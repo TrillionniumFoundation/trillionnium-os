@@ -520,11 +520,13 @@ final class NativeAppSession {
         boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
                 &&productLoginExitReserved&&a.guard==null&&provedUnenteredAction(a,actionExecution,finished)
                 &&actionExecution.get("native_action_guard")==null;
+        boolean dateRelease=!accepted&&!dispatched&&stale&&provedUnenteredDateNavigation(a,actionExecution,finished);
         if(a.guard!=null)a.guard.close();
         Map<String,Object> outcome=NativeAppEvidence.map();outcome.put("accepted",accepted);outcome.put("dispatched",dispatched);outcome.put("stale",stale);
         outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);
         outcome.put("query_reservation_released",release);
         outcome.put("login_exit_reservation_released",loginRelease);
+        outcome.put("date_reservation_released",dateRelease);
         outcome.put("pre_effect_stale_recovery_available",recovery);
         if(recovery){
             Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-stale-recovery-proof.v1");
@@ -551,12 +553,23 @@ final class NativeAppSession {
             proof.put("fresh_observation_and_new_model_decision_required",true);proof.put("automatic_redispatch",false);
             proof.put("business_verified",false);outcome.put("login_exit_reservation_release",proof);
         }
+        if(dateRelease){
+            Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-date-reservation-release.v1");
+            proof.put("date",a.date.toString());proof.put("purpose",a.purpose);proof.put("node_id",a.action.nodeId);
+            proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+            proof.put("original_observation_id",a.before.frame.observationId);proof.put("original_model_run_id",a.run);
+            proof.put("operation_id",actionExecution.get("operation_id"));proof.put("worker_drained",true);proof.put("effect_entered",false);
+            proof.put("fresh_observation_and_new_model_decision_required",true);proof.put("automatic_redispatch",false);
+            proof.put("query_or_result_proof_created",false);proof.put("business_verified",false);
+            outcome.put("date_reservation_release",proof);
+        }
         a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
         Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);inFlight=null;
         // Only the durable receipt above releases a reservation. The old frame
         // and old model run stay unusable; neither a result nor an action is made.
         if(release){queryAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
         if(loginRelease){productLoginExitReserved=false;requireReobservationAfterReleasedReservation(a,finished);}
+        if(dateRelease){dateAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
         if(recovery){recoverableStaleAttempt=a;requireReobservationAfterReleasedReservation(a,finished);}
         if(stale&&!dispatched)return;
         if(!accepted||stale){invalidate("native_action_receipt_not_accepted");return;}
@@ -584,6 +597,18 @@ final class NativeAppSession {
         long deadline=executionNumber(x,"deadline_elapsed_ms");
         return queued>=a.started&&deadline>queued&&deadline-queued<=8000
                 &&drained>=queued&&drained<=finished&&finished<deadline;
+    }
+    /** Release only this exact visible date proposal when its serial worker is
+     * proved drained before entering an effect. This cannot retry an unknown or
+     * entered action, replenish an action/query/login budget, or create a query
+     * proof; the caller journals before release and requires a new observation. */
+    private boolean provedUnenteredDateNavigation(Attempt a,Map<String,Object> x,long finished){
+        return a.guard==null&&a.date!=null&&a.flight!=null&&NativeCtripFlightPage.RESULTS.equals(a.flight.phase)
+                &&lastQueryProof!=null&&lastQueryDate!=null&&dateAttempts.contains(a.date)
+                &&("navigate_departure_date:"+a.date).equals(a.purpose)&&"click".equals(a.action.action)
+                &&a.purpose.equals(a.before.purposes.get(a.action.nodeId))
+                &&a.date.equals(a.flight.resolvedDates(lastQueryDate).get(a.action.nodeId))
+                &&provedUnenteredAction(a,x,finished)&&x.get("native_action_guard")==null;
     }
     private boolean provedUnenteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
         ActionGuard g=a.guard;

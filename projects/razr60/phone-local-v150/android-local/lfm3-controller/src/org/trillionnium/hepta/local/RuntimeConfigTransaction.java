@@ -133,6 +133,31 @@ final class RuntimeConfigTransaction {
                 .put("compute",compute).put("context_tokens",8192).put("threads",4)
                 .toString(2).getBytes(StandardCharsets.UTF_8);
     }
+    /** Visual settings are an explicit v3 tools selection; the text-only API stays closed. */
+    static byte[] selectedVisualTools(String compute)throws Exception{
+        if(!"npu".equals(compute))throw new IOException("GUI-Owl requires HTP0 language and GPUOpenCL vision");
+        LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,compute,8192,4);
+        requireSupported(config);
+        return new JSONObject().put("schema","hepta.local-runtime.v3").put("model_profile",config.profile.id)
+                .put("compute",compute).put("context_tokens",8192).put("threads",4).put("visual_mode","tools")
+                .toString(2).getBytes(StandardCharsets.UTF_8);
+    }
+    /** LFM3-VL is a distinct closed observation choice; it cannot select tool mode. */
+    static byte[] selectedVisualObservation(String compute)throws Exception{
+        if(!"npu".equals(compute))throw new IOException("LFM3-VL requires HTP0 language and GPUOpenCL vision");
+        LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,compute,8192,4,true);
+        requireSupported(config);
+        return new JSONObject().put("schema","hepta.local-runtime.v3").put("model_profile",config.profile.id)
+                .put("compute",compute).put("context_tokens",8192).put("threads",4).put("visual_mode","observe")
+                .toString(2).getBytes(StandardCharsets.UTF_8);
+    }
+    static void requireSupported(LocalRuntimeConfig config)throws IOException{
+        if(config!=null&&config.profile==ModelProfile.GUI_OWL_4B&&!config.visualObservationOnly
+                &&"npu".equals(config.compute)&&config.contextTokens==8192&&config.threads==4)return;
+        if(config!=null&&config.profile==ModelProfile.LFM3_VL_2B&&config.visualObservationOnly
+                &&"npu".equals(config.compute)&&config.contextTokens==8192&&config.threads==4)return;
+        requireText(config);
+    }
     private static JSONObject object(byte[] raw,String schema,String... names)throws Exception{
         JSONObject value=new JSONObject(new String(raw,StandardCharsets.UTF_8));
         Set<String> keys=new HashSet<String>();Iterator<String> it=value.keys();while(it.hasNext())keys.add(it.next());
@@ -172,8 +197,8 @@ final class RuntimeConfigTransaction {
     static RuntimeConfigTransaction prepare(File files,byte[] target,boolean targetExists)throws Exception{
         File canonical=canonicalFiles(files),root=settingsRoot(canonical,true);
         if(pending(canonical))throw new IOException("an earlier settings transaction requires explicit restore");
-        Snapshot before=current(canonical);requireText(decode(before));
-        Snapshot after=new Snapshot(before.path,targetExists,target,null);requireText(decode(after));
+        Snapshot before=current(canonical);requireSupported(decode(before));
+        Snapshot after=new Snapshot(before.path,targetExists,target,null);requireSupported(decode(after));
         if(!targetExists&&target.length!=0)throw new IOException("absent configuration cannot carry bytes");
         if(before.sameBytes(after))throw new IOException("the selected configuration is already exact");
         Snapshot last=read(new File(root,"last.json"),POINTER_LIMIT);
@@ -216,7 +241,7 @@ final class RuntimeConfigTransaction {
         Snapshot oldLast=new Snapshot(new File(root,"last.json"),bool(value,"last_exists"),last.bytes,null);
         if(!before.exists&&before.bytes.length!=0||!after.exists&&after.bytes.length!=0||!oldLast.exists&&oldLast.bytes.length!=0)
             throw new IOException("absent settings original has bytes");
-        requireText(decode(before));requireText(decode(after));if(oldLast.exists)pointerId(oldLast.bytes);
+        requireSupported(decode(before));requireSupported(decode(after));if(oldLast.exists)pointerId(oldLast.bytes);
         return new RuntimeConfigTransaction(canonical,root,directory,id,before,after,oldLast,recovery,intent,old,next,last);
     }
     static RuntimeConfigTransaction restore(File files)throws Exception{

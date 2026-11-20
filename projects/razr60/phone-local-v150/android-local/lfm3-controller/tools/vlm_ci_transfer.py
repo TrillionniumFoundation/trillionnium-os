@@ -67,7 +67,7 @@ def binding(repo, source, runtime, source_head, repository, run_id, run_attempt)
     member = rows["libhepta_local_vlm_runner.so"]
     receipt_raw = _read_regular(runtime / "BUILD-RECEIPT.json", 131072)
     receipt = strict_json(receipt_raw)
-    reference = strict_json(_read_regular(source / "native/vlm-worker/provenance/ANDROID-BUILD-R6.json", 131072))
+    reference = strict_json(_read_regular(source / "native/vlm-worker/provenance/ANDROID-BUILD-LFM3-VL-R1.json", 131072))
     for key in ("compiler_wrapper_sha256", "source_properties_sha256"):
         need(receipt.get(key) == reference[key], "VLM CI compiler identity differs: " + key)
     need(receipt.get("compiler_version", "").splitlines()[:1] == reference["compiler_version"].splitlines()[:1]

@@ -169,9 +169,25 @@ public final class PromptAdmissionHostTest {
         Method attempt=ConservativeTokenBudget.class.getMethod("mayAttemptNative");
         int exactProfiles=0,upperProfiles=0;
         int visualProfiles=0;
+        int observationProfiles=0;
         for(Field field:ModelProfile.class.getFields()){
             if(field.getType()!=ModelProfile.class)continue;
             ModelProfile profile=(ModelProfile)field.get(null);
+            // The separately pinned LFM observer is never a text-matrix or GUI-tools entry.
+            if(profile==ModelProfile.LFM3_VL_2B){
+                final ModelProfile observer=profile;
+                LocalRuntimeConfig observed=new LocalRuntimeConfig(observer,"npu",8192,4,true);
+                check(observer.visual()&&observed.profile==observer&&observed.visualObservationOnly
+                        &&observed.contextTokens==8192&&observed.threads==4&&"HTP0".equals(observed.expectedDevice()),
+                        "the closed LFM observer keeps its explicit multimodal configuration");
+                rejects(new Throwing(){public void run(){new LocalRuntimeConfig(observer,"npu",4096,4,true);}},
+                        IllegalArgumentException.class,"LFM observer cannot enter the original 4096 text matrix");
+                rejects(new Throwing(){public void run(){new LocalRuntimeConfig(observer,"gpu",8192,4,true);}},
+                        IllegalArgumentException.class,"LFM observer cannot enter the text GPU route");
+                rejects(new Throwing(){public void run(){new LocalRuntimeConfig(observer,"npu",8192,4);}},
+                        IllegalArgumentException.class,"LFM observer cannot acquire implicit GUI tools mode");
+                observationProfiles++;continue;
+            }
             if(profile.visual()){
                 check(profile==ModelProfile.GUI_OWL_4B,"only the explicit GUI profile leaves the original text matrix");
                 visualProfiles++;continue;
@@ -187,6 +203,7 @@ public final class PromptAdmissionHostTest {
         }
         check(exactProfiles==12&&upperProfiles==0,"all declared profiles require native exact admission");
         check(visualProfiles==1,"exactly one GUI visual profile requires its separate 8192 admission matrix");
+        check(observationProfiles==1,"exactly one closed LFM observation profile has its separate admission gate");
         cases++;
 
         final LocalRuntimeConfig lfm3=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);

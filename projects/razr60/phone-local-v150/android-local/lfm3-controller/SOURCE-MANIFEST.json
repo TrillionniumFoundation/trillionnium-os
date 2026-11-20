@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "dfbbb0c0d1704b3723f39cc11812c4f7ed10ddd5",
-  "base_manifest_sha256": "5f743a5c99d07dcfa8f1bfc79491cfbed9326f8e3a26c7887327b2d330138e88",
-  "candidate_status": "initial_native_drain_retry_and_same_request_saved_graph_seed_host_validation_pending",
+  "base_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
+  "base_manifest_sha256": "c62a357ec86c6c4f86d83e30e9d86cae386c130a23e4d11f8405b9add24fc3ef",
+  "candidate_status": "lfm3_vl_ordinary_entry_ctrip_xiaomi_reviewed_census_pin_host_validation_r4_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
-  "main_java_sources": 191,
-  "production_build_inputs_count": 363,
-  "production_input_map_sha256": "e0cc8bfb4cc2727391bca9e5640ad65f51c19db71b8f80c0aebaa6ebbede084b",
-  "complete_source_files": 2251,
+  "main_java_sources": 192,
+  "production_build_inputs_count": 367,
+  "production_input_map_sha256": "9be219f70d25abf649c03009d3fdbe72c4502fef42163f6e3febc8e6625e8367",
+  "complete_source_files": 2283,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain the exact dfbbb installed component. Add one private initial native pre-model read retry only after the latest complete sealed pair, successful persisted-window check, known target event at the original final rejection fence, and actual serial read queue drain. Keep ordinary initial window transitions and original stale-action authority. Permit a consumed retry to seed only its own newly completed full saved graph under the same private proof identity, then require a new complete sample, new PNG and all original publication checks. Preserve the one-use retry budgets, 10s settle, 12s request, 480s task deadline, unknown-event and owner/profile guards. Host and Android qualification remain pending; this source manifest authorizes no Phone operation.",
+  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim.",
   "files": [
     {
       "path": ".gitignore",
@@ -176,8 +176,8 @@
     },
     {
       "path": "MODEL-PROFILES.md",
-      "bytes": 11944,
-      "sha256": "b2d3321ff598a654fd4de0780abb66ad12e301ca2282daea2859de771c1fd16f"
+      "bytes": 15676,
+      "sha256": "e33e5d39a54d9560ab2f88f9cfe4b821678ecf7ae0c25e48fc8094ea27973dc7"
     },
     {
       "path": "OWNER-AUTHORIZATION.md",
@@ -4956,8 +4956,8 @@
     },
     {
       "path": "native/local-vlm-runtime-pins.json",
-      "bytes": 5327,
-      "sha256": "997b383be7bf1d69cb4a38f3a7ee3bba0cdeaf99a161de25ebcfc8c66299eb02"
+      "bytes": 6094,
+      "sha256": "5586f9fbde85e2f397d6be453b283d505c31494f6c8d6370f78d3618c87f9931"
     },
     {
       "path": "native/mobimind-runtime-pins.json",
@@ -5212,7 +5212,7 @@
     {
       "path": "native/vlm-worker/SOURCE.json",
       "bytes": 9197,
-      "sha256": "c8b9f13bdd0e38bf1963b1bcf68937c71395dcf2282eb7fceec1d7dffce3595a"
+      "sha256": "0479f529b02cb78e85dc5946c4c007f50b528380a86470c736dd7ac93a821d9c"
     },
     {
       "path": "native/vlm-worker/native/admission.h",
@@ -5266,8 +5266,13 @@
     },
     {
       "path": "native/vlm-worker/native/vlm-worker.cpp",
-      "bytes": 30541,
-      "sha256": "6901bf8e7df072c564b89bedf3e6774d105c842064ce38d37aea89bf0cc87600"
+      "bytes": 30909,
+      "sha256": "8f83e592ff9c78f6e70379d4074e6477552b8e4f05d4c653b58cd87888e68b82"
+    },
+    {
+      "path": "native/vlm-worker/provenance/ANDROID-BUILD-LFM3-VL-R1.json",
+      "bytes": 9043,
+      "sha256": "f361bd987dbddd5b2b24ec4abd98427ec6499a12d3ae0f52482afcb19ac73d21"
     },
     {
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-R4.json",
@@ -5295,6 +5300,11 @@
       "sha256": "dfcaacaba6c7e7bf48996e38468259d09171a4339aa0be11007e8f75667ee72e"
     },
     {
+      "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-LFM3-VL-R1.json",
+      "bytes": 5565,
+      "sha256": "eba6506fcab47ea32a6b0be5d1491621fea7b43d0387a40e3d045a60db5b9fd7"
+    },
+    {
       "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json",
       "bytes": 6078,
       "sha256": "06df8558523a589087220c6c0818accf9bbf9a56842f666036e6ce9715959ef1"
@@ -5308,6 +5318,11 @@
       "path": "native/vlm-worker/provenance/REPRODUCIBLE-R4.json",
       "bytes": 663,
       "sha256": "2e84e431be18e6a0471481be690653f8e4bf3ab7220ad430d3df43bb5cc923f3"
+    },
+    {
+      "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-LFM3-VL-R1.json",
+      "bytes": 6957,
+      "sha256": "f5c409abcfb1bcf20abcd06c70931b8d26175c41c217712f01cabd1eed98b059"
     },
     {
       "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
@@ -6486,8 +6501,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 322943,
-      "sha256": "bfb13249345811e0d9d3243c58def0ac891641fc13cbec0320ccf9bfaefbb52d"
+      "bytes": 322855,
+      "sha256": "b264ab65ee70d8556363863c984a0862645d282824043c0875ef86a296f73ee0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6506,13 +6521,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 86488,
-      "sha256": "51f4372683c9b2c9c4359534a16b04a75944d6866cd621e34f5f0b3628fe4fde"
+      "bytes": 87879,
+      "sha256": "eb7945227953dc239f80197bed1c014ed935180a864a6a364978393f0ebfe9ef"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelSettings.java",
-      "bytes": 8841,
-      "sha256": "e81150b9143e5a7679233b604e0ff61882df179b9ffd2decdbee7e7b544bd50f"
+      "bytes": 9423,
+      "sha256": "e2e42501ecab0d06a9926c68e26ae8dd252929389073e03ab79f648e969d97da"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
@@ -6521,8 +6536,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
-      "bytes": 4550,
-      "sha256": "e99ef5b8c965dc5d09983a638412b3b5329f0dd9180099e8fe8f8e824153c991"
+      "bytes": 4748,
+      "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
@@ -6536,8 +6551,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 72893,
-      "sha256": "8ad663ceb5f2ace1cdc6a0e499806bce7d88f4434988f1ead014cf7964d038cf"
+      "bytes": 73463,
+      "sha256": "013390a64b21a8dba3894d9aca7ed6fca756b8e47fbc9013c86f30251f1ab562"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
@@ -6576,23 +6591,23 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
-      "bytes": 2504,
-      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+      "bytes": 3170,
+      "sha256": "4e23633436f181639ec271cacedc2fbb7175483bc8c123935bc9bf46e8d013f5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "bytes": 7491,
-      "sha256": "11ff3d26283dc4e8789c427363043675427e647bff6524b1c5a987afba4a8a9c"
+      "bytes": 8494,
+      "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "bytes": 48778,
-      "sha256": "de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec"
+      "bytes": 49724,
+      "sha256": "ee304f12980f51c87dfe031e55c5a34d4d7466e963a5f5f6bd18b633718b4fc2"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "bytes": 9873,
-      "sha256": "495f9d98854d8137e48e07b074987d81bcfbab8f3b3fe437cdd3239c16719f1a"
+      "bytes": 10085,
+      "sha256": "320c7c6f4f1f4babb2d950cf25ca97b74c9ff2e0719c8a88520f99e4c5c33d02"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
@@ -6611,8 +6626,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "bytes": 77201,
-      "sha256": "f961c738aea45a9f1e0c86177affc9ce339098ede72782a23b1637a489f15bca"
+      "bytes": 79414,
+      "sha256": "e33234fcf0140269ffb8653144c3ac11a161cd6f980516fcd76a6edfef10082b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -6621,8 +6636,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "bytes": 47175,
-      "sha256": "61cf52bf5ece6d444a3e570c9c229e9d3992cf5f6e5b0b34e54fc66d52e63a7b"
+      "bytes": 53518,
+      "sha256": "603ec3111bfa7330ee7f6cf361d22492154d213f052cd942a0dd1f00f5108459"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
@@ -6836,8 +6851,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/RuntimeConfigTransaction.java",
-      "bytes": 21309,
-      "sha256": "22c9965ea7f3bff25a1a0efc20dac44198a711df84f5ff84e348f49403eccfe1"
+      "bytes": 23244,
+      "sha256": "e353ed22871a68e9c602d5add7f0875b3931bd55339afadffac799028aa70b53"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RuntimeInferenceAdapter.java",
+      "bytes": 5627,
+      "sha256": "8ebe1714328eb69adf8e50f07c69943914c0bc3c3a02a8c62a6588cc48d03841"
     },
     {
       "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
@@ -6931,18 +6951,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
-      "bytes": 57155,
-      "sha256": "b90f858df35153e4a7ad5475326bc35087601b38a3503179d1e8fbb76a5c4317"
+      "bytes": 57321,
+      "sha256": "8e0d52337f7abdcd649f5c0bd1625473a734d1c4a8c75b16454a818eaf5b20fe"
     },
     {
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
       "bytes": 1091,
-      "sha256": "a0638bca1ec2d7197f61723a39357bc317d8b47c3cf7aa38e47444cca7e03428"
+      "sha256": "88a2e753c203d992b77a46176ff3cfe16bbbfec2831d9b31b772be91673062d3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/VlmResultContract.java",
-      "bytes": 34867,
-      "sha256": "ef189e6745b448382e4b66cc427193349cd250e42b31f44a35b23272cfd4fe53"
+      "bytes": 36500,
+      "sha256": "fe72c7d94631e27f3b9bca4afd960dc5ecee4f1d2aebc9bd7439b81e7af8d9c8"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WarmProcessSession.java",
@@ -7631,8 +7651,8 @@
     },
     {
       "path": "tests/exact-admission/PromptAdmissionHostTest.java",
-      "bytes": 20690,
-      "sha256": "09552d4039d9898fbb5c7d8aaecb2437eaaef4fde91e694ed5ce7524b332f21b"
+      "bytes": 22171,
+      "sha256": "2ff720ccb9fbc07b547b4097930fd09be5dafb1cd5937670f012852d601d4f93"
     },
     {
       "path": "tests/exact-admission/TextOnlyClickHostTest.java",
@@ -7800,14 +7820,64 @@
       "sha256": "23397c1ba00ab85ed9bfdaadadc0eb96985ea3813a8939262f63aa02757015dd"
     },
     {
+      "path": "tests/lfm3-vl-profile/Lfm3VlProfileHostTest.java",
+      "bytes": 9853,
+      "sha256": "502873dc5bd3d1452694d8546173220fb604b319ca7e18142170c820f3044bbb"
+    },
+    {
+      "path": "tests/lfm3-vl-profile/check_template.py",
+      "bytes": 3154,
+      "sha256": "c33395f0477569f53e764f1a5b44458ac5b561dff2446f42eda0f7ebed079d9b"
+    },
+    {
+      "path": "tests/lfm3-vl-profile/run_host.py",
+      "bytes": 3941,
+      "sha256": "9507db4aff49486fadea67ff38a3a5a6e48347e74c631868db15d1dfc6591406"
+    },
+    {
+      "path": "tests/lfm3-vl-profile/runtime-observe.json",
+      "bytes": 173,
+      "sha256": "6a73c6a91dca0841e4331b84a5e10ac9cf06b2d4bec2a138461c4e010ea3ec0a"
+    },
+    {
+      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
+      "bytes": 1562,
+      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
+    },
+    {
+      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
+      "bytes": 698,
+      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+    },
+    {
+      "path": "tests/local-model-settings-visual/README.md",
+      "bytes": 1927,
+      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+    },
+    {
+      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
+      "bytes": 9112,
+      "sha256": "ca7cc191703239847add13edc25405a994ea37871f12d16b3d5584911f513c2a"
+    },
+    {
+      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "bytes": 42001,
+      "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
+    },
+    {
+      "path": "tests/local-model-settings-visual/run_host.py",
+      "bytes": 13265,
+      "sha256": "5d7920f4c296789c8c7b16f90b92a41b9f3a29dd57017ad4a8211091c48212d0"
+    },
+    {
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
       "bytes": 3794,
       "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
     },
     {
       "path": "tests/local-model-settings/PRODUCTION-SOURCES.json",
-      "bytes": 2459,
-      "sha256": "5c254a2206b88a3846ef82e7dd931be84bd24fd6a21f8853803ab31b4bee5837"
+      "bytes": 2575,
+      "sha256": "954283cd02ea4c9dcc404447087cf7649c9ef2617563057a231fa9dd063f584a"
     },
     {
       "path": "tests/local-model-settings/README.md",
@@ -7897,7 +7967,7 @@
     {
       "path": "tests/local-model-settings/run_host.py",
       "bytes": 8421,
-      "sha256": "9dc3ec6c37105e7f17ac4fb6fe2c6ab1f25e6c8b25aed73d46fbc59228e9f551"
+      "sha256": "f2cb8a2af82ffa073d359ec46a3eee294374d1905055da2309dfcea43fc23725"
     },
     {
       "path": "tests/main-ui-permission/MainActivityLocatorHostTest.java",
@@ -8055,6 +8125,11 @@
       "sha256": "839dfb0cf24c51d5f7ef37bcdda370fc45fcb58e015484647ed40a74270ce64f"
     },
     {
+      "path": "tests/native-app-provider/NativeCtripDateReservationHostTest.java",
+      "bytes": 20495,
+      "sha256": "872e7e600d85b54b7cec885ded5c4cb8685a567599de4e2f9f9c74aa3bf16679"
+    },
+    {
       "path": "tests/native-app-provider/NativeCtripLoginExitHostTest.java",
       "bytes": 24609,
       "sha256": "1d08f34c7d0f78a9c10d476db0ba3ffed1ba2b61348506b117fbf0910db2a30b"
@@ -8065,6 +8140,11 @@
       "sha256": "a32811f5a31d3c17410f44a56df9c79c54ea76dfdaaf59fb4f4514ddb2881447"
     },
     {
+      "path": "tests/native-app-provider/NativeCtripSmsLoginHostTest.java",
+      "bytes": 19735,
+      "sha256": "2e3eabcf5cb3aed25a479bd5a8068facc28954204c718c342f26b3397e6ba040"
+    },
+    {
       "path": "tests/native-app-provider/NativeResourceHomeHostTest.java",
       "bytes": 16035,
       "sha256": "26d6f8b232170f3e787584ad7e7f629e0b61cb7aa26b6c87e2f82e67fcb74d2c"
@@ -8073,6 +8153,11 @@
       "path": "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
       "bytes": 22139,
       "sha256": "447ab0da3ae8b10eda23e4c37600c12b18c354082ef6ae7d7856c50819f87ead"
+    },
+    {
+      "path": "tests/native-app-provider/NativeXiaomiSearchHintWidthHostTest.java",
+      "bytes": 19765,
+      "sha256": "e3c757249b1e6de49ee54406556ce6132e3789a6bc09c0715785a0d1a053a49e"
     },
     {
       "path": "tests/native-app-provider/fixtures/calendar-result.xml",
@@ -8090,6 +8175,36 @@
       "sha256": "8cae8ec8f3deb6e45f4c4778c6a6de9826aba383ffb7a572ea7ad9c08ac8eb58"
     },
     {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/PROVENANCE.json",
+      "bytes": 3211,
+      "sha256": "d61ad0e69d2939f75925ac7f26a3b34d5dadb8c84ab735d5c42ef0e231faf14f"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/step-02-after.json",
+      "bytes": 48212,
+      "sha256": "631cb90ec09a2ccf834411ebb7c5cd75da53cfbe5959f5bffc1bb96f88464fba"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/step-02-before.json",
+      "bytes": 162018,
+      "sha256": "73de917d8e29446cf9ca1becafbb38ec1da835cdc73443c862fd2f5b46e588c2"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/step-03-after.json",
+      "bytes": 163302,
+      "sha256": "fe66b42240ffca02d3c07e7d01ea72e9ef15633a333f824c307b307b1be6038a"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/step-04-after.json",
+      "bytes": 53872,
+      "sha256": "89fcc7145e0db8e3c2d7a36a5cf911e759925f80df908bc6398f6a5328c216d8"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-date-reservation-r18/step-05-action.json",
+      "bytes": 30444,
+      "sha256": "ee3bc20c2f8fd6df90fb3bdc699e1dd128b73319b78bd9e9206c7b48f6962864"
+    },
+    {
       "path": "tests/native-app-provider/fixtures/ctrip-loading-r18.json",
       "bytes": 52345,
       "sha256": "e58b11da5ce3750ae074bb6a8a818e27e347cb66feca5b7414c552c5220f3e82"
@@ -8098,6 +8213,16 @@
       "path": "tests/native-app-provider/fixtures/ctrip-login-r18-redacted.json",
       "bytes": 25173,
       "sha256": "ef4fd9367820cf0c87b7b805890abe58cd0a5d972a3dd235e4a60c64639d878a"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-sms-login-r18-provenance.json",
+      "bytes": 1556,
+      "sha256": "c187ef52635bb36d8bc54f271a058613b22545fd85d5ed0cc273ec728d46d870"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/ctrip-sms-login-r18.json",
+      "bytes": 33758,
+      "sha256": "c2aa485a10fd22e9c7c3a48b08e246313d31232e91d40fbf29f1779b0edca2b7"
     },
     {
       "path": "tests/native-app-provider/fixtures/form14.xml",
@@ -8145,14 +8270,34 @@
       "sha256": "1bc4acfb65cf5b8096d3eada6d79f34a7eb960522a3f7af6ebf6b72ca76bdb7b"
     },
     {
+      "path": "tests/native-app-provider/fixtures/xiaomi-search-hint-width-r18/PROVENANCE.json",
+      "bytes": 1668,
+      "sha256": "7cb9f1bbd2bbdbf093b60f589b0777ba132f5b99cbce202e8c8b517b00133247"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-search-hint-width-r18/step-01-action.json",
+      "bytes": 210350,
+      "sha256": "2f189b831adbf1c43c313646138b3d7830f185bfbdd159225a595671c4362f90"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-search-hint-width-r18/step-02-action.json",
+      "bytes": 210292,
+      "sha256": "5f7c0c72963ac9153bd9f635318bb26d8c062862dad60cd63bd485a604f738dc"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-search-hint-width-r18/step-03-action.json",
+      "bytes": 210470,
+      "sha256": "2aa2286d6aa1f8e5204c8c8c71e336b43f4c867dd9707cfc2be61778f7be0228"
+    },
+    {
       "path": "tests/native-app-provider/fixtures/xiaomi-search-results.xml",
       "bytes": 55869,
       "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
     },
     {
       "path": "tests/native-app-provider/run_host.py",
-      "bytes": 31167,
-      "sha256": "dda00cacefb31be339a998e7b20bb131cd28b1ee3f3b117e99983008000d31f8"
+      "bytes": 42414,
+      "sha256": "94e4719e25db6a14dafdccbbe880230585f32840f52203526dd8eab47edbd2af"
     },
     {
       "path": "tests/native-app-routing/InstalledIdentityFixture.template",
@@ -8446,8 +8591,8 @@
     },
     {
       "path": "tests/native-stale-recovery/run_budget.py",
-      "bytes": 10247,
-      "sha256": "0c08224c33ca7d0be6adf48613b721b8cfa616efc0191acdfb1fe1345169ff52"
+      "bytes": 10547,
+      "sha256": "4da97b4465badda673040bbd3436575569eff5a4be29e5ef7ca17b004d677c12"
     },
     {
       "path": "tests/native-stale-recovery/run_host.py",
@@ -9831,8 +9976,8 @@
     },
     {
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "bytes": 23249,
-      "sha256": "a76d4ee577c4006e3fb206679ba81ac3ab40b020e3ea05b1b5fa85bf7ed7975a"
+      "bytes": 23269,
+      "sha256": "2e2e4fffe19f99086fcce2fac81c277a3e856c0e8829b502ab21d44d1121d896"
     },
     {
       "path": "tests/qualification-scope/run_host_tests.py",
@@ -9966,13 +10111,13 @@
     },
     {
       "path": "tests/runtime-config-ui/RefreshFixture.template",
-      "bytes": 15969,
-      "sha256": "13d25bf15966dc5125c4882f709e18f65bc9f3552c4ced6c91efd070a676fb56"
+      "bytes": 24251,
+      "sha256": "4cd70319b5add1ae7d2c21a907d18581d63b9304630988d40ff0af1d1e9ea097"
     },
     {
       "path": "tests/runtime-config-ui/run_host_tests.py",
-      "bytes": 8083,
-      "sha256": "1be3c053b9cd8c662bf9607385f91e3089b0c769369805208c22b8c7d51ab0c0"
+      "bytes": 11550,
+      "sha256": "91396e8e3201ba2dfd92bd7641c9ce51e00ac8ef2107c031d1906c30ea77ffd4"
     },
     {
       "path": "tests/sdk-exception-failure-audit/SdkExceptionFailureHostTest.java",
@@ -10301,8 +10446,8 @@
     },
     {
       "path": "tests/test_vlm_runtime.py",
-      "bytes": 6169,
-      "sha256": "feaec02d57941dcdd7571e03939b60eb48484c298ee3fe2c5eb8e9af2a069cfa"
+      "bytes": 6185,
+      "sha256": "49b28158ee036355aeba717baecdf46c6d420e4ccf469ab3774f93230485feb5"
     },
     {
       "path": "tests/text-only-click/fixtures/v43-note-step05-before.json",
@@ -10361,8 +10506,8 @@
     },
     {
       "path": "tests/vlm-adapter/VlmAdapterLifecycleHostTest.java",
-      "bytes": 62598,
-      "sha256": "59e82823e5452c11c292548bc1dd7793069de7f884c5c16a6cca5e449c2d535a"
+      "bytes": 65725,
+      "sha256": "49d196ff876e0d3406e411fd6bc2e31719ecce763f13873564a1bc369b60c30a"
     },
     {
       "path": "tests/vlm-adapter/run_host.py",
@@ -10380,6 +10525,16 @@
       "sha256": "9d0cc060db50831c1d7328179f7d4f7a939b3443ae8d832756c3ce2ef814b1fb"
     },
     {
+      "path": "tests/vlm-contract/fixtures/LFM3-VL-MODELS-VERIFIED.json",
+      "bytes": 571,
+      "sha256": "d79e95150ffd3a52d4fe11a0f2465992c344faa942baa7e71b75e1063c0ff0af"
+    },
+    {
+      "path": "tests/vlm-contract/fixtures/LFM3-VL-PROVENANCE.json",
+      "bytes": 1339,
+      "sha256": "987aa979ae408c961bbd5f0b9f8652d443406e2f9407a345fb8ce9d3b9f97cb1"
+    },
+    {
       "path": "tests/vlm-contract/fixtures/PROVENANCE.json",
       "bytes": 572,
       "sha256": "494bb8d1a57792becc462e9cf6a7cb8962fcaeab658a3750997dcee0234a4b3f"
@@ -10390,14 +10545,19 @@
       "sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4"
     },
     {
+      "path": "tests/vlm-contract/fixtures/lfm3-vl-chat-template.jinja",
+      "bytes": 12129,
+      "sha256": "f45005c50cd2a97329722bf3a2dee9f16c04cdf825a589b280fb7e99e6827818"
+    },
+    {
       "path": "tests/vlm-contract/requirements.txt",
       "bytes": 32,
       "sha256": "8c1ba43ad377dfde62a47543a953436c0841e93844c5f9a85523a1b6280d04b2"
     },
     {
       "path": "tests/vlm-contract/run_host_tests.py",
-      "bytes": 3940,
-      "sha256": "0f57dd11355a3889769a061904a3d895e38c7c2017f7678556c8522690a4b969"
+      "bytes": 5532,
+      "sha256": "1f872d55b0fa1af60f5b4ac436678c521a1c2256d2bef299acad342382a57e6e"
     },
     {
       "path": "tests/warm-finalization/WarmFinalizationHostTest.java",
@@ -11061,8 +11221,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 49708,
-      "sha256": "af20ce6be05ab6834472a8b980cf25c7b6c08a0011e6dc80fd85bbd3a825a61d"
+      "bytes": 57970,
+      "sha256": "ae3fe03b6f716527cdfb65c17141307e815d2244733aee8acf50e0d9bbcd559a"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
@@ -11251,13 +11411,13 @@
     },
     {
       "path": "tools/verify_vlm_runtime.py",
-      "bytes": 10249,
-      "sha256": "6e9eda6ba7f2b31570aa372fa8531feace1c468ef523130fa091263330735c34"
+      "bytes": 10273,
+      "sha256": "44017629277fae9bee8b09240ff5a49a1eac2275844e8768ac730931ddf34867"
     },
     {
       "path": "tools/vlm_ci_transfer.py",
-      "bytes": 6504,
-      "sha256": "9d9d56f353c1bf878c4bcc14d0ad43351e5b9251e81eaa3f69314ffe360f7f50"
+      "bytes": 6512,
+      "sha256": "f4a12a7383dba776a1351a7615c9b420b189c0e29e38e9a85b68928986e153b9"
     },
     {
       "path": "tools/warm_receipts.py",

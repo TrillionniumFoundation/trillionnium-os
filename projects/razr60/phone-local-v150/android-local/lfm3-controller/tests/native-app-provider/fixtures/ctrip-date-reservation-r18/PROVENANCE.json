@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.ctrip-date-reservation-fixtures.v1",
+  "source_git_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
+  "source_task_id": "d17485e67e774d5a9d4106f962d24bdf",
+  "source_actual_query_date": "2026-11-20",
+  "source_owner_target_date": "2026-11-25",
+  "source_stale_proposed_date": "2026-11-24",
+  "source_stale_dispatched": false,
+  "source_effect_entered": false,
+  "source_task_business_verified": false,
+  "files": [
+    {
+      "path": "step-02-before.json",
+      "bytes": 162018,
+      "sha256": "73de917d8e29446cf9ca1becafbb38ec1da835cdc73443c862fd2f5b46e588c2",
+      "source_bytes_modified": false,
+      "original_record": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-ctrip-evidence-r1/raw/task/files/control-tasks/d17485e67e774d5a9d4106f962d24bdf/step-02-before.json",
+      "retained_nodes": 107
+    },
+    {
+      "path": "step-02-after.json",
+      "bytes": 48212,
+      "sha256": "631cb90ec09a2ccf834411ebb7c5cd75da53cfbe5959f5bffc1bb96f88464fba",
+      "source_bytes_modified": false,
+      "original_record": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-ctrip-evidence-r1/raw/task/files/control-tasks/d17485e67e774d5a9d4106f962d24bdf/step-02-after.json",
+      "retained_nodes": 28
+    },
+    {
+      "path": "step-03-after.json",
+      "bytes": 163302,
+      "sha256": "fe66b42240ffca02d3c07e7d01ea72e9ef15633a333f824c307b307b1be6038a",
+      "source_bytes_modified": false,
+      "original_record": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-ctrip-evidence-r1/raw/task/files/control-tasks/d17485e67e774d5a9d4106f962d24bdf/step-03-after.json",
+      "retained_nodes": 108
+    },
+    {
+      "path": "step-04-after.json",
+      "bytes": 53872,
+      "sha256": "89fcc7145e0db8e3c2d7a36a5cf911e759925f80df908bc6398f6a5328c216d8",
+      "source_bytes_modified": false,
+      "original_record": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-ctrip-evidence-r1/raw/task/files/control-tasks/d17485e67e774d5a9d4106f962d24bdf/step-04-after.json",
+      "retained_nodes": 35
+    },
+    {
+      "path": "step-05-action.json",
+      "bytes": 30444,
+      "sha256": "ee3bc20c2f8fd6df90fb3bdc699e1dd128b73319b78bd9e9206c7b48f6962864",
+      "source_bytes_modified": false,
+      "original_record": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-ctrip-evidence-r1/raw/task/files/control-tasks/d17485e67e774d5a9d4106f962d24bdf/step-05-action.json",
+      "retained_nodes": null
+    }
+  ],
+  "sms_fixture": "../ctrip-sms-login-r18.json",
+  "sms_fixture_sha256": "c2aa485a10fd22e9c7c3a48b08e246313d31232e91d40fbf29f1779b0edca2b7",
+  "phone_operations": 0,
+  "android_runtime": false,
+  "model_executed": false,
+  "business_verified": false,
+  "test_boundaries": "Complete unmodified actual source graphs/receipt. Production parser/Session used with host profile ownership and model callbacks. A fresh post-SMS-return result observation is synthetic, cloned from the actual pre-SMS 11/20 graph; it is not an observed phone return or date-query success."
+}

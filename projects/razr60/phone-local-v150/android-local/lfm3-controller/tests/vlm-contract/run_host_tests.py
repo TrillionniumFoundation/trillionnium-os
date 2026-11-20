@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 
 def pin(path):
     data=path.read_bytes()
@@ -25,7 +26,13 @@ def main():
     protocol=source/"native/vlm-worker/PROTOCOL.md"
     sources=[support/"VlmResultContract.java",here/"VlmResultContractHostTest.java",
              support/"MobiMindContract.java",support/"MobiMindPins.java"]
-    inputs=sources+[template,native,protocol,Path(__file__).resolve()]
+    lfm=source/"tests/lfm3-vl-profile"
+    lfm_template=here/"fixtures/lfm3-vl-chat-template.jinja"
+    sources += [support/"ModelProfile.java",support/"LocalRuntimeConfig.java",
+                support/"VlmPins.java",lfm/"Lfm3VlProfileHostTest.java"]
+    inputs=sources+[template,native,protocol,Path(__file__).resolve(),lfm_template,
+                    here/"fixtures/LFM3-VL-PROVENANCE.json",lfm/"check_template.py",
+                    lfm/"runtime-observe.json"]
     before={str(path):pin(path) for path in inputs}
     report={"schema":"hepta.vlm.result-contract.host-gate.v1","all_pass":False,
             "java_release":8,"input_pins":before,"commands":[],"phone_operations":0,
@@ -35,13 +42,27 @@ def main():
         classes=out/"classes";classes.mkdir()
         commands=[("compile",[str(jdk/"javac"),"--release","8","-d",str(classes)]+[str(p) for p in sources]),
                   ("contract",[str(jdk/"java"),"-cp",str(classes),
-                    "org.trillionnium.hepta.local.VlmResultContractHostTest",str(template),str(out/"TESTS.json")])]
+                    "org.trillionnium.hepta.local.VlmResultContractHostTest",str(template),str(out/"TESTS.json")]),
+                  ("lfm3vl-profile",[str(jdk/"java"),"-cp",str(classes),
+                    "org.trillionnium.hepta.local.Lfm3VlProfileHostTest",str(template),str(lfm_template),str(out/"LFM3-VL-TESTS.json")]),
+                  ("lfm3vl-template",[sys.executable,"-B",str(lfm/"check_template.py"),
+                    "--template",str(lfm_template),"--output",str(out/"lfm3vl-template")])]
         for name,argv in commands:
             result=subprocess.run(argv,capture_output=True,timeout=60)
             (out/(name+".stdout")).write_bytes(result.stdout);(out/(name+".stderr")).write_bytes(result.stderr)
             report["commands"].append({"name":name,"argv":argv,"exit_code":result.returncode})
             if result.returncode:raise RuntimeError(name+" failed: "+result.stderr.decode("utf-8","replace")[-4000:])
         tests=json.loads((out/"TESTS.json").read_text())
+        lfm_tests=json.loads((out/"LFM3-VL-TESTS.json").read_text())
+        lfm_render=json.loads((out/"lfm3vl-template/RESULT.json").read_text())
+        assert lfm_tests["all_pass"] is True and lfm_tests["assertions"]==52,"LFM3-VL profile gate required"
+        assert lfm_render["all_pass"] is True and lfm_render["case_count"]==5,"LFM3-VL template gate required"
+        assert json.loads((lfm/"runtime-observe.json").read_text())=={
+            "schema":"hepta.local-runtime.v3","model_profile":"lfm3-vl-2b-qad-q4_0",
+            "compute":"npu","context_tokens":8192,"threads":4,"visual_mode":"observe"
+        },"closed observation fixture differs"
+        report.update(lfm3vl_profile_assertions=52,lfm3vl_template_cases=5,
+                      lfm3vl_config_fixture_verified=True)
         cpp=native.read_text();start=cpp.index("common_json receipt={{");end=cpp.index("std::string raw,error=",start)
         native_keys=set(re.findall(r'\{"([a-z0-9_]+)"\s*,',cpp[start:end]))
         native_keys.update(re.findall(r'receipt\["([a-z0-9_]+)"\]',cpp))

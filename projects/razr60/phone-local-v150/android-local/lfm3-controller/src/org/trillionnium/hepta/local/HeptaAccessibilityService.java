@@ -267,8 +267,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return ownedController;
     }
     public synchronized LocalTaskController taskController(LocalModelEngine engine){
-        return taskController(engine.configuration().profile.visual()
-                ?new VlmInferenceAdapter(this,engine):new EngineInferenceAdapter(engine));
+        return taskController(new RuntimeInferenceAdapter(this,engine));
     }
     /** Pure idle query for local configuration; no controller retirement or recovery authority. */
     synchronized boolean modelSettingsIdle(){

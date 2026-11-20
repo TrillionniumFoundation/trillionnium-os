@@ -55,9 +55,9 @@ class VlmRuntime(unittest.TestCase):
     def test_added_cpp_runtime(self):self.receipt_mutation('new_cpp_runtime_added',True)
     def test_vendor_closure_cannot_be_overclaimed(self):
         self.receipt_mutation('strong_undefined_closure_complete',True)
-        proof=self.root/'native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json'
+        proof=self.root/'native/vlm-worker/provenance/LINKED-BACKENDS-HOST-LFM3-VL-R1.json'
         self.mutate(proof,proof.read_bytes()+b'\n')
-        order_proof=self.root/'native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json'
+        order_proof=self.root/'native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-LFM3-VL-R1.json'
         self.mutate(order_proof,order_proof.read_bytes()+b'\n')
         original=json.loads((self.runtime/'BUILD-RECEIPT.json').read_text())
         for key,value in [('registration','dynamic_plugin'),('generic_plugin_entry_absent',False),

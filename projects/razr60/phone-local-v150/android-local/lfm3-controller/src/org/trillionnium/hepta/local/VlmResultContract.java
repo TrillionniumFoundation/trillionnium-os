@@ -86,6 +86,16 @@ public final class VlmResultContract {
             "qwen3vl", "qwen2", "gpt2",
             "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4");
 
+    /** Official LFM3-VL QAD Q4_0 plus F16 projector, observation-only in LocalRuntimeConfig. */
+    public static final Profile LFM3_VL_2B = new Profile(
+            "lfm3-vl-2b-qad-q4_0",
+            "LFM3-VL-2B-QAD-Q4_0.gguf", 1049615648L,
+            "621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6",
+            "mmproj-LFM3-VL-2B-F16.gguf", 378996032L,
+            "1d8e6e58eefc093e09d6332f081516e1ddbd5b35cfca7f35463fb270db230b1e",
+            "lfm3", "lfm2", "gpt2",
+            "f45005c50cd2a97329722bf3a2dee9f16c04cdf825a589b280fb7e99e6827818");
+
     public static final Profile UI_VENUS_9B = new Profile(
             "ui-venus-2-9b-q4_0",
             "UI-Venus-2-9B-Q4_0.gguf", 5482832672L,
@@ -94,6 +104,13 @@ public final class VlmResultContract {
             "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2",
             "qwen35", "qwen35", null,
             "4a3d47f53cc133e5dc859e9532fcb74baf0459ef426b8f107a3ac6e5926533e5");
+
+    /** Closed names select complete local pins, never caller-supplied metadata. */
+    public static Profile named(String id){
+        if(GUI_OWL_4B.id.equals(id))return GUI_OWL_4B;
+        if(LFM3_VL_2B.id.equals(id))return LFM3_VL_2B;
+        throw new IllegalArgumentException("visual artifact profile is not admitted");
+    }
 
     /** Independently observed by Java; native result flags cannot fill these. */
     public static final class Lifecycle {
@@ -128,7 +145,7 @@ public final class VlmResultContract {
                     ||bootId==null||!bootId.matches("[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}")
                     // UI-Venus stays unavailable until its tokenizer metadata is
                     // independently read from the pinned file. Do not infer it.
-                    ||profile!=GUI_OWL_4B||lifecycle==null)
+                    ||(profile!=GUI_OWL_4B&&profile!=LFM3_VL_2B)||lifecycle==null)
                 throw new IllegalArgumentException("invalid independent VLM expectation");
             this.taskId=taskId; this.generation=generation; this.requestId=requestId;
             this.scopeToken=scopeToken; this.appUid=appUid; this.appPid=appPid;
@@ -283,6 +300,16 @@ public final class VlmResultContract {
             String expectedFormatted="<|im_start|>system\n"+systemText+"<|im_end|>\n"
                     +"<|im_start|>user\n"+MEDIA_MARKER+promptText+"<|im_end|>\n"
                     +"<|im_start|>assistant\n";
+            check(e,Arrays.equals(formatted,expectedFormatted.getBytes(StandardCharsets.UTF_8)),
+                    "formatted_prompt_not_exact_pinned_template");
+        }
+        if (p==LFM3_VL_2B&&promptText!=null&&systemText!=null) {
+            // Exact embedded template. add_bos=false means its explicit BOS stays
+            // in common_chat_templates_apply's output. The worker disables thinking.
+            String expectedFormatted="<|startoftext|>"
+                    +(systemText.isEmpty()?"":"<|im_start|>system\n"+systemText+"<|im_end|>\n")
+                    +"<|im_start|>user\n"+MEDIA_MARKER+promptText+"<|im_end|>\n"
+                    +"<|im_start|>assistant\n<think></think>";
             check(e,Arrays.equals(formatted,expectedFormatted.getBytes(StandardCharsets.UTF_8)),
                     "formatted_prompt_not_exact_pinned_template");
         }

@@ -33,12 +33,12 @@ import java.util.concurrent.TimeUnit;
 public final class VlmInferenceAdapter implements LocalInference {
     private static final String PACKAGE="org.trillionnium.hepta.local";
     private static final String TASK_SCHEMA="hepta.vlm.task-aggregate.v1";
-    private static final long MIN_AVAILABLE_BYTES=6L<<30;
     private static final long MAX_REQUEST_MILLIS=120000L;
     private static final int MAX_ROUNDS=64,RECEIPT_LIMIT=2*1024*1024,LOG_LIMIT=8*1024*1024;
     private final Context context;
     private final LocalModelEngine engine;
     private final LocalRuntimeConfig configuration;
+    private final VlmResultContract.Profile visualProfile;
     private final File files;
     private volatile Task task;
     private volatile TaskCleanup lastCleanup;
@@ -47,9 +47,10 @@ public final class VlmInferenceAdapter implements LocalInference {
         if(context==null||engine==null)throw new IllegalArgumentException("context and shared engine required");
         this.context=context.getApplicationContext();this.engine=engine;
         configuration=engine.configuration();
-        if(configuration.profile!=ModelProfile.GUI_OWL_4B||!"npu".equals(configuration.compute)
+        if(!configuration.profile.visual()||!"npu".equals(configuration.compute)
                 ||configuration.contextTokens!=8192||configuration.threads!=4)
-            throw new IllegalArgumentException("the pinned GUI-Owl HTP0/GPUOpenCL configuration is required");
+            throw new IllegalArgumentException("a pinned visual HTP0/GPUOpenCL configuration is required");
+        visualProfile=VlmResultContract.named(configuration.profile.id);
         try{files=this.context.getFilesDir().getCanonicalFile();}
         catch(IOException failure){throw new IllegalStateException("private app root unavailable",failure);}
     }
@@ -331,10 +332,10 @@ public final class VlmInferenceAdapter implements LocalInference {
             need(!"android.permission.INTERNET".equals(permission),"visual APK must not declare INTERNET");
         round.audit.put("internet_permission_declared",false);
         checkMemory(round,"before");
-        File model=new File(files,"gui-owl-model");
+        File model=new File(files,configuration.profile.visualDirectory());
         need(model.equals(model.getCanonicalFile()),"model directory aliases");MobiMindPrivateFiles.directory(model,false);
         model(round,new File(model,configuration.profile.fileName),configuration.profile.bytes);
-        model(round,new File(model,VlmPins.PROJECTOR),VlmPins.PROJECTOR_BYTES);
+        model(round,new File(model,visualProfile.projectorFilename),visualProfile.projectorBytes);
         File installed=new File(context.getApplicationInfo().nativeLibraryDir);
         need(installed.isAbsolute()&&installed.equals(installed.getCanonicalFile())
                 &&installed.getPath().startsWith("/data/app/"),"canonical installed APK native directory required");
@@ -345,7 +346,7 @@ public final class VlmInferenceAdapter implements LocalInference {
         need(new File(installed,VlmPins.WORKER).canExecute(),"installed pinned VLM worker is not executable");
         round.audit.put("runtime_files",runtime);round.audit.put("runtime_files_full_sha_verified_by_app",true);
         round.audit.put("model_sha256_expected",configuration.profile.sha256);
-        round.audit.put("projector_sha256_expected",VlmPins.PROJECTOR_SHA);
+        round.audit.put("projector_sha256_expected",visualProfile.projectorSha256);
         round.audit.put("model_full_hash_authority","pinned_native_worker_held_fds_per_request");
     }
     private void checkMemory(Round round,String phase)throws Exception{
@@ -356,9 +357,9 @@ public final class VlmInferenceAdapter implements LocalInference {
         MemoryAvailability memory=MemoryAvailability.read(info.availMem,info.totalMem,info.lowMemory);
         round.audit.put("available_memory_"+phase+"_bytes",memory.availableBytes);
         round.audit.put("available_memory_"+phase+"_source",memory.source);
-        round.audit.put("minimum_available_memory_bytes",MIN_AVAILABLE_BYTES);
+        round.audit.put("minimum_available_memory_bytes",configuration.profile.minimumAvailableBytes);
         round.audit.put("memory_threshold_is_not_peak_memory_proof",true);
-        need(memory.admits(MIN_AVAILABLE_BYTES),"available physical memory below 6 GiB or invalid/lowMemory measurement");
+        need(memory.admits(configuration.profile.minimumAvailableBytes),"available physical memory below pinned visual profile threshold or invalid/lowMemory measurement");
     }
     private void model(Round round,File path,long expectedBytes)throws Exception{
         need(path.equals(path.getCanonicalFile()),"model file aliases");StructStat st=Os.lstat(path.getPath());
@@ -588,7 +589,7 @@ public final class VlmInferenceAdapter implements LocalInference {
                 round.parentCurrent,owns,round.owner.lease.isCancellationRequested());
         VlmResultContract.Expected expected=new VlmResultContract.Expected(round.owner.taskId,round.generation,round.requestId,
                 round.token,round.parent.uid,round.parent.pid,(int)round.identity.leaderPid,round.parent.start,
-                round.identity.leaderStart,round.parent.boot,VlmResultContract.GUI_OWL_4B,round.originalInputs,
+                round.identity.leaderStart,round.parent.boot,visualProfile,round.originalInputs,
                 round.currentFrame,round.taskOwner,System.nanoTime(),lifecycle);
         round.validation.addAll(VlmResultContract.verify(nativeResult,sidecars,expected,
                 round.exitObserved&&round.exitCode!=null?round.exitCode.intValue():-1));

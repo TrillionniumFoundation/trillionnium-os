@@ -258,7 +258,7 @@ final class NativeActionSnapshotCheck {
                 requireSearchHintReferences(s,entry,hint,term);
                 out.facts.put("query_entry",stableHintFacts(entry,null));
                 out.facts.put("entry_hint",stableHintFacts(hint,"description"));
-                out.facts.put("entry_hint_term",stableHintFacts(term,"text"));
+                out.facts.put("entry_hint_term",stableSearchIconTermFacts(term));
                 out.facts.put("navigation_target","stable_search_icon_candidate");
             }else{
                 out.facts.put("query_entry",entry.v);out.facts.put("entry_hint",hint.v);out.facts.put("entry_hint_term",term.v);
@@ -279,7 +279,10 @@ final class NativeActionSnapshotCheck {
     }
     /** Only this exact SEARCH icon uses the two known noninteractive hint
      * descendants as context. The icon, ancestors, all other roles and census
-     * fields stay exact. No path, arbitrary hash, geometry or capability is ignored. */
+     * fields stay exact. Only the noninteractive term right edge may resize
+     * inside the same fixed hint. Its left/top/bottom and all capabilities stay
+     * exact; full references are recomputed from each census's actual bounds.
+     * No observed node, bounds or reference is rewritten. */
     private static boolean searchIconTarget(Intent in,Snapshot snapshot){
         return SEARCH_ICON.equals(in.purpose)&&XIAOMI.equals(in.pkg)
                 &&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(snapshot.node(in.path).view);
@@ -288,6 +291,14 @@ final class NativeActionSnapshotCheck {
         Map<String,Object> value=new TreeMap<String,Object>(node.v);
         if(literal!=null)value.remove(literal);
         value.remove("label");value.remove("ref_signature_sha256");return value;
+    }
+    private static Map<String,Object> stableSearchIconTermFacts(Node term){
+        // scope() already requires the same fixed hint container, a positive
+        // visible term wholly inside it, exact child shape and no capabilities.
+        // This semantic projection does not normalize the actual Node bounds.
+        Map<String,Object> value=stableHintFacts(term,"text");value.remove("bounds");
+        value.put("fixed_left_top_bottom",Arrays.asList(term.bounds.get(0),term.bounds.get(1),term.bounds.get(3)));
+        return value;
     }
     private static Map<String,String> xiaomiSearchIconHintVariation(Intent in,Snapshot old,Snapshot fresh){
         Map<String,String> result=new TreeMap<String,String>();
@@ -298,7 +309,7 @@ final class NativeActionSnapshotCheck {
         need(a.path.equals(z.path),"same switcher path");
         // scope() on both complete trees already checks these exact three nodes,
         // their child counts, text relationship and recomputed full references.
-        result.put(a.path,"exact_two_noninteractive_hint_literals_and_recomputed_references");
+        result.put(a.path,"noninteractive_hint_literals_and_contained_term_right_edge_with_recomputed_actual_references");
         return result;
     }
     private static void requireSearchHintReferences(Snapshot snapshot,Node entry,Node hint,Node term){
@@ -335,9 +346,11 @@ final class NativeActionSnapshotCheck {
         return hash(node.pkg+"\u0001"+i(node.v,"window_id")+"\u0001"+node.cls+"\u0001"+node.view+"\u0001"+rect+"\u0001"
                 +node.text+"\u0001"+node.desc+"\u0001"+b(node.v,"enabled")+"|"+b(node.v,"clickable")+"|"+b(node.v,"editable")+"|"+b(node.v,"scrollable"));
     }
-    /** Only the installed-version-bound Xiaomi SEARCH opener can classify this
-     * observed banner decoration. The query-entry target and its entire hint
-     * subtree stay exact, including the original projected label/signature.
+    /** Only the installed-version-bound Xiaomi SEARCH or SEARCH_ICON opener
+     * can classify this observed banner decoration. SEARCH keeps its complete
+     * query-entry hint subtree exact, including projected labels/references.
+     * SEARCH_ICON has only the separately checked hint literal/right-edge
+     * variation above; its icon, fixed hint enclosure and remaining facts stay exact.
      * A banner overlapping the icon is not treated as disjoint: its complete
      * visible coverage and blank-leaf facts must stay equal across page slots.
      * Horizontal animation may partition that same fixed coverage, but never

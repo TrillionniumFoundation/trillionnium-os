@@ -30,6 +30,13 @@ public final class ModelProfile {
     public static final ModelProfile LFM25_8B_A1B=new ModelProfile("lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B（实验）",
             "LiquidAI/LFM2.5-8B-A1B-GGUF","49c14831707011e64d70b2ebd8462ba08d608434","LFM2.5-8B-A1B-Q4_0.gguf",4844678368L,
             "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",true,7L<<30);
+    // Observation-only qualification candidate. The language weights are distinct
+    // from text LFM3 even though both use lfm3. A pinned F16 projector is required.
+    // Four GiB is engineering admission headroom, not measured peak memory.
+    public static final ModelProfile LFM3_VL_2B=new ModelProfile("lfm3-vl-2b-qad-q4_0","LFM3-VL 2B（仅视觉观察候选）",
+            "LiquidAI/LFM3-VL-2B-GGUF","1add221a5ea6c047fcf1eaaf2d247939d7cf8849",
+            "LFM3-VL-2B-QAD-Q4_0.gguf",1049615648L,
+            "621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6","lfm3",true,4L<<30);
     // Separate pinned projector and an observed image are required by the visual adapter.
     // This admission threshold is engineering headroom, not measured peak memory.
     public static final ModelProfile GUI_OWL_4B=new ModelProfile("gui-owl-1.5-4b-instruct-i1-q4_0","GUI-Owl 1.5 4B（视觉候选）",
@@ -71,6 +78,7 @@ public final class ModelProfile {
         if(LFM3.id.equals(id))return LFM3;
         if(LFM25_8B_A1B.id.equals(id))return LFM25_8B_A1B;
         if(GUI_OWL_4B.id.equals(id))return GUI_OWL_4B;
+        if(LFM3_VL_2B.id.equals(id))return LFM3_VL_2B;
         if(MINICPM5.id.equals(id))return MINICPM5;
         if(SPARK.id.equals(id))return SPARK;
         if(GEMMA4_E4B.id.equals(id))return GEMMA4_E4B;
@@ -83,5 +91,11 @@ public final class ModelProfile {
         if(NANBEIGE42_3B.id.equals(id))return NANBEIGE42_3B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
-    public boolean visual(){return this==GUI_OWL_4B;}
+    public boolean visual(){return this==GUI_OWL_4B||this==LFM3_VL_2B;}
+    /** Closed private directories; a profile ID never becomes a filesystem path. */
+    public String visualDirectory(){
+        if(this==GUI_OWL_4B)return "gui-owl-model";
+        if(this==LFM3_VL_2B)return "lfm3-vl-model";
+        throw new IllegalArgumentException("text profile has no visual model directory");
+    }
 }

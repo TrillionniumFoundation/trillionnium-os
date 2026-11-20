@@ -193,3 +193,73 @@ generation. Every request still retains output/reserve and byte limits. The
 new profile does not admit a projector, arbitrary model path or CPU fallback.
 The installed runtime must still demonstrate real load and correct output
 before any tool or phone-task qualification is claimed.
+
+## LFM3-VL 2B observation profile and ordinary runtime selection
+
+The closed `lfm3-vl-2b-qad-q4_0` candidate pairs two official files from
+`LiquidAI/LFM3-VL-2B-GGUF` revision
+`1add221a5ea6c047fcf1eaaf2d247939d7cf8849`:
+
+| Asset | Exact file | Bytes | SHA-256 |
+|---|---|---:|---|
+| Language weights | `LFM3-VL-2B-QAD-Q4_0.gguf` | 1049615648 | `621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6` |
+| Vision encoder/projector | `mmproj-LFM3-VL-2B-F16.gguf` | 378996032 | `1d8e6e58eefc093e09d6332f081516e1ddbd5b35cfca7f35463fb270db230b1e` |
+
+The private directory is `files/lfm3-vl-model`. The text LFM3 artifact differs in
+both byte count and hash and cannot substitute for the VL language weights.
+F16 is the single admitted projector for this profile; the Q8 projector is not
+part of this qualification.
+
+Ordinary **选择本地模型** now offers LFM3-VL with the explicit **仅观察** label.
+The existing four text choices and GUI-Owl tools choice retain their order and
+meaning. Saving the observation choice uses this exact configuration shape:
+
+```json
+{
+  "schema": "hepta.local-runtime.v3",
+  "model_profile": "lfm3-vl-2b-qad-q4_0",
+  "compute": "npu",
+  "context_tokens": 8192,
+  "threads": 4,
+  "visual_mode": "observe"
+}
+```
+
+Settings verify the full language and correct F16 asset hashes before committing,
+retain exact original bytes for restore, and reject changes while a task or
+unknown cleanup still owns the runtime. The cached service controller captures a
+new immutable runtime/delegate pair for each task. Saving a model does not run
+inference. The default remains the original text LFM3 configuration.
+
+LFM3-VL accepts only the HTP0 language / GPUOpenCL vision path, 8192 context and
+four threads. Four GiB available memory is an admission margin, not a measured
+peak. This does not claim that every operator executes on an accelerator.
+The source's pinned llama.cpp commit
+`19cce6919992fdffd92e0ac152caaf1e2b8f254e` includes LFM3-VL support; the new
+separate Android worker is independently rebuilt against the unchanged pinned
+SDK libraries. Full model files were verified on the host; this does not establish
+ordinary-App load, device acceleration, quality or task completion.
+
+The actual language GGUF records `lfm3`, tokenizer `gpt2` with preprocessor
+`lfm2`, and a 12129-byte embedded template with SHA-256
+`f45005c50cd2a97329722bf3a2dee9f16c04cdf825a589b280fb7e99e6827818`.
+Its explicit `<|startoftext|>` is retained because `add_bos_token=false`.
+The worker passes `enable_thinking=false`; the validated assistant suffix is
+`<think></think>`. Input-owned role/tool strings are preserved as input text,
+and the existing single current-frame media marker and exact chunk accounting
+remain mandatory.
+
+This profile's raw result stops before action parsing or dispatch. The existing
+current-frame DecisionGrammar is still used for bounded model proposals; this
+patch adds no trusted calendar coordinates or free-form observation-to-click
+translation. It cannot certify a shopping order or flight task as complete.
+Observation and action authority remain separate checks.
+
+The existing canonical VLM result gate includes 318 original GUI cases, 52
+LFM3-VL profile/config/result checks, five independent embedded-template renders
+and the exact observation configuration fixture. The VLM adapter gate retains
+its original lifecycle cases and adds real preflight refusals for missing or
+mismatched LFM3-VL assets. The ordinary visual-settings gate retains its original
+GUI settings cases and adds LFM3-VL observation selection, restore, per-task
+routing and artifact admission cases. These host gates use explicit platform or
+positive model-loading fixtures; they do not execute a phone model.

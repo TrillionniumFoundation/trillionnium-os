@@ -76,7 +76,11 @@ const Profile profiles[] = {
     {"gui-owl-1.5-4b-instruct-i1-q4_0", "gui-owl-model", "qwen3vl", "qwen2",
      "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
      {"GUI-Owl-1.5-4B-Instruct.i1-Q4_0.gguf",2375774624ULL,"c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df"},
-     {"GUI-Owl-1.5-4B-Instruct.mmproj-f16.gguf",836180288ULL,"eabdc0291d460f2e68874f51044030a7da8fe956c2a6b86abd69fd701227c105"}}
+     {"GUI-Owl-1.5-4B-Instruct.mmproj-f16.gguf",836180288ULL,"eabdc0291d460f2e68874f51044030a7da8fe956c2a6b86abd69fd701227c105"}},
+    {"lfm3-vl-2b-qad-q4_0", "lfm3-vl-model", "lfm3", "lfm2",
+     "f45005c50cd2a97329722bf3a2dee9f16c04cdf825a589b280fb7e99e6827818",
+     {"LFM3-VL-2B-QAD-Q4_0.gguf",1049615648ULL,"621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6"},
+     {"mmproj-LFM3-VL-2B-F16.gguf",378996032ULL,"1d8e6e58eefc093e09d6332f081516e1ddbd5b35cfca7f35463fb270db230b1e"}}
 };
 const Pin runtime_pins[] = {
     {"libllama.so",5642424,"4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"},

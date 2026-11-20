@@ -55,8 +55,8 @@
     },
     {
       "path": "native/vlm-worker.cpp",
-      "bytes": 30541,
-      "sha256": "6901bf8e7df072c564b89bedf3e6774d105c842064ce38d37aea89bf0cc87600"
+      "bytes": 30909,
+      "sha256": "8f83e592ff9c78f6e70379d4074e6477552b8e4f05d4c653b58cd87888e68b82"
     },
     {
       "path": "vendor/llama/LICENSE",

@@ -47,6 +47,7 @@ def main():
         paths=set(ROOT.glob("*.py"))
         paths.add(ROOT/"tests/vlm-contract/requirements.txt")
         paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
+        paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","OBSERVE-CASE-CONTRACT.json","README.md"))
         paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
@@ -171,6 +172,94 @@ def main():
                 raise RuntimeError("Local model settings original cases differ: "+name)
         report["local_model_settings_gate"]={"bytes":len(settings_raw),"sha256":hashlib.sha256(settings_raw).hexdigest(),
             "cases":settings_gate["cases"]}
+        run("local-model-settings-visual",[sys.executable,"-B",ROOT/"tests/local-model-settings-visual/run_host.py",
+            "--source",ROOT,"--output",out/"local-model-settings-visual","--java-home",java_home,"--json-jar",json_jar],timeout=360)
+        visual_raw=(out/"local-model-settings-visual/RESULT.json").read_bytes()
+        visual_gate=json.loads(visual_raw)
+        if (visual_gate.get("schema")!="hepta.local-model-settings-visual-host-gate.v1"
+                or visual_gate.get("all_pass") is not True or visual_gate.get("inputs_unchanged") is not True
+                or visual_gate.get("original_settings_cases_retained") is not True
+                or visual_gate.get("actual_settings_and_runtime_router") is not True
+                or visual_gate.get("view_inventory_and_positive_model_loading_are_host_ports") is not True
+                or type(visual_gate.get("phone_operations")) is not int or visual_gate["phone_operations"]!=0
+                or visual_gate.get("native_model_executed") is not False
+                or visual_gate.get("positive_backend_qualified") is not False):
+            raise RuntimeError("Visual settings and runtime routing host scope or receipt differs")
+        if ([row.get("name") for row in visual_gate.get("stages",[])]!=["javac-version","original-settings","compile","visual-settings"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in visual_gate["stages"])):
+            raise RuntimeError("Visual settings mandatory compile/run stages differ")
+        visual_cases=visual_gate.get("cases",{})
+        visual_rows=visual_cases.get("case_results")
+        if (visual_cases.get("schema")!="hepta.local-model-settings-visual-cases.v1"
+                or visual_cases.get("passed") is not True
+                or type(visual_cases.get("cases")) is not int or visual_cases["cases"]!=30
+                or type(visual_cases.get("assertions")) is not int or visual_cases["assertions"]!=243
+                or type(visual_rows) is not list or len(visual_rows)!=30
+                or any(type(row) is not dict or row.get("passed") is not True
+                    or type(row.get("name")) is not str or type(row.get("assertions")) is not int
+                    or row["assertions"]<1 for row in visual_rows)
+                or sum(row["assertions"] for row in visual_rows)!=243):
+            raise RuntimeError("Visual settings exact original/new case assertions differ")
+        visual_names=[row["name"] for row in visual_rows]
+        visual_names_sha=hashlib.sha256(json.dumps(visual_names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()
+        visual_contract=json.loads((ROOT/"tests/local-model-settings-visual/CASE-CONTRACT.json").read_bytes())
+        if (len(set(visual_names))!=30 or visual_names_sha!="e5d32582f6bfa5797dedb933949b69f87d37719e03c49d088588bffde850362a"
+                or visual_gate.get("case_names_sha256")!=visual_names_sha
+                or visual_contract.get("schema")!="hepta.local-model-settings-visual-case-contract.v1"
+                or visual_contract.get("case_schema")!=visual_cases["schema"]
+                or visual_contract.get("cases")!=22 or visual_contract.get("assertions")!=169
+                or visual_contract.get("names")!=visual_names[:22]
+                or json.loads((out/"local-model-settings-visual/cases/RESULT.json").read_bytes())!=visual_cases
+                or json.loads((out/"local-model-settings-visual/visual-settings.stdout").read_bytes())!=visual_cases):
+            raise RuntimeError("Visual settings case identity or actual Java output differs")
+        visual_extension=json.loads((ROOT/"tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json").read_bytes())
+        if (sum(row["assertions"] for row in visual_rows[:22])!=169
+                or hashlib.sha256(json.dumps(visual_names[:22],ensure_ascii=False,separators=(",",":")).encode()).hexdigest()!=
+                    "7afd16285a00eb25340ef178f2b9c11b2e036e8bde8bd810e5c3d1ddc31adf73"
+                or visual_extension.get("schema")!="hepta.local-model-settings-lfm3-observe-case-contract.v1"
+                or visual_extension.get("cases")!=8 or visual_extension.get("assertions")!=74
+                or visual_extension.get("names")!=visual_names[22:]
+                or sum(row["assertions"] for row in visual_rows[22:])!=74
+                or visual_gate.get("original_visual_cases_retained")!={"cases":22,"assertions":169}
+                or visual_gate.get("lfm3_observation_extension")!={"cases":8,"assertions":74}):
+            raise RuntimeError("Original GUI or LFM3 observation case/assertion boundaries differ")
+        if (type(visual_cases.get("phone_operations")) is not int or visual_cases["phone_operations"]!=0
+                or visual_cases.get("native_model_executed") is not False or visual_cases.get("positive_backend_qualified") is not False
+                or any(visual_cases.get(key) is not True for key in ("actual_owner_button_methods",
+                    "actual_application_idle_methods","actual_service_controller_factory","actual_settings_transaction_and_engine",
+                    "actual_runtime_generation_binding","same_service_and_controller_roundtrip",
+                    "positive_weight_verification_is_host_boundary","vlm_model_loading_is_host_boundary",
+                    "actual_negative_asset_and_hash_checks","android_view_and_inventory_are_host_boundaries"))):
+            raise RuntimeError("Visual settings actual methods or explicit host boundary differs")
+        engine_boundary=visual_gate.get("engine_host_type_boundary",{})
+        if (any(engine_boundary.get(key) is not True for key in ("only_class_final_removed",
+                "all_fields_and_method_bodies_unchanged","unmodified_final_engine_executed_in_original_gate"))
+                or engine_boundary.get("original_sha256")!=hashlib.sha256((ROOT/"src/org/trillionnium/hepta/local/LocalModelEngine.java").read_bytes()).hexdigest()):
+            raise RuntimeError("Visual settings unmodified production Engine identity differs")
+        original_visual_settings=json.loads((out/"local-model-settings-visual/original-settings/RESULT.json").read_bytes())
+        if (original_visual_settings.get("all_pass") is not True or original_visual_settings.get("inputs_unchanged") is not True
+                or set(original_visual_settings.get("cases",{}))!={"transaction","generation","context_files"}):
+            raise RuntimeError("Visual routing gate did not retain the complete original settings gate")
+        for name,count,assertions in (("transaction",43,196),("generation",15,100),("context_files",8,36)):
+            original_case=original_visual_settings["cases"][name]
+            if (original_case.get("passed") is not True or type(original_case.get("cases")) is not int
+                    or original_case["cases"]!=count or type(original_case.get("assertions")) is not int
+                    or original_case["assertions"]!=assertions):
+                raise RuntimeError("Visual routing gate original settings case contract differs: "+name)
+        visual_inputs=visual_gate.get("source_inputs")
+        if type(visual_inputs) is not list or not visual_inputs:
+            raise RuntimeError("Visual settings actual source and tool pins missing")
+        visual_input_paths=set()
+        for item in visual_inputs:
+            path=Path(item["path"])
+            if not path.is_absolute() or path.is_symlink() or str(path) in visual_input_paths:
+                raise RuntimeError("Visual settings duplicate or aliased input")
+            visual_input_paths.add(str(path));data=path.read_bytes()
+            if len(data)!=item["bytes"] or hashlib.sha256(data).hexdigest()!=item["sha256"]:
+                raise RuntimeError("Visual settings source or tool changed after its gate")
+        report["local_model_settings_visual_gate"]={"bytes":len(visual_raw),
+            "sha256":hashlib.sha256(visual_raw).hexdigest(),"cases":visual_cases,
+            "case_names_sha256":visual_names_sha,"original_settings_cases_retained":True}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("public-screen-lease",[sys.executable,"-B",ROOT/"tests/public-screen-lease/run_host.py",

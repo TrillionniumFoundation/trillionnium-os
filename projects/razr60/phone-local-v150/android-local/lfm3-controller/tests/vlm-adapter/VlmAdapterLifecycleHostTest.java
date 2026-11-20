@@ -130,11 +130,12 @@ public final class VlmAdapterLifecycleHostTest {
         final File files;final Context context;final ManualExecutor executor=new ManualExecutor();
         final LocalModelEngine engine;final VlmInferenceAdapter adapter;final Guard guard=new Guard();
         Environment(String name)throws Exception{this(name,false);}
-        Environment(String name,boolean observe)throws Exception{
+        Environment(String name,boolean observe)throws Exception{this(name,ModelProfile.GUI_OWL_4B,observe);}
+        Environment(String name,ModelProfile model,boolean observe)throws Exception{
             LocalModelEngine.fixtureReset();OwnedGenerationScope.reset();android.system.Os.failFsyncPath=null;
             files=root.resolve(name).toFile();Files.createDirectories(files.toPath());
             context=new Context(files);engine=new LocalModelEngine(context,
-                    new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",8192,4,observe),executor);
+                    new LocalRuntimeConfig(model,"npu",8192,4,observe),executor);
             adapter=new VlmInferenceAdapter(context,engine);
         }
         LocalInference.CurrentFrame frame(int index,boolean current)throws Exception{return frame(index,current,PNG);}
@@ -551,6 +552,40 @@ public final class VlmAdapterLifecycleHostTest {
             LocalInference.TaskCleanup result=e.end();check(!result.processStarted&&result.cleanupKnown,"permission preflight launched a worker");
         }
     }
+    static void lfm3MissingArtifacts(String variant)throws Exception{
+        try(Environment e=new Environment("lfm3-artifact-"+variant,ModelProfile.LFM3_VL_2B,true)){
+            check(e.adapter.acceptsObservedImage()&&!e.adapter.modelOutputDispatchAllowed(),"LFM3-VL cannot acquire tool dispatch");
+            check(field(e.adapter,"visualProfile")==VlmResultContract.LFM3_VL_2B,"adapter selected foreign visual pins");
+            File directory=new File(e.files,"lfm3-vl-model");MobiMindPrivateFiles.directory(directory,true);
+            File model=new File(directory,"LFM3-VL-2B-QAD-Q4_0.gguf");
+            File projector=new File(directory,"mmproj-LFM3-VL-2B-F16.gguf");
+            try{
+                if(!"missing-model".equals(variant)){
+                    try(java.io.RandomAccessFile sparse=new java.io.RandomAccessFile(model,"rw")){
+                        sparse.setLength("text-model".equals(variant)?1049615680L:1049615648L);
+                    }
+                    Files.setAttribute(model.toPath(),"unix:mode",0600);
+                }
+                if("q8-projector".equals(variant)){
+                    try(java.io.RandomAccessFile sparse=new java.io.RandomAccessFile(projector,"rw")){sparse.setLength(203031872L);}
+                    Files.setAttribute(projector.toPath(),"unix:mode",0600);
+                }
+                e.adapter.beginTask(TASK);Callback callback=new Callback(e.engine);LocalInference.CurrentFrame frame=e.frame(1,true);
+                e.adapter.generateObserved("只观察当前图像","禁止操作",frame,e.grammar(frame),256,120000,callback);
+                Runnable work=e.executor.take();
+                Object round=field(field(e.adapter,"task"),"current");
+                work.run();
+                check(callback.success==0&&callback.failure==1&&callback.cleanup,"missing/mismatched visual asset admitted: "+variant);
+                int expected=("missing-model".equals(variant)||"text-model".equals(variant))?0:1;
+                check(((List<?>)field(round,"modelFiles")).size()==expected,"wrong file rejection boundary: "+variant);
+                check(((List<?>)field(round,"runtimeFiles")).isEmpty(),"artifact refusal reached runtime pinning");
+                LocalInference.TaskCleanup result=e.end();
+                check(!result.processStarted&&result.cleanupKnown&&!result.receiptValid,"artifact refusal launched a process or fabricated success");
+            }finally{
+                Files.deleteIfExists(model.toPath());Files.deleteIfExists(projector.toPath());
+            }
+        }
+    }
     static void submissionRefused()throws Exception{
         try(Environment e=new Environment("submission-refused")){
             e.adapter.beginTask(TASK);e.executor.reject=true;Callback callback=new Callback(e.engine);LocalInference.CurrentFrame frame=e.frame(1,true);
@@ -750,6 +785,10 @@ public final class VlmAdapterLifecycleHostTest {
             test("callback_exception_no_release_or_double_delivery",VlmAdapterLifecycleHostTest::callbackThrows);
             test("independent_expected_identity_not_from_native_result",VlmAdapterLifecycleHostTest::nativeIdentityIsNotExpected);
             test("APK_INTERNET_rejected_before_launch",VlmAdapterLifecycleHostTest::noInternet);
+            test("lfm3_missing_language_file_refused_before_launch",()->lfm3MissingArtifacts("missing-model"));
+            test("lfm3_missing_f16_projector_refused_before_launch",()->lfm3MissingArtifacts("missing-projector"));
+            test("lfm3_text_weights_size_cannot_substitute_visual",()->lfm3MissingArtifacts("text-model"));
+            test("lfm3_q8_projector_size_not_admitted_as_f16",()->lfm3MissingArtifacts("q8-projector"));
             test("executor_refusal_never_requeues_model",VlmAdapterLifecycleHostTest::submissionRefused);
             test("full_pixel_scan_exact_zero_alpha_and_no_ratio",VlmAdapterLifecycleHostTest::purePixels);
             test("all_black_original_frame_rejected",()->unavailablePixels("all-black",0xff000000));
