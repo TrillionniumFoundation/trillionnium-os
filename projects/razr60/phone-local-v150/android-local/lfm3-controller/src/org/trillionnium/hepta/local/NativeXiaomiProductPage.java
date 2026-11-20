@@ -319,7 +319,11 @@ final class NativeXiaomiProductPage {
         if(fields.size()==1){
             NativeAppEvidence.Node field=fields.get(0);String toolbar=parent(field.path);
             int fieldIndex=childIndex(field.path);
-            if(!VIEW.equals(field.parentClass)||(fieldIndex!=1&&fieldIndex!=2))
+            // The current App also exposes this toolbar directly beneath its
+            // FrameLayout root. Keep its exact shape separate from the retained
+            // nested ViewGroup variant; the left control remains excluded.
+            boolean directRoot="android.widget.FrameLayout".equals(field.parentClass)&&"0/1".equals(field.path);
+            if(!directRoot&&(!VIEW.equals(field.parentClass)||(fieldIndex!=1&&fieldIndex!=2)))
                 return page(frame,"search_input_unverified","observed_search_toolbar_required",null,null);
             NativeAppEvidence.Node normal=null,normalLabel=null,toggle=null,toggleLabel=null;
             int labels=0;
@@ -328,10 +332,10 @@ final class NativeXiaomiProductPage {
                 if(button==null||!parent(button.path).equals(toolbar)||distance(n.path,button.path)!=1
                         ||!VIEW.equals(button.className))continue;
                 labels++;
-                if(childIndex(button.path)==3&&childIndex(n.path)==1){
+                if(childIndex(button.path)==(directRoot?4:3)&&childIndex(n.path)==(directRoot?0:1)){
                     if(normal!=null)return page(frame,"search_input_unverified","duplicate_normal_search_button",null,null);
                     normal=button;normalLabel=n;
-                }else if(childIndex(button.path)==fieldIndex-1&&childIndex(n.path)==2){
+                }else if(childIndex(button.path)==fieldIndex-1&&childIndex(n.path)==(directRoot?0:2)){
                     if(toggle!=null)return page(frame,"search_input_unverified","duplicate_search_mode_toggle",null,null);
                     toggle=button;toggleLabel=n;
                 }
@@ -341,10 +345,13 @@ final class NativeXiaomiProductPage {
                     ||toggle.top<field.top||normal.top<field.top
                     ||Math.min(toggle.bottom,normal.bottom)<=Math.max(toggle.top,normal.top))
                 return page(frame,"search_input_unverified","normal_search_and_mode_toggle_not_distinguished",null,null);
+            if(directRoot&&!directRootSearchToolbar(frame,field,normal,normalLabel,toggle,toggleLabel))
+                return page(frame,"search_input_unverified","observed_direct_root_search_toolbar_required",null,null);
             Map<String,Object> proof=map();proof.put("query_field",field.fact("text"));
             proof.put("normal_search_button",normal.fact("description"));proof.put("normal_search_label",normalLabel.fact("text"));
             proof.put("excluded_mode_toggle",toggle.fact("description"));proof.put("excluded_mode_toggle_label",toggleLabel.fact("text"));
             proof.put("same_native_toolbar_path",toolbar);proof.put("mode_toggle_offered",false);
+            if(directRoot)proof.put("search_toolbar_variant","direct_root_framelayout");
             String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
             if(!field.text.equals(literal)){
                 Map<String,String> edits=new LinkedHashMap<String,String>();edits.put(field.id,literal);
@@ -355,7 +362,7 @@ final class NativeXiaomiProductPage {
             String panel=parent(parent(toolbar));
             List<NativeAppEvidence.Node> exactSuggestions=exactText(frame,"xiaomi路由器ax3000t");
             NativeAppEvidence.Node suggestion=null;
-            if(exactSuggestions.size()==1){
+            if(!directRoot&&exactSuggestions.size()==1){
                 NativeAppEvidence.Node label=exactSuggestions.get(0),button=clickAncestor(frame,label);
                 String prefix=panel+"/2/0/0/";
                 if(button!=null&&VIEW.equals(button.className)&&button.path.startsWith(prefix)
@@ -397,6 +404,29 @@ final class NativeXiaomiProductPage {
         if(home!=null&&search==null&&navigationOnlyHome(frame))
             return page(frame,HOME_LOADING,"native_home_search_content_not_loaded",null,null);
         return page(frame,"unrecognized_native_page","no_current_supported_native_page",null,null);
+    }
+
+    /** Exact observed root toolbar. Its two literal labels identify separate
+     * current controls, not an arbitrary same-text history row or a coordinate.
+     * No root-variant suggestion has been qualified; only its right button can
+     * submit after the actual editable field contains the immutable query. */
+    private static boolean directRootSearchToolbar(NativeAppEvidence.Frame frame,NativeAppEvidence.Node field,
+            NativeAppEvidence.Node normal,NativeAppEvidence.Node normalLabel,
+            NativeAppEvidence.Node toggle,NativeAppEvidence.Node toggleLabel){
+        NativeAppEvidence.Node[] nodes={field,normal,normalLabel,toggle,toggleLabel};
+        String[] paths={"0/1","0/4","0/4/0","0/0","0/0/0"};
+        for(int i=0;i<nodes.length;i++){
+            NativeAppEvidence.Node n=nodes[i];boolean label=i==2||i==4;
+            if(!usable(frame,n)||!paths[i].equals(n.path)||!n.viewId.isEmpty()
+                    ||!(label?VIEW:"android.widget.FrameLayout").equals(n.parentClass)
+                    ||n.scrollable||!Boolean.FALSE.equals(n.selected)||!Boolean.FALSE.equals(n.checkable)||!Boolean.FALSE.equals(n.checked)
+                    ||n.clickable==label||n.editable!=(i==0))return false;
+            int samePath=0;for(NativeAppEvidence.Node other:frame.nodes)if(n.path.equals(other.path))samePath++;
+            if(samePath!=1)return false;
+            if(i>0&&(!n.description.isEmpty()||!(label?TEXT:VIEW).equals(n.className)
+                    ||!(label?"搜索":"").equals(n.text)||!"搜索".equals(n.label)))return false;
+        }
+        return normalLabel.within(normal)&&toggleLabel.within(toggle);
     }
 
     /** The retained manual search-entry transition used the ViewSwitcher, not

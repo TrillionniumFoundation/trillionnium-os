@@ -20,6 +20,7 @@ METHODS={
  'guard':'    private void requireNativeActionGuard(',
  'snapshot':'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(',
  'search_entry_guard':'    private static boolean nativeSearchEntryGuard(',
+ 'flight_open_guard':'    private static boolean nativeFlightOpenGuard(',
  'search_entry_defer':'    private boolean deferNativeSearchEntrySignature(',
  'background_precheck':'    private void backgroundBeforeDispatch(',
  'compare':'    private Map<String,Object> compareNativeAction(',
@@ -87,6 +88,21 @@ def generate(source,out):
     for name,signature in METHODS.items():methods[name]=body(service,signature)
     text=replace(text,'    // ACTUAL_METHODS','\n'.join(methods.values()))
     text=replace(text,'{{bridge_cases}}',(source/TEST/'BridgeCases.fragment').read_text())
+    # Actual Controller handoff is connected to the actual unchanged-tree Service
+    # branch. Only Android callback/clock/IO endpoints are synthetic.
+    open_parts={
+      'open_record':body(controller,'    private static void record(File directory,String name,JSONObject value)throws Exception{'),
+      'open_cleanup_unknown':body(controller,'    private static final class CleanupUnknown extends Exception {'),
+      'open_execution_projection':body(controller,'    private static java.util.Map<String,Object> nativeQueryExecution('),
+      'open_await_action':body(controller,'    private HeptaAccessibilityService.ActionOutcome awaitAction('),
+      'open_legacy_selected_refresh':parts['selected_refresh']}
+    legacy_open=replace(parts['click_branch'],
+      'if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)))',
+      'if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)))')
+    need(sha(legacy_open.encode())=='0a8533a8c582e714df4777b5ddc1ed7acb40e1ee99007f95095b5c9f4be1c742','old 1079 OPEN branch must match retained actual bytes')
+    open_parts['open_legacy_click_branch']=legacy_open
+    for key,value in open_parts.items():text=replace(text,'{{'+key+'}}',value)
+    methods.update(open_parts)
     need('{{' not in text,'unfilled bridge template');write(out/'NativeActionBridgeHost.java',text)
     original=(source/'tests/native-app-provider/NativeXiaomiModalSessionHostTest.java').read_text()
     main=body(original,'    public static void main(String[] args)throws Exception{')
@@ -164,6 +180,11 @@ def main():
           'xiaomi_original_harness':meta(source/'tests/native-app-provider/NativeXiaomiModalSessionHostTest.java'),
           'xiaomi_only_main_and_outer_name_changed':False,'xiaomi_main_outer_name_and_File_import_only':True,'xiaomi_old_main_sha256':sha(oldmain.encode()),
           'background_fixture':bgrecord,'actual_image_fixture':modal_record,
+          'open_equal_tree_actual_Service_and_Controller_handoff':True,
+          'open_legacy_click_branch_sha256':'0a8533a8c582e714df4777b5ddc1ed7acb40e1ee99007f95095b5c9f4be1c742',
+          'open_legacy_click_branch_exact_inverse_of_one_condition':True,
+          'open_host_endpoint_manually_claims_guard':False,
+          'open_actual_receipt_create_write_fsync':True,
           'boundary':'Session/authorization/provider classes and Service extracted bodies are actual. Complete census rows, Android APIs, traversal, clock, installed verifier and performAction are explicit synthetic host endpoints. No PhoneObservation screenshot is fabricated as device proof.'}
         save(out/'EXTRACTION.json',record)
         report['compile_inputs']=[meta(p) for p in paths]

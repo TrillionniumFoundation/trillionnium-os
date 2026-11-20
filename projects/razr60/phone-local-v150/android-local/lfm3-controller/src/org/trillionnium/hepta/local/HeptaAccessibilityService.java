@@ -771,7 +771,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             value.put("failed_request_started_elapsed_ms",started);value.put("failed_request_deadline_elapsed_ms",deadline);
             value.put("failed_request_terminal_elapsed_ms",failedAt);value.put("failed_request_terminal_status","failed");
             value.put("read_queue_drain_observed_elapsed_ms",drainedAt);value.put("completed_read_works",completedReadWorks);
-            value.put("actual_task_read_ordinal",readOrdinal);value.put("reason","sealed_pair_target_event_without_remaining_sample_gap");
+            value.put("actual_task_read_ordinal",readOrdinal);value.put("reason","sealed_pair_target_event_after_window_check");
             value.put("read_worker_drained",true);value.put("failed_request_resources_released",true);value.put("unknown_events",0);
             value.put("grants_action_authority",false);value.put("action_replayed",false);value.put("renews_failed_request",false);
             value.put("business_completion_verified",false);return java.util.Collections.unmodifiableMap(value);
@@ -1636,15 +1636,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||actionWorkPending()||nativeCancellationWorkPending())return false;
         return product.identity.matches(request.captured)&&nativeObservationRecheckAllowed(request,request.captured);
     }
-    /** Only an already accepted OPEN navigation can retire this failed read
-     * when the remaining original settle interval cannot fit one sample gap. */
+    /** Only an already accepted OPEN navigation can replace this first read
+     * after the current sealed capture passes its window check but a later
+     * known target event still makes the original publication fence reject it. */
     private boolean postEffectLateEventReadFailure(ObservationRequest request,ObservationProduct product,boolean retry){
         long now=SystemClock.elapsedRealtime();
-        long settleEnd=Math.min(request.deadline,request.started+ObservationStabilityGate.SETTLE_LIMIT_MS);
         if(retry||request.postEffectController==null||request.postEffectRetrySubmission!=null
                 ||!postEffectObservationOwner(request)||request.postEffectIdentity!=null||request.postEffectIdentityRejected
                 ||request.initialController!=null||request.readBefore!=null||request.readIdentity!=null||request.retrySubmission!=null
-                ||now<request.started||settleEnd-now>ObservationStabilityGate.SAMPLE_GAP_MS
+                ||now<request.started
                 ||now>=request.deadline||now>=request.postEffectTaskDeadline||now>=request.postEffectTransitionDeadline
                 ||product.seal==null||product.seal.identity!=product.identity
                 ||product.seal.authorization!=request.readAuthorization||!product.identity.nativeRecheck
@@ -2214,6 +2214,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SEARCH.equals(work.nativeGuard.purpose)
                 &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
     }
+    /** Equal-tree Ctrip OPEN still needs the existing full final checker and
+     * its real one-use claim before effect. That claim is also the prerequisite
+     * for the unchanged Controller close-and-seal post-effect read handoff. */
+    private static boolean nativeFlightOpenGuard(ActionWork work){
+        return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.OPEN.equals(work.nativeGuard.purpose)
+                &&NativeCtripFlightPage.supported(work.nativeGuard.goal);
+    }
     /** Read-only precheck deferral. No reference, action, label or observation is
      * replaced and no signature is declared current. This exact private SEARCH
      * guard must still pass finalNativeActionCheck even if the tree is equal. */
@@ -2488,7 +2495,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
-                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work))){
+                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));

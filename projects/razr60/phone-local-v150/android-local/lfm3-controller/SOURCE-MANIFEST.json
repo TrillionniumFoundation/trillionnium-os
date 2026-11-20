@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "457f03010f2e81069aa9c20f604bf9d28cf9ab73",
-  "base_manifest_sha256": "7245de8759ff273e9255e75898086ddaa8685657ab5d8eb97093684bc458e939",
-  "candidate_status": "search_entry_and_post_effect_read_compile_closure_host_validation_pending",
+  "base_head": "1079ddd4383af110544361d23bcc7e37fc8d6833",
+  "base_manifest_sha256": "ae3849d18808d4004cf54ece4107398390957216b288f7e45b7c914f647a90bb",
+  "candidate_status": "search_toolbar_and_guarded_post_effect_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "cd681bb2d6f3bd42d6f5cfe8278ea240dbef0afbf968eaea131af5e342e8a013",
+  "production_input_map_sha256": "c8cefc90d8fbb1e4fb58c24815d6036c68a424e7001d50cbe4aa2a640274e0ae",
   "complete_source_files": 2251,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain exact installed 457f source. Select the observed Xiaomi search switcher instead of its adjacent recommendation icon, with private SEARCH-only signature deferral followed by mandatory complete final censuses, live parent/target signatures, original persistent-action policy, eight-second limit and single effect claim. Add one distinct read-only recovery only after an actually entered Ctrip open_flight_form: exact private close receipt and durable Session outcome, latest sealed pair and postpersist window check invalidated by known target events, old-image closure and real serial drain. The new complete request is clipped by the original fifteen-second transition and original task deadline; original publication fence and shared noninitial once budget remain. No historical failed action is reinterpreted or replayed. Three test-only closure changes compile the existing typed Snapshot dependency and keep legacy window fixtures unable to defer SEARCH signatures. The retained first full-host attempt remains a recorded failure. Host/Android qualification is pending and this manifest grants no Phone authority.",
+  "scope": "Retain exact installed 1079 source. Add the observed Xiaomi direct-root FrameLayout search toolbar variant, with exact source-node structure and separate ordinary-search control; retained history is not query evidence. Route exact supported Ctrip OPEN through the existing final full checker and real one-use claim even when graph digests are equal. On the first strictly qualified sealed-pair/postpersist-window capture rejected by a known target event, use the existing discard, retire, serial drain and one new read immediately. Relative to 1079, the original 8/10/12/15/480-second limits, private handoff, publication fence and once budget remain unchanged. The original failed Phone observations remain failures. A separately bound host-only CI positive fixture and its own manifest are committed alongside this component; they are not production inputs. Complete combined host and Android validation remains pending; this manifest grants no Phone authority.",
   "files": [
     {
       "path": ".gitignore",
@@ -6486,8 +6486,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 343433,
-      "sha256": "1b62fb52fc885096b33041e20008b3f4de5effae2037fc010f35f742ba5e5737"
+      "bytes": 343869,
+      "sha256": "ca00064a2cc186aefcb476fab6e83c4bd2b437c2529488964699f99372a8a40f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6626,8 +6626,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "bytes": 42309,
-      "sha256": "2cf6154bbe0beca707f5c6b31086245758b68250f818b63e5a9d5fe2499e05c6"
+      "bytes": 44696,
+      "sha256": "46aa41a05e284bae8a033155612dbc362375872c89356a8021214082a1a68801"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
@@ -7921,8 +7921,8 @@
     },
     {
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "bytes": 38951,
-      "sha256": "8a3f753d455b73469d3dafd8ee07ce0f2a77558488fa57be77cfff8fff09dc41"
+      "bytes": 58390,
+      "sha256": "e30df010476fd692bc807c8f09effec3295644ae9390e4997827411cee49c99a"
     },
     {
       "path": "tests/native-action-integration/IntegrationChecks.java",
@@ -7931,13 +7931,13 @@
     },
     {
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "bytes": 35902,
-      "sha256": "412cd775129fdbc2b0395c56017404ca4d1c5bab6217bb2ad32be3bbfdfa6acb"
+      "bytes": 36852,
+      "sha256": "701d9aecdc2eda9e9d2ad81a5d157b035f23824c701352d26b7b08c9e75e774c"
     },
     {
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
-      "bytes": 1260,
-      "sha256": "739d6d0704fc283ef8941e0ed6917359d0075ac85c0fb829f96250163392fe5a"
+      "bytes": 1343,
+      "sha256": "d26d50cd9a7d374e2fccb1eb90f960811f76723a7a4738ad6a3cdd45fa2eb4cf"
     },
     {
       "path": "tests/native-action-integration/NativeActionSessionHostTest.java",
@@ -7986,8 +7986,8 @@
     },
     {
       "path": "tests/native-action-integration/run_host.py",
-      "bytes": 15699,
-      "sha256": "b0cca9ba587d00cd9d0e62c304805a551dcba66503c4247e8df5abb07feeb230"
+      "bytes": 17437,
+      "sha256": "c3b95f59cbc19b407e85651e51d108230f67d2c1bc5f81f2077ff0a7c816fb98"
     },
     {
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
@@ -8336,8 +8336,8 @@
     },
     {
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "bytes": 81426,
-      "sha256": "d8cf0202e4fe08dc00c59a9f0890c2beb7b6d57d7c05f2fd06f09155ffc02af2"
+      "bytes": 84227,
+      "sha256": "113d70f289f15218abfb7960e58bf3071f35f8f0670cfcba33d932d98d8b0a5d"
     },
     {
       "path": "tests/native-observation-events/run_host.py",
@@ -8571,8 +8571,8 @@
     },
     {
       "path": "tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java",
-      "bytes": 30538,
-      "sha256": "910c1070e60dd5ecb0d17d6965a82fb97d95c9ac328abd54c978674504b46cba"
+      "bytes": 41278,
+      "sha256": "325cae3ea203567e6c1c51b4c6d52948bc7f37ec6944a8e560bb3cdabe299b9c"
     },
     {
       "path": "tests/native-xiaomi-product/fixtures/PROVENANCE.json",
@@ -8632,7 +8632,7 @@
     {
       "path": "tests/native-xiaomi-product/run_host.py",
       "bytes": 7249,
-      "sha256": "de712670e5b1cb4f489cd27140b943f640a8df839123be79ca968df52fc982ed"
+      "sha256": "5ac128fb562338aaf98656bc0604a9f15f912c20a69efa969c0583bc212b5102"
     },
     {
       "path": "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
