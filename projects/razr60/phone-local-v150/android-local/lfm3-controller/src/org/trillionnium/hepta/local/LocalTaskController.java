@@ -1156,10 +1156,31 @@ public final class LocalTaskController implements AutoCloseable {
         if(cleanup==null||!cleanup.known)return null;
         try{
             JSONObject raw=cleanup.evidence.optJSONObject("profile_cleanup");if(raw==null)return null;
+            java.util.Set<String> fields=new java.util.LinkedHashSet<String>(java.util.Arrays.asList(
+                    "schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+                    "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present",
+                    "identity_unknown","owned_tasks","display_absence_observed"));
+            java.util.Set<String> expected=new java.util.HashSet<String>(fields);
+            boolean publicProfile=raw.has("public_foreign_recent_history")||raw.has("recents_absence_scope");
+            if(publicProfile){
+                // BackgroundSession already validated the complete nested history
+                // against this live scope. Keep that original evidence intact;
+                // the native terminal consumes only its existing fourteen fields.
+                Object history=raw.get("public_foreign_recent_history"),scope=raw.get("recents_absence_scope");
+                if(!(history instanceof JSONObject)||!(scope instanceof String))return null;
+                Object schema=((JSONObject)history).get("schema");
+                if(!("hepta.public-profile-history-custody.v1".equals(schema)
+                        &&"owned_target_only_with_foreign_history_preserved".equals(scope))
+                        &&!("hepta.public-profile-history-custody.v2".equals(schema)
+                        &&"owned_target_only_with_unrelated_physical_history_audited".equals(scope)))return null;
+                expected.add("public_foreign_recent_history");expected.add("recents_absence_scope");
+            }
+            java.util.Set<String> actual=new java.util.HashSet<String>();
+            java.util.Iterator<String> keys=raw.keys();while(keys.hasNext())actual.add(keys.next());
+            if(!actual.equals(expected))return null;
             java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
-            java.util.Iterator<String> keys=raw.keys();int count=0;
-            while(keys.hasNext()){
-                String key=keys.next();if(++count>14)return null;Object item=raw.get(key);
+            for(String key:fields){
+                Object item=raw.get(key);
                 if("owned_tasks".equals(key)){
                     if(!(item instanceof JSONArray))return null;JSONArray rows=(JSONArray)item;
                     if(rows.length()>32)return null;

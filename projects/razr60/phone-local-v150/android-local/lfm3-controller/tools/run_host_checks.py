@@ -406,6 +406,51 @@ def main():
             raise RuntimeError("Foreground concurrency compile/run stages incomplete")
         report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
+        run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",
+            "--source",ROOT,"--output",out/"public-profile-terminal-bridge","--java-home",java_home,"--json-jar",json_jar])
+        bridge_raw=(out/"public-profile-terminal-bridge/RESULT.json").read_bytes()
+        bridge=json.loads(bridge_raw)
+        if (bridge.get("schema")!="hepta.public-profile-terminal-bridge-host.v1" or bridge.get("all_pass") is not True
+                or bridge.get("strict_release8") is not True or bridge.get("source_inputs_unchanged") is not True
+                or bridge.get("tools_unchanged") is not True or bridge.get("android_runtime") is not False
+                or bridge.get("native_model_executed") is not False or bridge.get("full_android_controller_compiled_or_executed") is not False
+                or bridge.get("controller_bridge_verbatim_extraction") is not True
+                or bridge.get("actual_profile_owned_task_producer") is not True or bridge.get("actual_background_session_consumer") is not True
+                or bridge.get("actual_native_session_terminal") is not True or bridge.get("framework_model_installed_and_worker_io_synthetic") is not True
+                or type(bridge.get("phone_operations")) is not int or bridge["phone_operations"]!=0):
+            raise RuntimeError("Public profile terminal bridge receipt differs")
+        bridge_contracts={'legacy': (1, 28, 'ad7777f8f55f49c6fdf31b255460e7526ce4449eaec94a2378ce3e7f6ebdf864', 0, 1), 'candidate': (33, 412, '5f2b560320c45a07a342a67ef1e8e703b2cf390494ca1406ebe549814322312d', 11, 17)}
+        if set(bridge.get("cases",{}))!=set(bridge_contracts):
+            raise RuntimeError("Public profile terminal bridge case groups differ")
+        bridge_summary={}
+        for name,(count,assertions,names_sha,refusals,terminals) in bridge_contracts.items():
+            cases=bridge["cases"][name];names=cases.get("case_names")
+            if (cases.get("schema")!="hepta.public-profile-terminal-bridge-cases.v1" or cases.get("all_pass") is not True
+                    or type(cases.get("cases")) is not int or cases["cases"]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions
+                    or type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or cases.get("case_names_sha256")!=names_sha
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()!=names_sha
+                    or type(cases.get("real_nested_consumer_refusals")) is not int or cases["real_nested_consumer_refusals"]!=refusals
+                    or type(cases.get("full_native_terminal_calls")) is not int or cases["full_native_terminal_calls"]!=terminals
+                    or cases.get("old_bridge_full_terminal_reproduced") is not (name=="legacy")):
+                raise RuntimeError("Public profile terminal bridge exact case contract differs: "+name)
+            actual=json.loads((out/"public-profile-terminal-bridge"/(name+"-CASES.json")).read_bytes())
+            aggregate=dict(cases);aggregate.pop("case_names_sha256")
+            lines=(out/"public-profile-terminal-bridge"/(name+".stdout")).read_text().splitlines()
+            emitted=[line for line in lines if line.startswith("{")]
+            if (aggregate!=actual or len(emitted)!=1 or json.loads(emitted[0])!=actual
+                    or [line[5:] for line in lines if line.startswith("PASS ")]!=names):
+                raise RuntimeError("Public profile terminal bridge cases differ from actual Java output: "+name)
+            bridge_summary[name]={key:cases[key] for key in ("cases","assertions","case_names_sha256",
+                "real_nested_consumer_refusals","full_native_terminal_calls","old_bridge_full_terminal_reproduced")}
+        if ([row.get("name") for row in bridge.get("stages",[])]!=["compile","legacy","candidate"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in bridge["stages"])
+                or bridge.get("controller_bridge",{}).get("verbatim_method_and_helpers") is not True
+                or bridge["controller_bridge"].get("source",{}).get("sha256")!=hashlib.sha256((ROOT/"src/org/trillionnium/hepta/local/LocalTaskController.java").read_bytes()).hexdigest()):
+            raise RuntimeError("Public profile terminal bridge actual source or compile/run stages differ")
+        report["public_profile_terminal_bridge_gate"]={"bytes":len(bridge_raw),
+            "sha256":hashlib.sha256(bridge_raw).hexdigest(),"cases":bridge_summary}
         run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",

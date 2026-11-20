@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "4e3d150600f05edaa3b1bcf8ed6fef055254d0ac",
-  "base_manifest_sha256": "04486bd299b5e1ccc464e98f23fd8569278007412718dd49c813a599049b1325",
-  "candidate_status": "notes_display_census_and_host_dependency_successor_not_compiled_or_deployed",
+  "base_head": "cf15b7dbb0a12e7307121f5ed24e461dd85b8c4e",
+  "base_manifest_sha256": "0ef0b8da97ea6a64c65ae901587d3dbd0265c8f018f3718b75eb9aaa054b33df",
+  "candidate_status": "public_profile_terminal_bridge_successor_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "e7354efb50aed0d0c2c41fd4589f63d1554290d442450043e3e3f23a13e9ce91",
-  "complete_source_files": 2247,
+  "production_input_map_sha256": "c116b373d33509e272e945cd9b886b1ff282c58891380cb30ee597edb7c12a8a",
+  "complete_source_files": 2251,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain the 4e3d1506 task/display ownership validators and original host cases. Fix Notes absence display census to enumerate disabled logical displays with complete direct rows and stable ID membership, add 15 synthetic-Binder census cases, and reuse the existing permission-pair host adapter in initialization. Two host compile runners, one Notes producer, one Notes runner, one added test, and this complete manifest change; no device operations. Canonical host integration additionally preserves the original five Notes stages and their exact case contracts while requiring the new display-census stage, its 15 exact cases, 16 assertions and actual Java stdout binding.",
+  "scope": "Retain the complete PR160 cf15b7d source and all existing host case contracts. Project only the exact already-validated fourteen native profile cleanup fields from private fourteen-field or public sixteen-field App evidence; keep full public history validation and original nested evidence. Add a mandatory real producer/BackgroundSession/controller bridge/full native terminal host integration gate with exact legacy counterexample and candidate case contracts. No device, model, APK signing or Git mutation is performed by this source preparation.",
   "files": [
     {
       "path": ".gitignore",
@@ -6526,8 +6526,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 179787,
-      "sha256": "23b4c8fd5d0c1ad3d93f743f2866e2a1070bcca4441c12f59b4104336e5228ab"
+      "bytes": 181520,
+      "sha256": "3ea00555e7c566a78277f39c3c8a1e11bca1fcbe997ef8a811154544fd30eebd"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -9550,6 +9550,26 @@
       "sha256": "e6895e847f32046d3bc68cca5aacd124ee9a3e1b3b1e18148a57c29b487f4e02"
     },
     {
+      "path": "tests/public-profile-terminal-bridge/PublicProfileBridgeProducer.java",
+      "bytes": 3717,
+      "sha256": "06036ddf3a06261d6c2ce0589c97972168e7c8414d8d9f1d850b4cef4d02ed50"
+    },
+    {
+      "path": "tests/public-profile-terminal-bridge/PublicProfileTerminalBridgeHostTest.java",
+      "bytes": 26881,
+      "sha256": "4fdca6d3b0cba461de6b8a99aa0820bbe53e76ddc401dbafcf8036b48048432d"
+    },
+    {
+      "path": "tests/public-profile-terminal-bridge/legacy-r17-native-profile-cleanup.java.inc",
+      "bytes": 1335,
+      "sha256": "0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47"
+    },
+    {
+      "path": "tests/public-profile-terminal-bridge/run_host.py",
+      "bytes": 13733,
+      "sha256": "8035a0dd1b44f9eb222b827f1d1b0a0b317fe37288036db93a5ed8b153e17d3e"
+    },
+    {
       "path": "tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java",
       "bytes": 17308,
       "sha256": "6f9c567f19b8cb4f9b97de85fae9411904e52379c410b630bb4a9bf902cdb057"
@@ -11041,8 +11061,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 45052,
-      "sha256": "2bb6a77c37b8da96f3e40997d82219d967b125ee47ea49e838bcc19106405e36"
+      "bytes": 49708,
+      "sha256": "af20ce6be05ab6834472a8b980cf25c7b6c08a0011e6dc80fd85bbd3a825a61d"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
