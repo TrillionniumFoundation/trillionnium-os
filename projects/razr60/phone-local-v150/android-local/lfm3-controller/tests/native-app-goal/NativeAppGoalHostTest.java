@@ -32,6 +32,88 @@ public final class NativeAppGoalHostTest {
         try { goal.requireBinding(owner, pkg); } catch (IllegalArgumentException expected) { thrown = true; }
         check(thrown, "foreign binding refused");
     }
+    private static void readOnlyReportCases() {
+        final String product = "在小米商城搜索小米路由器AX3000T，读取实际商品页面显示的当前售价并说明商品型号。只查询，不购买、不提交订单、不支付。";
+        final String flight = "在携程查询2026年11月25日北京到上海的单程机票，1名成人，读取航班列表中可见的航班时间、航司和价格。只查询，不预订、不支付。";
+        named("complete_product_read_only_report", () -> {
+            NativeAppGoal g=goal(product,NativeAppGoal.XIAOMI_PACKAGE);
+            check("complete_literal_native_product_read_only_report.v2".equals(g.recognition),"new form identity");
+            check(NativeAppGoal.PRODUCT_PRICE.equals(g.kind)&&"AX3000T".equals(g.productModel),"original qualified model");
+            check("AX3000T".equals(product.substring(g.modelStartUtf16,g.modelEndUtf16)),"actual model span");
+            check(product.equals(g.immutableOwner)&&g.immutableOwner.endsWith("不支付。"),"complete limits retained");
+            g.requireBinding(product,NativeAppGoal.XIAOMI_PACKAGE);
+            throwsBinding(g,product.substring(0,product.indexOf("只查询")),NativeAppGoal.XIAOMI_PACKAGE);
+            check(g.toolCeiling.equals(goal(PRODUCT,NativeAppGoal.XIAOMI_PACKAGE).toolCeiling),"unchanged query tool ceiling");
+        });
+        named("product_report_keeps_literal_case_and_price_word", () -> {
+            String owner=product.replace("搜索小米路由器AX3000T","查询Xiaomi 路由器 ax3000t").replace("当前售价","当前价格");
+            NativeAppGoal g=goal(owner,NativeAppGoal.XIAOMI_PACKAGE);
+            check("ax3000t".equals(owner.substring(g.modelStartUtf16,g.modelEndUtf16)),"literal source case");
+            check(!g.ownerSha256.equals(goal(product,NativeAppGoal.XIAOMI_PACKAGE).ownerSha256),"owner not normalized");
+        });
+        named("complete_flight_read_only_report", () -> {
+            NativeAppGoal g=goal(flight,NativeAppGoal.CTRIP_PACKAGE);
+            check("complete_literal_native_flight_read_only_report.v2".equals(g.recognition),"report form identity");
+            check(LocalDate.of(2026,11,25).equals(g.departureDate)&&"北京".equals(g.fromCity)&&"上海".equals(g.toCity),"literal flight fields");
+            check(g.adults==1&&g.children==0&&g.infants==0,"no added passengers");
+            check("2026年11月25日".equals(flight.substring(g.dateStartUtf16,g.dateEndUtf16)),"literal date span");
+            check("北京".equals(flight.substring(g.fromStartUtf16,g.fromEndUtf16))&&"上海".equals(flight.substring(g.toStartUtf16,g.toEndUtf16)),"city spans");
+            check(flight.equals(g.immutableOwner),"report and no-booking limits belong to same immutable owner");
+            for(String key:new String[]{"provider_support_claimed","query_executed","business_verified","grants_tool_authority"})
+                check(Boolean.FALSE.equals(g.evidence().get(key)),"recognition never proves "+key);
+        });
+        named("flight_report_uses_general_literal_date_and_cities", () -> {
+            String owner=flight.replace("2026年11月25日北京到上海","2028年2月29日广州到深圳");
+            NativeAppGoal g=goal(owner,NativeAppGoal.CTRIP_PACKAGE);
+            check(LocalDate.of(2028,2,29).equals(g.departureDate)&&"广州".equals(g.fromCity)&&"深圳".equals(g.toCity),"no test-date or route substitution");
+            check(!g.contractSha256.equals(goal(flight,NativeAppGoal.CTRIP_PACKAGE).contractSha256),"distinct complete contract");
+        });
+        named("flight_report_iso_ascii_field_spacing", () -> {
+            String owner=flight.replace("查询2026年11月25日北京到上海的单程机票，1名成人", "查询 2027-04-03 从 广州 到 深圳 的 单程 航班, 一 位 成人");
+            NativeAppGoal g=goal(owner,NativeAppGoal.CTRIP_PACKAGE);
+            check("2027-04-03".equals(owner.substring(g.dateStartUtf16,g.dateEndUtf16)),"ISO boundary span");
+            check("广州".equals(g.fromCity)&&"深圳".equals(g.toCity),"ASCII spaces stay outside city spans");
+        });
+        named("flight_report_explicit_app_not_substituted", () -> {
+            String owner=flight.replace("携程","南航");
+            NativeAppGoal g=goal(owner,NativeAppGoal.CSAIR_PACKAGE);
+            check(NativeAppGoal.CSAIR_PACKAGE.equals(g.packageName),"same complete purpose remains selected-app specific");
+        });
+        reject("report_unknown_product_model_not_substituted",product.replace("AX3000T","AX3000"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_variant_not_dropped",product.replace("AX3000T","AX3000T双只装"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_wrong_selected_app",product,NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_product_website_not_native",product.replace("小米商城","小米官网"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_unknown_suffix",product+"并总结优惠券。",NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_order_after_query",product+"查询完下单。",NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_payment_after_query",product+"然后支付。",NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_positive_purchase_limit",product.replace("不购买","购买"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_positive_order_limit",product.replace("不提交订单","提交订单"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_positive_payment_limit",product.replace("不支付","支付"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_conditional_purchase",product.replace("不支付。","不支付，除非价格合适就购买。"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_double_negation",product.replace("不购买","不是不购买"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_second_app",product+"再去携程查机票。",NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_injected_action_before_limits",product.replace("只查询","先下单，再只查询"),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_missing_model_reading",product.replace("并说明商品型号",""),NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_product_trailing_space_not_trimmed",product+" ",NativeAppGoal.XIAOMI_PACKAGE);
+        reject("report_flight_named_app_mismatch",flight,NativeAppGoal.CSAIR_PACKAGE);
+        reject("report_flight_invalid_date",flight.replace("2026年11月25日","2027年2月29日"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_missing_year",flight.replace("2026年",""),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_relative_date",flight.replace("2026年11月25日","明天"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_two_adults",flight.replace("1名成人","2名成人"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_extra_child",flight.replace("1名成人","1名成人、1名儿童"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_return_trip",flight.replace("单程","往返"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_alternative_route",flight.replace("北京到上海","北京或天津到上海"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_action_in_city",flight.replace("北京到上海","北京到上海然后支付"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_booking_after_query",flight+"查询完预订。",NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_payment_exception",flight.replace("不支付。","不支付，但可支付低价票。"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_positive_booking",flight.replace("不预订","预订"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_unknown_report_field",flight.replace("航司和价格","航司、库存和价格"),NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_second_app",flight+"再打开小米商城。",NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_tool_clause_not_removed",flight+"只允许click、done。",NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_leading_space_not_trimmed"," "+flight,NativeAppGoal.CTRIP_PACKAGE);
+        reject("report_flight_newline_not_normalized",flight.replace("只查询","\n只查询"),NativeAppGoal.CTRIP_PACKAGE);
+    }
+
     public static void main(String[] args) {
         named("generic_flight_is_bound_to_explicit_ctrip", () -> {
             NativeAppGoal g = goal(FLIGHT, NativeAppGoal.CTRIP_PACKAGE);
@@ -132,6 +214,7 @@ public final class NativeAppGoalHostTest {
         reject("product_multi_goal",PRODUCT+"并下单",NativeAppGoal.XIAOMI_PACKAGE);
         reject("empty_owner","",NativeAppGoal.CTRIP_PACKAGE);
         reject("null_owner",null,NativeAppGoal.CTRIP_PACKAGE);
+        readOnlyReportCases();
         StringBuilder json=new StringBuilder("{\"schema\":\"hepta.native-app-goal-host.v1\",\"all_pass\":true,\"cases\":")
                 .append(names.size()).append(",\"assertions\":").append(assertions).append(",\"case_names\":[");
         for(int i=0;i<names.size();i++){if(i>0)json.append(',');json.append('"').append(names.get(i)).append('"');}

@@ -1,6 +1,11 @@
 package org.trillionnium.hepta.local;
 
 import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.*;
 import java.security.MessageDigest;
 import org.json.JSONObject;
@@ -276,10 +281,14 @@ final class NativeActionBridgeHost {
         final TaskAuthorization authorization;final TaskAuthorization.Gate gate;final NativeAppSession session;
         final Map<String,NodeData> data=new TreeMap<String,NodeData>();final List<Map<String,Object>> journal=new ArrayList<Map<String,Object>>();
         final Map<String,String> ids=new TreeMap<String,String>();int serial,observations,step;boolean installedCurrent=true;
+        final File actualJournalDirectory;boolean failActualOutcome;
         NativeActionSnapshotCheckHostTest.Fixture raw,fresh;NativeAppEvidence.Frame frame;ActionDecision action;ActionWork work;
         Fixture(String p,String label)throws Exception{this(p,label,null);}
         Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded)throws Exception{
-            fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
+            this(p,label,recorded,false,null);
+        }
+        Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded,boolean deferGuard,File journalDirectory)throws Exception{
+            actualJournalDirectory=journalDirectory;fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
             raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
             owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
             BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
@@ -291,7 +300,12 @@ final class NativeActionBridgeHost {
                     Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
             session=new NativeAppSession(task,gate,selection,installed,NativeAppObservation.selectionSha(selection),background.generation,7,
                     ()->{if(!installedCurrent)throw new IllegalStateException("host installed change");events.add("installed");},
-                    (leaf,value)->{Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
+                    (leaf,value)->{
+                        if(actualJournalDirectory!=null){
+                            if(failActualOutcome&&leaf.startsWith("native-app-outcome-"))throw new java.io.IOException("explicit actual journal endpoint failure");
+                            OpenController.record(actualJournalDirectory,leaf,OpenController.wire(value));
+                        }
+                        Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
             observeGraph(raw);
             if(NativeActionSnapshotCheck.QUERY.equals(p))year();
             String selected=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(p.equals(e.getValue()))selected=e.getKey();
@@ -300,9 +314,12 @@ final class NativeActionBridgeHost {
             // on that original selected NodeRef, never on its adjacent icon.
             raw.target=frame.byId.get(selected).path;raw.label=frame.byId.get(selected).label;
             action=click(selected);SystemClock.now+=10;step++;gate.check(action,run);session.beforeModelAction(step,action,run,SystemClock.now);
-            NativeAppSession.ActionGuard guard=session.actionGuard(action,run,frame.observationId,SystemClock.now,SystemClock.now+8000);
-            work=new ActionWork(task,current,run,scope,gate,background,()->cancelled,currentGraph.copyForAction(action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,guard);
-            work.phase("worker_started");fresh=raw.copy();SystemClock.now+=10;events.clear();
+            if(!deferGuard){
+                NativeAppSession.ActionGuard guard=session.actionGuard(action,run,frame.observationId,SystemClock.now,SystemClock.now+8000);
+                work=new ActionWork(task,current,run,scope,gate,background,()->cancelled,currentGraph.copyForAction(action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,guard);
+                work.phase("worker_started");
+            }
+            fresh=raw.copy();SystemClock.now+=10;events.clear();
         }
         ObservedWindowMetadata metadata(){return ObservedWindowMetadata.observed(new int[]{0,0,1224,2992},"android.widget.FrameLayout",1,7,new int[]{0,0,1224,2992},"");}
         ActionDecision click(String node)throws Exception{return ActionDecision.parse(new JSONObject().put("action","click").put("package",raw.pkg).put("observation_id",frame.observationId)

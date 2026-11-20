@@ -3,7 +3,7 @@
   "base_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
   "base_manifest_sha256": "c62a357ec86c6c4f86d83e30e9d86cae386c130a23e4d11f8405b9add24fc3ef",
   "candidate_exact_git_head": null,
-  "candidate_status": "r10_exact_source_complete_host_validation_pending",
+  "candidate_status": "r11_exact_source_complete_host_validation_pending",
   "complete_source_files": 2296,
   "files": [
     {
@@ -6493,8 +6493,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 343694,
-      "sha256": "ac9eb01e12e6ff203b0f8e6f984ef85c966a637d0a815fb5402162e4c9e72c8b"
+      "bytes": 343781,
+      "sha256": "0d26303e28ca96a6d166922f9e8000879abaf9c88809bf041483a2467b905c45"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6608,8 +6608,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "bytes": 13841,
-      "sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
+      "bytes": 16946,
+      "sha256": "c266f1e3e6ca3d86ad2e8f94c78a4263138822e004b5eab64dafdda5fcb653d5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppObservation.java",
@@ -6633,8 +6633,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "bytes": 46712,
-      "sha256": "fc6ad9320350549ac0f8bcd565c470e129243bda500fb695dde94cd1aa1803ff"
+      "bytes": 48640,
+      "sha256": "c66ebf4c03bcf523c13331800348ee195897367c41182b5c2a75c7b8c0a8768b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
@@ -6648,8 +6648,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "bytes": 12329,
-      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+      "bytes": 13600,
+      "sha256": "a4706c6c89f569e2530aa7a48160d36f34ddd73236c67701424897d288c3486c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
@@ -7593,8 +7593,8 @@
     },
     {
       "path": "tests/completion/TaskCompletionGateHostTest.java",
-      "bytes": 40280,
-      "sha256": "ef66b44b024c04e12796510806c079738f49bc39e11a49e86fd09dc4282a9044"
+      "bytes": 51609,
+      "sha256": "126452bab9fc057612a329c4f777b8e02f0814df306d4050b989a3961a305af2"
     },
     {
       "path": "tests/completion/fixtures/RESULT.json",
@@ -8008,8 +8008,8 @@
     },
     {
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "bytes": 46629,
-      "sha256": "04f3d56eeada9c4efecb5f8b3633fe282f10bff4eee59a5dddde3c5ac538d992"
+      "bytes": 66068,
+      "sha256": "4b9628552b35c061b1c3abd68a10bb8ee056ac257f65c0377877646232909bea"
     },
     {
       "path": "tests/native-action-integration/IntegrationChecks.java",
@@ -8018,13 +8018,13 @@
     },
     {
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "bytes": 35902,
-      "sha256": "412cd775129fdbc2b0395c56017404ca4d1c5bab6217bb2ad32be3bbfdfa6acb"
+      "bytes": 36852,
+      "sha256": "701d9aecdc2eda9e9d2ad81a5d157b035f23824c701352d26b7b08c9e75e774c"
     },
     {
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
-      "bytes": 1260,
-      "sha256": "739d6d0704fc283ef8941e0ed6917359d0075ac85c0fb829f96250163392fe5a"
+      "bytes": 1343,
+      "sha256": "d26d50cd9a7d374e2fccb1eb90f960811f76723a7a4738ad6a3cdd45fa2eb4cf"
     },
     {
       "path": "tests/native-action-integration/NativeActionSessionHostTest.java",
@@ -8073,8 +8073,8 @@
     },
     {
       "path": "tests/native-action-integration/run_host.py",
-      "bytes": 16404,
-      "sha256": "b45dded9b49929f9dbbe26ae4884421b4a3e53222084fc421fe6fe2403eb70f5"
+      "bytes": 18142,
+      "sha256": "0426c98b96d88ea7b221d542342139b44741dfacec567931e5da87e0d9e9dd2a"
     },
     {
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
@@ -8113,8 +8113,8 @@
     },
     {
       "path": "tests/native-app-goal/NativeAppGoalHostTest.java",
-      "bytes": 11094,
-      "sha256": "674738f8f9de28731dd582344d807667045c9eebc771bccf482a2a12c4718e7e"
+      "bytes": 19613,
+      "sha256": "49b6a760165259ccbfad0e8a5f0881b91cd33cef8bd7acbb60d19cdda946bcba"
     },
     {
       "path": "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
@@ -8123,8 +8123,8 @@
     },
     {
       "path": "tests/native-app-goal/run_host.py",
-      "bytes": 8542,
-      "sha256": "1f845254c01112a1db90b13be0b52688c37dea7f9a131383d1cdbcc5dfdb215e"
+      "bytes": 10028,
+      "sha256": "5312dcc1287c84af0ddc57baf6640a4a0e54509b11b43d16ffe1143e198b675f"
     },
     {
       "path": "tests/native-app-provider/FIXTURES.json",
@@ -8523,8 +8523,8 @@
     },
     {
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "bytes": 81426,
-      "sha256": "d8cf0202e4fe08dc00c59a9f0890c2beb7b6d57d7c05f2fd06f09155ffc02af2"
+      "bytes": 84227,
+      "sha256": "113d70f289f15218abfb7960e58bf3071f35f8f0670cfcba33d932d98d8b0a5d"
     },
     {
       "path": "tests/native-observation-events/run_host.py",
@@ -8768,8 +8768,8 @@
     },
     {
       "path": "tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java",
-      "bytes": 30538,
-      "sha256": "910c1070e60dd5ecb0d17d6965a82fb97d95c9ac328abd54c978674504b46cba"
+      "bytes": 41278,
+      "sha256": "325cae3ea203567e6c1c51b4c6d52948bc7f37ec6944a8e560bb3cdabe299b9c"
     },
     {
       "path": "tests/native-xiaomi-product/fixtures/PROVENANCE.json",
@@ -8829,7 +8829,7 @@
     {
       "path": "tests/native-xiaomi-product/run_host.py",
       "bytes": 7249,
-      "sha256": "de712670e5b1cb4f489cd27140b943f640a8df839123be79ca968df52fc982ed"
+      "sha256": "b7954b8e1659a9f791b9c2fc80c6200e3ad8cac91cd60af6d786b51aa6e3172f"
     },
     {
       "path": "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
@@ -8938,8 +8938,8 @@
     },
     {
       "path": "tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
-      "bytes": 15279,
-      "sha256": "617eb96a0273bd391c45d442d4e4ec50c6cd9eb4f1039b93d015fd814e6ad44e"
+      "bytes": 19020,
+      "sha256": "020426a66c6b8923254509bd8b8dc387022cedf17ae03a166727ead524ad7161"
     },
     {
       "path": "tests/notes-owner-intent/README.md",
@@ -11485,11 +11485,11 @@
   "main_java_sources": 192,
   "phone_qualified": false,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "f22fd9b7051f318da289bb6b71812f45f04445db88fe6f3dc51ac6f1c647b8c5",
+  "production_input_map_sha256": "242e2458c51c0cdb7818896d2981556d6da6c0d3d5b925143f0cf3c450428e42",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim. Resolve private native paths component by component through held directory descriptors with no symlink traversal. Preserve input FD, owner, mode, size, SHA and named-identity checks for both generated text and VLM workers. Retain the original 43 guard checks and add a real filesystem race regression under existing Python discovery. The independently rebuilt native ELF is bound to its actual source and receipt; full r5 host, Android and phone qualification remains pending. Compile the standalone publication fixture against the actual private IO definitions and initialize the real directory identity for every destination, retaining all 18 original assertions and explicitly reaching the invalid-fd fsync failure. This fixture-only successor preserves the 46-member native source and independently rebuilt ELF. Full exact-source r6 host, Android and phone qualification remains pending. Preserve the independently verified installed 457f03 branch with common ebb383 source ancestry. Integrate all six public permission/virtual-display production fixes, original added regressions and raised policy thresholds. Preserve all r6 native/runtime/model sources and the exact purpose-specific comparator. Three explicitly documented test-policy resolutions retain account-value-independent login return and contained noninteractive hint-right comparison with original action gates. Full exact-source r7 host, Android and phone qualification remains pending. Preserve independently verified installed 1079ddd changes: actual Xiaomi SEARCH entry with retained original references and complete final censuses; single private read-only recovery after a sealed accepted Ctrip OPEN effect with serial drain and unchanged original transition/task deadlines. Retain all r7 model/runtime/native and pre-effect date-reservation changes. Explicitly migrate the superseded SEARCH exact-hint test contract while retaining all other stated guard assertions. Exact-source r8 host, Android and phone qualification remains pending. Add the exact observed FrameLayout Xiaomi search toolbar without relaxing old templates. Finish an accepted pending transition through fresh serial observations before another model plan, preserving the original task, transition and per-read deadlines and observation/retry budgets. Require a real final census and one-use claim for equal-tree Ctrip OPEN before entering its effect. Existing private recovery proof is unchanged. Only focused host fixtures are qualified; complete host, Android and phone validation remain pending. This exact r9 materialization requires its own complete host, Android and phone qualification. Add the unconstructible throwing legacy pending-read type boundary and the reviewed profile-specific bounded output format. Preserve all native sources, action authority and original deadlines. Prior r9 failed its host canonical fixture compilation and was never published or installed; this exact r10 source requires its own complete host, Android and phone qualification.",
-  "source_parent_head": "f9aec1c2231daece5c421e04464f77b0ae623cf8",
-  "source_parent_manifest_sha256": "bb78d61ca4f848a273defe4059d554c8bdbfc05364b9ddd22362731a8e0ba974",
+  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim. Resolve private native paths component by component through held directory descriptors with no symlink traversal. Preserve input FD, owner, mode, size, SHA and named-identity checks for both generated text and VLM workers. Retain the original 43 guard checks and add a real filesystem race regression under existing Python discovery. The independently rebuilt native ELF is bound to its actual source and receipt; full r5 host, Android and phone qualification remains pending. Compile the standalone publication fixture against the actual private IO definitions and initialize the real directory identity for every destination, retaining all 18 original assertions and explicitly reaching the invalid-fd fsync failure. This fixture-only successor preserves the 46-member native source and independently rebuilt ELF. Full exact-source r6 host, Android and phone qualification remains pending. Preserve the independently verified installed 457f03 branch with common ebb383 source ancestry. Integrate all six public permission/virtual-display production fixes, original added regressions and raised policy thresholds. Preserve all r6 native/runtime/model sources and the exact purpose-specific comparator. Three explicitly documented test-policy resolutions retain account-value-independent login return and contained noninteractive hint-right comparison with original action gates. Full exact-source r7 host, Android and phone qualification remains pending. Preserve independently verified installed 1079ddd changes: actual Xiaomi SEARCH entry with retained original references and complete final censuses; single private read-only recovery after a sealed accepted Ctrip OPEN effect with serial drain and unchanged original transition/task deadlines. Retain all r7 model/runtime/native and pre-effect date-reservation changes. Explicitly migrate the superseded SEARCH exact-hint test contract while retaining all other stated guard assertions. Exact-source r8 host, Android and phone qualification remains pending. Add the exact observed FrameLayout Xiaomi search toolbar without relaxing old templates. Finish an accepted pending transition through fresh serial observations before another model plan, preserving the original task, transition and per-read deadlines and observation/retry budgets. Require a real final census and one-use claim for equal-tree Ctrip OPEN before entering its effect. Existing private recovery proof is unchanged. Only focused host fixtures are qualified; complete host, Android and phone validation remain pending. This exact r9 materialization requires its own complete host, Android and phone qualification. Add the unconstructible throwing legacy pending-read type boundary and the reviewed profile-specific bounded output format. Preserve all native sources, action authority and original deadlines. Prior r9 failed its host canonical fixture compilation and was never published or installed; this exact r10 source requires its own complete host, Android and phone qualification. Reconcile the reviewed peer1090 source: preserve the r10 toolbar/pending/compact and native contracts, retain the stricter toolbar intersection, admit the existing one-use read after a sealed late target event, and retain complete bounded natural owner parsing. Explicitly record the old early-read test migration. This exact r11 source requires fresh complete host, Android and phone qualification. Two separately bound offline-validation sibling files are outside this component.",
+  "source_parent_head": "034c3b0368ea3144e15fd52fe2eb231a366a60a8",
+  "source_parent_manifest_sha256": "ceb5fbe349a80812354e06f12db9dc379dbb9dda255d9a79fd8a8507b11f0d57",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

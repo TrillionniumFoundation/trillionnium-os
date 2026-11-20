@@ -58,6 +58,13 @@ public final class NotesOwnerIntent {
             + "|(?:新建|打开|写)(?:一个|一条)?(?:笔记)?草稿"
             + "|不要保存|不保存|不必保存|无需保存|只打开(?:笔记)?编辑器");
     private static final char[][] QUOTES = {{'“','”'}, {'‘','’'}, {'"','"'}, {'\'','\''}};
+    // One bounded literal body followed by the complete requested workflow and
+    // limits. The body is not a fixed test message, and no later clause is cut
+    // off or treated as an authorized second task.
+    private static final Pattern SAVE_REOPEN = full(POLITE
+            + "(?:新建|创建)(?:一条|一个)?(?:笔记|备忘录)[，,]正文为(.+?)"
+            + " 保存后回到(?:笔记)?列表[，,]再重新打开核对正文[。.]"
+            + "只创建本次这条记录[，,]不修改或删除已有记录[，,]不分享[。.]?");
 
     private NotesOwnerIntent() { }
 
@@ -93,7 +100,8 @@ public final class NotesOwnerIntent {
          * This choice is data flow, not a second copy of the authority grammar.
          */
         public boolean masksOwnerBodyForAuthority() {
-            return supported && !"natural_note_comma_prefix.v1".equals(recognition);
+            return supported && !"natural_note_comma_prefix.v1".equals(recognition)
+                    && !"natural_note_save_list_reopen.v2".equals(recognition);
         }
 
         /** Return authority text only for this parser's exact immutable OWNER.
@@ -140,6 +148,16 @@ public final class NotesOwnerIntent {
         for (int i = 0; i < patterns.length; i++) {
             Matcher match = patterns[i].matcher(owner);
             if (match.matches()) return candidate(owner, match, forms[i], false);
+        }
+        Matcher workflow = SAVE_REOPEN.matcher(owner);
+        if (workflow.matches()) {
+            Result result = candidate(owner, workflow, "natural_note_save_list_reopen.v2", false);
+            // Keep the older short-body validator, and refuse unquoted action
+            // language instead of hiding it from the authority compiler. The
+            // entire new OWNER remains visible to that unchanged compiler.
+            if (result.supported && AMBIGUOUS_COMMA_BODY.matcher(result.body).find())
+                return refused(owner, false, "ambiguous_unquoted_body_or_additional_goal");
+            return result;
         }
         return refused(owner, DRAFT_ONLY.matcher(outsideQuotedText(owner)).find(),
                 "no_complete_supported_natural_note_request");

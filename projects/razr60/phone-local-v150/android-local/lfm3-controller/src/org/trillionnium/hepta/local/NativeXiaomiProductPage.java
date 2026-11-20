@@ -340,11 +340,14 @@ final class NativeXiaomiProductPage {
                 ||toggle.top<field.top||normal.top<field.top
                 ||Math.min(toggle.bottom,normal.bottom)<=Math.max(toggle.top,normal.top))
             return page(frame,"search_input_unverified","normal_search_and_mode_toggle_not_distinguished",null,null);
+        if(!directRootSearchToolbar(frame,field,normal,normalLabel,toggle,toggleLabel))
+            return page(frame,"search_input_unverified","observed_direct_root_search_toolbar_required",null,null);
         Map<String,Object> proof=map();proof.put("query_field",field.fact("text"));
         proof.put("normal_search_button",normal.fact("description"));proof.put("normal_search_label",normalLabel.fact("text"));
         proof.put("excluded_mode_toggle",toggle.fact("description"));proof.put("excluded_mode_toggle_label",toggleLabel.fact("text"));
         proof.put("same_native_toolbar_path","0");proof.put("toolbar_shape","observed_frame_layout_direct_children.v1");
         proof.put("mode_toggle_offered",false);proof.put("derived_label_grants_authority",false);
+        proof.put("search_toolbar_variant","direct_root_framelayout");
         String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
         Map<String,String> purposes=new LinkedHashMap<String,String>();Map<String,Object> facts=map();
         if(!field.text.equals(literal)){
@@ -449,6 +452,29 @@ final class NativeXiaomiProductPage {
         if(home!=null&&search==null&&navigationOnlyHome(frame))
             return page(frame,HOME_LOADING,"native_home_search_content_not_loaded",null,null);
         return page(frame,"unrecognized_native_page","no_current_supported_native_page",null,null);
+    }
+
+    /** Exact observed root toolbar. Its two literal labels identify separate
+     * current controls, not an arbitrary same-text history row or a coordinate.
+     * No root-variant suggestion has been qualified; only its right button can
+     * submit after the actual editable field contains the immutable query. */
+    private static boolean directRootSearchToolbar(NativeAppEvidence.Frame frame,NativeAppEvidence.Node field,
+            NativeAppEvidence.Node normal,NativeAppEvidence.Node normalLabel,
+            NativeAppEvidence.Node toggle,NativeAppEvidence.Node toggleLabel){
+        NativeAppEvidence.Node[] nodes={field,normal,normalLabel,toggle,toggleLabel};
+        String[] paths={"0/1","0/4","0/4/0","0/0","0/0/0"};
+        for(int i=0;i<nodes.length;i++){
+            NativeAppEvidence.Node n=nodes[i];boolean label=i==2||i==4;
+            if(!usable(frame,n)||!paths[i].equals(n.path)||!n.viewId.isEmpty()
+                    ||!(label?VIEW:"android.widget.FrameLayout").equals(n.parentClass)
+                    ||n.scrollable||!Boolean.FALSE.equals(n.selected)||!Boolean.FALSE.equals(n.checkable)||!Boolean.FALSE.equals(n.checked)
+                    ||n.clickable==label||n.editable!=(i==0))return false;
+            int samePath=0;for(NativeAppEvidence.Node other:frame.nodes)if(n.path.equals(other.path))samePath++;
+            if(samePath!=1)return false;
+            if(i>0&&(!n.description.isEmpty()||!(label?TEXT:VIEW).equals(n.className)
+                    ||!(label?"搜索":"").equals(n.text)||!"搜索".equals(n.label)))return false;
+        }
+        return normalLabel.within(normal)&&toggleLabel.within(toggle);
     }
 
     /** The retained manual search-entry transition used the ViewSwitcher, not

@@ -5,7 +5,7 @@ from pathlib import Path
 import argparse, hashlib, json, os, stat, subprocess, time, traceback
 SCHEMA="hepta.native-xiaomi-product-compiled-gate.v1"
 SHARED={
-"src/org/trillionnium/hepta/local/NativeAppGoal.java":"beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5",
+"src/org/trillionnium/hepta/local/NativeAppGoal.java":"c266f1e3e6ca3d86ad2e8f94c78a4263138822e004b5eab64dafdda5fcb653d5",
 "src/org/trillionnium/hepta/local/NativeAppEvidence.java":"5ddf2055e23f96efcbc223a17b21d0a7a8e8d0fc2aae788b5d316e7f9eb006b3",
 "src/org/trillionnium/hepta/background/ProfileIdentity.java":"7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd",
 "src/org/trillionnium/hepta/background/ProfileTarget.java":"b65d62af4dd9f68d6c0070b21bf7fe0127a0a1898cc0f6ee604c9d56fa83f821",
@@ -70,7 +70,7 @@ def main():
     try:
         command("javac",[a.java_home/"bin/javac","--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*[a.source/x for x in PATHS]])
         command("cases",[a.java_home/"bin/java","-cp",classes,"org.trillionnium.hepta.local.NativeXiaomiProductPageHostTest",provenance_path.parent,a.output/"CASES.json"])
-        cases=json.loads((a.output/"CASES.json").read_bytes());need(cases["all_pass"] is True and cases["cases"]==55 and len(set(cases["case_names"]))==55,"complete fixed parser cases")
+        cases=json.loads((a.output/"CASES.json").read_bytes());need(cases["all_pass"] is True and cases["cases"]==75 and len(set(cases["case_names"]))==75,"complete fixed parser cases")
         need(cases["phone_operations"]==0 and cases["android_runtime"] is False and cases["business_verified"] is False,"host-only case scope")
         result["cases"]=cases;result["all_pass"]=True
     except Exception as error:
