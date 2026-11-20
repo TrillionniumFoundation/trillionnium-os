@@ -20,10 +20,13 @@ final class NativeAppSession {
             InstalledVerifier verifier,Journal journal)throws Exception{throw unavailable();}
     /** Type-only new API; these legacy cases cannot create or claim a native Attempt. */
     static final class ActionGuard {
+        final String purpose=null;final NativeAppGoal goal=null;final NativeAppEvidence.Node targetNode=null;
+        NativeActionSnapshotCheck.Intent intent(String ref){throw unavailable();}
         private ActionGuard(){throw unavailable();}
         void requireClaimed(){throw unavailable();}
         void close(){throw unavailable();}
         void closeAfterUnenteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){throw unavailable();}
+        void closeAfterEnteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){throw unavailable();}
         Map<String,Object> evidence(){throw unavailable();}
     }
     static final class ReadRecoveryPermit {
@@ -31,6 +34,16 @@ final class NativeAppSession {
         void requireCurrent(){throw unavailable();}
         Map<String,Object> evidence(){throw unavailable();}
     }
+    static final class PostEffectReadPermit {
+        private PostEffectReadPermit(){throw unavailable();}
+        void requireCurrent(){throw unavailable();}
+        long transitionDeadline(){throw unavailable();}
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){throw unavailable();}
+        void admit(boolean retry){throw unavailable();}
+        boolean admitted(boolean retry){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    PostEffectReadPermit postEffectReadPermit(ActionDecision action,String run,String observation){throw unavailable();}
     ReadRecoveryPermit observationRecoveryPermit(ActionDecision action,String run,String observation){throw unavailable();}
     ActionGuard actionGuard(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{throw unavailable();}
     void verifyInstalled()throws Exception{throw unavailable();}

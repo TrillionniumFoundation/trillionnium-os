@@ -32,6 +32,7 @@ def prepare(source, output):
         # executed by its separate gate; this non-native fixture has throwing endpoints.
         'scope_validate_dispatch': (section(s, '    synchronized void bindQualificationScope(', '    private void requireNativeActionGuard(')
                                     + section(s, '    private String validate(', '    private void coordinateClick(')),
+        'search_entry_precheck': section(s, '    private static boolean nativeSearchEntryGuard(', '    private Map<String,Object> compareNativeAction('),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
         # Preserve each legacy-tested production method byte-for-byte; the new
         # helper-only live-region implementation has a throwing type boundary below.

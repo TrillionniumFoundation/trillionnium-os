@@ -29,6 +29,17 @@ public final class HeptaAccessibilityService extends android.content.Context {
                 BackgroundSession background,long deadline){throw new AssertionError("legacy fixture has no initial-read proof");}
         Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no initial-read proof");}
     }
+    static final class PostEffectObservationRetryProof {
+        private PostEffectObservationRetryProof(){throw new AssertionError("legacy fixture cannot mint post-effect proof");}
+        void requireOriginal(Object service,Object controller,NativeAppSession nativeTask,NativeAppSession.PostEffectReadPermit permit,
+                String task,Object authorization,BackgroundSession background,long deadline){throw new AssertionError("legacy fixture has no post-effect proof");}
+        Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no post-effect proof");}
+    }
+    void observePostEffectNative(Object controller,NativeAppSession nativeTask,NativeAppSession.PostEffectReadPermit permit,
+            String task,Object authorization,BackgroundSession background,File directory,Cancellation cancel,
+            long deadline,long taskDeadline,ObservationCallback callback,PostEffectObservationRetryProof proof){
+        throw new AssertionError("legacy fixture cannot submit a post-effect native read");
+    }
     void observeInitialNative(Object controller,Object nativeTask,String task,Object authorization,BackgroundSession background,
             File directory,Cancellation cancel,long deadline,long taskDeadline,ObservationCallback callback,InitialObservationRetryProof proof){
         throw new AssertionError("legacy fixture cannot submit an initial-native read");
@@ -55,6 +66,19 @@ public final class HeptaAccessibilityService extends android.content.Context {
     private void finalNativeActionCheck(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{
         throw new AssertionError("legacy fixture has no final native action capability");
     }
+    // The two new prechecks below are production code. Their native-only
+    // dependencies remain all-throw IO boundaries in these legacy suites.
+    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{
+        throw new AssertionError("legacy fixture has no private native guard");
+    }
+    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){
+        throw new AssertionError("legacy fixture has no complete native census");
+    }
+    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,
+            String parentClass,PhoneObservation.Node retained,NodeRef reference){
+        throw new AssertionError("legacy fixture has no fresh native node census");
+    }
+{{search_entry_precheck}}
     static HeptaAccessibilityService live;
     private int taskObservationAdmissions;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;

@@ -264,12 +264,12 @@
             yes(NativeQueryReservationHostTest.progress(f.session).get("last_query_date")==null,"repeated rejection cannot fabricate query result");
         });
         one("xiaomi_current_search_also_requires_actual_durable_guard_proof",()->{
-            Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH_ICON,"stale-recovery:xiaomi");
+            Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH,"stale-recovery:xiaomi");
             f.fresh.add("0/3","android.view.View","","","",NativeActionSnapshotCheckHostTest.rect(0,2650,1224,2750));f.fresh.link();
             String refusal=f.service.validate(f.task,f.service.current,f.action,null,()->false,f.work);
             yes(refusal!=null&&refusal.contains("actual ancestor changed: 0"),"actual Xiaomi ancestor change remains rejected");
             staleOutcome(f,recoveryExecution(f,"none"));f.observeGraph(f.fresh);
-            Map<?,?> context=recoveryContext(f);yes(context!=null&&NativeActionSnapshotCheck.SEARCH_ICON.equals(context.get("purpose")),"same current Xiaomi search purpose is described only after fresh observation");
+            Map<?,?> context=recoveryContext(f);yes(context!=null&&NativeActionSnapshotCheck.SEARCH.equals(context.get("purpose")),"same current Xiaomi search purpose is described only after fresh observation");
             f.noEffect("search recovery context is not a click");
         });
     }

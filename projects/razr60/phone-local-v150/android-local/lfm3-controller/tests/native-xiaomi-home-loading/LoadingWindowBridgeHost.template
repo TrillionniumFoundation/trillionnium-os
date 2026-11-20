@@ -102,6 +102,12 @@ final class LoadingWindowBridgeHost {
         if(value.profileTarget!=null||frame.profileWindow!=null)
             throw new AssertionError("legacy window fixture cannot admit a profile task");
     }
+    // This legacy user0 window fixture has no private SEARCH guard or full native census.
+    // It cannot defer the original strict target signature comparison.
+    private boolean deferNativeSearchEntrySignature(String task,PhoneObservation frame,
+            ActionDecision action,AccessibilityNodeInfo node,ActionWork work){
+        return false;
+    }
     // ACTUAL_METHODS
     private void nextWindow(){root.windowId=139;root.window.id=139;}
     private void guardThenHostEffect(AccessibilityNodeInfo node,boolean required){

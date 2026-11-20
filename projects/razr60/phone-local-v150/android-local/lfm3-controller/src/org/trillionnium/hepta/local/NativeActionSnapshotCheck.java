@@ -124,7 +124,9 @@ final class NativeActionSnapshotCheck {
         need(a.equals(z),"window/display/IME/authority differs");
         Node target=old.node(in.path),newTarget=fresh.node(in.path);
         need(target.click()&&newTarget.click()&&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original target/ref/label");
-        need(target.v.equals(newTarget.v),"target facts changed");
+        need(searchEntryTarget(in,old)
+                ?stableHintFacts(target,null).equals(stableHintFacts(newTarget,null))
+                :target.v.equals(newTarget.v),"target facts changed");
         Scope before=scope(in,old),after=scope(in,fresh);
         need(before.roots.equals(after.roots)&&before.facts.equals(after.facts),"fresh purpose semantics differ");
         need(roleFacts(in,old).equals(roleFacts(in,fresh)),"global Provider roles/ambiguity changed");
@@ -150,7 +152,8 @@ final class NativeActionSnapshotCheck {
         out.put("protected_subtrees",new ArrayList<String>(before.roots));out.put("checked_ancestors",new ArrayList<String>(before.ancestors));
         out.put("variable_branch_anchors",new ArrayList<String>(anchors));out.put("changed_paths",changed);out.put("changed_paths_truncated",false);
         out.put("xiaomi_search_home_variations",homeVariations);out.put("fully_unoccluded_claimed",false);
-        if(searchIconTarget(in,old))out.put("navigation_semantics_device_verified",false);
+        if(searchIconTarget(in,old)||searchEntryTarget(in,old))out.put("navigation_semantics_device_verified",false);
+        if(searchEntryTarget(in,old))out.put("search_entry_original_reference_retained_fresh_signature_required",true);
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
         out.put("grants_dispatch",false);out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
         out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
@@ -253,13 +256,13 @@ final class NativeActionSnapshotCheck {
             for(Node n:Arrays.asList(entry,icon,hint,term))need(n.usable()&&neutralFlags(n)&&!b(n.v,"scrollable"),"neutral actual query-entry controls");
             need(!(hasText(s,"综合")&&hasText(s,"销量")&&hasText(s,"价格")),"not a results page");
             out.facts.put("home",home.v);
-            if(icon.path.equals(in.path)){
+            if(icon.path.equals(in.path)||searchEntryTarget(in,s)){
                 need(icon.text.isEmpty()&&"搜索".equals(icon.label)&&icon.children==0,"exact stable leaf search icon");
                 requireSearchHintReferences(s,entry,hint,term);
                 out.facts.put("query_entry",stableHintFacts(entry,null));
                 out.facts.put("entry_hint",stableHintFacts(hint,"description"));
                 out.facts.put("entry_hint_term",stableHintFacts(term,"text"));
-                out.facts.put("navigation_target","stable_search_icon_candidate");
+                out.facts.put("navigation_target",searchEntryTarget(in,s)?"same_resource_query_entry":"stable_search_icon_candidate");
             }else{
                 out.facts.put("query_entry",entry.v);out.facts.put("entry_hint",hint.v);out.facts.put("entry_hint_term",term.v);
             }
@@ -273,17 +276,33 @@ final class NativeActionSnapshotCheck {
             if(CTRIP.equals(in.pkg)){String shortId=n.view.startsWith(CP)?n.view.substring(CP.length()):"";
                 relevant=FORM_IDS.contains(shortId)||Arrays.asList(TILE_IDS).contains(shortId)||"calendar_month_title_left_tv".equals(shortId)||"calendar_list".equals(shortId)||ROLES.contains(n.view)||ROLES.contains(n.desc)||"机票".equals(n.text);
             }else relevant=n.view.equals("com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/searchIcon")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/switcher")||xiaomi.contains(n.text)||n.text.startsWith("Xiaomi路由器")||"android.widget.EditText".equals(n.cls)||b(n.v,"editable");
-            if(relevant)out.put(n.path,searchIconTarget(in,s)&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.view)
+            if(relevant)out.put(n.path,(searchIconTarget(in,s)||searchEntryTarget(in,s))&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.view)
                     ?stableHintFacts(n,null):n.v);
         }return out;
     }
-    /** Only this exact SEARCH icon uses the two known noninteractive hint
+    /** Only these exact SEARCH controls use the two known noninteractive hint
      * descendants as context. Their term may change its right edge with its
      * literal inside the same fixed hint; left/top/bottom remain exact. The
      * icon, ancestors, all other roles, geometry and capabilities stay exact. */
     private static boolean searchIconTarget(Intent in,Snapshot snapshot){
         return SEARCH_ICON.equals(in.purpose)&&XIAOMI.equals(in.pkg)
                 &&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(snapshot.node(in.path).view);
+    }
+    private static boolean searchEntryTarget(Intent in,Snapshot snapshot){
+        return SEARCH.equals(in.purpose)&&XIAOMI.equals(in.pkg)
+                &&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(snapshot.node(in.path).view);
+    }
+    /** A precheck may defer only this entry's derived child-text signature to
+     * the mandatory complete comparisons. This is not a compatible census or
+     * an effect permit. The caller must retain the original Android node and
+     * later verify the full latest signature, parent chain and one-use guard. */
+    static boolean searchEntryOwnFactsForFullRecheck(Intent in,Snapshot original,Node live){
+        if(in==null||original==null||live==null||!searchEntryTarget(in,original))return false;
+        Node target=original.node(in.path);
+        need(target.click()&&in.label.equals(target.label)
+                &&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original query-entry reference");
+        scope(in,original); // Complete original structure and derived references, never a resource-ID shortcut.
+        return live.click()&&stableHintFacts(target,null).equals(stableHintFacts(live,null));
     }
     private static Map<String,Object> stableHintFacts(Node node,String literal){
         Map<String,Object> value=new TreeMap<String,Object>(node.v);
@@ -299,8 +318,8 @@ final class NativeActionSnapshotCheck {
     }
     private static Map<String,String> xiaomiSearchIconHintVariation(Intent in,Snapshot old,Snapshot fresh){
         Map<String,String> result=new TreeMap<String,String>();
-        if(!searchIconTarget(in,old))return result;
-        need(searchIconTarget(in,fresh),"same exact search icon purpose");
+        if(!searchIconTarget(in,old)&&!searchEntryTarget(in,old))return result;
+        need(searchIconTarget(in,old)?searchIconTarget(in,fresh):searchEntryTarget(in,fresh),"same exact search purpose");
         Node a=oneId(old,"com.xiaomi.shop.plugin.homepage:id/switcher");
         Node z=oneId(fresh,"com.xiaomi.shop.plugin.homepage:id/switcher");
         need(a.path.equals(z.path),"same switcher path");

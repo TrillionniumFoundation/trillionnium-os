@@ -400,10 +400,11 @@ final class NativeXiaomiProductPage {
     }
 
     /** The retained manual search-entry transition used the ViewSwitcher, not
-     * its adjacent searchIcon. Keep that distinct control as observed context;
-     * it has not proved that it opens an editable product query. The two exact
-     * noninteractive descendants supply the original entry label, never a
-     * replacement label or the owner's requested product as current UI text. */
+     * its adjacent searchIcon. The active Session offers that exact entry;
+     * every model-issued navigation still needs a fresh search-input contract.
+     * The historical manual result is not model execution or query success.
+     * The two exact noninteractive descendants supply the original entry label,
+     * never a replacement label or the owner's requested product as UI text. */
     private static Page homeSearchEntry(NativeAppEvidence.Frame frame,NativeAppEvidence.Node home,NativeAppEvidence.Node icon,boolean preferSearchIcon){
         String hp="com.xiaomi.shop.plugin.homepage:id/";
         NativeAppEvidence.Node entry=null,pager=null,hint=null,term=null;int entries=0,pagers=0,icons=0,descendants=0;
@@ -440,6 +441,9 @@ final class NativeXiaomiProductPage {
         if(preferSearchIcon){
             proof.put("navigation_target",icon.fact("description"));proof.put("query_entry_offered",false);
             proof.put("navigation_semantics_device_verified",false);proof.put("fresh_search_contract_required",true);
+        }else{
+            proof.put("navigation_target",entry.fact("description"));proof.put("query_entry_offered",true);
+            proof.put("fresh_search_contract_required",true);proof.put("hint_selects_query",false);
         }
         proof.put("hint_is_owner_query",false);Map<String,Object> facts=map();facts.put(chosen.id,proof);
         return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(chosen.id),

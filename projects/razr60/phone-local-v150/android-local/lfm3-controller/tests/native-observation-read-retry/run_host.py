@@ -40,7 +40,16 @@ def main():
         need(run_task.count('awaitInitialNativeObservation(')==1,'one initial native entry')
         need(run_task.index('awaitInitialNativeObservation(')<run_task.index('taskSteps: while(')<run_task.index('awaitModel('),'initial entry before first model loop')
         need(run_task.count('initialNativeObservationRetryUsed=false;')==1,'one independent initial budget reset')
+        need(run_task.count('awaitPostEffectNativeObservation(')==1,'one post-effect observation callsite')
+        need(run_task.index('activeNativeTask.modelActionOutcome(')<run_task.index('awaitPostEffectNativeObservation('),'durable outcome precedes post-effect read')
         anchors={
+          'post_context':'    private static final class PostEffectNativeObservation {',
+          'post_failure':'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {',
+          'post_require':'    private void requirePostEffectNativeObservation(',
+          'post_wrapper':'    private PhoneObservation awaitPostEffectNativeObservation(',
+          'await_action':'    private HeptaAccessibilityService.ActionOutcome awaitAction(',
+          'native_query_execution':'    private static java.util.Map<String,Object> nativeQueryExecution(',
+          'cleanup_unknown':'    private static final class CleanupUnknown extends Exception {',
           'initial_context':'    private static final class InitialNativeObservation {',
           'initial_failure':'    private static final class InitialNativeObservationFailure extends IllegalStateException {',
           'initial_require':'    private void requireInitialNativeObservation(',
@@ -55,19 +64,23 @@ def main():
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
         methods['service_proof']=extractor.body(service,'    static final class NativeObservationRetryProof {')
         methods['initial_service_proof']=extractor.body(service,'    static final class InitialObservationRetryProof {')
+        methods['post_service_proof']=extractor.body(service,'    static final class PostEffectObservationRetryProof {')
         template=(source/TEST/'ControllerReadRetryHost.template').read_text(encoding='utf-8')
         for key,body in methods.items():
             marker='{{'+key+'}}';need(template.count(marker)==1,'unique marker '+key);template=template.replace(marker,body,1)
         need('{{' not in template,'all actual methods inserted')
         generated=out/'generated/ControllerReadRetryHost.java';common.write(generated,template)
-        paths=list(dict.fromkeys([*paths,generated,source/PKG/'ObservationStabilityGate.java']))
+        paths=list(dict.fromkeys([*paths,generated,source/PKG/'ObservationStabilityGate.java',source/PKG/'ActionExecutionState.java']))
         extraction={'schema':'hepta.native-observation-controller-retry-extraction.v1','bodies_verbatim':True,
           'source_files':{name:common.meta(source/PKG/name) for name in ('LocalTaskController.java','HeptaAccessibilityService.java','NativeAppSession.java')},
           'methods':{name:{'bytes':len(body.encode()),'sha256':common.sha(body.encode())} for name,body in methods.items()},
           'task_entry_source_sha256':common.sha(run_task.encode()),'one_task_budget_reset':True,'one_original_task_deadline':True,
           'recovery_only_in_actual_stale_undispatched_branch':True,'uses_actual_Session_private_permit':True,
           'actual_create_new_write_fsync_executed':True,'producer_Android_read_schedule_is_fake':True,
-          'actual_Service_drain_qualification_is_separate':True,'business_completion_verified':False}
+          'actual_Service_drain_qualification_is_separate':True,'business_completion_verified':False,
+          'post_effect_actual_awaitAction_finally_and_projection':True,'post_effect_actual_ActionExecutionState_and_Session':True,
+          'post_effect_platform_action_endpoint_is_synthetic':True,'post_effect_private_proof_class_is_verbatim':True,
+          'post_effect_producer_qualification_is_separate':True,'post_effect_original_task_and_transition_caps_retained':True}
         common.save(out/'CONSUMER-EXTRACTION.json',extraction)
         classes=out/'classes';classes.mkdir();report['compile_inputs']=[common.meta(p) for p in paths]
         for name,argv in [('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all,-options','-Werror','-cp',jar,'-d',classes,*paths]),

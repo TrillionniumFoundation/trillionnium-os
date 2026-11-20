@@ -58,14 +58,14 @@ final class NativeXiaomiHomeVariationHostTest {
         IntegrationChecks.one("recorded_xiaomi_home_rejects_"+name,()->{Fixture f=stableEntry(raw);yes(Boolean.FALSE.equals(f.compare().get("grants_dispatch")),"unmutated host entry control passes");change.apply(f);IntegrationChecks.rejects(()->f.compare(),"complete changed predicate must refuse "+name);});
     }
     static NativeActionBridgeHost.Fixture bridge(Map<String,Object> raw,String label)throws Exception{
-        Fixture data=TARGET.equals(map(raw.get("census")).get("target_path"))?new Fixture(raw):stableEntry(raw);NativeActionBridgeHost.Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH_ICON,"recorded-home:"+label,data.bridge(false));
+        Fixture data=TARGET.equals(map(raw.get("census")).get("target_path"))?new Fixture(raw):stableEntry(raw);NativeActionBridgeHost.Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH,"recorded-home:"+label,data.bridge(false));
         f.fresh=data.bridge(true);return f;
     }
     static void run(Path source)throws Exception{
         NativeActionBridgeHost.sourceRoot=source;NativeAppProviderHostTest.fixtures=source.resolve("tests/native-app-provider/fixtures");
         byte[] bytes=Files.readAllBytes(source.resolve("tests/native-action-integration/fixtures/r17-xiaomi-open-search-rejection.json"));
         final Map<String,Object> raw=new JSONObject(new String(bytes,StandardCharsets.UTF_8)).toMap();
-        IntegrationChecks.one("recorded_xiaomi_icon_and_changing_entry_intents_refused",()->{
+        IntegrationChecks.one("recorded_xiaomi_icon_refused_changed_entry_comparison_not_authority",()->{
             yes(FIXTURE_SHA.equals(NativeActionBridgeHost.sha(bytes)),"exact full recorded 82+82-node fixture pin");
             Fixture f=new Fixture(raw);yes(f.rows(false).size()==82&&f.rows(true).size()==82,"complete before/fresh census retained");
             yes(Boolean.TRUE.equals(f.census.get("complete_two_censuses"))&&Boolean.FALSE.equals(f.census.get("nodes_truncated")),"actual rejection diagnostic was complete");
@@ -74,22 +74,24 @@ final class NativeXiaomiHomeVariationHostTest {
             yes(f.node(false,TARGET).get("bounds").equals(f.node(true,TARGET).get("bounds"))
                     &&f.node(false,TARGET).get("view_id").equals(f.node(true,TARGET).get("view_id")),"same observed entry geometry/resource");
             yes(!f.node(false,TARGET).get("label").equals(f.node(true,TARGET).get("label")),"recorded hint changed while target geometry stayed fixed");
-            f.entryTarget(true);IntegrationChecks.rejects(()->f.compare(),"changed hint cannot be exempted once it is the action target");
+            f.entryTarget(true);Map<String,Object> entryProof=f.compare();
+            yes(Boolean.FALSE.equals(entryProof.get("grants_dispatch"))&&Boolean.TRUE.equals(entryProof.get("search_entry_original_reference_retained_fresh_signature_required")),"known derived hint may compare only with retained original reference and mandatory final fresh signature");
             Fixture stable=stableEntry(raw);Map<String,Object> proof=stable.compare();Map<String,Object> variants=map(proof.get("xiaomi_search_home_variations"));
-            yes(variants.size()==1&&variants.containsKey(BANNER)&&!variants.containsKey(SWITCHER),"only banner is variable in explicit host stable-entry fixture");
+            yes(variants.size()==2&&variants.containsKey(BANNER)&&"exact_two_noninteractive_hint_literals_and_recomputed_references".equals(variants.get(SWITCHER)),"banner and exact independently reconstructed hint predicates are explicit");
             yes(list(proof.get("changed_paths")).size()==9,"all nine remaining original banner changes accounted for");
             yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("fully_unoccluded_claimed")),"host rebind claims no phone action or complete visual visibility");
         });
         for(final String unchanged:Arrays.asList(BANNER,SWITCHER))IntegrationChecks.one("host_query_entry_exact_hint_and_banner_"+unchanged.replace('/','_'),()->{
             Fixture f=stableEntry(raw);f.replaceFreshBranch(unchanged);yes(Boolean.FALSE.equals(f.compare().get("grants_dispatch")),"independent decoration proof stays non-authoritative");
         });
-        IntegrationChecks.one("recorded_changed_entry_and_old_default_action_remain_refused",()->{
+        IntegrationChecks.one("recorded_changed_entry_keeps_original_reference_and_adjacent_icon_refused",()->{
             Fixture data=new Fixture(raw).entryTarget(true);
-            IntegrationChecks.rejects(()->data.compare(),"legacy changed target hint remains stale");
+            yes(Boolean.FALSE.equals(data.compare().get("grants_dispatch")),"changed hint comparison is not a private effect permit");
             NativeActionBridgeHost.Fixture f=bridge(data.root,"changed-entry-hint");
-            ActionDecision oldEntry=f.click(f.ids.get(TARGET));
-            IntegrationChecks.rejects(()->f.session.domain().requireCurrent(oldEntry),"actual new default does not admit old entry action");
-            f.noEffect("old switcher proposal dispatches no action");
+            ActionDecision entry=f.click(f.ids.get(TARGET));f.session.domain().requireCurrent(entry);
+            ActionDecision oldIcon=f.click(f.ids.get(OLD_ICON));
+            IntegrationChecks.rejects(()->f.session.domain().requireCurrent(oldIcon),"actual query-entry domain rejects the adjacent icon");
+            f.noEffect("domain membership and comparison alone dispatch no action");
         });
         negative(raw,"second_visible_banner_page",f->{Map<String,Object> n=f.node(true,BANNER+"/5");n.put("visible",true);n.put("bounds",f.node(true,BANNER).get("bounds"));n.put("label","");n.put("ref_signature_sha256",f.node(true,BANNER+"/6").get("ref_signature_sha256"));});
         negative(raw,"changed_visible_banner_coverage",f->f.node(true,BANNER+"/6").put("bounds",NativeActionSnapshotCheckHostTest.rect(1,0,1224,931)));
@@ -120,7 +122,7 @@ final class NativeXiaomiHomeVariationHostTest {
         negative(raw,"duplicate_census_path",f->{f.rows(true).add(copyMap(f.node(true,BANNER+"/6")));f.env(true).put("visited",83);});
         negative(raw,"foreign_action_purpose",f->f.census.put("purpose",NativeActionSnapshotCheck.QUERY));
         IntegrationChecks.one("recorded_xiaomi_variation_reaches_actual_final_live_chain_once",()->{
-            NativeActionBridgeHost.Fixture f=bridge(raw,"dispatch");yes(f.dispatch()&&f.effects()==1,"actual extracted compare and final live chain accept one explicit host icon click");
+            NativeActionBridgeHost.Fixture f=bridge(raw,"dispatch");yes(f.dispatch()&&f.effects()==1,"actual extracted compare and final live chain accept one explicit host query-entry click");
             yes(f.service.events.contains("full_census"),"actual Service performs fresh census before effect");
         });
         IntegrationChecks.one("recorded_xiaomi_live_ancestor_change_after_fresh_census_refuses",()->{
@@ -148,7 +150,7 @@ final class NativeXiaomiHomeVariationHostTest {
     static void runR18Transition(Path source)throws Exception{
         byte[] bytes=Files.readAllBytes(source.resolve("tests/native-action-integration/fixtures/r18-xiaomi-open-search-rejection.json"));
         final Map<String,Object> raw=new JSONObject(new String(bytes,StandardCharsets.UTF_8)).toMap();
-        IntegrationChecks.one("recorded_r18_phone_icon_and_changed_entry_refused_then_host_stable_entry",()->{
+        IntegrationChecks.one("recorded_r18_phone_icon_refused_then_explicit_host_entry_comparison",()->{
             yes(R18_FIXTURE_SHA.equals(NativeActionBridgeHost.sha(bytes)),"exact new retained fixture bytes");
             Fixture f=new Fixture(raw);
             yes("b8e1fd019f31eadd60dc163b2bfb4d55d5869919dc29f6ab2895c5e7b00842ed".equals(f.root.get("source_action_sha256")),"original rejected phone action pin retained");
@@ -159,10 +161,11 @@ final class NativeXiaomiHomeVariationHostTest {
                     &&f.node(true,BANNER+"/6").get("bounds").equals(NativeActionSnapshotCheckHostTest.rect(0,0,18,931))
                     &&f.node(true,BANNER+"/7").get("bounds").equals(NativeActionSnapshotCheckHostTest.rect(18,0,1224,931)),"exact recorded full page and two clips");
             IntegrationChecks.rejects(()->f.compare(),"recorded n17 phone intent remains excluded from query-entry authority");
-            f.entryTarget(true);IntegrationChecks.rejects(()->f.compare(),"recorded changed target hint remains protected");
+            f.entryTarget(true);Map<String,Object> entryProof=f.compare();
+            yes(Boolean.FALSE.equals(entryProof.get("grants_dispatch"))&&Boolean.TRUE.equals(entryProof.get("search_entry_original_reference_retained_fresh_signature_required")),"explicit host entry rebind preserves original reference and requires complete current final signature");
             Fixture stable=stableEntry(raw);Map<String,Object> proof=stable.compare();Map<String,Object> variants=map(proof.get("xiaomi_search_home_variations"));
-            yes(variants.size()==1&&"same_complete_horizontal_blank_leaf_coverage".equals(variants.get(BANNER))
-                    &&!variants.containsKey(SWITCHER),"only exact banner coverage classified for host stable-entry intent");
+            yes(variants.size()==2&&"same_complete_horizontal_blank_leaf_coverage".equals(variants.get(BANNER))
+                    &&"exact_two_noninteractive_hint_literals_and_recomputed_references".equals(variants.get(SWITCHER)),"banner coverage and exact hint-reference predicates both remain explicit");
             yes(list(proof.get("changed_paths")).size()==9,"all nine banner changes accounted for after explicit host hint stabilization");
             yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("fully_unoccluded_claimed")),"coverage does not confer an action or pixel Z-order proof");
         });
@@ -227,8 +230,8 @@ final class NativeXiaomiHomeVariationHostTest {
         IntegrationChecks.one("recorded_r18_transition_reaches_original_search_ax_target_only",()->{
             NativeActionBridgeHost.Fixture f=bridge(raw,"two-clip-target");
             yes(f.dispatch()&&f.effects()==1,"actual compare/final census/live chain accepts one synthetic directed AX click");
-            yes(f.data.get(f.raw.target).effects==1&&OLD_ICON.equals(f.raw.target),"effect belongs to actual default icon NodeRef");
-            yes(f.data.get(TARGET).effects==0,"legacy switcher receives no effect");
+            yes(f.data.get(f.raw.target).effects==1&&TARGET.equals(f.raw.target),"effect belongs to actual query-entry NodeRef");
+            yes(f.data.get(OLD_ICON).effects==0,"adjacent icon receives no effect");
             boolean untouched=true;for(Map.Entry<String,NativeActionBridgeHost.NodeData> e:f.data.entrySet())
                 if(!f.raw.target.equals(e.getKey())&&e.getValue().effects!=0)untouched=false;
             yes(untouched,"no banner clip or other node receives the effect");
