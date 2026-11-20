@@ -1348,7 +1348,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(Exception failure){failObservation(request,"无法接收当前活动窗口："+message(failure));}
         finally{if(graph!=null)graph.close();}
     }
-    /** Reuse only copied evidence from the actual complete, unsealed saved-graph mismatch. */
+    /** Reuse only copied evidence from an actual complete, unsealed post-capture graph mismatch. */
     private NativeResampleSeed nativeSavedGraphSeed(ObservationRequest request,CaptureIdentity identity,Graph graph,
                                                    long completedEvents,long completedUnknown){
         if(!identity.nativeRecheck||identity.frozenWindow==null
@@ -1581,6 +1581,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 product.pairCompletedAt=SystemClock.elapsedRealtime();
                 request.graph("screenshot_graph",after);
                 if(!retry&&!identity.matches(after)){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);retry=true;
+                    // The rejected pixels are never published. This complete fresh read may
+                    // only seed the next same-request pair; all later reads/capture stay new.
+                    product.seed=nativeSavedGraphSeed(request,identity,after,request.events,request.unknownEvents);
+                    if(product.seed!=null)request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_SEED_CANDIDATE);
                     recordNativeFullGraphChange(request,"screenshot_graph",request.captured,after);}
                 product.nativeGraphRechecked=!retry&&identity.nativeRecheck&&nativeObservationRecheckAllowed(request,after);
                 if(product.nativeGraphRechecked&&identity.frozenWindow!=null

@@ -3,8 +3,8 @@
   "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
   "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r6_complete_host_android_phone_validation_pending",
-  "complete_source_files": 2323,
+  "candidate_status": "integrated_r7_complete_host_android_phone_validation_pending",
+  "complete_source_files": 2325,
   "files": [
     {
       "bytes": 100,
@@ -6492,9 +6492,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 355368,
+      "bytes": 355796,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "be9a8d5af4f1cf1457d8d21727031193661e133c2736de68c2d178cbcbf084f3"
+      "sha256": "c9f6852618998be7365db7636456c42fafa3e573a0414c400806ec1524a72056"
     },
     {
       "bytes": 711,
@@ -6677,9 +6677,9 @@
       "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
     },
     {
-      "bytes": 31067,
+      "bytes": 31099,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "223d68b0e7c0020563a52772bd777d47e973c6facc2935ddfa2a33e7348923fa"
+      "sha256": "1e54a60f8ea053e510745dcdf79cbb5ef8d11a41d1950d0de659badf7ff2bab3"
     },
     {
       "bytes": 4368,
@@ -8595,6 +8595,16 @@
       "bytes": 6659,
       "path": "tests/native-observation-retry/run_host.py",
       "sha256": "cdc25c6875acc0b84eb304ae44c4f3db72878ed59ef5bba7a7d51e2fc847f223"
+    },
+    {
+      "bytes": 13680,
+      "path": "tests/native-observation-screenshot-seed/ScreenshotGraphSeedCases.fragment",
+      "sha256": "71814de4f7537fffa9834579817c7f2c435bfc82aeb8ada43b22d59f3213683f"
+    },
+    {
+      "bytes": 15602,
+      "path": "tests/native-observation-screenshot-seed/run_host.py",
+      "sha256": "77c44ec133034c1ba20d010bfdecabb3ced9a82d4209f7b146577473c1c75546"
     },
     {
       "bytes": 7722,
@@ -11620,11 +11630,11 @@
   "main_java_sources": 196,
   "phone_qualified": false,
   "production_build_inputs_count": 371,
-  "production_input_map_sha256": "f9b61bb4d2f1d570196a471bd070dcc5ddb21132c96f659b6c6fbc00b9f87875",
+  "production_input_map_sha256": "6c962e8f9d335c9b32cac373a26a91f6ba6babe560dda2fbe973fc180c3c7566",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved. Rebind exactly three host runner reviewed-source SHA declarations to the reviewed r4 profile and nested-action production. The inherited FD producer pin is also bound to the unchanged current ProcessGone adapter DTO. Historical comparator SHA values, all original cases and assertions, all fixture/provenance pins, and the 21 terminal-method digest remain intact; production files and compiler input map are byte-identical to r4.",
-  "source_parent_head": "78303bb166e72e5392c0c37b6d947ae6a8309ed6",
-  "source_parent_manifest_sha256": "3bb6999bfd153703a8f3810932b445d4fe3b170c6537740cfd1dfa4b90859349",
+  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved. Rebind exactly three host runner reviewed-source SHA declarations to the reviewed r4 profile and nested-action production. The inherited FD producer pin is also bound to the unchanged current ProcessGone adapter DTO. Historical comparator SHA values, all original cases and assertions, all fixture/provenance pins, and the 21 terminal-method digest remain intact; production files and compiler input map are byte-identical to r4. Reuse only copied complete same-request screenshot-mismatch graph metadata through the existing native resample seed path. Rejected pixels and Graph resources are released; the subsequent complete sample, minimum gap, new screenshot, full post-read, identity checks, original deadlines, action permits and no-replay contract remain unchanged. Add an independent 33-case screenshot-seed gate that runs all original 238 event cases unchanged; all original 35 host gates and FD cases remain required.",
+  "source_parent_head": "daa75a11ff9e6992e135074c94733895cf0873bc",
+  "source_parent_manifest_sha256": "9b8a0be678c0121ee215be123637c8f92ec4ed24ad82f919818c0b72d08df626",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
