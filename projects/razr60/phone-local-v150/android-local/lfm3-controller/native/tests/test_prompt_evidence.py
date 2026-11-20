@@ -52,6 +52,7 @@ static void assert_contents(const char *path,const char *data,size_t length){
 int main(int argc,char **argv){
     (void)hepta_take_model_profile;
     assert(argc==3);assert(!mkdir(argv[1],0700));
+    assert(private_directory_stat(argv[1],NULL));
     char result[PATH_MAX];assert(snprintf(result,sizeof result,"%s/native-result.json",argv[1])<(int)sizeof result);
     Options o={.id="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",.result=result,.ctx=4096};
     Input inputs[4]={{0}};const char *prompt="test-only prompt\n";char sha[65];hash_bytes(prompt,strlen(prompt),sha);

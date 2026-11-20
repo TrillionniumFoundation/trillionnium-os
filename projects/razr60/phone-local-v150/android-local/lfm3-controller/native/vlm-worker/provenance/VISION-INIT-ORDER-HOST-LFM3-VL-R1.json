@@ -2,67 +2,67 @@
   "schema": "hepta.vlm.vision-init-order-host-run.v1",
   "sources": {
     "native/vlm-worker.cpp": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/native/vlm-worker.cpp",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/native/vlm-worker.cpp",
       "bytes": 30909,
       "sha256": "8f83e592ff9c78f6e70379d4074e6477552b8e4f05d4c653b58cd87888e68b82"
     },
     "tests/vision-init-order-fixture.cpp": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/tests/vision-init-order-fixture.cpp",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/tests/vision-init-order-fixture.cpp",
       "bytes": 5643,
       "sha256": "9a9083296cb208c76767a61df47b73245fc3bcc0f6fe87c7e9bf0c32367de6d8"
     },
     "tools/test_vision_init_order.py": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/tools/test_vision_init_order.py",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/tools/test_vision_init_order.py",
       "bytes": 5639,
       "sha256": "3aa47f875984b023ba4ca6d6bd418411909cf40cfbb8e1741f88895631e69802"
     },
     "vendor/llama/ggml-alloc.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/ggml-alloc.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/ggml-alloc.h",
       "bytes": 3689,
       "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
     },
     "vendor/llama/ggml-backend.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/ggml-backend.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/ggml-backend.h",
       "bytes": 27570,
       "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
     },
     "vendor/llama/ggml-cpu.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/ggml-cpu.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/ggml-cpu.h",
       "bytes": 7753,
       "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
     },
     "vendor/llama/ggml-opt.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/ggml-opt.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/ggml-opt.h",
       "bytes": 14040,
       "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
     },
     "vendor/llama/ggml.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/ggml.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/ggml.h",
       "bytes": 118304,
       "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
     },
     "vendor/llama/gguf.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/gguf.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/gguf.h",
       "bytes": 11355,
       "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
     },
     "vendor/llama/llama-cpp.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/llama-cpp.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/llama-cpp.h",
       "bytes": 1102,
       "sha256": "26175c5711004432b5678d6b14ce711a79388ff96eeff46dab3c9f8a3694521d"
     },
     "vendor/llama/llama.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/llama.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/llama.h",
       "bytes": 90962,
       "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
     },
     "vendor/llama/mtmd-helper.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/mtmd-helper.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/mtmd-helper.h",
       "bytes": 16152,
       "sha256": "4c610053ef3383d99e341fb1a93f2ab66d01a24c117096c7a7721d6b9fc122da"
     },
     "vendor/llama/mtmd.h": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama/mtmd.h",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/mtmd.h",
       "bytes": 26213,
       "sha256": "8cca120b5095c19362aebff2d5b35a7247b364dc3fb28d8f0a3a99754c865813"
     }
@@ -77,35 +77,35 @@
         "-Wextra",
         "-Werror",
         "-pedantic",
-        "-I/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/source/vendor/llama",
-        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/vision-init-order.cpp",
+        "-I/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama",
+        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/vision-init-order.cpp",
         "-o",
-        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/vision-init-order-test"
+        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/vision-init-order-test"
       ],
       "exit_code": 0,
       "stdout": {
-        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/compile-test.stdout",
+        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/compile-test.stdout",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "stderr": {
-        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/compile-test.stderr",
+        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/compile-test.stderr",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }
     },
     {
       "argv": [
-        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/vision-init-order-test"
+        "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/vision-init-order-test"
       ],
       "exit_code": 0,
       "stdout": {
-        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/execute-test.stdout",
+        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/execute-test.stdout",
         "bytes": 218,
         "sha256": "35d0ee6cc71ee199f1ae674f30a949bb0f228599cd15a5981bc037c710e525e1"
       },
       "stderr": {
-        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/execute-test.stderr",
+        "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/execute-test.stderr",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }
@@ -141,7 +141,7 @@
     },
     "early_metric_control": "same extracted statements reordered metric/init/guard, matching R5 failure order",
     "generated_fixture": {
-      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native/build/vision-init-order-host/vision-init-order.cpp",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/vision-init-order-host/vision-init-order.cpp",
       "bytes": 6289,
       "sha256": "3927c872ef99c83fd81118a45084975b6127c7bd44b04ca5b9cb6373019ee1b1"
     }

@@ -10,8 +10,8 @@
     },
     {
       "path": "native/generation-bridge.c",
-      "bytes": 4754,
-      "sha256": "d47d13445995481346cab225343195947b120b599fcf7901af9e994809d6b4cb"
+      "bytes": 4377,
+      "sha256": "15f0f51bca0b477758e7a034de3b45f7b31d6bd7fd1e46554319170d1194933d"
     },
     {
       "path": "native/guard-io.h",
@@ -30,8 +30,8 @@
     },
     {
       "path": "native/owned-generation.inc",
-      "bytes": 36870,
-      "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
+      "bytes": 36777,
+      "sha256": "03a827537c6ebdb13cbeb66f8d79fcaa132dc4482626f1408151fffb5a9157ce"
     },
     {
       "path": "native/parent-death-guard.h",
@@ -40,8 +40,8 @@
     },
     {
       "path": "native/private-io.inc",
-      "bytes": 5448,
-      "sha256": "0962a052ef7c255cc681723653cb729f2be974d47f5f3499ad8df56378b7a8ab"
+      "bytes": 8085,
+      "sha256": "dee754f003de1bb6e748d5f258f312415d1e34ee445bbee44f8a96c5746f8446"
     },
     {
       "path": "native/sha256-dispatch.h",

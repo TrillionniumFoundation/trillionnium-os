@@ -317,9 +317,7 @@ static bool hg_parse_identity(const unsigned char *bytes,size_t n,HgIdentity *ou
         &&n==canonical_size&&!memcmp(bytes,canonical_id,n);
 }
 static bool hg_private_directory(const char *path) {
-    struct stat s;
-    return canonical(path)&&lstat(path,&s)==0&&S_ISDIR(s.st_mode)
-        &&s.st_uid==getuid()&&(s.st_mode&0777)==0700;
+    return private_directory_stat(path,NULL);
 }
 static bool hg_caller(const HgIdentity *id) {
     if(getuid()!=geteuid()||(unsigned long)getuid()!=id->uid||getppid()!=id->app_pid)return false;

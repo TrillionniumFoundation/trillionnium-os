@@ -11,17 +11,29 @@ def generate(root, out):
     upstream_sha=hashlib.sha256(original).hexdigest()
     assert upstream_sha=='07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e'
     source=original.decode('utf-8')
-    first=source.index('static bool publish(Destination *d) {')
-    last=source.index('static void destination_close(',first)
+    # Both native workers use the same descriptor-relative private IO. Preserve
+    # the pinned upstream artifact and replace only its generated helper block.
+    first=source.index('static bool utf8(')
+    last=source.index('\ntypedef struct {\n    const char *id,*mode,',first)
+    private_io=(root/'native/vlm-worker/native/private-io.inc').read_text()
+    private_io=private_io.split('\nstatic bool id_ok(',1)[0]
+    assert private_io.count('typedef HeptaInput Input;')==1
+    private_io=private_io.replace('typedef HeptaInput Input;',
+        'typedef struct { const char *path;int fd;struct stat before;unsigned char *bytes;size_t size;char digest[65]; } Input;')
+    private_io+='static bool canonical(const char *path) { struct stat st; return stat_canonical(path,&st)==0; }\n'
+    adapted=source[:first]+private_io+source[last:]
+    first=adapted.index('static bool publish(Destination *d) {')
+    last=adapted.index('static void destination_close(',first)
     replacement=(root/'native/publish-appuid.inc').read_text()
-    adapted=source[:first]+replacement+'\n'+source[last:]
+    assert adapted[first:last].strip()==replacement.strip()
+    adapted=adapted[:first]+replacement+'\n'+adapted[last:]
     # The probe sets feature macros before its first system include. glibc may
     # raise their values for _GNU_SOURCE; a subsequently included worker must
     # preserve that already-selected feature set. Standalone generation keeps
     # the original POSIX/XOPEN defaults when neither macro has been defined.
     feature_prefix = '#define _POSIX_C_SOURCE 200809L\n#define _XOPEN_SOURCE 700\n'
     assert adapted.startswith(feature_prefix)
-    guarded_prefix = '#ifndef _POSIX_C_SOURCE\n#define _POSIX_C_SOURCE 200809L\n#endif\n#ifndef _XOPEN_SOURCE\n#define _XOPEN_SOURCE 700\n#endif\n'
+    guarded_prefix = '#ifndef _GNU_SOURCE\n#define _GNU_SOURCE 1\n#endif\n#ifndef _POSIX_C_SOURCE\n#define _POSIX_C_SOURCE 200809L\n#endif\n#ifndef _XOPEN_SOURCE\n#define _XOPEN_SOURCE 700\n#endif\n'
     adapted = guarded_prefix + adapted[len(feature_prefix):]
     # Replace only the generated primitive. The pinned upstream bytes, full
     # per-request model read, SHA comparison, held FD and metadata fences stay.

@@ -2,17 +2,17 @@
   "schema": "hepta.local-source.v3",
   "base_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
   "base_manifest_sha256": "c62a357ec86c6c4f86d83e30e9d86cae386c130a23e4d11f8405b9add24fc3ef",
-  "candidate_status": "lfm3_vl_ordinary_entry_ctrip_xiaomi_reviewed_census_pin_host_validation_r4_pending",
+  "candidate_status": "native_private_path_publish_fixture_dependency_exact_source_host_validation_r6_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 192,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "9be219f70d25abf649c03009d3fdbe72c4502fef42163f6e3febc8e6625e8367",
-  "complete_source_files": 2283,
+  "production_input_map_sha256": "f3fc2173fd77dc7d0c1d9afbb037d8c66e4831768124af47f906dac63e24fcad",
+  "complete_source_files": 2286,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim.",
+  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim. Resolve private native paths component by component through held directory descriptors with no symlink traversal. Preserve input FD, owner, mode, size, SHA and named-identity checks for both generated text and VLM workers. Retain the original 43 guard checks and add a real filesystem race regression under existing Python discovery. The independently rebuilt native ELF is bound to its actual source and receipt; full r5 host, Android and phone qualification remains pending. Compile the standalone publication fixture against the actual private IO definitions and initialize the real directory identity for every destination, retaining all 18 original assertions and explicitly reaching the invalid-fd fsync failure. This fixture-only successor preserves the 46-member native source and independently rebuilt ELF. Full exact-source r6 host, Android and phone qualification remains pending.",
   "files": [
     {
       "path": ".gitignore",
@@ -4951,13 +4951,13 @@
     },
     {
       "path": "native/generate_adapter.py",
-      "bytes": 15044,
-      "sha256": "a37721f6304c7cbec2694f2642ddeba207cd1dc731b12b5fbea890af12831e5b"
+      "bytes": 15999,
+      "sha256": "390d0da8c632514811c858de097cec5d76da2b353dfe171b5942afcbf94f36d8"
     },
     {
       "path": "native/local-vlm-runtime-pins.json",
       "bytes": 6094,
-      "sha256": "5586f9fbde85e2f397d6be453b283d505c31494f6c8d6370f78d3618c87f9931"
+      "sha256": "8218caa0546dee6a08f2ab6b3b4b3089e6c5dbcdddeecfc1350e19ddc6f5fce5"
     },
     {
       "path": "native/mobimind-runtime-pins.json",
@@ -4971,13 +4971,13 @@
     },
     {
       "path": "native/model-runtime.inc",
-      "bytes": 6356,
-      "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
+      "bytes": 6354,
+      "sha256": "99b5e73899a5fd2ec5e1c704e625a1ac89a8e2b4dbfd0961552509771a8382e4"
     },
     {
       "path": "native/owned-generation.inc",
-      "bytes": 36870,
-      "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
+      "bytes": 36777,
+      "sha256": "03a827537c6ebdb13cbeb66f8d79fcaa132dc4482626f1408151fffb5a9157ce"
     },
     {
       "path": "native/parent-death-guard.h",
@@ -5011,8 +5011,8 @@
     },
     {
       "path": "native/publish-appuid.inc",
-      "bytes": 1006,
-      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+      "bytes": 1147,
+      "sha256": "e6551438e8190ac56026a072bc06af7f2db4297bdcbecff1eca7e7363a322835"
     },
     {
       "path": "native/sampler-profile.inc",
@@ -5086,8 +5086,8 @@
     },
     {
       "path": "native/tests/publish_contract.c",
-      "bytes": 2430,
-      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+      "bytes": 2950,
+      "sha256": "dc430de558e9508d1f9bf3266dcccaea8bff26785ac13c63324e9f093ec7266a"
     },
     {
       "path": "native/tests/qwen35_profile_contract.c",
@@ -5111,8 +5111,8 @@
     },
     {
       "path": "native/tests/test_prompt_evidence.py",
-      "bytes": 6563,
-      "sha256": "e32248746246be65274e8958165ff0a2f9d46f2f5199931e19de25662ede9ff2"
+      "bytes": 6613,
+      "sha256": "df6d41e25cf0496a0b64ce518cc57deebd76a8c58a49dc5fd425f7b4b232cf89"
     },
     {
       "path": "native/tests/test_sdk_exception_boundary.py",
@@ -5212,7 +5212,7 @@
     {
       "path": "native/vlm-worker/SOURCE.json",
       "bytes": 9197,
-      "sha256": "0479f529b02cb78e85dc5946c4c007f50b528380a86470c736dd7ac93a821d9c"
+      "sha256": "f1d11753423a1a71a1e25c755cee1e302ffb6ba86d9469e4bb98ed80e2dfd8b9"
     },
     {
       "path": "native/vlm-worker/native/admission.h",
@@ -5221,8 +5221,8 @@
     },
     {
       "path": "native/vlm-worker/native/generation-bridge.c",
-      "bytes": 4754,
-      "sha256": "d47d13445995481346cab225343195947b120b599fcf7901af9e994809d6b4cb"
+      "bytes": 4377,
+      "sha256": "15f0f51bca0b477758e7a034de3b45f7b31d6bd7fd1e46554319170d1194933d"
     },
     {
       "path": "native/vlm-worker/native/guard-io.h",
@@ -5241,8 +5241,8 @@
     },
     {
       "path": "native/vlm-worker/native/owned-generation.inc",
-      "bytes": 36870,
-      "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
+      "bytes": 36777,
+      "sha256": "03a827537c6ebdb13cbeb66f8d79fcaa132dc4482626f1408151fffb5a9157ce"
     },
     {
       "path": "native/vlm-worker/native/parent-death-guard.h",
@@ -5251,8 +5251,8 @@
     },
     {
       "path": "native/vlm-worker/native/private-io.inc",
-      "bytes": 5448,
-      "sha256": "0962a052ef7c255cc681723653cb729f2be974d47f5f3499ad8df56378b7a8ab"
+      "bytes": 8085,
+      "sha256": "dee754f003de1bb6e748d5f258f312415d1e34ee445bbee44f8a96c5746f8446"
     },
     {
       "path": "native/vlm-worker/native/sha256-dispatch.h",
@@ -5271,8 +5271,8 @@
     },
     {
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-LFM3-VL-R1.json",
-      "bytes": 9043,
-      "sha256": "f361bd987dbddd5b2b24ec4abd98427ec6499a12d3ae0f52482afcb19ac73d21"
+      "bytes": 9234,
+      "sha256": "69b3e7424a7c46f77aac6989722dcbcc5d68a0c5279bddda0287f6ffe51f2eed"
     },
     {
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-R4.json",
@@ -5301,8 +5301,8 @@
     },
     {
       "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-LFM3-VL-R1.json",
-      "bytes": 5565,
-      "sha256": "eba6506fcab47ea32a6b0be5d1491621fea7b43d0387a40e3d045a60db5b9fd7"
+      "bytes": 5772,
+      "sha256": "7db24984e22951b884ffbef5c379a698b0fcc75175704ce718372e7a3ce9abf6"
     },
     {
       "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json",
@@ -5321,8 +5321,8 @@
     },
     {
       "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-LFM3-VL-R1.json",
-      "bytes": 6957,
-      "sha256": "f5c409abcfb1bcf20abcd06c70931b8d26175c41c217712f01cabd1eed98b059"
+      "bytes": 7155,
+      "sha256": "b500549ecd4227916ee61ff3a077170d5ddf3de35eae08c39a8cd174773be6d3"
     },
     {
       "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
@@ -5521,8 +5521,8 @@
     },
     {
       "path": "native/warm-protocol.inc",
-      "bytes": 10540,
-      "sha256": "40ce0bb3a0d208e71c1313c9caca44a3d514e3c2ad2eace05be87704be47ec29"
+      "bytes": 10469,
+      "sha256": "887597b275f31ecdb785ef673fe6d4fe6492ff85a71d5b2fc51a5d1536745e4c"
     },
     {
       "path": "native/warm-state.inc",
@@ -6957,7 +6957,7 @@
     {
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
       "bytes": 1091,
-      "sha256": "88a2e753c203d992b77a46176ff3cfe16bbbfec2831d9b31b772be91673062d3"
+      "sha256": "3a8375f8136901dd45411ffe01434a150a45055c2f4d61e5fae796cb41357b2c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/VlmResultContract.java",
@@ -8538,6 +8538,16 @@
       "path": "tests/native-observation-snapshot/run_host.py",
       "bytes": 14328,
       "sha256": "885ffe0745a30bff156e1d0019c43de8176297ceaeb60240f6cf3f94ed2482bb"
+    },
+    {
+      "path": "tests/native-private-path/race-test.c",
+      "bytes": 9080,
+      "sha256": "1a467f2a02a369603956e977952f80af47d09d0a87187005c878402cf9542cdb"
+    },
+    {
+      "path": "tests/native-private-path/run_host.py",
+      "bytes": 8945,
+      "sha256": "994dd313d91a337da73cc07b700337b2647336264b89348083b8bd6582fbae3c"
     },
     {
       "path": "tests/native-query-reservation/NativeQueryReservationHostTest.java",
@@ -11308,6 +11318,11 @@
       "path": "tools/test_nanbeige42_profile.py",
       "bytes": 7655,
       "sha256": "1595732ce20ab5c5522f0dd987a52cfe93263b7460bbabb7a02f2fc7856c3afe"
+    },
+    {
+      "path": "tools/test_native_private_path.py",
+      "bytes": 1822,
+      "sha256": "8e5d39772e6eddf85ab7865abcd83af6d4ca172cb1e1d78bd424a2af9a0132c3"
     },
     {
       "path": "tools/test_phone_acceptance.py",

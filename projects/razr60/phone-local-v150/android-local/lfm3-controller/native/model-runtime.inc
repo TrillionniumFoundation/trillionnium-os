@@ -12,13 +12,13 @@ static int32_t hepta_input_count;
 
 static bool hepta_model_is_unchanged(const char *path){
     struct stat descriptor,named;
-    return hepta_model_fd>=0&&fstat(hepta_model_fd,&descriptor)==0&&lstat(path,&named)==0&&
+    return hepta_model_fd>=0&&fstat(hepta_model_fd,&descriptor)==0&&stat_canonical(path,&named)==0&&
         same_stat(&hepta_model_stat,&descriptor)&&same_stat(&descriptor,&named);
 }
 static bool hepta_verify_model(const char *path){
     const char *name=strrchr(path,'/');
     if(!hepta_model_profile||!name||strcmp(name+1,hepta_model_profile->filename))return false;
-    hepta_model_fd=open(path,O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
+    hepta_model_fd=open_canonical(path,O_RDONLY);
     if(hepta_model_fd<0||fstat(hepta_model_fd,&hepta_model_stat)!=0||!S_ISREG(hepta_model_stat.st_mode)||
        hepta_model_stat.st_uid!=getuid()||hepta_model_stat.st_nlink!=1||(hepta_model_stat.st_mode&0777)!=0600||
        hepta_model_stat.st_size<0||(uint64_t)hepta_model_stat.st_size!=hepta_model_profile->bytes)return false;

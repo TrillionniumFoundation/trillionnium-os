@@ -36,21 +36,13 @@ int hv_publish(const char *path, const char *nonce, const void *data, size_t siz
     return hg_publish_bytes(path, nonce, data, size);
 }
 int hv_private_directory(const char *path, struct stat *out) {
-    if (!canonical(path)) return 0;
-    int fd = open(path, O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_DIRECTORY);
-    struct stat a, b;
-    int ok = fd >= 0 && fstat(fd,&a) == 0 && lstat(path,&b) == 0
-        && same_stat(&a,&b) && S_ISDIR(a.st_mode) && a.st_uid == getuid()
-        && (a.st_mode & 0777) == 0700;
-    if (fd >= 0 && close(fd) != 0) ok = 0;
-    if (ok && out) *out = a;
-    return ok;
+    return private_directory_stat(path,out);
 }
 int hv_pin(HeptaInput *in, const char *path, uint64_t bytes, const char *sha,
            int private_model, int (*fence)(void *), void *data) {
     in->fd = -1; in->path = path; in->bytes = NULL;
-    if (!canonical(path) || !sha || strlen(sha) != 64) return 0;
-    in->fd = open(path,O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
+    if (!sha || strlen(sha) != 64) return 0;
+    in->fd = open_canonical(path,O_RDONLY);
     if (in->fd < 0 || fstat(in->fd,&in->before) != 0 || !S_ISREG(in->before.st_mode)
         || in->before.st_nlink != 1 || in->before.st_size <= 0
         || (uint64_t)in->before.st_size != bytes

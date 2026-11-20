@@ -21,8 +21,7 @@ static int hepta_take_warm_arguments(int *argc,char **argv) {
     if(!generation&&!task&&!directory)return 0;
     if(!generation||!task||!directory||!id_ok(hepta_warm_generation)||!id_ok(hepta_warm_task_id)
        ||!canonical(hepta_warm_session_dir))return -1;
-    struct stat st;
-    if(lstat(hepta_warm_session_dir,&st)<0||!S_ISDIR(st.st_mode)||st.st_uid!=getuid()||(st.st_mode&0777)!=0700)return -1;
+    if(!private_directory_stat(hepta_warm_session_dir,NULL))return -1;
     hepta_warm_enabled=true;return 0;
 }
 static bool hepta_warm_prepare_control(void) {
