@@ -1,0 +1,2 @@
+package android.system;
+public final class StructStat {public long st_dev,st_ino,st_size,st_nlink,st_mtime,st_ctime;public int st_uid,st_gid,st_mode;}

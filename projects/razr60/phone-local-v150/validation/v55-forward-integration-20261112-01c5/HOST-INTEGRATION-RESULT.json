@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.v55-host-integration.v1",
+  "scope": "host_only",
+  "phone_operations": false,
+  "android_compiled": false,
+  "external_model_used": false,
+  "all_pass": true,
+  "started_unix_ms": 1794463739959,
+  "steps": [
+    {
+      "name": "javac-version",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "-version"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.5238431990146637,
+      "stdout_sha256": "e1afbe1e3cf37b9ac274f484dc4549b2e2cf9960574681ba39b00277a32e948b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure-before",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.321055795007851,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "launch-callsite-negative",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/alex/hepta-v55-01c5-20261112/source/tests/background-launch-isolation/run_host_tests.py",
+        "--source",
+        "/home/alex/hepta-v55-01c5-20261112/guard-negative-source",
+        "--output",
+        "/home/alex/hepta-v55-01c5-20261112/guard-negative-r1",
+        "--release8"
+      ],
+      "exit_code": 1,
+      "elapsed_s": 2.6459302209841553,
+      "stdout_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "stderr_sha256": "fc508dff541e09b1408dc8e8b50809c90952526141b84191ca815f707cfe5f7c"
+    },
+    {
+      "name": "strict-host-gate",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-v55-01c5-20261112/host-r1"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 217.55032184699667,
+      "stdout_sha256": "a37d234cda9985ce014d461496c7fb0e98ec0c39195e6166829573b1597b8e56",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure-after",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.3672780469933059,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_transfer": {
+    "payload_sha256": "b8a5b9752d0b5bdfb86121566b3af81e27dd61dc8b7ca622bc57b5ec71e32a0f",
+    "local_component_commit": "66314803ddf85cfcfde878b0d13d4470a6760242",
+    "component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+    "members": 1377,
+    "seeded": 1321,
+    "overlaid": 56,
+    "manifest_sha256": "1caa51fbbbced802cdea93be8395433a29839743fd16b1c2204ba9bf3f1d711d",
+    "full_file_map": "host-source-transfer.json.gz:files",
+    "all_materialized_git_blobs_verified": true
+  },
+  "launch_guard_negative": {
+    "production_broker_sha256": "f1f773a4a5a6cf2e6df0dae74df6043e25e8a9747e96701f406517f86d069cc1",
+    "mutated_broker_sha256": "55d3cf1aaac693ce055afd53893b66ecaf4d4d9fe3d70b56ab7a3475254dde23",
+    "mutation": "remove exactly one production requireIsolatedTaskLaunch(taskPolicy) call",
+    "compiler_contract": "--release 8 -Xlint:all -Werror",
+    "exit_code": 1,
+    "expected_assertion_observed": true,
+    "phone_operations": false
+  },
+  "strict_gate": {
+    "exit_code": 0,
+    "all_pass": true,
+    "checks": 105,
+    "error": null,
+    "receipt": "/home/alex/hepta-v55-01c5-20261112/host-r1/HOST-CHECKS.json",
+    "receipt_sha256": "a04917855e9bcc8afd24e394e567061e54e379dab7dfc6416476b4e19ca426c8"
+  },
+  "finished_unix_ms": 1794463961832
+}

@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+"""Run the actual public-profile producer/consumer/controller/native terminal chain.
+
+The controller bridge and its unchanged value-copy helpers are extracted verbatim;
+the Android Activity/controller loop is not compiled. The actual full pure native
+query/session/terminal, BackgroundSession and ProfileOwnedTask are compiled. All
+Android, socket, model callback, installed and worker facts are explicit host IO.
+"""
+import argparse
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+sys.dont_write_bytecode = True
+JSON_SHA = '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
+LEGACY_SHA = '0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47'
+CONTRACTS = {'legacy': (1, 28, 'ad7777f8f55f49c6fdf31b255460e7526ce4449eaec94a2378ce3e7f6ebdf864'), 'candidate': (33, 412, '5f2b560320c45a07a342a67ef1e8e703b2cf390494ca1406ebe549814322312d')}
+
+EXTRA = ['PromptActionDomain', 'NativeAppEvidence', 'NativeAppDomain', 'NativeAppSession',
+         'NativeActionSnapshotCheck', 'NativeAppObservation', 'NativeCtripFlightPage', 'NativeXiaomiProductPage']
+
+
+def need(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def sha(value):
+    return hashlib.sha256(value).hexdigest()
+
+
+def ref(path):
+    value = path.read_bytes()
+    return {'path': str(path.resolve()), 'bytes': len(value), 'sha256': sha(value)}
+
+
+def put(path, value):
+    with path.open('xb') as stream:
+        stream.write(value)
+
+
+def json_bytes(value):
+    return (json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + '\n').encode()
+
+
+def load(path, name):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def inventory(source):
+    result = {}
+    for path in sorted(source.rglob('*')):
+        need(not path.is_symlink(), 'source symlink refused')
+        if path.is_file():
+            result[str(path.relative_to(source))] = dict(ref(path), mode=path.stat().st_mode & 0o777)
+    return result
+
+
+def extract_bridge(source, output):
+    original = source / 'src/org/trillionnium/hepta/local/LocalTaskController.java'
+    raw = original.read_text()
+    first = '    private static java.util.Map<String,Object> nativeProfileCleanup('
+    second = '    private static java.util.Map<String,Object> completionFixed('
+    end = '    private static final class ModelAnswer '
+    need(raw.count(first) == raw.count(second) == raw.count(end) == 1, 'nonunique real controller bridge/copy helpers')
+    a, b, c = raw.index(first), raw.index(second), raw.index(end)
+    need(a < b < c, 'real bridge helper order changed')
+    current, helpers = raw[a:b], raw[b:c]
+    call = 'TaskCompletionGate.Check terminal=completion.terminalNativeCheck(activeNativeTask,finalFrame,terminalOwnerFrame,'
+    need(raw.count(call) == raw.count('nativeProfileCleanup(backgroundCleanup)') == 1, 'actual controller native terminal bridge disconnected')
+    call_start = raw.index(call)
+    call_end = raw.index(');', call_start) + 2
+    callsite = raw[call_start:call_end]
+    need('nativeProfileCleanup(backgroundCleanup)' in callsite, 'bridge not used by actual native terminal call')
+    old = source / 'tests/public-profile-terminal-bridge/legacy-r17-native-profile-cleanup.java.inc'
+    legacy = old.read_bytes()
+    need(sha(legacy) == LEGACY_SHA, 'exact immutable R17 bridge reproduction changed')
+    text = ('package org.trillionnium.hepta.local;\nimport org.json.JSONObject;import org.json.JSONArray;\n'
+            'final class ControllerProfileCleanupFixture {\n'
+            ' static java.util.Map<String,Object> current(BackgroundSession.Cleanup c){return Current.nativeProfileCleanup(c);}\n'
+            ' static java.util.Map<String,Object> legacy(BackgroundSession.Cleanup c){return Legacy.nativeProfileCleanup(c);}\n'
+            ' private static final class Current {\n' + current + helpers + '}\n'
+            ' private static final class Legacy {\n' + legacy.decode() + helpers + '}\n}\n')
+    path = output / 'ControllerProfileCleanupFixture.java'
+    put(path, text.encode())
+    evidence = {'source': ref(original), 'actual_method_sha256': sha(current.encode()),
+                'unchanged_copy_helpers_sha256': sha(helpers.encode()), 'legacy_exact_r17_method': ref(old),
+                'actual_terminal_callsite': callsite, 'actual_terminal_callsite_sha256': sha(callsite.encode()),
+                'generated': ref(path), 'verbatim_method_and_helpers': True,
+                'full_android_controller_compiled_or_executed': False}
+    return path, evidence
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('source', 'output', 'java-home', 'json-jar'):
+        parser.add_argument('--' + name, type=Path, required=True)
+    args = parser.parse_args()
+    source, out, jdk, jar = [path.resolve() for path in (args.source, args.output, args.java_home, args.json_jar)]
+    need(source.is_dir() and not out.exists() and source not in out.parents, 'fresh output outside source required')
+    need(jar.stat().st_size == 78332 and sha(jar.read_bytes()) == JSON_SHA, 'existing pinned JSON dependency changed')
+    need((jdk / 'lib/ct.sym').is_file(), 'full JDK with real --release 8 APIs required')
+    before = inventory(source)
+    out.mkdir(parents=True, mode=0o700)
+    env = dict(os.environ)
+    for key in ('JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'CLASSPATH', 'PYTHONPATH'):
+        env.pop(key, None)
+    env.update(PATH=str(jdk / 'bin') + os.pathsep + '/usr/bin:/bin', PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1')
+    report = {'schema': 'hepta.public-profile-terminal-bridge-host.v1', 'all_pass': False,
+              'strict_release8': True, 'phone_operations': 0, 'android_runtime': False, 'native_model_executed': False,
+              'full_android_controller_compiled_or_executed': False, 'controller_bridge_verbatim_extraction': True,
+              'actual_profile_owned_task_producer': True, 'actual_background_session_consumer': True,
+              'actual_native_session_terminal': True, 'framework_model_installed_and_worker_io_synthetic': True,
+              'source_before': before, 'stages': [], 'cases': {},
+              'tools_before': [ref(p) for p in (jdk / 'bin/java', jdk / 'bin/javac', jdk / 'lib/modules', jar)]}
+
+    def run(name, argv):
+        started = time.monotonic()
+        result = subprocess.run(list(map(str, argv)), cwd=out, env=env, capture_output=True, timeout=180)
+        put(out / (name + '.stdout'), result.stdout)
+        put(out / (name + '.stderr'), result.stderr)
+        report['stages'].append({'name': name, 'argv': list(map(str, argv)), 'exit_code': result.returncode,
+                                 'elapsed_seconds': time.monotonic() - started,
+                                 'stdout': ref(out / (name + '.stdout')), 'stderr': ref(out / (name + '.stderr'))})
+        if result.returncode:
+            print(result.stdout.decode('utf-8', 'replace')[-4000:])
+            print(result.stderr.decode('utf-8', 'replace')[-14000:])
+        need(result.returncode == 0, 'actual stage failed: ' + name)
+
+    try:
+        bg = load(source / 'tests/background-session/prepare_fixture.py', 'public_profile_bridge_android_io')
+        files, projection = bg.prepare(source, out / 'android-io-fixture', include_terminal=False)
+        fixture = out / 'android-io-fixture'
+        (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')
+        io = fixture / 'android/system/Os.java'
+        body, seam = io.read_text(), 'r.st_uid=((Number)a.get("uid")).intValue();'
+        need(body.count(seam) == 1, 'original Android UID fixture seam changed')
+        io.write_text(body.replace(seam, seam + 'if(r.st_uid==' + str(os.getuid()) + ')r.st_uid=10481;'))
+        files = [path for path in files if not (fixture / 'org/json') in path.parents]
+        query = load(source / 'tests/web-flight/run_query_host_tests.py', 'public_profile_bridge_native_closure')
+        files += [source / path for path in query.PURE_PATHS if path not in
+                  ('tests/web-flight/WebFlightQueryHostTest.java', 'tests/native-app/legacy-boundary/NativeAppSession.java')]
+        files += [source / ('src/org/trillionnium/hepta/local/' + name + '.java') for name in EXTRA]
+        files += [source / 'src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java']
+        files += [source / path for path in (
+            'tests/profile-broker/ProfileBrokerHostTest.java',
+            'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',
+            'tests/public-own-group-policy/PersonalNotesCustodyHostTest.java',
+            'tests/public-profile-history/ForegroundConcurrencyHostTest.java',
+            'tests/public-profile-cleanup/PublicProfileCleanupHostTest.java',
+            'tests/native-app-fixtures/NativeXmlFixture.java',
+            'tests/native-app-provider/NativeAppProviderHostTest.java',
+            'tests/public-profile-terminal-bridge/PublicProfileBridgeProducer.java',
+            'tests/public-profile-terminal-bridge/PublicProfileTerminalBridgeHostTest.java')]
+        bridge, extraction = extract_bridge(source, out)
+        files.append(bridge)
+        files = list(dict.fromkeys(path.resolve() for path in files))
+        need(all(path.is_file() for path in files), 'complete actual compile closure required')
+        report.update(android_io_projection=projection, controller_bridge=extraction, compile_inputs=[ref(path) for path in files])
+        put(out / 'BOUNDARIES.json', json_bytes({'android_io': projection, 'controller_bridge': extraction,
+              'producer': 'Full ProfileOwnedTask.cleanupEvidence with full PublicProfileRecentHistory; no constructed replacement cleanup algorithm',
+              'native_terminal': 'Full NativeAppSession and TaskCompletionGate with original saved XML and explicit host model/worker callbacks',
+              'phone_operations': 0}))
+        classes = out / 'classes'
+        classes.mkdir()
+        run('compile', [jdk / 'bin/javac', '--release', '8', '-encoding', 'UTF-8', '-proc:none', '-Xlint:all,-options', '-Werror',
+                        '-classpath', jar, '-d', classes, *files])
+        for mode in ('legacy', 'candidate'):
+            cases = out / (mode + '-CASES.json')
+            run(mode, [jdk / 'bin/java', '-cp', str(classes) + os.pathsep + str(jar),
+                       'org.trillionnium.hepta.local.PublicProfileTerminalBridgeHostTest',
+                       source / 'tests/native-app-provider/fixtures', cases, mode])
+            value = json.loads(cases.read_bytes())
+            report['cases'][mode] = value
+        for mode, (count, assertions, names_sha) in CONTRACTS.items():
+            value = report['cases'][mode]
+            names = value.get('case_names')
+            actual_sha = sha(json.dumps(names, ensure_ascii=False, separators=(',', ':')).encode())
+            emitted=(out/(mode+'.stdout')).read_text().splitlines()
+            summaries=[line for line in emitted if line.startswith('{')]
+            need(len(summaries)==1 and json.loads(summaries[0])==value
+                 and [line[5:] for line in emitted if line.startswith('PASS ')]==names,
+                 'actual Java stdout and case file differ: '+mode)
+            value['case_names_sha256'] = actual_sha
+            need(value.get('schema') == 'hepta.public-profile-terminal-bridge-cases.v1' and value.get('all_pass') is True
+                 and type(value.get('cases')) is int and value['cases'] == count
+                 and type(value.get('assertions')) is int and value['assertions'] == assertions
+                 and type(names) is list and len(names) == len(set(names)) == count and actual_sha == names_sha,
+                 'exact new integration case contract differs: ' + mode)
+            need(value.get('phone_operations') == 0 and value.get('android_runtime') is False
+                 and value.get('native_model_executed') is False, 'host boundary changed')
+        need(report['cases']['legacy'].get('old_bridge_full_terminal_reproduced') is True
+             and report['cases']['legacy'].get('full_native_terminal_calls') == 1, 'legacy counterexample did not reach full terminal')
+        need(report['cases']['candidate'].get('real_nested_consumer_refusals') == 11
+             and report['cases']['candidate'].get('full_native_terminal_calls') == 17, 'real consumer/full-terminal coverage missing')
+        report['source_inputs_unchanged'] = inventory(source) == before
+        report['tools_after'] = [ref(Path(row['path'])) for row in report['tools_before']]
+        report['tools_unchanged'] = report['tools_after'] == report['tools_before']
+        need(report['source_inputs_unchanged'] and report['tools_unchanged'], 'source or pinned tool inputs changed')
+        report['all_pass'] = True
+    except Exception as error:
+        report['error'] = type(error).__name__ + ': ' + str(error)
+    finally:
+        put(out / 'RESULT.json', json_bytes(report))
+    print(json.dumps({'all_pass': report['all_pass'], 'result': ref(out / 'RESULT.json'),
+                      'cases': {name: {k: value.get(k) for k in ('cases', 'assertions', 'case_names_sha256', 'real_nested_consumer_refusals', 'full_native_terminal_calls')}
+                                for name, value in report['cases'].items()}, 'error': report.get('error')}, ensure_ascii=False))
+    return 0 if report['all_pass'] else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

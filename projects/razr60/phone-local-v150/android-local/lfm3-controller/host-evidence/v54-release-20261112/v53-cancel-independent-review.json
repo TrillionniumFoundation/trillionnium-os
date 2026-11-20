@@ -1,0 +1,234 @@
+{
+  "schema": "hepta.v53-actual-cancellation-independent-original-review.v1",
+  "reviewer": "android_background",
+  "scope": "Independent read-only review and V8 cross-check of exact collected phone originals. No new phone command, host SDK mock, new native request, or mutation of the original collector.",
+  "source_result": {
+    "git_blob": "4c765e64a0413d9828ad81c7087763990c830862",
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-cancel-r1/RESULT.json",
+    "bytes": 137745,
+    "sha256": "b5e8191c952456fad910aad500fca060d65808648842f4cc83f2fcbead0877a2",
+    "qualified": false,
+    "machine_checks_passed": false,
+    "infrastructure_checks_passed": false,
+    "cancel_machine_checks_passed": true
+  },
+  "original_json_bundle": {
+    "git_blob": "7ba1d89b3b9fbe48ecbdf1c30457be8a03d86853",
+    "bytes": 47080,
+    "sha256": "047b7d095ae13a534f686dda2d0846e42ec6da307167dc9b38d41c210b64c105",
+    "members": 7
+  },
+  "original_binary_bundle": {
+    "git_blob": "1e92a89411be126cb8b12cb16c15b3f8cd22adb0",
+    "bytes": 85228,
+    "sha256": "64fb353382265cbd2d4ab00b4d57b628690a1db01b0ffb3f1b0e4ef30f092cb9",
+    "members": 2
+  },
+  "all_original_cross_checks_passed": true,
+  "check_count": 22,
+  "checks": {
+    "exact_seven_original_jsons_lexically_valid": true,
+    "task_generation_current_app_identity": true,
+    "one_first_request_not_accepted": true,
+    "java_wait_exit_143_no_force_or_restart": true,
+    "single_owned_term_attempt_no_force": true,
+    "native_same_worker_generation_and_signal": true,
+    "native_model_instance_counts_and_metadata": true,
+    "native_sdk_destroy_and_deinit_zero": true,
+    "native_control_epipe_keeps_143": true,
+    "embedded_native_copy_exact_and_numeric_types": true,
+    "normal_native_claim_stays_false": true,
+    "cancelled_original_task_did_not_claim_success": true,
+    "request_and_native_request_match": true,
+    "actual_installed_argv0_and_exact_tail": true,
+    "actual_le32_bytes_count_and_all_receipt_hashes": true,
+    "before_stop_sdk_log_segment_and_input_bound": true,
+    "stderr_sequence_stop_epipe_deinit_durable_session": true,
+    "no_abort_signature_found_in_bound_stderr": true,
+    "android_target_epipe_bound_to_same_signed_worker": true,
+    "original_task_background_release_distinct": true,
+    "raw_result_lock_record_complete": true,
+    "original_qualification_and_normal_flags_preserved": true
+  },
+  "actual_identity": {
+    "task_id": "a1e8dcf1a7d8469b9a6d7984bd117f2e",
+    "run_id": "1e1d633cb0ca4fdcb953d7307624cfc8",
+    "worker_generation": "b2cf881c5fab4eafa8976f3b366f9d31",
+    "app_uid": 10481,
+    "app_pid": 30185,
+    "worker_pid": 27329,
+    "apk_sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e",
+    "native_worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "signed_build_receipt_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+    "source_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853"
+  },
+  "observed_native_cancellation": {
+    "app_process_exit_observed": true,
+    "exit_code": 143,
+    "term_destroy_attempts": 1,
+    "force_destroy_attempts": 0,
+    "requests_sent": 1,
+    "requests_accepted": 0,
+    "native_signal_observed": 15,
+    "native_requests_received": 1,
+    "native_requests_completed": 0,
+    "native_last_request_status": 143,
+    "native_last_request_return_status": 143,
+    "sdk_destroy_attempted": true,
+    "sdk_destroy_rc": 0,
+    "sdk_deinit_attempted": true,
+    "sdk_deinit_rc": 0,
+    "control_done_attempts": 1,
+    "control_done_delivered": 0,
+    "control_channel_write_failed": true,
+    "control_channel_last_errno": 32,
+    "normal_native_session_binding_valid": false,
+    "cancellation_sdk_cleanup_binding_valid": true,
+    "cleanup_classification": "expected_cancelled_exit_143_with_observed_sdk_cleanup",
+    "native_receipt_does_not_self_claim_process_exit": true
+  },
+  "errno_binding": {
+    "git_blob": "dd77a3c088c2dd87f0d4772b9a53f905493983d3",
+    "bytes": 7576,
+    "sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+    "target": "aarch64-linux-android30",
+    "epipe": 32,
+    "device_jni_constant_observed": false,
+    "historical_compiler_binary_hash_attested": false,
+    "scope": "Actual current NDK target preprocessing tied to the signed worker compiler receipt; no claim of historical compiler byte identity."
+  },
+  "input_ids": {
+    "bytes": 16444,
+    "count": 4111,
+    "sha256": "e9aecf23d99759c5b4d29f0c3da590ab1ca7e71c35acb40464f646fda08691b3",
+    "encoding": "uint32-little-endian",
+    "independently_decoded": true,
+    "native_budget_prompt_metadata_and_sdk_count_match": true
+  },
+  "stderr": {
+    "bytes": 46076,
+    "sha256": "593f09899575d77a775101e693557e9e23cc9b244d3c0f4d49e9693bf94654dc",
+    "events_in_original_byte_order": [
+      {
+        "offset": 45621,
+        "event": "User callback requested stop during token generation"
+      },
+      {
+        "offset": 45846,
+        "event": "fd=3 errno=32 error=Broken pipe"
+      },
+      {
+        "offset": 45959,
+        "event": "geniex_deinit: deinitializing ml"
+      },
+      {
+        "offset": 46029,
+        "event": "native-session-result.json published=true"
+      }
+    ],
+    "abort_signature_matches": [],
+    "abort_signature_scope": "Scanned exact bytes for ggml_abort, dspqueue_read, DSP queue read, FATAL, Abort message and SIGABRT; absence is limited to this collected stderr.",
+    "utf8_status": {
+      "valid": false,
+      "invalid": [
+        {
+          "offset": 4738,
+          "hex": "c4",
+          "kind": "invalid_sequence"
+        },
+        {
+          "offset": 25309,
+          "hex": "c4",
+          "kind": "invalid_sequence"
+        }
+      ]
+    },
+    "original_bytes_retained": true,
+    "utf8_note": "Two incomplete C4 tokenizer-preview sequences occur immediately before literal ellipses at offsets 4738 and 25309. Original binary was preserved; no lossy replacement text is used as the source."
+  },
+  "original_report_and_task_context": {
+    "root_stop_tap_requested": true,
+    "root_stop_tap_command_returned": true,
+    "stop_point": [
+      444,
+      1936
+    ],
+    "continuous_npu_busy_verified": false,
+    "model_dispatched_effects": 0,
+    "fixed_intent_attempts": [],
+    "typed_tool_child_actions": [],
+    "final_snapshot_json_members_equal_collected": true,
+    "task_status": "cancelled",
+    "controller_cleanup_known": true,
+    "background_display_id": 19,
+    "background_generation": "e2a6c659-f7e1-44f0-b6b1-0f08645003c5",
+    "background_state": "RELEASED",
+    "broker_process_exit_code": 0,
+    "active_background_or_web_lease": false,
+    "operation_lock": {
+      "schema": "hepta.cooperative-operation-lock.v1",
+      "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+      "cooperative_advisory_only": true,
+      "nonblocking": true,
+      "created": false,
+      "truncated": false,
+      "reacquisition_attempted": false,
+      "acquired": true,
+      "released": true,
+      "continuity_verified": true,
+      "continuity_checks": 145,
+      "boundary": "participating host processes only; already submitted commands cannot be revoked",
+      "held_device": 66306,
+      "held_inode": 58890228,
+      "owner_uid": 1000,
+      "last_check": "execute_exit"
+    },
+    "reported_system_sample_count": 9,
+    "reported_active_display_samples": 5,
+    "system_sample_scope": "Original collector evidence fields; not a fresh device sample or a new independent replay of all system commands."
+  },
+  "root_observations_external_to_this_native_review": {
+    "busy_Stop_and_final_VD_full_frames_reviewed_by_root": true,
+    "reviewer_viewed_images": false,
+    "runner_actual_pty_exit_code_reported_by_root": 2,
+    "next_owner14_lock_acquisition_reported_by_root": {
+      "pid": 2832310,
+      "start_ticks": "24815752",
+      "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b",
+      "pty": "dpty-dc04eccf60303d26aa2bbf5526d7c4118d6b47afbed1cc78dfd3ec361cc6c9c7"
+    },
+    "raw_next_owner14_receipt_retrieved_here": false
+  },
+  "conclusion": {
+    "observed_cancelled_sdk_cleanup_chain_verified": true,
+    "normal_successful_inference": false,
+    "normal_native_receipt_valid": false,
+    "business_completion": false,
+    "original_qualified_remains": false,
+    "continuous_NPU_activity_proven": false,
+    "new_database_row_absence_proven": false,
+    "repeated_cancellation_or_future_recovery_proven": false
+  },
+  "interpretation": [
+    "The actual native session durably records successful destroy and deinit after an observed SIGTERM and cancelled return status. Java separately supplies wait/exit143 and one owned TERM with no forced destroy.",
+    "DONE control delivery failed with the exact target EPIPE value, while cancellation status143 and the terminal SDK cleanup receipt were preserved. This is the path the fixed worker was intended to retain.",
+    "The request-level warm receipt predates session teardown and therefore keeps request destroy/deinit fields unset; successful terminal teardown comes from the separately hashed native-session result.",
+    "Normal native/session receipt validity, inference completion, controller business completion and raw overall qualified remain false. Their false values are not overwritten by the cancellation-specific conclusion.",
+    "No fixed-intent/submit/tool-child dispatch appears in the original task/collection boundary. The visible Notes list is not a database inspection.",
+    "A new positive recovery task on the same installed binary is separate evidence and was not yet observed by this report."
+  ],
+  "reference_contract": {
+    "module_sha256": "f3b4fc04c4834712ba5722e8f31dc396311d2a334cd0f21e0980f57f26011a61",
+    "source_pins": {
+      "src/org/trillionnium/hepta/local/LocalModelEngine.java": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8",
+      "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9",
+      "src/org/trillionnium/hepta/local/WarmProcessSession.java": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a",
+      "native/generate_adapter.py": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7",
+      "native/warm-protocol.inc": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
+    },
+    "strict_number_types_checked_from_original_JSON_lexemes": true,
+    "reexecuted_original_python_verdict": false
+  },
+  "phone_actions_by_reviewer": 0,
+  "original_files_modified": false
+}
