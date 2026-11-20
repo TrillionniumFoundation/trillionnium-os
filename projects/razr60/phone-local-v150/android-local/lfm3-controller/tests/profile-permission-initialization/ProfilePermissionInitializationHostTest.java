@@ -31,6 +31,31 @@ public final class ProfilePermissionInitializationHostTest {
     }
     private static String h(char c){char[] a=new char[64];Arrays.fill(a,c);return new String(a);}
     private static Map<Integer,String> physical(){Map<Integer,String> m=new LinkedHashMap<Integer,String>();m.put(0,h('a'));m.put(1,h('b'));return m;}
+    private static void refuseRead(Work work)throws Exception{
+        try{work.run();throw new AssertionError("unsafe complete public read accepted");}
+        catch(Exception expected){if(!(expected instanceof java.io.IOException||expected instanceof IllegalArgumentException||expected instanceof ProfileTaskPolicy.Refusal))throw expected;checks++;}
+    }
+    private static Map<Integer,String> deviceHashes(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> facts)throws Exception{
+        Map<Integer,String> value=new LinkedHashMap<Integer,String>();
+        for(int id:new int[]{0,1}){PublicOwnGroupPhysicalFence.DisplayFacts row=facts.get(id);
+            java.io.ByteArrayOutputStream bytes=new java.io.ByteArrayOutputStream();java.io.DataOutputStream out=new java.io.DataOutputStream(bytes);
+            out.writeUTF("hepta.public-own-group.physical-device-identity.v1");out.writeInt(row.id);out.writeUTF(row.uniqueId);out.writeInt(row.type);out.flush();
+            value.put(id,ProfileIdentity.sha(bytes.toByteArray()));}
+        return value;
+    }
+    /** Equivalent to Android libcore JSONObject(Map)'s recursive String-key
+     * cast/wrap contract. It deliberately does not use a permissive host jar. */
+    private static void androidJsonKeys(Object value){
+        if(value instanceof Map){for(Map.Entry<?,?> row:((Map<?,?>)value).entrySet()){
+            String key=(String)row.getKey();if(key==null)throw new NullPointerException("null JSON key");androidJsonKeys(row.getValue());}}
+        else if(value instanceof Iterable)for(Object row:(Iterable<?>)value)androidJsonKeys(row);
+        else if(value instanceof Object[])for(Object row:(Object[])value)androidJsonKeys(row);
+    }
+    private static String wireSchema(String wire,String schema)throws Exception{
+        java.io.DataInputStream in=new java.io.DataInputStream(new java.io.ByteArrayInputStream(Base64.getUrlDecoder().decode(wire)));
+        in.readUTF();java.io.ByteArrayOutputStream bytes=new java.io.ByteArrayOutputStream();java.io.DataOutputStream out=new java.io.DataOutputStream(bytes);
+        out.writeUTF(schema);while(in.available()>0)out.writeByte(in.readByte());out.flush();return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes.toByteArray());
+    }
     private static Node node(Object handle,int window,String id,String label,boolean button,boolean checkable,boolean checked){
         return new Node(handle,PC,window,id,button?"android.widget.Button":checkable?"android.widget.RadioButton":"android.widget.TextView",
                 label,"","[10,20][300,80]",true,true,button,button,checkable,checked);
@@ -42,9 +67,15 @@ public final class ProfilePermissionInitializationHostTest {
         final Map<Integer,String> baseline=physical(),currentPhysical=physical();
         final List<String> events=new ArrayList<String>();
         final IdentityHashMap<PermissionWindowObservation,Boolean> received=new IdentityHashMap<PermissionWindowObservation,Boolean>();
+        boolean publicMode;PublicOwnGroupPolicy.Scope publicScope;PublicOwnGroupPolicy.Readback currentReadback;
+        PermissionWindowObservation.PublicInitialization publicBaseline;
+        String physicalActivities=PublicPhysicalAuditHostTest.activities(),physicalWindows=PublicPhysicalAuditHostTest.windows(),physicalRecents=PublicPhysicalAuditHostTest.recents(true);
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> physicalDisplays=PublicPhysicalAuditHostTest.displays(),lastPhysicalDisplays=physicalDisplays;
+        Map<Integer,String> reportedDevices;int publicGroup=2,lastPublicGroup=2;long dumpAdvance;
         boolean forgeWire,globalActive=true,ownerVisible=true,publicationValid=true;
         int provenanceChecks,cancelAtProvenance=-1,delayAtProvenance=-1;
         Session session;Preview preview;Map<String,Object> attempt,result;
+        PermissionWindowObservation preparedIdentity;
         String message="允许携程旅行访问此设备的位置信息吗？",denyId=ProfilePermissionInitialization.DENY;
         String onceId=ProfilePermissionInitialization.ONE_TIME;
         boolean location=true,denyEnabled=true,denyVisible=true,denyAction=true,accepted=true,complete=true;
@@ -58,6 +89,27 @@ public final class ProfilePermissionInitializationHostTest {
         @Override public long now(){return adapter.f.now;}
         @Override public boolean cancelled(){return adapter.f.cancel;}
         ProfileOwnedTask.PermissionRead identity()throws Exception{return task.permissionForInitialization(14,300,now()+1800);}
+        void enablePublic()throws Exception{
+            ProfileOwnedTask.PermissionRead live=identity();publicMode=true;
+            publicScope=new PublicOwnGroupPolicy.Scope("123456789abcdef0123456789abcdef0",GOAL.ownerSha256,live.generation,10481,live.target,0,60000,1);
+            reportedDevices=deviceHashes(physicalDisplays);
+        }
+        PublicOwnGroupPolicy.Readback publicReadback(int group)throws Exception{
+            Map<Integer,String> observed=new LinkedHashMap<Integer,String>();observed.put(0,"{}");observed.put(1,"{}");
+            return new PublicOwnGroupPolicy.Readback(publicScope,UUID.randomUUID().toString(),now(),now(),
+                    new PublicOwnGroupPolicy.Privileges(0,0,0,0),new PublicOwnGroupPolicy.Credentials(0,false,
+                    new PublicOwnGroupPolicy.UserState(0,0,false,false,false),new PublicOwnGroupPolicy.UserState(10,0,false,false,false)),
+                    new PublicOwnGroupPolicy.DisplayState(7,"hepta-bg-"+publicScope.generation,"virtual:host-public",0,"com.android.shell",
+                    PublicOwnGroupPolicy.ACTUAL_FLAGS,group,0,0,1,1,2,2),new PublicOwnGroupPolicy.PhysicalDisplays(reportedDevices,observed));
+        }
+        PublicOwnGroupPhysicalReader.InitializationRead readPublic()throws Exception{
+            android.os.SystemClock.now=now();PublicOwnGroupPhysicalReader.advanceAfterDump=dumpAdvance;
+            PublicOwnGroupPhysicalReader.activities=physicalActivities;PublicOwnGroupPhysicalReader.windows=physicalWindows;PublicOwnGroupPhysicalReader.recents=physicalRecents;
+            PublicOwnGroupPhysicalReader.firstDisplays=physicalDisplays;PublicOwnGroupPhysicalReader.lastDisplays=lastPhysicalDisplays;
+            PublicOwnGroupPolicy.Readback first=publicReadback(publicGroup),last=publicReadback(lastPublicGroup);
+            PublicOwnGroupPhysicalReader.InitializationRead read=PublicOwnGroupPhysicalReader.exercise(publicScope,adapter.f.actual,first,last,now()+1000);
+            currentReadback=last;return read;
+        }
         List<Node> nodes(){
             List<Node> nodes=new ArrayList<Node>();nodes.add(node(titleHandle,14,ProfilePermissionInitialization.MESSAGE,message,false,false,false));
             Node n=node(changeHandle?new Object():denyHandle,14,denyId,"不允许",true,false,false);
@@ -78,19 +130,29 @@ public final class ProfilePermissionInitializationHostTest {
             return windows;
         }
         @Override public Snapshot observe()throws Exception{
-            events.add("observe");ProfileOwnedTask.PermissionRead live=identity();
-            PermissionWindowObservation sent=PermissionWindowObservation.fromLive(live,currentPhysical,now());
-            PermissionWindowObservation proof=PermissionWindowObservation.fromWire(sent.wire(),live.target);received.put(proof,Boolean.TRUE);
+            events.add("observe");PublicOwnGroupPhysicalReader.InitializationRead before=publicMode?readPublic():null;
+            ProfileOwnedTask.PermissionRead live=identity();
+            PublicOwnGroupPhysicalReader.InitializationRead after=publicMode?readPublic():null;
+            if(publicMode){
+                if(publicBaseline==null){publicBaseline=before.projection;baseline.clear();baseline.putAll(before.physicalAudit);}
+                if(!publicBaseline.same(before.projection)||!publicBaseline.same(after.projection))throw new java.io.IOException("fixture public baseline changed");
+                currentPhysical.clear();currentPhysical.putAll(after.physicalAudit);
+            }
+            PermissionWindowObservation sent=publicMode?PermissionWindowObservation.fromLive(live,currentPhysical,after.projection,now())
+                    :PermissionWindowObservation.fromLive(live,currentPhysical,now());
+            PermissionWindowObservation proof=PermissionWindowObservation.fromWire(sent.wire(),live.target);
+            proof.requireMode(publicMode?publicScope:null,currentReadback,now());received.put(proof,Boolean.TRUE);
             if(forgeWire)proof=PermissionWindowObservation.fromWire(proof.wire(),live.target);
             return new Snapshot(proof,now(),now(),complete,nodes(),windows(),currentPhysical);
         }
         void prepare()throws Exception{
-            Snapshot first=observe();session=new Session(GOAL,GOAL.ownerSha256,first.identity,baseline,now(),now()+20000,this);
+            Snapshot first=observe();preparedIdentity=first.identity;session=new Session(GOAL,GOAL.ownerSha256,first.identity,baseline,now(),now()+20000,this);
             preview=session.publish(first,this,this);
         }
         @Override public void require(PermissionWindowObservation proof,long now)throws Exception{
             if(!received.containsKey(proof))throw new java.io.IOException("not from live authenticated RPC");
             proof.requireFresh(now);
+            proof.requireMode(publicMode?publicScope:null,currentReadback,now);
             provenanceChecks++;
             if(provenanceChecks==cancelAtProvenance)adapter.f.cancel=true;
             if(provenanceChecks==delayAtProvenance)adapter.f.now+=100;
@@ -300,6 +362,106 @@ public final class ProfilePermissionInitializationHostTest {
             reject("PROFILE_PERMISSION_READ_INVALID",()->f.identity());f.noInput();
             yes(f.adapter.f.mutations.equals(Arrays.asList("create","bind","remove_leaf","delete_root")),"unexpected cleanup effect");
         });
+        test("public v2 carries complete audit and round-trips without granting authority",()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();PermissionWindowObservation first=f.preparedIdentity;
+            yes(PermissionWindowObservation.PUBLIC_SCHEMA.equals(first.schema),"public wire version omitted");
+            PermissionWindowObservation decoded=PermissionWindowObservation.fromWire(first.wire(),first.target);
+            yes(decoded.wire().equals(first.wire())&&decoded.samePhysicalScope(first)&&decoded.sameRequest(first),"public roundtrip lost identity");
+            yes(first.physicalIdentities.equals(f.baseline)&&f.baseline.equals(PublicPhysicalAuditHostTest.baseline()),"complete audit not bound to wire");
+            yes(PublicOwnGroupPhysicalReader.dumps==3&&PublicOwnGroupPhysicalReader.physicalReads==2,"complete reader skipped an original source");
+            Map<String,Object> projection=f.publicBaseline.evidence();
+            yes(!projection.containsKey("root_task_id")&&!projection.containsKey("task_id")&&!projection.containsKey("leaf_token_id"),"prepare projection invented a task capability");
+            yes(Boolean.FALSE.equals(first.evidence().get("serialized_evidence_is_authority")),"wire became authority");f.noInput();
+        });
+        for(String change:new String[]{"focus-top","ime","recents","same-target-user0-new-task"})test("public init allows unrelated user0 "+change+" through fresh final dispatch",()->{
+            Harness f=new Harness();f.enablePublic();f.globalActive=false;f.prepare();PermissionWindowObservation first=f.preparedIdentity;
+            if("focus-top".equals(change)){
+                f.physicalActivities=f.physicalActivities.replace("{ab u0 ctrip.android.view/.Home t100}","{ab u0 ctrip.android.view/.Settings t100}");
+                f.physicalWindows=f.physicalWindows.replace("Window{ad u0 ctrip.android.view/ctrip.android.view.Home}","Window{af u0 ctrip.android.view/ctrip.android.view.Settings}")
+                        .replace("{ab u0 ctrip.android.view/.Home t100}","{ab u0 ctrip.android.view/.Settings t100}");
+            }else if("ime".equals(change))f.physicalWindows=f.physicalWindows.replace("mImeInputTarget=null","mImeInputTarget=Window{ae u0 input}");
+            else if("recents".equals(change)){
+                f.physicalRecents=f.physicalRecents.replace("  Visible recent tasks (most recent first):\n",PublicPhysicalAuditHostTest.row(3,102,0,10370,0,"ac","com.example.reader")+"  Visible recent tasks (most recent first):\n")
+                        +PublicPhysicalAuditHostTest.visible(3,102,0,0,"com.example.reader");
+            }else{
+                f.physicalActivities=f.physicalActivities.replace("Display #1 (activities from top to bottom):", "  * Task{ac #102 type=standard A=10367:ctrip.android.view U=0 visible=false sz=1}\n    * Hist #0: ActivityRecord{ae u0 ctrip.android.view/.Home t102}\nDisplay #1 (activities from top to bottom):");
+                f.physicalRecents=f.physicalRecents.replace("  Visible recent tasks (most recent first):\n",PublicPhysicalAuditHostTest.row(3,102,0,10367,0,"ac",ProfileTarget.CTRIP)+"  Visible recent tasks (most recent first):\n")
+                        +PublicPhysicalAuditHostTest.visible(3,102,0,0,ProfileTarget.CTRIP);
+            }
+            Snapshot fresh=f.observe();yes(!first.physicalIdentities.equals(fresh.identity.physicalIdentities),"fixture did not actually change whole audit");
+            yes(first.sameRequest(fresh.identity)&&first.samePhysicalScope(fresh.identity),"unrelated user0 state changed owned scope");
+            Receipt receipt=f.optionalDeny();yes(receipt.inputEntered&&f.clicks==1&&f.reservations==1,"fresh v2 path did not enter the original sole effect");
+            yes(!receipt.continuationAuthorized&&!receipt.businessCompleted,"permission effect mislabeled task success");
+        });
+        test("legacy v1 keeps complete physical equality and cannot downgrade public mode",()->{
+            Harness f=new Harness();f.prepare();PermissionWindowObservation first=f.preparedIdentity;
+            yes(PermissionWindowObservation.SCHEMA.equals(first.schema)&&first.wire().equals(PermissionWindowObservation.fromWire(first.wire(),first.target).wire()),"legacy wire changed");
+            f.currentPhysical.put(0,h('c'));Snapshot changed=f.observe();yes(!first.samePhysicalScope(changed.identity),"v1 physical equality relaxed");
+            reject("PERMISSION_PHYSICAL_DISPLAY_CHANGED",()->f.ownerDeny());f.noInput();
+            Harness p=new Harness();p.enablePublic();p.prepare();
+            reject("PERMISSION_PUBLIC_PROJECTION_REQUIRED",()->first.requireMode(p.publicScope,p.currentReadback,p.now()));
+            reject("PERMISSION_LEGACY_PROJECTION_MODE",()->p.preparedIdentity.requireMode(null,null,p.now()));
+            reject("PERMISSION_READ_WIRE_TRUNCATED",()->PermissionWindowObservation.fromWire(wireSchema(first.wire(),PermissionWindowObservation.PUBLIC_SCHEMA),first.target));
+        });
+        test("Android recursive Map String-key consumer accepts both previews and public projection",()->{
+            Harness legacy=new Harness();legacy.prepare();androidJsonKeys(legacy.preview.evidence());
+            Harness f=new Harness();f.enablePublic();f.prepare();androidJsonKeys(f.preview.evidence());androidJsonKeys(f.publicBaseline.evidence());
+            Map<?,?> audit=(Map<?,?>)f.preparedIdentity.evidence().get("physical_identities");
+            yes(audit.keySet().equals(new LinkedHashSet<String>(Arrays.asList("0","1"))),"JSON physical keys are not explicit strings");
+            yes(f.preparedIdentity.physicalIdentities.containsKey(0)&&f.preparedIdentity.physicalIdentities.containsKey(1),"JSON conversion altered internal wire map");
+            try{androidJsonKeys(Collections.singletonMap("nested",physical()));throw new AssertionError("integer-key Android Map constructor accepted");}
+            catch(ClassCastException expected){checks++;}f.noInput();
+        });
+        for(String change:new String[]{"device","group","audit-device-disagreement","within-read-device-change"})test("public read rejects "+change+" before permission input",()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();
+            if("device".equals(change)){
+                f.physicalDisplays=new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>(f.physicalDisplays);
+                f.physicalDisplays.put(0,new PublicOwnGroupPhysicalFence.DisplayFacts(0,"local:1002",1,2,0,1224,2992));
+                f.lastPhysicalDisplays=f.physicalDisplays;f.reportedDevices=deviceHashes(f.physicalDisplays);
+            }else if("group".equals(change))f.lastPublicGroup=3;
+            else if("audit-device-disagreement".equals(change))f.reportedDevices.put(0,h('d'));
+            else{f.lastPhysicalDisplays=new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>(f.physicalDisplays);
+                f.lastPhysicalDisplays.put(0,new PublicOwnGroupPhysicalFence.DisplayFacts(0,"local:1002",1,2,0,1224,2992));}
+            refuseRead(()->f.optionalDeny());f.noInput();yes(f.reservations==0,"identity uncertainty reserved a click");
+        });
+        for(String change:new String[]{"owned-escape","mixed-user","unknown-census","incomplete-census"})test("public reader keeps full raw-census refusal "+change,()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();
+            if("owned-escape".equals(change))f.physicalActivities=f.physicalActivities.replace("A=10367:ctrip.android.view U=0","A=1010367:ctrip.android.view U=10").replace("{ab u0","{ab u10");
+            else if("mixed-user".equals(change))f.physicalRecents=f.physicalRecents.replace("id=101 userId=0","id=101 userId=10");
+            else if("unknown-census".equals(change))f.physicalWindows+="Permission Denial\n";
+            else f.physicalActivities=f.physicalActivities.replace("ActivityTaskSupervisor state:","partial:");
+            refuseRead(()->f.optionalDeny());f.noInput();yes(f.reservations==0,"unproved census reserved a click");
+        });
+        for(String change:new String[]{"leaf-token","leaf-uid","requester-uid","root-cookie"})test("public projection does not replace private owned proof "+change,()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();
+            if("leaf-token".equals(change))f.adapter.f.leafToken=new Object();
+            else if("leaf-uid".equals(change))f.adapter.f.wrongUid=true;
+            else if("requester-uid".equals(change))f.adapter.wrongCaller=true;
+            else f.adapter.f.missingRootCookie=true;
+            refuseRead(()->f.optionalDeny());f.noInput();yes(f.reservations==0,"invalid private proof reserved a click");
+        });
+        test("public wire cannot cross generation profile or current authenticated readback",()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();PermissionWindowObservation proof=f.preparedIdentity;
+            PublicOwnGroupPolicy.Scope wrong=new PublicOwnGroupPolicy.Scope(publicTask(),GOAL.ownerSha256,UUID.randomUUID().toString(),10481,proof.target,0,60000,1);
+            reject("PUBLIC_SCOPE_READBACK_STALE",()->proof.requireMode(wrong,f.currentReadback,f.now()));
+            reject("PERMISSION_PUBLIC_PROJECTION_TARGET",()->PermissionWindowObservation.fromWire(proof.wire(),ProfileBrokerHostTest.target(11,1010367)));
+            reject("PERMISSION_PUBLIC_PROJECTION_TARGET",()->PermissionWindowObservation.fromWire(proof.wire(),ProfileBrokerHostTest.target(10,1010368)));
+            PublicOwnGroupPolicy.Readback changed=f.publicReadback(3);
+            reject("PERMISSION_PUBLIC_PROJECTION_READBACK_CHANGED",()->proof.requireMode(f.publicScope,changed,f.now()));f.noInput();
+        });
+        test("public v2 cancellation after reservation and old RPC provenance still refuse",()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();f.cancelAfterReserve=true;
+            reject("PERMISSION_INITIALIZATION_CANCELLED",()->f.optionalDeny());f.noInput();yes(f.session.attemptedOrUnknown(),"cancelled reservation forgotten");
+            Harness old=new Harness();old.enablePublic();old.prepare();old.forgeWire=true;
+            failIo(()->old.optionalDeny());old.noInput();yes(old.reservations==0,"redecoded history entered effect");
+        });
+        test("public complete reader and final provenance preserve original deadlines",()->{
+            Harness f=new Harness();f.enablePublic();f.prepare();f.dumpAdvance=1000;
+            failIo(()->f.optionalDeny());f.noInput();yes(f.reservations==0,"expired full read reserved input");
+            Harness late=new Harness();late.enablePublic();late.prepare();late.adapter.f.now+=12000;
+            reject("PERMISSION_INITIALIZATION_DEADLINE",()->late.optionalDeny());late.noInput();
+        });
         System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"all_pass\":true,\"android_adapter_executed\":false,\"phone_contacted\":false}");
     }
+    private static String publicTask(){return "abcdef0123456789abcdef0123456789";}
 }

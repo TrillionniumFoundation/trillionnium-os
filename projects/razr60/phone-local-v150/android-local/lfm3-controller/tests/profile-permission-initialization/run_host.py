@@ -17,6 +17,75 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def public_reader_fixture(source, output):
+    """Execute the exact new reader/coordinator body; only Android IO is inert.
+
+    The original complete physical parser and actual scope/wire/policy remain
+    production classes. These files are host-only outputs, never APK sources.
+    """
+    original = source / 'src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java'
+    raw = original.read_text()
+    begin = '    static final class InitializationRead {'
+    end = '    static Map<Integer,String> read(Object windowManager,'
+    if raw.count(begin) != 1 or raw.count(end) != 1:
+        raise RuntimeError('public initialization reader extraction boundary changed')
+    body = raw[raw.index(begin):raw.index(end)]
+    files = {
+        'org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java': '''package org.trillionnium.hepta.background;
+import java.util.*;import java.io.*;import java.util.function.LongSupplier;
+import android.hardware.display.DisplayManager;import android.os.SystemClock;
+final class PublicOwnGroupPhysicalReader {
+'''+body+'''
+ static String activities,windows,recents;static int physicalReads,dumps;static long advanceAfterDump;
+ static Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> firstDisplays,lastDisplays;
+ private static Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> displayFacts(DisplayManager ignored){
+  return physicalReads++==0?firstDisplays:lastDisplays;
+ }
+ private static String dump(Object ignored,String[] arguments,LongSupplier deadline)throws IOException{
+  dumps++;if(arguments.length!=2||!"-a".equals(arguments[0]))throw new IOException("unexpected fixture dump");
+  if("activities".equals(arguments[1]))return activities;
+  if("displays".equals(arguments[1]))return windows;
+  if("recents".equals(arguments[1])){SystemClock.now+=advanceAfterDump;return recents;}
+  throw new IOException("unexpected fixture dump");
+ }
+ static InitializationRead exercise(PublicOwnGroupPolicy.Scope scope,ProfileTarget target,
+     PublicOwnGroupPolicy.Readback first,PublicOwnGroupPolicy.Readback last,long deadline)throws Exception{
+  physicalReads=0;dumps=0;
+  return readInitialization(new Object(),new DisplayManager(),new Object(),new PublicOwnGroupFramework(first,last),
+    scope,target,first.display.displayId,first.display.name,null,()->deadline);
+ }
+}
+final class PublicOwnGroupFramework {
+ private final PublicOwnGroupPolicy.Readback first,last;int reads;
+ PublicOwnGroupFramework(PublicOwnGroupPolicy.Readback first,PublicOwnGroupPolicy.Readback last){this.first=first;this.last=last;}
+ PublicOwnGroupPolicy.Readback read(String request,int display,String name){return reads++==0?first:last;}
+}
+final class BackgroundTaskOrganizer {
+ static PublicPermissionControllerUi.Task readOnlyControllerTask(Object ignored,int task,int display,LongSupplier deadline)throws IOException{
+  throw new IOException("physical controller IO is covered by the original main-ui-permission gate");
+ }
+}
+''',
+        'android/hardware/display/DisplayManager.java': 'package android.hardware.display;public final class DisplayManager {}\n',
+        'android/os/Build.java': 'package android.os;public final class Build {public static final class VERSION {public static int SDK_INT=36;}}\n',
+        'android/os/SystemClock.java': 'package android.os;public final class SystemClock {public static long now=1000;public static long elapsedRealtime(){return now;}}\n',
+        'android/app/ActivityManager.java': 'package android.app;public final class ActivityManager {public static Object getService(){return new Object();}}\n',
+    }
+    generated = []
+    for relative, content in files.items():
+        path = output/'public-initialization-reader-ports'/relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+        generated.append(path)
+    receipt = {'source': str(original), 'source_sha256': digest(original),
+               'exact_body_sha256': hashlib.sha256(body.encode()).hexdigest(),
+               'whole_physical_parser_is_production': True,
+               'substitutes': ['framework readback and DisplayManager IO', 'Binder dump transport',
+                              'Android elapsed clock', 'unused physical-controller Binder lookup'],
+               'android_runtime': False, 'phone_operations': 0}
+    return generated, receipt
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
@@ -32,7 +101,7 @@ def main():
     names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'PublicOwnGroupPolicy',
              'FixedIntentTools', 'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask',
              'ProfileTaskPolicy', 'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody',
-             'PermissionWindowObservation', 'PhysicalDisplayFence']
+             'PermissionWindowObservation', 'PhysicalDisplayFence', 'PublicOwnGroupPhysicalFence']
     inputs = [background / (name + '.java') for name in names]
     inputs += [source / 'src/org/trillionnium/hepta/local/NativeAppGoal.java',
                source / 'src/org/trillionnium/hepta/local/ProfilePermissionInitialization.java',
@@ -40,11 +109,13 @@ def main():
                source / 'tests/profile-permission-transient/ProfilePermissionTransientHostTest.java',
                source / 'tests/profile-permission-transient/ProfileStateSettleHostTest.java',
                source / 'tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java',
-               source / 'tests/profile-permission-initialization/PhysicalDisplayFenceHostTest.java']
+               source / 'tests/profile-permission-initialization/PhysicalDisplayFenceHostTest.java',
+               source / 'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java']
     fixture = source / 'tests/profile-permission-transient/fixtures/synthetic-activities.txt'
     pair_runner = source / 'tests/profile-permission-transient/run_host.py'
     platform = background / 'ProfileTaskPlatform.java'
-    tracked = inputs + [fixture, Path(__file__).resolve(), pair_runner, platform]
+    tracked = inputs + [fixture, Path(__file__).resolve(), pair_runner, platform,
+                        background/'PublicOwnGroupPhysicalReader.java']
     pins = {str(p): digest(p) for p in tracked}
     result = {'schema': 'hepta.permission-init-core-host.v1', 'all_pass': False,
               'base_head': 'f7dbe2f1c06e34c992b140d5d88995a8e99c03db',
@@ -87,6 +158,10 @@ def main():
         inputs += generated
         pins.update({str(path): digest(path) for path in generated})
         result['permission_pair_adapter'] = pair_receipt
+        public_generated, public_receipt = public_reader_fixture(source, output)
+        inputs += public_generated
+        pins.update({str(path): digest(path) for path in public_generated})
+        result['public_initialization_reader'] = public_receipt
         result['compiler'] = run('compiler-version', [str(javac), '-version']).strip()
         run('compile', [str(javac), '--release', '8',
                         '-encoding', 'UTF-8', '-d', str(classes)] + [str(p) for p in inputs])

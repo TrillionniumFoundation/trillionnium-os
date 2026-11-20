@@ -21,6 +21,60 @@ import java.util.function.LongSupplier;
  * command string, caller-supplied dump command, task mutation or permission grant. */
 final class PublicOwnGroupPhysicalReader {
     private PublicOwnGroupPhysicalReader(){}
+    static final class InitializationRead {
+        final Map<Integer,String> physicalAudit;
+        final PermissionWindowObservation.PublicInitialization projection;
+        private InitializationRead(Map<Integer,String> audit,PermissionWindowObservation.PublicInitialization projection){
+            if(audit==null||projection==null)throw new IllegalArgumentException("PUBLIC_INITIALIZATION_READ_INCOMPLETE");
+            physicalAudit=audit;this.projection=projection;
+        }
+    }
+    /** Public permission initialization only. Every complete physical hierarchy,
+     * focus/IME and recents observation is still parsed by the original audit
+     * and its escape/unknown checks. Unrelated user-0 presentation is evidence,
+     * while the actual public display topology remains the admission identity.
+     * Strict recovery/diagnostic reads below retain their original semantics. */
+    static InitializationRead readInitialization(Object windowManager,DisplayManager displays,Object activityTasks,
+            PublicOwnGroupFramework framework,PublicOwnGroupPolicy.Scope scope,ProfileTarget target,int ownedDisplay,String ownedName,
+            PublicPermissionControllerUi.Bound controller,LongSupplier deadline)throws Exception{
+        if(android.os.Build.VERSION.SDK_INT!=36||framework==null||scope==null||target==null
+                ||scope.targetUserId!=target.profile.userId||!scope.targetSha256.equals(target.sha256)||ownedDisplay<=1)
+            throw new IOException("PUBLIC_INITIALIZATION_READ_SCOPE_INVALID");
+        if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
+        PublicOwnGroupPolicy.Readback first=framework.read(java.util.UUID.randomUUID().toString(),ownedDisplay,ownedName);
+        PermissionWindowObservation.PublicInitialization beforeScope=PermissionWindowObservation.PublicInitialization.fromReadback(
+                scope,target,first,SystemClock.elapsedRealtime());
+        if(controller!=null)controller.recheck(BackgroundTaskOrganizer.readOnlyControllerTask(activityTasks,controller.task(),controller.display(),deadline),SystemClock.elapsedRealtime());
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before=displayFacts(displays);
+        requireDevices(before,first);
+        Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
+        String activities=dump(am,new String[]{"-a","activities"},deadline);
+        String windows=dump(windowManager,new String[]{"-a","displays"},deadline);
+        String recents=dump(am,new String[]{"-a","recents"},deadline);
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after=displayFacts(displays);
+        for(int id:new int[]{0,1})if(!before.get(id).data().equals(after.get(id).data()))throw new IOException("PUBLIC_AUDIT_PHYSICAL_STATE_CHANGED_DURING_READ");
+        if(controller!=null)controller.recheck(BackgroundTaskOrganizer.readOnlyControllerTask(activityTasks,controller.task(),controller.display(),deadline),SystemClock.elapsedRealtime());
+        Map<Integer,String> audit=controller==null?PublicOwnGroupPhysicalFence.capture(activities,windows,recents,after,target.profile.userId)
+                :PublicOwnGroupPhysicalFence.captureControllerInitialization(activities,windows,recents,after,target.profile.userId,controller);
+        PublicOwnGroupPolicy.Readback last=framework.read(java.util.UUID.randomUUID().toString(),ownedDisplay,ownedName);
+        requireDevices(after,last);
+        PermissionWindowObservation.PublicInitialization afterScope=PermissionWindowObservation.PublicInitialization.fromReadback(
+                scope,target,last,SystemClock.elapsedRealtime());
+        if(!beforeScope.same(afterScope))throw new IOException("PUBLIC_INITIALIZATION_TOPOLOGY_CHANGED_DURING_READ");
+        if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
+        return new InitializationRead(audit,afterScope);
+    }
+    /** Cross the complete audit's actual Display rows with the independent
+     * framework readback's existing stable-device identity serialization. */
+    private static void requireDevices(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> facts,PublicOwnGroupPolicy.Readback actual)throws Exception{
+        for(int id:new int[]{0,1}){
+            PublicOwnGroupPhysicalFence.DisplayFacts row=facts.get(id);
+            ByteArrayOutputStream bytes=new ByteArrayOutputStream();java.io.DataOutputStream out=new java.io.DataOutputStream(bytes);
+            out.writeUTF("hepta.public-own-group.physical-device-identity.v1");out.writeInt(row.id);out.writeUTF(row.uniqueId);out.writeInt(row.type);out.flush();
+            if(!ProfileIdentity.sha(bytes.toByteArray()).equals(actual.physicalDeviceIdentities.get(id)))
+                throw new IOException("PUBLIC_INITIALIZATION_AUDIT_DEVICE_DISAGREES");
+        }
+    }
     static Map<Integer,String> read(Object windowManager,DisplayManager displays,int targetUser,LongSupplier deadline)throws Exception{
         if(android.os.Build.VERSION.SDK_INT!=36)throw new IOException("PUBLIC_AUDIT_PHYSICAL_PLATFORM_UNSUPPORTED");
         Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before=displayFacts(displays);

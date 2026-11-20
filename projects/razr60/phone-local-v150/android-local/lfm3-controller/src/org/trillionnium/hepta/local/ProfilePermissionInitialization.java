@@ -89,8 +89,9 @@ public final class ProfilePermissionInitialization {
         private String data(){return id+":"+display+":"+task+":"+type+":"+layer+":"+packageName+":"+active+":"+focused;}
     }
     /** Snapshot facts come from a dedicated platform adapter, never an LLM.
-     * physicalIdentities contains complete identity/focus/recents fingerprints for
-     * both Razr physical displays (0 and 1); an empty or partial census refuses. */
+     * physicalIdentities always contains complete identity/focus/recents audit
+     * fingerprints for displays 0 and 1. V1 freezes them; authenticated public
+     * V2 compares its additional owned-scope projection. Partial reads refuse. */
     public static final class Snapshot {
         public final PermissionWindowObservation identity;
         public final long started,finished;
@@ -150,7 +151,7 @@ public final class ProfilePermissionInitialization {
         }
         private boolean sameDialog(Snapshot other){
             if(other==null||!identity.sameRequest(other.identity)||!fingerprint.equals(other.fingerprint)
-                    ||!physicalIdentities.equals(other.physicalIdentities)||nodes.size()!=other.nodes.size())return false;
+                    ||!identity.samePhysicalScope(other.identity)||nodes.size()!=other.nodes.size())return false;
             for(int i=0;i<nodes.size();i++)if(!Objects.equals(nodes.get(i).handle,other.nodes.get(i).handle))return false;
             return true;
         }
@@ -298,7 +299,7 @@ public final class ProfilePermissionInitialization {
                     &&snapshot.identity.observedElapsedMs>=snapshot.started,"PERMISSION_UI_TIME_INVALID");
             provenance.require(snapshot.identity,now);snapshot.identity.requireFresh(now);
             need(owner.sameOwnedTask(snapshot.identity),"PERMISSION_OWNED_TASK_CHANGED");
-            need(physicalBaseline.equals(snapshot.physicalIdentities),"PERMISSION_PHYSICAL_DISPLAY_CHANGED");
+            need(owner.samePhysicalScope(snapshot.identity),"PERMISSION_PHYSICAL_DISPLAY_CHANGED");
         }
         public synchronized Preview publish(Snapshot snapshot,StatePublisher publisher,Platform platform)throws Exception{
             guard(platform);need(state==State.READY&&publisher!=null,"PERMISSION_PREVIEW_NOT_AVAILABLE");

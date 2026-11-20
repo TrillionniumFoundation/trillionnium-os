@@ -2,17 +2,17 @@
   "schema": "hepta.local-source.v3",
   "base_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
   "base_manifest_sha256": "c62a357ec86c6c4f86d83e30e9d86cae386c130a23e4d11f8405b9add24fc3ef",
-  "candidate_status": "native_private_path_publish_fixture_dependency_exact_source_host_validation_r6_pending",
+  "candidate_status": "installed_457_preserved_three_way_source_r7_complete_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 192,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "f3fc2173fd77dc7d0c1d9afbb037d8c66e4831768124af47f906dac63e24fcad",
+  "production_input_map_sha256": "444754839c9ab862b0e25f167a0b5e30b6075db94e40a92f6310ab2239b848ea",
   "complete_source_files": 2286,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim. Resolve private native paths component by component through held directory descriptors with no symlink traversal. Preserve input FD, owner, mode, size, SHA and named-identity checks for both generated text and VLM workers. Retain the original 43 guard checks and add a real filesystem race regression under existing Python discovery. The independently rebuilt native ELF is bound to its actual source and receipt; full r5 host, Android and phone qualification remains pending. Compile the standalone publication fixture against the actual private IO definitions and initialize the real directory identity for every destination, retaining all 18 original assertions and explicitly reaching the invalid-fd fsync failure. This fixture-only successor preserves the 46-member native source and independently rebuilt ELF. Full exact-source r6 host, Android and phone qualification remains pending.",
+  "scope": "Exact ebb383 source plus selectively ported ordinary runtime routing and transactional visual model settings from PR160/5cb88c5. Add official pinned LFM3-VL-2B Q4_0/F16 observation-only profile and actually rebuilt native worker. Preserve GUI-Owl tools and text NPU default, all original tool dispatch limits, source/build/installed identity, background/profile/physical-screen guards. Recognize observed Ctrip v1779 SMS login variant and release a date reservation only after the exact original action is proved not entered, worker drained and durable outcome written; require a new observation and model run. No model or business phone qualification is claimed by this source manifest. Close ordinary MainActivity visual projector presence and task preflight using the selected closed artifact profile. Preserve original UI assertions and shared qualification fixture cases; add LFM/GUI projector discrimination and exact ordinary model/background preflight regressions. This immutable r2 source has no Android or phone qualification claim. Preserve the original exact-admission text/GUI assertions while separately checking the closed LFM3-VL observation profile. Admit only the reviewed noninteractive Xiaomi search-hint right-edge variation for an unchanged search icon, with three exact archived request/action pairs and 45 new mandatory regression cases. This immutable r3 source has no Android, phone, or business qualification claim. Bind the unchanged maximum-census gate to the audited legacy comparator or the exact reviewed Xiaomi successor. Retain the fixed 21-method digest and every projection/IO assertion; actual unknown-hash rejection and the complete positive stale-recovery gate passed in isolation. This immutable r4 source still has no Android, phone or business qualification claim. Resolve private native paths component by component through held directory descriptors with no symlink traversal. Preserve input FD, owner, mode, size, SHA and named-identity checks for both generated text and VLM workers. Retain the original 43 guard checks and add a real filesystem race regression under existing Python discovery. The independently rebuilt native ELF is bound to its actual source and receipt; full r5 host, Android and phone qualification remains pending. Compile the standalone publication fixture against the actual private IO definitions and initialize the real directory identity for every destination, retaining all 18 original assertions and explicitly reaching the invalid-fd fsync failure. This fixture-only successor preserves the 46-member native source and independently rebuilt ELF. Full exact-source r6 host, Android and phone qualification remains pending. Preserve the independently verified installed 457f03 branch with common ebb383 source ancestry. Integrate all six public permission/virtual-display production fixes, original added regressions and raised policy thresholds. Preserve all r6 native/runtime/model sources and the exact purpose-specific comparator. Three explicitly documented test-policy resolutions retain account-value-independent login return and contained noninteractive hint-right comparison with original action gates. Full exact-source r7 host, Android and phone qualification remains pending.",
   "files": [
     {
       "path": ".gitignore",
@@ -6171,8 +6171,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 101575,
-      "sha256": "b079273a10e986233fc25fbbb6267c5a1b963fd13d175e9ee3110c0d33781cb3"
+      "bytes": 103949,
+      "sha256": "bbd621bb40fa36d56a3731cb9246dc8fdd4b6cbd79564280113e35b751adef24"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6211,8 +6211,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PermissionWindowObservation.java",
-      "bytes": 9075,
-      "sha256": "0020ba395cd2ba050f07d1656bf0454e99fb8d4d5876331e8e4f85db8e731098"
+      "bytes": 19577,
+      "sha256": "b7deba68699311af54ef8e06137ab455f2753201915f1e0e2696f14ac89c8c5a"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PhysicalDisplayFence.java",
@@ -6316,8 +6316,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java",
-      "bytes": 7245,
-      "sha256": "2a333554dc0155b68d649bd21ef6cf36f914a46947e9159320cdeee19eb7475a"
+      "bytes": 12193,
+      "sha256": "a3d14f814b5249ece8ae08f730e3ea1f21232efd2c2e3d8afcf2b0719a6c4998"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java",
@@ -6426,8 +6426,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 112433,
-      "sha256": "66648f9c10dbee82211f26acaa63528b5df2046d1fdd7d12d4bc32301e67d32a"
+      "bytes": 112577,
+      "sha256": "ff7a56d8a243650f017a3a4d40a72601e3f9517606352b6120504558660a3ced"
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
@@ -6636,8 +6636,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "bytes": 53518,
-      "sha256": "603ec3111bfa7330ee7f6cf361d22492154d213f052cd942a0dd1f00f5108459"
+      "bytes": 55419,
+      "sha256": "fcce736df40dfc29fe8b2b31e6c37d58e9e820ca075727dd6fd4a05aea1ae3a7"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
@@ -6761,13 +6761,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionAndroidAdapter.java",
-      "bytes": 14249,
-      "sha256": "493fbb5c16754b1d1285c2831e3711190160704b7ac3be9fcbb696178dd96c36"
+      "bytes": 14222,
+      "sha256": "e0108c7edbbcb7d4e872c745be7627323d7c6369d8eaa270587e628bf56c6675"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionInitialization.java",
-      "bytes": 27018,
-      "sha256": "24e9c1456caf3df7a83ed3c6575406e80fb2802ffb1c1d4bbc8be253d0c6a0ab"
+      "bytes": 27073,
+      "sha256": "7a36feb5497ddeb323fbdab8dd2cec1e54580b6d8b2006202a494c1b1ffdbae0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionUiSession.java",
@@ -7991,8 +7991,8 @@
     },
     {
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "bytes": 18501,
-      "sha256": "b9dfd34d29b75bb277da1a61eb43b7e8e04cf8b7dbc829b62864cb9d01e32df7"
+      "bytes": 31075,
+      "sha256": "a6e4a0a82f2310a49bae55c439e9c761f89f0fc801f52a9a064f713b1c6b0364"
     },
     {
       "path": "tests/native-action-integration/IntegrationChecks.java",
@@ -8136,8 +8136,8 @@
     },
     {
       "path": "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java",
-      "bytes": 24505,
-      "sha256": "a32811f5a31d3c17410f44a56df9c79c54ea76dfdaaf59fb4f4514ddb2881447"
+      "bytes": 44407,
+      "sha256": "a786a4e7d0e2530802167fbd668928866f44c5d6a61e5bf95bb608f3c249d3d6"
     },
     {
       "path": "tests/native-app-provider/NativeCtripSmsLoginHostTest.java",
@@ -8296,8 +8296,8 @@
     },
     {
       "path": "tests/native-app-provider/run_host.py",
-      "bytes": 42414,
-      "sha256": "94e4719e25db6a14dafdccbbe880230585f32840f52203526dd8eab47edbd2af"
+      "bytes": 43489,
+      "sha256": "d3d91dac5fb6b51c6c9d1a2265534508d467a1d4f3e27c7570308cfb33779375"
     },
     {
       "path": "tests/native-app-routing/InstalledIdentityFixture.template",
@@ -9371,8 +9371,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java",
-      "bytes": 28270,
-      "sha256": "60970d7b77f22b02bd37be3e6c75ece88b62ebb8280a09c6132c533206d6601e"
+      "bytes": 45087,
+      "sha256": "77f851a4b43301b0b9e85cacf62b686c2da5a39f52562ca54c9c9bac81ec59d4"
     },
     {
       "path": "tests/profile-permission-initialization/README.md",
@@ -9381,8 +9381,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/run_host.py",
-      "bytes": 7396,
-      "sha256": "9ded5cf8bdaee68fbb20c1e4f2619ed055951d98e15c9288a6942377a7f7b007"
+      "bytes": 12204,
+      "sha256": "2d560b5901f006957a55deb7766cd040fa0dbb4f919c6285db7f9a1b29f95fc8"
     },
     {
       "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
@@ -9601,8 +9601,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicOwnGroupSessionHostTest.java",
-      "bytes": 16872,
-      "sha256": "1bd0163d3ae558e80d1bc3fa6204441d986bc96c79f9123015d55257c215d9fb"
+      "bytes": 23315,
+      "sha256": "eccd4bddc336553e4d8b6812ebc2aa7a4499729250686c550687dea0e7ca5392"
     },
     {
       "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
@@ -11232,7 +11232,7 @@
     {
       "path": "tools/run_host_checks.py",
       "bytes": 57970,
-      "sha256": "ae3fe03b6f716527cdfb65c17141307e815d2244733aee8acf50e0d9bbcd559a"
+      "sha256": "d4e13a3ff666b8462bffdbdc5073e965d0aa713419c8b4d1aa9d0118fdd158e7"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

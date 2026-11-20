@@ -254,7 +254,8 @@ final class NativeCtripFlightPage {
         return false;
     }
     private static boolean hasSmsLoginMarker(NativeAppEvidence.Frame f){
-        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"tvLoginTitle").equals(n.viewId)||(PREFIX+"tvDoLogin").equals(n.viewId))return true;
+        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"tvLoginTitle").equals(n.viewId)
+                ||(PREFIX+"tvDoLogin").equals(n.viewId))return true;
         return false;
     }
     private static Page loginRequired(NativeAppEvidence.Frame f){
@@ -283,49 +284,67 @@ final class NativeCtripFlightPage {
                 &&privacy.bottom<=carrier.top,"ordered nonoverlapping login anchors required");
         return empty(f,LOGIN_REQUIRED,"native_ctrip_login_requires_user_handling");
     }
-    /** Exact observed v1779 empty-phone SMS variant. The disabled SMS button is
-     * obstruction evidence only; no account value is read or made actionable. */
+    /** The observed v1779 SMS structure is a login obstruction, never a
+     * credential, consent or registration action domain. Phone field contents
+     * are neither page identity nor public prompt facts. The disabled code
+     * button is a structural fact; it does not become an actionable node. */
     private static Page smsLoginRequired(NativeAppEvidence.Frame f){
-        for(NativeAppEvidence.Node n:f.nodes)need(!(PREFIX+"bLoginBtn").equals(n.viewId)
-                &&!(PREFIX+"tvLoginMiddle").equals(n.viewId)&&!(PREFIX+"tvPersonalizedSubtitle").equals(n.viewId)
-                &&!(PREFIX+"tvCarrierServicePolicy").equals(n.viewId),"SMS and one-click login variants must not coexist");
+        for(NativeAppEvidence.Node n:f.nodes){
+            need(PACKAGE.equals(n.packageName),"SMS login must remain in the actual application");
+            for(String id:new String[]{"bLoginBtn","tvPersonalizedSubtitle","tvLoginMiddle","tvCarrierServicePolicy"})
+                need(!(PREFIX+id).equals(n.viewId),"SMS and one-tap login layouts must not be mixed");
+        }
         NativeAppEvidence.Node register=loginNode(f,"tvTitleBarRightBtn","android.widget.TextView","注册","",true);
         NativeAppEvidence.Node title=loginNode(f,"tvLoginTitle","android.widget.TextView","手机验证码登录","",false);
         NativeAppEvidence.Node subtitle=loginNode(f,"tvLoginSubTitle","android.widget.TextView","未注册手机验证后即可完成注册","",false);
-        NativeAppEvidence.Node button=disabledSmsButton(f);
-        NativeAppEvidence.Node password=loginNode(f,"tvLeftBtn","android.widget.TextView","账号密码登录","",true);
-        NativeAppEvidence.Node foreign=loginNode(f,"tvRightBtn","android.widget.TextView","境外手机密码登录","",true);
+        NativeAppEvidence.Node country=loginNode(f,"llCountryCode","android.widget.LinearLayout","","国家码，区号86",true);
+        NativeAppEvidence.Node countryText=loginNode(f,"tvCountryCode","android.widget.TextView","+ 86","",false);
+        NativeAppEvidence.Node phone=null;
+        for(NativeAppEvidence.Node n:f.nodes)if(n.editable||"android.widget.EditText".equals(n.className)){
+            need(phone==null,"one observed phone field required");phone=n;
+        }
+        requireSmsPhoneField(f,phone);
+        NativeAppEvidence.Node code=null;
+        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"tvDoLogin").equals(n.viewId)){
+            need(code==null,"one observed SMS code button required");code=n;
+        }
+        requireSmsField(f,code,PREFIX+"tvDoLogin","android.widget.TextView","获取验证码","获取验证码按钮不可用，请先输入手机号",false,false);
+        NativeAppEvidence.Node left=loginNode(f,"tvLeftBtn","android.widget.TextView","账号密码登录","",true);
+        NativeAppEvidence.Node right=loginNode(f,"tvRightBtn","android.widget.TextView","境外手机密码登录","",true);
         NativeAppEvidence.Node select=loginNode(f,"rlSelectIcon","android.widget.RelativeLayout","","",true);
         NativeAppEvidence.Node icon=loginNode(f,"ivSelectIcon","android.widget.ImageView","","勾选服务协议和个人信息保护指引",false);
         NativeAppEvidence.Node remark=loginNode(f,"tvServiceProtocolRemark","android.widget.TextView","阅读并同意携程的","",false);
         NativeAppEvidence.Node protocol=loginNode(f,"tvServiceProtocol","android.widget.TextView","《服务协议》","",true);
         NativeAppEvidence.Node privacy=loginNode(f,"tvServicePolicy","android.widget.TextView","《个人信息保护指引》","",true);
         String scope=parent(title.path);
-        NativeAppEvidence.Node[] anchors={register,title,subtitle,button,password,foreign,select,remark,protocol,privacy};
-        int[] positions={1,2,3,6,7,8,12,13,14,16};
-        for(int i=0;i<anchors.length;i++)need(anchors[i].path.equals(scope+"/"+positions[i])
-                &&"android.widget.LinearLayout".equals(anchors[i].parentClass)&&anchors[i].scrollDirections.isEmpty(),
-                "same observed SMS login container and ordering required");
-        need(icon.within(select)&&parent(icon.path).equals(select.path)&&select.className.equals(icon.parentClass)
-                &&icon.scrollDirections.isEmpty(),"same observed unchecked SMS agreement indicator required");
-        need(register.bottom<=title.top&&title.bottom<=subtitle.top&&subtitle.bottom<=button.top
-                &&button.bottom<=password.top&&password.top==foreign.top&&password.bottom==foreign.bottom
-                &&password.right<=foreign.left&&password.bottom<=select.top&&select.right<=remark.left
+        NativeAppEvidence.Node[] row={register,title,subtitle,country,phone,code,left,right,select,remark,protocol,privacy};
+        int[] slots={1,2,3,4,5,6,7,8,12,13,14,16};
+        for(int i=0;i<row.length;i++)need(row[i].path.equals(scope+"/"+slots[i])
+                &&"android.widget.LinearLayout".equals(row[i].parentClass)&&row[i].scrollDirections.isEmpty(),
+                "same observed SMS login container required");
+        need(countryText.within(country)&&countryText.path.equals(country.path+"/0")&&country.className.equals(countryText.parentClass)
+                &&icon.within(select)&&icon.path.equals(select.path+"/0")&&select.className.equals(icon.parentClass)&&icon.scrollDirections.isEmpty(),
+                "same observed SMS country and agreement children required");
+        need(register.bottom<=title.top&&title.bottom<=subtitle.top&&subtitle.bottom<=Math.min(country.top,phone.top)&&country.right<=phone.left
+                &&Math.max(country.bottom,phone.bottom)<=code.top&&code.bottom<=Math.min(left.top,right.top)
+                &&left.top==right.top&&left.bottom==right.bottom&&left.right<=right.left&&Math.max(left.bottom,right.bottom)<=select.top&&select.right<=remark.left
                 &&remark.right<=protocol.left&&protocol.right<=privacy.left,
                 "ordered nonoverlapping SMS login anchors required");
         return empty(f,LOGIN_REQUIRED,"native_ctrip_login_requires_user_handling");
     }
-    private static NativeAppEvidence.Node disabledSmsButton(NativeAppEvidence.Frame f){
-        NativeAppEvidence.Node value=null;
-        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"tvDoLogin").equals(n.viewId)){
-            need(value==null,"ambiguous disabled SMS anchor");value=n;
-        }
-        need(f.usable(value)&&"android.widget.TextView".equals(value.className)&&"获取验证码".equals(value.text)
-                &&"获取验证码按钮不可用，请先输入手机号".equals(value.description)&&!value.enabled
-                &&value.clickable&&!value.password&&!value.editable&&!value.scrollable&&value.scrollDirections.isEmpty()
-                &&Boolean.FALSE.equals(value.selected)&&Boolean.FALSE.equals(value.checkable)&&Boolean.FALSE.equals(value.checked),
-                "exact observed disabled SMS button required; never an action target");
-        return value;
+    /** Account contents never identify or authorize leaving the observed login page. */
+    private static void requireSmsPhoneField(NativeAppEvidence.Frame f,NativeAppEvidence.Node n){
+        need(f.usable(n)&&n.viewId.isEmpty()&&"android.widget.EditText".equals(n.className)
+                &&n.enabled&&n.editable&&n.clickable&&!n.password&&!n.scrollable&&n.scrollDirections.isEmpty()
+                &&Boolean.FALSE.equals(n.selected)&&Boolean.FALSE.equals(n.checkable)&&Boolean.FALSE.equals(n.checked),
+                "exact observed SMS phone field structure required");
+    }
+    private static void requireSmsField(NativeAppEvidence.Frame f,NativeAppEvidence.Node n,String id,String cls,
+            String text,String description,boolean enabled,boolean editable){
+        need(f.usable(n)&&id.equals(n.viewId)&&cls.equals(n.className)&&text.equals(n.text)&&description.equals(n.description)
+                &&n.enabled==enabled&&n.editable==editable&&n.clickable&&!n.password&&!n.scrollable&&n.scrollDirections.isEmpty()
+                &&Boolean.FALSE.equals(n.selected)&&Boolean.FALSE.equals(n.checkable)&&Boolean.FALSE.equals(n.checked),
+                "exact observed SMS code field required");
     }
     /** A current observed return control, never a coordinate or system Back fallback.
      * Missing or ambiguous controls leave the recognized login page non-actionable. */
@@ -333,17 +352,7 @@ final class NativeCtripFlightPage {
         if(page==null||!LOGIN_REQUIRED.equals(page.phase))return null;
         NativeAppEvidence.Frame f=page.frame;
         try{
-            if(hasSmsLoginMarker(f)){
-                NativeAppEvidence.Node back=loginNode(f,"ivTitleBarLeftBtn","android.widget.ImageView","","",true);
-                NativeAppEvidence.Node title=loginNode(f,"tvLoginTitle","android.widget.TextView","手机验证码登录","",false);
-                NativeAppEvidence.Node register=loginNode(f,"tvTitleBarRightBtn","android.widget.TextView","注册","",true);
-                need(back.path.equals(parent(title.path)+"/0")&&"android.widget.LinearLayout".equals(back.parentClass)
-                        &&back.bottom<=title.top&&back.left<title.left&&back.right<=title.right
-                        &&back.right<=register.left&&back.top<register.bottom&&register.top<back.bottom
-                        &&back.label.isEmpty()&&back.scrollDirections.isEmpty(),
-                        "same observed resource-only SMS title-bar return required");
-                return back;
-            }
+            if(hasSmsLoginMarker(f))return smsLoginReturnControl(f);
             NativeAppEvidence.Node back=loginNode(f,"ivTitleBarLeftBtn","android.widget.ImageView","","返回",true);
             NativeAppEvidence.Node subtitle=loginNode(f,"tvPersonalizedSubtitle","android.widget.TextView","账号安全，放心登录","",false);
             need(parent(back.path).equals(parent(subtitle.path))&&"android.widget.ScrollView".equals(back.parentClass)
@@ -353,15 +362,29 @@ final class NativeCtripFlightPage {
             return back;
         }catch(IllegalArgumentException unavailable){return null;}
     }
-    /** Same installed-provider exception as the cold-home resource control, but
-     * only for the exact unlabelled SMS return. Session still requires an actual
-     * prior query/result chain and reserves a single model proposal. */
+    private static NativeAppEvidence.Node smsLoginReturnControl(NativeAppEvidence.Frame f){
+        smsLoginRequired(f);
+        NativeAppEvidence.Node back=loginNode(f,"ivTitleBarLeftBtn","android.widget.ImageView","","",true);
+        NativeAppEvidence.Node register=loginNode(f,"tvTitleBarRightBtn","android.widget.TextView","注册","",true);
+        NativeAppEvidence.Node title=loginNode(f,"tvLoginTitle","android.widget.TextView","手机验证码登录","",false);
+        String scope=parent(title.path);
+        need(back.path.equals(scope+"/0")&&register.path.equals(scope+"/1")
+                &&"android.widget.LinearLayout".equals(back.parentClass)&&back.parentClass.equals(register.parentClass)
+                &&back.label.isEmpty()&&back.scrollDirections.isEmpty()&&register.scrollDirections.isEmpty()
+                &&back.right<=register.left&&Math.max(back.top,register.top)<Math.min(back.bottom,register.bottom)
+                &&Math.max(back.bottom,register.bottom)<=title.top&&back.left<title.left
+                &&back.right<=title.right&&back.right<=f.left+(f.right-f.left)/4,
+                "same observed top-left SMS login resource control required");
+        return back;
+    }
+    /** Only this installed-version SMS layout may name its unlabelled return
+     * resource. Session still requires its actual query/result chain and one
+     * proposal budget; the existing NodeRef and service checks still dispatch. */
     static boolean resourceLoginReturnClick(NativeAppEvidence.Frame frame,String nodeId){
         try{
-            need(frame!=null&&PACKAGE.equals(frame.packageName)&&frame.metadataObserved&&frame.windowType==1
-                    &&frame.displayId>0&&frame.collectionComplete&&!frame.nodesTruncated&&hasSmsLoginMarker(frame),
-                    "complete observed SMS application frame required");
-            NativeAppEvidence.Node back=loginReturnControl(loginRequired(frame));
+            need(frame!=null&&PACKAGE.equals(frame.packageName)&&frame.displayId>0&&frame.metadataObserved&&frame.windowType==1
+                    &&frame.collectionComplete&&!frame.nodesTruncated&&hasSmsLoginMarker(frame),"complete SMS login frame required");
+            Page page=loginRequired(frame);NativeAppEvidence.Node back=loginReturnControl(page);
             return back!=null&&back.id.equals(nodeId)&&back==frame.byId.get(nodeId)&&back.label.isEmpty();
         }catch(IllegalArgumentException rejected){return false;}
     }
