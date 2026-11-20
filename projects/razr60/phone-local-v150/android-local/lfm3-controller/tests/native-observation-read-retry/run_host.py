@@ -7,6 +7,7 @@ TEST=Path('tests/native-observation-read-retry')
 
 def load(path,name):
     spec=importlib.util.spec_from_file_location(name,path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+EXPECTED_PENDING_NAMES=['pending_actual_loop_observes_before_next_model', 'pending_no_new_model_at_original_absolute_deadline', 'pending_successful_reads_never_renew_first_transition', 'pending_total_task_cap_clips_read_before_transition', 'pending_request_retains_original_12_second_cap', 'pending_failed_read_does_not_mint_or_spend_a_retry', 'pending_old_observation_is_not_replayed', 'pending_model_guard_refuses_before_any_read', 'pending_currentness_and_queue_guards_run_before_new_read', 'pending_cancellation_after_success_callback_blocks_model', 'pending_installed_identity_change_blocks_model', 'pending_original_96_successful_observation_limit_is_shared', 'pending_completed_transition_needs_no_additional_read', 'pending_non_native_loop_keeps_original_model_route', 'failed_dispatched_action_no_pending_keeps_original_raw_diagnostic', 'pending_outcome_journal_failure_cannot_start_read', 'pending_unknown_action_drain_cannot_start_observation', 'pending_deadline_clock_cannot_precede_original_outcome', 'pending_read_context_binds_original_owner_objects', 'pending_expired_context_never_submits_read_or_model', 'pending_new_observation_id_must_also_advance_capture_clock', 'pending_intent_io_failure_prevents_read_and_model']
 def need(value,why):
     if not value:raise RuntimeError(why)
 def main():
@@ -43,6 +44,8 @@ def main():
         need(run_task.count('awaitPostEffectNativeObservation(')==1,'one post-effect observation callsite')
         need(run_task.index('activeNativeTask.modelActionOutcome(')<run_task.index('awaitPostEffectNativeObservation('),'durable outcome precedes post-effect read')
         anchors={
+          'pending_require':'    private void requirePendingNativeObservation(',
+          'pending_wrapper':'    private PhoneObservation awaitPendingNativeTransition(',
           'post_context':'    private static final class PostEffectNativeObservation {',
           'post_failure':'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {',
           'post_require':'    private void requirePostEffectNativeObservation(',
@@ -62,6 +65,10 @@ def main():
           'await_raw_request':'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n',
           'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
+        methods['pending_loop_prefix']=extractor.section(controller,'            taskSteps: while(steps<MAX_STEPS){','                // Includes fresh observations after stale/undispatched proposals.')
+        methods['pending_model_guard']=extractor.section(controller,'        if(nativeApp){\n            NativeAppSession nativeTask=activeNativeTask;','        final LocalRuntimeConfig runtime=inference.configuration();')
+        need(run_task.count('awaitPendingNativeTransition(')==1 and run_task.index('awaitPendingNativeTransition(')<run_task.index('awaitModel('),
+             'actual main loop must finish pending observation before model planning')
         methods['service_proof']=extractor.body(service,'    static final class NativeObservationRetryProof {')
         methods['initial_service_proof']=extractor.body(service,'    static final class InitialObservationRetryProof {')
         methods['post_service_proof']=extractor.body(service,'    static final class PostEffectObservationRetryProof {')
@@ -88,6 +95,7 @@ def main():
             step=common.stage(name,argv,out,env);report['steps'].append(step);need(step['exit_code']==0,'actual stage failed: '+name)
         cases=json.loads((out/'CASES.json').read_text(encoding='utf-8'))
         need(cases['all_pass'] and cases['cases']==len(cases['case_names'])==len(set(cases['case_names'])) and cases['assertions']>0,'complete unique real cases')
+        need(all(name in cases['case_names'] for name in EXPECTED_PENDING_NAMES),'all actual pending-loop regression identities required')
         report.update(all_pass=True,cases=cases,cases_file=common.meta(out/'CASES.json'),case_records={'CASES.json':common.meta(out/'CASES.json')},
           extraction_file=common.meta(out/'CONSUMER-EXTRACTION.json'),bridge_extraction_file=common.meta(out/'EXTRACTION.json'),
           generated_files={str(p.relative_to(out/'generated')):common.meta(p) for p in sorted((out/'generated').rglob('*.java'))})

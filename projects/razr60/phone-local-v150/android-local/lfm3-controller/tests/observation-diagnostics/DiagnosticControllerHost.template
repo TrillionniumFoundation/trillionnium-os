@@ -15,6 +15,11 @@ final class DiagnosticControllerHost {
     static final class Selection {String initialPackage=DiagnosticChecks.APP;}
     static final class BackgroundSession {String generation=DiagnosticChecks.GENERATION,ownerSha256=DiagnosticChecks.OWNER;Selection selection=new Selection();}
     static final class TaskAuthorization {static final class Gate {Map<String,Object> evidence(){return Collections.<String,Object>emptyMap();}}}
+    // This retained diagnostic fixture never enables a native Session.
+    static final class NativeAppSession {
+        long boundedObservationDeadline(long deadline,long now){throw new AssertionError("native pending mode not enabled by diagnostic fixtures");}
+    }
+    final NativeAppSession activeNativeTask=null;
     static final class PhoneObservation {final String id="44444444444444444444444444444444";JSONObject toEvidenceJson(){return new JSONObject().put("observation_id",id);}}
     static final class HeptaAccessibilityService {
         interface Cancellation {boolean isCancelled();}

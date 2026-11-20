@@ -218,8 +218,16 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static String systemPrompt(LocalRuntimeConfig config,boolean nativeApp){
         if(config==null)throw new IllegalArgumentException("local configuration required");
-        return config.profile.visual()?VisualPromptProjection.SYSTEM:
+        String system=config.profile.visual()?VisualPromptProjection.SYSTEM:
                 nativeApp?VisualPromptProjection.NATIVE_SYSTEM:SYSTEM;
+        return config.profile==ModelProfile.LFM25_8B_A1B
+                ?system+"本轮 reason 最多24字；只输出紧凑JSON，字符串外不得留空格、换行或制表符。字符串内的原始标签和OWNER完整正文逐字保留。\n"
+                :system;
+    }
+
+    private static DecisionGrammar profileGrammar(LocalRuntimeConfig config,DecisionGrammar grammar){
+        if(config==null||grammar==null)throw new IllegalArgumentException("local configuration and observed grammar required");
+        return config.profile==ModelProfile.LFM25_8B_A1B?grammar.compactReasonAndWhitespace():grammar;
     }
 
     public LocalTaskController(HeptaAccessibilityService service,LocalInference inference){
@@ -463,7 +471,9 @@ public final class LocalTaskController implements AutoCloseable {
             emit("正在观察当前屏幕…");observation=awaitInitialNativeObservation(taskId,evidence,authorization,deadline);
             completion.observed(completionFrame(observation));
             taskSteps: while(steps<MAX_STEPS){
-                checkActive(deadline);steps++;
+                checkActive(deadline);
+                observation=awaitPendingNativeTransition(taskId,evidence,authorization,deadline,observation);
+                steps++;
                 final PhoneObservation before=observation;
                 // Includes fresh observations after stale/undispatched proposals.
                 // Observation evidence can advance a stage; it never replays an action.
@@ -1235,6 +1245,11 @@ public final class LocalTaskController implements AutoCloseable {
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
                                   PhoneObservation before,String originalInstruction,
                                   TaskAuthorization.Gate authorization,BackgroundSession background,boolean nativeApp)throws Exception{
+        if(nativeApp){
+            NativeAppSession nativeTask=activeNativeTask;
+            if(nativeTask==null)throw new IllegalStateException("原生模型请求缺少同一任务");
+            nativeTask.requireModelPlanning();
+        }
         final LocalRuntimeConfig runtime=inference.configuration();
         final String system=systemPrompt(runtime,nativeApp);
         if(!ConservativeTokenBudget.estimate(system,prompt,runtime).mayAttemptNative())
@@ -1294,6 +1309,47 @@ public final class LocalTaskController implements AutoCloseable {
             service.requireExperimentalModelScope(this,authorization.taskId,authorization,background,modelScopeCancel,taskDeadline);
         return answer;
     }
+    private void requirePendingNativeObservation(NativeAppSession nativeTask,NativeAppSession.PendingObservation pending,
+            BackgroundSession background,String id,TaskAuthorization.Gate authorization,long deadline)throws Exception{
+        if(nativeTask==null||nativeTask!=activeNativeTask||background==null||background!=activeNativeBackground
+                ||!id.equals(currentTaskId)||activeWebTask!=null||initialNativeObservation!=null||postEffectNativeObservation!=null)
+            throw new IllegalStateException("待验证页面的观察任务身份已变化");
+        synchronized(handleLock){if(activeInference!=null)throw new IllegalStateException("待验证页面不能跨越模型请求");}
+        checkActive(deadline);pending.requireOwner(nativeTask,authorization,id,background.selection,background.generation,background.displayId());
+        if(service.actionWorkPending()||service.nativeCancellationWorkPending())
+            throw new IllegalStateException("待验证页面的动作队列尚未退出");
+    }
+    /** Successful reads may await the page produced by the one original effect.
+     * No model wait, failed-read retry, action replay or new transition budget. */
+    private PhoneObservation awaitPendingNativeTransition(String id,File directory,TaskAuthorization.Gate authorization,long deadline,
+            PhoneObservation observed)throws Exception{
+        final NativeAppSession nativeTask=activeNativeTask;
+        final NativeAppSession.PendingObservation pending=nativeTask==null?null:nativeTask.pendingObservation();
+        if(pending==null)return observed;
+        final BackgroundSession background=activeNativeBackground;int reads=0;
+        emit("正在等待手机页面完成切换…");
+        while(pending.required()){
+            requirePendingNativeObservation(nativeTask,pending,background,id,authorization,deadline);
+            long bound=nativeTask.boundedObservationDeadline(deadline,SystemClock.elapsedRealtime());
+            final PhoneObservation before=observed;
+            String leaf="native-pending-observation-"+pending.originalRun()+"-"+(++reads);
+            record(directory,leaf+"-intent.json",new JSONObject(pending.evidence())
+                    .put("read_ordinal",reads).put("task_deadline_elapsed_ms",deadline)
+                    .put("bounded_observation_deadline_elapsed_ms",bound).put("previous_observation_id",before.id)
+                    .put("model_requested",false).put("failed_read_retried",false));
+            observed=awaitObservation(id,directory,authorization,deadline);
+            requirePendingNativeObservation(nativeTask,pending,background,id,authorization,deadline);
+            if(observed==null||before.id.equals(observed.id)||observed.capturedElapsedMillis<=before.capturedElapsedMillis
+                    ||!nativeTask.domain().frame.observationId.equals(observed.id))
+                throw new IllegalStateException("待验证页面需要本次新采集的完整观察");
+            record(directory,leaf+"-result.json",new JSONObject(pending.evidence())
+                    .put("read_ordinal",reads).put("observation_id",observed.id)
+                    .put("captured_elapsed_ms",observed.capturedElapsedMillis).put("pending",pending.required())
+                    .put("model_requested",false).put("action_replayed",false));
+        }
+        return observed;
+    }
+
     private static final class InitialNativeObservation {
         final NativeAppSession nativeTask;final BackgroundSession background;final TaskAuthorization.Gate authorization;
         final String taskId;final long taskDeadline;final HeptaAccessibilityService.InitialObservationRetryProof retryProof;
@@ -1476,8 +1532,11 @@ public final class LocalTaskController implements AutoCloseable {
         checkActive(deadline);service.verifyBackgroundRemote(id);checkActive(deadline);
         final PostEffectNativeObservation post=postEffectNativeObservation;
         if(post!=null)requirePostEffectNativeObservation(post,id,authorization,deadline);
-        final long observationDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),
-                post==null?deadline:Math.min(deadline,post.permit.transitionDeadline()));
+        final long observationStarted=SystemClock.elapsedRealtime();
+        final NativeAppSession nativeTask=activeNativeTask;
+        final long nativeDeadline=nativeTask==null?deadline:nativeTask.boundedObservationDeadline(deadline,observationStarted);
+        final long observationDeadline=ObservationStabilityGate.requestDeadline(observationStarted,
+                post==null?nativeDeadline:Math.min(nativeDeadline,post.permit.transitionDeadline()));
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<PhoneObservation> value=new AtomicReference<PhoneObservation>();
         final AtomicReference<String> error=new AtomicReference<String>();
@@ -1986,6 +2045,7 @@ public final class LocalTaskController implements AutoCloseable {
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,nativeDomain!=null?nativeDomain.toolMask(taskPhase.toolMask()):web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible,doneStatuses)
                         :DecisionGrammar.createFixedIntentAuthorized(observation.id,observation.packageName,packages,
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets),nativeDomain!=null?nativeDomain.toolMask(taskPhase.toolMask()):web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible,doneStatuses);
+                grammar=profileGrammar(config,grammar);
                 NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);phaseGuard.publish(phaseDomain);
                 CalculatorTaskInputGuard.Domain calculatorDomain=calculator.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);calculatorGuard.publish(calculatorDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,

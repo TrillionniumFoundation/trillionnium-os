@@ -46,6 +46,36 @@ public final class DecisionGrammar {
         }catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
     }
 
+    /** A format-only subset of this already observed and OWNER-bound grammar.
+     * The schema and every immutable authority/domain object remain identical. */
+    DecisionGrammar compactReasonAndWhitespace(){
+        String reasonRule="reason-string ::= "+literal("\"")+" json-char{1,96} "+literal("\"")+"\n";
+        String compactReasonRule="reason-string ::= "+literal("\"")+" json-char{1,24} "+literal("\"")+"\n";
+        String whitespaceRule="ws ::= [ \\t\\n\\r]{0,8}\n";
+        if(text.indexOf(reasonRule)<0||text.indexOf(reasonRule)!=text.lastIndexOf(reasonRule)
+                ||text.indexOf(whitespaceRule)<0||text.indexOf(whitespaceRule)!=text.lastIndexOf(whitespaceRule))
+            throw new IllegalStateException("exact generated reason and whitespace rules required");
+        return new DecisionGrammar(this,text.replace(reasonRule,compactReasonRule)
+                .replace(whitespaceRule,"ws ::= "+literal("")+"\n"));
+    }
+
+    private DecisionGrammar(DecisionGrammar original,String text){
+        this.observationId=original.observationId;this.currentPackage=original.currentPackage;
+        this.schema=original.schema;this.targets=original.targets;this.appLabels=original.appLabels;
+        this.authorization=original.authorization;this.actions=original.actions;
+        this.scrollDirections=original.scrollDirections;this.submitNodes=original.submitNodes;
+        this.fixedIntentTargets=original.fixedIntentTargets;
+        this.successAllowed=original.successAllowed;this.doneStatuses=original.doneStatuses;
+        this.text=text;
+        byte[] bytes=text.getBytes(StandardCharsets.UTF_8);
+        if(bytes.length>65536)throw new IllegalArgumentException("observed action grammar exceeds bound");
+        try{
+            StringBuilder hash=new StringBuilder(64);
+            for(byte value:MessageDigest.getInstance("SHA-256").digest(bytes))hash.append(String.format(Locale.ROOT,"%02x",value&255));
+            this.sha256=hash.toString();
+        }catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
+    }
+
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null,false,Collections.<String>emptySet(),false,null);

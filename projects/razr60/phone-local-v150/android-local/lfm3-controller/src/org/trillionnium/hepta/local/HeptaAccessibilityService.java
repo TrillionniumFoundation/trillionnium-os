@@ -2487,7 +2487,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
-                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work))){
+                // OPEN reaches the actual final census and one-use claim even
+                // when the initial full-tree comparison is exactly equal.
+                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)
+                        ||work.nativeGuard!=null&&NativeActionSnapshotCheck.OPEN.equals(work.nativeGuard.purpose)
+                        &&NativeCtripFlightPage.supported(work.nativeGuard.goal))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));

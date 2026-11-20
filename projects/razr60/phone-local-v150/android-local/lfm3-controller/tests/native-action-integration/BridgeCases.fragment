@@ -27,7 +27,7 @@
             yes(f.dispatch(),"motion only inside unchanged disjoint anchor");
             yes(!new JSONObject(f.work.nativeActionProof).getBoolean("changed_paths_truncated"),"all changed paths recorded");
         });
-        signatureCases();rejectionCases();effectCases();
+        signatureCases();rejectionCases();effectCases();equalOpenCases();
     }
     static void signatureCases()throws Exception{
         one("actual_NodeRef_census_Intent_live_chain_share_full_signature_hash",()->{
@@ -425,6 +425,62 @@
             Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-node");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
             f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
             yes(!f.dispatch(),"equal-looking new icon cannot replace original live reference");f.noEffect("replacement node has no effect");
+        });
+    }
+
+
+    /** The actual unchanged-tree path still needs its private pre-effect claim. */
+    static void equalOpenCases()throws Exception{
+        one("equal_tree_OPEN_runs_final_complete_census_and_one_claim_before_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-positive");Graph same=f.graph(f.fresh,null);
+            try{yes(f.work.graph.digest.equals(same.digest),"explicit equal-tree fixture reaches the formerly unclaimed path");}finally{same.close();}
+            long deadline=f.work.state.deadlineElapsed;NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+            yes(f.dispatch()&&f.effects()==1,"one explicit host effect through actual Service click branch");
+            yes(!f.work.nativeActionRevalidated&&Collections.frequency(f.service.events,"full_census")==2,"equal initial digest still requires a final full census");
+            yes(f.work.nativeActionProof!=null&&Integer.valueOf(1).equals(f.work.nativeGuard.evidence().get("state")),"real claim exists before effect receipt; JSON state is not rewritten");
+            yes(new JSONObject(f.work.nativeActionProof).getBoolean("final_complete_census_compared")
+                &&f.work.graph.refs.get(f.action.nodeId)==original&&f.work.state.deadlineElapsed==deadline,"same original NodeRef and absolute action deadline");
+            IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"private claim cannot enter another effect");
+            yes(f.effects()==1,"no second effect");
+        });
+        one("equal_tree_OPEN_closed_guard_cannot_enter_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-closed");f.work.nativeGuard.close();
+            IntegrationChecks.rejects(()->f.dispatch(),"equal tree cannot revive a closed guard");f.noEffect("closed claim has no effect");
+        });
+        one("equal_tree_OPEN_preclaimed_guard_cannot_enter_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-preclaimed");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);
+            IntegrationChecks.rejects(()->f.dispatch(),"equal tree cannot consume an already claimed guard again");f.noEffect("one-use guard cannot be replayed");
+        });
+        one("equal_tree_OPEN_rechecks_installed_uid_and_apk",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-installed");f.installedCurrent=false;
+            IntegrationChecks.rejects(()->f.dispatch(),"independent actual installed verifier remains mandatory");f.noEffect("changed installed identity has no effect");
+        });
+        one("equal_tree_OPEN_rejects_same_value_selection_replacement",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-selection");
+            f.service.scopeMutation=()->f.service.background.selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(f.selection.taskTarget);
+            IntegrationChecks.rejects(()->f.dispatch(),"same payload cannot replace original Selection object");f.noEffect("new selection gains no claim");
+        });
+        one("equal_tree_OPEN_preserves_original_deadline_and_cancel",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-deadline");long deadline=f.work.state.deadlineElapsed;
+            f.service.scopeMutation=()->SystemClock.now=deadline;IntegrationChecks.rejects(()->f.dispatch(),"original eight-second action cap is exclusive");
+            f.noEffect("deadline cannot be renewed by full recheck");
+            Fixture z=setup(NativeActionSnapshotCheck.OPEN,"equal-open-cancel");z.service.scopeMutation=()->z.service.cancelled=true;
+            IntegrationChecks.rejects(()->z.dispatch(),"original cancellation wins");z.noEffect("cancelled action has no effect");
+        });
+        one("equal_tree_OPEN_rejects_missing_final_complete_census",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-census");f.service.scopeMutation=()->f.service.serviceInfo.flags=0;
+            IntegrationChecks.rejects(()->f.dispatch(),"equal initial graph cannot replace final complete reported-window census");f.noEffect("missing complete census has no effect");
+        });
+        one("equal_tree_OPEN_final_read_cannot_replace_original_live_NodeRef",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-reference");
+            f.service.scopeMutation=()->f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            IntegrationChecks.rejects(()->f.dispatch(),"equal looking new node is not the original retained reference");f.noEffect("replacement reference has no effect");
+        });
+        one("equal_tree_OPEN_last_target_geometry_change_is_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-last-geometry");
+            f.service.afterFinalCensus=()->f.data.get(f.raw.target).values.put("bounds",Arrays.asList(0,0,1,1));
+            IntegrationChecks.rejects(()->f.dispatch(),"original live target and ancestor chain still follow the final census");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"refusal after actual final complete read");f.noEffect("late geometry has no effect");
         });
     }
 

@@ -43,9 +43,23 @@ final class NativeAppSession {
         boolean admitted(boolean retry){throw unavailable();}
         Map<String,Object> evidence(){throw unavailable();}
     }
+    /** Type-only pending-read surface for the complete legacy Controller compile.
+     * No context, deadline, frame or capability can be produced by this boundary. */
+    static final class PendingObservation {
+        private PendingObservation(){throw unavailable();}
+        boolean required(){throw unavailable();}
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){throw unavailable();}
+        long deadline(){throw unavailable();}
+        String originalRun(){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    PendingObservation pendingObservation(){throw unavailable();}
+    long boundedObservationDeadline(long taskDeadline,long now){throw unavailable();}
+    NativeAppDomain domain(){throw unavailable();}
     PostEffectReadPermit postEffectReadPermit(ActionDecision action,String run,String observation){throw unavailable();}
     ReadRecoveryPermit observationRecoveryPermit(ActionDecision action,String run,String observation){throw unavailable();}
     ActionGuard actionGuard(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{throw unavailable();}
+    void requireModelPlanning(){throw unavailable();}
     void verifyInstalled()throws Exception{throw unavailable();}
     void observed(NativeAppEvidence.Frame frame)throws Exception{throw unavailable();}
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{throw unavailable();}

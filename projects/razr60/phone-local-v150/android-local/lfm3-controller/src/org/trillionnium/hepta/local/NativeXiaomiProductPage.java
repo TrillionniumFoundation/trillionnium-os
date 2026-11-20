@@ -311,13 +311,65 @@ final class NativeXiaomiProductPage {
         }
     }
 
+    /** The archived ordinary App toolbar uses a FrameLayout root and direct
+     * sibling slots. Its two real TextView labels distinguish normal search
+     * from the mode toggle; a derived label or nearby blank control is not proof. */
+    private static Page frameLayoutInput(NativeAppGoal goal,NativeAppEvidence.Frame frame,NativeAppEvidence.Node field){
+        if(!"0/1".equals(field.path)||!field.viewId.isEmpty()||!field.clickable||field.scrollable
+                ||!field.scrollDirections.isEmpty()||!unselected(field))
+            return page(frame,"search_input_unverified","observed_frame_layout_query_field_required",null,null);
+        NativeAppEvidence.Node normal=null,normalLabel=null,toggle=null,toggleLabel=null;int labels=0;
+        for(NativeAppEvidence.Node label:exactText(frame,"搜索")){
+            NativeAppEvidence.Node button=clickAncestor(frame,label);
+            if(button==null||!"0".equals(parent(button.path)))continue;
+            labels++;
+            if(!VIEW.equals(button.className)||!"android.widget.FrameLayout".equals(button.parentClass)
+                    ||!button.viewId.isEmpty()||!button.text.isEmpty()||!button.description.isEmpty()
+                    ||button.editable||button.scrollable||!button.scrollDirections.isEmpty()||!unselected(button)
+                    ||!VIEW.equals(label.parentClass)||!label.viewId.isEmpty()||!label.description.isEmpty()
+                    ||label.clickable||label.editable||label.scrollable||!label.scrollDirections.isEmpty()||!unselected(label)
+                    ||distance(label.path,button.path)!=1||childIndex(label.path)!=0)
+                return page(frame,"search_input_unverified","observed_frame_layout_search_controls_required",null,null);
+            if("0/4".equals(button.path)){if(normal!=null)return page(frame,"search_input_unverified","duplicate_normal_search_button",null,null);
+                normal=button;normalLabel=label;}
+            else if("0/0".equals(button.path)){if(toggle!=null)return page(frame,"search_input_unverified","duplicate_search_mode_toggle",null,null);
+                toggle=button;toggleLabel=label;}
+        }
+        if(labels!=2||normal==null||toggle==null||normal==toggle
+                ||toggle.right>=normal.left||toggle.left>field.left||normal.right<field.right
+                ||toggle.top<field.top||normal.top<field.top
+                ||Math.min(toggle.bottom,normal.bottom)<=Math.max(toggle.top,normal.top))
+            return page(frame,"search_input_unverified","normal_search_and_mode_toggle_not_distinguished",null,null);
+        Map<String,Object> proof=map();proof.put("query_field",field.fact("text"));
+        proof.put("normal_search_button",normal.fact("description"));proof.put("normal_search_label",normalLabel.fact("text"));
+        proof.put("excluded_mode_toggle",toggle.fact("description"));proof.put("excluded_mode_toggle_label",toggleLabel.fact("text"));
+        proof.put("same_native_toolbar_path","0");proof.put("toolbar_shape","observed_frame_layout_direct_children.v1");
+        proof.put("mode_toggle_offered",false);proof.put("derived_label_grants_authority",false);
+        String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
+        Map<String,String> purposes=new LinkedHashMap<String,String>();Map<String,Object> facts=map();
+        if(!field.text.equals(literal)){
+            Map<String,String> edits=new LinkedHashMap<String,String>();edits.put(field.id,literal);
+            purposes.put(field.id,"set_product_query");facts.put(field.id,proof);
+            return new Page(frame,"search_input",Collections.<String>emptyList(),Collections.<String>emptySet(),edits,purposes,facts,null);
+        }
+        // No unobserved suggestion layout is admitted by this distinct template.
+        purposes.put(normal.id,"submit_product_query");facts.put(normal.id,proof);
+        return new Page(frame,"search_submit",Collections.<String>emptyList(),Collections.singleton(normal.id),
+                Collections.<String,String>emptyMap(),purposes,facts,null);
+    }
+    private static boolean unselected(NativeAppEvidence.Node node){
+        return Boolean.FALSE.equals(node.selected)&&Boolean.FALSE.equals(node.checkable)&&Boolean.FALSE.equals(node.checked);
+    }
+
     private static Page inputOrHome(NativeAppGoal goal,NativeAppEvidence.Frame frame,boolean preferSearchIcon){
         List<NativeAppEvidence.Node> fields=new ArrayList<NativeAppEvidence.Node>();
         for(NativeAppEvidence.Node n:frame.nodes)
             if(usable(frame,n)&&n.editable&&"android.widget.EditText".equals(n.className))fields.add(n);
         if(fields.size()>1)return page(frame,"search_input_unverified","unique_native_query_field_required",null,null);
         if(fields.size()==1){
-            NativeAppEvidence.Node field=fields.get(0);String toolbar=parent(field.path);
+            NativeAppEvidence.Node field=fields.get(0);
+            if("android.widget.FrameLayout".equals(field.parentClass))return frameLayoutInput(goal,frame,field);
+            String toolbar=parent(field.path);
             int fieldIndex=childIndex(field.path);
             if(!VIEW.equals(field.parentClass)||(fieldIndex!=1&&fieldIndex!=2))
                 return page(frame,"search_input_unverified","observed_search_toolbar_required",null,null);

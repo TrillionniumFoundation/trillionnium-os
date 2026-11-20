@@ -28,6 +28,7 @@ class ExactAdmissionTest(unittest.TestCase):
             classes.mkdir()
             sources, record = module.prepare(source, output / "fixture")
             sources += sorted((root / "tests/exact-admission").rglob("*.java"))
+            sources += [root / "tests/moe-compact-grammar/CompactGrammarHostTest.java"]
             print(json.dumps(record, sort_keys=True))
             compiled = subprocess.run(compiler + ["--release", "8", "-encoding", "UTF-8", "-Xlint:all", "-Werror",
                                                  "-d", str(classes)] + [str(path) for path in sources],
@@ -54,6 +55,22 @@ class ExactAdmissionTest(unittest.TestCase):
                                      capture_output=True, text=True, timeout=30)
             self.assertEqual(grammar.returncode, 0, grammar.stdout + grammar.stderr)
             print(grammar.stdout, end="")
+
+            compact = output / "moe-compact-grammar"
+            compact_java = subprocess.run([java, "-cp", str(classes),
+                    "org.trillionnium.hepta.local.CompactGrammarHostTest", str(compact), "candidate",
+                    str(root / "tests/moe-compact-grammar/fixtures/case05-partial.txt")],
+                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(compact_java.returncode, 0, compact_java.stdout + compact_java.stderr)
+            print(compact_java.stdout, end="")
+            compact_consumer = subprocess.run([sys.executable, "-B",
+                    str(root / "tests/moe-compact-grammar/test_compact_grammar.py"),
+                    "--source", str(source), "--generated", str(compact),
+                    "--raw", str(root / "tests/moe-compact-grammar/fixtures/case05-partial.txt")],
+                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(compact_consumer.returncode, 0, compact_consumer.stdout + compact_consumer.stderr)
+            print(compact_consumer.stdout, end="")
+            print(compact_consumer.stderr, end="")
 
 
 if __name__ == "__main__":

@@ -44,6 +44,8 @@ METHODS={
  'observed_child_text':'    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root,final boolean refreshChildren,final GraphBudget budget){',
  'input_hash':'    private static String inputTextHash('}
 
+EXPECTED_EQUAL_OPEN_CASES=['equal_tree_OPEN_runs_final_complete_census_and_one_claim_before_effect', 'equal_tree_OPEN_closed_guard_cannot_enter_effect', 'equal_tree_OPEN_preclaimed_guard_cannot_enter_effect', 'equal_tree_OPEN_rechecks_installed_uid_and_apk', 'equal_tree_OPEN_rejects_same_value_selection_replacement', 'equal_tree_OPEN_preserves_original_deadline_and_cancel', 'equal_tree_OPEN_rejects_missing_final_complete_census', 'equal_tree_OPEN_final_read_cannot_replace_original_live_NodeRef', 'equal_tree_OPEN_last_target_geometry_change_is_refused']
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def need(ok,why):
     if not ok:raise RuntimeError(why)
@@ -177,6 +179,7 @@ def main():
         pure=json.loads((out/'PURE-CASES.json').read_text());cases=json.loads((out/'CASES.json').read_text())
         need(pure['schema']=='hepta.native-action-snapshot-candidate-host.v1' and pure['all_pass'] is True and pure['cases']==76 and pure['assertions']==157 and len(set(pure['names']))==76,'original complete pure matrix required')
         need(cases['schema']=='hepta.native-action-integration-host.v1' and cases['all_pass'] is True and cases['cases']==len(cases['case_names'])==len(set(cases['case_names'])) and cases['assertions']>0,'actual complete unique integration cases required')
+        need(all(name in cases['case_names'] for name in EXPECTED_EQUAL_OPEN_CASES),'all equal-tree OPEN pre-effect claim regressions required')
         pending=json.loads((out/'PENDING-BOUNDARY.json').read_text())
         need(pending['schema']=='hepta.r5.native-pending-controller-boundary.v1'
              and pending['actual_controller_barrier_completed'] is True

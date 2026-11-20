@@ -380,6 +380,54 @@ final class NativeAppSession {
                 "post-effect read lost its durable private pending navigation");
         requireFrame(a.before.frame);
     }
+    /** Read-only identity of one durable accepted transition. It has no action
+     * admission, retry entitlement or method that can renew the original clock. */
+    static final class PendingObservation {
+        private final NativeAppSession session;private final Attempt attempt;private final long deadline;
+        private PendingObservation(NativeAppSession session,Attempt attempt){
+            this.session=session;this.attempt=attempt;deadline=session.pendingObservationDeadline(attempt);
+        }
+        boolean required(){
+            session.live();need(session.pending==null||session.pending==attempt,"pending transition identity changed");
+            if(session.pending==null)return false;session.pendingObservationDeadline(attempt);return true;
+        }
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){
+            session.live();need(owner==session&&authorization==session.authorization&&session.taskId.equals(task)
+                    &&selection==session.selection&&session.generation.equals(generation)&&displayId==session.displayId,
+                    "pending observation belongs to another Session or background");
+            need(session.inFlight==null&&(session.pending==null||session.pending==attempt),"pending observation crossed an action");
+        }
+        long deadline(){return deadline;}
+        String originalRun(){return attempt.run;}
+        Map<String,Object> evidence(){
+            session.live();Map<String,Object> value=session.base();value.put("schema","hepta.native-pending-observation.v1");
+            value.put("original_model_run_id",attempt.run);value.put("original_observation_id",attempt.before.frame.observationId);
+            value.put("purpose",attempt.purpose);value.put("action_record_sha256",attempt.receipt.get("step_action_record_sha256"));
+            value.put("dispatch_finished_elapsed_ms",attempt.finished);value.put("original_transition_deadline_elapsed_ms",deadline);
+            value.put("action_replayed",false);value.put("grants_action_authority",false);value.put("business_verified",false);
+            return NativeAppEvidence.immutableMap(value);
+        }
+    }
+    private long pendingObservationDeadline(Attempt attempt){
+        live();need(attempt!=null&&pending==attempt&&current!=null&&inFlight==null&&attempt.journaled&&attempt.outcomeJournaled
+                &&attempt.receipt!=null&&Boolean.TRUE.equals(attempt.receipt.get("accepted"))
+                &&Boolean.TRUE.equals(attempt.receipt.get("dispatched"))&&Boolean.FALSE.equals(attempt.receipt.get("stale"))
+                &&(attempt.guard==null||attempt.guard.state.get()==2)&&attempt.finished>=attempt.started
+                &&attempt.finished<=Long.MAX_VALUE-OBSERVED_TRANSITION_MS,"pending read requires its durable closed action outcome");
+        requireFrame(current.frame);return attempt.finished+OBSERVED_TRANSITION_MS;
+    }
+    PendingObservation pendingObservation(){live();return pending==null?null:new PendingObservation(this,pending);}
+    long boundedObservationDeadline(long taskDeadline,long now){
+        // No pending transition adds no new condition to the original one-read
+        // failure diagnostic; its Service/task authorization remains mandatory.
+        if(pending==null)return taskDeadline;
+        live();
+        long end=pendingObservationDeadline(pending);need(now>=pending.finished,"pending observation clock precedes outcome");
+        if(now>=end){invalidate("actual_native_transition_observation_deadline");live();}
+        return Math.min(taskDeadline,end);
+    }
+    void requireModelPlanning(){live();need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
+
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
     /** A private Session Attempt supplies authority; the pure comparator does not.
