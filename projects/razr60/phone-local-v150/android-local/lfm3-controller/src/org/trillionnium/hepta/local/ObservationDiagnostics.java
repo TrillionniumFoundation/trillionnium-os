@@ -1,16 +1,21 @@
 package org.trillionnium.hepta.local;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 /** Bounded non-authoritative values only: no Android object, I/O, sampling or effect. */
 final class ObservationDiagnostics {
     static final int MAX_RECORDS=96,MAX_TRANSITIONS=16,MAX_FRAMES=6,MAX_NODE_DIFFS=8,MAX_NODES=512,MAX_JSON_BYTES=16384;
+    // Same existing full native-census limits; these do not expand observation collection.
+    static final int MAX_CENSUS_NODES=1536,MAX_CENSUS_TEXT=32768;
     enum Event {
         SAMPLE_START,SAMPLE_NO_ROOT,SAMPLE_STALE_ROOT,SAMPLE_ERROR,SAMPLE_EVENT_RESET,SAMPLE_EVENT_RECHECKED,
         SAMPLE_KEY_CHANGED,SAMPLE_MISSING,SAMPLE_READY,SAMPLE_WAIT,SAMPLE_EXPIRED,SAMPLE_CANCELLED,
@@ -33,6 +38,7 @@ final class ObservationDiagnostics {
     private boolean ended,clockRegressed,workerActive;
     private String previousSampleKey,publishedObservationId,terminal;
     private Map<String,Object> lastSavedGraphChange,lastSeedDecision;private long seedAdmissions;
+    private Map<String,Object> lastFullGraphChange;private long fullGraphChanges;
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -85,6 +91,45 @@ final class ObservationDiagnostics {
         row.put("grants_action_authority",false);lastSeedDecision=Collections.unmodifiableMap(row);
         if("admitted".equals(decision))seedAdmissions=plus(seedAdmissions,1);
     }
+    /** Existing immutable census values only. This never admits an observation or action. */
+    synchronized void fullGraphChange(String stage,CensusStamp before,CensusStamp after,long now){
+        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)))return;
+        Map<String,Object> delta=map();delta.put("schema","hepta.native-observation-census-difference.v1");
+        delta.put("stage",stage);delta.put("elapsed_ms",clock(now)-started);
+        delta.put("full_census_compared",false);delta.put("node_difference_limit",MAX_NODE_DIFFS);
+        delta.put("node_text_recorded",false);delta.put("screenshot_pixels_recorded",false);
+        delta.put("grants_action_authority",false);delta.put("grants_publication",false);
+        delta.put("business_verified",false);delta.put("changes_deadline",false);
+        delta.put("before",before==null?null:before.summary());delta.put("after",after==null?null:after.summary());
+        if(before==null||after==null)delta.put("status","full_census_unavailable");
+        else if(!before.belongs(this)||!after.belongs(this)||!before.identity.equals(after.identity)){
+            delta.put("status","identity_mismatch");List<String> changed=new ArrayList<String>();
+            TreeSet<String> keys=new TreeSet<String>(before.identity.keySet());keys.addAll(after.identity.keySet());
+            for(String key:keys)if(!Objects.equals(before.identity.get(key),after.identity.get(key)))changed.add(key);
+            delta.put("changed_identity_fields",Collections.unmodifiableList(changed));
+            delta.put("both_match_request",before.belongs(this)&&after.belongs(this));
+        }else{
+            TreeSet<String> paths=new TreeSet<String>(before.nodes.keySet());paths.addAll(after.nodes.keySet());
+            List<Map<String,Object>> details=new ArrayList<Map<String,Object>>();int changed=0;
+            for(String path:paths){Map<String,Object> a=before.nodes.get(path),b=after.nodes.get(path);
+                if(a!=null&&a.equals(b))continue;changed++;
+                if(details.size()<MAX_NODE_DIFFS){Map<String,Object> row=map();row.put("native_path",path);
+                    row.put("parent_path",parentPath(path));List<String> fields=new ArrayList<String>();
+                    for(String key:CENSUS_NODE_KEYS)if(a==null||b==null||!Objects.equals(a.get(key),b.get(key)))fields.add(key);
+                    row.put("changed_fields",Collections.unmodifiableList(fields));
+                    row.put("before",a==null?null:censusNodeEvidence(a));row.put("after",b==null?null:censusNodeEvidence(b));
+                    details.add(Collections.unmodifiableMap(row));
+                }
+            }
+            delta.put("status","compared");delta.put("full_census_compared",true);
+            delta.put("app_tree_equal",before.appTree.equals(after.appTree));delta.put("observation_state_equal",before.state.equals(after.state));
+            delta.put("window_metadata_equal",before.window.equals(after.window));
+            delta.put("changed_path_count",changed);delta.put("node_differences",Collections.unmodifiableList(details));
+            delta.put("retained_detail_count",details.size());delta.put("node_differences_truncated",changed>details.size());
+            delta.put("details_omitted_for_budget",false);
+        }
+        lastFullGraphChange=Collections.unmodifiableMap(delta);fullGraphChanges=plus(fullGraphChanges,1);
+    }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;}}
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
@@ -116,6 +161,8 @@ final class ObservationDiagnostics {
         value.put("graph_records_truncated",frameTotal>MAX_FRAMES);value.put("graph_record_limit",MAX_FRAMES);
         value.put("node_text_recorded",false);value.put("screenshot_pixels_recorded",false);
         if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",new LinkedHashMap<String,Object>(lastSavedGraphChange));
+        if(lastFullGraphChange!=null){value.put("last_native_full_graph_change",new LinkedHashMap<String,Object>(lastFullGraphChange));
+            value.put("native_full_graph_change_count",fullGraphChanges);}
         if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
             value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
@@ -126,6 +173,80 @@ final class ObservationDiagnostics {
     }
     private static List<Map<String,Object>> copyRows(List<Map<String,Object>> rows){
         List<Map<String,Object>> copy=new ArrayList<Map<String,Object>>();for(Map<String,Object> row:rows)copy.add(new LinkedHashMap<String,Object>(row));return copy;
+    }
+    private static Set<String> keys(String csv){return Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(csv.split(","))));}
+    private static final Set<String> CENSUS_NODE_KEYS=keys("path,parent_class,package,window_id,class,view_id,text,description,label,ref_signature_sha256,bounds,visible,enabled,clickable,editable,scrollable,focused,password,selected,checkable,checked,children,scroll_actions,ime_enter,input_sha256,action_click");
+    private static final Set<String> CENSUS_FLAGS=keys("visible,enabled,clickable,editable,scrollable,focused,password,selected,checkable,checked,action_click");
+    private static final Set<String> CENSUS_IDENTITY=keys("task_id,owner_sha256,package,background_generation,display_id,window_id,rotation,width,height,root_bounds,authorization_sha256,selection_sha256,target_sha256,goal_sha256");
+    private static final Set<String> CENSUS_PROFILE=keys("profile_target_sha256,profile_user_id,profile_user_serial,profile_full_uid,profile_task_id,profile_parent_task_id,profile_task_token_id");
+    private static String parentPath(String path){int end=path.lastIndexOf('/');return end<0?null:path.substring(0,end);}
+    private static void require(boolean value){if(!value)throw new IllegalArgumentException("bounded copied native census required");}
+    private static String string(Map<String,Object> value,String key,int limit){Object raw=value.get(key);require(raw instanceof String&&((String)raw).length()<=limit);return (String)raw;}
+    private static long integer(Map<String,Object> value,String key){Object raw=value.get(key);require(raw instanceof Integer||raw instanceof Long);return ((Number)raw).longValue();}
+    private static List<Integer> bounds(Object raw){require(raw instanceof List&&((List<?>)raw).size()==4);List<Integer> result=new ArrayList<Integer>();
+        for(Object part:(List<?>)raw){require(part instanceof Integer||part instanceof Long);long n=((Number)part).longValue();require(n>=Integer.MIN_VALUE&&n<=Integer.MAX_VALUE);result.add((int)n);}return Collections.unmodifiableList(result);}
+    /** Pure diagnostic carrier. Values originate from a completed full BFS, not retained rows. */
+    static final class CensusStamp {
+        final Map<String,Object> identity;final Map<String,Map<String,Object>> nodes;
+        final String appTree,state,window;
+        CensusStamp(Map<String,Object> identity,String appTree,String state,String window,int visited,List<Map<String,Object>> source){
+            require(identity!=null&&source!=null&&!source.isEmpty()&&source.size()<=MAX_CENSUS_NODES&&visited==source.size()
+                    &&sha(appTree)&&sha(state)&&sha(window));
+            TreeSet<String> allowed=new TreeSet<String>(CENSUS_IDENTITY);
+            if(identity.containsKey("profile_target_sha256"))allowed.addAll(CENSUS_PROFILE);
+            require(identity.keySet().equals(allowed));Map<String,Object> ids=new TreeMap<String,Object>(identity);
+            require(id(string(ids,"task_id",32))&&sha(string(ids,"owner_sha256",64)));
+            require(string(ids,"package",192).matches("[A-Za-z0-9_.]+")&&string(ids,"background_generation",36).matches("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"));
+            for(String key:Arrays.asList("authorization_sha256","selection_sha256","target_sha256","goal_sha256"))require(sha(string(ids,key,64)));
+            require(integer(ids,"display_id")>1&&integer(ids,"window_id")>=0&&integer(ids,"rotation")>=0&&integer(ids,"rotation")<=3
+                    &&integer(ids,"width")>0&&integer(ids,"height")>0);ids.put("root_bounds",bounds(ids.get("root_bounds")));
+            if(ids.containsKey("profile_target_sha256")){
+                require(sha(string(ids,"profile_target_sha256",64))&&integer(ids,"profile_user_id")>0&&integer(ids,"profile_user_serial")>0
+                        &&integer(ids,"profile_full_uid")/100000==integer(ids,"profile_user_id")
+                        &&integer(ids,"profile_task_id")>0&&integer(ids,"profile_parent_task_id")>0
+                        &&integer(ids,"profile_task_id")!=integer(ids,"profile_parent_task_id")
+                        &&string(ids,"profile_task_token_id",36).matches("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"));
+            }
+            this.identity=Collections.unmodifiableMap(ids);this.appTree=appTree;this.state=state;this.window=window;
+            TreeMap<String,Map<String,Object>> rows=new TreeMap<String,Map<String,Object>>();int text=0;
+            for(Map<String,Object> value:source){require(value!=null&&value.keySet().equals(CENSUS_NODE_KEYS));Map<String,Object> row=new TreeMap<String,Object>(value);
+                String path=string(row,"path",240);require(path.matches("0(?:/[0-9]+)*")&&!rows.containsKey(path));
+                require(string(row,"package",192).equals(ids.get("package"))&&integer(row,"window_id")==integer(ids,"window_id"));
+                require(!string(row,"class",128).isEmpty());string(row,"parent_class",128);string(row,"view_id",256);
+                text+=string(row,"text",1024).length()+string(row,"description",1024).length();require(text<=MAX_CENSUS_TEXT);
+                if(row.get("label")!=null)string(row,"label",4096);
+                string(row,"scroll_actions",1024);string(row,"ime_enter",512);
+                for(String key:CENSUS_FLAGS)require(row.get(key) instanceof Boolean);
+                for(String key:Arrays.asList("ref_signature_sha256","input_sha256"))require(row.get(key)==null||sha(string(row,key,64)));
+                require(integer(row,"children")>=0&&integer(row,"children")<=MAX_CENSUS_NODES);row.put("bounds",bounds(row.get("bounds")));
+                rows.put(path,Collections.unmodifiableMap(row));
+            }
+            require(rows.containsKey("0")&&rows.get("0").get("bounds").equals(ids.get("root_bounds")));
+            for(Map.Entry<String,Map<String,Object>> entry:rows.entrySet()){
+                String path=entry.getKey();Map<String,Object> row=entry.getValue();String parent=parentPath(path);
+                if(parent!=null){Map<String,Object> p=rows.get(parent);require(p!=null&&row.get("parent_class").equals(p.get("class")));
+                    long index=Long.parseLong(path.substring(path.lastIndexOf('/')+1));require(index>=0&&index<integer(p,"children"));}
+                for(long i=0;i<integer(row,"children");i++)require(rows.containsKey(path+"/"+i));
+            }
+            nodes=Collections.unmodifiableMap(rows);
+        }
+        boolean belongs(ObservationDiagnostics d){return d.taskId.equals(identity.get("task_id"))&&d.ownerSha.equals(identity.get("owner_sha256"))
+                &&d.packageName.equals(identity.get("package"))&&d.generation.equals(identity.get("background_generation"))&&d.displayId==integer(identity,"display_id");}
+        Map<String,Object> summary(){Map<String,Object> out=map();out.put("app_tree_sha256",appTree);out.put("observation_state_sha256",state);
+            out.put("window_metadata_sha256",window);out.put("full_native_nodes",nodes.size());return Collections.unmodifiableMap(out);}
+    }
+    private static Map<String,Object> censusNodeEvidence(Map<String,Object> node){
+        Map<String,Object> out=map();for(String key:Arrays.asList("package","window_id","class","parent_class","view_id","bounds","children"))out.put(key,node.get(key));
+        Map<String,Object> flags=map();for(String key:CENSUS_FLAGS)flags.put(key,node.get(key));out.put("flags",Collections.unmodifiableMap(flags));
+        for(String key:Arrays.asList("text","description","label","scroll_actions","ime_enter")){
+            String value=(String)node.get(key);Map<String,Object> content=map();content.put("utf16_length",value==null?null:value.length());
+            content.put("sha256",value==null?null:contentHash(value));out.put(key,Collections.unmodifiableMap(content));}
+        out.put("ref_signature_sha256",node.get("ref_signature_sha256"));out.put("input_sha256",node.get("input_sha256"));return Collections.unmodifiableMap(out);
+    }
+    private static String contentHash(String value){
+        try{byte[] digest=java.security.MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            char[] hex="0123456789abcdef".toCharArray(),result=new char[digest.length*2];for(int i=0;i<digest.length;i++){int b=digest[i]&255;result[i*2]=hex[b>>>4];result[i*2+1]=hex[b&15];}return new String(result);}
+        catch(java.security.NoSuchAlgorithmException unavailable){throw new IllegalStateException("SHA-256 unavailable",unavailable);}
     }
     /** Already-observed selected-App values; content is reduced to fixed hashes. */
     static final class NodeStamp {

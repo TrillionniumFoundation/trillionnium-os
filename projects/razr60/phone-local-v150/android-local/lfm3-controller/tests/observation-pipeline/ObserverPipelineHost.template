@@ -92,6 +92,7 @@ public final class ObserverPipelineHost {
     static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
     static final class Graph {
         ObservationDiagnostics.GraphStamp diagnosticStamp;
+        ObservationDiagnostics.CensusStamp diagnosticCensus;
         WindowOwnership profileWindow; // Must remain absent in this scheduling-only fixture.
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
         long readStartedElapsedMs,readCompletedElapsedMs;
@@ -104,6 +105,9 @@ public final class ObserverPipelineHost {
         Graph(int serial,int display){this.serial=serial;displayId=display;backgroundGeneration=display==0?null:"generation";}
         synchronized void close(){expect(!closed,"graph closed twice "+serial);closed=true;}
     }
+    // Explicit immutable-value IO carrier. The diagnostic gate separately
+    // extracts and executes the real nativeDiagnosticCensus Graph adapter.
+    private static ObservationDiagnostics.CensusStamp nativeDiagnosticCensus(Graph graph){return graph==null?null:graph.diagnosticCensus;}
     static final class HardwareBuffer {int closes;synchronized void close(){closes++;expect(closes==1,"buffer closed twice");}}
     static final class ScreenshotResult {
         final HardwareBuffer buffer=new HardwareBuffer();HardwareBuffer getHardwareBuffer(){return buffer;}Object getColorSpace(){return null;}

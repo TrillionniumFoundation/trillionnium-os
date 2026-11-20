@@ -132,6 +132,7 @@ final class NativeActionSnapshotCheck {
         need(roleFacts(in,old).equals(roleFacts(in,fresh)),"global Provider roles/ambiguity changed");
         for(String p:before.ancestors)need(old.node(p).v.equals(fresh.node(p).v),"actual ancestor changed: "+p);
         Map<String,String> homeVariations=xiaomiSearchHomeVariations(in,old,fresh);
+        homeVariations.putAll(xiaomiSearchImageCarouselVariation(in,old,fresh));
         homeVariations.putAll(xiaomiSearchIconHintVariation(in,old,fresh));
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots)&&!protectedPath(p,homeVariations.keySet())){
             if(!(old.nodes.containsKey(p)&&fresh.nodes.containsKey(p)&&old.node(p).v.equals(fresh.node(p).v)))
@@ -396,6 +397,96 @@ final class NativeActionSnapshotCheck {
             }
         }
         return out;
+    }
+    /** SEARCH-only decoration in a fixed row below the query entry. Unlike the
+     * blank banner above, this complete RecyclerView family contains clickable
+     * image cards. Their capabilities/text/shape cannot change and none becomes
+     * an action target. Only the row's horizontal animation is classified; the
+     * original query-entry reference and final live chain remain mandatory. */
+    private static Map<String,String> xiaomiSearchImageCarouselVariation(Intent in,Snapshot old,Snapshot fresh){
+        Map<String,String> out=new TreeMap<String,String>();
+        if(!searchEntryTarget(in,old)||!searchEntryTarget(in,fresh))return out;
+        List<Node> rows=findId(old,"com.xiaomi.shop:id/recycle_view"),newRows=findId(fresh,"com.xiaomi.shop:id/recycle_view");
+        if(rows.size()!=1||newRows.size()!=1)return out;
+        Node a=rows.get(0),z=newRows.get(0),pager=oneId(old,"com.xiaomi.shop.plugin.homepage:id/home_3_vp");
+        if(!a.path.equals(z.path)||!a.v.equals(z.v)||!pager.v.equals(fresh.node(pager.path).v)
+                ||!"androidx.recyclerview.widget.RecyclerView".equals(a.cls)||a.children!=4
+                ||!imageRowContainer(a,false,true,"hepta.observed-scroll-actions.v1|observed|forward|backward"))return out;
+        Node holder=old.nodes.get(parent(a.path)),content=holder==null?null:old.nodes.get(parent(holder.path));
+        if(holder==null||content==null||!"android.widget.FrameLayout".equals(holder.cls)||!holder.view.isEmpty()
+                ||holder.children!=1||!holder.v.equals(fresh.node(holder.path).v)||!a.within(holder)
+                ||!imageRowContainer(holder,true,false,"hepta.observed-scroll-actions.v1|observed")
+                ||!"androidx.recyclerview.widget.RecyclerView".equals(content.cls)
+                ||!"com.xiaomi.shop:id/recyclerView".equals(content.view)||!parent(content.path).equals(pager.path)
+                ||!content.v.equals(fresh.node(content.path).v)||!holder.within(content)||!content.within(pager)
+                ||!imageRowContainer(content,false,true,"hepta.observed-scroll-actions.v1|observed|forward"))return out;
+        Node entry=old.node(in.path),icon=oneId(old,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
+        if(holder.bounds.get(1)<Math.max(entry.bounds.get(3),icon.bounds.get(3)))return out;
+        int navigation=0;
+        for(Node n:old.nodes.values())if("com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text".equals(n.view)){
+            if(!n.usable()||holder.bounds.get(3)>n.bounds.get(1)||!n.v.equals(fresh.node(n.path).v))return out;
+            navigation++;
+        }
+        if(navigation==0)return out;
+        int oldCardEdge=a.bounds.get(0),newCardEdge=oldCardEdge,oldImageEdge=oldCardEdge,newImageEdge=oldCardEdge;
+        for(int slot=0;slot<a.children;slot++){
+            Node card=old.node(a.path+"/"+slot),newCard=fresh.node(card.path);
+            if(!imageCarouselCard(card)||!imageCarouselCard(newCard))return out;
+            Node image=old.node(card.path+"/0"),newImage=fresh.node(image.path);
+            if(!imageCarouselLeaf(image)||!imageCarouselLeaf(newImage)
+                    ||!sameExcept(card,newCard,"bounds","visible","label","ref_signature_sha256")
+                    ||!sameExcept(image,newImage,"bounds","visible","label","ref_signature_sha256")
+                    ||!imageRowGeometry(card,a,false)||!imageRowGeometry(newCard,a,false)
+                    ||!imageRowGeometry(image,a,true)||!imageRowGeometry(newImage,a,true))return out;
+            // A card's child label/reference was collected before the full BFS
+            // reached that image. Do not manufacture atomic child coordinates.
+            // Its opaque non-target reference may vary only with observed
+            // horizontal geometry/visibility in that same slot; it is never
+            // substituted for a dispatch reference or used to click the card.
+            if(!Objects.equals(card.v.get("ref_signature_sha256"),newCard.v.get("ref_signature_sha256"))
+                    &&card.bounds.equals(newCard.bounds)&&b(card.v,"visible")==b(newCard.v,"visible")
+                    &&image.bounds.equals(newImage.bounds)&&b(image.v,"visible")==b(newImage.v,"visible"))return out;
+            if(card.visible()){if(card.bounds.get(0)<oldCardEdge)return out;oldCardEdge=card.bounds.get(2);}
+            if(newCard.visible()){if(newCard.bounds.get(0)<newCardEdge)return out;newCardEdge=newCard.bounds.get(2);}
+            if(image.visible()){if(image.bounds.get(0)<oldImageEdge)return out;oldImageEdge=image.bounds.get(2);}
+            if(newImage.visible()){if(newImage.bounds.get(0)<newImageEdge)return out;newImageEdge=newImage.bounds.get(2);}
+        }
+        if(oldCardEdge==a.bounds.get(0)||newCardEdge==a.bounds.get(0)
+                ||oldImageEdge==a.bounds.get(0)||newImageEdge==a.bounds.get(0))return out;
+        out.put(a.path,"same_disjoint_image_carousel_row_horizontal_geometry_only");return out;
+    }
+    private static boolean imageRowContainer(Node n,boolean click,boolean scroll,String actions){
+        return n.usable()&&neutralFlags(n)&&n.text.isEmpty()&&n.desc.isEmpty()&&"".equals(n.label)
+                &&b(n.v,"clickable")==click&&b(n.v,"action_click")==click&&b(n.v,"scrollable")==scroll
+                &&actions.equals(s(n.v,"scroll_actions"))&&imageRowInputMetadata(n)
+                &&n.v.get("ref_signature_sha256")!=null;
+    }
+    private static boolean imageCarouselCard(Node n){
+        return "android.widget.FrameLayout".equals(n.cls)&&"androidx.recyclerview.widget.RecyclerView".equals(n.parent)
+                &&"com.xiaomi.shop.plugin.homepage:id/banner_container".equals(n.view)&&n.children==1
+                &&n.text.isEmpty()&&n.desc.isEmpty()&&b(n.v,"enabled")&&b(n.v,"clickable")&&b(n.v,"action_click")
+                &&!b(n.v,"scrollable")&&neutralFlags(n)&&imageRowInputMetadata(n)
+                &&"hepta.observed-scroll-actions.v1|observed".equals(s(n.v,"scroll_actions"));
+    }
+    private static boolean imageCarouselLeaf(Node n){
+        return "android.widget.ImageView".equals(n.cls)&&"android.widget.FrameLayout".equals(n.parent)
+                &&"com.xiaomi.shop:id/banner_image".equals(n.view)&&n.children==0&&n.text.isEmpty()&&"Image".equals(n.desc)
+                &&b(n.v,"enabled")&&!b(n.v,"clickable")&&!b(n.v,"action_click")&&!b(n.v,"scrollable")
+                &&neutralFlags(n)&&imageRowInputMetadata(n)
+                &&"hepta.observed-scroll-actions.v1|observed".equals(s(n.v,"scroll_actions"));
+    }
+    private static boolean imageRowInputMetadata(Node n){
+        return n.v.get("input_sha256")==null&&"hepta.observed-ime-enter.v1|true|false|null".equals(s(n.v,"ime_enter"));
+    }
+    private static boolean imageRowGeometry(Node n,Node anchor,boolean leaf){
+        if(!n.bounds.get(1).equals(anchor.bounds.get(1))||!n.bounds.get(3).equals(anchor.bounds.get(3)))return false;
+        if(!b(n.v,"visible"))return n.label==null&&n.v.get("ref_signature_sha256")==null
+                &&(n.bounds.get(2)<=n.bounds.get(0)||n.bounds.get(2)<=anchor.bounds.get(0)||n.bounds.get(0)>=anchor.bounds.get(2));
+        if(!n.visible()||!contains(anchor.bounds,n.bounds)||!"Image".equals(n.label)||n.v.get("ref_signature_sha256")==null)return false;
+        if(!leaf)return true;
+        String full=ObservedChildText.notApplicable().bind(searchHintBase(n))+"\nscroll_actions="+s(n.v,"scroll_actions")
+                +"\nime_enter="+s(n.v,"ime_enter")+"|focused="+b(n.v,"focused")+"|full_input=null";
+        return hash(full).equals(n.v.get("ref_signature_sha256"));
     }
     private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){
         List<Node> visibleOld=new ArrayList<Node>(),visibleFresh=new ArrayList<Node>();int count=0;

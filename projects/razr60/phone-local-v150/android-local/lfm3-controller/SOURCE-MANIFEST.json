@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "23a6246006fc8b83af2c18304335e92658763552",
-  "base_manifest_sha256": "f45f89fd8d82307aab109eb88325ca80df90419fa63b076b4827ccef5a410c64",
-  "candidate_status": "natural_owner_full_host_and_android_validation_pending",
+  "base_head": "1090c6c766b3fbfa763887a44d8ef24c1a24f31b",
+  "base_manifest_sha256": "722ba07c52792f20d20585b5d0e94802a129bb1e382e375de1de7efb8b740844",
+  "candidate_status": "dynamic_ui_full_host_and_android_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 192,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "57a14f56846ef2952a3e6bc20785f64a70017cb32608f11f5db50c8c0b9d1b65",
+  "production_input_map_sha256": "40d30b11242fa148cdd5b2574597618206ed0c88ed546fb3942b7a933e3f05b1",
   "complete_source_files": 2286,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Whole immutable natural OWNER recognition only. Existing AX3000T provider, single-adult literal flight facts, exact short Notes body<=94 UTF16 and save/list/same-item/reopen proof stay unchanged. No authority parser, completion predicate, provider, controller, service, deadline or retry budget changes. Unknown suffix/transaction/second-App goals stay unsupported. Native recognition restores existing initial observation eligibility; it does not prove the historical6004 capture met a recovery cut point or guarantee business success. This materialization adds only the current Xiaomi runner Goal SHA literal and regenerates the complete manifest. All RuntimeInferenceAdapter, provider, Service, Controller, TaskAuthorization, TaskCompletionGate and native runtime bytes are inherited unchanged from published 23a6246. Original full30/canonical123 and Python306, Git CAS, Android compile/signing and actual Phone validation remain pending.",
+  "scope": "Only complete SEARCH image-carousel comparison and bounded read-only full-census difference diagnostics. Existing target identity, private guard, full fresh action validation, 8s/10s/12s/15s/480s deadlines and recovery budgets remain unchanged. Original first-child-unavailable failure is not covered; Ctrip diagnostics do not resolve or reclassify its failed business result. Original full30/canonical123 and Python306 on this combined source remain pending. This materialization regenerates the complete manifest. All other 364 production inputs, including RuntimeInferenceAdapter, model, prompts, controller, Session, owner parsing, permission/completion logic and native runtime bytes, are inherited unchanged from published1090c6. Original full30/canonical123 and Python306, Git CAS, Android compile/signing and actual Phone validation remain pending.",
   "files": [
     {
       "path": ".gitignore",
@@ -6501,8 +6501,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 343781,
-      "sha256": "0d26303e28ca96a6d166922f9e8000879abaf9c88809bf041483a2467b905c45"
+      "bytes": 349064,
+      "sha256": "a32f8192ab194b28801a705286602f1974b7c2c3cb5968448794afb42bdcd354"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6601,8 +6601,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "bytes": 51470,
-      "sha256": "d137bba5126a60e14c95de9a24a50dd8b4539c2692e4bf32533cf9b890c35fe0"
+      "bytes": 59139,
+      "sha256": "39fed7241743499db4fa5f6c3c5fef71ee80eb354281bb6f8a888fc63b29b756"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
@@ -6666,8 +6666,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "bytes": 15363,
-      "sha256": "34149396b13820e35372706ef8f96458544687aef904ad8f962a837efe05c80d"
+      "bytes": 27852,
+      "sha256": "ab43a749920eca5440b9c7c7c9d164ed14825554eb425c34ebef995e3c26f4dc"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
@@ -8001,8 +8001,8 @@
     },
     {
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "bytes": 36852,
-      "sha256": "701d9aecdc2eda9e9d2ad81a5d157b035f23824c701352d26b7b08c9e75e774c"
+      "bytes": 37821,
+      "sha256": "bc22fad4af4e40063161a99f9c0a6c4506def85918f17324f2603ce15a222956"
     },
     {
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
@@ -8036,8 +8036,8 @@
     },
     {
       "path": "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
-      "bytes": 26393,
-      "sha256": "14cac774dbb7db68d05e330fe3a70d15e6d9cfa42929aebddf4a644b6fe8e2c0"
+      "bytes": 42337,
+      "sha256": "5372e1efed25b269a7d4003cffc90001a7ba55ba40d852c3e311c9cd95596c2f"
     },
     {
       "path": "tests/native-action-integration/XiaomiGuardCases.fragment",
@@ -8602,7 +8602,7 @@
     {
       "path": "tests/native-stale-recovery/run_budget.py",
       "bytes": 10619,
-      "sha256": "d35bf354d7f1d0aff08435223971c7472ebdca2eeacea3322a4c7a9ae32c0dc9"
+      "sha256": "769c10cee071878f5271156b0e12ee8cbb2a2e68f4c23219e8c0b8c7dbf26c72"
     },
     {
       "path": "tests/native-stale-recovery/run_host.py",
@@ -9056,13 +9056,13 @@
     },
     {
       "path": "tests/observation-diagnostics/DiagnosticGraphHost.template",
-      "bytes": 8077,
-      "sha256": "2bf26523a43cd41cd574a075aedd3cf9df90d0b10d5c4515a652b479a3806fe1"
+      "bytes": 22945,
+      "sha256": "4ed5966efc910aacb228825eb677ee4fc3f98d2e88c21cd68540cdf111c5fc3d"
     },
     {
       "path": "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
-      "bytes": 10944,
-      "sha256": "3d0afe39fe3086b0fdcbd46edf2fccefe289ef024491e1da5ab0a907a67f6dc3"
+      "bytes": 13576,
+      "sha256": "5cbd8f21086aca9bec80157cf8001037e5f452c83a47a0e4ebec8dc73425d5c2"
     },
     {
       "path": "tests/observation-diagnostics/ObservationDiagnosticsHostTest.java",
@@ -9071,8 +9071,8 @@
     },
     {
       "path": "tests/observation-diagnostics/run_host.py",
-      "bytes": 15018,
-      "sha256": "3c1f94a290b1ae1b15473bbe1aed8aa789405133b56b7434371372299fcc9fc1"
+      "bytes": 15261,
+      "sha256": "1735839bbd853d43addfea7223fff49e55604849fdb5a5d7a495826329898111"
     },
     {
       "path": "tests/observation-display-scope/ObservationDisplayScopeHostTest.java",
@@ -9101,8 +9101,8 @@
     },
     {
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "bytes": 34276,
-      "sha256": "418d1006f4c175cdf01bedd08cafbafd799cf10ab7c91fdb7f2dc21b5da6036e"
+      "bytes": 34627,
+      "sha256": "318cd082d6a6b89820b4892a3cd2a714fdb8636abec26833f2e223a863329888"
     },
     {
       "path": "tests/observation-pipeline/run_host_tests.py",

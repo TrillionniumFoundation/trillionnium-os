@@ -18,7 +18,8 @@ import time
 PKG = Path('src/org/trillionnium/hepta/local')
 TEST = Path('tests/observation-diagnostics')
 JAVA = ['HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
-        'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java']
+        'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java',
+        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
        'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template']
 
@@ -81,6 +82,7 @@ def generate(source,output):
     write(output/'ObserverPipelineHost.java',template)
     methods={
         'native_stamp':body(service,'    private static ObservationDiagnostics.GraphStamp nativeDiagnosticStamp(Graph graph){'),
+        'native_census':body(service,'    private static ObservationDiagnostics.CensusStamp nativeDiagnosticCensus(Graph graph){'),
         'stale_record':body(service,'    private static void recordStaleDiagnostic(ActionWork work,Graph before,Graph after,String selectedId){'),
         'action_evidence':body(service,'    private static JSONObject actionDiagnosticEvidence(ActionWork work){'),
         'take_diagnostics':body(controller,'    private JSONObject takeObservationDiagnostics(String task){'),
@@ -89,7 +91,7 @@ def generate(source,output):
         'read_retry_failure':body(controller,'    private static final class NativeObservationTransientFailure extends IllegalStateException {'),
         'initial_read_failure':body(controller,'    private static final class InitialNativeObservationFailure extends IllegalStateException {'),
         'post_effect_read_failure':body(controller,'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {')}
-    for fixture,names in [('DiagnosticGraphHost',['native_stamp','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics'])]:
+    for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics'])]:
         text=(source/TEST/(fixture+'.template')).read_text()
         for name in names:
             marker='{{'+name+'}}'

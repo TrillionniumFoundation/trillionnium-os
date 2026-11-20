@@ -216,6 +216,7 @@ final class NativeActionBridgeHost {
             try{return hash(reference.signature);}finally{reference.node.recycle();}
         }finally{node.recycle();}
     }
+    static long originalActionDeadline(Fixture f){return f.work.state.deadlineElapsed;}
     static boolean recordedRejectionPresent(Fixture f){return f.work.nativeActionRejection!=null;}
     static String actualComparisonDisposition(Fixture f)throws Exception{
         Graph fresh=f.graph(f.fresh,f.work.budget());
@@ -288,6 +289,10 @@ final class NativeActionBridgeHost {
             this(p,label,recorded,false,null);
         }
         Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded,boolean deferGuard,File journalDirectory)throws Exception{
+            this(p,label,recorded,deferGuard,journalDirectory,null);
+        }
+        Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded,boolean deferGuard,File journalDirectory,
+                Map<String,ObservedScrollActions> initialScrollActions)throws Exception{
             actualJournalDirectory=journalDirectory;fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
             raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
             owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
@@ -306,6 +311,13 @@ final class NativeActionBridgeHost {
                             OpenController.record(actualJournalDirectory,leaf,OpenController.wire(value));
                         }
                         Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
+            // Explicit synthetic Android action-list IO for the disjoint image
+            // row cases. Legacy callers pass null and keep their original IO.
+            if(initialScrollActions!=null)for(Map.Entry<String,ObservedScrollActions> e:initialScrollActions.entrySet()){
+                Map<String,Object> node=raw.nodes.get(e.getKey());
+                if(node==null||e.getValue()==null)throw new AssertionError("missing explicit initial scroll endpoint");
+                NodeData d=new NodeData(node);d.scrollOverride=e.getValue();data.put(e.getKey(),d);
+            }
             observeGraph(raw);
             if(NativeActionSnapshotCheck.QUERY.equals(p))year();
             String selected=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(p.equals(e.getValue()))selected=e.getKey();
