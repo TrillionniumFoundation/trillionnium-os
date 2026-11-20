@@ -17,6 +17,30 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def prepare_permission_pair_adapters(platform, output):
+    platform_text = platform.read_text()
+    start = '    @Override public java.util.Map<String,Object> permissionReadMismatchEvidence()'
+    end = '    @Override public void createRoot'
+    if platform_text.count(start) != 1 or platform_text.count(end) != 1:
+        raise RuntimeError('Exact permission pair adapter extraction boundary changed')
+    pair = platform_text[platform_text.index(start):platform_text.index(end)]
+
+    def adapter(name, body, current):
+        prefix = 'package org.trillionnium.hepta.background;\nimport java.util.*;\n/** Only framework rows and time below are synthetic; the complete platform pair method follows. */\n'
+        if current:
+            prefix += 'interface PermissionPairReadDiagnosticPort {Map<String,Object> permissionReadMismatchEvidence();}\n'
+        prefix += 'final class ' + name + (' implements PermissionPairReadDiagnosticPort' if current else '') + ' {\n'
+        prefix += '\n    static final class SystemClock {static long elapsedRealtime(){return 1000;}}\n    static final class Rows {\n        List<BackgroundOwnedSingleTask.Task> rootRows,leafRows;int childrenCalls;\n        Rows(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){rootRows=r;leafRows=l;}\n        List<BackgroundOwnedSingleTask.Task> roots(){return rootRows;}\n        List<BackgroundOwnedSingleTask.Task> children(Object token){childrenCalls++;return leafRows;}\n    }\n    final Rows organizer;final ProfileTarget expected=ProfilePermissionTransientHostTest.target();\n    private volatile Map<String,Object> firstPermissionReadMismatch=Collections.emptyMap();\n'
+        prefix += '    ' + name + '(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){organizer=new Rows(r,l);}\n'
+        prefix += '    void read(BackgroundOwnedSingleTask.Task r,BackgroundOwnedSingleTask.Task l,String phase)throws Exception{requireSamePermissionPair(r,l' + (',phase' if current else '') + ');}\n'
+        return prefix + body + '}\n'
+    current_adapter = output / 'PermissionPairReadHostAdapter.java'
+    original_adapter = output / 'OriginalPermissionPairReadHostAdapter.java'
+    current_adapter.write_text(adapter('PermissionPairReadHostAdapter', pair, True))
+    original_adapter.write_text(adapter('OriginalPermissionPairReadHostAdapter', ORIGINAL_PERMISSION_PAIR, False))
+    metadata = {'complete_current_method_and_diagnostic_body_sha256': hashlib.sha256(pair.encode()).hexdigest(), 'original_method_sha256': hashlib.sha256(ORIGINAL_PERMISSION_PAIR.encode()).hexdigest(), 'original_platform_head': 'c529e021556a0648d9aebf0011d7cd984c1ece8c', 'original_platform_sha256': '807a1463115e8e79c39164631031ac3b7fbf325340fefeebd4401b84a3004fcc', 'current_adapter_sha256': sha(current_adapter), 'original_adapter_sha256': sha(original_adapter), 'framework_and_clock_are_explicit_synthetic_ports': True, 'actual_phone_first_pair_values_available': False, 'phone_operations': 0}
+    return ([current_adapter, original_adapter], metadata)
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'java-home', 'output'):
@@ -107,47 +131,9 @@ def main():
                 raise RuntimeError('Explicit private actual fixture pin differs')
             result['private_actual_fixture'] = {'bytes': 91980, 'sha256': ACTUAL_SHA,
                                                 'kind': 'actual_saved_bytes', 'copied_into_source': False}
-        platform_text = platform.read_text()
-        start = '    @Override public java.util.Map<String,Object> permissionReadMismatchEvidence()'
-        end = '    @Override public void createRoot'
-        if platform_text.count(start) != 1 or platform_text.count(end) != 1:
-            raise RuntimeError('Exact permission pair adapter extraction boundary changed')
-        pair = platform_text[platform_text.index(start):platform_text.index(end)]
-        def adapter(name, body, current):
-            prefix = '''package org.trillionnium.hepta.background;
-import java.util.*;
-/** Only framework rows and time below are synthetic; the complete platform pair method follows. */
-'''
-            if current:
-                prefix += 'interface PermissionPairReadDiagnosticPort {Map<String,Object> permissionReadMismatchEvidence();}\n'
-            prefix += 'final class '+name+(' implements PermissionPairReadDiagnosticPort' if current else '')+' {\n'
-            prefix += '''
-    static final class SystemClock {static long elapsedRealtime(){return 1000;}}
-    static final class Rows {
-        List<BackgroundOwnedSingleTask.Task> rootRows,leafRows;int childrenCalls;
-        Rows(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){rootRows=r;leafRows=l;}
-        List<BackgroundOwnedSingleTask.Task> roots(){return rootRows;}
-        List<BackgroundOwnedSingleTask.Task> children(Object token){childrenCalls++;return leafRows;}
-    }
-    final Rows organizer;final ProfileTarget expected=ProfilePermissionTransientHostTest.target();
-    private volatile Map<String,Object> firstPermissionReadMismatch=Collections.emptyMap();
-'''
-            prefix += '    '+name+'(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){organizer=new Rows(r,l);}\n'
-            prefix += '    void read(BackgroundOwnedSingleTask.Task r,BackgroundOwnedSingleTask.Task l,String phase)throws Exception{requireSamePermissionPair(r,l'+(',phase' if current else '')+');}\n'
-            return prefix+body+'}\n'
-        current_adapter=output/'PermissionPairReadHostAdapter.java'
-        original_adapter=output/'OriginalPermissionPairReadHostAdapter.java'
-        current_adapter.write_text(adapter('PermissionPairReadHostAdapter',pair,True))
-        original_adapter.write_text(adapter('OriginalPermissionPairReadHostAdapter',ORIGINAL_PERMISSION_PAIR,False))
-        files += [current_adapter,original_adapter]
-        result['permission_pair_adapter'] = {
-            'complete_current_method_and_diagnostic_body_sha256': hashlib.sha256(pair.encode()).hexdigest(),
-            'original_method_sha256': hashlib.sha256(ORIGINAL_PERMISSION_PAIR.encode()).hexdigest(),
-            'original_platform_head': 'c529e021556a0648d9aebf0011d7cd984c1ece8c',
-            'original_platform_sha256': '807a1463115e8e79c39164631031ac3b7fbf325340fefeebd4401b84a3004fcc',
-            'current_adapter_sha256': sha(current_adapter), 'original_adapter_sha256': sha(original_adapter),
-            'framework_and_clock_are_explicit_synthetic_ports': True,
-            'actual_phone_first_pair_values_available': False, 'phone_operations': 0}
+        generated, pair_receipt = prepare_permission_pair_adapters(platform, output)
+        files += generated
+        result['permission_pair_adapter'] = pair_receipt
         classes = output / 'classes'
         run('compile', [str(args.java_home / 'bin/javac'), '--release', '8', '-encoding', 'UTF-8',
                         '-Xlint:all,-options', '-Werror', '-proc:none', '-d', str(classes)]

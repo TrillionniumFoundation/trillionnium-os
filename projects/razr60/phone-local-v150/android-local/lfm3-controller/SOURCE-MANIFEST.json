@@ -1,7 +1,7 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "ac1708dfbabaff4344983306f0c3f018e3708025",
-  "base_manifest_sha256": "55f76a771a5e3b1972540e359670a87b964dcef1138d75fdb52e5bb3fa9472e3",
+  "base_head": "4e3d150600f05edaa3b1bcf8ed6fef055254d0ac",
+  "base_manifest_sha256": "04486bd299b5e1ccc464e98f23fd8569278007412718dd49c813a599049b1325",
   "candidate_status": "host_compilation_dependency_successor_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
@@ -12,7 +12,7 @@
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain all reviewed R16 production bytes; complete the explicit Main UI and Notes TaskInfo host compiler source lists for PublicOwnGroupTaskFence and bind the Notes runner to the already-reviewed current Organizer. All original assertions, fixtures, source modes, and complete production input map remain unchanged.",
+  "scope": "Keep every reviewed R16 production and test-case source byte. Share the exact permission-pair host adapter generator between the transient and initialization gates, complete their tracked generated compiler inputs, and pin the initialization gate to the already-reviewed state-settle tests. The old unresolved preparation has no role in this candidate or its new exact-head validation.",
   "files": [
     {
       "path": ".gitignore",
@@ -9221,8 +9221,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/run_host.py",
-      "bytes": 6750,
-      "sha256": "57dfdc307ed848f50c6ce504f302fd055e9295cb025d46ed96e2b32462b4d289"
+      "bytes": 7396,
+      "sha256": "f8cbc838a2ccdbae5192deed34d97f16c875f12ab484607f3295bd8b2b1f6e91"
     },
     {
       "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
@@ -9246,8 +9246,8 @@
     },
     {
       "path": "tests/profile-permission-transient/run_host.py",
-      "bytes": 14300,
-      "sha256": "722f10b69f02dd6a335b3f9fff25de2bb1bb671b84ef1f0467322b3a61e4a34a"
+      "bytes": 14379,
+      "sha256": "b02634c4bf63b028213bab70cd3abed2bd26960f911064a8c2b9762df78ec939"
     },
     {
       "path": "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",

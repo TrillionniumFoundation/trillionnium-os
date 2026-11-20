@@ -5,6 +5,7 @@ This runner does not execute or qualify Android Binder/A11y adapters or build an
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -41,7 +42,9 @@ def main():
                source / 'tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java',
                source / 'tests/profile-permission-initialization/PhysicalDisplayFenceHostTest.java']
     fixture = source / 'tests/profile-permission-transient/fixtures/synthetic-activities.txt'
-    tracked = inputs + [fixture, Path(__file__).resolve()]
+    pair_runner = source / 'tests/profile-permission-transient/run_host.py'
+    platform = background / 'ProfileTaskPlatform.java'
+    tracked = inputs + [fixture, Path(__file__).resolve(), pair_runner, platform]
     pins = {str(p): digest(p) for p in tracked}
     result = {'schema': 'hepta.permission-init-core-host.v1', 'all_pass': False,
               'base_head': 'f7dbe2f1c06e34c992b140d5d88995a8e99c03db',
@@ -66,7 +69,7 @@ def main():
         return process.stdout.decode('utf-8')
 
     try:
-        original_tests = {'tests/profile-broker/ProfileBrokerHostTest.java': '5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04', 'tests/profile-permission-transient/ProfilePermissionTransientHostTest.java': '7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162', 'tests/profile-permission-transient/ProfileStateSettleHostTest.java': 'def0b550864c8abaff472de0ad2275d900ff620ebe23538c52ddbdcfe7db066b'}
+        original_tests = {'tests/profile-broker/ProfileBrokerHostTest.java': '5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04', 'tests/profile-permission-transient/ProfilePermissionTransientHostTest.java': '7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162', 'tests/profile-permission-transient/ProfileStateSettleHostTest.java': 'f1a5060afee2cf24a78abb237a5e175988ccc3a0192478cf25ce401087d20d0a'}
         for name, expected in original_tests.items():
             if digest(source/name) != expected:
                 raise RuntimeError("Original ownership test changed: "+name)
@@ -77,6 +80,13 @@ def main():
             raise RuntimeError("Existing full JDK required; no fallback")
         if digest(fixture) != '7f8adcb158486f74a1ebe342e54902b9fc7550ed7b0dd7bf11b36d1d97ab63f0':
             raise RuntimeError('synthetic fixture pin differs')
+        pair_spec = importlib.util.spec_from_file_location('permission_init_pair_fixture', pair_runner)
+        pair_module = importlib.util.module_from_spec(pair_spec)
+        pair_spec.loader.exec_module(pair_module)
+        generated, pair_receipt = pair_module.prepare_permission_pair_adapters(platform, output)
+        inputs += generated
+        pins.update({str(path): digest(path) for path in generated})
+        result['permission_pair_adapter'] = pair_receipt
         result['compiler'] = run('compiler-version', [str(javac), '-version']).strip()
         run('compile', [str(javac), '--release', '8',
                         '-encoding', 'UTF-8', '-d', str(classes)] + [str(p) for p in inputs])
