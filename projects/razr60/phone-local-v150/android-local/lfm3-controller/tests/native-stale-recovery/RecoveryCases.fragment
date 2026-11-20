@@ -1,0 +1,305 @@
+    // Synthetic host cases. Actual methods above are extracted verbatim.
+    interface RecoveryChange { void apply(Map<String,Object> value)throws Exception; }
+    static JSONObject recoveryJson(Map<?,?> value)throws Exception{return NativeQueryReservationHostTest.serviceJson(value);}
+    static Map<?,?> recoveryContext(Fixture f){
+        Object provider=f.session.domain().promptEvidence().get("provider");
+        return provider instanceof Map<?,?>?(Map<?,?>)((Map<?,?>)provider).get("recoverable_pre_effect_stale"):null;
+    }
+    static Fixture recoveryHome(String name)throws Exception{
+        Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.OPEN,"stale-recovery:"+name);
+        f.fresh.add("0/2","android.view.View","","","",NativeActionSnapshotCheckHostTest.rect(0,2700,1224,2800));f.fresh.link();
+        String refusal=f.service.validate(f.task,f.service.current,f.action,null,()->f.service.cancelled,f.work);
+        yes(refusal!=null&&refusal.contains("actual ancestor changed: 0"),"actual Service strict ancestor comparison rejects inserted root child");
+        f.noEffect("rejected actual Service comparison never enters click");return f;
+    }
+    static Map<String,Object> recoveryExecution(Fixture f,String mode)throws Exception{
+        SystemClock.now++;
+        if(mode.startsWith("entered")||"accepted".equals(mode))f.work.state.enterEffect(false,true);
+        if("entered-return-false".equals(mode))f.work.state.effectReturned(Boolean.FALSE);
+        if("accepted".equals(mode))f.work.state.effectReturned(Boolean.TRUE);
+        if("stop".equals(mode))f.work.state.retire("cancelled");
+        if("lease".equals(mode))f.work.state.retire("lease_retired");
+        SystemClock.now++;f.work.state.drained();SystemClock.now++;
+        if("expired".equals(mode))SystemClock.now=f.work.nativeGuard.deadline;
+        f.work.state.publish("stop".equals(mode),!"lease".equals(mode));SystemClock.now++;
+        Map<String,Object> raw=f.work.state.evidence();raw.put("native_action_guard",f.work.nativeGuard.evidence());
+        return NativeStaleProjectionBridge.project(recoveryJson(raw));
+    }
+    static void staleOutcome(Fixture f,Map<String,Object> execution)throws Exception{
+        f.session.modelActionOutcome(f.action,f.run,false,false,true,hash("synthetic-durable-action:"+f.run),SystemClock.now,execution);
+    }
+    static Object recoveryPermit(NativeAppSession session,ActionDecision action,String run,String observation)throws Exception{
+        java.lang.reflect.Method m=NativeAppSession.class.getDeclaredMethod("observationRecoveryPermit",ActionDecision.class,String.class,String.class);
+        try{return m.invoke(session,action,run,observation);}catch(java.lang.reflect.InvocationTargetException e){throwRecoveryCause(e);return null;}
+    }
+    static Object permitCall(Object permit,String name)throws Exception{
+        java.lang.reflect.Method m=permit.getClass().getDeclaredMethod(name);
+        try{return m.invoke(permit);}catch(java.lang.reflect.InvocationTargetException e){throwRecoveryCause(e);return null;}
+    }
+    static void throwRecoveryCause(java.lang.reflect.InvocationTargetException e)throws Exception{
+        Throwable cause=e.getCause();if(cause instanceof Exception)throw (Exception)cause;if(cause instanceof Error)throw (Error)cause;throw e;
+    }
+    static void recoveryNegative(String name,RecoveryChange change)throws Exception{
+        one(name,()->{Fixture f=recoveryHome(name);Map<String,Object> value=recoveryExecution(f,"none");change.apply(value);
+            staleOutcome(f,value);yes(recoveryPermit(f.session,f.action,f.run,f.frame.observationId)==null,"unproved execution grants no opaque permit");
+            f.observeGraph(f.fresh);yes(recoveryContext(f)==null,"unproved execution grants no recovered context");
+            yes(!f.session.domain().resultReady,"refusal cannot invent result");});
+    }
+    static void recoveryPositive()throws Exception{
+        one("strict_rejection_then_durable_proof_fresh_frame_and_new_model",()->{
+            Fixture f=recoveryHome("positive");NativeAppEvidence.Frame old=f.frame;
+            NativeAppSession.ActionGuard guard=f.work.nativeGuard;
+            yes(recoveryContext(f)==null,"recovery absent before durable outcome");
+            staleOutcome(f,recoveryExecution(f,"none"));
+            yes(recoveryContext(f)==null,"old observation never receives recovered context");
+            Object permit=recoveryPermit(f.session,f.action,f.run,old.observationId);
+            yes(permit!=null,"complete durable unentered outcome gives opaque read eligibility");
+            Map<?,?> p=(Map<?,?>)permitCall(permit,"evidence");
+            yes(Boolean.FALSE.equals(p.get("grants_action_authority"))&&Boolean.FALSE.equals(p.get("grants_service_read_authority")),"permit is not action or live Service authority");
+            yes(old.sourceRecordSha.equals(p.get("original_frame_record_sha256")),"permit binds exact original frame record");
+            IntegrationChecks.rejects(()->guard.requireOpen(f.action,f.run,SystemClock.now),"old guard closed");
+            IntegrationChecks.rejects(()->f.session.observed(old),"same old observation blocked");
+            IntegrationChecks.rejects(()->f.session.beforeModelAction(2,f.action,id("new-model-old-frame"),SystemClock.now),"new model alone cannot reuse old frame");
+            f.ids.put(f.raw.target,"n400");f.observeGraph(f.fresh);
+            Map<?,?> context=recoveryContext(f);
+            yes(context!=null,"fresh current native domain must describe proven pre-effect stale recovery");
+            yes(f.frame.observationId.equals(context.get("current_observation_id"))&&"n400".equals(context.get("current_node_id")),"context copies current frame and current retained ID");
+            yes(!f.action.nodeId.equals(context.get("current_node_id")),"old retained node ID is not reused");
+            yes(f.frame.sourceRecordSha.equals(context.get("current_frame_record_sha256"))&&f.frame.byId.get("n400").signature.equals(context.get("same_target_ref_sha256")),"current exact source and target signature bound");
+            yes(Boolean.TRUE.equals(context.get("new_model_decision_required"))&&Boolean.FALSE.equals(context.get("automatic_redispatch"))&&Boolean.FALSE.equals(context.get("business_verified")),"descriptive context needs model and proves no business");
+            yes(Boolean.FALSE.equals(context.get("grants_tool_authority"))&&Boolean.FALSE.equals(context.get("previous_node_id_reusable")),"no tool authority or stale ID grant");
+            IntegrationChecks.rejects(()->permitCall(permit,"requireCurrent"),"new observation consumes old read barrier");
+            IntegrationChecks.rejects(()->f.session.beforeModelAction(2,f.click("n400"),f.run,SystemClock.now),"old model run remains consumed");
+            ActionDecision next=f.click("n400");String nextRun=id("stale-recovery-new-model");SystemClock.now++;
+            f.gate.check(next,nextRun);f.session.beforeModelAction(2,next,nextRun,SystemClock.now);
+            NativeAppSession.ActionGuard fresh=f.session.actionGuard(next,nextRun,f.frame.observationId,SystemClock.now,SystemClock.now+8000);
+            yes(fresh!=guard&&next!=f.action,"actual new model decision gets new guard");
+            fresh.requireOpen(next,nextRun,SystemClock.now);f.noEffect("new decision has not replayed previous click");
+        });
+    }
+    static void recoveryProofNegatives()throws Exception{
+        for(String key:Arrays.asList("task_id","model_run_id","observation_id","authorization_sha256","background_generation")){
+            final String k=key;recoveryNegative("foreign_execution_"+k,x->x.put(k,"foreign"));
+        }
+        for(String key:Arrays.asList("window_id","display_id")){final String k=key;recoveryNegative("foreign_execution_"+k,x->x.put(k,999));}
+        recoveryNegative("wrong_schema",x->x.put("schema","model_claim"));
+        recoveryNegative("wrong_execution_kind",x->x.put("execution_kind","not_serial_worker"));
+        recoveryNegative("invalid_operation",x->x.put("operation_id","no-operation"));
+        for(String key:Arrays.asList("worker_drained","callback_published","callback_authority_current")){
+            final String k=key;recoveryNegative("missing_"+k,x->x.remove(k));recoveryNegative("false_"+k,x->x.put(k,false));
+        }
+        for(String key:Arrays.asList("effect_entered","effect_returned","retired","automatic_redispatch")){
+            final String k=key;recoveryNegative("true_"+k,x->x.put(k,true));recoveryNegative("missing_"+k,x->x.remove(k));
+        }
+        recoveryNegative("api_accepted_true",x->x.put("api_accepted",true));
+        recoveryNegative("api_rejected_not_proven_unentered",x->x.put("api_accepted",false));
+        recoveryNegative("missing_explicit_null_api",x->x.remove("api_accepted"));
+        recoveryNegative("missing_explicit_null_retirement",x->x.remove("retirement_reason"));
+        recoveryNegative("non_null_retirement",x->x.put("retirement_reason","cancelled"));
+        recoveryNegative("queue_before_attempt",x->x.put("queued_elapsed_ms",0L));
+        recoveryNegative("drain_before_queue",x->x.put("worker_drained_elapsed_ms",0L));
+        recoveryNegative("drain_after_outcome",x->x.put("worker_drained_elapsed_ms",Long.MAX_VALUE));
+        recoveryNegative("non_integer_clock",x->x.put("queued_elapsed_ms",1.5));
+        recoveryNegative("changed_original_deadline",x->x.put("deadline_elapsed_ms",Long.MAX_VALUE));
+        recoveryNegative("missing_guard",x->x.remove("native_action_guard"));
+        recoveryNegative("nonobject_guard",x->x.put("native_action_guard","claim"));
+        for(String key:Arrays.asList("purpose","model_run_id","action_sha256","query_history_sha256","attempt_started_elapsed_ms","issued_elapsed_ms","deadline_elapsed_ms","state","single_atomic_claim")){
+            final String k=key;recoveryNegative("mismatched_guard_"+k,x->{
+                Map<String,Object> guard=new LinkedHashMap<String,Object>();
+                for(Map.Entry<?,?> e:((Map<?,?>)x.get("native_action_guard")).entrySet())guard.put((String)e.getKey(),e.getValue());
+                guard.put(k,"foreign");x.put("native_action_guard",guard);
+            });
+        }
+        recoveryNegative("null_history_must_be_explicit",x->{
+            Map<String,Object> guard=new LinkedHashMap<String,Object>();
+            for(Map.Entry<?,?> e:((Map<?,?>)x.get("native_action_guard")).entrySet())guard.put((String)e.getKey(),e.getValue());
+            guard.remove("query_history_sha256");x.put("native_action_guard",guard);
+        });
+        for(String mode:Arrays.asList("entered-unknown","entered-return-false","accepted","stop","lease","expired")){
+            final String m=mode;one("actual_lifetime_refuses_"+m,()->{
+                Fixture f=recoveryHome(m);staleOutcome(f,recoveryExecution(f,m));
+                yes(recoveryPermit(f.session,f.action,f.run,f.frame.observationId)==null,"actual entered/retired/late worker has no recovery eligibility");
+                f.observeGraph(f.fresh);yes(recoveryContext(f)==null,"actual ambiguous outcome has no descriptive recovery");
+            });
+        }
+        one("already_claimed_private_guard_cannot_create_recovery",()->{
+            Fixture f=recoveryHome("claimed");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);
+            Map<String,Object> x=recoveryExecution(f,"none");
+            Map<String,Object> forged=new LinkedHashMap<String,Object>();for(Map.Entry<?,?> e:((Map<?,?>)x.get("native_action_guard")).entrySet())forged.put((String)e.getKey(),e.getValue());
+            forged.put("state",0);x.put("native_action_guard",forged);staleOutcome(f,x);
+            yes(recoveryPermit(f.session,f.action,f.run,f.frame.observationId)==null,"serialized state0 cannot override private claimed guard");
+            f.observeGraph(f.fresh);yes(recoveryContext(f)==null,"no recovery from contradictory private state");
+        });
+    }
+    static void recoveryLifetime()throws Exception{
+        one("permit_is_private_bound_and_invalid_after_retirement",()->{
+            Fixture f=recoveryHome("permit");
+            yes(recoveryPermit(f.session,f.action,f.run,f.frame.observationId)==null,"uncommitted attempt grants no permit");
+            staleOutcome(f,recoveryExecution(f,"none"));Object permit=recoveryPermit(f.session,f.action,f.run,f.frame.observationId);
+            yes(permit!=null,"permit after actual durable outcome");
+            int declaredConstructors=0;
+            for(java.lang.reflect.Constructor<?> c:permit.getClass().getDeclaredConstructors())if(!c.isSynthetic()){
+                declaredConstructors++;yes(java.lang.reflect.Modifier.isPrivate(c.getModifiers()),"caller cannot directly create permit");
+            }
+            yes(declaredConstructors==1,"one private source constructor, excluding Java8 compiler access bridge");
+            IntegrationChecks.rejects(()->recoveryPermit(f.session,f.action,id("foreign-run"),f.frame.observationId),"foreign run rejected");
+            IntegrationChecks.rejects(()->recoveryPermit(f.session,f.action,f.run,id("foreign-observation")),"foreign observation rejected");
+            IntegrationChecks.rejects(()->recoveryPermit(f.session,f.click(f.action.nodeId),f.run,f.frame.observationId),"equal JSON is not original ActionDecision object");
+            permitCall(permit,"requireCurrent");f.session.retire();
+            IntegrationChecks.rejects(()->permitCall(permit,"requireCurrent"),"Stop/session retirement invalidates eligibility");
+            IntegrationChecks.rejects(()->permitCall(permit,"evidence"),"retired permit cannot issue fresh evidence");
+        });
+        one("journal_failure_cannot_publish_recovery_or_read_permit",()->{
+            NativeQueryReservationHostTest.Fixture f=new NativeQueryReservationHostTest.Fixture("stale-journal");
+            f.year();ActionDecision action=f.begin(NativeActionSnapshotCheck.QUERY);NativeAppSession.ActionGuard guard=f.guard(action);
+            Map<String,Object> execution=f.execution(guard,"none");f.failOutcome=true;
+            IntegrationChecks.ioRejects(()->f.outcome(action,false,false,true,execution),"actual durable outcome failure propagates");
+            yes(recoveryPermit(f.session,action,f.h.lastRun,f.h.frame.observationId)==null,"no private recovery published before durable journal");
+            IntegrationChecks.rejects(()->guard.requireOpen(action,f.h.lastRun,f.h.time),"old guard closed after failed journal");
+            IntegrationChecks.rejects(()->f.session.observed(f.h.frame("form14.xml")),"failed journal keeps in-flight barrier");
+        });
+        one("new_id_with_pre_drain_capture_is_not_fresh",()->{
+            Fixture f=recoveryHome("old-time");NativeAppEvidence.Frame early=f.frame(f.frame.nodes,f.frame.treeSha);
+            staleOutcome(f,recoveryExecution(f,"none"));
+            IntegrationChecks.rejects(()->f.session.observed(early),"old captured data with a new ID remains invalid");
+        });
+        one("descriptive_context_has_no_new_fifteen_second_read_deadline",()->{
+            Fixture f=recoveryHome("fresh-after-read");staleOutcome(f,recoveryExecution(f,"none"));
+            Object permit=recoveryPermit(f.session,f.action,f.run,f.frame.observationId);SystemClock.now+=20000;
+            permitCall(permit,"requireCurrent");f.observeGraph(f.fresh);
+            yes(recoveryContext(f)!=null,"authorized new read may finish after old hint time without changing task deadline");
+            f.noEffect("elapsed time alone grants no action");
+        });
+        one("failure_and_partial_remain_legal_new_model_decisions",()->{
+            Fixture f=recoveryHome("done-options");staleOutcome(f,recoveryExecution(f,"none"));f.observeGraph(f.fresh);
+            for(String status:Arrays.asList("failure","partial")){
+                ActionDecision done=ActionDecision.parse(new JSONObject().put("action","done").put("package",f.frame.packageName)
+                    .put("observation_id",f.frame.observationId).put("status",status).put("summary","synthetic current obstacle").toString(),ActionDecision.IME_ACTION_SCHEMA);
+                f.session.domain().requireCurrent(done);f.gate.frame().requireDecision(done);
+                yes(!f.session.domain().resultReady,"context cannot make unsupported success");
+            }
+            yes(NativeStalePromptBridge.value().contains("recoverable_pre_effect_stale"),"actual Controller prompt describes narrow context");
+            yes(NativeStalePromptBridge.value().contains("新的真实阻碍"),"prompt preserves truthful stopping on a new obstacle");
+        });
+        one("boolean_only_legacy_outcome_cannot_mint_recovery",()->{
+            Fixture f=recoveryHome("legacy");SystemClock.now++;
+            f.session.modelActionOutcome(f.action,f.run,false,false,true,hash("legacy-receipt"),SystemClock.now);
+            yes(recoveryPermit(f.session,f.action,f.run,f.frame.observationId)==null,"stale and undispatched alone are insufficient");
+            f.observeGraph(f.fresh);yes(recoveryContext(f)==null,"legacy booleans never authorize recovered context");
+        });
+    }
+    static NativeAppEvidence.Frame recoveryFrame(NativeAppEvidence.Frame f,String field){
+        return new NativeAppEvidence.Frame("task".equals(field)?id("foreign-task"):f.taskId,
+          "owner".equals(field)?hash("foreign-owner"):f.ownerSha,"target".equals(field)?hash("foreign-target"):f.targetSha,
+          "authorization".equals(field)?hash("foreign-auth"):f.authorizationSha,"selection".equals(field)?hash("foreign-selection"):f.selectionSha,
+          id("changed-frame:"+field),f.packageName,"generation".equals(field)?"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee":f.generation,
+          f.treeSha,f.stateSha,f.screenshotSha,hash("changed-record:"+field),f.completionFrameSha,
+          "display".equals(field)?8:f.displayId,"window".equals(field)?97:f.windowId,"rotation".equals(field)?1:f.rotation,
+          f.width,f.height,f.left,f.top,f.right,f.bottom,SystemClock.now+10,"truncated".equals(field),!"incomplete".equals(field),f.nodes,
+          "window_type".equals(field)?2:f.windowType,!"unknown_metadata".equals(field));
+    }
+    static void recoveryFreshness()throws Exception{
+        for(String field:Arrays.asList("description","text","bounds","disabled","hidden","editable","selected")){
+            final String k=field;one("changed_current_target_has_no_context_"+k,()->{
+                Fixture f=recoveryHome(k);staleOutcome(f,recoveryExecution(f,"none"));Map<String,Object> node=f.fresh.nodes.get(f.raw.target);
+                if("description".equals(k)||"text".equals(k))node.put(k,"different observed target");
+                else if("bounds".equals(k))node.put(k,NativeActionSnapshotCheckHostTest.rect(262,431,470,624));
+                else if("disabled".equals(k))node.put("enabled",false);
+                else if("hidden".equals(k))node.put("visible",false);else node.put(k,true);
+                f.observeGraph(f.fresh);yes(recoveryContext(f)==null,"target must have same full actual signature and semantic identity");
+            });
+        }
+        for(String field:Arrays.asList("task","owner","target","authorization","selection","generation","display")){
+            final String k=field;one("foreign_or_incomplete_fresh_frame_rejected_"+k,()->{
+                Fixture f=recoveryHome(k);staleOutcome(f,recoveryExecution(f,"none"));
+                IntegrationChecks.rejects(()->f.session.observed(recoveryFrame(f.frame,k)),"fresh frame must retain all task/lease/collection authority");
+            });
+        }
+        for(String field:Arrays.asList("window","rotation","window_type","unknown_metadata","truncated","incomplete")){
+            final String k=field;one("unknown_or_changed_window_has_no_recovery_context_"+k,()->{
+                Fixture f=recoveryHome(k);staleOutcome(f,recoveryExecution(f,"none"));f.session.observed(recoveryFrame(f.frame,k));
+                yes(recoveryContext(f)==null,"context requires same exact observed application window");
+            });
+        }
+    }
+    static void recoveryDiagnosticLimits()throws Exception{
+        one("oversize_diagnostic_preserves_original_service_refusal_without_truncation",()->{
+            Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.OPEN,"stale-recovery:oversize");
+            f.fresh.add("0/2","android.widget.LinearLayout","","","",NativeActionSnapshotCheckHostTest.rect(0,2700,1224,2800));
+            for(int i=0;i<480;i++)f.fresh.add("0/2/"+i,"android.widget.TextView","","synthetic large census node "+i,"",NativeActionSnapshotCheckHostTest.rect(0,2701,1224,2799));
+            f.fresh.link();String refusal=f.service.validate(f.task,f.service.current,f.action,null,()->false,f.work);
+            yes(refusal!=null&&refusal.contains("actual ancestor changed: 0"),"oversize diagnostic preserves exact strict ancestor refusal");
+            yes(!actionDiagnosticEvidence(f.work).has("native_action_rejection_census"),"no truncated diagnostic disguised as complete trees");
+            f.noEffect("diagnostic allocation/budget failure never enables effect");
+        });
+        one("actual_projection_and_final_execution_never_copy_two_census_attachment",()->{
+            Fixture f=recoveryHome("projection");Map<String,Object> execution=recoveryExecution(f,"none");
+            JSONObject receipt=actionDiagnosticEvidence(f.work);
+            yes(receipt.has("native_action_rejection_census"),"private step receipt contains actual diagnostic");
+            // Preserve explicit null lifecycle fields, as Android's JSONObject(Map) does.
+            JSONObject raw=recoveryJson(execution).put("native_action_rejection_census",receipt.getJSONObject("native_action_rejection_census"));
+            Map<String,Object> projected=NativeStaleProjectionBridge.project(raw);
+            yes(!projected.containsKey("native_action_rejection_census"),"actual Controller projection strips private diagnostic");
+            f.service.lastActionExecution=f.work.state;JSONObject terminal=f.service.actionExecutionEvidence(f.task);
+            yes(terminal!=null&&!terminal.has("native_action_rejection_census"),"actual terminal Service projection reads state only");
+            yes(f.service.actionExecutionEvidence(id("foreign-task"))==null,"terminal execution remains task-bound");
+            staleOutcome(f,projected);f.observeGraph(f.fresh);
+            String prompt=new JSONObject(f.session.domain().promptEvidence()).toString();
+            String evidence=new JSONObject(f.session.evidence()).toString();
+            yes(!prompt.contains("native-action-rejection-census")&&!prompt.contains("complete_two_censuses"),"actual native prompt excludes raw trees");
+            yes(!evidence.contains("native-action-rejection-census")&&!evidence.contains("complete_two_censuses"),"Session evidence excludes raw trees");
+        });
+    }
+    static void recoveryBounds()throws Exception{
+        one("recovery_does_not_reset_twenty_model_action_budget",()->{
+            NativeQueryReservationHostTest.Fixture f=new NativeQueryReservationHostTest.Fixture("stale-max-actions");f.year();
+            for(int i=0;i<18;i++){
+                ActionDecision action=f.begin(NativeActionSnapshotCheck.QUERY);NativeAppSession.ActionGuard g=f.guard(action);
+                f.outcome(action,false,false,true,f.execution(g,"none"));
+                yes(recoveryPermit(f.session,action,f.h.lastRun,f.h.frame.observationId)!=null,"bounded attempt has its own private eligibility");
+                f.observe("form14.xml");
+            }
+            yes(((Number)NativeQueryReservationHostTest.progress(f.session).get("actual_model_actions")).intValue()==20,"all stale model decisions remain counted");
+            IntegrationChecks.rejects(()->f.begin(NativeActionSnapshotCheck.QUERY),"twenty-first recovery action denied");
+            yes(NativeQueryReservationHostTest.progress(f.session).get("last_query_date")==null,"repeated rejection cannot fabricate query result");
+        });
+        one("xiaomi_current_search_also_requires_actual_durable_guard_proof",()->{
+            Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH,"stale-recovery:xiaomi");
+            f.fresh.add("0/3","android.view.View","","","",NativeActionSnapshotCheckHostTest.rect(0,2650,1224,2750));f.fresh.link();
+            String refusal=f.service.validate(f.task,f.service.current,f.action,null,()->false,f.work);
+            yes(refusal!=null&&refusal.contains("actual ancestor changed: 0"),"actual Xiaomi ancestor change remains rejected");
+            staleOutcome(f,recoveryExecution(f,"none"));f.observeGraph(f.fresh);
+            Map<?,?> context=recoveryContext(f);yes(context!=null&&NativeActionSnapshotCheck.SEARCH.equals(context.get("purpose")),"same current Xiaomi search purpose is described only after fresh observation");
+            f.noEffect("search recovery context is not a click");
+        });
+    }
+    static void staleRecoveryMain(String[] args)throws Exception{
+        sourceRoot=java.nio.file.Paths.get(args[0]);NativeAppProviderHostTest.fixtures=sourceRoot.resolve("tests/native-app-provider/fixtures");
+        if(args.length>2&&"old-context".equals(args[2])){
+            Fixture f=recoveryHome("old-context");staleOutcome(f,recoveryExecution(f,"none"));f.observeGraph(f.fresh);
+            yes(recoveryContext(f)!=null,"fresh current native domain must describe proven pre-effect stale recovery");
+            throw new AssertionError("old production unexpectedly supplies recovery context");
+        }
+        if(args.length>2&&"old-diagnostic".equals(args[2])){
+            recoveryDiagnostic();throw new AssertionError("old production unexpectedly supplies complete rejection diagnostic");
+        }
+        recoveryPositive();recoveryProofNegatives();recoveryLifetime();recoveryFreshness();recoveryDiagnostic();recoveryDiagnosticLimits();recoveryBounds();
+        IntegrationChecks.finish(java.nio.file.Paths.get(args[1]),"hepta.native-stale-recovery-host.v1",
+          "Actual production Session/lifetime/comparator and verbatim Service/Controller methods, synthetic host graph and IO. No phone, Android, model response or business completion pass.");
+    }
+    static void recoveryDiagnostic()throws Exception{
+        one("actual_service_preserves_complete_two_tree_refusal_diagnostic",()->{
+            Fixture f=recoveryHome("diagnostic");JSONObject receipt=actionDiagnosticEvidence(f.work);
+            JSONObject d=receipt.optJSONObject("native_action_rejection_census");
+            yes(d!=null,"actual rejected Service comparison must retain complete two-tree diagnostic");
+            yes(d.getBoolean("complete_two_censuses")&&!d.getBoolean("nodes_truncated")&&!d.getBoolean("grants_dispatch"),"complete diagnostic is not dispatch proof");
+            yes(d.getString("original_observation_id").equals(f.frame.observationId)&&d.getString("operation_id").equals(f.work.state.operationId),"same original observation and actual operation");
+            yes(d.getString("original_phone_observation_record_sha256").equals(f.frame.sourceRecordSha)&&d.getString("original_screen_sha256").equals(f.frame.screenshotSha),"source and screenshot bound without taking a new screenshot");
+            yes(!d.getBoolean("fresh_screenshot_observed")&&d.getBoolean("original_refusal_preserved"),"no fabricated fresh screenshot or rewritten refusal");
+            JSONArray before=d.getJSONObject("before").getJSONArray("nodes"),fresh=d.getJSONObject("fresh").getJSONArray("nodes");
+            yes(before.length()==f.raw.nodes.size()&&fresh.length()==f.fresh.nodes.size(),"both complete census arrays include every raw node");
+            yes(before.getJSONObject(0).getString("path").equals("0")&&before.getJSONObject(0).getInt("children")==2&&fresh.getJSONObject(0).getInt("children")==3,"unretained root change actually captured");
+            yes(d.toString().getBytes(StandardCharsets.UTF_8).length<=262144,"compact diagnostic object bounded");
+            f.noEffect("diagnostic never enables dispatch");
+        });
+    }

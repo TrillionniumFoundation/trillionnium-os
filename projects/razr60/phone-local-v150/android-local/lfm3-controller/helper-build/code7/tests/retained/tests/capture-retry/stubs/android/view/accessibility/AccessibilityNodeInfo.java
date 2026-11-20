@@ -1,0 +1,1 @@
+package android.view.accessibility; public final class AccessibilityNodeInfo { private final int id; public AccessibilityNodeInfo(int n){id=n;} public int getWindowId(){return id;} public void recycle(){} }

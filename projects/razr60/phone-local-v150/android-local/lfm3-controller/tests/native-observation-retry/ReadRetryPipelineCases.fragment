@@ -1,0 +1,165 @@
+    /** Synthetic UI carriers; every request, read, retirement and proof runs the extracted Service. */
+    static final class ReadProofResult implements ObservationCallback {
+        final List<NativeObservationRetryProof> proofs=new ArrayList<NativeObservationRetryProof>();
+        final List<String> failures=new ArrayList<String>();final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();
+        public void onObservation(PhoneObservation value){check(isMain(),"observation callback stays main-owned");observations.add(value);}
+        public void onError(String value){check(isMain(),"failure callback stays main-owned");failures.add(value);}
+        public void onReadRetryAvailable(String error,NativeObservationRetryProof proof){
+            check(isMain(),"proof callback stays main-owned");check(proof!=null,"actual typed proof required");failures.add(error);proofs.add(proof);
+        }
+    }
+    static final class ReadScenario {
+        final ObserverPipelineHost f;final ReadProofResult out=new ReadProofResult();ObservationRequest request;
+        final int first;String mutation;
+        ReadScenario()throws Exception{
+            f=nativeFixture(null);f.taskAuthorization=new Object();twoSamples(f);
+            check(f.current!=null&&f.currentGraph!=null&&f.delivered.size()==1,"real prior native observation required");first=f.reads.get();
+            f.readHook=(g,n)->{
+                nativeGraph(g);if(n>=first+3)g.digest="synthetic changing public layout";
+                if(n==first+4&&mutation!=null){
+                    if(mutation.equals("missing"))throw new NoActiveWindow();
+                    if(mutation.equals("sample_error"))throw new IllegalStateException("synthetic system read error");
+                    if(mutation.equals("incomplete"))g.collectionStats=counts(1,1,0,0,0);
+                    else if(mutation.equals("package"))g.packageName="other.app";
+                    else if(mutation.equals("window_metadata"))g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,g.displayId,new int[]{0,0,1080,2400},"other title");
+                    else if(mutation.equals("unknown"))f.noteObservationEvent(-1);
+                    else if(!mutation.equals("missing")&&!mutation.equals("sample_error")&&!mutation.equals("incomplete"))changeIdentity(g,mutation);
+                }
+                sealGraph(g);
+            };
+        }
+        void start()throws Exception{
+            f.observe(f.lease,f.directory,()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,481000),out);
+            f.main.drain();request=f.activeObservation;check(request!=null,"new ordinary read admitted");f.awaitSample();
+            SystemClock.now+=400;f.main.drain();f.awaitSample();f.finish();
+            check(out.observations.isEmpty()&&request.readCaptureFailures==1,"real changed screenshot graph refused");
+        }
+        void expire()throws Exception{SystemClock.now=request.started+10278;f.main.drain();f.finish();f.finish();}
+        Block terminalPostHeld()throws Exception{
+            Block hold=new Block();f.main.afterWorkerPost=hold;
+            SystemClock.now=request.started+10278;f.main.drain();hold.entered();
+            check(!observationIoBusy.get()&&observationIo.active.get()>0,"worker(false) precedes the actual Runnable return");
+            f.main.drain();return hold;
+        }
+        void releasedResources(){
+            check(request.finished&&request.captured==null&&!request.shotPending&&f.activeObservation==null,"request retired before proof");
+            for(Graph g:f.graphs)if(g!=f.currentGraph)check(g.closed,"failed request graph released before proof");
+            for(Bitmap bitmap:Bitmap.made)if(bitmap!=f.currentBitmap)check(bitmap.recycled,"failed request bitmap released before proof");
+            for(ScreenshotResult shot:f.shots)check(shot.buffer.closes==1,"hardware buffer released before proof");
+        }
+        NativeObservationRetryProof proved()throws Exception{
+            start();expire();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one typed failure, never an observation");
+            releasedResources();return out.proofs.get(0);
+        }
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.main.rejectWorkerPosts=false;f.main.throwWorkerPosts=false;f.dispose();}
+    }
+    static void retryCase(String name,Case body)throws Exception{eventCase("read_retry/"+name,body);}
+    static void finishRetryCases(String output)throws Exception{
+        org.json.JSONObject value=new org.json.JSONObject().put("schema","hepta.native-observation-retry-service-host.v1")
+                .put("all_pass",true).put("cases",EventChecks.names.size()).put("assertions",EventChecks.assertions).put("case_names",EventChecks.names)
+                .put("actual_Service_observer_bodies",true).put("actual_serial_read_executor",true)
+                .put("android_execution",false).put("phone_execution",false).put("business_completion_verified",false);
+        Files.write(Paths.get(output),value.toString(2).getBytes(StandardCharsets.UTF_8));System.out.println(value.toString());
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        retryCase("terminal_read_return_is_required_after_busy_false_and_main_callback",()->{
+            ReadScenario s=new ReadScenario();s.start();Block hold=s.terminalPostHeld();
+            check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty(),"main accepted terminal sample but actual worker has not returned");
+            check(observationIo.active.get()>=2,"drain marker is queued behind the held read");s.releasedResources();
+            hold.open();s.f.finish();check(s.out.proofs.size()==1&&s.out.failures.size()==1,"only actual serial drain permits proof");
+            Map<String,Object> e=s.out.proofs.get(0).evidence();
+            check(Boolean.TRUE.equals(e.get("read_worker_drained"))&&Boolean.TRUE.equals(e.get("failed_request_resources_released")),"typed proof records actual drain and release");
+            check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("renews_failed_request")),"read proof grants no action or renewal");
+            check(((Number)e.get("failed_request_terminal_elapsed_ms")).longValue()>=s.request.started,"actual failed terminal clock");
+            check(s.request.deadline==s.request.started+12000&&s.request.readGraphChanges>0&&s.request.readCaptureFailures==1,"unchanged limit and observed transient evidence");s.dispose();
+        });
+        for(final boolean throwing:new boolean[]{false,true})retryCase("drain_marker_main_post_"+(throwing?"throws":"returns_false"),()->{
+            ReadScenario s=new ReadScenario();s.start();Block hold=s.terminalPostHeld();s.f.main.throwWorkerPosts=throwing;s.f.main.rejectWorkerPosts=!throwing;
+            hold.open();await(()->observationIo.active.get()==0,"old read and no-read marker return");s.f.main.drain();
+            check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"undeliverable main callback cannot issue proof");s.releasedResources();s.dispose();
+        });
+        retryCase("drain_marker_queue_rejection_never_issues_proof",()->{
+            ReadScenario s=new ReadScenario();s.start();Block hold=new Block();s.f.main.afterWorkerPost=hold;
+            SystemClock.now=s.request.started+10278;s.f.main.drain();hold.entered();observationIo.reject=true;s.f.main.drain();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1,"queue rejection preserves failure");observationIo.reject=false;hold.open();s.f.finish();s.dispose();
+        });
+        for(final String changed:new String[]{"stop","lease","authorization","current","background","locked","deadline"})retryCase("queued_drain_rechecks_"+changed,()->{
+            ReadScenario s=new ReadScenario();s.start();Block hold=s.terminalPostHeld();hold.open();await(()->observationIo.active.get()==0,"marker posted");
+            if(changed.equals("stop"))s.f.cancelled.set(true);else if(changed.equals("lease"))s.f.lease="other-task";
+            else if(changed.equals("authorization"))s.f.taskAuthorization=new Object();else if(changed.equals("current"))s.f.current=null;
+            else if(changed.equals("background"))s.f.taskBackground=new BackgroundSession(9);else if(changed.equals("locked"))s.f.locked=true;
+            else SystemClock.now=s.request.deadline;
+            s.f.main.drain();check(s.out.proofs.isEmpty()&&s.out.failures.size()==1&&s.out.observations.isEmpty(),"changed private boundary forbids proof");s.dispose();
+        });
+        for(final String kind:new String[]{"package","window","rotation","bounds","generation","owner","display","window_metadata","incomplete","missing","sample_error","unknown"})retryCase("complete_same_identity_required_"+kind,()->{
+            ReadScenario s=new ReadScenario();s.mutation=kind;s.start();s.expire();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1&&s.out.observations.isEmpty(),"display events alone do not authorize recovery");s.dispose();
+        });
+        retryCase("initial_observation_has_no_prior_snapshot_proof",()->{
+            ReadScenario s=new ReadScenario();s.f.clearSnapshot();s.start();s.expire();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1,"no initial-read recovery");s.dispose();
+        });
+        retryCase("authorization_absent_cannot_issue_proof",()->{
+            ReadScenario s=new ReadScenario();s.f.taskAuthorization=null;s.start();s.expire();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1,"no authorization inferred from UI events");s.dispose();
+        });
+        retryCase("typed_proof_is_not_a_serializable_constructor",()->{
+            int constructors=0;
+            for(java.lang.reflect.Constructor<?> constructor:NativeObservationRetryProof.class.getDeclaredConstructors())if(!constructor.isSynthetic()){
+                constructors++;check(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()),"source proof constructor is private");
+            }
+            check(constructors==1,"single source issuer constructor; Java 8 synthetic access bridge is compiler-owned");
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();
+            try{proof.evidence().put("read_worker_drained",false);throw new AssertionError("mutable proof evidence");}catch(UnsupportedOperationException expected){check(true,"evidence is immutable and cannot alter authority");}s.dispose();
+        });
+        for(final String kind:new String[]{"service","task","authorization","before"})retryCase("two_producer_cross_binding_requires_original_"+kind,()->{
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();proof.requireOriginal(s.f,s.f.lease,s.f.taskAuthorization,s.f.current);
+            Graph g=s.f.currentGraph;PhoneObservation original=s.f.current;
+            PhoneObservation distinct=new PhoneObservation(original.id,g.packageName,original.capturedElapsedMillis,1080,2400,g.rotation,g.windowId,g.bounds,
+                    original.path,"synthetic-hash",g.digest,g.state,g.windowMetadata,g.truncated,g.rows,g.backgroundGeneration,g.backgroundBootstrapPackage,g.backgroundAllowedPackages,g.collectionStats,null,g.backgroundOwnerSha);
+            try{proof.requireOriginal(kind.equals("service")?new Object():s.f,kind.equals("task")?"other-task":s.f.lease,
+                    kind.equals("authorization")?new Object():s.f.taskAuthorization,kind.equals("before")?distinct:s.f.current);throw new AssertionError("foreign binding accepted");}
+            catch(IllegalStateException expected){check(true,"actual objects and task must coincide");}s.dispose();
+        });
+        retryCase("fresh_request_preserves_two_samples_two_capture_rechecks_and_single_use",()->{
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();int oldReads=s.f.reads.get();PhoneObservation old=s.f.current;
+            s.f.readHook=(g,n)->{nativeGraph(g);g.digest="settled public layout";sealGraph(g);};ReadProofResult next=new ReadProofResult();long originalDeadline=s.request.deadline;
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->s.f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,481000),next,proof);
+            s.f.main.drain();ObservationRequest replacement=s.f.activeObservation;s.f.awaitSample();SystemClock.now+=400;s.f.main.drain();s.f.awaitSample();s.f.finish();
+            check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"one real fresh observation");
+            check(s.f.reads.get()==oldReads+4&&s.f.current!=old,"two samples and both graph rechecks preserved");
+            check(replacement.deadline==replacement.started+12000&&s.request.deadline==originalDeadline,"new request does not renew old request");
+            int reads=s.f.reads.get();ReadProofResult reused=new ReadProofResult();
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,481000),reused,proof);s.f.main.drain();
+            check(reused.failures.size()==1&&s.f.reads.get()==reads,"same proof cannot schedule a second new read");s.dispose();
+        });
+        for(final String kind:new String[]{"stop","task","authorization","current","window","oversized_deadline","wrong_service"})retryCase("proof_consumption_rechecks_"+kind,()->{
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();int reads=s.f.reads.get();ReadProofResult next=new ReadProofResult();
+            ObserverPipelineHost recipient=s.f;String task=s.f.lease;long deadline=ObservationStabilityGate.requestDeadline(SystemClock.now,481000);
+            if(kind.equals("stop"))s.f.cancelled.set(true);else if(kind.equals("task"))task="other-task";
+            else if(kind.equals("authorization"))s.f.taskAuthorization=new Object();else if(kind.equals("current"))s.f.current=null;
+            else if(kind.equals("window"))s.f.currentGraph.windowId++;else if(kind.equals("oversized_deadline"))deadline++;
+            else{recipient=nativeFixture(null);recipient.taskAuthorization=s.f.taskAuthorization;}
+            try{recipient.observeAfterTransientFailure(task,recipient.directory,()->s.f.cancelled.get(),deadline,next,proof);recipient.main.drain();}
+            catch(IllegalStateException expected){check(kind.equals("task"),"only foreign task rejects before callback");}
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&s.f.reads.get()==reads,"invalid proof never schedules a read");
+            if(recipient!=s.f){check(recipient.reads.get()==0,"foreign service did not read");s.dispose();recipient.dispose();}else s.dispose();
+        });
+        retryCase("replacement_window_change_cannot_publish_or_mint_proof",()->{
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();ReadProofResult next=new ReadProofResult();
+            s.f.readHook=(g,n)->{nativeGraph(g);g.windowId++;sealGraph(g);};
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,481000),next,proof);
+            s.f.main.drain();s.f.awaitSample();s.f.finish();
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1,"new request preserves same complete window binding");s.dispose();
+        });
+        retryCase("replacement_failure_cannot_issue_another_proof",()->{
+            ReadScenario s=new ReadScenario();NativeObservationRetryProof proof=s.proved();int first=s.f.reads.get();ReadProofResult next=new ReadProofResult();
+            s.f.readHook=(g,n)->{nativeGraph(g);if(n>=first+3)g.digest="another changing public layout";sealGraph(g);};
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,481000),next,proof);
+            s.f.main.drain();ObservationRequest r=s.f.activeObservation;s.f.awaitSample();SystemClock.now+=400;s.f.main.drain();s.f.awaitSample();s.f.finish();
+            SystemClock.now=r.started+10278;s.f.main.drain();s.f.finish();s.f.finish();
+            check(next.proofs.isEmpty()&&next.failures.size()==1&&next.observations.isEmpty(),"second failure is terminal, never a third read");s.dispose();
+        });
+        observationIo.executor.shutdown();finishRetryCases(args[0]);
+    }

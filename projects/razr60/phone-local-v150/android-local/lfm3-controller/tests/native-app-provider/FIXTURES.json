@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.native-app-provider-fixtures.v1",
+  "files": [
+    {
+      "path": "fixtures/home.xml",
+      "bytes": 82723,
+      "sha256": "3d41a958108d6c0a7a2247fc6aa4a90469407691f6e3824812b154594851b1c2",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-launch-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false,
+      "original_bytes": 82723,
+      "original_sha256": "c69f42c5abee7404cc907f5d67a9fa5a9c0f072025575b63f9bd2551757e5438",
+      "public_redactions": [
+        {
+          "node_ordinal": 135,
+          "field": "text",
+          "old_value_sha256": "703380cb14fff9b48a12019625ceb29cdc43f5bc3bc53d264abd601a63b18836",
+          "new_value": "\u533f\u540d\u5185\u5bb9\u4f5c\u8005",
+          "resource_id": ""
+        }
+      ],
+      "root_raw_private_original_unchanged": true
+    },
+    {
+      "path": "fixtures/form14.xml",
+      "bytes": 93861,
+      "sha256": "e7f34d9e8225de7792ccd43481e83c6eef809496262b65018e2bfa4b629fe1f6",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-flight-form-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/calendar14.xml",
+      "bytes": 20043,
+      "sha256": "aaa46fc247a406b9d30ae81625e775a7552fa52a4155a6a3f44b219722f6a79c",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-calendar-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/form17.xml",
+      "bytes": 95922,
+      "sha256": "5e8d433a28d0f2aa3b895591d533c7903043601d2e34cfce8fed096d766a523c",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-date17-root-fixture-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/result14.xml",
+      "bytes": 136818,
+      "sha256": "3b908dec948091d16df06d5632a5d67a0bbb0d369c08a6f6dee12a58fe1cb8e7",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-result-form14-close-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/result16.xml",
+      "bytes": 136679,
+      "sha256": "bff376f9b8daba0e90d3a5608f8e19e79a5bab892225f954c1717e184998653c",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-date16-ax-readonly-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/result17.xml",
+      "bytes": 143543,
+      "sha256": "1bc4acfb65cf5b8096d3eada6d79f34a7eb960522a3f7af6ebf6b72ca76bdb7b",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-query-readonly-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/result17-second.xml",
+      "bytes": 143543,
+      "sha256": "1bc4acfb65cf5b8096d3eada6d79f34a7eb960522a3f7af6ebf6b72ca76bdb7b",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-query-readonly-r2/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/overlay14.xml",
+      "bytes": 146164,
+      "sha256": "484a4a1966d1a7880b772ebcc729402fda8594dec8392c27cfc2a679adca9e91",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-result-form14-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/reset14.xml",
+      "bytes": 99905,
+      "sha256": "384306392834ca107d4a28efb3b1cc804c758dc36773aea3cd6587503c6f810b",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-query-form-reset14-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/calendar-result.xml",
+      "bytes": 20982,
+      "sha256": "36494a413e269d8cabd07b4b1dfdd49ada5508da5f63b01f572912ab98602269",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-ctrip-result-calendar-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    },
+    {
+      "path": "fixtures/xiaomi-search-results.xml",
+      "bytes": 55869,
+      "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-search-submit-r1/after-tree.xml",
+      "original_root_setup": true,
+      "model_executed": false
+    }
+  ],
+  "boundary": "Original XML; Android visibility/actions/NodeRef/Frame explicitly host-modelled"
+}

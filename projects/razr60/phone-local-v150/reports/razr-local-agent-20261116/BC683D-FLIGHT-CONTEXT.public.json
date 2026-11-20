@@ -1,0 +1,192 @@
+{
+  "analyst_device_operations": 0,
+  "apk_sha256": "bc683d4a3685883a3a7c1be623e947a7cf04978f150c26e7deeec88f442cba5d",
+  "audit_sha256": "1e83cc26dcf2298d4a2c18aa75e1db2f71b38ee68bc65a79acde1f1da374f7b9",
+  "branch_coverage": {
+    "booking_pending_16s_branch_exercised": false,
+    "new_initial_unavailable_retry_records": 0,
+    "new_pending_prompt_delivered": false,
+    "new_typed_pre_dispatch_recovery_records": 0,
+    "prior_city_readonly_retries": [
+      1
+    ],
+    "prior_initial_captured_pair_retries": [
+      1,
+      2
+    ]
+  },
+  "budget": {
+    "clock": "Android elapsedRealtime",
+    "context_tokens": 8192,
+    "host_ceiling_is_not_an_app_deadline_override": true,
+    "host_observation_ceiling_seconds": 480,
+    "native_exact_admitted": true,
+    "native_exact_total_context_tokens": 4947,
+    "native_prompt_tokens_exact": 4435,
+    "original_application_deadline_ms": 197336259,
+    "remaining_at_final_action_queue_ms": 257257,
+    "remaining_at_terminal_decision_ms": 246703
+  },
+  "case": "strict-flight-lfm8b-pending-bc683d4a/runs/web-flight-lfm8b-bc683-01/run-87dd6074",
+  "conclusion": "The model ended while an authorized date-selection action remained available. Calendar and query were not reached. The task is failed; this does not qualify the newly added recovery branches.",
+  "evidence": [
+    {
+      "artifact": "last-request/prompt.txt",
+      "bytes": 8477,
+      "private_original_published": false,
+      "sha256": "52447fc9506d362793f79d4dbf28a8d59e428aa39d7a219ef21d05be0739e876"
+    },
+    {
+      "artifact": "last-request/grammar.gbnf",
+      "bytes": 1565,
+      "private_original_published": false,
+      "sha256": "ec65291d7207b480b98f149f59586cf360f1d4ac8a6f8c4785d89c277b4775c7"
+    },
+    {
+      "artifact": "last-request/native-result.json",
+      "bytes": 5027,
+      "private_original_published": false,
+      "sha256": "0e879df5c36588d0192869f25231269daaadb5d6ac59a1f7e3187e8304192012"
+    },
+    {
+      "artifact": "task/step-06-action.json",
+      "bytes": 14293,
+      "private_original_published": false,
+      "sha256": "56477b9a66b974564be76b9be28cb61c56ac99e5030e82ceec9c48237487671d"
+    },
+    {
+      "artifact": "task/web-frame-2fbc6e0e87404cc09e5dee2575a77910.json",
+      "bytes": 56707,
+      "private_original_published": false,
+      "sha256": "d7242ef0f595021ad8576dde2eadb3628a10a4da11185d3c3eb59a3a786602dc"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 26003,
+      "private_original_published": false,
+      "sha256": "cfec0581ef7c24bcd7beda56796a9d9f667b87d53b10856c41f09023b690747c"
+    },
+    {
+      "artifact": "session/stderr.log",
+      "bytes": 54592,
+      "private_original_published": false,
+      "sha256": "ea9582614ec59f28ccf7f321a18157dc47b732682e4dfed6b2d5fe1445f096cd"
+    },
+    {
+      "artifact": "task/web-observation-timing-1c4784e1a63c4302bf7e9ddf5bf149bf.json",
+      "bytes": 2381,
+      "private_original_published": false,
+      "sha256": "47669efe544958ba444cb30cc91c0f6a3683a285e5d1dffda28b7f4263f83468"
+    },
+    {
+      "artifact": "task/web-observation-timing-508b957d464a4212a265332b977e87bf.json",
+      "bytes": 3526,
+      "private_original_published": false,
+      "sha256": "376098c59f417763b9fdc511a9900f27ebc078c75fe77917184dc6c17725af0e"
+    },
+    {
+      "artifact": "task/web-observation-timing-74052b2afc404388a031252a5da5741c.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "25696c6ae2b8d7759b20f28a55214ffeb6c4cc6563dfed4d6d42bce52c16f540"
+    },
+    {
+      "artifact": "task/web-observation-timing-8bf09161eb1540e8906efcb16160c33e.json",
+      "bytes": 5063,
+      "private_original_published": false,
+      "sha256": "499c24d559be6c18d9a1274ddf6c5541f1717c598531eb6ba81561e9574c366b"
+    },
+    {
+      "artifact": "task/web-observation-timing-a71a3f3e58e84ed0aefde0e94c371a8e.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "d7b5b77e1cd96357ea310d5f54a78d5f07afef97fefdb23e95935f0777e448ef"
+    },
+    {
+      "artifact": "task/web-observation-timing-bd3c4857821f49ceb15748d7948c962a.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "340fa92e58fa2b9fdb3b67cbadbdb71a23027c3d5e55507e299348d9861f0b04"
+    },
+    {
+      "artifact": "task/web-observation-timing-d5f6f178a9b645388c4f5f5c5d2ff103.json",
+      "bytes": 9021,
+      "private_original_published": false,
+      "sha256": "925a552db79efd2a3faa9d8d5e518e02f4740bf4313e9012f2bc6d1d6fff548b"
+    }
+  ],
+  "final_prompt": {
+    "accepted": true,
+    "allowed_click_ids": [
+      "n24"
+    ],
+    "date_confirmation_missing": true,
+    "dispatched": false,
+    "grammar_actions": [
+      "click",
+      "wait",
+      "done"
+    ],
+    "model_action": "done",
+    "model_done_status": "failure",
+    "model_input_was_structured_nodes_not_the_saved_png": true,
+    "model_narrative_of_completed_query_not_supported": true,
+    "phase": "official_query_form",
+    "purpose": "choose_departure_date",
+    "query_attempted": false,
+    "query_executed": false,
+    "query_withheld": true,
+    "stale": false
+  },
+  "generator_sha256": "734d685632011e6871dd458e9952f5812d2c211c1c2904536daea23164598090",
+  "inference": {
+    "actual_backend": "HTP0",
+    "layers_placed_on_selected_backend": 25,
+    "native_session_counts": {
+      "model_create_count": 1,
+      "model_hash_count": 1,
+      "model_reset_count": 6,
+      "requests_completed": 6,
+      "requests_received": 6,
+      "sdk_init_count": 1
+    },
+    "no_controlled_steady_state_benchmark_claimed": true,
+    "one_task_warm_worker": true,
+    "per_request_profile_ranges": {
+      "app_request_elapsed_ms": {
+        "max": 30643,
+        "min": 13447
+      },
+      "decode_tokens_per_second": {
+        "max": 21.5584662457363,
+        "min": 14.74339409781725
+      },
+      "generated_tokens": {
+        "max": 180,
+        "min": 126
+      },
+      "native_request_elapsed_ms": {
+        "max": 24621.593,
+        "min": 13435.888
+      },
+      "prefill_tokens_per_second": {
+        "max": 614.7099815303729,
+        "min": 501.31392854688363
+      },
+      "prompt_tokens": {
+        "max": 4435,
+        "min": 3480
+      },
+      "ttft_us": {
+        "max": 8893344,
+        "min": 5831749
+      }
+    },
+    "prompts_and_generated_lengths_differ": true,
+    "runtime_htp_library_version": 79,
+    "selected_device_count": 1,
+    "total_layers": 25
+  },
+  "schema": "hepta.flight-final-context-diagnosis.public.v1",
+  "source_head": "f2f1b8710f4b33dcf2ae5f7512d9ee4472215f6e"
+}
