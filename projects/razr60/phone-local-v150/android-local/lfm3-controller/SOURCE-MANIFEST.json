@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "cf15b7dbb0a12e7307121f5ed24e461dd85b8c4e",
-  "base_manifest_sha256": "0ef0b8da97ea6a64c65ae901587d3dbd0265c8f018f3718b75eb9aaa054b33df",
-  "candidate_status": "public_profile_terminal_bridge_successor_host_validation_pending",
+  "base_head": "a6b6ef3e24d614d66fa2c5458236fad063f44e11",
+  "base_manifest_sha256": "c5594b8f7c22651f5ffeeb1a96b1212829c75829d92ce6d0b1aeeaced20e91a1",
+  "candidate_status": "shopping_navigation_permission_cookie_and_late_event_read_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "c116b373d33509e272e945cd9b886b1ff282c58891380cb30ee597edb7c12a8a",
+  "production_input_map_sha256": "243cf7acc5beaed35bd7934ae73538336d6f7f2581751802422907d2737f15af",
   "complete_source_files": 2251,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain the complete PR160 cf15b7d source and all existing host case contracts. Project only the exact already-validated fourteen native profile cleanup fields from private fourteen-field or public sixteen-field App evidence; keep full public history validation and original nested evidence. Add a mandatory real producer/BackgroundSession/controller bridge/full native terminal host integration gate with exact legacy counterexample and candidate case contracts. No device, model, APK signing or Git mutation is performed by this source preparation.",
+  "scope": "Retain the exact a6b R18 component. Add next_goal only inside the existing one-use pre-query image-modal Back capability. Permit only the reviewed permission-to-target cookie-subset read to be discarded after retained-root-cookie and claimed-leaf checks; re-read the complete graph within the original three-attempt/request deadline and require exact final TaskInfo/cookie equality. Keep ordinary window, permission input, dispatch, ownership and retirement guards. Classify only a sealed, same-identity late target-display capture event as a reason for the existing one-use drained read-only retry; discard unpublished pixels and require new complete evidence and a new model decision. Keep original publisher, unknown-event, task/lease, retry-budget and deadline guards. Extend existing tests and bind their actual digest, including the exact existing home-loading hint. New host and Android qualification remain pending; no Phone operation is authorized by this source manifest.",
   "files": [
     {
       "path": ".gitignore",
@@ -6221,8 +6221,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "bytes": 45506,
-      "sha256": "8a73b3ef8e5df3702a56433aeb2ec93b5888bb148b8aae7be57b9f51985e4d5a"
+      "bytes": 46130,
+      "sha256": "d98c8affa3f97e3a067f2cba1e45db7e8e2692cd90cbcf73d52ae904d920cb18"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePackages.java",
@@ -6236,8 +6236,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
-      "bytes": 24744,
-      "sha256": "87cf5de7b171a82a1ba0cb614eaf32193b6192048a882713e007b6c6b6dd03ce"
+      "bytes": 27906,
+      "sha256": "e42352eabead0b2dacc628181a732348544eae5139124c8d0f67e6608f77c106"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
@@ -6276,8 +6276,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
-      "bytes": 7953,
-      "sha256": "48ee97facded47ecd943b2baf75fb938d5759693732138092c0b22434ad78353"
+      "bytes": 8186,
+      "sha256": "a037b524fd3221848cfb7d7dcb458627c3bba755960a883f12e6e501fdc72d2e"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
@@ -6486,8 +6486,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 304563,
-      "sha256": "64b2713f2ab8e12dfb5dfd18063594705757ac746db7c5928c1e9f3189c2e9a0"
+      "bytes": 306302,
+      "sha256": "0aecf0acc8adcfc29ef937d90ad60701e7407901f5426d2bf6de8c2db66728c2"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6611,8 +6611,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "bytes": 76811,
-      "sha256": "d723a2b87d821e1e80e1e5c10e0daceaf4da64f78714f658e34a64d4be006516"
+      "bytes": 77201,
+      "sha256": "f961c738aea45a9f1e0c86177affc9ce339098ede72782a23b1637a489f15bca"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -8071,8 +8071,8 @@
     },
     {
       "path": "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
-      "bytes": 20800,
-      "sha256": "216c645fbc3db4c789dfb33c337e2df13b4edbe311eda826b098fc0fb950edaf"
+      "bytes": 22139,
+      "sha256": "447ab0da3ae8b10eda23e4c37600c12b18c354082ef6ae7d7856c50819f87ead"
     },
     {
       "path": "tests/native-app-provider/fixtures/calendar-result.xml",
@@ -8336,8 +8336,8 @@
     },
     {
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "bytes": 22515,
-      "sha256": "ec12a8c215a99b84a1b851972eeb33875fbfc7f9d3a37363c0fbfc6f5b6febb6"
+      "bytes": 34119,
+      "sha256": "2c36ca8abb73bb6acc64006472c6614f2ee583bb98d3caf7313565a7a33c4047"
     },
     {
       "path": "tests/native-observation-events/run_host.py",
@@ -8346,8 +8346,8 @@
     },
     {
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "bytes": 25249,
-      "sha256": "95e60de8a2cef4528ef73c748bfb78538452c911465fc2137bc4dbad65b85abb"
+      "bytes": 25954,
+      "sha256": "5f4bbf23717617c312c7fd4ebae0636fe228c216dec7ff2dea96531282024f70"
     },
     {
       "path": "tests/native-observation-read-retry/README.md",
@@ -8456,8 +8456,8 @@
     },
     {
       "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
-      "bytes": 16923,
-      "sha256": "7ebf5031592d433a5e889858f6b88fac9e7035d6bc4c1f8110557e123c4609da"
+      "bytes": 17625,
+      "sha256": "3fda4cdcc11aa2e4663e0b94c6c49edd283373f3e055130978b954c0796671d8"
     },
     {
       "path": "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
@@ -9227,7 +9227,7 @@
     {
       "path": "tests/profile-permission-initialization/run_host.py",
       "bytes": 7396,
-      "sha256": "f8cbc838a2ccdbae5192deed34d97f16c875f12ab484607f3295bd8b2b1f6e91"
+      "sha256": "9ded5cf8bdaee68fbb20c1e4f2619ed055951d98e15c9288a6942377a7f7b007"
     },
     {
       "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
@@ -9236,8 +9236,8 @@
     },
     {
       "path": "tests/profile-permission-transient/ProfileStateSettleHostTest.java",
-      "bytes": 35486,
-      "sha256": "f1a5060afee2cf24a78abb237a5e175988ccc3a0192478cf25ce401087d20d0a"
+      "bytes": 43719,
+      "sha256": "e1b13341ce3db24921f78b4c378c7635253d659abb44027b3d582a0d808a2cf1"
     },
     {
       "path": "tests/profile-permission-transient/README.md",

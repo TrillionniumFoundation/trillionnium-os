@@ -69,7 +69,7 @@ def main():
         return process.stdout.decode('utf-8')
 
     try:
-        original_tests = {'tests/profile-broker/ProfileBrokerHostTest.java': '5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04', 'tests/profile-permission-transient/ProfilePermissionTransientHostTest.java': '7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162', 'tests/profile-permission-transient/ProfileStateSettleHostTest.java': 'f1a5060afee2cf24a78abb237a5e175988ccc3a0192478cf25ce401087d20d0a'}
+        original_tests = {'tests/profile-broker/ProfileBrokerHostTest.java': '5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04', 'tests/profile-permission-transient/ProfilePermissionTransientHostTest.java': '7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162', 'tests/profile-permission-transient/ProfileStateSettleHostTest.java': 'e1b13341ce3db24921f78b4c378c7635253d659abb44027b3d582a0d808a2cf1'}
         for name, expected in original_tests.items():
             if digest(source/name) != expected:
                 raise RuntimeError("Original ownership test changed: "+name)

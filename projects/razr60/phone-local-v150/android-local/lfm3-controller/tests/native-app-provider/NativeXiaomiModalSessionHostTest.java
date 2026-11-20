@@ -35,6 +35,7 @@ final class NativeXiaomiModalSessionHostTest {
         checks++;try{test.run();}catch(IllegalArgumentException|IllegalStateException|ActionDecision.InvalidActionException expected){return;}
         throw new AssertionError(reason);
     }
+    private static Map<?,?> provider(NativeAppDomain domain){return (Map<?,?>)domain.promptEvidence().get("provider");}
     private static final class Binding implements BackgroundTaskTarget.SelectionBinding {
         final BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(OWNER,PACKAGE,Collections.singleton(PACKAGE));
         public BackgroundTaskTarget executionTarget(){return target;}
@@ -101,7 +102,8 @@ final class NativeXiaomiModalSessionHostTest {
             check(Boolean.FALSE.equals(progress().get("product_detail_navigation_observed")),"Back is not detail proof");
             check(!session.domain().resultReady&&session.resultRecord()==null,"Back is not a price result");}
         void pendingOnly(){check(progress().get("pending")!=null,"transition must remain pending");
-            check(!session.domain().backAllowed&&session.domain().clickIds.isEmpty()&&session.domain().editValues.isEmpty(),"pending page has no new navigation or search");noQueryOrResult();}
+            check(!session.domain().backAllowed&&session.domain().clickIds.isEmpty()&&session.domain().editValues.isEmpty(),"pending page has no new navigation or search");
+            check(!provider(session.domain()).containsKey("next_goal"),"pending transition does not repeat the modal navigation hint");noQueryOrResult();}
         void queryAndDetail()throws Exception{
             returnedHome();perform(NativeXiaomiProductPage.SEARCH_ICON,"search-entry.xml");perform("set_product_query","suggestions.xml");
             String submit=node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query";
@@ -131,12 +133,16 @@ final class NativeXiaomiModalSessionHostTest {
             check(d.clickIds.isEmpty()&&d.editValues.isEmpty()&&d.purposes.equals(Collections.singletonMap("back",DISMISS)),"no image target or search command");
             check(d.toolMask(null).equals(new TreeSet<String>(Arrays.asList("back","wait","done"))),"native five-tool ceiling is narrowed");
             check(d.toolMask(Collections.singleton("wait")).equals(Collections.singleton("wait"))&&d.toolMask(Collections.<String>emptySet()).isEmpty(),"original mask is still intersected");h.noQueryOrResult();
+            Object hint=provider(d).get("next_goal");
+            check(hint instanceof String&&!((String)hint).isEmpty(),"permitted pre-query modal Back has model-facing navigation guidance");
+            check(hint.equals(new JSONObject(d.promptEvidence()).getJSONObject("provider").getString("next_goal")),"original prompt evidence preserves navigation guidance through JSON serialization");
         });
         one("modal_back_closes_only_on_fresh_supported_home_without_query_proof",()->{
             Harness h=new Harness("returnhome");h.returnedHome();check(h.progress().get("pending")==null&&h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"fresh home restores original search action");
             check(Boolean.TRUE.equals(h.progress().get("product_modal_exit_attempted")),"single proposal is recorded");
             List<?> transitions=(List<?>)h.progress().get("transitions");check(transitions.size()==1,"one observed navigation transition");
             Map<?,?> proof=(Map<?,?>)transitions.get(0);check(Boolean.TRUE.equals(proof.get("navigation_only"))&&Boolean.FALSE.equals(proof.get("query_or_result_proof_created")),"proof explicitly excludes business/query authority");h.noQueryOrResult();
+            check(!provider(h.session.domain()).containsKey("next_goal"),"fresh home no longer carries the modal-only navigation hint");
         });
         one("modal_back_same_modal_after_dispatch_keeps_pending_and_zero_targets",()->{Harness h=new Harness("same");h.modal();h.issue(h.action(DISMISS),true,true,false);h.modal();h.pendingOnly();});
         one("modal_back_unknown_page_never_counts_as_dismissal",()->{
@@ -153,7 +159,8 @@ final class NativeXiaomiModalSessionHostTest {
         one("modal_back_stale_undispatched_proposal_is_consumed_without_retry",()->{
             Harness h=new Harness("stale");h.modal();h.issue(h.action(DISMISS),false,false,true);h.modal();
             check(Boolean.TRUE.equals(h.progress().get("product_modal_exit_attempted"))&&h.progress().get("pending")==null,"stale proposal consumed without fabricated effect");
-            check(!h.session.domain().backAllowed,"stale attempt does not authorize automatic redispatch");h.noQueryOrResult();
+            check(!h.session.domain().backAllowed,"stale attempt does not authorize automatic redispatch");
+            check(!provider(h.session.domain()).containsKey("next_goal"),"consumed stale proposal cannot recommend another modal Back");h.noQueryOrResult();
         });
         one("modal_back_rejected_effect_invalidates_the_session",()->{
             Harness h=new Harness("rejected");h.modal();h.issue(h.action(DISMISS),false,true,false);
@@ -168,7 +175,8 @@ final class NativeXiaomiModalSessionHostTest {
         });
         one("modal_back_incomplete_or_truncated_observation_has_no_navigation",()->{
             for(boolean truncated:new boolean[]{false,true}){Harness h=new Harness("incomplete"+truncated);NativeAppEvidence.Frame f=h.modalFrame();
-                h.session.observed(changed(f,f.taskId,f.ownerSha,f.generation,f.displayId,false,truncated));check(!h.session.domain().backAllowed,"incomplete frame cannot offer Back");}
+                h.session.observed(changed(f,f.taskId,f.ownerSha,f.generation,f.displayId,false,truncated));check(!h.session.domain().backAllowed,"incomplete frame cannot offer Back");
+                check(!provider(h.session.domain()).containsKey("next_goal"),"incomplete frame cannot recommend modal navigation");}
         });
         one("modal_back_installed_identity_is_rechecked_before_model_action",()->{
             Harness h=new Harness("installed");h.modal();ActionDecision back=h.action(DISMISS);h.installedCurrent=false;
@@ -191,8 +199,10 @@ final class NativeXiaomiModalSessionHostTest {
             Harness h=new Harness("postquery");h.xml("suggestions.xml");h.perform(h.node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query","results.xml");
             check(Boolean.TRUE.equals(h.progress().get("product_query_observed")),"real original query transition in host fixture");h.modal();
             check(!h.session.domain().backAllowed&&h.session.domain().clickIds.isEmpty()&&!h.session.domain().resultReady,"pre-query bound excludes later modal");
+            check(!provider(h.session.domain()).containsKey("next_goal"),"committed product query excludes pre-query modal navigation guidance");
         });
-        one("modal_back_after_completed_home_return_cannot_be_repeated",()->{Harness h=new Harness("repeat");h.returnedHome();h.modal();check(!h.session.domain().backAllowed,"only one modal proposal in task");h.noQueryOrResult();});
+        one("modal_back_after_completed_home_return_cannot_be_repeated",()->{Harness h=new Harness("repeat");h.returnedHome();h.modal();check(!h.session.domain().backAllowed,"only one modal proposal in task");
+            check(!provider(h.session.domain()).containsKey("next_goal"),"returning modal cannot repeat consumed navigation guidance");h.noQueryOrResult();});
         one("modal_back_replayed_original_frame_cannot_prove_home_transition",()->{
             Harness h=new Harness("replay");h.modal();NativeAppEvidence.Frame before=h.frame;h.issue(h.action(DISMISS),true,true,false);h.session.observed(before);
             check(h.progress().get("pending")!=null,"same saved frame is not post-Back evidence");rejects(()->h.issue(h.back(before.observationId,PACKAGE),true,true,false),"replay does not restore consumed Back");

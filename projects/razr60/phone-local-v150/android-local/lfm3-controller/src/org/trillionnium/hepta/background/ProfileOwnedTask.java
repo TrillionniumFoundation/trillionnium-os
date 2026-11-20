@@ -376,6 +376,14 @@ public final class ProfileOwnedTask {
         for(int attempt=0;attempt<3;attempt++){
             try{return observeTreeSample(visible,pinned);}
             catch(ProfilePermissionTransient.ReadChanged changed){
+                if(changed.exitedRoot!=null){
+                    // A discarded permission-to-App pair is not a first claim or a proof.
+                    // Both samples must retain this coordinator's actual owned capabilities.
+                    requireRootIdentity(changed.exitedRoot);requireRootIdentity(changed.root);
+                    need(leaf!=null&&sameTask(leaf,changed.exitedLeaf)&&sameTask(leaf,changed.leaf)
+                            &&changed.exitedLeaf.uid==target.fullUid&&changed.leaf.uid==target.fullUid,
+                            "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+                }
                 if(pinned==null)pinned=changed;else pinned.requireAttempt(changed);
                 need(attempt<2,changed.code);
                 platform.guard();long now=platform.now();

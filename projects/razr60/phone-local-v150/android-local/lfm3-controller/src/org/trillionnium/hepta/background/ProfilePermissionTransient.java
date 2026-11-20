@@ -90,14 +90,22 @@ public final class ProfilePermissionTransient {
     static final class ReadChanged extends Exception {
         private static final long serialVersionUID=1L;
         final BackgroundOwnedSingleTask.Task root,leaf;final String code;
+        final BackgroundOwnedSingleTask.Task exitedRoot,exitedLeaf;
         private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code){
+            this(root,leaf,code,null,null);
+        }
+        private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code,
+                BackgroundOwnedSingleTask.Task exitedRoot,BackgroundOwnedSingleTask.Task exitedLeaf){
             super(code);this.root=root;this.leaf=leaf;this.code=code;
+            this.exitedRoot=exitedRoot;this.exitedLeaf=exitedLeaf;
         }
         void requireRoot(BackgroundOwnedSingleTask.Task current)throws Exception{
-            need(sameReadIdentity(root,current),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+            need(sameReadIdentity(root,current)&&(exitedRoot==null||sameTaskInfo(root,current)),
+                    "PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
         }
         void requireLeaf(BackgroundOwnedSingleTask.Task current)throws Exception{
-            need(sameReadIdentity(leaf,current),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+            need(sameReadIdentity(leaf,current)&&(exitedRoot==null||sameTaskInfo(leaf,current)),
+                    "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
         }
         void requireAttempt(ReadChanged current)throws Exception{requireRoot(current.root);requireLeaf(current.leaf);}
     }
@@ -107,6 +115,38 @@ public final class ProfilePermissionTransient {
                 &&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)
                 &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.base,b.base)
                 &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static boolean sameTaskCapability(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return a!=null&&b!=null&&a.id>0&&a.token!=null&&b.token!=null
+                &&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent&&a.uid==b.uid
+                &&Objects.equals(a.token,b.token)&&Objects.equals(a.intentComponent,b.intentComponent)
+                &&Objects.equals(a.base,b.base)&&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static boolean permissionToTarget(ProfileTarget target,BackgroundOwnedSingleTask.Task before,
+            BackgroundOwnedSingleTask.Task after){
+        return target!=null&&before!=null&&after!=null&&before.activities==2&&after.activities==1
+                &&before.running&&before.visible&&after.running&&after.visible
+                &&before.topUid==(long)target.profile.userId*100000+10335&&COMPONENT.equals(before.top)
+                &&after.topUid==target.fullUid&&targetComponent(target,after.top);
+    }
+    /** This classification only permits finishing the read of the same live root.
+     * Cookie provenance is not inferred; no changed pair can become a Proof. */
+    static boolean mayReadCookieExitLeaf(ProfileTarget target,BackgroundOwnedSingleTask.Task before,
+            BackgroundOwnedSingleTask.Task after){
+        return sameTaskCapability(before,after)&&permissionToTarget(target,before,after)
+                &&before.cookies.size()==2&&after.cookies.size()==1&&before.cookies.containsAll(after.cookies);
+    }
+    static void requireCookieExitRead(ProfileTarget target,BackgroundOwnedSingleTask.Task root,
+            BackgroundOwnedSingleTask.Task leaf,BackgroundOwnedSingleTask.Task currentRoot,
+            BackgroundOwnedSingleTask.Task currentLeaf)throws Exception{
+        need(mayReadCookieExitLeaf(target,root,currentRoot),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        need(sameTaskCapability(leaf,currentLeaf)&&permissionToTarget(target,leaf,currentLeaf)
+                &&leaf.user==target.profile.userId&&leaf.uid==target.fullUid&&leaf.parent==root.id
+                &&leaf.display==root.display&&leaf.cookies.containsAll(currentLeaf.cookies)
+                &&currentLeaf.cookies.size()<=leaf.cookies.size(),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+        // The state coordinator must still prove its retained rootCookie and leaf token.
+        // Its next full read must exactly match this complete pair, including cookies.
+        throw new ReadChanged(currentRoot,currentLeaf,"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ",root,leaf);
     }
     private static boolean knownReadPresentation(ProfileTarget target,BackgroundOwnedSingleTask.Task task,int permissionUid){
         return task!=null&&task.activities>0&&task.activities<=2048

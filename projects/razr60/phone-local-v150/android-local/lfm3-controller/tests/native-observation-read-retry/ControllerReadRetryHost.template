@@ -60,14 +60,14 @@ final class ControllerReadRetryHost {
         }
         static final class ObservationRequest {
             String taskId,requestId;BackgroundSession background;NativeReadIdentity readIdentity;
-            long started,deadline,failedAt;int readWorksFinished=3,readGraphChanges=2,readCaptureFailures=1;
+            long started,deadline,failedAt;int readWorksFinished=3,readGraphChanges=2,readCaptureFailures=1,readSealedEventFailures;
         }
 {{service_proof}}
         final ControllerReadRetryHost host;
         String firstMode="typed",retryMode="success",proofMutation;
         long firstAt=-1,retryAt=-1,firstDeadline,retryDeadline;
         int observeCalls,retryCalls,remoteChecks,authorityChecks;
-        boolean duplicateFirst,duplicateRetry;
+        boolean duplicateFirst,duplicateRetry,sealedEventFailure;
         Cancellation firstCancellation,retryCancellation;ObservationCallback firstCallback,retryCallback;
         NativeObservationRetryProof issued;PhoneObservation latest;IntegrationChecks.Work beforeFirstCallback,beforeRetryCallback;
         HeptaAccessibilityService(ControllerReadRetryHost host){this.host=host;}
@@ -76,6 +76,7 @@ final class ControllerReadRetryHost {
             ObservationRequest request=new ObservationRequest();request.taskId="task".equals(proofMutation)?NativeActionBridgeHost.id("foreign-proof-task"):id;
             request.requestId=NativeActionBridgeHost.id("synthetic-read:"+observeCalls+":"+retryCalls);
             request.started=started;request.deadline=deadline;request.failedAt=SystemClock.elapsedRealtime();request.background=host.activeNativeBackground;
+            if(sealedEventFailure){request.readCaptureFailures=0;request.readSealedEventFailures=1;}
             NativeAppEvidence.Frame frame=host.fixture.frame;request.readIdentity=new NativeReadIdentity();
             request.readIdentity.packageName=frame.packageName;request.readIdentity.generation=frame.generation;
             request.readIdentity.owner=frame.ownerSha;request.readIdentity.windowId=frame.windowId;request.readIdentity.displayId=frame.displayId;
@@ -160,17 +161,23 @@ final class ControllerReadRetryHost {
     static ControllerReadRetryHost fresh(String name)throws Exception{return new ControllerReadRetryHost(name,true);}
     static void cases()throws Exception{
         one("controller_actual_durable_permit_new_read_and_new_observation",()->{
-            ControllerReadRetryHost f=fresh("positive");long deadline=SystemClock.elapsedRealtime()+480000;PhoneObservation value=f.call(deadline);
+            for(final boolean sealed:new boolean[]{false,true}){
+            ControllerReadRetryHost f=fresh("positive-"+sealed);f.service.sealedEventFailure=sealed;
+            long deadline=SystemClock.elapsedRealtime()+480000;PhoneObservation value=f.call(deadline);
             yes(value==f.service.latest&&value!=f.before&&!value.id.equals(f.before.id),"returned new observation");
             yes(f.service.observeCalls==1&&f.service.retryCalls==1&&f.service.authorityChecks==4,"one failed read then one bound new read");
             yes(f.events.indexOf("intent_synced")<f.events.indexOf("new_read_submitted"),"durable-first order");
             JSONObject intent=f.written.get("native-observation-read-retry-01.json");
             yes(intent.getLong("original_task_deadline_elapsed_ms")==deadline&&!intent.getBoolean("action_replayed")&&!intent.getBoolean("old_request_renewed"),"original task deadline and no replay");
             yes(intent.getJSONObject("failed_read_terminal").getString("before_observation_id").equals(f.before.id),"actual failed-read proof retained");
+            yes(intent.getJSONObject("failed_read_terminal").getInt("capture_failures")== (sealed?0:1)
+                    &&intent.getJSONObject("failed_read_terminal").getInt("sealed_capture_target_event_failures")== (sealed?1:0),"actual private proof retains distinct failure cause");
+            yes(intent.getBoolean("fresh_observation_and_new_model_decision_required"),"new frame still requires a new model decision");
             yes(intent.getJSONObject("unentered_action").getString("original_observation_id").equals(f.before.id),"actual Session permit retained");
             yes(f.activeNativeTask.domain().frame.observationId.equals(value.id),"actual Session owns fresh frame");
             yes(f.service.retryCancellation.isCancelled()&&f.checkedTaskDeadlines.equals(Collections.singleton(Long.valueOf(deadline))),"tokens abandoned and original task checks");
             yes(f.written.size()==3,"intent plus original scope and native frame writes");f.fixture.noEffect("recovery is not a click");
+            }
         });
         one("controller_original_success_needs_no_replacement",()->{
             ControllerReadRetryHost f=fresh("initial-success");f.service.firstMode="success";yes(f.call(480000)==f.service.latest,"original success returned");

@@ -90,7 +90,8 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
             String phase)throws Exception{
         List<BackgroundOwnedSingleTask.Task> roots=organizer.roots();
         BackgroundOwnedSingleTask.Task currentRoot=roots!=null&&roots.size()==1?roots.get(0):null;
-        if(!ProfilePermissionTransient.sameReadIdentity(root,currentRoot)){
+        boolean cookieExit=ProfilePermissionTransient.mayReadCookieExitLeaf(expected,root,currentRoot);
+        if(!ProfilePermissionTransient.sameReadIdentity(root,currentRoot)&&!cookieExit){
             recordPermissionMismatch(phase,roots,null,root,leaf);
             throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
         }
@@ -98,6 +99,7 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
         BackgroundOwnedSingleTask.Task currentLeaf=leaves!=null&&leaves.size()==1?leaves.get(0):null;
         if(!ProfilePermissionTransient.sameTaskInfo(root,currentRoot)||!ProfilePermissionTransient.sameTaskInfo(leaf,currentLeaf))
             recordPermissionMismatch(phase,roots,leaves,root,leaf);
+        if(cookieExit)ProfilePermissionTransient.requireCookieExitRead(expected,root,leaf,currentRoot,currentLeaf);
         ProfilePermissionTransient.requireSameRead(expected,root,leaf,currentRoot,currentLeaf);
     }
     @Override public void createRoot(Object cookie)throws Exception{organizer.createRoot(cookie);}

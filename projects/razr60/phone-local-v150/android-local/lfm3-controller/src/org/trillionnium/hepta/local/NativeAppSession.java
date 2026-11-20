@@ -240,6 +240,7 @@ final class NativeAppSession {
             view.put("modal_exit_requires_fresh_home",true);
             if(!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null){
                 back=true;purposes.put("back","dismiss_image_modal_once");
+                view.put("next_goal","当前图片内容未分类，但当前动作域已允许一次 back 导航。由你选择现有 back 一次尝试返回，然后读取新页面；不必先识别图片内容或继续等待，不能猜无标签图片的用途或点击坐标。只有新的实际 home_search 页面才能继续查询；back 派发本身不是查询或价格结果。");
             }else missing.add("one_prequery_modal_exit_attempt_unavailable");
             missing.addAll(product.missing);
         }else{

@@ -36,6 +36,7 @@ public final class ProfileStateSettleHostTest {
         int guards,reads,rechecks,pauses;long readCost,proofCost,recheckCost;
         boolean hiddenApp,forgedSetup;Hook onPause,onGuard;
         boolean stableBase,endlessPairChange,leafPairChange;int changingPairs,pairReads;
+        boolean cookieExitRead,dropLeafCookie;String cookieRootChange,cookieLeafChange;
         String pairPhase="before_activity_dump";
         Map<String,Object> mismatch=Collections.emptyMap();
         Rig(){this(fixture);}
@@ -58,7 +59,10 @@ public final class ProfileStateSettleHostTest {
         @Override public ProfileTaskPolicy.Recents recents()throws Exception{return a.recents();}
         @Override public List<BackgroundOwnedSingleTask.Task> roots(){
             List<BackgroundOwnedSingleTask.Task> rows=a.roots();
-            return stableBase&&f.app&&rows.size()==1?Collections.singletonList(stableBase(rows.get(0))):rows;
+            if(stableBase&&f.app&&rows.size()==1)rows=Collections.singletonList(stableBase(rows.get(0)));
+            if(cookieExitRead&&a.permission&&f.app&&rows.size()==1)
+                rows=Collections.singletonList(cookies(rows.get(0),Arrays.asList(f.rootCookie,f.launchCookie)));
+            return rows;
         }
         @Override public List<BackgroundOwnedSingleTask.Task> children(Object token){
             List<BackgroundOwnedSingleTask.Task> value=a.children(token);
@@ -81,6 +85,19 @@ public final class ProfileStateSettleHostTest {
                         Collections.singletonList(leafPairChange?root:hidden(root)),
                         Collections.singletonList(leafPairChange?hidden(leaf):leaf));
                 try{pair.read(root,leaf,pairPhase);}
+                finally{if(mismatch.isEmpty())mismatch=pair.permissionReadMismatchEvidence();}
+            }
+            if(cookieExitRead){
+                // Explicit synthetic lifecycle: a complete after-leaf was NOT captured in
+                // the phone failure. Actual Platform pair code and the owned coordinator run.
+                pairReads++;a.permission=false;if(dropLeafCookie)f.wrongCookie=true;
+                BackgroundOwnedSingleTask.Task afterRoot=roots().get(0),afterLeaf=children(root.token).get(0);
+                if(cookieRootChange!=null)afterRoot="root_cookie".equals(cookieRootChange)
+                        ?cookies(afterRoot,Collections.singletonList(f.launchCookie)):alter(afterRoot,cookieRootChange);
+                if(cookieLeafChange!=null)afterLeaf=alter(afterLeaf,cookieLeafChange);
+                PermissionPairReadHostAdapter pair=new PermissionPairReadHostAdapter(
+                        Collections.singletonList(afterRoot),Collections.singletonList(afterLeaf));
+                try{pair.read(root,leaf,pairPhase);throw new AssertionError("changed cookie pair returned a proof");}
                 finally{if(mismatch.isEmpty())mismatch=pair.permissionReadMismatchEvidence();}
             }
             ProfilePermissionTransient.Proof proof=a.permissionTransient(root,leaf);f.now+=proofCost;return proof;
@@ -121,6 +138,10 @@ public final class ProfileStateSettleHostTest {
         return new BackgroundOwnedSingleTask.Task(t.id,t.display,t.user,t.parent,t.uid,t.topUid,t.activities,
                 t.token,t.cookies,t.intentComponent,ProfileBrokerHostTest.SPLASH.equals(t.base)?ProfilePermissionTransientHostTest.HOME:t.base,t.top,t.real,t.orig,t.running,t.visible);
     }
+    private static BackgroundOwnedSingleTask.Task cookies(BackgroundOwnedSingleTask.Task t,List<Object> value){
+        return new BackgroundOwnedSingleTask.Task(t.id,t.display,t.user,t.parent,t.uid,t.topUid,t.activities,
+                t.token,value,t.intentComponent,t.base,t.top,t.real,t.orig,t.running,t.visible);
+    }
     private static BackgroundOwnedSingleTask.Task alter(BackgroundOwnedSingleTask.Task t,String field){
         return new BackgroundOwnedSingleTask.Task("id".equals(field)?t.id+1:t.id,
                 "display".equals(field)?t.display+1:t.display,"user".equals(field)?t.user+1:t.user,
@@ -157,6 +178,19 @@ public final class ProfileStateSettleHostTest {
             yes("APP_READY".equals(p.initializationState(r.f.now+1000)),"typed read could not return a newly proved App");
             yes(r.pairReads==1&&r.pauses==1&&r.reads==2&&r.a.proofs==0,"whole read was skipped or old permission proof reused");
             yes(token.equals(retained(p)),"retained task capability replaced");ordinaryValidation(p);r.noEffects();
+            for(boolean drop:new boolean[]{false,true}){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);String original=retained(owned);
+                exit.a.permission=true;exit.cookieExitRead=true;exit.dropLeafCookie=drop;
+                yes(owned.observeStateUntil(exit.f.now+1000),"retained cookie exit did not re-sample");
+                yes(exit.pairReads==1&&exit.pauses==1&&exit.reads==2&&exit.a.proofs==0,"cookie exit skipped full fresh graph or granted a permission proof");
+                yes(original.equals(retained(owned)),"cookie exit replaced retained task");ordinaryValidation(owned);exit.noEffects();
+                Map<?,?> diagnostic=owned.firstPermissionReadMismatch();
+                yes(Integer.valueOf(1).equals(diagnostic.get("leaf_count")),"cookie exit did not read the complete leaf");
+                Map<?,?> rootDifference=(Map<?,?>)diagnostic.get("root");
+                yes(Boolean.FALSE.equals(((Map<?,?>)rootDifference.get("equal_fields")).get("actual_cookies"))
+                        &&Boolean.FALSE.equals(rootDifference.get("complete_identity_equal"))
+                        &&Boolean.FALSE.equals(rootDifference.get("complete_taskinfo_equal")),"old mismatch rewritten as equality");
+            }
         });
         test("first unclaimed pair is pinned through state retry without a premature leaf claim",()->{
             Rig r=new Rig();r.stableBase=true;ProfileOwnedTask p=r.start(false);r.a.permission=true;r.changingPairs=1;
@@ -196,6 +230,32 @@ public final class ProfileStateSettleHostTest {
             cookie.onPause=x->{x.a.permission=false;x.f.wrongCookie=true;};
             rejects("PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ",()->p.initializationState(cookie.f.now+1000));
             yes(retained(p)==null,"cookie loss during incomplete sampling claimed a leaf");cookie.noEffects();r.noEffects();
+            Rig unclaimed=new Rig();unclaimed.stableBase=true;ProfileOwnedTask first=unclaimed.start(false);
+            unclaimed.a.permission=true;unclaimed.cookieExitRead=true;
+            rejects("PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ",()->first.initializationState(unclaimed.f.now+1000));
+            yes(unclaimed.pauses==0&&retained(first)==null,"cookie transition made a first claim");unclaimed.noEffects();
+            for(String field:new String[]{"root_cookie","binder","id","display","user","parent","uid","intent","base","real","orig"}){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);String original=retained(owned);
+                exit.a.permission=true;exit.cookieExitRead=true;exit.cookieRootChange=field;
+                refused(()->owned.initializationState(exit.f.now+1000));
+                yes(exit.pauses==0&&original.equals(retained(owned)),"changed root gained cookie retry: "+field);exit.noEffects();
+            }
+            for(String field:new String[]{"binder","id","display","user","parent","uid","intent","base","real","orig"}){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);String original=retained(owned);
+                exit.a.permission=true;exit.cookieExitRead=true;exit.cookieLeafChange=field;
+                rejects("PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ",()->owned.initializationState(exit.f.now+1000));
+                yes(exit.pauses==0&&original.equals(retained(owned)),"changed leaf gained cookie retry: "+field);exit.noEffects();
+            }
+            for(String field:new String[]{"root_cookie","leaf_binder","user","parent","display","full_uid","base","intent","real","orig","extra_child","missing_global_leaf","foreign_global"}){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);String original=retained(owned);
+                exit.a.permission=true;exit.cookieExitRead=true;exit.onPause=x->corrupt(x,field);
+                refused(()->owned.initializationState(exit.f.now+1000));
+                yes(exit.pauses==1&&original.equals(retained(owned)),"fresh graph failed to re-prove ownership: "+field);exit.noEffects();
+            }
+            Rig repeated=new Rig();repeated.stableBase=true;ProfileOwnedTask rp=repeated.start(true);
+            repeated.a.permission=true;repeated.cookieExitRead=true;repeated.onPause=x->x.f.wrongCookie=true;
+            rejects("PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ",()->rp.initializationState(repeated.f.now+1000));
+            yes(repeated.pauses==1,"final cookie mismatch bypassed strict pair equality");repeated.noEffects();
         });
         test("unknown presentation incomplete pair and foreign top cannot manufacture a retry",()->{
             Rig r=new Rig();r.stableBase=true;r.start(false);r.a.permission=true;
@@ -213,6 +273,13 @@ public final class ProfileStateSettleHostTest {
             }
             PermissionPairReadHostAdapter y=new PermissionPairReadHostAdapter(Collections.singletonList(root),null);
             rejects("PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ",()->y.read(root,leaf,"after_activity_dump"));r.noEffects();
+            for(String field:new String[]{"empty","top_uid","foreign_top","unknown_top"})for(boolean leafSide:new boolean[]{false,true}){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);
+                exit.a.permission=true;exit.cookieExitRead=true;
+                if(leafSide)exit.cookieLeafChange=field;else exit.cookieRootChange=field;
+                refused(()->owned.initializationState(exit.f.now+1000));
+                yes(exit.pauses==0,"unknown cookie-transition presentation became retry");exit.noEffects();
+            }
         });
         test("sampling retries exhaust at three complete reads within the original deadline and cancellation",()->{
             Rig r=new Rig();r.stableBase=true;ProfileOwnedTask p=r.start(false);r.a.permission=true;r.endlessPairChange=true;
@@ -227,6 +294,18 @@ public final class ProfileStateSettleHostTest {
             Rig late=new Rig();late.stableBase=true;ProfileOwnedTask l=late.start(false);late.a.permission=true;late.changingPairs=1;
             late.onPause=x->{x.a.permission=false;x.f.now+=1000;};
             rejects("PROFILE_STATE_READ_DEADLINE",()->l.observeStateUntil(late.f.now+500));yes(late.reads==1&&retained(l)==null,"late retry began another sample");late.noEffects();
+            Rig third=new Rig();third.stableBase=true;ProfileOwnedTask finalAttempt=third.start(true);
+            third.a.permission=true;third.cookieExitRead=true;third.changingPairs=2;
+            rejects("PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ",()->finalAttempt.initializationState(third.f.now+1000));
+            yes(third.pairReads==3&&third.reads==3&&third.pauses==2,"cookie exit extended original three attempts");third.noEffects();
+            Rig shortExit=new Rig();shortExit.stableBase=true;ProfileOwnedTask se=shortExit.start(true);
+            shortExit.a.permission=true;shortExit.cookieExitRead=true;
+            rejects("PROFILE_PERMISSION_READ_DEADLINE",()->se.initializationState(shortExit.f.now+20));
+            yes(shortExit.pauses==0&&shortExit.reads==1,"cookie exit renewed short deadline");shortExit.noEffects();
+            Rig cancelledExit=new Rig();cancelledExit.stableBase=true;ProfileOwnedTask ce=cancelledExit.start(true);
+            cancelledExit.a.permission=true;cancelledExit.cookieExitRead=true;cancelledExit.onPause=x->x.f.cancel=true;
+            rejects("CANCELLED",()->ce.initializationState(cancelledExit.f.now+1000));
+            yes(cancelledExit.pauses==1&&cancelledExit.reads==1,"cancelled cookie exit continued");cancelledExit.noEffects();
         });
         test("ordinary windows permission reads and retirement never inherit state sampling retries",()->{
             for(int api=0;api<3;api++){
@@ -238,6 +317,13 @@ public final class ProfileStateSettleHostTest {
             Rig r=new Rig();r.stableBase=true;ProfileOwnedTask p=r.start(true);r.a.permission=true;r.changingPairs=1;
             changed(()->p.retire(r.f.now+1000));yes(r.pauses==0&&!p.cleanupKnown(),"retirement invented a fresh proof");
             yes(r.f.mutations.equals(Arrays.asList("create","bind")),"unproved retirement removed a task");
+            for(int api=0;api<4;api++){
+                Rig exit=new Rig();exit.stableBase=true;ProfileOwnedTask owned=exit.start(true);
+                exit.a.permission=true;exit.cookieExitRead=true;final int choice=api;
+                changed(()->{if(choice==0)owned.observe();else if(choice==1)owned.window(14,300,exit.f.now+1000);
+                    else if(choice==2)owned.permissionForInitialization(14,300,exit.f.now+1000);else owned.retire(exit.f.now+1000);});
+                yes(exit.pauses==0&&exit.pairReads==1&&!owned.cleanupKnown(),"cookie transition retried outside state/init");exit.noEffects();
+            }
         });
         test("first platform mismatch is bounded immutable diagnostic data without serialized capabilities",()->{
             Rig r=new Rig();r.stableBase=true;r.start(false);r.a.permission=true;

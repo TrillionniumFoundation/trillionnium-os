@@ -658,13 +658,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         private final NativeReadIdentity identity;
         private final String taskId,requestId;
         private final long started,deadline,failedAt,drainedAt;
-        private final int completedReadWorks,graphChanges,captureFailures;
+        private final int completedReadWorks,graphChanges,captureFailures,sealedEventFailures;
         private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
         private NativeObservationRetryProof(Object issuer,Object authorization,PhoneObservation before,ObservationRequest request,long drainedAt){
             this.issuer=issuer;this.authorization=authorization;this.before=before;this.background=request.background;
             identity=request.readIdentity;taskId=request.taskId;requestId=request.requestId;started=request.started;
             deadline=request.deadline;failedAt=request.failedAt;this.drainedAt=drainedAt;completedReadWorks=request.readWorksFinished;
             graphChanges=request.readGraphChanges;captureFailures=request.readCaptureFailures;
+            sealedEventFailures=request.readSealedEventFailures;
         }
         void requireOriginal(Object service,String task,Object authorization,PhoneObservation before){
             if(issuer!=service||!taskId.equals(task)||this.authorization!=authorization||this.before!=before||consumed.get())
@@ -681,6 +682,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             value.put("failed_request_terminal_elapsed_ms",failedAt);value.put("failed_request_terminal_status","failed");
             value.put("read_queue_drain_observed_elapsed_ms",drainedAt);value.put("completed_read_works",completedReadWorks);
             value.put("same_identity_graph_changes",graphChanges);value.put("capture_failures",captureFailures);
+            value.put("sealed_capture_target_event_failures",sealedEventFailures);
             value.put("read_worker_drained",true);value.put("failed_request_resources_released",true);
             value.put("unknown_events",0);value.put("grants_action_authority",false);value.put("renews_failed_request",false);
             return java.util.Collections.unmodifiableMap(value);
@@ -710,7 +712,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         NativeObservationRetryProof retrySubmission;
         NativeResampleSeed resampleSeed; // Main-owned first-sample lineage only.
         boolean readRecoveryRejected;String lastReadDigest;long failedAt=-1;
-        int readWorksStarted,readWorksFinished,readGraphChanges,readCaptureFailures;
+        int readWorksStarted,readWorksFinished,readGraphChanges,readCaptureFailures,readSealedEventFailures;
         Graph captured;long token;int intervalRetries;boolean shotPending,nativeSample;
         ObservationDiagnostics trace;
         volatile boolean finished;
@@ -1060,7 +1062,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
                 &&request.readIdentity!=null&&!request.readRecoveryRejected&&request.readIdentity.matches(graph)
                 &&nativeObservationRecheckAllowed(request,graph)&&request.unknownEvents==0
-                &&request.readGraphChanges>0&&request.readCaptureFailures>0
+                &&request.readGraphChanges>0&&(request.readCaptureFailures>0||request.readSealedEventFailures>0)
                 &&request.readWorksStarted>0&&request.readWorksStarted==request.readWorksFinished
                 &&!observationIoBusy.get()&&!capturePending&&!request.shotPending
                 &&!actionWorkPending()&&!nativeCancellationWorkPending();
@@ -1266,6 +1268,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             request.worker(false);observationIoBusy.set(false);result.getHardwareBuffer().close();failObservation(request,"屏幕观察队列不可用："+message(unavailable));
         }
     }
+    /** Read-failure classification only. The unpublished pair is still discarded.
+     * A known target-display event after the current-window check's watermark is
+     * distinct from missing/changed identity, unknown events or an unsealed pair. */
+    private boolean nativeLateEventReadFailure(ObservationRequest request,ObservationProduct product,boolean retry){
+        if(retry||request.retrySubmission!=null||request.readRecoveryRejected
+                ||request.readBefore==null||request.readBefore!=current
+                ||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
+                ||request.readIdentity==null||product.seal==null||product.seal.identity!=product.identity
+                ||product.seal.authorization!=request.readAuthorization||!product.identity.nativeRecheck
+                ||!product.frozenWindowRechecked
+                ||product.events<0||product.seal.events<product.events||product.checkedEvents<product.seal.events
+                ||request.events<=product.checkedEvents
+                ||product.unknownEvents!=0||product.seal.unknownEvents!=0||request.unknownEvents!=0)return false;
+        return request.readIdentity.matches(request.captured)&&product.identity.matches(request.captured)
+                &&nativeObservationRecheckAllowed(request,request.captured);
+    }
     private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){
         try{
             if(!observationActive(request))return;
@@ -1279,6 +1297,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 failObservation(request,"封存观察的授权或后台窗口租约已变化");return;
             }
             if(product.seal!=null)requireTaskAuthorization(request.taskId,taskAuthorization);
+            boolean sealedEventFailure=nativeLateEventReadFailure(request,product,retry);
             boolean eventsChanged=product.events!=request.events||product.unknownEvents!=request.unknownEvents;
             boolean currentCheck=product.seal==null?product.nativeGraphRechecked:product.frozenWindowRechecked;
             boolean eventsRechecked=eventsChanged&&currentCheck
@@ -1287,6 +1306,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(product.seal!=null&&(!product.frozenWindowRechecked||product.checkedEvents!=request.events
                     ||product.unknownEvents!=request.unknownEvents))retry=true;
             if(retry||(eventsChanged&&!eventsRechecked)){
+                if(sealedEventFailure)request.readSealedEventFailures++;
                 if(eventsChanged)request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
                 NativeResampleSeed seed=product.seed;
                 product.close(); // Old pixels/file never accompany the copied first sample.
