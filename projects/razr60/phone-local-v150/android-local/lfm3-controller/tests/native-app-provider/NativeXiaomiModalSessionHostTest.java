@@ -105,7 +105,7 @@ final class NativeXiaomiModalSessionHostTest {
             check(!session.domain().backAllowed&&session.domain().clickIds.isEmpty()&&session.domain().editValues.isEmpty(),"pending page has no new navigation or search");
             check(!provider(session.domain()).containsKey("next_goal"),"pending transition does not repeat the modal navigation hint");noQueryOrResult();}
         void queryAndDetail()throws Exception{
-            returnedHome();perform(NativeXiaomiProductPage.SEARCH_ICON,"search-entry.xml");perform("set_product_query","suggestions.xml");
+            returnedHome();perform("open_search","search-entry.xml");perform("set_product_query","suggestions.xml");
             String submit=node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query";
             perform(submit,"results.xml");perform("open_exact_product","detail.xml");
             check(session.domain().resultReady&&completionGate.verified(completion),"original exact query/card/detail chain still required and usable");
@@ -138,7 +138,7 @@ final class NativeXiaomiModalSessionHostTest {
             check(hint.equals(new JSONObject(d.promptEvidence()).getJSONObject("provider").getString("next_goal")),"original prompt evidence preserves navigation guidance through JSON serialization");
         });
         one("modal_back_closes_only_on_fresh_supported_home_without_query_proof",()->{
-            Harness h=new Harness("returnhome");h.returnedHome();check(h.progress().get("pending")==null&&h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"fresh home restores original search action");
+            Harness h=new Harness("returnhome");h.returnedHome();check(h.progress().get("pending")==null&&h.node("open_search")!=null,"fresh home restores original search action");
             check(Boolean.TRUE.equals(h.progress().get("product_modal_exit_attempted")),"single proposal is recorded");
             List<?> transitions=(List<?>)h.progress().get("transitions");check(transitions.size()==1,"one observed navigation transition");
             Map<?,?> proof=(Map<?,?>)transitions.get(0);check(Boolean.TRUE.equals(proof.get("navigation_only"))&&Boolean.FALSE.equals(proof.get("query_or_result_proof_created")),"proof explicitly excludes business/query authority");h.noQueryOrResult();

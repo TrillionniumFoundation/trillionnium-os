@@ -178,8 +178,31 @@ public final class NativeXiaomiSearchHintWidthHostTest {
             rejected(s->{node(s,TERM).put("text","加入购物车");node(s,HINT).put("description","搜索加入购物车");references(s);});
             rejected(s->{node(s,TERM).put("text","综合");node(s,HINT).put("description","搜索综合");references(s);});
         });
-        test("SEARCH_whole_entry_purpose_keeps_exact_original_target",()->{
-            rejected(copy(ORIGINALS.get(0)),NativeActionSnapshotCheck.SEARCH,ENTRY,0L);
+        test("SEARCH_same_resource_entry_compares_complete_actual_refs_without_dispatch_authority",()->{
+            JSONObject action=copy(ORIGINALS.get(0)),c=census(action);
+            JSONObject before=c.getJSONObject("before"),after=c.getJSONObject("fresh");
+            String unchanged=action.toString();
+            NativeActionSnapshotCheck.Intent in=intent(action,NativeActionSnapshotCheck.SEARCH,ENTRY);
+            NativeActionSnapshotCheck.Node original=snapshot(before).node(ENTRY),current=snapshot(after).node(ENTRY);
+            require(ENTRY.equals(in.path)&&in.label.equals(original.label)
+                    &&in.refSha256.equals(original.v.get("ref_signature_sha256")),"original entry intent, label and full reference remain bound");
+            require("com.xiaomi.shop.plugin.homepage:id/switcher".equals(original.view)
+                    &&original.view.equals(current.view),"same exact installed query-entry resource");
+            require(original.bounds.equals(current.bounds)&&node(before,HINT).getJSONArray("bounds").similar(node(after,HINT).getJSONArray("bounds")),"entry and hint enclosure geometry remain exact");
+            for(int edge:new int[]{0,1,3})require(node(before,TERM).getJSONArray("bounds").getInt(edge)==node(after,TERM).getJSONArray("bounds").getInt(edge),"term left/top/bottom edge remains exact");
+            require(node(before,ICON).similar(node(after,ICON))&&node(before,"0/0").similar(node(after,"0/0")),"actual adjacent icon and parent remain exact");
+            for(JSONObject actual:Arrays.asList(before,after)){
+                JSONObject reconstructed=copy(actual);references(reconstructed);
+                require(actual.toString().equals(reconstructed.toString()),"complete reference reconstruction reproduces each actual census without normalization");
+            }
+            require(!original.v.get("ref_signature_sha256").equals(current.v.get("ref_signature_sha256")),"fresh derived full reference is observed rather than replaced with the original");
+            Map<String,Object> proof=NativeActionSnapshotCheck.compare(in,snapshot(before),snapshot(after),c.getLong("compared_elapsed_ms"));
+            require(Boolean.TRUE.equals(proof.get("search_entry_original_reference_retained_fresh_signature_required"))
+                    &&Boolean.TRUE.equals(proof.get("live_node_chain_window_and_one_effect_recheck_required")),"original live node and latest full signature still required before any effect");
+            require(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("business_verified"))
+                    &&Boolean.FALSE.equals(proof.get("navigation_semantics_device_verified")),"pure comparison grants no action or business authority");
+            require(Boolean.FALSE.equals(proof.get("provider_frame_constructed"))&&Boolean.FALSE.equals(proof.get("session_observed_called")),"no app observation or private Session permit is fabricated");
+            require(in.refSha256.equals(original.v.get("ref_signature_sha256"))&&unchanged.equals(action.toString()),"original intent and all actual fixture facts remain unchanged");
         });
         test("duplicate_search_icon_role_is_refused",()->rejected(s->{node(s,TERM).put("view_id","com.xiaomi.shop.plugin.homepage:id/searchIcon");references(s);}));
         test("foreign_node_package_or_window_is_refused",()->{

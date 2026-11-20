@@ -113,7 +113,7 @@ final class NativeAppSession {
         if(current!=null)need(frame.capturedElapsedMs>=current.frame.capturedElapsedMs,"native observation clock moved backwards");
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
-        product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspectPreferredNavigation(goal,frame):null;
+        product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
         if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
             productHomeLoadingSince=frame.capturedElapsedMs;
         if(pending!=null)advancePending(frame);
@@ -332,6 +332,54 @@ final class NativeAppSession {
                 "read recovery lost its durable unentered Attempt or current reobservation barrier");
         requireFrame(a.before.frame);
     }
+    /** Read eligibility after one real, drained navigation effect. It cannot
+     * replay that effect or extend the original pending-transition clock. */
+    static final class PostEffectReadPermit {
+        private final NativeAppSession session;private final Attempt attempt;
+        private final java.util.concurrent.atomic.AtomicInteger admissions=new java.util.concurrent.atomic.AtomicInteger();
+        private PostEffectReadPermit(NativeAppSession session,Attempt attempt){this.session=session;this.attempt=attempt;}
+        void requireCurrent(){session.requirePostEffectRead(attempt);}
+        long transitionDeadline(){requireCurrent();return attempt.finished+OBSERVED_TRANSITION_MS;}
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){
+            requireCurrent();need(owner==session&&authorization==session.authorization&&session.taskId.equals(task)
+                    &&selection==session.selection&&session.generation.equals(generation)&&displayId==session.displayId,
+                    "post-effect read belongs to another private Session or background");
+        }
+        void admit(boolean retry){
+            requireCurrent();need(admissions.compareAndSet(retry?1:0,retry?2:1),"post-effect read admission already consumed");
+        }
+        boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}
+        Map<String,Object> evidence(){
+            requireCurrent();Map<String,Object> value=session.base();value.put("schema","hepta.native-post-effect-read-permit.v1");
+            value.put("original_model_run_id",attempt.run);value.put("original_observation_id",attempt.before.frame.observationId);
+            value.put("original_action_sha256",attempt.guard.actionSha);value.put("purpose",attempt.purpose);
+            value.put("action_record_sha256",attempt.receipt.get("step_action_record_sha256"));
+            value.put("entered_execution_projection_sha256",attempt.enteredExecutionSha);
+            value.put("operation_id",attempt.enteredOperation);value.put("drained_outcome_elapsed_ms",attempt.finished);
+            value.put("original_transition_deadline_elapsed_ms",transitionDeadline());
+            value.put("effect_entered",true);value.put("worker_drained",true);value.put("action_replayed",false);
+            value.put("grants_action_authority",false);value.put("business_verified",false);return NativeAppEvidence.immutableMap(value);
+        }
+    }
+    PostEffectReadPermit postEffectReadPermit(ActionDecision action,String run,String observation){
+        Attempt a=pending;if(a==null||!a.postEffectReadEligible)return null;
+        need(a.action==action&&a.run.equals(run)&&a.before.frame.observationId.equals(observation),
+                "post-effect read must follow the same accepted action");
+        requirePostEffectRead(a);need(!a.postEffectPermitIssued,"post-effect read context already issued");
+        a.postEffectPermitIssued=true;return new PostEffectReadPermit(this,a);
+    }
+    private void requirePostEffectRead(Attempt a){
+        live();need(a!=null&&a==pending&&a.before==current&&inFlight==null&&a.journaled&&a.outcomeJournaled
+                &&a.postEffectReadEligible&&a.guard!=null&&a.guard.state.get()==2
+                &&NativeCtripFlightPage.supported(goal)&&NativeActionSnapshotCheck.OPEN.equals(a.purpose)
+                &&a.receipt!=null&&Boolean.TRUE.equals(a.receipt.get("accepted"))
+                &&Boolean.TRUE.equals(a.receipt.get("dispatched"))&&Boolean.FALSE.equals(a.receipt.get("stale"))
+                &&Boolean.TRUE.equals(a.receipt.get("post_effect_read_recovery_available"))
+                &&NativeAppEvidence.sha(a.enteredExecutionSha)&&NativeAppEvidence.id(a.enteredOperation)
+                &&a.finished>=a.started&&a.finished<=Long.MAX_VALUE-OBSERVED_TRANSITION_MS,
+                "post-effect read lost its durable private pending navigation");
+        requireFrame(a.before.frame);
+    }
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
     /** A private Session Attempt supplies authority; the pure comparator does not.
@@ -361,6 +409,15 @@ final class NativeAppSession {
         }
         private final java.util.concurrent.atomic.AtomicReference<UnenteredAwaitReceipt> unenteredAwaitReceipt=
                 new java.util.concurrent.atomic.AtomicReference<UnenteredAwaitReceipt>();
+        private static final class EnteredAwaitReceipt {
+            final Map<String,Object> execution;final String sha;
+            final java.util.concurrent.atomic.AtomicBoolean cancelled;
+            EnteredAwaitReceipt(Map<String,Object> value,java.util.concurrent.atomic.AtomicBoolean token){
+                execution=NativeAppEvidence.immutableMap(value);sha=NativeAppEvidence.fingerprint(execution);cancelled=token;
+            }
+        }
+        private final java.util.concurrent.atomic.AtomicReference<EnteredAwaitReceipt> enteredAwaitReceipt=
+                new java.util.concurrent.atomic.AtomicReference<EnteredAwaitReceipt>();
         private ActionGuard(NativeAppSession session,Attempt attempt,long issued,long deadline){
             action=attempt.action;run=attempt.run;purpose=attempt.purpose;frame=attempt.before.frame;
             targetNode=frame.byId.get(action.nodeId);selection=session.selection;target=session.target;
@@ -410,7 +467,7 @@ final class NativeAppSession {
                     &&state.compareAndSet(0,1),"native Attempt closed or already claimed; no second effect");
         }
         void requireClaimed(){need(state.get()==1,"native Attempt closed before effect entry");}
-        synchronized void close(){state.getAndSet(2);unenteredAwaitReceipt.set(null);}
+        synchronized void close(){state.getAndSet(2);unenteredAwaitReceipt.set(null);enteredAwaitReceipt.set(null);}
         synchronized void closeAfterUnenteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){
             boolean sealed=false;
             try{
@@ -419,8 +476,30 @@ final class NativeAppSession {
                 if(!cancelled.get()&&state.compareAndSet(0,2)){unenteredAwaitReceipt.set(receipt);sealed=true;}
             }finally{
                 state.getAndSet(2);
+                enteredAwaitReceipt.set(null);
                 if(!sealed||cancelled==null||cancelled.get())unenteredAwaitReceipt.set(null);
             }
+        }
+        synchronized void closeAfterEnteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){
+            boolean sealed=false;
+            try{
+                if(execution==null||cancelled==null||cancelled.get()||!NativeActionSnapshotCheck.OPEN.equals(purpose)
+                        ||!Boolean.TRUE.equals(execution.get("effect_entered"))||!Boolean.TRUE.equals(execution.get("effect_returned"))
+                        ||!Boolean.TRUE.equals(execution.get("api_accepted"))||!Boolean.TRUE.equals(execution.get("worker_drained"))
+                        ||!Boolean.TRUE.equals(execution.get("callback_published"))||!Boolean.TRUE.equals(execution.get("callback_authority_current")))return;
+                EnteredAwaitReceipt receipt=new EnteredAwaitReceipt(execution,cancelled);
+                if(!cancelled.get()&&state.compareAndSet(1,2)){enteredAwaitReceipt.set(receipt);sealed=true;}
+            }finally{
+                state.getAndSet(2);unenteredAwaitReceipt.set(null);
+                if(!sealed||cancelled==null||cancelled.get())enteredAwaitReceipt.set(null);
+            }
+        }
+        private boolean consumeEnteredOutcome(Map<String,Object> execution){
+            if(state.get()!=2||execution==null)return false;
+            EnteredAwaitReceipt sealed=enteredAwaitReceipt.get();
+            if(sealed==null||sealed.cancelled.get()||!sealed.execution.equals(execution)
+                    ||!sealed.sha.equals(NativeAppEvidence.fingerprint(execution)))return false;
+            return enteredAwaitReceipt.compareAndSet(sealed,null)&&!sealed.cancelled.get();
         }
         private boolean consumeUnenteredOutcome(Map<String,Object> execution){
             if(state.get()==0)return true;
@@ -452,6 +531,7 @@ final class NativeAppSession {
         final int ordinal,step;final String run,purpose;final ActionDecision action;final NativeAppDomain before;
         final NativeCtripFlightPage.Page flight;final NativeXiaomiProductPage.Page product;final long started;
         final LocalDate date;long finished;Map<String,Object> receipt;boolean journaled;ActionGuard guard;
+        boolean outcomeJournaled,postEffectReadEligible,postEffectPermitIssued;String enteredExecutionSha,enteredOperation;
         Attempt(int ordinal,int step,String run,ActionDecision action,NativeAppDomain before,String purpose,
                 NativeCtripFlightPage.Page flight,NativeXiaomiProductPage.Page product,long started,LocalDate date){
             this.ordinal=ordinal;this.step=step;this.run=run;this.action=action;this.before=before;this.purpose=purpose;
@@ -515,6 +595,7 @@ final class NativeAppSession {
             Map<String,Object> actionExecution)throws Exception{
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
         boolean recovery=!accepted&&!dispatched&&stale&&provedUnenteredGuardedAction(a,actionExecution,finished);
+        boolean postEffect=accepted&&dispatched&&!stale&&provedEnteredGuardedAction(a,actionExecution,finished);
         boolean release=recovery&&NativeActionSnapshotCheck.QUERY.equals(a.purpose)
                 &&a.date!=null&&queryAttempts.contains(a.date);
         boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
@@ -528,6 +609,10 @@ final class NativeAppSession {
         outcome.put("login_exit_reservation_released",loginRelease);
         outcome.put("date_reservation_released",dateRelease);
         outcome.put("pre_effect_stale_recovery_available",recovery);
+        if(postEffect){
+            outcome.put("post_effect_read_recovery_available",true);
+            outcome.put("post_effect_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+        }
         if(recovery){
             Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-stale-recovery-proof.v1");
             proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
@@ -564,7 +649,7 @@ final class NativeAppSession {
             outcome.put("date_reservation_release",proof);
         }
         a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
-        Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);inFlight=null;
+        Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);a.outcomeJournaled=true;inFlight=null;
         // Only the durable receipt above releases a reservation. The old frame
         // and old model run stay unusable; neither a result nor an action is made.
         if(release){queryAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
@@ -577,6 +662,39 @@ final class NativeAppSession {
         if("done".equals(action.action)){lastDone=a;return;}
         need(dispatched,"native action effect not dispatched");
         need(pending==null,"new native action while preceding transition unresolved");pending=a;
+        if(postEffect){a.enteredExecutionSha=NativeAppEvidence.fingerprint(actionExecution);a.enteredOperation=(String)actionExecution.get("operation_id");a.postEffectReadEligible=true;}
+    }
+    /** An exact Controller close-and-seal handoff is mandatory; JSON alone,
+     * a normal closed guard or the unentered receipt never qualifies. */
+    private boolean provedEnteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
+        ActionGuard g=a.guard;
+        if(!NativeCtripFlightPage.supported(goal)||!NativeActionSnapshotCheck.OPEN.equals(a.purpose)
+                ||!"click".equals(a.action.action)||a.action.toolChildOrigin!=null||a.before!=current||pending!=null
+                ||g==null||g.action!=a.action||g.frame!=a.before.frame||x==null)return false;
+        if(!"hepta.action-execution.v1".equals(x.get("schema"))||!"serial_action_worker".equals(x.get("execution_kind"))
+                ||!(x.get("operation_id") instanceof String)||!NativeAppEvidence.id((String)x.get("operation_id"))
+                ||!taskId.equals(x.get("task_id"))||!a.run.equals(x.get("model_run_id"))
+                ||!a.before.frame.observationId.equals(x.get("observation_id"))
+                ||!authorization.authorization.sha256.equals(x.get("authorization_sha256"))
+                ||executionNumber(x,"window_id")!=a.before.frame.windowId||executionNumber(x,"display_id")!=displayId
+                ||!generation.equals(x.get("background_generation"))||!Boolean.FALSE.equals(x.get("retired"))
+                ||!x.containsKey("retirement_reason")||x.get("retirement_reason")!=null
+                ||!Boolean.TRUE.equals(x.get("effect_entered"))||!Boolean.TRUE.equals(x.get("effect_returned"))
+                ||!Boolean.TRUE.equals(x.get("api_accepted"))||!Boolean.TRUE.equals(x.get("worker_drained"))
+                ||!Boolean.TRUE.equals(x.get("callback_published"))||!Boolean.TRUE.equals(x.get("callback_authority_current"))
+                ||!Boolean.FALSE.equals(x.get("automatic_redispatch")))return false;
+        long queued=executionNumber(x,"queued_elapsed_ms"),drained=executionNumber(x,"worker_drained_elapsed_ms");
+        if(queued<a.started||queued<g.issued||g.deadline<=queued||g.deadline-queued>8000
+                ||executionNumber(x,"deadline_elapsed_ms")!=g.deadline||drained<queued||drained>finished||finished>=g.deadline)return false;
+        Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;
+        Map<?,?> guard=(Map<?,?>)raw;
+        return a.purpose.equals(guard.get("purpose"))&&a.run.equals(guard.get("model_run_id"))
+                &&g.actionSha.equals(guard.get("action_sha256"))&&guard.containsKey("query_history_sha256")
+                &&g.historySha==null&&guard.get("query_history_sha256")==null
+                &&executionNumber(guard,"attempt_started_elapsed_ms")==a.started
+                &&executionNumber(guard,"issued_elapsed_ms")==g.issued&&executionNumber(guard,"deadline_elapsed_ms")==g.deadline
+                &&executionNumber(guard,"state")==1&&Boolean.TRUE.equals(guard.get("single_atomic_claim"))
+                &&g.consumeEnteredOutcome(x);
     }
     /** Service lifetime facts bound to this exact private Attempt; no JSON/model claim supplies authority. */
     private boolean provedUnenteredAction(Attempt a,Map<String,Object> x,long finished){
@@ -687,13 +805,15 @@ final class NativeAppSession {
                         &&a.product.quote.amountDecimal.equals(product.quote.amountDecimal)&&a.product.quote.currency.equals(product.quote.currency),"same queried product/card and displayed price required");
                 proof.put("query",productQueryProof);proof.put("search_card",a.product.quote.evidence());proof.put("detail",product.quote.evidence());
                 productOpenProof=NativeAppEvidence.immutableMap(proof);productSemantic=product.quote.semanticFingerprint;complete=true;
-            }else if(NativeXiaomiProductPage.SEARCH_ICON.equals(a.purpose)&&a.product!=null&&a.product.searchIconNavigationCandidate){
+            }else if(a.product!=null&&"home_search".equals(a.product.phase)
+                    &&(NativeActionSnapshotCheck.SEARCH.equals(a.purpose)
+                    ||NativeXiaomiProductPage.SEARCH_ICON.equals(a.purpose)&&a.product.searchIconNavigationCandidate)){
                 complete=java.util.Arrays.asList("search_input","search_submit","search_suggestion").contains(product.phase);
                 if(complete){
                     proof.put("navigation_only",true);proof.put("fresh_search_contract_phase",product.phase);
                     proof.put("query_or_result_proof_created",false);proof.put("business_transition_verified",false);
                 }
-            }else if("set_product_query".equals(a.purpose)||"open_search".equals(a.purpose)||"return_to_owned_product_search".equals(a.purpose)){
+            }else if("set_product_query".equals(a.purpose)||"return_to_owned_product_search".equals(a.purpose)){
                 complete=!"unrecognized_native_page".equals(product.phase)&&!"observation_unavailable".equals(product.phase)
                         &&!NativeXiaomiProductPage.HOME_LOADING.equals(product.phase);
             }

@@ -135,6 +135,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // A failed read is never an observation or an action. Old consumers still fail.
         default void onReadRetryAvailable(String error,NativeObservationRetryProof proof){onError(error);}
         default void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){onError(error);}
+        default void onPostEffectReadRetryAvailable(String error,PostEffectObservationRetryProof proof){onError(error);}
     }
     public interface Cancellation { boolean isCancelled(); }
     public interface ActionCallback { void onResult(ActionOutcome result); }
@@ -732,6 +733,49 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return java.util.Collections.unmodifiableMap(value);
         }
     }
+    /** A separate entered-action read proof. No published frame or action token
+     * crosses the actual serial read-queue drain boundary. */
+    static final class PostEffectObservationRetryProof {
+        private final Object issuer,controller,authorization;
+        private final NativeAppSession nativeTask;private final NativeAppSession.PostEffectReadPermit permit;
+        private final BackgroundSession background;private final NativeReadIdentity identity;
+        private final String taskId,requestId;
+        private final long taskDeadline,transitionDeadline,started,deadline,failedAt,drainedAt;
+        private final int readOrdinal,completedReadWorks;
+        private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
+        private PostEffectObservationRetryProof(Object issuer,ObservationRequest request,long drainedAt){
+            this.issuer=issuer;controller=request.postEffectController;nativeTask=request.postEffectNativeTask;
+            permit=request.postEffectPermit;authorization=request.readAuthorization;background=request.background;
+            identity=request.postEffectIdentity;taskId=request.taskId;requestId=request.requestId;
+            taskDeadline=request.postEffectTaskDeadline;transitionDeadline=request.postEffectTransitionDeadline;
+            started=request.started;deadline=request.deadline;failedAt=request.failedAt;this.drainedAt=drainedAt;
+            readOrdinal=request.taskReadOrdinal;completedReadWorks=request.readWorksFinished;
+        }
+        void requireOriginal(Object service,Object controller,NativeAppSession nativeTask,NativeAppSession.PostEffectReadPermit permit,
+                String task,Object authorization,BackgroundSession background,long taskDeadline){
+            if(issuer!=service||this.controller!=controller||this.nativeTask!=nativeTask||this.permit!=permit
+                    ||!taskId.equals(task)||this.authorization!=authorization||this.background!=background
+                    ||this.taskDeadline!=taskDeadline||consumed.get())
+                throw new IllegalStateException("操作后重新观察的私有任务身份已变化");
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            value.put("schema","hepta.native-post-effect-observation-retry-proof.v1");value.put("task_id",taskId);
+            value.put("failed_request_id",requestId);value.put("package",identity.packageName);
+            value.put("window_id",identity.windowId);value.put("display_id",identity.displayId);
+            value.put("owner_sha256",identity.owner);value.put("background_generation",identity.generation);
+            if(identity.profileWindow!=null)value.put("actual_profile_window",identity.profileWindow.evidence());
+            value.put("original_task_deadline_elapsed_ms",taskDeadline);
+            value.put("original_transition_deadline_elapsed_ms",transitionDeadline);
+            value.put("failed_request_started_elapsed_ms",started);value.put("failed_request_deadline_elapsed_ms",deadline);
+            value.put("failed_request_terminal_elapsed_ms",failedAt);value.put("failed_request_terminal_status","failed");
+            value.put("read_queue_drain_observed_elapsed_ms",drainedAt);value.put("completed_read_works",completedReadWorks);
+            value.put("actual_task_read_ordinal",readOrdinal);value.put("reason","sealed_pair_target_event_without_remaining_sample_gap");
+            value.put("read_worker_drained",true);value.put("failed_request_resources_released",true);value.put("unknown_events",0);
+            value.put("grants_action_authority",false);value.put("action_replayed",false);value.put("renews_failed_request",false);
+            value.put("business_completion_verified",false);return java.util.Collections.unmodifiableMap(value);
+        }
+    }
     /** Metadata of one complete failed-capture read; never a Graph, image or effect permit. */
     private static final class NativeResampleSeed {
         final String taskId,requestId;final BackgroundSession background;final Object authorization;
@@ -758,6 +802,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         InitialObservationRetryProof initialRetrySubmission;
         NativeReadIdentity initialIdentity;boolean initialIdentityRejected;
         WindowOwnership initialProfileOwner;boolean initialProfileBound;
+        Object postEffectController;NativeAppSession postEffectNativeTask;NativeAppSession.PostEffectReadPermit postEffectPermit;
+        long postEffectTaskDeadline,postEffectTransitionDeadline;PostEffectObservationRetryProof postEffectRetrySubmission;
+        NativeReadIdentity postEffectIdentity;boolean postEffectIdentityRejected;
+        WindowOwnership postEffectProfileOwner;boolean postEffectProfileBound;
         NativeResampleSeed resampleSeed; // Main-owned first-sample lineage only.
         boolean readRecoveryRejected;String lastReadDigest;long failedAt=-1;
         int readWorksStarted,readWorksFinished,readGraphChanges,readCaptureFailures,readSealedEventFailures;
@@ -784,6 +832,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||event==ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE
                     ||event==ObservationDiagnostics.Event.SAVED_GRAPH_MISSING||event==ObservationDiagnostics.Event.SAVED_GRAPH_STALE))
                 initialIdentityRejected=true;
+            if(postEffectController!=null&&(event==ObservationDiagnostics.Event.SCREENSHOT_GRAPH_MISSING
+                    ||event==ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE
+                    ||event==ObservationDiagnostics.Event.SAVED_GRAPH_MISSING||event==ObservationDiagnostics.Event.SAVED_GRAPH_STALE))
+                postEffectIdentityRejected=true;
             if(trace!=null)trace.note(event);
         }
         synchronized void worker(boolean active){
@@ -791,6 +843,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(trace!=null)trace.worker(active);
         }
         synchronized void graph(String stage,Graph graph){
+            if(postEffectController!=null&&graph!=null){
+                // A normal navigation can replace the app window. Only recovery
+                // eligibility is latched until the latest sealed pair is chosen.
+                if(background==null||displayId!=graph.displayId
+                        ||!background.generation.equals(graph.backgroundGeneration)
+                        ||!background.ownerSha256.equals(graph.backgroundOwnerSha)
+                        ||!background.selection.initialPackage.equals(graph.packageName))postEffectIdentityRejected=true;
+                try{
+                    NativeAppEvidence.requireProfileTarget(background==null?null:background.profileTarget(),graph.profileWindow);
+                    if(postEffectProfileBound)requireSameProfileOwner(postEffectProfileOwner,graph.profileWindow);
+                    else if(graph.nativeObservationComplete){postEffectProfileOwner=graph.profileWindow;postEffectProfileBound=true;}
+                }catch(RuntimeException foreign){postEffectIdentityRejected=true;}
+                if(postEffectRetrySubmission!=null&&postEffectIdentity!=null&&!postEffectIdentity.matches(graph))postEffectIdentityRejected=true;
+            }
             if(initialController!=null&&graph!=null){
                 // Recovery-only latch. Normal first-read window/geometry changes,
                 // incomplete samples and startup gaps keep the original settle path.
@@ -939,10 +1005,31 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final long deadline,final ObservationCallback callback,final NativeObservationRetryProof retryProof,
                         final Object initialController,final Object initialNativeTask,final Object initialAuthorization,
                         final BackgroundSession initialBackground,final long taskDeadline,final InitialObservationRetryProof initialProof){
+        observeRequest(taskId,evidenceDirectory,cancel,deadline,callback,retryProof,initialController,initialNativeTask,
+                initialAuthorization,initialBackground,taskDeadline,initialProof,null,null,null,null,null,0,null);
+    }
+    void observePostEffectNative(final Object controller,final NativeAppSession nativeTask,final NativeAppSession.PostEffectReadPermit permit,
+                        final String taskId,final Object authorization,final BackgroundSession background,final File evidenceDirectory,
+                        final Cancellation cancel,final long deadline,final long taskDeadline,
+                        final ObservationCallback callback,final PostEffectObservationRetryProof proof){
+        if(controller==null||nativeTask==null||permit==null||authorization==null||background==null)
+            throw new IllegalArgumentException("private accepted navigation and native controller required");
+        observeRequest(taskId,evidenceDirectory,cancel,deadline,callback,null,null,null,null,null,0,null,
+                controller,nativeTask,permit,authorization,background,taskDeadline,proof);
+    }
+    private void observeRequest(final String taskId,final File evidenceDirectory,final Cancellation cancel,
+                        final long deadline,final ObservationCallback callback,final NativeObservationRetryProof retryProof,
+                        final Object initialController,final Object initialNativeTask,final Object initialAuthorization,
+                        final BackgroundSession initialBackground,final long taskDeadline,final InitialObservationRetryProof initialProof,
+                        final Object postController,final NativeAppSession postNativeTask,final NativeAppSession.PostEffectReadPermit postPermit,
+                        final Object postAuthorization,final BackgroundSession postBackground,final long postTaskDeadline,
+                        final PostEffectObservationRetryProof postProof){
         final ObservationRequest request=new ObservationRequest(taskId,evidenceDirectory,callback,cancel,deadline,backgroundFor(taskId));
         request.retrySubmission=retryProof;
         request.initialController=initialController;request.initialNativeTask=initialNativeTask;
         request.initialTaskDeadline=taskDeadline;request.initialRetrySubmission=initialProof;
+        request.postEffectController=postController;request.postEffectNativeTask=postNativeTask;request.postEffectPermit=postPermit;
+        request.postEffectTaskDeadline=postTaskDeadline;request.postEffectRetrySubmission=postProof;
         request.trace=observationDiagnostic(request);
         if(request.trace!=null)try{callback.onDiagnostic(new DiagnosticSnapshot(request.trace));}
         catch(RuntimeException unavailable){/* Optional diagnostics grant no authority and do not replace the observation. */}
@@ -955,7 +1042,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(capturePending){callback.onError("已有截图尚未结束");return;}
             if(observationIoBusy.get()){callback.onError(request.diagnostic("先前屏幕读取尚未退出，不堆积新观察"));return;}
             try{
-                if(initialController!=null)admitInitialObservation(request,initialAuthorization,initialBackground);
+                if(postController!=null)admitPostEffectObservation(request,postAuthorization,postBackground);
+                else if(initialController!=null)admitInitialObservation(request,initialAuthorization,initialBackground);
                 else{
                     if(retryProof!=null)consumeObservationRetry(request,retryProof);
                     request.readBefore=current;request.readAuthorization=taskAuthorization;
@@ -996,6 +1084,44 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&request.initialNativeTask!=null&&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
                 &&request.background!=null&&owns(request.taskId)&&ownsBackground(request.taskId,request.background)&&taskWeb==null
                 &&request.taskReadOrdinal==taskObservationAdmissions;
+    }
+    private synchronized void admitPostEffectObservation(ObservationRequest request,Object authorization,BackgroundSession background){
+        long now=SystemClock.elapsedRealtime();PostEffectObservationRetryProof proof=request.postEffectRetrySubmission;
+        if(live!=this||ownedController!=request.postEffectController||request.postEffectNativeTask==null||request.postEffectPermit==null
+                ||request.initialController!=null||request.retrySubmission!=null||authorization==null||authorization!=taskAuthorization
+                ||background==null||background!=request.background||!owns(request.taskId)||!ownsBackground(request.taskId,background)
+                ||taskWeb!=null||request.cancel.isCancelled()||locked(background)||activeObservation!=null
+                ||capturePending||observationIoBusy.get()||actionWorkPending()||nativeCancellationWorkPending()
+                ||taskObservationAdmissions<1||now<request.started||now>=request.deadline
+                ||request.deadline>request.postEffectTaskDeadline
+                ||request.deadline>ObservationStabilityGate.requestDeadline(request.started,request.postEffectTaskDeadline))
+            throw new IllegalStateException("post-effect native read admission changed");
+        request.postEffectPermit.requireOwner(request.postEffectNativeTask,authorization,request.taskId,background.selection,background.generation,background.displayId());
+        request.postEffectTransitionDeadline=request.postEffectPermit.transitionDeadline();
+        if(request.deadline>request.postEffectTransitionDeadline||now>=request.postEffectTransitionDeadline)
+            throw new IllegalStateException("original transition read budget expired");
+        if(proof!=null){
+            proof.requireOriginal(this,request.postEffectController,request.postEffectNativeTask,request.postEffectPermit,
+                    request.taskId,authorization,background,request.postEffectTaskDeadline);
+            if(taskObservationAdmissions!=proof.readOrdinal||request.started<proof.drainedAt
+                    ||request.postEffectTransitionDeadline!=proof.transitionDeadline||!proof.consumed.compareAndSet(false,true))
+                throw new IllegalStateException("post-effect read drain or one-use boundary changed");
+            request.postEffectIdentity=proof.identity;
+        }
+        request.postEffectPermit.admit(proof!=null);request.readAuthorization=authorization;
+        // No current/currentGraph copy: the old home observation cannot anchor a new page.
+    }
+    private synchronized boolean postEffectObservationOwner(ObservationRequest request){
+        if(live!=this||request.postEffectController==null||ownedController!=request.postEffectController
+                ||request.postEffectNativeTask==null||request.postEffectPermit==null||request.readAuthorization==null
+                ||request.readAuthorization!=taskAuthorization||request.background==null||!owns(request.taskId)
+                ||!ownsBackground(request.taskId,request.background)||taskWeb!=null
+                ||request.taskReadOrdinal!=taskObservationAdmissions)return false;
+        try{
+            request.postEffectPermit.requireOwner(request.postEffectNativeTask,request.readAuthorization,request.taskId,request.background.selection,request.background.generation,request.background.displayId());
+            return request.postEffectPermit.transitionDeadline()==request.postEffectTransitionDeadline
+                    &&request.postEffectPermit.admitted(request.postEffectRetrySubmission!=null);
+        }catch(RuntimeException changed){return false;}
     }
     private void consumeObservationRetry(ObservationRequest request,NativeObservationRetryProof proof){
         long now=SystemClock.elapsedRealtime();
@@ -1090,6 +1216,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
             boolean nativeRecheck=nativeObservationRecheckAllowed(request,graph);
+            if(request.postEffectController!=null){
+                if(!postEffectObservationOwner(request))request.postEffectIdentityRejected=true;
+                if(request.postEffectRetrySubmission!=null&&(request.postEffectIdentityRejected
+                        ||(graph!=null&&(!nativeRecheck||!request.postEffectIdentity.matches(graph))))){
+                    failObservation(request,"操作后重新读取的窗口或任务身份已变化");return;
+                }
+            }
             if(request.initialController!=null){
                 if(!initialObservationOwner(request))request.initialIdentityRejected=true;
                 if(request.initialRetrySubmission!=null&&(request.initialIdentityRejected
@@ -1173,6 +1306,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||request.initialIdentityRejected||!initialObservationOwner(request)
                 ||request.initialIdentity!=request.initialRetrySubmission.identity
                 ||!request.initialRetrySubmission.identity.matches(graph)))return null;
+        if(request.postEffectRetrySubmission!=null&&(!request.postEffectRetrySubmission.consumed.get()
+                ||request.postEffectIdentityRejected||!postEffectObservationOwner(request)
+                ||request.postEffectIdentity!=request.postEffectRetrySubmission.identity
+                ||!request.postEffectRetrySubmission.identity.matches(graph)))return null;
         FrozenObservationWindow window=frozenObservationWindow(graph);
         if(window==null||!identity.frozenWindow.matches(window))return null;
         requireObservationWork(request);long now=SystemClock.elapsedRealtime();
@@ -1192,7 +1329,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         catch(RuntimeException unavailable){/* A diagnostic cannot grant or retire evidence. */}
     }
     private boolean nativeReadRetryCandidate(ObservationRequest request,Graph graph){
-        return request.initialController==null&&request.retrySubmission==null&&request.readBefore!=null&&request.readBefore==current
+        return request.initialController==null&&request.postEffectController==null&&request.retrySubmission==null&&request.readBefore!=null&&request.readBefore==current
                 &&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
                 &&request.readIdentity!=null&&!request.readRecoveryRejected&&request.readIdentity.matches(graph)
                 &&nativeObservationRecheckAllowed(request,graph)&&request.unknownEvents==0
@@ -1265,6 +1402,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }});}catch(RuntimeException unavailable){/* No proof if main delivery fails; the original deadline wins. */}
         }});}catch(RuntimeException unavailable){request.callback.onError(diagnostic);}
     }
+    private void failPostEffectObservationAfterReadDrain(final ObservationRequest request,String error){
+        final int completed=request.readWorksFinished;
+        final String diagnostic=retireFailedObservation(request,error);
+        if(diagnostic==null)return;
+        try{observationIo.execute(new Runnable(){public void run(){
+            final long drainedAt=SystemClock.elapsedRealtime();
+            try{main.post(new Runnable(){public void run(){
+                long now=SystemClock.elapsedRealtime();
+                if(!request.finished||request.postEffectRetrySubmission!=null||!postEffectObservationOwner(request)
+                        ||request.postEffectIdentity==null||request.postEffectIdentityRejected
+                        ||request.readWorksStarted!=completed||request.readWorksFinished!=completed||completed<1
+                        ||request.captured!=null||request.shotPending||request.resampleSeed!=null||request.cancel.isCancelled()
+                        ||now<drainedAt||drainedAt<request.failedAt||request.failedAt<request.started
+                        ||now>=request.deadline||now>=request.postEffectTaskDeadline||now>=request.postEffectTransitionDeadline
+                        ||locked(request.background)||activeObservation!=null||capturePending||observationIoBusy.get()
+                        ||actionWorkPending()||nativeCancellationWorkPending()||request.unknownEvents!=0){
+                    request.callback.onError(diagnostic);return;
+                }
+                request.callback.onPostEffectReadRetryAvailable(diagnostic,new PostEffectObservationRetryProof(live,request,drainedAt));
+            }});}catch(RuntimeException unavailable){/* Undelivered drain cannot grant another read. */}
+        }});}catch(RuntimeException unavailable){request.callback.onError(diagnostic);}
+    }
     private void retryObservation(final ObservationRequest request,long delay){
         retryObservation(request,delay,null);
     }
@@ -1281,6 +1440,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     &&(request.initialRetrySubmission==null||(request.initialRetrySubmission.consumed.get()
                             &&!request.initialIdentityRejected&&initialObservationOwner(request)
                             &&request.initialIdentity==request.initialRetrySubmission.identity))
+                    &&(request.postEffectRetrySubmission==null||(request.postEffectRetrySubmission.consumed.get()
+                            &&!request.postEffectIdentityRejected&&postEffectObservationOwner(request)
+                            &&request.postEffectIdentity==request.postEffectRetrySubmission.identity))
                     &&seed.authorization==taskAuthorization&&ownsBackground(request.taskId,request.background)
                     &&seed.unknownEvents==0&&request.unknownEvents==0&&seed.events==request.events
                     &&seed.graphCompletedAt>=seed.graphStartedAt&&seed.graphCompletedAt<=now
@@ -1401,6 +1563,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_STALE);retry=true;}
                         if(!retry&&!product.frozenWindowRechecked){
                             if(request.initialController!=null)request.initialIdentityRejected=true;
+                            if(request.postEffectController!=null)request.postEffectIdentityRejected=true;
                             request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;
                         }
                     }else{
@@ -1472,10 +1635,36 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||actionWorkPending()||nativeCancellationWorkPending())return false;
         return product.identity.matches(request.captured)&&nativeObservationRecheckAllowed(request,request.captured);
     }
+    /** Only an already accepted OPEN navigation can retire this failed read
+     * when the remaining original settle interval cannot fit one sample gap. */
+    private boolean postEffectLateEventReadFailure(ObservationRequest request,ObservationProduct product,boolean retry){
+        long now=SystemClock.elapsedRealtime();
+        long settleEnd=Math.min(request.deadline,request.started+ObservationStabilityGate.SETTLE_LIMIT_MS);
+        if(retry||request.postEffectController==null||request.postEffectRetrySubmission!=null
+                ||!postEffectObservationOwner(request)||request.postEffectIdentity!=null||request.postEffectIdentityRejected
+                ||request.initialController!=null||request.readBefore!=null||request.readIdentity!=null||request.retrySubmission!=null
+                ||now<request.started||settleEnd-now>ObservationStabilityGate.SAMPLE_GAP_MS
+                ||now>=request.deadline||now>=request.postEffectTaskDeadline||now>=request.postEffectTransitionDeadline
+                ||product.seal==null||product.seal.identity!=product.identity
+                ||product.seal.authorization!=request.readAuthorization||!product.identity.nativeRecheck
+                ||!product.frozenWindowRechecked||product.bitmap==null||product.path==null||product.digest==null
+                ||product.persistedAt<product.seal.sealedAt||product.publicationCheckStartedAt<product.persistedAt
+                ||product.publicationCheckCompletedAt<product.publicationCheckStartedAt||product.publicationCheckCompletedAt>now
+                ||product.events<0||product.seal.events<product.events||product.checkedEvents<product.seal.events
+                ||request.events<=product.checkedEvents
+                ||product.unknownEvents!=0||product.seal.unknownEvents!=0||request.unknownEvents!=0
+                ||request.readWorksStarted<1||request.readWorksStarted!=request.readWorksFinished
+                ||observationIoBusy.get()||capturePending||request.shotPending
+                ||actionWorkPending()||nativeCancellationWorkPending())return false;
+        return product.identity.matches(request.captured)&&nativeObservationRecheckAllowed(request,request.captured);
+    }
     private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){
         try{
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
+            if(request.postEffectRetrySubmission!=null&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)){
+                failObservation(request,"操作后重新读取的窗口或任务身份已变化");return;
+            }
             if(request.initialRetrySubmission!=null&&(!initialObservationOwner(request)||request.initialIdentityRejected)){
                 failObservation(request,"首次页面重新读取的窗口或任务身份已变化");return;
             }
@@ -1490,6 +1679,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(product.seal!=null)requireTaskAuthorization(request.taskId,taskAuthorization);
             boolean sealedEventFailure=nativeLateEventReadFailure(request,product,retry);
             boolean initialEventFailure=initialLateEventReadFailure(request,product,retry);
+            boolean postEffectEventFailure=postEffectLateEventReadFailure(request,product,retry);
             boolean eventsChanged=product.events!=request.events||product.unknownEvents!=request.unknownEvents;
             boolean currentCheck=product.seal==null?product.nativeGraphRechecked:product.frozenWindowRechecked;
             boolean eventsRechecked=eventsChanged&&currentCheck
@@ -1502,10 +1692,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(eventsChanged)request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
                 NativeResampleSeed seed=product.seed;
                 if(initialEventFailure)request.initialIdentity=new NativeReadIdentity(request.captured);
+                if(postEffectEventFailure)request.postEffectIdentity=new NativeReadIdentity(request.captured);
                 product.close(); // Old pixels/file never accompany the copied first sample.
                 if(initialEventFailure){
                     request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
                     failInitialObservationAfterReadDrain(request,"首次页面仍在变化，当前截图未发布");return;
+                }
+                if(postEffectEventFailure){
+                    request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
+                    failPostEffectObservationAfterReadDrain(request,"操作后页面仍在变化，当前截图未发布");return;
                 }
                 retryObservation(request,200,seed);return;
             }
@@ -1644,7 +1839,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
         finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
     }
-    private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired,ActionWork work){
+    private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired,ActionWork work)throws Exception{
         BackgroundSession background=backgroundFor(taskId);if(background==null)return;
         requireBackgroundObservation(taskId,expected);
         if("home".equals(action.action))throw new IllegalArgumentException("后台任务不提供 HOME，也不会回退到主屏导航");
@@ -1672,7 +1867,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 // Identity failures stay terminal, even when the same refresh also changes text.
                 requireBackgroundNodeWindow(background,expected,node);
                 if(!node.isVisibleToUser()||!node.isEnabled()
-                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node,true,work==null?null:work.budget()))))
+                        ||(!ref.signature.equals(nodeSignature(node,observedChildText(node,true,work==null?null:work.budget())))
+                        &&!deferNativeSearchEntrySignature(taskId,expected,action,node,work)))
                     throw new StaleObservation("后台节点内容已变化，需重新观察");
             }
             if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
@@ -2013,6 +2209,24 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         env.put("child_omissions",Integer.valueOf((int)stats.childSlotsOmitted));
         return new NativeActionSnapshotCheck.Snapshot(env,graph.nativeActionNodes);
     }
+    private static boolean nativeSearchEntryGuard(ActionWork work){
+        return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SEARCH.equals(work.nativeGuard.purpose)
+                &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
+    }
+    /** Read-only precheck deferral. No reference, action, label or observation is
+     * replaced and no signature is declared current. This exact private SEARCH
+     * guard must still pass finalNativeActionCheck even if the tree is equal. */
+    private boolean deferNativeSearchEntrySignature(String task,PhoneObservation frame,ActionDecision action,
+            AccessibilityNodeInfo node,ActionWork work)throws Exception{
+        if(!nativeSearchEntryGuard(work)||scopeFor(task).config!=null)return false;
+        requireNativeActionGuard(task,frame,action,work);
+        NodeRef original=work.graph.refs.get(action.nodeId);NativeAppSession.ActionGuard guard=work.nativeGuard;
+        if(original==null||original.node!=node||!original.appTreeSignature.equals(guard.targetNode.signature))return false;
+        NativeActionSnapshotCheck.Snapshot snapshot=nativeActionSnapshot(work.graph,guard);
+        NativeActionSnapshotCheck.Node expected=snapshot.node(guard.targetNode.path);
+        NativeActionSnapshotCheck.Node live=snapshotNativeActionNode(node,expected.path,expected.parent,null,null);
+        return NativeActionSnapshotCheck.searchEntryOwnFactsForFullRecheck(guard.intent(original.signature),snapshot,live);
+    }
     private Map<String,Object> compareNativeAction(String task,PhoneObservation frame,ActionDecision action,Graph fresh,ActionWork work)throws Exception{
         requireNativeActionGuard(task,frame,action,work);NativeAppSession.ActionGuard guard=work.nativeGuard;
         Graph original=work.graph;
@@ -2021,7 +2235,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         for(PhoneObservation.Node row:fresh.rows)if(guard.targetNode.path.equals(row.nativeTreePath)){
             if(after!=null)throw new StaleObservation("原生同路径目标不唯一");after=fresh.refs.get(row.id);
         }
-        if(before==null||after==null||!before.node.equals(after.node)||!before.signature.equals(after.signature)
+        if(before==null||after==null||!before.node.equals(after.node)
+                ||(!nativeSearchEntryGuard(work)&&!before.signature.equals(after.signature))
                 ||!before.appTreeSignature.equals(guard.targetNode.signature))
             throw new StaleObservation("原始NodeRef与同路径新节点不是同一目标");
         NativeActionSnapshotCheck.Snapshot oldSnapshot=nativeActionSnapshot(original,guard);
@@ -2059,8 +2274,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Map<String,Object> proof=compareNativeAction(task,frame,action,fresh,work);
             Map<String,Object> windowsBefore=readNativeActionWindows(fresh,work.budget());
             if(!fresh.nativeActionWindows.equals(windowsBefore))throw new StaleObservation("完整复核后原生窗口集合变化");
-            NativeActionSnapshotCheck.Snapshot original=nativeActionSnapshot(work.graph,guard);
-            refreshNativeActionTargetChain(work.background,frame,work.graph.refs.get(action.nodeId),guard.targetNode.path,original,work);
+            NativeActionSnapshotCheck.Snapshot checked=nativeActionSnapshot(nativeSearchEntryGuard(work)?fresh:work.graph,guard);
+            refreshNativeActionTargetChain(work.background,frame,work.graph.refs.get(action.nodeId),guard.targetNode.path,checked,work);
             Map<String,Object> windowsAfter=readNativeActionWindows(fresh,work.budget());
             if(!windowsBefore.equals(windowsAfter))throw new StaleObservation("原生派发前窗口集合变化");
             requireNativeActionGuard(task,frame,action,work);authorizationBeforeDispatch(task,work.authorization,action,work.state.modelRunId);
@@ -2090,13 +2305,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(!bounds.contains(targetBounds))throw new StaleObservation("原生动作祖先不再包含原目标");
                 NativeActionSnapshotCheck.Node actual=snapshotNativeActionNode(cursor,path,expected.parent,null,null);
                 Map<String,Object> before=new java.util.TreeMap<String,Object>(expected.v),now=new java.util.TreeMap<String,Object>(actual.v);
-                // A retained ancestor's derived label is covered by its full original signature.
+                // The bound census retains the full derived signature: original
+                // for ordinary purposes, the just-compared fresh one for SEARCH.
                 before.remove("label");before.remove("ref_signature_sha256");now.remove("label");now.remove("ref_signature_sha256");
                 if(!before.equals(now))throw new StaleObservation("原生目标祖先属性或选择状态变化");
                 Object fullSignatureSha256=expected.v.get("ref_signature_sha256");
-                if(fullSignatureSha256!=null&&!fullSignatureSha256.equals(NativeAppEvidence.hash(
-                        nodeSignature(cursor,observedChildText(cursor,true,work.budget())))))
-                    throw new StaleObservation("原生目标祖先签名变化");
+                if(fullSignatureSha256!=null){
+                    ObservedChildText.Result children=observedChildText(cursor,true,work.budget());
+                    if(!fullSignatureSha256.equals(NativeAppEvidence.hash(nodeSignature(cursor,children))))
+                        throw new StaleObservation("原生目标祖先签名变化");
+                    if(path.equals(targetPath)&&nativeSearchEntryGuard(work)){
+                        PersistentActionPolicy.Decision policy=PersistentActionPolicy.evaluate(string(cursor.getText()),
+                                string(cursor.getContentDescription()),children.text,cursor.isEditable());
+                        if(!policy.allowed)throw new IllegalArgumentException(policy.reasonCode+": "+policy.detail);
+                    }
+                }
                 AccessibilityNodeInfo parent=regionParent(work,cursor,temporary);
                 if("0".equals(path)){
                     if(parent!=null||!frame.windowMetadata.bindFreshness("").equals(
@@ -2232,7 +2455,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             BackgroundSession background=backgroundFor(taskId);
             if(refreshed&&background!=null)requireBackgroundNodeWindow(background,expected,node);
             ObservedChildText.Result freshChildText=refreshed?observedChildText(node,background!=null,work==null?null:work.budget()):ObservedChildText.notApplicable();
-            if(!refreshed||!reference.signature.equals(nodeSignature(node,freshChildText))||!node.isVisibleToUser()||!node.isEnabled()){
+            if(!refreshed||(!reference.signature.equals(nodeSignature(node,freshChildText))
+                    &&!deferNativeSearchEntrySignature(taskId,expected,action,node,work))||!node.isVisibleToUser()||!node.isEnabled()){
                 callback.onResult(new ActionOutcome(false,false,true,"stale:目标节点已变化"));return;
             }
             if(node.isPassword())throw new IllegalArgumentException("不自动输入或操作密码节点");
@@ -2263,7 +2487,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
-                if(work!=null&&work.nativeActionRevalidated){
+                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));

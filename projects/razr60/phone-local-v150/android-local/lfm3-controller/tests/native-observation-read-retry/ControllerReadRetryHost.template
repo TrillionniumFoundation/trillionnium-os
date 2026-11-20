@@ -25,7 +25,14 @@ final class ControllerReadRetryHost {
         JSONObject toEvidenceJson(){return new JSONObject().put("observation_id",id).put("package",packageName).put("synthetic_host_endpoint",true);}
     }
     static final class BackgroundSession {
-        String generation,ownerSha256;Selection selection=new Selection();static final class Selection {String initialPackage;}
+        String generation,ownerSha256;int display=7;Selection selection=new Selection();
+        int displayId(){return display;}
+        static final class Selection implements BackgroundTaskTarget.SelectionBinding {
+            String initialPackage;final BackgroundTaskTarget target;
+            Selection(){target=null;}
+            Selection(BackgroundTaskTarget target){this.target=target;initialPackage=target.packageName;}
+            public BackgroundTaskTarget executionTarget(){return target;}
+        }
     }
     static final class WebFlightSession {
         interface Observer {PhoneObservation observe()throws Exception;}
@@ -55,6 +62,7 @@ final class ControllerReadRetryHost {
             default void onDiagnostic(Callable<String> snapshot){}
             default void onReadRetryAvailable(String error,NativeObservationRetryProof proof){onError(error);}
             default void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){onError(error);}
+            default void onPostEffectReadRetryAvailable(String error,PostEffectObservationRetryProof proof){onError(error);}
         }
         static final class NativeReadIdentity {String packageName,generation,owner;int windowId,displayId;
             final org.trillionnium.hepta.background.WindowOwnership profileWindow=null; // Legacy user0 fixture; no profile proof producer.
@@ -63,9 +71,12 @@ final class ControllerReadRetryHost {
             String taskId,requestId;BackgroundSession background;NativeReadIdentity readIdentity;
             long started,deadline,failedAt;int readWorksFinished=3,readGraphChanges=2,readCaptureFailures=1,readSealedEventFailures;
             Object initialController,initialNativeTask,readAuthorization;NativeReadIdentity initialIdentity;long initialTaskDeadline;
+            Object postEffectController;NativeAppSession postEffectNativeTask;NativeAppSession.PostEffectReadPermit postEffectPermit;
+            NativeReadIdentity postEffectIdentity;long postEffectTaskDeadline,postEffectTransitionDeadline;int taskReadOrdinal;
         }
 {{service_proof}}
 {{initial_service_proof}}
+{{post_service_proof}}
         final ControllerReadRetryHost host;
         String firstMode="typed",retryMode="success",proofMutation;
         long firstAt=-1,retryAt=-1,firstDeadline,retryDeadline;
@@ -157,6 +168,115 @@ final class ControllerReadRetryHost {
                 callback.onObservation(fresh());if(duplicateRetry)callback.onError("late duplicate initial error");
             }
         }
+        // Synthetic Android/read-delivery endpoints only. Production awaitAction,
+        // ActionExecutionState, Session permits and private proof class are real.
+        interface ActionCallback {void onResult(ActionOutcome value);}
+        static final class ActionOutcome {
+            final boolean accepted,dispatched,stale;final JSONObject actionExecution;
+            ActionOutcome(boolean accepted,boolean dispatched,boolean stale,JSONObject execution){
+                this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.actionExecution=execution;
+            }
+        }
+        boolean pendingAction,pendingCancellation;
+        int performCalls,syntheticEffectEntries,retireCalls,postCalls,postRetryCalls;
+        boolean actionClaim=true,actionDrain=true,actionCallbackCurrent=true,actionAccepted=true;
+        NativeAppSession.ActionGuard lastGuard;ActionExecutionState executionState;
+        IntegrationChecks.Work beforeActionCallback;
+        PostEffectObservationRetryProof postIssued;
+        boolean actionWorkPending(){return pendingAction;}
+        boolean nativeCancellationWorkPending(){return pendingCancellation;}
+        void retireActionWork(String id,String reason){
+            yes(id.equals(host.currentTaskId),"synthetic action retirement keeps exact task");
+            retireCalls++;if(executionState!=null)executionState.retire(reason);
+        }
+        void perform(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,
+                org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,
+                String run,long deadline,NativeAppSession.ActionGuard guard,Cancellation cancellation,ActionCallback callback)throws Exception{
+            performCalls++;lastGuard=guard;
+            yes(host.postFixture&&id.equals(host.currentTaskId)&&observed==host.before&&action==host.fixture.action
+                    &&authorization==host.authorization&&run.equals(host.fixture.run)&&guard!=null,
+                    "synthetic platform endpoint receives the exact original action/context");
+            yes(deadline==guard.deadline&&guard.issued==SystemClock.elapsedRealtime(),"actual awaitAction supplies its original eight-second budget");
+            long queued=SystemClock.elapsedRealtime();
+            executionState=new ActionExecutionState(NativeActionBridgeHost.id("post-effect-operation:"+id),id,run,observed.id,
+                    authorization.authorization.sha256,observed.nativeFrame.windowId,observed.nativeFrame.displayId,
+                    observed.nativeFrame.generation,queued,deadline,()->SystemClock.elapsedRealtime());
+            ActionExecutionState.Slot slot=new ActionExecutionState.Slot();
+            yes(slot.acquire(executionState),"real state slot acquires one synthetic work");pendingAction=true;
+            clock(queued+1);
+            if(actionClaim)guard.claim(action,run,SystemClock.elapsedRealtime());
+            executionState.enterEffect(false,true);syntheticEffectEntries++;
+            clock(queued+2);executionState.effectReturned(Boolean.valueOf(actionAccepted));
+            if(actionDrain){
+                clock(queued+3);executionState.drained();slot.release(executionState);pendingAction=slot.pending();
+                clock(queued+4);executionState.publish(false,actionCallbackCurrent);
+            }
+            Map<String,Object> raw=executionState.evidence();raw.put("native_action_guard",guard.evidence());
+            ActionOutcome result=new ActionOutcome(actionAccepted,true,false,NativeQueryReservationHostTest.serviceJson(raw));
+            if(beforeActionCallback!=null)beforeActionCallback.run();
+            callback.onResult(result);
+        }
+        PhoneObservation postFresh()throws Exception{
+            NativeXmlFixture.Snapshot xml=NativeXmlFixture.read(NativeActionBridgeHost.sourceRoot.resolve("tests/native-app-provider/fixtures/form14.xml"));
+            latest=new PhoneObservation(host.fixture.frame(xml.nodes,xml.sourceSha256));return latest;
+        }
+        void observePostEffectNative(Object controller,NativeAppSession nativeTask,NativeAppSession.PostEffectReadPermit permit,
+                String id,Object authorization,BackgroundSession background,File directory,Cancellation cancel,
+                long deadline,long taskDeadline,ObservationCallback callback,PostEffectObservationRetryProof proof)throws Exception{
+            yes(host.postFixture&&controller==host&&nativeTask==host.activeNativeTask&&authorization==host.authorization
+                    &&background==host.activeNativeBackground,"post-effect synthetic observer receives exact private context");
+            permit.requireOwner(nativeTask,authorization,id,background.selection,background.generation,background.displayId());
+            long started=SystemClock.elapsedRealtime();
+            yes(deadline<=taskDeadline&&deadline<=permit.transitionDeadline()
+                    &&deadline<=ObservationStabilityGate.requestDeadline(started,taskDeadline),"read deadline cannot outlive any original cap");
+            if(proof==null){
+                postCalls++;host.events.add("post_effect_read_submitted");firstDeadline=deadline;firstCancellation=cancel;firstCallback=callback;
+                permit.admit(false);
+                if("timeout".equals(firstMode)){clock(deadline);return;}
+                clock(firstAt>=0?firstAt:Math.min(started+9827,deadline-1));
+                if("success".equals(firstMode)){callback.onObservation(postFresh());return;}
+                if("error".equals(firstMode)){callback.onError("original ordinary post-effect failure");return;}
+                if("legacy".equals(firstMode)){callback.onReadRetryAvailable("unrelated stale-action proof",mint(id,started,deadline));return;}
+                ObservationRequest request=new ObservationRequest();
+                request.taskId="task".equals(proofMutation)?NativeActionBridgeHost.id("foreign-post-task"):id;
+                request.requestId=NativeActionBridgeHost.id("synthetic-post-read:"+id);request.started=started;
+                request.deadline=deadline;request.failedAt=SystemClock.elapsedRealtime();request.taskReadOrdinal=2;
+                request.background="background".equals(proofMutation)?new BackgroundSession():background;
+                request.postEffectController="controller".equals(proofMutation)?new Object():controller;
+                request.postEffectNativeTask="native".equals(proofMutation)?host.fixture.session:nativeTask;
+                request.postEffectPermit="permit".equals(proofMutation)?null:permit;
+                request.readAuthorization="authorization".equals(proofMutation)?new Object():authorization;
+                request.postEffectTaskDeadline="deadline".equals(proofMutation)?taskDeadline+1:taskDeadline;
+                request.postEffectTransitionDeadline=permit.transitionDeadline();
+                request.postEffectIdentity=new NativeReadIdentity();
+                NativeAppEvidence.Frame frame=host.before.nativeFrame;
+                request.postEffectIdentity.packageName=frame.packageName;request.postEffectIdentity.generation=frame.generation;
+                request.postEffectIdentity.owner=frame.ownerSha;request.postEffectIdentity.windowId=frame.windowId;
+                request.postEffectIdentity.displayId=frame.displayId;
+                // The real proof constructor is deliberately exercised here with
+                // synthetic producer facts. Actual producer qualification/drain
+                // is tested independently by the original events gate.
+                postIssued=new PostEffectObservationRetryProof("service".equals(proofMutation)?new Object():this,request,SystemClock.elapsedRealtime());
+                if("consumed".equals(proofMutation))postIssued.consumed.set(true);
+                if(beforeFirstCallback!=null)beforeFirstCallback.run();
+                callback.onPostEffectReadRetryAvailable("synthetic sealed pair refused by final event fence",postIssued);
+                if(duplicateFirst)callback.onObservation(host.before);
+            }else{
+                postRetryCalls++;host.events.add("post_effect_replacement_submitted");retryDeadline=deadline;
+                retryCancellation=cancel;retryCallback=callback;
+                yes(host.nativeObservationRetryUsed&&host.written.containsKey(POST_INTENT),"shared noninitial budget and actual fsynced intent precede new read");
+                yes(firstCancellation!=cancel&&firstCancellation.isCancelled()&&!cancel.isCancelled(),"original request cancellation stays abandoned");
+                proof.requireOriginal(this,controller,nativeTask,permit,id,authorization,background,taskDeadline);
+                yes(proof.consumed.compareAndSet(false,true),"synthetic admission consumes actual opaque proof exactly once");
+                permit.admit(true);
+                if(beforeRetryCallback!=null)beforeRetryCallback.run();
+                if("timeout".equals(retryMode)){clock(deadline);return;}
+                clock(retryAt>=0?retryAt:Math.min(SystemClock.elapsedRealtime()+300,deadline-1));
+                if("error".equals(retryMode)){callback.onError("post-effect replacement still unstable");return;}
+                if("typed".equals(retryMode)){callback.onPostEffectReadRetryAvailable("second post-effect failure",postIssued);return;}
+                callback.onObservation(postFresh());if(duplicateRetry)callback.onError("late duplicate post-effect error");
+            }
+        }
         String observationTimeoutMessage(String id){return "original observation deadline reached";}
         void requireTaskAuthorization(String id,TaskAuthorization.Gate gate){yes(id.equals(host.currentTaskId)&&gate==host.authorization,"actual Gate identity binding");authorityChecks++;}
         void requireScopeObservation(String id,PhoneObservation value){yes(value==latest,"scope uses fresh observation");authorityChecks++;}
@@ -170,6 +290,7 @@ final class ControllerReadRetryHost {
     NativeAppSession activeNativeTask;WebFlightSession activeWebTask;BackgroundSession activeNativeBackground;
     String currentTaskId;boolean nativeObservationRetryUsed;
     boolean initialNativeObservationRetryUsed;InitialNativeObservation initialNativeObservation;
+    PostEffectNativeObservation postEffectNativeObservation;
     final Object handleLock=new Object();Object activeInference;
     final AtomicBoolean cancelled=new AtomicBoolean();
     final List<String> events=new ArrayList<String>(),messages=new ArrayList<String>();
@@ -188,11 +309,78 @@ final class ControllerReadRetryHost {
     void checkActive(long deadline)throws Exception{checkedTaskDeadlines.add(Long.valueOf(deadline));if(cancelled.get()||SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("original task stopped or expired");}
     void emit(String text){messages.add(text);if(onEmit!=null)onEmit.run();}
     void record(File dir,String name,JSONObject value)throws Exception{
-        boolean intent="native-observation-read-retry-01.json".equals(name)||"native-initial-observation-read-retry-01.json".equals(name);
+        boolean intent="native-observation-read-retry-01.json".equals(name)||"native-initial-observation-read-retry-01.json".equals(name)||POST_INTENT.equals(name);
         if(intent){events.add("intent_write_entered");if(failIntentBeforeWrite)throw new IOException("explicit host disk failure");}
         Disk.record(dir,name,value);written.put(name,value);
         if(intent){events.add("intent_synced");yes(Files.readAllBytes(new File(dir,name).toPath()).length>0,"actual fsynced intent bytes");if(afterDurableIntent!=null)afterDurableIntent.run();}
     }
+    static final String POST_INTENT="native-post-effect-observation-read-retry-01.json";
+    boolean postFixture,failPostOutcome;
+    long postFinished,postTransitionDeadline;
+    HeptaAccessibilityService.ActionOutcome postActionOutcome;
+    final List<String> postJournal=new ArrayList<String>();
+    ControllerReadRetryHost(String label,int postMarker)throws Exception{
+        if(postMarker!=1)throw new IllegalArgumentException("explicit post-effect fixture constructor");
+        fixture=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.OPEN,"post-controller:"+label);
+        // The old bridge already owns its own guard. Do not clear/reuse it: a new
+        // actual Session below gets its guard only from extracted awaitAction.
+        activeNativeBackground=new BackgroundSession();activeNativeBackground.generation=fixture.frame.generation;
+        activeNativeBackground.ownerSha256=fixture.frame.ownerSha;activeNativeBackground.display=fixture.frame.displayId;
+        activeNativeBackground.selection=new BackgroundSession.Selection(fixture.selection.executionTarget());
+        authorization=TaskAuthorization.parse(fixture.owner).forExecutionSelection(activeNativeBackground.selection).bind(fixture.task);
+        yes(authorization.authorization.sha256.equals(fixture.frame.authorizationSha),"same immutable selected goal has exact authorization digest");
+        before=new PhoneObservation(fixture.frame);currentTaskId=fixture.task;
+        Path path=outputRoot.resolve(String.format(Locale.ROOT,"case-%03d",++fixtureOrdinal));Files.createDirectory(path);directory=path.toFile();
+        service=new HeptaAccessibilityService(this);postFixture=true;
+        activeNativeTask=new NativeAppSession(fixture.task,authorization,activeNativeBackground.selection,fixture.session.installed,
+                fixture.session.selectionSha,fixture.frame.generation,fixture.frame.displayId,
+                ()->{if(!fixture.installedCurrent)throw new IllegalStateException("synthetic installed identity changed");},
+                (leaf,value)->{
+                    if(failPostOutcome&&leaf.startsWith("native-app-outcome-"))throw new IOException("explicit synthetic Session journal failure");
+                    record(directory,leaf,new JSONObject(value));postJournal.add(leaf);
+                });
+        activeNativeTask.observed(fixture.frame);
+        authorization.check(fixture.action,fixture.run);
+        activeNativeTask.beforeModelAction(1,fixture.action,fixture.run,SystemClock.elapsedRealtime());
+    }
+    HeptaAccessibilityService.ActionOutcome invokePostAction()throws Exception{
+        postActionOutcome=awaitAction(currentTaskId,before,fixture.action,null,null,authorization,fixture.run,SystemClock.elapsedRealtime()+480000);
+        return postActionOutcome;
+    }
+    void commitPostOutcome(Map<String,Object> projection)throws Exception{
+        yes(postActionOutcome!=null,"actual awaitAction must return before original Session outcome");
+        postFinished=SystemClock.elapsedRealtime();postTransitionDeadline=postFinished+15000;
+        JSONObject receipt=new JSONObject().put("synthetic_host_endpoint",true).put("accepted",postActionOutcome.accepted)
+                .put("dispatched",postActionOutcome.dispatched).put("stale",postActionOutcome.stale)
+                .put("action_execution",postActionOutcome.actionExecution);
+        record(directory,"step-01-action.json",receipt);
+        activeNativeTask.modelActionOutcome(fixture.action,fixture.run,postActionOutcome.accepted,postActionOutcome.dispatched,
+                postActionOutcome.stale,HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8)),
+                postFinished,projection);
+    }
+    void completePostAction()throws Exception{
+        invokePostAction();commitPostOutcome(nativeQueryExecution(postActionOutcome.actionExecution));
+    }
+    NativeAppSession.PostEffectReadPermit postPermit(){return activeNativeTask.postEffectReadPermit(fixture.action,fixture.run,before.id);}
+    PhoneObservation postCall(long deadline)throws Exception{
+        return awaitPostEffectNativeObservation(currentTaskId,directory,authorization,deadline,fixture.action,fixture.run,before);
+    }
+    static ControllerReadRetryHost postNew(String label)throws Exception{return new ControllerReadRetryHost(label,1);}
+    static ControllerReadRetryHost postReady(String label)throws Exception{
+        ControllerReadRetryHost f=postNew(label);f.completePostAction();return f;
+    }
+    void postNoRetry(String why){
+        yes(service.postRetryCalls==0,why);yes(service.performCalls==1,"read refusal cannot replay original synthetic effect");
+    }
+    void postNoIntent(String why){yes(!written.containsKey(POST_INTENT),why);}
+
+{{post_context}}
+{{post_failure}}
+{{post_require}}
+{{post_wrapper}}
+{{await_action}}
+{{native_query_execution}}
+{{cleanup_unknown}}
 {{retry_failure}}
 {{retry_wrapper}}
 {{initial_context}}
@@ -211,6 +399,7 @@ final class ControllerReadRetryHost {
     void noIntent(String reason){yes(!written.containsKey("native-observation-read-retry-01.json"),reason);}
     static ControllerReadRetryHost fresh(String name)throws Exception{return new ControllerReadRetryHost(name,true);}
     static void cases()throws Exception{
+        postEffectCases();
         initialCases();
         one("controller_actual_durable_permit_new_read_and_new_observation",()->{
             for(final boolean sealed:new boolean[]{false,true}){
@@ -387,6 +576,168 @@ final class ControllerReadRetryHost {
             yes(f.service.authorityChecks==4&&f.service.firstCancellation.isCancelled()&&f.service.retryCancellation.isCancelled(),"both request lifecycles retired");
         });
     }
+    static void postEffectCases()throws Exception{
+        one("post_effect_actual_await_finally_seals_closed_guard_and_durable_outcome_issues_once",()->{
+            ControllerReadRetryHost f=postNew("handoff");
+            yes(f.postPermit()==null,"no permit before actual action callback and durable outcome");
+            f.invokePostAction();
+            yes(Integer.valueOf(2).equals(f.service.lastGuard.evidence().get("state")),"real awaitAction finally has closed the claimed guard");
+            refused(()->f.service.lastGuard.requireClaimed(),"closed guard cannot enter another effect");
+            yes(f.postPermit()==null,"sealed callback alone is not a durable outcome");
+            f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution));
+            NativeAppSession.PostEffectReadPermit permit=f.postPermit();yes(permit!=null,"real Session consumes entered handoff after successful journal");
+            yes(permit.transitionDeadline()==f.postFinished+15000,"original outcome-relative transition deadline");
+            Map<String,Object> proof=permit.evidence();
+            yes(Boolean.TRUE.equals(proof.get("effect_entered"))&&Boolean.TRUE.equals(proof.get("worker_drained"))
+                    &&Boolean.FALSE.equals(proof.get("grants_action_authority"))&&Boolean.FALSE.equals(proof.get("business_verified")),"permit contains historical effect facts only");
+            refused(()->f.postPermit(),"one permit issuance per original pending navigation");
+            permit.admit(false);refused(()->permit.admit(false),"no repeated first admission");
+            permit.admit(true);refused(()->permit.admit(true),"no third admission");
+            yes(f.service.performCalls==1&&f.service.syntheticEffectEntries==1&&!f.service.pendingAction,"one explicitly synthetic drained effect");
+        });
+        one("post_effect_normal_close_erases_entered_receipt",()->{
+            ControllerReadRetryHost f=postNew("ordinary-close");f.invokePostAction();f.service.lastGuard.close();
+            f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution));
+            yes(f.postPermit()==null,"ordinary state2 plus plausible callback cannot replace private entered receipt");
+        });
+        one("post_effect_unclaimed_guard_cannot_be_relabelled_entered",()->{
+            ControllerReadRetryHost f=postNew("unclaimed");f.service.actionClaim=false;f.invokePostAction();
+            Map<String,Object> raw=nativeQueryExecution(f.postActionOutcome.actionExecution);
+            Map<String,Object> guard=new LinkedHashMap<String,Object>();for(Map.Entry<?,?> e:((Map<?,?>)raw.get("native_action_guard")).entrySet())guard.put((String)e.getKey(),e.getValue());
+            guard.put("state",1);raw.put("native_action_guard",guard);f.commitPostOutcome(raw);
+            yes(f.postPermit()==null,"JSON state1 cannot forge actual 1-to-2 handoff");
+        });
+        one("post_effect_changed_projection_after_finally_cannot_consume_seal",()->{
+            ControllerReadRetryHost f=postNew("projection");f.invokePostAction();
+            Map<String,Object> raw=nativeQueryExecution(f.postActionOutcome.actionExecution);raw.put("operation_id",NativeActionBridgeHost.id("different-actual-operation"));
+            f.commitPostOutcome(raw);yes(f.postPermit()==null,"same shape and state2 need exact originally sealed projection");
+        });
+        one("post_effect_cancellation_between_finally_and_outcome_revokes_receipt",()->{
+            ControllerReadRetryHost f=postNew("cancel-handoff");f.invokePostAction();f.cancelled.set(true);
+            f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution));yes(f.postPermit()==null,"same cancellation token revokes unconsumed seal");
+        });
+        one("post_effect_session_journal_failure_cannot_publish_permit",()->{
+            ControllerReadRetryHost f=postNew("outcome-disk");f.invokePostAction();f.failPostOutcome=true;
+            IntegrationChecks.ioRejects(()->f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution)),"actual Session outcome writer fails");
+            yes(f.postPermit()==null&&!f.postJournal.contains("native-app-outcome-01.json"),"failed journal leaves in-flight barrier and no permit");
+            refused(()->f.activeNativeTask.observed(f.service.postFresh().nativeFrame),"failed outcome cannot advance to another frame");
+        });
+        one("post_effect_undrained_action_has_no_normal_await_receipt",()->{
+            ControllerReadRetryHost f=postNew("undrained");f.service.actionDrain=false;
+            boolean unknown=false;try{f.invokePostAction();}catch(CleanupUnknown expected){unknown=true;}
+            yes(unknown&&f.cancelled.get()&&f.service.retireCalls==1,"real awaitAction refuses a callback while work remains pending");
+            yes(f.postPermit()==null&&f.service.postCalls==0,"no read authority after undrained effect");
+        });
+        one("post_effect_noncurrent_callback_cannot_issue_permit",()->{
+            ControllerReadRetryHost f=postNew("callback-current");f.service.actionCallbackCurrent=false;f.completePostAction();
+            yes(f.postPermit()==null,"actual state publication denial cannot become entered read permit");
+        });
+        one("post_effect_latest_sealed_failure_one_fsync_one_new_complete_frame",()->{
+            ControllerReadRetryHost f=postReady("fresh-positive");long deadline=SystemClock.elapsedRealtime()+480000;
+            PhoneObservation after=f.postCall(deadline);
+            yes(after==f.service.latest&&after!=f.before&&!after.id.equals(f.before.id),"new complete form frame returned");
+            yes(f.service.postCalls==1&&f.service.postRetryCalls==1&&f.service.observeCalls==0&&f.service.retryCalls==0,"separate post-effect route, no borrowed old stale-action route");
+            yes(f.service.performCalls==1&&f.service.syntheticEffectEntries==1,"new read never repeats navigation effect");
+            yes(f.nativeObservationRetryUsed&&!f.initialNativeObservationRetryUsed&&f.postEffectNativeObservation==null,"only shared noninitial budget consumed and context exited");
+            yes(f.service.firstCancellation.isCancelled()&&f.service.retryCancellation.isCancelled(),"both completed/abandoned request tokens remain retired");
+            yes(f.service.retryDeadline==f.postTransitionDeadline&&f.service.retryDeadline<f.service.firstDeadline+12000,"replacement clipped to original fifteen-second transition");
+            yes(f.service.authorityChecks==4,"fresh frame crosses all four original scope/authorization readback checks");
+            yes(f.events.indexOf("intent_synced")<f.events.indexOf("post_effect_replacement_submitted"),"actual create-new fsync precedes fresh submission");
+            JSONObject intent=f.written.get(POST_INTENT);
+            yes(intent.getLong("original_task_deadline_elapsed_ms")==deadline&&intent.getLong("original_transition_deadline_elapsed_ms")==f.postTransitionDeadline
+                    &&!intent.getBoolean("action_replayed")&&!intent.getBoolean("old_request_renewed")&&!intent.getBoolean("business_verified"),"durable record preserves separate old failure and fixed deadlines");
+            yes("failed".equals(intent.getJSONObject("failed_read_terminal").getString("failed_request_terminal_status")),"old failed request never promoted");
+            yes(NativeCtripFlightPage.FORM.equals(f.activeNativeTask.domain().phase)&&!f.activeNativeTask.domain().resultReady,"actual Session sees the new form, not business success");
+            yes(!f.activeNativeTask.domain().purposes.containsValue(NativeActionSnapshotCheck.QUERY),"opening form does not invent calendar year/query proof");
+            yes(f.activeNativeTask.postEffectReadPermit(f.fixture.action,f.fixture.run,f.before.id)==null,"new observation consumes pending navigation eligibility");
+        });
+        one("post_effect_ordinary_first_read_success_needs_no_retry",()->{
+            ControllerReadRetryHost f=postReady("direct-success");f.service.firstMode="success";
+            PhoneObservation after=f.postCall(SystemClock.elapsedRealtime()+480000);
+            yes(after==f.service.latest&&f.service.postCalls==1&&f.service.postRetryCalls==0&&!f.nativeObservationRetryUsed,"ordinary successful read retains original path");
+            f.postNoIntent("success produces no recovery intent");
+        });
+        for(String mode:Arrays.asList("error","legacy","timeout")){
+            final String value=mode;one("post_effect_unqualified_"+value+"_does_not_retry",()->{
+                ControllerReadRetryHost f=postReady("failure-"+value);f.service.firstMode=value;
+                refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"unqualified original callback remains failure");
+                f.postNoRetry("no second observation without proper private proof");f.postNoIntent("no durable intent for ordinary error/foreign proof/expired request");
+            });
+        }
+        one("post_effect_noninitial_once_already_spent_blocks_replacement",()->{
+            ControllerReadRetryHost f=postReady("shared-spent");f.nativeObservationRetryUsed=true;
+            refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"same shared budget cannot be reset by accepted action");
+            f.postNoRetry("prior stale-action recovery prevents another noninitial replacement");f.postNoIntent("spent budget no new intent");
+        });
+        for(String mutation:Arrays.asList("service","controller","native","permit","task","authorization","background","deadline","consumed")){
+            final String value=mutation;one("post_effect_private_proof_"+value+"_rejected",()->{
+                ControllerReadRetryHost f=postReady("proof-"+value);f.service.proofMutation=value;
+                refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"exact private producer binding required");
+                f.postNoRetry("foreign or reused proof cannot submit replacement");f.postNoIntent("identity rejection before durable intent");
+            });
+        }
+        for(String mutation:Arrays.asList("selection","generation","display","task","native","background","web","inference","action_pending","cancellation_pending","stop")){
+            final String value=mutation;one("post_effect_context_"+value+"_rejected_before_intent",()->{
+                ControllerReadRetryHost f=postReady("context-"+value);f.service.beforeFirstCallback=()->{
+                    if("selection".equals(value))f.activeNativeBackground.selection=new BackgroundSession.Selection(f.fixture.selection.executionTarget());
+                    else if("generation".equals(value))f.activeNativeBackground.generation="12345678-1234-4234-8234-123456789abd";
+                    else if("display".equals(value))f.activeNativeBackground.display++;
+                    else if("task".equals(value))f.currentTaskId=NativeActionBridgeHost.id("other-current-task");
+                    else if("native".equals(value))f.activeNativeTask=f.fixture.session;
+                    else if("background".equals(value))f.activeNativeBackground=new BackgroundSession();
+                    else if("web".equals(value))f.activeWebTask=new WebFlightSession();
+                    else if("inference".equals(value))f.activeInference=new Object();
+                    else if("action_pending".equals(value))f.service.pendingAction=true;
+                    else if("cancellation_pending".equals(value))f.service.pendingCancellation=true;
+                    else f.cancelled.set(true);
+                };
+                refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"current private context must survive producer delivery");
+                f.postNoRetry("context change cannot start fresh read");f.postNoIntent("context mismatch before fsync");
+            });
+        }
+        one("post_effect_retry_intent_io_failure_consumes_budget_without_submission",()->{
+            ControllerReadRetryHost f=postReady("intent-disk");f.failIntentBeforeWrite=true;
+            IntegrationChecks.ioRejects(()->f.postCall(SystemClock.elapsedRealtime()+480000),"original fsync-intent boundary rejects actual IO failure");
+            yes(f.nativeObservationRetryUsed,"failed fsync does not refund once budget");f.postNoRetry("no request after intent write failure");f.postNoIntent("no success intent recorded");
+        });
+        one("post_effect_stop_after_fsync_prevents_new_read",()->{
+            ControllerReadRetryHost f=postReady("stop-after-intent");f.afterDurableIntent=()->f.cancelled.set(true);
+            refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"post-fsync stop wins");
+            yes(f.nativeObservationRetryUsed&&f.written.containsKey(POST_INTENT),"durable old failure remains");f.postNoRetry("no submission after stop");
+        });
+        one("post_effect_original_task_deadline_clips_both_reads",()->{
+            ControllerReadRetryHost f=postReady("task-cap");long deadline=SystemClock.elapsedRealtime()+10500;
+            PhoneObservation value=f.postCall(deadline);yes(value==f.service.latest&&f.service.firstDeadline==deadline&&f.service.retryDeadline==deadline,"same earlier task cap retained");
+            yes(SystemClock.elapsedRealtime()<deadline&&f.service.performCalls==1,"bounded new read and no repeated effect");
+        });
+        one("post_effect_late_first_callback_cannot_create_new_budget",()->{
+            ControllerReadRetryHost f=postReady("old-cutoff");long start=SystemClock.elapsedRealtime();f.service.firstAt=start+12000;
+            refused(()->f.postCall(start+480000),"old request deadline still checked before callback consumption");
+            f.postNoRetry("late old callback cannot renew request");f.postNoIntent("expired callback no intent");
+        });
+        one("post_effect_new_callback_at_transition_deadline_cannot_publish",()->{
+            ControllerReadRetryHost f=postReady("new-cutoff");f.service.retryAt=f.postTransitionDeadline;
+            refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"new callback at original fifteen seconds refused");
+            yes(f.service.postRetryCalls==1&&f.service.authorityChecks==0&&f.service.performCalls==1,"late new frame gets no fresh-scope acceptance");
+        });
+        for(String mode:Arrays.asList("error","typed","timeout")){
+            final String value=mode;one("post_effect_second_"+value+"_never_creates_third_read",()->{
+                ControllerReadRetryHost f=postReady("replacement-"+value);f.service.retryMode=value;
+                refused(()->f.postCall(SystemClock.elapsedRealtime()+480000),"replacement failure remains failure");
+                yes(f.service.postCalls==1&&f.service.postRetryCalls==1&&f.service.performCalls==1&&f.nativeObservationRetryUsed,"finite reads and one original effect");
+            });
+        }
+        one("post_effect_callback_default_remains_error_only",()->{
+            final List<String> errors=new ArrayList<String>();
+            HeptaAccessibilityService.ObservationCallback old=new HeptaAccessibilityService.ObservationCallback(){
+                public void onObservation(PhoneObservation value){throw new AssertionError("no observation expected");}
+                public void onError(String error){errors.add(error);}
+            };
+            old.onPostEffectReadRetryAvailable("unhandled private read failure",null);
+            yes(errors.equals(Collections.singletonList("unhandled private read failure")),"old consumer default never grants recovery");
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         NativeActionBridgeHost.sourceRoot=Paths.get(args[0]);NativeAppProviderHostTest.fixtures=NativeActionBridgeHost.sourceRoot.resolve("tests/native-app-provider/fixtures");
         outputRoot=Paths.get(args[2]);Files.createDirectory(outputRoot);cases();

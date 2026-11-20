@@ -63,6 +63,28 @@ public final class ObserverPipelineHost {
     static final class LocalTaskController {
         boolean running;boolean isRunning(){return running;}String currentTaskId(){return "task-one";}
     }
+    /** Explicit Session IO carrier for observer-only tests. This is not an entered
+     * action receipt; the separate Controller consumer gate runs the real Session. */
+    static final class NativeAppSession {
+        static final class PostEffectReadPermit {
+            final NativeAppSession owner;final Object authorization,selection;final String task,generation;
+            final int display;final long transition;final AtomicInteger admissions=new AtomicInteger();boolean valid=true;
+            PostEffectReadPermit(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display,long transition){
+                this.owner=owner;this.authorization=authorization;this.task=task;this.selection=selection;
+                this.generation=generation;this.display=display;this.transition=transition;
+            }
+            void requireCurrent(){if(!valid)throw new IllegalStateException("synthetic Session transition ended");}
+            long transitionDeadline(){requireCurrent();return transition;}
+            void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display){
+                requireCurrent();if(this.owner!=owner||this.authorization!=authorization||!this.task.equals(task)
+                        ||this.selection!=selection||!this.generation.equals(generation)||this.display!=display)
+                    throw new IllegalStateException("synthetic Session IO binding changed");
+            }
+            void admit(boolean retry){requireCurrent();if(!admissions.compareAndSet(retry?1:0,retry?2:1))
+                throw new IllegalStateException("synthetic Session admission consumed");}
+            boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}
+        }
+    }
     static final class Looper {
         static Thread myLooper(){return Thread.currentThread();}static Thread getMainLooper(){return mainThread;}
     }

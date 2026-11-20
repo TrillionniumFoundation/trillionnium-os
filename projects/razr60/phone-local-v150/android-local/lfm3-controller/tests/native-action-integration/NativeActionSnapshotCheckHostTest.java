@@ -74,7 +74,38 @@ public final class NativeActionSnapshotCheckHostTest {
         f.add("0/0/1","android.widget.ImageView","com.xiaomi.shop.plugin.homepage:id/searchIcon","","搜索",rect(1000,290,1156,372));f.click("0/0/1");
         f.add("0/1","android.widget.LinearLayout","","","",rect(0,2800,1224,2992));f.add("0/1/0","android.widget.TextView","com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页","",rect(0,2800,200,2992));f.nodes.get("0/1/0").put("selected",true);
         f.add("0/2","android.widget.LinearLayout","","","",rect(0,400,1224,2700));f.add("0/2/0","android.widget.TextView","","推荐A","",rect(0,600,1224,800));
-        f.target="0/0/0";f.label="搜索洗衣机 · 洗衣机";f.link();return f;
+        f.target="0/0/0";f.label="搜索洗衣机 · 洗衣机";f.link();bindSyntheticHint(f);return f;
+    }
+    /** Synthetic complete rows use the actual pure child-text producer. They
+     * are not Android NodeRefs or an installed/current-action authority. */
+    private static void bindSyntheticHint(final Fixture f){
+        for(final String path:Arrays.asList("0/0/0","0/0/0/0","0/0/0/0/0")){
+            final Map<String,Object> root=f.nodes.get(path);
+            ObservedChildText.Result child=ObservedChildText.collect(root,new ObservedChildText.Reader<Map<String,Object>>(){
+                public ObservedChildText.Metadata metadata(Map<String,Object> n){
+                    boolean click=(Boolean)n.get("clickable"),action=(Boolean)n.get("action_click"),input=(Boolean)n.get("editable");
+                    return new ObservedChildText.Metadata((Boolean)n.get("visible"),true,click,action,input,(Boolean)n.get("password"),
+                            click||action||input||(Boolean)n.get("scrollable")||(Boolean)n.get("checkable"));
+                }
+                public String text(Map<String,Object> n){return (String)n.get("text");}
+                public String description(Map<String,Object> n){return (String)n.get("description");}
+                public String identity(Map<String,Object> n){return syntheticHintBase(n);}
+                public String viewId(Map<String,Object> n){return (String)n.get("view_id");}
+                public int childCount(Map<String,Object> n){return (Integer)n.get("children");}
+                public Map<String,Object> child(Map<String,Object> n,int i){return f.nodes.get(n.get("path")+"/"+i);}
+                public void release(Map<String,Object> n){}
+            });
+            String own=(String)root.get("text"),desc=(String)root.get("description");
+            root.put("label",ObservedTargetLabels.project(!own.isEmpty()?own:!desc.isEmpty()?desc:child.text));
+            root.put("ref_signature_sha256",NativeActionSnapshotCheck.hash(child.bind(syntheticHintBase(root))
+                    +"\nscroll_actions="+root.get("scroll_actions")+"\nime_enter="+root.get("ime_enter")
+                    +"|focused="+root.get("focused")+"|full_input="+root.get("input_sha256")));
+        }
+    }
+    private static String syntheticHintBase(Map<String,Object> n){
+        List<?> r=(List<?>)n.get("bounds");String rect="Rect("+r.get(0)+", "+r.get(1)+" - "+r.get(2)+", "+r.get(3)+")";
+        return NativeActionSnapshotCheck.hash(n.get("package")+"\u0001"+n.get("window_id")+"\u0001"+n.get("class")+"\u0001"+n.get("view_id")+"\u0001"+rect+"\u0001"
+                +n.get("text")+"\u0001"+n.get("description")+"\u0001"+n.get("enabled")+"|"+n.get("clickable")+"|"+n.get("editable")+"|"+n.get("scrollable"));
     }
     static Fixture fresh(Fixture f){Fixture x=f.copy();x.env.put("captured_elapsed_ms",300L);return x;}
     static Map<String,Object> compare(Fixture old,Fixture fresh){return NativeActionSnapshotCheck.compare(old.intent(),old.snapshot(),fresh.snapshot(),400L);}

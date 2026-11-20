@@ -1,7 +1,7 @@
     static Fixture setup(String purpose,String name)throws Exception{NativeActionBridgeHost h=new NativeActionBridgeHost();return h.new Fixture(purpose,name);}
     static void run(java.nio.file.Path source)throws Exception{
         sourceRoot=source;
-        for(String purpose:Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH_ICON)){
+        for(String purpose:Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH)){
             final String p=purpose;
             one("actual_bridge_accepts_complete_disjoint_change_"+p,()->{
                 Fixture f=setup(p,"positive:"+p);f.neutralText();yes(f.dispatch(),"same purpose through actual validate/final/click blocks");
@@ -173,37 +173,140 @@
         hint.put("description","搜索"+term);hint.put("label","搜索"+term);text.put("text",term);text.put("label",term);
     }
     static IconCensus iconCensus(String name,String term)throws Exception{
-        Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-census:"+name);
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-census:"+name);
         if(term!=null)rotateIconHint(f,term);
         Graph fresh=f.graph(f.fresh,f.work.budget());
-        try{return new IconCensus(f.work.nativeGuard.intent(f.work.graph.refs.get(f.action.nodeId).signature),
-                nativeActionSnapshot(f.work.graph,f.work.nativeGuard),nativeActionSnapshot(fresh,f.work.nativeGuard),SystemClock.now);}
+        try{return retainedIconPredicate(f,fresh); }
         finally{fresh.close();}
     }
+    /** The retired icon parser/predicate remains tested as detached data only.
+     * No private icon Attempt is fabricated; current Session admits SEARCH. */
+    private static IconCensus retainedIconPredicate(Fixture f,Graph fresh){
+        NativeActionSnapshotCheck.Snapshot a=nativeActionSnapshot(f.work.graph,f.work.nativeGuard),z=nativeActionSnapshot(fresh,f.work.nativeGuard);
+        NativeActionSnapshotCheck.Node icon=a.node("0/0/1");
+        NativeActionSnapshotCheck.Intent i=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH_ICON,icon.pkg,icon.path,icon.label,
+                (String)icon.v.get("ref_signature_sha256"),f.run,f.ids.get(icon.path),hash("HOST_PURE_ICON_INTENT_NOT_A_PRIVATE_ATTEMPT"),null,
+                f.work.nativeGuard.identity,f.work.nativeGuard.issued,f.work.nativeGuard.deadline);
+        return new IconCensus(i,a,z,SystemClock.now);
+    }
     static void stableIconLiveCases()throws Exception{
-        one("stable_icon_actual_service_keeps_original_node_and_one_effect",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-live");
-            yes("com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(f.frame.byId.get(f.action.nodeId).viewId),"production default selects actual icon");
+        one("search_entry_actual_service_keeps_original_node_and_one_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-live");
+            yes("com.xiaomi.shop.plugin.homepage:id/switcher".equals(f.frame.byId.get(f.action.nodeId).viewId),"production default selects actual query entry");
             NodeRef original=f.work.graph.refs.get(f.action.nodeId);rotateIconHint(f,"REDMI K系列电池换新");
             yes(f.dispatch()&&f.effects()==1,"complete compare, live chain and one explicit host effect");
             yes(f.work.graph.refs.get(f.action.nodeId)==original&&f.work.nativeActionRevalidated,"original retained ref, not a replacement target");
-            yes(f.data.get("0/0/0").effects==0,"switcher never receives fallback effect");
+            yes(f.data.get("0/0/1").effects==0,"adjacent icon never receives a fallback effect");
         });
-        one("stable_icon_final_scope_io_revalidates_rotated_hint",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-final");rotateIconHint(f,"充电宝");
+        one("search_entry_final_scope_io_revalidates_rotated_hint",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-final");rotateIconHint(f,"充电宝");
             f.service.scopeMutation=()->rotateIconHint(f,"电视");
             yes(f.dispatch()&&f.effects()==1,"second full census keeps only classified hint rotation");
         });
-        one("stable_icon_actual_node_replacement_refused",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-replaced");rotateIconHint(f,"电视");
+        one("search_entry_actual_node_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-replaced");rotateIconHint(f,"电视");
             f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
             yes(!f.dispatch(),"same fields do not replace original actual node");f.noEffect("replaced icon not entered");
         });
-        one("stable_icon_installed_uid_or_apk_replacement_refused",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-install");rotateIconHint(f,"电视");f.installedCurrent=false;
+        one("search_entry_installed_uid_or_apk_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-install");rotateIconHint(f,"电视");f.installedCurrent=false;
             IntegrationChecks.rejects(()->f.dispatch(),"same original installed verifier remains required");f.noEffect("no effect after PM replacement");
         });
         stableIconWidthCases();
+        currentSearchEntryCases();
+    }
+
+    /** Full production precheck/validate/selected refresh/final/effect bodies;
+     * all Android nodes, clocks and actual action endpoints are host doubles. */
+    static void installLiveHint(Fixture f){
+        for(String p:Arrays.asList("0/0/0","0/0/0/0","0/0/0/0/0")){
+            NodeData d=f.data.get(p);d.values.clear();d.values.putAll(f.fresh.nodes.get(p));
+        }
+    }
+    static void currentSearchEntryCases()throws Exception{
+        one("search_entry_purpose_cannot_alias_adjacent_icon",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-wrong-icon");
+            NativeActionSnapshotCheck.Snapshot before=nativeActionSnapshot(f.work.graph,f.work.nativeGuard);
+            NativeActionSnapshotCheck.Node icon=before.node("0/0/1");
+            NativeActionSnapshotCheck.Intent wrong=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH,icon.pkg,icon.path,icon.label,
+                    (String)icon.v.get("ref_signature_sha256"),f.run,f.ids.get(icon.path),hash("HOST_DETACHED_WRONG_ENTRY_INTENT"),null,
+                    f.work.nativeGuard.identity,f.work.nativeGuard.issued,f.work.nativeGuard.deadline);
+            yes(!NativeActionSnapshotCheck.searchEntryOwnFactsForFullRecheck(wrong,before,icon),"a SEARCH label does not make the adjacent icon a query entry");
+            IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(wrong,before,before,SystemClock.now),"complete purpose structure still rejects the icon");
+            f.noEffect("detached malformed purpose has no private effect permit");
+        });
+        one("search_entry_original_precheck_defers_only_to_full_currentness",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-precheck");
+            NodeRef original=f.work.graph.refs.get(f.action.nodeId);String signature=original.signature,label=f.action.nodeLabel;
+            rotateIconHint(f,"REDMI K100");iconTermBounds(f,156,301,410,360);installLiveHint(f);
+            f.service.exerciseBackgroundPrecheck=true;
+            f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,original.node,true,f.work);
+            yes(f.work.nativeActionProof==null&&Integer.valueOf(0).equals(f.work.nativeGuard.evidence().get("state")),"precheck creates no compatible census or claim");
+            f.noEffect("precheck cannot effect");
+            yes(!signature.equals(nodeSignature(original.node,observedChildText(original.node,true,f.work.budget()))),"real derived signature changed before read-only precheck");
+            yes(f.dispatch()&&f.effects()==1,"actual precheck, two full comparisons and final fresh signature reach one host endpoint");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"both whole censuses are mandatory");
+            yes(f.work.graph.refs.get(f.action.nodeId)==original&&signature.equals(original.signature)&&label.equals(f.action.nodeLabel),"no original reference, model label or signature replaced");
+            yes(f.data.get("0/0/1").effects==0&&!f.session.domain().resultReady,"icon and business completion untouched");
+        });
+        one("search_entry_equal_digest_still_requires_final_full_census_and_claim",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-equal");f.service.exerciseBackgroundPrecheck=true;
+            yes(f.dispatch()&&f.effects()==1,"equal initial graph may perform one guarded navigation");
+            yes(!f.work.nativeActionRevalidated&&Collections.frequency(f.service.events,"full_census")==2,"final compare is forced even when validate had no digest mismatch");
+            yes(f.work.nativeActionProof!=null&&Integer.valueOf(1).equals(f.work.nativeGuard.evidence().get("state")),"full proof precedes single claim");
+            IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"no second claim on equal graph");yes(f.effects()==1,"one effect only");
+        });
+        one("search_entry_last_hint_rotation_after_final_census_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-last-hint");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.afterFinalCensus=()->{rotateIconHint(f,"充电宝");iconTermBounds(f,156,301,250,360);installLiveHint(f);};
+            IntegrationChecks.rejects(()->f.dispatch(),"latest full signature changes again before effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"failure is after the final complete census");f.noEffect("late hint is not silently current");
+        });
+        one("search_entry_final_policy_uses_latest_verified_child_text",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-final-policy");rotateIconHint(f,"电视");
+            f.service.scopeMutation=()->rotateIconHint(f,"删除所有数据");
+            IntegrationChecks.rejects(()->f.dispatch(),"latest prohibited child text must still pass original PersistentActionPolicy");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"policy recheck follows final complete comparison");f.noEffect("read-only projection is not a persistent-deletion exception");
+        });
+        one("search_entry_precheck_never_accepts_replaced_same_path_node",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-replaced");NodeRef ref=f.work.graph.refs.get(f.action.nodeId);
+            rotateIconHint(f,"电视");installLiveHint(f);AccessibilityNodeInfo replacement=new AccessibilityNodeInfo(new NodeData(f.data.get(f.raw.target).values));
+            try{IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,replacement,true,f.work),"same path metadata cannot replace original object");}
+            finally{replacement.recycle();}yes(ref==f.work.graph.refs.get(f.action.nodeId),"original ref retained");f.noEffect("replacement refused before full compare");
+        });
+        one("search_entry_wrong_own_resource_or_capability_never_defers",()->{
+            for(String field:Arrays.asList("view_id","class","bounds","enabled","clickable","action_click","focused","selected","editable")){
+                Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-own-"+field);rotateIconHint(f,"电视");
+                Map<String,Object> row=f.fresh.nodes.get(f.raw.target);
+                if("view_id".equals(field))row.put(field,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
+                else if("class".equals(field))row.put(field,"android.widget.ImageView");
+                else if("bounds".equals(field))row.put(field,Arrays.asList(156,287,999,375));
+                else row.put(field,!(Boolean)row.get(field));
+                installLiveHint(f);NodeRef ref=f.work.graph.refs.get(f.action.nodeId);
+                IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,ref.node,true,f.work),"own target "+field+" remains exact");f.noEffect("no own-fact deferral");
+            }
+        });
+        one("search_entry_qualification_scope_has_no_signature_exception",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-qualified");rotateIconHint(f,"电视");installLiveHint(f);f.service.scope.config=new Object();
+            IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work),"explicit qualification scope keeps original full signature");f.noEffect("no wider scope permission");
+        });
+        one("search_entry_deferral_does_not_classify_new_interactive_hint",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-new-interactive");rotateIconHint(f,"电视");
+            f.fresh.nodes.get("0/0/0/0/0").put("clickable",true);f.fresh.nodes.get("0/0/0/0/0").put("action_click",true);installLiveHint(f);
+            f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work);
+            yes(!f.dispatch(),"full fresh census rejects new actionable descendant");f.noEffect("precheck was not a successful full comparison");
+        });
+        one("search_entry_final_complete_census_cannot_be_missing",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-no-final");rotateIconHint(f,"电视");
+            f.service.scopeMutation=()->{f.service.serviceInfo.flags=0;};
+            IntegrationChecks.rejects(()->f.dispatch(),"final full census is mandatory");f.noEffect("no missing-census exception");
+        });
+        one("search_entry_original_8s_and_cancellation_apply_before_deferral",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-deadline");rotateIconHint(f,"电视");installLiveHint(f);SystemClock.now=f.work.state.deadlineElapsed;
+            IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work),"deadline exclusive before precheck");f.noEffect("expired guard cannot defer");
+            Fixture z=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-cancel");rotateIconHint(z,"电视");installLiveHint(z);z.service.cancelled=true;
+            IntegrationChecks.rejects(()->z.service.backgroundBeforeDispatch(z.task,z.service.current,z.action,z.work.graph.refs.get(z.action.nodeId).node,true,z.work),"cancel before deferral");z.noEffect("cancelled guard cannot defer");
+        });
     }
 
     /** Synthetic Android endpoints only. Every census/ref below is rebuilt by
@@ -213,11 +316,10 @@
         f.fresh.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(left,top,right,bottom));
     }
     static IconCensus iconWidthCensus(String name,String term,IconWidthMutation mutation)throws Exception{
-        Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-width:"+name);
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-width:"+name);
         if(term!=null)rotateIconHint(f,term);mutation.change(f);
         Graph fresh=f.graph(f.fresh,f.work.budget());
-        try{return new IconCensus(f.work.nativeGuard.intent(f.work.graph.refs.get(f.action.nodeId).signature),
-                nativeActionSnapshot(f.work.graph,f.work.nativeGuard),nativeActionSnapshot(fresh,f.work.nativeGuard),SystemClock.now);}
+        try{return retainedIconPredicate(f,fresh); }
         finally{fresh.close();}
     }
     static Map<String,Object> compareIconWidth(IconCensus c){
@@ -275,23 +377,25 @@
         widthRejected("new_semantic_role","Xiaomi路由器AX3000T",f->iconTermBounds(f,156,301,536,360));
         widthRejected("target_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/1").put("bounds",Arrays.asList(1001,290,1156,372));});
         widthRejected("ancestor_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0").put("bounds",Arrays.asList(0,1,1224,400));});
-        one("stable_icon_bounded_width_does_not_extend_legacy_switcher_intent",()->{
+        one("search_entry_bounded_hint_is_detached_comparison_not_authority",()->{
             IconCensus c=iconWidthCensus("legacy-switcher","电视",f->iconTermBounds(f,156,301,536,360));
             NativeActionSnapshotCheck.Intent i=c.intent;NativeActionSnapshotCheck.Node entry=c.before.node("0/0/0");
             NativeActionSnapshotCheck.Intent legacy=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH,i.pkg,entry.path,entry.label,
                     (String)entry.v.get("ref_signature_sha256"),i.run,i.node,i.actionSha,i.historySha,i.identity,i.started,i.deadline);
-            IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(legacy,c.before,c.fresh,c.now),"legacy switcher purpose keeps its original complete-target equality");
+            Map<String,Object> proof=NativeActionSnapshotCheck.compare(legacy,c.before,c.fresh,c.now);
+            yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.TRUE.equals(proof.get("search_entry_original_reference_retained_fresh_signature_required")),
+                    "same bound entry may classify the hint but still needs its private original node and final live signature");
         });
-        one("stable_icon_width_passes_both_real_service_comparisons_before_one_host_effect",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-live");NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+        one("search_entry_width_passes_both_real_service_comparisons_before_one_host_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-live");NodeRef original=f.work.graph.refs.get(f.action.nodeId);
             long deadline=f.work.state.deadlineElapsed;rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
             f.service.scopeMutation=()->{rotateIconHint(f,"充电宝");iconTermBounds(f,156,301,250,360);};
             yes(f.dispatch()&&f.effects()==1,"fresh first and final complete census allow one explicit host effect");
             yes(Collections.frequency(f.service.events,"full_census")==2&&f.work.graph.refs.get(f.action.nodeId)==original,"both original whole-census passes and original retained target remain");
             yes(f.work.state.deadlineElapsed==deadline&&new JSONObject(f.work.nativeActionProof).getBoolean("final_complete_census_compared"),"original deadline and final comparison remain required");
         });
-        one("stable_icon_width_final_same_literal_compares_before_exactly_one_guarded_effect",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-final-same");iconTermBounds(f,156,301,536,360);rotateIconHint(f,"电视");
+        one("search_entry_width_final_same_literal_compares_before_exactly_one_guarded_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-final-same");iconTermBounds(f,156,301,536,360);rotateIconHint(f,"电视");
             NodeRef original=f.work.graph.refs.get(f.action.nodeId);long deadline=f.work.state.deadlineElapsed;
             Map<String,Object> identity=new TreeMap<String,Object>(f.work.nativeGuard.intent(original.signature).identity);
             f.service.scopeMutation=()->{rotateIconHint(f,"洗衣机");iconTermBounds(f,156,301,536,360);};
@@ -301,24 +405,24 @@
             yes(f.work.state.deadlineElapsed==deadline&&f.work.nativeGuard.intent(original.signature).identity.equals(identity),"original deadline, owner, window, task and lease identity remain unchanged");
             JSONObject proof=new JSONObject(f.work.nativeActionProof);
             yes(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("reported_windows_before_after_equal"),"final complete census and window equality proof remain required");
-            yes(f.data.get("0/0/0").effects==0,"hint entry never substitutes for the original search icon");
+            yes(f.data.get("0/0/1").effects==0,"adjacent icon never substitutes for the original search entry");
             IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"same action claim cannot enter an effect twice");yes(f.effects()==1,"no second effect");
         });
-        one("stable_icon_width_final_other_edge_refuses_effect",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-final-top");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+        one("search_entry_width_final_other_edge_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-final-top");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
             f.service.scopeMutation=()->iconTermBounds(f,156,302,536,360);
             IntegrationChecks.rejects(()->f.dispatch(),"final whole census retains top geometry");f.noEffect("final top refusal has no effect");
         });
-        one("stable_icon_width_does_not_extend_deadline_or_override_cancel",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-deadline");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+        one("search_entry_width_does_not_extend_deadline_or_override_cancel",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-deadline");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
             f.service.scopeMutation=()->{SystemClock.now=f.work.state.deadlineElapsed;};
             IntegrationChecks.rejects(()->f.dispatch(),"same original 8s deadline applies");f.noEffect("expired action has no effect");
-            Fixture z=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-cancel");rotateIconHint(z,"电视");iconTermBounds(z,156,301,536,360);
+            Fixture z=setup(NativeActionSnapshotCheck.SEARCH,"width-cancel");rotateIconHint(z,"电视");iconTermBounds(z,156,301,536,360);
             z.service.scopeMutation=()->{z.service.cancelled=true;};
             IntegrationChecks.rejects(()->z.dispatch(),"cancellation still wins before original effect claim");z.noEffect("cancelled action has no effect");
         });
-        one("stable_icon_width_does_not_replace_original_live_node",()->{
-            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-node");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+        one("search_entry_width_does_not_replace_original_live_node",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-node");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
             f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
             yes(!f.dispatch(),"equal-looking new icon cannot replace original live reference");f.noEffect("replacement node has no effect");
         });

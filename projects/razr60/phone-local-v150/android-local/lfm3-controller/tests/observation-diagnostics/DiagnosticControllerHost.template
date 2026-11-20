@@ -20,9 +20,11 @@ final class DiagnosticControllerHost {
         interface Cancellation {boolean isCancelled();}
         static final class NativeObservationRetryProof {}
         static final class InitialObservationRetryProof {}
+        static final class PostEffectObservationRetryProof {}
         interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){}
             default void onReadRetryAvailable(String e,NativeObservationRetryProof proof){onError(e);}
-            default void onInitialReadRetryAvailable(String e,InitialObservationRetryProof proof){onError(e);}}
+            default void onInitialReadRetryAvailable(String e,InitialObservationRetryProof proof){onError(e);}
+            default void onPostEffectReadRetryAvailable(String e,PostEffectObservationRetryProof proof){onError(e);}}
         String mutation,originalError;boolean omitDiagnostic,throwDiagnostic,timeout;int observeCalls,remoteChecks,authorityChecks,snapshotCalls;PhoneObservation value=new PhoneObservation();
         Callable<String> lastSnapshot;ObservationCallback callback;Cancellation cancellation;
         long observedDeadline,callbackAt=-1;boolean duplicateCallback;
@@ -51,6 +53,10 @@ final class DiagnosticControllerHost {
                 Cancellation cancel,long deadline,long taskDeadline,ObservationCallback cb,InitialObservationRetryProof proof){
             throw new AssertionError("original diagnostic cases must not enter initial native mode");
         }
+        void observePostEffectNative(Object controller,Object nativeTask,PostPermit permit,String id,Object auth,BackgroundSession background,File dir,
+                Cancellation cancel,long deadline,long taskDeadline,ObservationCallback cb,PostEffectObservationRetryProof proof){
+            throw new AssertionError("original diagnostic cases must not enter post-effect native mode");
+        }
         void requireTaskAuthorization(String id,TaskAuthorization.Gate g){authorityChecks++;}
         void requireScopeObservation(String id,PhoneObservation o){authorityChecks++;}
         void requireBackgroundObservation(String id,PhoneObservation o){authorityChecks++;}
@@ -63,6 +69,11 @@ final class DiagnosticControllerHost {
     // These diagnostic cases never enable the separate initial-native entry.
     static final class InitialNativeObservation {Object nativeTask;BackgroundSession background;HeptaAccessibilityService.InitialObservationRetryProof retryProof;}
     InitialNativeObservation initialNativeObservation;
+    static final class PostPermit {long transitionDeadline(){throw new AssertionError("diagnostic fixture has no post-effect permit");}}
+    static final class PostEffectNativeObservation {Object nativeTask;PostPermit permit;BackgroundSession background;HeptaAccessibilityService.PostEffectObservationRetryProof retryProof;}
+    PostEffectNativeObservation postEffectNativeObservation;
+    void requirePostEffectNativeObservation(PostEffectNativeObservation expected,String id,TaskAuthorization.Gate auth,long deadline){throw new AssertionError("post-effect mode not enabled by diagnostic fixtures");}
+
     void requireInitialNativeObservation(InitialNativeObservation expected,String id,TaskAuthorization.Gate auth,long deadline){throw new AssertionError("initial mode not enabled by diagnostic fixtures");}
     void checkActive(long deadline){if(cancelled.get()||SystemClock.now>=deadline)throw new IllegalStateException("original task stopped");}
     void record(File dir,String name,JSONObject body)throws Exception{if(name.startsWith("observation-diagnostic-"))throw new AssertionError("diagnostic must use existing result only");written.put(name,body);}
@@ -70,6 +81,7 @@ final class DiagnosticControllerHost {
 {{await_observation_request}}
 {{read_retry_failure}}
 {{initial_read_failure}}
+{{post_effect_read_failure}}
 {{take_diagnostics}}
     static DiagnosticControllerHost fresh(){SystemClock.now=1000;ObserverPipelineHost.SystemClock.now=1000;return new DiagnosticControllerHost();}
     PhoneObservation call()throws Exception{return call(21000);}

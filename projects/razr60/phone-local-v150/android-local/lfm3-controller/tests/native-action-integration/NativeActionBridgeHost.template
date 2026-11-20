@@ -73,6 +73,7 @@ final class NativeActionBridgeHost {
         boolean isClickable(){return b("clickable");}boolean isEditable(){return b("editable");}boolean isScrollable(){return b("scrollable");}
         boolean isFocused(){return b("focused");}boolean isSelected(){return b("selected");}boolean isCheckable(){return b("checkable");}boolean isChecked(){return b("checked");}
         int getChildCount(){return ((Integer)value("children")).intValue();}
+        AccessibilityWindowInfo getWindow(){AccessibilityWindowInfo w=new AccessibilityWindowInfo();w.id=getWindowId();return w;}
         int getInputType(){return 0;}boolean isLongClickable(){return false;}
         AccessibilityNodeInfo getChild(int index){if(index<0||index>=data.children.size()||data.children.get(index)==null)return null;return new AccessibilityNodeInfo(data.children.get(index));}
         void getBoundsInScreen(Rect b){List<?> r=(List<?>)value("bounds");b.left=(Integer)r.get(0);b.top=(Integer)r.get(1);b.right=(Integer)r.get(2);b.bottom=(Integer)r.get(3);}
@@ -101,6 +102,7 @@ final class NativeActionBridgeHost {
         org.trillionnium.hepta.local.BackgroundSession.Selection selection;
         BackgroundSession(NativeActionBridgeHost owner){fixtureOwner=owner;}
         int displayId(){return display;}
+        boolean allows(String pkg){return selection!=null&&selection.taskTarget.packageName.equals(pkg);}
         // These existing user0 action cases model only the legacy lock policy.
         // No synthetic RPC or display-scope proof may admit an independent mode.
         private void requireLegacyOnly(){
@@ -162,8 +164,8 @@ final class NativeActionBridgeHost {
     final Display display=new Display();boolean displayPresent=true,owned=true,isLocked,cancelled,authorizationCurrent=true;
     final AccessibilityServiceInfo serviceInfo=new AccessibilityServiceInfo();
     final List<AccessibilityWindowInfo> windowRows=new ArrayList<AccessibilityWindowInfo>();
-    final List<String> events=new ArrayList<String>();Fixture fixture;Runnable scopeMutation,chainMutation,windowMutation;
-    int windowReads,staleDiagnostics;boolean callbackAccepted;
+    final List<String> events=new ArrayList<String>();Fixture fixture;Runnable scopeMutation,chainMutation,windowMutation,afterFinalCensus;
+    int windowReads,staleDiagnostics;boolean callbackAccepted,exerciseBackgroundPrecheck;
     Object getSystemService(String name){if(!DISPLAY_SERVICE.equals(name))throw new AssertionError("unexpected service");return new DisplayManager();}
     AccessibilityServiceInfo getServiceInfo(){return serviceInfo;}
     List<AccessibilityWindowInfo> windowsForDisplay(int ignored){
@@ -180,7 +182,12 @@ final class NativeActionBridgeHost {
     // Profile IO is outside these user0 cases. The actual profile guards below
     // still execute; an attempted profile read cannot receive a synthetic proof.
     AccessibilityNodeInfo selectedRoot(BackgroundSession selected,GraphBudget budget){
-        throw new AssertionError("legacy action fixture cannot select an actual profile root");
+        if(selected!=background||selected.selection.profileTarget!=null||selected.selection.independentProfileDisplay
+                ||selected.selection.independentPersonalDisplay)throw new AssertionError("fixture cannot select an actual owned/profile root");
+        checkReadBudget(budget);return new AccessibilityNodeInfo(fixture.data.get("0"));
+    }
+    void requireActualProfileTask(BackgroundSession selected,PhoneObservation frame,AccessibilityWindowInfo window){
+        if(selected.selection.profileTarget!=null)throw new AssertionError("fixture has no actual profile RPC authority");
     }
     WindowOwnership readProfileWindow(AccessibilityNodeInfo root,BackgroundSession selected,GraphBudget budget){
         throw new AssertionError("legacy action fixture cannot produce an actual profile proof");
@@ -233,11 +240,16 @@ final class NativeActionBridgeHost {
         if(!ownsAuthorization(task,authorization))throw new StaleObservation("fake authorization revoked");authorization.check(action,run);events.add("authorization");
     }
     QualificationScopeConfig.Bound scopeFor(String task){if(!owns(task))throw new StaleObservation("fake scope owner");return scope;}
-    void scopeBeforeDispatch(String task,QualificationScopeConfig.Bound value,PhoneObservation frame,ActionDecision action,AccessibilityNodeInfo node,boolean effect,ActionWork work){
+    void scopeBeforeDispatch(String task,QualificationScopeConfig.Bound value,PhoneObservation frame,ActionDecision action,AccessibilityNodeInfo node,boolean effect,ActionWork work)throws Exception{
         actionCheck(work);if(!ownsScope(task,value))throw new StaleObservation("fake scope changed");events.add("scope");
         if(scopeMutation!=null){Runnable r=scopeMutation;scopeMutation=null;r.run();}actionCheck(work);
+        if(exerciseBackgroundPrecheck)backgroundBeforeDispatch(task,frame,action,node,effect,work);
     }
-    Graph readGraph(GraphBudget budget,BackgroundSession b)throws Exception{checkReadBudget(budget);events.add("full_census");return fixture.graph(fixture.fresh,budget);}
+    Graph readGraph(GraphBudget budget,BackgroundSession b)throws Exception{
+        checkReadBudget(budget);events.add("full_census");Graph g=fixture.graph(fixture.fresh,budget);
+        if(Collections.frequency(events,"full_census")==2&&afterFinalCensus!=null){Runnable r=afterFinalCensus;afterFinalCensus=null;r.run();}
+        return g;
+    }
     void finishAfter(long delay,boolean accepted,String text,ActionCallback callback,ActionWork work){callback.onResult(new ActionOutcome(accepted,accepted,false,text));}
     Object requireLiveFlightNativeStability(String task,PhoneObservation p,ActionDecision a,WebFlightNativeStability.Permit permit,Graph graph,Cancellation cancel,ActionWork work){throw new AssertionError("Web authority outside fixture");}
     Object requireLiveNativeRegion(String task,PhoneObservation p,AccessibilityNodeInfo n,WebRegionNativeBridge bridge,Cancellation cancel,ActionWork work){throw new AssertionError("Web region outside fixture");}
@@ -268,15 +280,15 @@ final class NativeActionBridgeHost {
         Fixture(String p,String label)throws Exception{this(p,label,null);}
         Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded)throws Exception{
             fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
-            raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
-            owner=NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
+            raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
+            owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
             BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
             selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(target);authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);gate=authorization.bind(task);
             background=new BackgroundSession(NativeActionBridgeHost.this);background.taskId=task;background.generation=NativeAppProviderHostTest.GENERATION;background.ownerSha256=target.ownerSha256;background.selection=selection;
             taskAuthorization=gate;windowRows.add(new AccessibilityWindowInfo());SystemClock.now=1000;
-            NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?10485:10367,
-                    NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?20261010L:1779L,
-                    Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
+            NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH.equals(p)?10485:10367,
+                    NativeActionSnapshotCheck.SEARCH.equals(p)?20261010L:1779L,
+                    Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
             session=new NativeAppSession(task,gate,selection,installed,NativeAppObservation.selectionSha(selection),background.generation,7,
                     ()->{if(!installedCurrent)throw new IllegalStateException("host installed change");events.add("installed");},
                     (leaf,value)->{Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
@@ -284,8 +296,8 @@ final class NativeActionBridgeHost {
             if(NativeActionSnapshotCheck.QUERY.equals(p))year();
             String selected=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(p.equals(e.getValue()))selected=e.getKey();
             if(selected==null)throw new AssertionError("synthetic full provider fixture does not admit original purpose: "+p+" "+session.domain().evidence());
-            // Actual default Session chooses the icon; effects must be counted
-            // on that selected NodeRef, never on the old synthetic switcher.
+            // Actual default Session chooses the query entry; effects must be counted
+            // on that original selected NodeRef, never on its adjacent icon.
             raw.target=frame.byId.get(selected).path;raw.label=frame.byId.get(selected).label;
             action=click(selected);SystemClock.now+=10;step++;gate.check(action,run);session.beforeModelAction(step,action,run,SystemClock.now);
             NativeAppSession.ActionGuard guard=session.actionGuard(action,run,frame.observationId,SystemClock.now,SystemClock.now+8000);
@@ -364,9 +376,13 @@ final class NativeActionBridgeHost {
             session.modelActionOutcome(back,second,true,true,false,hash("host-back-receipt"),++SystemClock.now);observeGraph(raw);
             yes(Boolean.TRUE.equals(((Map<?,?>)session.evidence().get("progress")).get("calendar_year_proved")),"bridge query uses actual Session calendar roundtrip");
         }
-        void neutralText(){String path=NativeActionSnapshotCheck.SEARCH_ICON.equals(purpose)?"0/2/0":NativeActionSnapshotCheck.OPEN.equals(purpose)?"0/1/0":"0/0/7/0";
+        void neutralText(){String path=NativeActionSnapshotCheck.SEARCH.equals(purpose)?"0/2/0":NativeActionSnapshotCheck.OPEN.equals(purpose)?"0/1/0":"0/0/7/0";
             fresh.nodes.get(path).put("text","host unrelated updated text");fresh.nodes.get(path).put("label","host unrelated updated text");}
         boolean dispatch()throws Exception{
+            if(exerciseBackgroundPrecheck){
+                scopeBeforeDispatch(task,scope,current,action,null,false,work);
+                scopeBeforeDispatch(task,scope,current,action,work.graph.refs.get(action.nodeId).node,true,work);
+            }
             String refusal=validate(task,current,action,null,()->cancelled,work);if(refusal!=null)return false;
             clickBranch(task,current,action,work);return callbackAccepted;
         }

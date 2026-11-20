@@ -87,8 +87,9 @@ def generate(source,output):
         'await_observation':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{'),
         'await_observation_request':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n'),
         'read_retry_failure':body(controller,'    private static final class NativeObservationTransientFailure extends IllegalStateException {'),
-        'initial_read_failure':body(controller,'    private static final class InitialNativeObservationFailure extends IllegalStateException {')}
-    for fixture,names in [('DiagnosticGraphHost',['native_stamp','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','take_diagnostics'])]:
+        'initial_read_failure':body(controller,'    private static final class InitialNativeObservationFailure extends IllegalStateException {'),
+        'post_effect_read_failure':body(controller,'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {')}
+    for fixture,names in [('DiagnosticGraphHost',['native_stamp','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics'])]:
         text=(source/TEST/(fixture+'.template')).read_text()
         for name in names:
             marker='{{'+name+'}}'
