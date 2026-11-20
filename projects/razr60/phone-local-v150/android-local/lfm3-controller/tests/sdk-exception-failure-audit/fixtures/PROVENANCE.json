@@ -1,0 +1,119 @@
+{
+  "boundary": "Actual archived host C++ exception boundary run with fake SDK and fake model only; not Android or real proprietary SDK execution. JSON values are unchanged; filesystem file names are local fixture aliases.",
+  "files": [
+    {
+      "bytes": 5230,
+      "name": "native-request.json",
+      "sha256": "cd448603b4449965566e5f5fb5d2b41fd096e2aa9ad08e7918f524ed8e8c04f8",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/native-result.json"
+    },
+    {
+      "bytes": 926,
+      "name": "native-session.json",
+      "sha256": "db43c4c74ec80b4ebcfa3d44560943102fdd56a188c47d78267c825f05076573",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/11111111111111111111111111111111/native-session-result.json"
+    },
+    {
+      "bytes": 1332,
+      "name": "prompt-evidence.json",
+      "sha256": "75003a3721f7ee5bd9ca50373bd1246a0d361db7871ed53a56b7f4a32ec4d315",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/prompt-evidence.json"
+    },
+    {
+      "bytes": 47,
+      "name": "formatted-prompt.txt",
+      "sha256": "efe26a01c3c119b79551673939bb96bc08b048c085661c73e48e13de448df93d",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/formatted-prompt.txt"
+    },
+    {
+      "bytes": 192,
+      "name": "formatted-input-ids.le32",
+      "sha256": "909834c013748d2eb99602a95856f5e15878386681e8e7dbbe8d1d3aab422e86",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/formatted-input-ids.le32"
+    },
+    {
+      "bytes": 30,
+      "name": "prompt.txt",
+      "sha256": "21912b052323e73c7460c48908f1d04edf5297e01d4dad570f2e8a620e8dd244",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/prompt.txt"
+    },
+    {
+      "bytes": 16,
+      "name": "system.txt",
+      "sha256": "4aa00717e388a97a583846abd70172597dc1d89ee81e8c6d66d44554391e89d5",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/system.txt"
+    },
+    {
+      "bytes": 13,
+      "name": "grammar.gbnf",
+      "sha256": "31e662fe97eb4be80591a86ad358192894782faefdf2d20583aef2db33e94f88",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/grammar.gbnf"
+    },
+    {
+      "bytes": 0,
+      "name": "raw-text.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-std/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/raw-text.txt"
+    },
+    {
+      "bytes": 5252,
+      "name": "prefix-native-request.json",
+      "sha256": "b31f27bd1830b3b77a35b3b37b85bd12affe3f00e11665e357ade3cb7d0bdabc",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/native-result.json"
+    },
+    {
+      "bytes": 926,
+      "name": "prefix-native-session.json",
+      "sha256": "f90918ff72de448f18dfce9528f5ee7ef0e5daf386761228aed379858862c9bb",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/11111111111111111111111111111111/native-session-result.json"
+    },
+    {
+      "bytes": 1332,
+      "name": "prefix-prompt-evidence.json",
+      "sha256": "75003a3721f7ee5bd9ca50373bd1246a0d361db7871ed53a56b7f4a32ec4d315",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/prompt-evidence.json"
+    },
+    {
+      "bytes": 47,
+      "name": "prefix-formatted-prompt.txt",
+      "sha256": "efe26a01c3c119b79551673939bb96bc08b048c085661c73e48e13de448df93d",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/formatted-prompt.txt"
+    },
+    {
+      "bytes": 192,
+      "name": "prefix-formatted-input-ids.le32",
+      "sha256": "909834c013748d2eb99602a95856f5e15878386681e8e7dbbe8d1d3aab422e86",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/formatted-input-ids.le32"
+    },
+    {
+      "bytes": 30,
+      "name": "prefix-prompt.txt",
+      "sha256": "21912b052323e73c7460c48908f1d04edf5297e01d4dad570f2e8a620e8dd244",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/prompt.txt"
+    },
+    {
+      "bytes": 16,
+      "name": "prefix-system.txt",
+      "sha256": "4aa00717e388a97a583846abd70172597dc1d89ee81e8c6d66d44554391e89d5",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/system.txt"
+    },
+    {
+      "bytes": 13,
+      "name": "prefix-grammar.gbnf",
+      "sha256": "31e662fe97eb4be80591a86ad358192894782faefdf2d20583aef2db33e94f88",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/grammar.gbnf"
+    },
+    {
+      "bytes": 1,
+      "name": "prefix-raw-text.txt",
+      "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+      "source_path": "/home/alex/hepta-v63-native-exception-261e-20261113-r1/validation-r1/sdk-exception/throw-prefix/runs/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/raw-text.txt"
+    }
+  ],
+  "original_bytes_unchanged": true,
+  "phone_operations": 0,
+  "request_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "schema": "hepta.sdk70-host-fake-sdk-originals.v1",
+  "task_id": "22222222222222222222222222222222",
+  "worker_generation": "11111111111111111111111111111111"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.local-model-settings-lfm3-observe-case-contract.v1",
+  "cases": 8,
+  "assertions": 74,
+  "names": [
+    "lfm3-observe-v3-is-explicit-and-tools-rejected",
+    "ordinary-text-lfm3-observe-gui-tools-text-router",
+    "ordinary-lfm3-observe-restore-keeps-exact-bytes",
+    "lfm3-unknown-cleanup-retains-observe-authority",
+    "lfm3-actual-missing-and-foreign-assets-refuse-before-hash",
+    "lfm3-actual-complete-primary-hash-rejects-sparse-impostor",
+    "lfm3-ordinary-asset-refusal-rolls-back-to-text",
+    "lfm3-four-gib-memory-contract-and-actual-low-memory-refusal"
+  ],
+  "original_cases": 22,
+  "original_assertions": 169,
+  "total_cases": 30,
+  "total_assertions": 243
+}

@@ -1,0 +1,217 @@
+    interface Change {void apply(ObserverPipelineHost f,Graph graph,int ordinal);}
+    volatile FrozenObservationWindow windowValue;
+    volatile Runnable windowHook;
+    volatile String windowFailure;
+    volatile boolean authorizationReady=true;
+    final AtomicInteger windowChecks=new AtomicInteger();
+    final AtomicBoolean pauseAfterPairCheck=new AtomicBoolean();
+    volatile Block afterPairBlock;
+    Map<String,Object> originalWindowBuilder;
+    static Map<String,Object> rawWindows(){
+        Map<String,Object> row=new LinkedHashMap<String,Object>();
+        row.put("window_id",7);row.put("display_id",9);row.put("type",1);row.put("layer",2);
+        row.put("bounds",new ArrayList<Integer>(Arrays.asList(0,0,1080,2400)));row.put("focused",true);row.put("active",true);
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("display_id",9);out.put("target_window_id",7);out.put("target_layer",2);
+        out.put("windows",new ArrayList<Map<String,Object>>(Collections.singletonList(row)));
+        out.put("other_window_roots_traversed",false);out.put("unreported_windows_excluded",false);return out;
+    }
+    static void nativeGraph(Graph graph){
+        graph.packageName=SnapshotChecks.APP;graph.backgroundGeneration=SnapshotChecks.GENERATION;graph.backgroundOwnerSha=SnapshotChecks.OWNER;
+        graph.backgroundSelectionRaw="{\"fixture\":\"synthetic_native_selection\"}";
+        graph.backgroundBootstrapPackage=SnapshotChecks.APP;graph.backgroundAllowedPackages=Collections.singletonList(SnapshotChecks.APP);
+        graph.state=new ObservationState(SnapshotChecks.OWNER,ImeVisibility.HIDDEN);
+        graph.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,graph.displayId,new int[]{0,0,1080,2400},SnapshotChecks.APP);
+        graph.rows.add(new PhoneObservation.Node("n0",SnapshotChecks.APP,"0/0",SnapshotChecks.OWNER));
+        graph.refs.put("n0",new NodeRef(SnapshotChecks.OWNER));graph.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,3,1,10,0,0,0,0,1);
+        graph.nativeActionNodes=Collections.<Object>singletonList(new Object());graph.nativeActionWidth=1080;graph.nativeActionHeight=2400;
+        graph.nativeActionWindows=immutableMap(rawWindows());
+    }
+    static void sealGraph(Graph graph){
+        String key=graph.backgroundGeneration+"|"+graph.backgroundOwnerSha+"|"+graph.backgroundSelectionRaw+"|"+graph.packageName+"|"+graph.digest;
+        key=graph.windowMetadata.bindFreshness(key+"|"+graph.state.fingerprintInput());
+        graph.digest=sha(key.getBytes(StandardCharsets.UTF_8));graph.nativeObservationComplete=completeNativeObservationGraph(graph);
+    }
+    static ObserverPipelineHost fixture(final Change change)throws Exception{
+        ObserverPipelineHost f=new ObserverPipelineHost();f.lease=SnapshotChecks.TASK;f.taskAuthorization=new Object();
+        BackgroundSession bg=new BackgroundSession(9);bg.ownerSha256=SnapshotChecks.OWNER;bg.generation=SnapshotChecks.GENERATION;
+        BackgroundTaskTarget target=new BackgroundTaskTarget();target.route=BackgroundTaskTarget.NATIVE_APP;target.explicitSelection=true;
+        target.ownerSha256=bg.ownerSha256;target.packageName=SnapshotChecks.APP;target.nativeGoal=new NativeAppGoal();
+        target.nativeGoal.ownerSha256=target.ownerSha256;target.nativeGoal.packageName=target.packageName;
+        bg.selection.taskTarget=target;bg.selection.initialPackage=target.packageName;bg.selection.allowedPackages=Collections.singletonList(target.packageName);
+        f.taskBackground=bg;f.readHook=(graph,n)->{
+            nativeGraph(graph);
+            if(n==2){f.originalWindowBuilder=rawWindows();graph.nativeActionWindows=immutableMap(f.originalWindowBuilder);}
+            if(change!=null)change.apply(f,graph,n);sealGraph(graph);
+            if(n==2)f.windowValue=frozenObservationWindow(graph);
+        };return f;
+    }
+    static void check(boolean value,String why){SnapshotChecks.check(value,why);}
+    static void snapshotCase(String name,Case body)throws Exception{SnapshotChecks.run(name,()->test(name,body));}
+    void snapshotBegin(){
+        observe(lease,directory,()->{
+            if(!isMain()&&pauseAfterPairCheck.compareAndSet(true,false)&&afterPairBlock!=null)afterPairBlock.run();
+            return cancelled.get();
+        },ObservationStabilityGate.requestDeadline(SystemClock.now,SystemClock.now+100000),new ObservationCallback(){
+            public void onObservation(PhoneObservation value){expect(isMain(),"publish off main");delivered.add(value);}
+            public void onError(String error){expect(isMain(),"error off main");errors.add(error);}
+        });main.drain();
+    }
+    static ObservationRequest capture(ObserverPipelineHost f)throws Exception{
+        f.snapshotBegin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;
+        f.main.drainUntil(()->f.pendingScreenshot!=null);
+        await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"second sample or capture");
+        f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"stable pair did not reach capture");return r;
+    }
+    static void rejected(ObserverPipelineHost f,ObservationRequest r,String why){
+        check(f.delivered.isEmpty(),why+": unexpected publication");check(f.directory.list().length==0,why+": unpublished PNG leaked");
+        check(r.deadline==r.started+12000,why+": original 12 second deadline changed");
+    }
+    static FrozenObservationWindow different(FrozenObservationWindow w,String kind){
+        Map<String,Object> windows=new LinkedHashMap<String,Object>(w.windows);
+        if("census".equals(kind)||"overlay".equals(kind)||"ime".equals(kind))windows.put("reported_change",kind);
+        return new FrozenObservationWindow("package".equals(kind)?"other.app":w.packageName,
+            w.windowId+("window".equals(kind)?1:0),w.displayId+("display".equals(kind)?1:0),w.rotation+("rotation".equals(kind)?1:0),
+            w.left,w.top,w.right-("root_geometry".equals(kind)?1:0),w.bottom,w.width-("display_geometry".equals(kind)?1:0),w.height,
+            "metadata".equals(kind)?"different window metadata":w.metadata,windows,w.profileWindow);
+    }
+    static void normalAndHistoryCases()throws Exception{
+        snapshotCase("png_only_content_change_preserves_original_paired_history",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n>=4)g.digest="content-changed-after-pair";});
+            Bitmap.encodeHook=()->{SystemClock.now+=600;f.noteObservationEvent(9);};
+            ObservationRequest r=capture(f);f.finish();
+            check(f.delivered.size()==1,"paired history was discarded because content changed during PNG");
+            check(f.reads.get()==3&&f.windowChecks.get()==1,"sealed path must use three full graphs plus one identity IO");
+            check(f.current.capturedElapsedMillis==f.lastScreenshotAt,"capture age was refreshed");
+            Map<String,Object> e=f.current.captureEvidence;
+            check("pre_encoding_paired_history".equals(e.get("mode")),"snapshot mode missing");
+            check(((Long)e.get("capture_age_at_publication_ms")).longValue()==600,"encoding age missing");
+            check(((Long)e.get("pair_sealed_elapsed_ms")).longValue()<=((Long)e.get("png_encode_started_elapsed_ms")).longValue(),"seal occurred after encoding");
+            check(Boolean.FALSE.equals(e.get("post_encoding_whole_graph_rechecked")),"identity read mislabeled whole graph");
+            check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("business_completion_verified")),"snapshot granted authority");
+            check(r.deadline==r.started+12000&&f.errors.isEmpty(),"history extended deadline or hid errors");f.dispose();
+        });
+        snapshotCase("queued_publication_retains_original_capture_time_and_evidence",()->{
+            ObserverPipelineHost f=fixture(null);capture(f);await(()->observationIo.active.get()==0,"queued seal");
+            SystemClock.now+=700;f.main.drain();check(f.delivered.size()==1,"queued stable identity rejected");
+            check(f.current.capturedElapsedMillis==1200,"queued delivery refreshed age");
+            check(((Long)f.current.captureEvidence.get("published_elapsed_ms")).longValue()==1900,"publication time not separate");f.dispose();
+        });
+        snapshotCase("window_census_is_deep_frozen_before_builder_change_and_graph_close",()->{
+            ObserverPipelineHost f=fixture(null);
+            Bitmap.encodeHook=()->{
+                @SuppressWarnings("unchecked") List<Map<String,Object>> rows=(List<Map<String,Object>>)f.originalWindowBuilder.get("windows");
+                rows.get(0).put("focused",false);rows.clear();f.originalWindowBuilder.clear();
+            };
+            capture(f);f.finish();check(f.delivered.size()==1,"old mutable builder changed frozen identity");
+            check(f.graphs.get(2).closed,"post-shot graph retained after sealing");
+            try{f.windowValue.windows.put("bad",true);throw new AssertionError("mutable outer census");}catch(UnsupportedOperationException expected){check(true,"outer frozen");}
+            @SuppressWarnings("unchecked") List<Map<String,Object>> rows=(List<Map<String,Object>>)f.windowValue.windows.get("windows");
+            try{rows.get(0).put("focused",false);throw new AssertionError("mutable nested census");}catch(UnsupportedOperationException expected){check(true,"nested frozen");}
+            f.dispose();
+        });
+    }
+    static void pairAndFenceCases()throws Exception{
+        snapshotCase("post_screenshot_whole_graph_change_still_rejects_before_encoding",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==3)g.digest="different";});ObservationRequest r=capture(f);f.finish();
+            rejected(f,r,"unpaired graph");check(f.windowChecks.get()==0,"unpaired graph acquired identity path");f.dispose();
+        });
+        snapshotCase("event_during_pair_read_cannot_acquire_seal_or_bypass_legacy_graph",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==3)x.noteObservationEvent(9);if(n==4)g.digest="later-content";});
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"pair event");
+            check(f.reads.get()==4&&f.windowChecks.get()==0,"event-inconsistent pair was sealed");f.dispose();
+        });
+        snapshotCase("unknown_event_after_pair_checks_before_seal_is_rejected_at_publication",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{
+                if(n==3)g.nativeActionNodes=new AbstractList<Object>(){
+                    public Object get(int index){return this;}public int size(){return 1;}
+                    @Override public boolean isEmpty(){x.pauseAfterPairCheck.set(true);return false;}
+                };
+            });
+            Block block=new Block();f.afterPairBlock=block;ObservationRequest r=capture(f);block.entered();
+            f.noteObservationEvent(-1);block.open();f.finish();rejected(f,r,"late unknown event");
+            check(r.unknownEvents==1,"late unknown event not recorded");check(f.windowChecks.get()==1,"test missed sealed post-check path");f.dispose();
+        });
+        snapshotCase("unknown_event_during_encoding_is_never_credited_by_identity",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->f.noteObservationEvent(-1);
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"unknown encoding event");f.dispose();
+        });
+        snapshotCase("event_during_post_identity_read_keeps_final_watermark",()->{
+            ObserverPipelineHost f=fixture(null);f.windowHook=()->f.noteObservationEvent(9);
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"identity watermark");check(f.windowChecks.get()==1,"identity hook missed");f.dispose();
+        });
+        snapshotCase("event_after_post_identity_before_main_keeps_final_watermark",()->{
+            ObserverPipelineHost f=fixture(null);ObservationRequest r=capture(f);await(()->observationIo.active.get()==0,"identity result queued");
+            f.noteObservationEvent(9);f.main.drain();rejected(f,r,"main publication watermark");f.dispose();
+        });
+        snapshotCase("other_display_events_do_not_destroy_sealed_background_history",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->{SystemClock.now+=600;f.noteObservationEvent(0);};
+            capture(f);f.finish();check(f.delivered.size()==1,"other display invalidated native pair");f.dispose();
+        });
+    }
+    static void identityAndLifetimeCases()throws Exception{
+        for(final String kind:new String[]{"package","window","display","rotation","root_geometry","display_geometry","metadata","census","overlay","ime"})
+            snapshotCase("publication_rejects_changed_"+kind,()->{
+                ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->f.windowValue=different(f.windowValue,kind);
+                ObservationRequest r=capture(f);f.finish();rejected(f,r,kind);check(f.windowChecks.get()==1,"identity comparison not executed");f.dispose();
+            });
+        for(final String kind:new String[]{"missing","invisible","permission","lease","unknown_windows"})
+            snapshotCase("publication_rejects_unavailable_"+kind,()->{
+                ObserverPipelineHost f=fixture(null);f.windowFailure=kind;ObservationRequest r=capture(f);f.finish();rejected(f,r,kind);f.dispose();
+            });
+        for(final String kind:new String[]{"cancel","deadline","background_generation","authorization","locked"})
+            snapshotCase("sealed_encoding_"+kind+"_cannot_publish",()->{
+                ObserverPipelineHost f=fixture(null);Block block=new Block();Bitmap.encodeHook=block;ObservationRequest r=capture(f);block.entered();
+                if("cancel".equals(kind))f.cancelled.set(true);
+                else if("deadline".equals(kind))SystemClock.now=r.deadline;
+                else if("background_generation".equals(kind))f.taskBackground=new BackgroundSession(10);
+                else if("authorization".equals(kind))f.taskAuthorization=new Object();
+                else f.locked=true;
+                f.main.drain();block.open();f.finish();rejected(f,r,kind);f.dispose();
+            });
+        snapshotCase("main_authorization_ready_failure_reports_error_and_recycles_product",()->{
+            ObserverPipelineHost f=fixture(null);ObservationRequest r=capture(f);await(()->observationIo.active.get()==0,"queued publication");
+            f.authorizationReady=false;f.main.drain();rejected(f,r,"retired auth");
+            check(f.errors.size()==1,"auth.ready failure was uncaught or duplicated");f.dispose();
+        });
+        snapshotCase("old_sealed_product_cannot_publish_under_new_request",()->{
+            ObserverPipelineHost f=fixture(null);ObservationRequest old=capture(f);await(()->observationIo.active.get()==0,"old product");
+            f.retire();f.snapshotBegin();f.awaitSample();check(f.delivered.isEmpty(),"old product adopted by new request");
+            check(old.finished,"old request not retired");f.dispose();
+        });
+        snapshotCase("late_screenshot_after_stop_has_one_buffer_owner",()->{
+            ObserverPipelineHost f=fixture(null);f.autoScreenshot=false;capture(f);f.retire();f.deliverScreenshot();
+            check(f.delivered.isEmpty()&&f.shots.get(0).buffer.closes==1,"late buffer leak/publication");f.dispose();
+        });
+    }
+    static void persistenceAndLegacyCases()throws Exception{
+        for(final String kind:new String[]{"encode","fsync","hash"})
+            snapshotCase("sealed_"+kind+"_failure_never_publishes",()->{
+                ObserverPipelineHost f=fixture(null);
+                if("encode".equals(kind))Bitmap.encodeHook=()->{throw new IllegalStateException("fake encoding failure");};
+                else if("fsync".equals(kind))Bitmap.streamHook=out->{try{out.close();}catch(IOException e){throw new UncheckedIOException(e);}};
+                else f.hashHook=()->{throw new IllegalStateException("fake hashing failure");};
+                ObservationRequest r=capture(f);f.finish();rejected(f,r,kind);check(f.errors.size()==1,"persistence failure not reported");f.dispose();
+            });
+        for(final String kind:new String[]{"unknown_goal","web","incomplete","visible_ime","missing_census"})
+            snapshotCase("legacy_"+kind+"_keeps_post_encoding_whole_graph",()->{
+                ObserverPipelineHost f=fixture((x,g,n)->{
+                    if("incomplete".equals(kind))g.truncated=true;
+                    if("visible_ime".equals(kind))g.state=new ObservationState(SnapshotChecks.OWNER,ImeVisibility.VISIBLE);
+                    if("missing_census".equals(kind))g.nativeActionNodes=null;
+                    if(n==4)g.digest="encoding-content-change";
+                });
+                if("unknown_goal".equals(kind))f.taskBackground.selection.taskTarget.nativeGoal=null;
+                if("web".equals(kind))f.taskWeb=new WebFlightSession();
+                ObservationRequest r=capture(f);f.finish();rejected(f,r,kind);
+                check(f.windowChecks.get()==0&&f.reads.get()==4,"legacy path lost full graph checks");f.dispose();
+            });
+        snapshotCase("non_native_metadata_reports_actual_post_encoding_whole_graph_check",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.startCapture();f.finish();check(f.delivered.size()==1,"legacy normal observation failed");
+            check(Boolean.TRUE.equals(f.current.captureEvidence.get("post_encoding_whole_graph_rechecked")),"legacy metadata mislabeled native-only result");f.dispose();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        try{normalAndHistoryCases();pairAndFenceCases();identityAndLifetimeCases();persistenceAndLegacyCases();ObservationEvidenceHost.run();}
+        finally{SnapshotChecks.finish(args[0]);observationIo.executor.shutdown();}
+    }

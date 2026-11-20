@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.independent-validation-source.v1",
+  "revision": "offline-r3",
+  "files": [
+    {
+      "path": "phone_offline_suite.py",
+      "bytes": 30392,
+      "sha256": "889c2fc39b09c7b3e71e7bdc8f1a254d80629a5cf389b63412f297688ba1e7fd"
+    },
+    {
+      "path": "offline_guards.py",
+      "bytes": 6004,
+      "sha256": "0550345c9eac7bf88a8511987c63979f0453da0f11f3648f2c532b3ad314b317"
+    },
+    {
+      "path": "test_offline_transaction.py",
+      "bytes": 16081,
+      "sha256": "76f3d84e85c40ea8294874c21bde81496db913db43b30489ebce3d550cbc1d3a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10880,
+      "sha256": "e8fa2810807604e6004f13e3e27a50728db9effb6ba6d3076799679c558e4f55"
+    }
+  ],
+  "phone_contacted": false,
+  "change_scope": "WiFi status parser plus focused synthetic contracts; transaction wrapper byte-identical to r2",
+  "publication_variant": {
+    "baseline_manifest_sha256": "87b05fe3cb25f9b72edd4993b6b27ea467bfac3dfcfb41507ca9b08d4dbe3305",
+    "changed_paths": [
+      "README.md"
+    ],
+    "operational_python_files_unchanged": true,
+    "phone_evidence_rewritten": false
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.r21.vlm-runtime-symbols.v1",
+  "readelf": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+  "source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "files": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "matches": {
+        "llama_model_load_from_file": [
+          "2544: 0000000000280fec   336 FUNC    GLOBAL DEFAULT    15 llama_model_load_from_file_ptr",
+          "2988: 0000000000280b10   420 FUNC    GLOBAL DEFAULT    15 llama_model_load_from_file"
+        ],
+        "llama_init_from_model": [
+          "3847: 00000000002b6f54  1308 FUNC    GLOBAL DEFAULT    15 llama_init_from_model"
+        ],
+        "llama_sampler_init_grammar": [
+          "534: 0000000000384538    60 FUNC    GLOBAL DEFAULT    15 llama_sampler_init_grammar_lazy_patterns",
+          "1439: 0000000000384504    52 FUNC    GLOBAL DEFAULT    15 llama_sampler_init_grammar_lazy",
+          "3324: 0000000000383734    52 FUNC    GLOBAL DEFAULT    15 llama_sampler_init_grammar"
+        ],
+        "llama_sampler_chain_init": [
+          "1070: 0000000000379748    88 FUNC    GLOBAL DEFAULT    15 llama_sampler_chain_init"
+        ],
+        "llama_sampler_sample": [
+          "1293: 000000000037a4e4  1532 FUNC    GLOBAL DEFAULT    15 llama_sampler_sample"
+        ],
+        "llama_process": [
+          "1733: 00000000002b8910    36 FUNC    GLOBAL DEFAULT    15 llama_process"
+        ]
+      }
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "matches": {
+        "mtmd_context_params_default": [
+          "381: 0000000000076c8c    76 FUNC    GLOBAL DEFAULT    15 mtmd_context_params_default"
+        ],
+        "mtmd_init_from_file": [
+          "875: 0000000000076cd8   220 FUNC    GLOBAL DEFAULT    15 mtmd_init_from_file"
+        ],
+        "mtmd_tokenize": [
+          "353: 0000000000080754   908 FUNC    GLOBAL DEFAULT    15 mtmd_tokenize_from_parts",
+          "921: 0000000000079fa0  2992 FUNC    GLOBAL DEFAULT    15 mtmd_tokenize"
+        ],
+        "mtmd_input_chunk_get_n_tokens": [
+          "717: 00000000000828a4   112 FUNC    GLOBAL DEFAULT    15 mtmd_input_chunk_get_n_tokens"
+        ],
+        "mtmd_helper_get_n_tokens": [
+          "858: 00000000000baef0   208 FUNC    GLOBAL DEFAULT    15 mtmd_helper_get_n_tokens"
+        ],
+        "mtmd_helper_get_n_pos": [
+          "899: 00000000000bafc0   204 FUNC    GLOBAL DEFAULT    15 mtmd_helper_get_n_pos"
+        ],
+        "mtmd_helper_eval_chunks": [
+          "383: 00000000000bc7ac   304 FUNC    GLOBAL DEFAULT    15 mtmd_helper_eval_chunks"
+        ],
+        "mtmd_helper_bitmap_init_from_buf": [
+          "402: 00000000000bc8dc  2024 FUNC    GLOBAL DEFAULT    15 mtmd_helper_bitmap_init_from_buf"
+        ]
+      }
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "matches": {
+        "common_chat_templates_init": [
+          "1198: 0000000000230fa0  2780 FUNC    GLOBAL DEFAULT    15 _Z26common_chat_templates_initPK11llama_modelRKNSt6__ndk112basic_stringIcNS2_11char_traitsIcEENS2_9allocatorIcEEEESA_SA_"
+        ],
+        "common_chat_templates_apply": [
+          "641: 000000000021faac  2752 FUNC    GLOBAL DEFAULT    15 _Z27common_chat_templates_applyPK21common_chat_templatesRK28common_chat_templates_inputs"
+        ],
+        "common_sampler_init": [
+          "2498: 00000000002d58e8  9140 FUNC    GLOBAL DEFAULT    15 _Z19common_sampler_initPK11llama_modelR22common_params_sampling"
+        ]
+      }
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "matches": {}
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "matches": {
+        "ggml_backend_load_all_from_path": [
+          "72: 00000000000089f8   296 FUNC    GLOBAL DEFAULT    15 ggml_backend_load_all_from_path"
+        ],
+        "ggml_backend_dev_by_name": [
+          "79: 0000000000007ddc   308 FUNC    GLOBAL DEFAULT    15 ggml_backend_dev_by_name"
+        ]
+      }
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "matches": {}
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "matches": {}
+    }
+  ],
+  "phone_contacted": false
+}

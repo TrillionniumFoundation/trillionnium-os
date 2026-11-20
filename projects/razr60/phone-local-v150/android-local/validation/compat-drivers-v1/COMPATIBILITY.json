@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.acceptance-compatibility.v1",
+  "source_directory": "/workspace/scratch/dda84ccf2855/razr-model-profiles-code8-r1",
+  "source_manifest_sha256": "8fd07b409a471927bc94577adb36da39e2256f0e347be35a967b869a0fd33c70",
+  "accepted_grammar_schemas": [
+    "hepta.observed-action-gbnf.v1",
+    "hepta.observed-action-gbnf.v2-reason-first"
+  ],
+  "app_source_modified": false,
+  "phone_contacted": false,
+  "changed_source_files": [
+    "phone_acceptance.py",
+    "test_phone_acceptance.py"
+  ],
+  "base_driver_sha256": "d461a28b5739a3fad92283e82bd258fb5a315bc7264e621d71723a9d6c4432eb",
+  "compat_driver_sha256": "8ace4acac2309653e7159dfd62d7bc479a1b0f0b6956ebedb5673cb51a788268",
+  "model_profiles_sha256": "85b5a72f24912f705ec07bb033204724bdfbf5aad30dfdc0e76b9fccbda91c90",
+  "package_binding": "one exact grammar_current_package for the grammar_observation_id in recorded step-before/after observations; conflicting or missing package is rejected",
+  "prior_evidence_modified": false
+}

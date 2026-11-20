@@ -1,0 +1,32 @@
+{
+  "business_verified": false,
+  "files": [
+    {
+      "bytes": 14991,
+      "original_bytes_preserved": true,
+      "path": "step-03-before.json",
+      "sha256": "1f2bf304f716adf64c19757688cc8b4590204992cf2cb36c6770c2801d17930c"
+    },
+    {
+      "bytes": 93716,
+      "original_bytes_preserved": true,
+      "path": "step-04-before.json",
+      "sha256": "5d8b88f9f319f90af473a4ea9b2e8645a716b7f253c99539765c6d39c152c5fc"
+    },
+    {
+      "bytes": 111897,
+      "original_bytes_preserved": true,
+      "path": "step-05-before.json",
+      "sha256": "9a0a0181927f0f9d2ed625b65fd2039e7cff1c2fb770b39d512810f3dc4a7107"
+    }
+  ],
+  "fixture_nodes_and_geometry_synthetic": false,
+  "model_executed": false,
+  "original_observation_json_unchanged": true,
+  "phone_operations": 0,
+  "privacy_scope": "Only the owned Xiaomi virtual-display App and its hashes. Later two frames contain the authorized test product xiaomi路由器ax3000t in search history; no account, address, credential, other-App or primary-display nodes were found in the read-only audit.",
+  "schema": "hepta.native-xiaomi-frame-layout-toolbar-fixtures.v1",
+  "source_head": "f9aec1c2231daece5c421e04464f77b0ae623cf8",
+  "source_task_id": "b32c76816e1a4ef18c2efc6f3c6a0ccb",
+  "test_task_authorization_and_completion_bindings_are_explicit_host_values": true
+}

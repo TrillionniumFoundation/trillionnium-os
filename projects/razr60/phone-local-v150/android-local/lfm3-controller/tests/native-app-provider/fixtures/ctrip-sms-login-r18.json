@@ -1,0 +1,1004 @@
+{
+  "observation_id": "99495d154fbb48efa4b778fdc366b23d",
+  "package": "ctrip.android.view",
+  "captured_elapsed_ms": 525248393,
+  "capture": {
+    "schema": "hepta.observation-capture.v1",
+    "mode": "pre_encoding_paired_history",
+    "sample_graph_started_elapsed_ms": 525248058,
+    "sample_graph_completed_elapsed_ms": 525248392,
+    "capture_requested_elapsed_ms": 525248393,
+    "screenshot_callback_elapsed_ms": 525248400,
+    "pair_graph_started_elapsed_ms": 525248421,
+    "pair_graph_completed_elapsed_ms": 525248752,
+    "pair_sealed_elapsed_ms": 525248752,
+    "png_encode_started_elapsed_ms": 525248752,
+    "png_encode_completed_elapsed_ms": 525250566,
+    "png_persisted_and_hashed_elapsed_ms": 525250594,
+    "post_persistence_check": "window_identity_geometry_permissions_and_reported_windows",
+    "publication_check_started_elapsed_ms": 525250594,
+    "publication_check_completed_elapsed_ms": 525250801,
+    "published_elapsed_ms": 525250801,
+    "capture_age_at_publication_ms": 2408,
+    "pair_graph_event_watermark": 0,
+    "pair_sealed_event_watermark": 0,
+    "unknown_events_at_capture": 0,
+    "publication_check_event_watermark": 0,
+    "post_encoding_whole_graph_rechecked": false,
+    "same_instant_pixels_and_ax_claimed": false,
+    "publication_refreshes_capture_age": false,
+    "fresh_action_validation_required": true,
+    "grants_action_authority": false,
+    "business_completion_verified": false
+  },
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 1353,
+  "screen_sha256": "d5ff2ec7387f989336bf176f633ff44708e708cdf20cad730f7810a1e88ead44",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 1353,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 261,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "携程旅行",
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "ctrip.android.view"
+    ],
+    "bootstrap_package": "ctrip.android.view",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "cc5b52874b545460c7f19f0233710beb642d6a6aa72eb737eed8eff9faeda06e",
+      "recognition": "complete_literal_native_single_adult_flight.v1",
+      "original_ui_initial_package": "ctrip.android.view",
+      "original_ui_allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "effective_initial_package": "ctrip.android.view",
+      "effective_allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": false,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "profile_target_wire": "ABdoZXB0YS5wcm9maWxlLXRhcmdldC52MQAAAAoAAAAAAAAACgAAAAAAI2FuZHJvaWQub3MudXNlcnR5cGUucHJvZmlsZS5NQU5BR0VEAA9qvwASY3RyaXAuYW5kcm9pZC52aWV3ADxjdHJpcC5hbmRyb2lkLnZpZXcvY3RyaXAuYnVzaW5lc3Muc3BsYXNoLkN0cmlwU3BsYXNoQWN0aXZpdHkAAAAAAAAG8wAAAAEABGJhc2UAQDY2NmNlMWU4MjM0NjgyYzg5MjQ3ZDUxMDljNWNmYTM2NDUxYzZlNjcyMzhlZTM4YTU0NWMyZDg0Yzg4MzYwZmEAAAABAEA4MTU1ZGMwNjQ0ZmVkNTE3ZThlZjZiZWY5NzE4YzM2M2QwZWIzZWIyYzIyYzA2NDU1MDQ0ZDg4MjY4YmRjZjBh",
+    "profile_target_sha256": "9942e17c0f4526996f2d88dc8c52d4c54fe409715814d14e5ebf8d303e6f2e13",
+    "display_scope_mode": "public_own_group_no_credentials_v1",
+    "display_scope_mode_source": "immutable_start_selection",
+    "display_scope_mode_grants_authority": false,
+    "generation": "fec71428-bdda-479f-840f-71e029457d7f",
+    "display_id": 261,
+    "actual_profile_window": {
+      "schema": "hepta.profile-window-ownership.v1",
+      "source": "observed_accessibility_task_id_and_fresh_privileged_leaf",
+      "generation": "fec71428-bdda-479f-840f-71e029457d7f",
+      "target_identity_sha256": "9942e17c0f4526996f2d88dc8c52d4c54fe409715814d14e5ebf8d303e6f2e13",
+      "proof_id": "4a80a810-09ce-4ece-a3f7-b11a782a7e28",
+      "task_token_id": "64ae7a3a-fecb-477e-a53c-875466efa88c",
+      "display_id": 261,
+      "window_id": 1353,
+      "task_id": 1000015,
+      "parent_task_id": 1532,
+      "user_id": 10,
+      "user_serial": 10,
+      "full_uid": 1010367,
+      "observed_elapsed_ms": 525248297,
+      "expires_elapsed_ms": 525252245,
+      "proof_sha256": "95c73e4671f3219b4a1d69c6075b46e1e6ea5d86d8ac67e57f9b6fe22834df91",
+      "serialized_token_is_authority": false,
+      "grants_action_authority": false,
+      "accessibility_task_id_source": "android16_a11y_public_parcel_checked_v1"
+    }
+  },
+  "app_tree_sha256": "52a8d662f89683ae3be823df4aa67e4ba510b92cfff46d9ed3a035ffda4b7f82",
+  "observation_state_sha256": "8a2f1c298f4d02bffae9efc06fd3a4a2e7eeb7a314fd4463240becf371863f0a",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 512,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 22,
+    "retained_nodes": 19,
+    "retained_text_utf16": 133,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 45,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        36,
+        160,
+        108,
+        232
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id\/ivTitleBarLeftBtn",
+      "node_app_tree_sha256": "866c4ecaf0437e70f20014d6784f1cafef49b405d23c407c089ce3512db01b4a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/0",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        1098,
+        163,
+        1188,
+        228
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "注册",
+      "view_id": "ctrip.android.view:id\/tvTitleBarRightBtn",
+      "node_app_tree_sha256": "99c1f7c76a37f528bef9ef9938e408bce81c1b2e03ec5d5984490f4c6e61c8a7",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/1",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        72,
+        405,
+        660,
+        526
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "手机验证码登录",
+      "view_id": "ctrip.android.view:id\/tvLoginTitle",
+      "node_app_tree_sha256": "75677c284c809ebe3ad4204c1ff7c26ef2190e6b2ea53ff0ccbcdbc62e134014",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/2",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        72,
+        574,
+        618,
+        630
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "未注册手机验证后即可完成注册",
+      "view_id": "ctrip.android.view:id\/tvLoginSubTitle",
+      "node_app_tree_sha256": "5e82485c724013599eeb3ab3b4e5025b03e8795c4ad6d6bdb688efa45e7b93dc",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/3",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        72,
+        853,
+        217,
+        906
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.LinearLayout",
+      "description": "国家码，区号86",
+      "view_id": "ctrip.android.view:id\/llCountryCode",
+      "node_app_tree_sha256": "57fc7757730bc32843b3b10e8ea66f1f8c7dd1b16b9969f2db3d2e2a703587fd",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        289,
+        832,
+        1152,
+        906
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.EditText",
+      "text": "请输入手机号",
+      "node_app_tree_sha256": "f36b6266e7c52f287b0e61ba8de3cb63c2256875b8064b549c7230f536d72823",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/5",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": "2f74a3ffc8067286bc34cfc844fe0ebee4e3ea886b2c01252e73b1ad39c217b5",
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        72,
+        1020,
+        1152,
+        1152
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "获取验证码",
+      "description": "获取验证码按钮不可用，请先输入手机号",
+      "view_id": "ctrip.android.view:id\/tvDoLogin",
+      "node_app_tree_sha256": "45324888ee8bf8e4605e20dc6462c16266851bf7f0b0ec9a2538c9861bba1b16",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/6",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "enabled": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        72,
+        1206,
+        306,
+        1262
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "账号密码登录",
+      "view_id": "ctrip.android.view:id\/tvLeftBtn",
+      "node_app_tree_sha256": "a171c8bd16df5a124755d7cad4bccb5914cf0d2d3f8f767eb0b5c832c1b8f78c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/7",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        840,
+        1206,
+        1152,
+        1262
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "境外手机密码登录",
+      "view_id": "ctrip.android.view:id\/tvRightBtn",
+      "node_app_tree_sha256": "1ae692e6fe455928f5cf92034d2910253f65273845d9132cbd915c811c368135",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/8",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        72,
+        2590,
+        216,
+        2734
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id\/ivLoginWechat",
+      "node_app_tree_sha256": "93731123b89431f8a9c8d6513cbe72ecdc942838792e79490e9d3b57b41c2094",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/9",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        288,
+        2590,
+        432,
+        2734
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id\/ivLoginQQ",
+      "node_app_tree_sha256": "ce91eb53163ea1ab1767b4a9914f72082a632cd79165fd361b5bd549cc406dd5",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/10",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        504,
+        2590,
+        648,
+        2734
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id\/ivLoginMore",
+      "node_app_tree_sha256": "acd32562253b5d563bdd7c47eaae0691aaf7138713aaeaaf0dfa96611849998f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/11",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        72,
+        2782,
+        132,
+        2842
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.RelativeLayout",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "勾选服务协议和个人信息保护指引",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "04f04d33654fb2c74cb09127f2ac89293803f8aa6894ba4857fc4dc46f34de40",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "description",
+          "text_sha256": "6fa44fb90b2033964efe697b11a854f709664efdd9e58686afad79c21113c0f8",
+          "node_signature": "fb63857fceb0f1f13cf8eefbc57e6265504ee12fefbcc355cfffd58c8ba3c85e",
+          "view_id": "ctrip.android.view:id\/ivSelectIcon"
+        }
+      ],
+      "view_id": "ctrip.android.view:id\/rlSelectIcon",
+      "node_app_tree_sha256": "8e0ba32fc231b75a06323572e87e02b8326eb3716f7cdcf8d074cafbc3273230",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/12",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        132,
+        2788,
+        396,
+        2836
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "阅读并同意携程的",
+      "view_id": "ctrip.android.view:id\/tvServiceProtocolRemark",
+      "node_app_tree_sha256": "9b48674d87eaeea76994fe7d02dd254c62f1777e0213da228f98a4e289119165",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/13",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        396,
+        2789,
+        606,
+        2836
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "《服务协议》",
+      "view_id": "ctrip.android.view:id\/tvServiceProtocol",
+      "node_app_tree_sha256": "96dc97b104af9bab14b2f021561a7dd34eb608adafa343125db1fa25a8e94eec",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/14",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        606,
+        2788,
+        639,
+        2836
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "和",
+      "node_app_tree_sha256": "6ab12ad3fa930f92b889a7485b145ed23cebba681ce8c6940b816d43ab8295d4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/15",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        639,
+        2789,
+        975,
+        2836
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "《个人信息保护指引》",
+      "view_id": "ctrip.android.view:id\/tvServicePolicy",
+      "node_app_tree_sha256": "a9a030939975515011e08e01dd586788d6703c2b096a3e36ceb24161d74da0ee",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/16",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        72,
+        853,
+        151,
+        906
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "+ 86",
+      "view_id": "ctrip.android.view:id\/tvCountryCode",
+      "node_app_tree_sha256": "5246c7b9ff8e3d0886e54b8580fa6d7d62254aebac7e73823188993515643f6d",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4\/0",
+        "parent_class": "android.widget.LinearLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        81,
+        2791,
+        123,
+        2833
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.ImageView",
+      "description": "勾选服务协议和个人信息保护指引",
+      "view_id": "ctrip.android.view:id\/ivSelectIcon",
+      "node_app_tree_sha256": "705d11c8954de8349d8eb119271ac1acf808714e8e0bafe54d01a8b5b33d3247",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/12\/0",
+        "parent_class": "android.widget.RelativeLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

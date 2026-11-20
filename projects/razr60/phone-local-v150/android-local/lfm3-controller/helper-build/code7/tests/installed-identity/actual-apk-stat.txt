@@ -1,0 +1,2 @@
+mode_hex=816d|nlink=3|dev=2097236|ino=238439|uid=1000|gid=1000|size=20985685|mtime=1794477565|ctime=1794477565|path=/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk
+mode_hex=81a4|nlink=1|dev=65086|ino=236950|uid=1000|gid=1000|size=1381371|mtime=1794471819|ctime=1794471819|path=/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk

@@ -1,0 +1,105 @@
+{
+  "actual_component_gates": [
+    {
+      "baseline_other_boundaries": {
+        "assertions": 39,
+        "cases": 8
+      },
+      "baseline_six_second_expected_rejection": true,
+      "candidate": {
+        "assertions": 45,
+        "cases": 9
+      },
+      "clock_ipc_ack_native_and_future_sequence_simulated": true,
+      "name": "booking_document_budget",
+      "original_receipt_sha256": "3eed6b50de28d5563b34e07df3c626fbc2571f2655dbcd02e362b975473b5999",
+      "passed": true,
+      "private_native_authority_proven": false,
+      "real_retained_dom_detection": true,
+      "sanitized_receipt_sha256": "c280429b3dd6876ddd7db191bdddf40432b00b18f6c9ca0ddb4f30db74a8a9f8",
+      "source_after_sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286",
+      "source_before_sha256": "ee2b2f8c1a236e6e0297db549381001877c7d00374c412b8078e83d66d919b98"
+    },
+    {
+      "candidate_assertions": 129,
+      "candidate_cases": 18,
+      "candidate_source_sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286",
+      "historical_baseline_source_sha256": "b5a06cebe0b12a02b76b28f06632895304c2c9c857f25c133f2fce4f808947db",
+      "name": "existing_readiness",
+      "native_identity_ipc_pending_detectors_and_future_sequences_mocked": true,
+      "original_receipt_sha256": "c2a022614c251c3ff7da91d4f78e187bc579f3bc128523087aad9230ff76c732",
+      "passed": true
+    }
+  ],
+  "all_requested_capabilities_qualified": false,
+  "apk": {
+    "bytes": 21387181,
+    "sha256": "ff0a1b713336575dcf6406d57cbc7b1df6f782a41a4daa8950e32c6c95537f77",
+    "version_code": 69,
+    "version_name": "0.69.0-native-background-runtime"
+  },
+  "artifact_sha256": {
+    "FINAL-INTEGRATION.json": "a3725f880b1f468f286385f16990790dcc35aaccc53c8332ebed258e3fa7547f",
+    "FROZEN-SOURCE.json": "37fd4bc1ec1fe5e7979bcaa3149009054b69b5102aae21cb9f0f94e7bd6bf3be",
+    "MAC-BUILD-RESULT.json": "14e51c5b4ab01006eb12eceaed90bef9093813c888d7488c25db0320517af461",
+    "PRODUCTION-CHANGES.patch": "2f403d33142fa27a097dc79f782c58dfb300f97ff82bfc6222d66c955c151211",
+    "PUBLICATION.json": "5313fff9b3ced07057879dfb6ba4245514729e7c46bae95ba324e94b373908ba",
+    "assembly/ASSEMBLY-RESULT.json": "3e01ab9ea4e7178aa9016c2f7f218ca27459b36dff342b9087785e6b3469cf80",
+    "assembly/apk-signature.txt": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+    "assembly/out/control-v69-static/STATIC-ACCEPTANCE.json": "bbf7d958a8836109b8e8d9498df5f3c3d2bcddd392728bef061ec0a304ac10c9"
+  },
+  "behavior": {
+    "action_replay_added": false,
+    "all_other_phase_budgets_unchanged": true,
+    "controller_manifest_changed": false,
+    "maximum_extra_reads": 2,
+    "model_profiles_changed": false,
+    "native_source_changed": false,
+    "permission_checks_changed": false,
+    "phase_same_key_extension": false,
+    "previous_ms": 6000,
+    "recognized_booking_pending_budget_ms": 16000,
+    "task_deadline_extended": false
+  },
+  "binary_android_manifest_byte_identical_to_prior_apk": true,
+  "build_and_signing_pass": true,
+  "build_identity_sha256": "ca2f94567f2a6bb4f7b1abec1356862cafc937067ef21f4d593e24775cdd016a",
+  "changed_production_files": 1,
+  "controller_has_internet_permission": false,
+  "draft_pr": 155,
+  "exact_gate_inputs_reverified_at_integration": true,
+  "integration_reran_gates": false,
+  "limits": [
+    "The booking phase budget changes from six to sixteen seconds only after the existing recognized pending-document predicate.",
+    "Its deadline remains fixed per page identity, capped by the original task deadline, with at most two read-only extra observations.",
+    "The counterfactual repeats a measured 2680 ms capture/ACK cost in a stated synthetic 7312 ms sequence. It is not an actual future private native bracket or successful flight task.",
+    "No unrelated Notes, shopping, model benchmark, native Stop or GPU gates were rerun for this one-file revision.",
+    "Host assertion counts, compilation and native binary identity are not business-success rates."
+  ],
+  "native_libraries_byte_identical_to_prior_apk": 18,
+  "parent": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "phone_outcomes_reported_here": false,
+  "prior_apk_sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+  "production_changes": [
+    {
+      "after_sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286",
+      "before_sha256": "ee2b2f8c1a236e6e0297db549381001877c7d00374c412b8078e83d66d919b98",
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java"
+    }
+  ],
+  "production_compile_inputs": 316,
+  "public_template_comment_only": {
+    "change": "Clarify that AX metadata is synthetic; original DOM is retained.",
+    "code_and_test_assertions_changed": false,
+    "original_tested_sha256": "e25f428f24ce70887900c42972d8fce0c5ea65dfb77fb4cc9f6d9bf002f1cbcd",
+    "published_sha256": "92deb3b399ea87de58de708d9855181ad775cd5454163f1baaaa7b7e073f94a8",
+    "rerun": false
+  },
+  "schema": "hepta.booking-budget-build-and-host-validation.public.v1",
+  "signature_scheme_v3_verified": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "source_head": "6e0129647f2f7b49a97c45ca57768f6aea3b3979",
+  "source_manifest_members": 2038,
+  "source_manifest_sha256": "4c6d67f7b59229a658dc8df8e53b75be24db2f4f4e7c90e3e2b1605b4d012afc",
+  "source_tree": "19ef631d6ed65843c937c07a607e27981d8afd53"
+}

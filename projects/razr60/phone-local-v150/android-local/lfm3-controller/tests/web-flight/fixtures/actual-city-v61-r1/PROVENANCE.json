@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.actual-city-v61-fixture-provenance.v1",
+  "task_id": "ba7a072aff434c1384ec4dc2dc2f92b1",
+  "commit": "28c75e85356d85723617a66a763a4443af2c4d52",
+  "apk_sha256": "fc496404a9998894b285ea2dca59a0bef34e558936f72f82cc621b89b4915e43",
+  "business_failed": true,
+  "query_dispatched": false,
+  "files": [
+    {
+      "role": "before_capture",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/web-helper/raw-0de358f0530542498aeafd61ae7f9679ab15e0f3cb7748acb82f85ee4d5a6e7e.json",
+      "name": "raw-0de358f0530542498aeafd61ae7f9679ab15e0f3cb7748acb82f85ee4d5a6e7e.json",
+      "fixture_file": "raw-0de358f0530542498aeafd61ae7f9679ab15e0f3cb7748acb82f85ee4d5a6e7e.json.gz",
+      "bytes": 1072636,
+      "sha256": "2d5fb34d33e7a239e0cd7d9724b9d314713ac4db4a925a5515b42e842a5f41ed",
+      "gzip_bytes": 38391,
+      "gzip_sha256": "4eca5ad74257f06881653d3ffd34bc17607e0229798ac86fbeb806613229ccf3"
+    },
+    {
+      "role": "first_capture",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/web-helper/raw-019f1826d6574784a26b5afffad63cc65ea3cea3f25a45e48bb7adaf5a961864.json",
+      "name": "raw-019f1826d6574784a26b5afffad63cc65ea3cea3f25a45e48bb7adaf5a961864.json",
+      "fixture_file": "raw-019f1826d6574784a26b5afffad63cc65ea3cea3f25a45e48bb7adaf5a961864.json.gz",
+      "bytes": 1071098,
+      "sha256": "b786e2e4c9279f0113ca4f32dd2afc8ed393ae99056647e24a7cc813bc427dfe",
+      "gzip_bytes": 39455,
+      "gzip_sha256": "1c2920ae4070e80226a442721ea1641b0271918c612a2b89ed51439e66f548a0"
+    },
+    {
+      "role": "last_capture",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/web-helper/raw-279a05b60a994d23a1ec6f36033ee7f2b2128d906c1b40f7b4e98530a7177232.json",
+      "name": "raw-279a05b60a994d23a1ec6f36033ee7f2b2128d906c1b40f7b4e98530a7177232.json",
+      "fixture_file": "raw-279a05b60a994d23a1ec6f36033ee7f2b2128d906c1b40f7b4e98530a7177232.json.gz",
+      "bytes": 1071098,
+      "sha256": "fb9c7d3c751c712de935b2525955e4d87b85fa4be8b079704a928274664333c3",
+      "gzip_bytes": 39459,
+      "gzip_sha256": "ed8f5a6775fde4d92a1ab926ed44ea21fe38e022efc2812cce73d63bbd736ace"
+    },
+    {
+      "role": "before_frame",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/scope-observation-dc3efe5a0806476c819ce44a6b78a963.json",
+      "name": "scope-observation-dc3efe5a0806476c819ce44a6b78a963.json",
+      "fixture_file": "scope-observation-dc3efe5a0806476c819ce44a6b78a963.json.gz",
+      "bytes": 49310,
+      "sha256": "fff2436b824378fc9388b93cf7ff5cb05fd28bc11e21f49bc9559d68304b26eb",
+      "gzip_bytes": 7457,
+      "gzip_sha256": "a42caf15443ad2a564f975816b2ae57b00b9c81d54ebbe39ecf161c3552509d7"
+    },
+    {
+      "role": "first_frame",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/scope-observation-abc97360b00f4ed5a9a55aead14482a3.json",
+      "name": "scope-observation-abc97360b00f4ed5a9a55aead14482a3.json",
+      "fixture_file": "scope-observation-abc97360b00f4ed5a9a55aead14482a3.json.gz",
+      "bytes": 85605,
+      "sha256": "6477d9940abd81205c4fb72f0ea5eae30afb3013c30c152465bd8c6f6ae19c01",
+      "gzip_bytes": 10224,
+      "gzip_sha256": "14ebefb5460f5b34b4f9a92762110417f4ade00fb9a45bb15b3286b5ed2b5c5c"
+    },
+    {
+      "role": "last_frame",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/scope-observation-7080bde351c04455bb74f1adc908e26b.json",
+      "name": "scope-observation-7080bde351c04455bb74f1adc908e26b.json",
+      "fixture_file": "scope-observation-7080bde351c04455bb74f1adc908e26b.json.gz",
+      "bytes": 85603,
+      "sha256": "e8f2e31153860561927afa9c8a9dd5d3381b1578c05246bdca474a4b2394cac1",
+      "gzip_bytes": 10222,
+      "gzip_sha256": "276062bb44e5a4e92c81dc1f7d307412998039ce3318dd3606e15e4e0bd4d9d4"
+    },
+    {
+      "role": "outcome",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/web-action-ca0f174a3d0540989859d9ba837b2b09.json",
+      "name": "web-action-ca0f174a3d0540989859d9ba837b2b09.json",
+      "fixture_file": "web-action-ca0f174a3d0540989859d9ba837b2b09.json.gz",
+      "bytes": 17115,
+      "sha256": "cda51ba33db5ecbc9bf1b251d87f0d6d046d3882f065216603fc8fe5b536298c",
+      "gzip_bytes": 3678,
+      "gzip_sha256": "efe58458ba08d146b9ec44b961acbbfd4ecbb84bca5877d02baffb0fbf1f8efe"
+    },
+    {
+      "role": "action",
+      "original_path": "/home/alex/hepta-resume-261e-r2/flight-v61-r1/collection/task/step-05-action.json",
+      "name": "step-05-action.json",
+      "fixture_file": "step-05-action.json.gz",
+      "bytes": 12554,
+      "sha256": "ea255af2ed039dcb8280a0061a0033a4c8958be005e400a6ead2ae91158f2343",
+      "gzip_bytes": 3266,
+      "gzip_sha256": "4fb55dd687e711d46927cc8f6295eb84fe00192ac1a737e85fdec6654170f040"
+    }
+  ],
+  "phone_operations_by_fixture_creation": 0
+}
