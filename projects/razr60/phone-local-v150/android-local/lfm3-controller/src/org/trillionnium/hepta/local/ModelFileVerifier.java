@@ -17,13 +17,21 @@ public final class ModelFileVerifier {
     }
     public synchronized void verify(File model, ModelProfile profile, Cancellation cancellation) throws Exception {
         if(profile==null)throw new IOException("pinned model profile required");
+        verifyPinned(model,profile.id,profile.fileName,profile.bytes,profile.sha256,cancellation);
+    }
+    /** The caller supplies a pinned asset identity, never a path learned from model output. */
+    synchronized void verifyPinned(File model,String identity,String fileName,long expectedBytes,
+            String expectedSha,Cancellation cancellation)throws Exception{
+        if(identity==null||identity.isEmpty()||fileName==null||fileName.isEmpty()||expectedBytes<=0
+                ||expectedSha==null||!expectedSha.matches("[0-9a-f]{64}")||cancellation==null)
+            throw new IOException("complete pinned asset identity required");
         File canonical = model.getCanonicalFile();
         if (!canonical.equals(model.getAbsoluteFile()) || !model.isFile() || model.length() == 0)
             throw new IOException("model must be the canonical nonempty app-private GGUF file");
         long length = model.length(), modified = model.lastModified();
-        if (!profile.fileName.equals(model.getName()) || length != profile.bytes)
+        if (!fileName.equals(model.getName()) || length != expectedBytes)
             throw new IOException("selected profile GGUF filename or size differs");
-        if (profile.id.equals(verifiedProfile) && model.getPath().equals(verifiedPath) && length == verifiedLength && modified == verifiedModified) return;
+        if ((identity+":"+expectedSha).equals(verifiedProfile) && model.getPath().equals(verifiedPath) && length == verifiedLength && modified == verifiedModified) return;
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (FileInputStream stream = new FileInputStream(model)) {
             byte[] bytes = new byte[1024 * 1024];
@@ -35,10 +43,10 @@ public final class ModelFileVerifier {
         }
         StringBuilder hash = new StringBuilder(64);
         for (byte value : digest.digest()) hash.append(String.format(Locale.ROOT, "%02x", value & 255));
-        if (!profile.sha256.equals(hash.toString()))
+        if (!expectedSha.equals(hash.toString()))
             throw new IOException("GGUF SHA-256 differs from the selected pinned profile");
         if (length != model.length() || modified != model.lastModified())
             throw new IOException("model changed while its SHA-256 was being verified");
-        verifiedProfile=profile.id;verifiedPath = model.getPath(); verifiedLength = length; verifiedModified = modified;
+        verifiedProfile=identity+":"+expectedSha;verifiedPath = model.getPath(); verifiedLength = length; verifiedModified = modified;
     }
 }

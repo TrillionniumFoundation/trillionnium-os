@@ -61,7 +61,7 @@ def main():
         need(contracts["schema"]=="hepta.local-model-settings-case-contract.v1","case contract schema")
         need(production["schema"]=="hepta.local-model-settings-production-sources.v1","source list schema")
         names=production["sources"]
-        need(type(names)is list and len(names)==37 and len(set(names))==37,"complete 37 production inputs required")
+        need(type(names)is list and len(names)==38 and len(set(names))==38,"complete 38 production inputs required")
         actual=[]
         for name in names:
             need(type(name)is str and name.startswith("src/org/trillionnium/hepta/") and name.endswith(".java")

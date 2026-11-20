@@ -1,0 +1,240 @@
+{
+  "schema": "hepta.native-model-metadata-projection.v1",
+  "original_controller_data": {
+    "action_schema": "hepta.observed-action-gbnf.v6-fixed-intents",
+    "apps": [
+      [
+        "com.xiaomi.shop",
+        "小米商城"
+      ]
+    ],
+    "open_allowed_packages": [],
+    "apps_omitted": 0,
+    "app_search": {
+      "query": "",
+      "offset": 0,
+      "matches": 1,
+      "total_apps": 1,
+      "next_offset": null,
+      "source": "initial_catalogue",
+      "model_issued": false
+    },
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents+explicit-app-selection.v1",
+      "instruction_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+      "authorization_sha256": "c9c3aa782ee785a8a326d18b7f17b39e9891c7fa77e70a6facc8d68f0159c78c",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [
+        "explicit_native_no_web_search.v1",
+        "native_app_tool_ceiling.v1"
+      ],
+      "execution_target": {
+        "schema": "hepta.explicit-task-target.v1",
+        "target_sha256": "5a64bd3c4afdab2add0c569f751dcb27ff2ada53ecef9896808820febebdeb9e",
+        "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+        "route": "native_app",
+        "recognition": "complete_literal_native_ax3000t_price.v1",
+        "explicit_initial_selection": true,
+        "original_ui_initial_package": "com.xiaomi.shop",
+        "original_ui_allowed_packages": [
+          "com.xiaomi.shop"
+        ],
+        "effective_initial_package": "com.xiaomi.shop",
+        "effective_allowed_packages": [
+          "com.xiaomi.shop"
+        ],
+        "native_goal": {
+          "schema": "hepta.native-app-owner.v1",
+          "kind": "native_product_price",
+          "package_name": "com.xiaomi.shop",
+          "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+          "contract_sha256": "a1a80f9c166838bbb97fc9c0d4cdbb529c15020777b79d07a38dcf581eff0c97",
+          "recognition": "complete_literal_native_ax3000t_price.v1",
+          "owner_start_utf16": 0,
+          "owner_end_utf16": 15,
+          "owner_rewritten": false,
+          "source": "complete_immutable_owner_and_explicit_initial_package",
+          "tool_ceiling": [
+            "back",
+            "click",
+            "done",
+            "open",
+            "scroll",
+            "submit",
+            "type",
+            "wait"
+          ],
+          "product_model": "AX3000T",
+          "model_start_utf16": 5,
+          "model_end_utf16": 12,
+          "variant_inferred": false,
+          "specifications_inferred": false,
+          "price_kind_inferred": false,
+          "provider_support_claimed": false,
+          "installed_identity_verified": false,
+          "grants_tool_authority": false,
+          "query_executed": false,
+          "business_verified": false
+        },
+        "owner_rewritten": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "business_verified": false
+      },
+      "arbitrary_semantic_constraints_verified": false,
+      "task_id": "931dfa0a1c3e4896a96b79c9d19b696d",
+      "discovery_run_id": null,
+      "found_packages": [],
+      "opened_package": null,
+      "success_done_allowed": true
+    },
+    "completion": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "native_product_price",
+      "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+      "contract_sha256": "f74cf28081701be32cde90c3e2e3e6543be4ed21a34844451ff3f91f1f8a527d",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "image_modal_content_unclassified"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "native_app": {
+        "schema": "hepta.native-app-action-domain.v1",
+        "phase": "image_modal",
+        "observation_id": "4473cffbe9894a69967e775e3f4b2183",
+        "package": "com.xiaomi.shop",
+        "background_generation": "3ab0306e-2927-4a6b-a319-573ce05fd00b",
+        "read_only_query_targets": {
+          "back": "dismiss_image_modal_once"
+        },
+        "literal_edit_values": {},
+        "back_allowed": true,
+        "provider": {
+          "schema": "hepta.native-xiaomi-product-page.v1",
+          "phase": "image_modal",
+          "missing": [
+            "image_modal_content_unclassified"
+          ],
+          "click_node_ids": [],
+          "edit_values": {},
+          "purposes": {},
+          "purchase_actions_available": false,
+          "product_modal_exit_attempted": false,
+          "modal_exit_requires_fresh_home": true
+        },
+        "result_ready": false,
+        "missing": [
+          "image_modal_content_unclassified"
+        ],
+        "booking_purchase_or_payment_allowed": false,
+        "web_helper_allowed": false,
+        "external_model_allowed": false
+      },
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "done_success_eligible": false,
+      "allowed_done_statuses": [
+        "failure",
+        "partial"
+      ],
+      "success_requires_final_observation_and_cleanup": true
+    },
+    "fixed_intent_tools": [],
+    "background_session": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.xiaomi.shop"
+      ],
+      "bootstrap_package": "com.xiaomi.shop",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+        "recognition": "complete_literal_native_ax3000t_price.v1",
+        "original_ui_initial_package": "com.xiaomi.shop",
+        "original_ui_allowed_packages": [
+          "com.xiaomi.shop"
+        ],
+        "effective_initial_package": "com.xiaomi.shop",
+        "effective_allowed_packages": [
+          "com.xiaomi.shop"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": false,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      },
+      "display_scope_mode": "public_own_group_personal_no_credentials_v1",
+      "display_scope_mode_source": "immutable_start_selection",
+      "display_scope_mode_grants_authority": false,
+      "generation": "3ab0306e-2927-4a6b-a319-573ce05fd00b",
+      "display_id": 244
+    },
+    "events": [],
+    "screen": {
+      "observation_id": "4473cffbe9894a69967e775e3f4b2183",
+      "package": "com.xiaomi.shop",
+      "size": [
+        1224,
+        2992
+      ],
+      "ime_visible": false,
+      "window": {
+        "scope": "active_root_only",
+        "root_bounds": [
+          186,
+          694,
+          1038,
+          2298
+        ],
+        "bounds": [
+          186,
+          694,
+          1038,
+          2298
+        ],
+        "type": 1,
+        "title": null,
+        "root_class": "android.widget.FrameLayout"
+      },
+      "node_projection_scope": "current_verified_native_app_domain_targets",
+      "whole_scene_included": false,
+      "private_full_native_node_count": 2,
+      "domain_filtered_nodes": 2,
+      "submit_actions": {},
+      "nodes": [],
+      "nodes_omitted": 2,
+      "tree_truncated": false,
+      "tree_truncation_reasons": [],
+      "text_projection_schema": "hepta.observed-text-projection.v1",
+      "editable_fields": [],
+      "editable_fields_omitted": 0,
+      "visible_text": [],
+      "visible_text_omitted": 0
+    }
+  },
+  "original_owner_rewritten": false,
+  "metadata_projection_filtered_screen_or_history": false,
+  "grammar_or_dispatch_authority_changed": false,
+  "model_prompt_sha256": "00192014549b94479d027f4cbbc632573b8dfab8089b59a603c56841a3144779",
+  "model_prompt_utf8_bytes": 3702
+}

@@ -33,6 +33,44 @@ final class ObservationDiagnostics {
     private boolean ended,clockRegressed,workerActive;
     private String previousSampleKey,publishedObservationId,terminal;
     private Map<String,Object> lastSavedGraphChange,lastSeedDecision;private long seedAdmissions;
+    private EventWatermark eventWatermark=EventWatermark.ZERO;
+
+    /** One immutable release-published event watermark. It contains copied values only. */
+    static final class EventWatermark {
+        static final EventWatermark ZERO=new EventWatermark(0,0,0,0,-1,-1,-1);
+        final long events,unknown,content,structural,lastEventAt,lastContentAt,lastStructuralAt;
+        private EventWatermark(long events,long unknown,long content,long structural,
+                long lastEventAt,long lastContentAt,long lastStructuralAt){
+            this.events=events;this.unknown=unknown;this.content=content;this.structural=structural;
+            this.lastEventAt=lastEventAt;this.lastContentAt=lastContentAt;this.lastStructuralAt=lastStructuralAt;
+        }
+        EventWatermark next(boolean unknownSource,boolean sealedContent,long at){
+            boolean contentOnly=sealedContent&&!unknownSource;
+            return new EventWatermark(events+1,unknown+(unknownSource?1:0),content+(contentOnly?1:0),
+                    structural+(contentOnly?0:1),at,contentOnly?at:lastContentAt,contentOnly?lastStructuralAt:at);
+        }
+        boolean follows(EventWatermark before){
+            return before!=null&&events>=before.events&&unknown>=before.unknown
+                    &&content>=before.content&&structural>=before.structural
+                    &&events==content+structural&&unknown<=structural
+                    &&events-before.events==content-before.content+structural-before.structural
+                    &&lastEventAt>=before.lastEventAt&&lastContentAt>=before.lastContentAt
+                    &&lastStructuralAt>=before.lastStructuralAt;
+        }
+        boolean sameStructure(EventWatermark before){
+            return follows(before)&&structural==before.structural&&unknown==before.unknown;
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> out=map();out.put("schema","hepta.observation-event-watermark.v1");
+            out.put("events",events);out.put("unknown_events",unknown);out.put("sealed_content_events",content);
+            out.put("structural_or_unclassified_events",structural);out.put("last_event_elapsed_ms",lastEventAt);
+            out.put("last_sealed_content_event_elapsed_ms",lastContentAt);
+            out.put("last_structural_event_elapsed_ms",lastStructuralAt);
+            out.put("event_time_source","service_callback_elapsed_realtime");
+            out.put("grants_action_authority",false);return Collections.unmodifiableMap(out);
+        }
+    }
+
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -55,6 +93,9 @@ final class ObservationDiagnostics {
     }
     synchronized void note(Event event){if(!ended&&event!=null)counts[event.ordinal()]=plus(counts[event.ordinal()],1);}
     synchronized void worker(boolean active){if(!ended)workerActive=active;}
+    synchronized void eventWatermark(EventWatermark value){
+        if(!ended&&value!=null&&value.events>=eventWatermark.events)eventWatermark=value;
+    }
     synchronized void reset(){if(!ended)previousSampleKey=null;}
     synchronized void graph(String stage,String key,String appTree,String state,String window,boolean truncated,long now){
         if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage))
@@ -104,7 +145,7 @@ final class ObservationDiagnostics {
         value.put("diagnostic_updates_frozen_at_terminal",ended);
         value.put("worker_drained_proved_by_this_record",false);value.put("published_observation_id",publishedObservationId);
         Map<String,Object> events=map();for(Event e:Event.values())if(counts[e.ordinal()]!=0)events.put(e.name(),counts[e.ordinal()]);
-        value.put("events",events);Map<String,Object> stages=map();
+        value.put("events",events);value.put("event_watermark",eventWatermark.evidence());Map<String,Object> stages=map();
         for(int i=0;i<PHASES.length;i++)if(phases[i][0]!=0){
             long open=!ended&&i==phase?Math.max(0,end-phaseAt):0;Map<String,Object> row=map();
             row.put("count",phases[i][0]);row.put("total_ms",plus(phases[i][1],open));row.put("max_ms",Math.max(phases[i][2],open));stages.put(PHASES[i],row);

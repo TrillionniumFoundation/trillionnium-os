@@ -1,0 +1,32 @@
+{
+  "assertions": 316,
+  "case_names": [
+    "saved root transition keeps strict equality false and requires a fresh after-leaf read",
+    "retained pair resamples the whole graph after its launch cookie retires",
+    "unclaimed leaf cannot gain the retained cookie-retirement exception",
+    "private retained Binder and both original cookie anchors are required",
+    "root or leaf immutable identity and unknown presentation changes still refuse",
+    "unpaired different duplicate or reordered cookie changes cannot request retry",
+    "retry pins the complete after-cookie sets and never accepts the earlier unstable pair",
+    "fresh complete retry reruns task scope global membership and component guards",
+    "original deadline cancellation and three-sample ceiling remain effective",
+    "ordinary observe window permission input and cleanup never acquire cookie retry"
+  ],
+  "case_names_sha256": "45d88559042fb70b3ae72c56b87e3e5fba22d8a1be184b480bb15146ede8b909",
+  "cases": 10,
+  "fixture_sha256": "06dbf806886ffde8834afa20bc3444db31214e2ecb7e75bb1c6f96b7e78c9837",
+  "original_permission": {
+    "assertions": 348,
+    "cases": 16
+  },
+  "original_state_settle": {
+    "assertions": 626,
+    "cases": 29
+  },
+  "schema": "hepta.profile-permission-cookie-retirement-case-contract.v1",
+  "stages": [
+    "original-permission-and-state",
+    "compile-cookie-retirement",
+    "cookie-retirement"
+  ]
+}

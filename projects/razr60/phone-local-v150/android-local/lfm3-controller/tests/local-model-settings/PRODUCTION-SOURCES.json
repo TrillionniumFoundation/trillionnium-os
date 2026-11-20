@@ -34,6 +34,7 @@
     "src/org/trillionnium/hepta/local/SdkExceptionFailure.java",
     "src/org/trillionnium/hepta/local/TaskAuthorization.java",
     "src/org/trillionnium/hepta/local/TaskCancellationQueue.java",
+    "src/org/trillionnium/hepta/local/VlmPins.java",
     "src/org/trillionnium/hepta/local/WarmProcessSession.java",
     "src/org/trillionnium/hepta/local/WorkerGenerationProof.java",
     "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",

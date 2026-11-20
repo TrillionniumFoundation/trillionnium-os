@@ -240,7 +240,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     @Override public void onAccessibilityEvent(AccessibilityEvent event) {
         // API 30..32 cannot identify the event display; conservatively invalidate the pending sample.
-        noteObservationEvent(android.os.Build.VERSION.SDK_INT>=33?event.getDisplayId():-1);
+        noteObservationEvent(android.os.Build.VERSION.SDK_INT>=33?event.getDisplayId():-1,
+                event.getEventType(),event.getWindowId(),event.getPackageName()==null?null:event.getPackageName().toString());
     }
     @Override public void onInterrupt() {
         requestStop();
@@ -264,8 +265,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return ownedController;
     }
     public synchronized LocalTaskController taskController(LocalModelEngine engine){
-        return taskController(engine.configuration().profile.visual()
-                ?new VlmInferenceAdapter(this,engine):new EngineInferenceAdapter(engine));
+        return taskController(new RuntimeInferenceAdapter(this,engine));
     }
     /** Pure idle query for local configuration; no controller retirement or recovery authority. */
     synchronized boolean modelSettingsIdle(){
@@ -715,6 +715,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         ObservationDiagnostics trace;
         volatile boolean finished;
         volatile long events,unknownEvents;
+        volatile ObservationDiagnostics.EventWatermark eventWatermark=ObservationDiagnostics.EventWatermark.ZERO;
+        volatile ObservationPairSeal activeSeal;
         private String phase="queued";private long phaseAt;
         ObservationRequest(String taskId,File directory,ObservationCallback callback,Cancellation cancel,long deadline,BackgroundSession background){
             this.taskId=taskId;this.directory=directory;this.callback=callback;this.cancel=cancel;this.background=background;
@@ -790,9 +792,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private static final class ObservationPairSeal {
         final CaptureIdentity identity;final Object authorization;
         final long graphStartedAt,graphCompletedAt,sealedAt,events,unknownEvents;
-        private ObservationPairSeal(CaptureIdentity identity,Object authorization,long start,long complete,long sealed,long events,long unknown){
+        final ObservationDiagnostics.EventWatermark eventWatermark;
+        private ObservationPairSeal(CaptureIdentity identity,Object authorization,long start,long complete,long sealed,long events,long unknown,
+                ObservationDiagnostics.EventWatermark eventWatermark){
             this.identity=identity;this.authorization=authorization;graphStartedAt=start;graphCompletedAt=complete;
-            sealedAt=sealed;this.events=events;unknownEvents=unknown;
+            sealedAt=sealed;this.events=events;unknownEvents=unknown;this.eventWatermark=eventWatermark;
         }
     }
     private static final class ObservationAbandoned extends IllegalStateException {
@@ -806,6 +810,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long pairStartedAt=-1,pairCompletedAt=-1,pairEvents=-1,encodeStartedAt=-1,encodeCompletedAt=-1,persistedAt=-1;
         long publicationCheckStartedAt=-1,publicationCheckCompletedAt=-1;
         ObservationPairSeal seal;NativeResampleSeed seed;
+        ObservationDiagnostics.EventWatermark publicationEvents,publicationEndEvents,publishedEvents;
         ObservationProduct(CaptureIdentity identity,long callbackAt){
             this.identity=identity;this.callbackAt=callbackAt;events=identity.events;unknownEvents=identity.unknownEvents;capturedAt=identity.capturedAt;
         }
@@ -824,6 +829,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("capture_age_at_publication_ms",publishedAt-capturedAt);
             e.put("pair_graph_event_watermark",pairEvents);e.put("pair_sealed_event_watermark",seal==null?null:Long.valueOf(seal.events));
             e.put("unknown_events_at_capture",unknownEvents);e.put("publication_check_event_watermark",checkedEvents);
+            if(seal!=null){
+                e.put("sealed_event_watermark",seal.eventWatermark.evidence());
+                e.put("publication_start_event_watermark",publicationEvents==null?null:publicationEvents.evidence());
+                e.put("publication_end_event_watermark",publicationEndEvents==null?null:publicationEndEvents.evidence());
+                e.put("published_event_watermark",publishedEvents==null?null:publishedEvents.evidence());
+                e.put("historical_pair_content_events_preserved",true);
+                e.put("current_input_state_claimed",false);
+            }
             e.put("post_encoding_whole_graph_rechecked",seal==null&&wholeGraphRechecked);
             e.put("same_instant_pixels_and_ax_claimed",false);e.put("publication_refreshes_capture_age",false);
             e.put("fresh_action_validation_required",true);e.put("grants_action_authority",false);e.put("business_completion_verified",false);
@@ -837,10 +850,25 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     private void noteObservationEvent(int displayId){
+        noteObservationEvent(displayId,-1,-1,null);
+    }
+    private void noteObservationEvent(int displayId,int eventType,int windowId,String packageName){
         ObservationRequest request=activeObservation;
         if(request!=null&&!request.finished&&(displayId<0||displayId==request.displayId)){
-            if(displayId<0)request.unknownEvents++;
-            request.events++;request.note(displayId<0?ObservationDiagnostics.Event.EVENT_UNKNOWN:ObservationDiagnostics.Event.EVENT_TARGET);
+            long at=SystemClock.elapsedRealtime();
+            ObservationPairSeal seal=request.activeSeal;
+            // Only copied framework event metadata is used here. No node, root or IPC is borrowed.
+            boolean content=seal!=null&&seal.identity.nativeRecheck&&seal.authorization==request.readAuthorization
+                    &&at>=seal.sealedAt&&displayId==seal.identity.displayId&&windowId>=0
+                    &&windowId==seal.identity.frame.windowId&&packageName!=null&&!packageName.isEmpty()
+                    &&packageName.equals(seal.identity.frame.packageName)
+                    &&(eventType==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+                        ||eventType==AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
+            ObservationDiagnostics.EventWatermark next=request.eventWatermark.next(displayId<0,content,at);
+            // Preserve the old raw counters and fences. Publish the complete new watermark last.
+            request.unknownEvents=next.unknown;request.events=next.events;request.eventWatermark=next;
+            request.note(displayId<0?ObservationDiagnostics.Event.EVENT_UNKNOWN:ObservationDiagnostics.Event.EVENT_TARGET);
+            if(request.trace!=null)request.trace.eventWatermark(next);
         }
     }
     public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,
@@ -1069,7 +1097,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(request.finished)return null;
         String diagnostic=request.diagnostic(error);
         request.note(ObservationDiagnostics.Event.REQUEST_ERROR);if(request.trace!=null)request.trace.finish("failed",SystemClock.elapsedRealtime());
-        request.failedAt=SystemClock.elapsedRealtime();request.finished=true;request.resampleSeed=null;request.gate.retire();
+        request.failedAt=SystemClock.elapsedRealtime();request.finished=true;request.resampleSeed=null;request.activeSeal=null;request.gate.retire();
         if(request.shotPending&&captureSerial==request.token){capturePending=false;captureSerial++;}
         request.shotPending=false;
         if(request.captured!=null){request.captured.close();request.captured=null;}
@@ -1109,7 +1137,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         retryObservation(request,delay,null);
     }
     private void retryObservation(final ObservationRequest request,long delay,NativeResampleSeed seed){
-        request.resampleSeed=null;
+        request.resampleSeed=null;request.activeSeal=null;
         if(request.captured!=null){request.captured.close();request.captured=null;}
         request.gate.resetEvidence();request.nativeSample=false;request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
         if(request.trace!=null)request.trace.reset();
@@ -1140,7 +1168,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         main.postDelayed(new Runnable(){public void run(){watchCapture(request,captureDeadline);}},100);
     }
     private void captureObservation(final ObservationRequest request){
-        request.resampleSeed=null;
+        request.resampleSeed=null;request.activeSeal=null;
         if(!observationActive(request))return;
         if(capturePending){failObservation(request,"已有截图尚未结束");return;}
         // Non-native/unknown/incomplete evidence keeps both post-capture whole-graph checks.
@@ -1193,17 +1221,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 request.graph("screenshot_graph",after);
                 if(!retry&&!identity.matches(after)){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);retry=true;}
                 product.nativeGraphRechecked=!retry&&identity.nativeRecheck&&nativeObservationRecheckAllowed(request,after);
+                final ObservationDiagnostics.EventWatermark sealEvents=request.eventWatermark;
                 if(product.nativeGraphRechecked&&identity.frozenWindow!=null
                         &&identity.frozenWindow.matches(frozenObservationWindow(after))
                         &&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
                         &&product.pairEvents==request.events&&pairUnknownEvents==request.unknownEvents
                         &&identity.unknownEvents==request.unknownEvents
+                        &&sealEvents.events==product.pairEvents&&sealEvents.unknown==pairUnknownEvents
                         &&identity.graphStartedAt>=request.started&&identity.graphCompletedAt>=identity.graphStartedAt
                         &&identity.graphCompletedAt<=identity.capturedAt&&identity.capturedAt<=callbackAt
                         &&callbackAt<=product.pairStartedAt&&product.pairStartedAt<=product.pairCompletedAt){
                     requireObservationWork(request);
                     product.seal=new ObservationPairSeal(identity,request.readAuthorization,product.pairStartedAt,
-                            product.pairCompletedAt,SystemClock.elapsedRealtime(),product.pairEvents,pairUnknownEvents);
+                            product.pairCompletedAt,SystemClock.elapsedRealtime(),product.pairEvents,pairUnknownEvents,sealEvents);
+                    // Never backfill a newer event watermark into this already checked pair.
+                    request.activeSeal=product.seal;
                 }
                 if(after!=null){after.close();after=null;}
                 if(!retry){
@@ -1229,6 +1261,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     request.phase("saved_graph");
                     product.checkedEvents=request.events;product.publicationCheckStartedAt=SystemClock.elapsedRealtime();
                     if(product.seal!=null){
+                        product.publicationEvents=request.eventWatermark;
+                        product.checkedEvents=product.publicationEvents.events;
                         // Content changes since the sealed pair do not rewrite historical facts.
                         // This still reads actual permission/root/window/geometry/census facts.
                         product.nativeGraphRechecked=false;
@@ -1236,6 +1270,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_MISSING);retry=true;}
                         catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_STALE);retry=true;}
                         if(!retry&&!product.frozenWindowRechecked){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;}
+                        product.publicationEndEvents=request.eventWatermark;
                     }else{
                         // Unknown/Web/incomplete or event-inconsistent pairs keep the old full-graph contract.
                         try{after=readGraph(observationBudget(request),request.background);}
@@ -1280,12 +1315,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
             if(product.seal!=null)requireTaskAuthorization(request.taskId,taskAuthorization);
             boolean eventsChanged=product.events!=request.events||product.unknownEvents!=request.unknownEvents;
-            boolean currentCheck=product.seal==null?product.nativeGraphRechecked:product.frozenWindowRechecked;
-            boolean eventsRechecked=eventsChanged&&currentCheck
-                    &&product.unknownEvents==request.unknownEvents&&product.checkedEvents==request.events
-                    &&nativeObservationRecheckAllowed(request,request.captured);
-            if(product.seal!=null&&(!product.frozenWindowRechecked||product.checkedEvents!=request.events
-                    ||product.unknownEvents!=request.unknownEvents))retry=true;
+            // A sealed pair remains historical evidence. Only precisely classified same-window
+            // content events may follow it; one immutable watermark closes the publication fence.
+            final ObservationDiagnostics.EventWatermark publishedEvents=request.eventWatermark;
+            product.publishedEvents=publishedEvents;
+            boolean sealedBoundaryCurrent=product.seal!=null&&request.activeSeal==product.seal
+                    &&product.frozenWindowRechecked&&product.publicationEvents!=null&&product.publicationEndEvents!=null
+                    &&product.publicationEvents.sameStructure(product.seal.eventWatermark)
+                    &&product.publicationEndEvents.sameStructure(product.publicationEvents)
+                    &&publishedEvents.sameStructure(product.publicationEndEvents)
+                    &&publishedEvents.events==request.events&&publishedEvents.unknown==request.unknownEvents
+                    &&publishedEvents.unknown==product.unknownEvents
+                    &&publishedEvents.lastEventAt<=SystemClock.elapsedRealtime();
+            boolean eventsRechecked=eventsChanged&&(product.seal==null
+                    ?product.nativeGraphRechecked&&product.unknownEvents==request.unknownEvents
+                        &&product.checkedEvents==request.events&&nativeObservationRecheckAllowed(request,request.captured)
+                    :sealedBoundaryCurrent&&nativeObservationRecheckAllowed(request,request.captured));
+            if(product.seal!=null&&!sealedBoundaryCurrent)retry=true;
             if(retry||(eventsChanged&&!eventsRechecked)){
                 if(eventsChanged)request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
                 NativeResampleSeed seed=product.seed;
@@ -1305,7 +1351,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
-            request.finished=true;request.gate.retire();activeObservation=null;
+            request.finished=true;request.activeSeal=null;request.gate.retire();activeObservation=null;
             request.callback.onObservation(observation);
         }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}
         finally{product.close();}

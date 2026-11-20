@@ -1,0 +1,13 @@
+# Typed content events after a sealed native snapshot
+
+The production observer runs verbatim through the existing snapshot extraction harness. The original 49 cases and every assertion remain; only the original PNG-content positive now supplies explicit synthetic event type/window/package metadata. Its unclassified post-read event negatives remain unchanged. Thirteen additional cases exercise the real new code, for 62 cases and 341 assertions.
+
+Only an already constructed private pre_encoding_paired_history seal may classify exact same-display/window/package WINDOW_CONTENT_CHANGED or VIEW_TEXT_CHANGED as historical content. Scroll, focus, window/state events, unknown type or provenance, combined type values and other-window events remain structural. Raw total/unknown counters remain real. A single immutable volatile watermark carries all counters and callback times. Any structural/unknown change from seal through the complete current window/task/geometry/census read and main publication refuses the old seal. Pre-seal all-event fences and unsealed whole-graph checks remain.
+
+The new positive cases exercise content events during frozen-window IO and after worker completion before main publication, and an authored 88-content-event stress case. The latter borrows only the count from the real failure: the old trace did not record event types or individual arrival times. Its event metadata and distribution are explicitly synthetic; no claim is made that all 88 actual events were content.
+
+The actual stale action is preserved byte for byte and the failed observation diagnostic is an exact JSON-value projection. accepted=false, dispatched=false and effect_entered=false are checked. The current source does not claim a click occurred. The failed task's result SHA and both fixture hashes are in PROVENANCE.json.
+
+The gate additionally hard-pins the complete original Service source tail from StaleObservation onward (dispatch, original node refresh, window enumeration and graph IO), then executes the unchanged native-action-integration runner. That gate runs the real extracted Session/Service bridge and original 76/157 pure cases plus its integration cases with explicit host Android IO. Historical publication does not grant action authority or renew the capture time/deadline.
+
+All Android IO, pixels, Binder/window fixtures and scheduling clock are explicit host boundaries. No phone command, device build, model inference or business-success claim occurs in this gate. Subsequent phone evidence must show actual content/structural/unknown watermarks and actual business progress.

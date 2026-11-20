@@ -691,6 +691,8 @@ public final class LocalModelEngine implements AutoCloseable {
     private File modelDirectory(LocalRuntimeConfig config){return new File(files,config.profile.visual()?"gui-owl-model":"model");}
     private File modelFile(LocalRuntimeConfig config){return new File(modelDirectory(config),config.profile.fileName);}
     public LocalRuntimeConfig configuration() { return runtime.configuration(); }
+    /** Read-only identity for a service-owned router; no runtime refresh or publication. */
+    RuntimeGeneration runtimeGeneration(){return runtime;}
     static RuntimeGeneration generation(RuntimeConfigTransaction.Snapshot source,ModelFileVerifier verifier)throws Exception{
         return new RuntimeGeneration(RuntimeConfigTransaction.decode(source),source,verifier,null);
     }
@@ -735,26 +737,41 @@ public final class LocalModelEngine implements AutoCloseable {
         lease.requireOwned();
     }
     ModelFileVerifier verifySettingsModel(SettingsReservation lease,LocalRuntimeConfig selected)throws Exception{
-        requireSettingsOwner(lease);RuntimeConfigTransaction.requireText(selected);
+        requireSettingsOwner(lease);RuntimeConfigTransaction.requireSupported(selected);
         ActivityManager.MemoryInfo info=memoryInfo();
         if(!MemoryAvailability.read(info.availMem,info.totalMem,info.lowMemory).admits(selected.profile.minimumAvailableBytes))
             throw new IOException("available memory is below the selected profile admission threshold");
         File directory=modelDirectory(selected).getCanonicalFile(),model=modelFile(selected).getCanonicalFile();
-        if(!directory.equals(new File(files.getCanonicalFile(),"model"))||!directory.isDirectory()
+        String directoryName=selected.profile.visual()?"gui-owl-model":"model";
+        if(!directory.equals(new File(files.getCanonicalFile(),directoryName))||!directory.isDirectory()
                 ||!model.getParentFile().equals(directory)||!model.getName().equals(selected.profile.fileName))
             throw new IOException("selected model is not the pinned app-private GGUF");
-        android.system.StructStat before=Os.lstat(model.getPath());
-        if(!android.system.OsConstants.S_ISREG(before.st_mode)||before.st_uid!=android.os.Process.myUid()
-                ||before.st_nlink!=1||before.st_size!=selected.profile.bytes)
-            throw new IOException("selected GGUF owner, type, link count or size differs");
+        android.system.StructStat before=settingsFile(model,selected.profile.bytes);
+        File projector=selected.profile.visual()?new File(directory,VlmPins.PROJECTOR):null;
+        android.system.StructStat projectorBefore=projector==null?null:settingsFile(projector,VlmPins.PROJECTOR_BYTES);
         ModelFileVerifier verifier=new ModelFileVerifier();
         verifier.verify(model,selected.profile,()->closed.get());
-        android.system.StructStat after=Os.lstat(model.getPath());
+        if(projector!=null)new ModelFileVerifier().verifyPinned(projector,selected.profile.id+"/projector",
+                VlmPins.PROJECTOR,VlmPins.PROJECTOR_BYTES,VlmPins.PROJECTOR_SHA,()->closed.get());
+        settingsFileUnchanged(model,before);
+        if(projector!=null)settingsFileUnchanged(projector,projectorBefore);
+        requireSettingsOwner(lease);return verifier;
+    }
+    private static android.system.StructStat settingsFile(File file,long bytes)throws Exception{
+        if(!file.getAbsoluteFile().equals(file.getCanonicalFile()))
+            throw new IOException("selected model asset is aliased");
+        android.system.StructStat stat=Os.lstat(file.getPath());
+        if(!android.system.OsConstants.S_ISREG(stat.st_mode)||stat.st_uid!=android.os.Process.myUid()
+                ||stat.st_nlink!=1||stat.st_size!=bytes)
+            throw new IOException("selected model asset owner, type, link count or size differs");
+        return stat;
+    }
+    private static void settingsFileUnchanged(File file,android.system.StructStat before)throws Exception{
+        android.system.StructStat after=settingsFile(file,before.st_size);
         if(before.st_dev!=after.st_dev||before.st_ino!=after.st_ino||before.st_size!=after.st_size
                 ||before.st_uid!=after.st_uid||before.st_gid!=after.st_gid||before.st_mode!=after.st_mode
                 ||before.st_nlink!=after.st_nlink||before.st_mtime!=after.st_mtime||before.st_ctime!=after.st_ctime)
-            throw new IOException("selected GGUF identity changed during verification");
-        requireSettingsOwner(lease);return verifier;
+            throw new IOException("selected model asset identity changed during verification");
     }
     void publishSettings(SettingsReservation lease,RuntimeGeneration next){
         if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
