@@ -3,7 +3,7 @@
   "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
   "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r1_complete_host_android_phone_validation_pending",
+  "candidate_status": "integrated_r2_complete_host_android_phone_validation_pending",
   "complete_source_files": 2312,
   "files": [
     {
@@ -6557,9 +6557,9 @@
       "sha256": "62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc"
     },
     {
-      "bytes": 77587,
+      "bytes": 77692,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "1e4366c103e185995a30f3cd222edf28fa1f3ba85fca422cd9e38c8911848eb3"
+      "sha256": "c2edf868dea33873c605839ed05b434e80843e1c85b2292d782bb74d6713da80"
     },
     {
       "bytes": 4417,
@@ -9892,9 +9892,9 @@
       "sha256": "26a9dda638d8646cb48cd4c9d1c4d26f085893d97d665f63e82d5d80f5248051"
     },
     {
-      "bytes": 2995,
+      "bytes": 3126,
       "path": "tests/qualification-scope/UiFixture.template",
-      "sha256": "0537915bf2f07eeb17f5ba6d2f08a0406e5d1be02acc54919543477a7b6f5b9a"
+      "sha256": "ea62199012fe06a5297660372310ae7b3c038d57e6bc738e8b69839b925c59fd"
     },
     {
       "bytes": 430,
@@ -10107,9 +10107,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 23423,
+      "bytes": 25566,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "6d1228918a801bc3009bce035e5aca278a8e3a41693d4da33dbc59346f2e4d85"
+      "sha256": "e22a4dc612103de9276f9b5a23fde77ac09c400a81d5da870e83e75136addcc4"
     },
     {
       "bytes": 2997,
@@ -10122,9 +10122,9 @@
       "sha256": "485a338067ebe71c87faa1d8d70404e4e1758d5437d9174dad5222d039dc0d04"
     },
     {
-      "bytes": 26949,
+      "bytes": 29416,
       "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
-      "sha256": "1f0778a4ea0b01f8a932cff4accab1dfd836e917cc28c4cc0ddc4c974370349c"
+      "sha256": "abbc2b816af62952989677e0937f41dac120b1eb812721ae67ff716a28d46535"
     },
     {
       "bytes": 143,
@@ -10177,9 +10177,9 @@
       "sha256": "3f205fae6da0308829ec3a6edf51fd7cbb10a9b9d41a76004182e7fce22bdf06"
     },
     {
-      "bytes": 6617,
+      "bytes": 8113,
       "path": "tests/recovery-application/prepare_engine_fixture.py",
-      "sha256": "8c867e77e5382ab04577c2f5490f15bbb3766fdb4d8f301cb930dc7c8bcbb6bc"
+      "sha256": "cb4297f3d5ee96a2e95e705364b877116bc87065b40583a2b842919da529e3d7"
     },
     {
       "bytes": 4565,
@@ -11477,9 +11477,9 @@
       "sha256": "397155470dc312309c1c66e209f3c8b9b3185381085fdf8f1446e9b0bb9e6d10"
     },
     {
-      "bytes": 1677,
+      "bytes": 1750,
       "path": "tools/test_recovery_application.py",
-      "sha256": "95fcb62f19544215f007a7b0aa38e575075237b06338dda9cf1fc9cf0356e773"
+      "sha256": "331f0a4254a746b2803506b4e99f4c4cb1e646a64bc6b22599591e54fbb8092d"
     },
     {
       "bytes": 3221,
@@ -11565,11 +11565,11 @@
   "main_java_sources": 196,
   "phone_qualified": false,
   "production_build_inputs_count": 371,
-  "production_input_map_sha256": "7354c2b57f4baa6e13be8109f89d9ea5f7b9773b505f50edddee8db93e7b1c77",
+  "production_input_map_sha256": "1ac34e99d00c4e70faaaf1ea35e50e61e619975681fa686d064606aa86275e10",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest.",
-  "source_parent_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
-  "source_parent_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
+  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions.",
+  "source_parent_head": "de5c96aebb0e6f42e7ec55ea129e83645d503686",
+  "source_parent_manifest_sha256": "60417aa28a9e024181341ba3de294fc679d9ebf13adb7fbdc844eee0c5f245c9",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

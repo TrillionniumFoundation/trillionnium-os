@@ -78,7 +78,29 @@ final class HeptaAccessibilityService {
  boolean modelSettingsIdle(){throw new AssertionError("settings UI is outside the legacy recovery fixture");}
 }
 """,encoding="utf-8")
-    all_sources=actual+[engine_file,settings_file,service_file]+fixtures
+    # Explicit import IO boundary. It cannot open a URI, publish a model, or claim
+    # actual SettingsReservation coverage. A host-owned external reservation uses
+    # the exact Engine slot/close path to exercise the actual Application lifecycle.
+    import_file=output/"LocalModelImport.java"
+    import_file.write_text("""package org.trillionnium.hepta.local;
+final class LocalModelImport implements AutoCloseable {
+ private final LocalModelEngine engine;
+ LocalModelEngine.ExternalRunLease lease;
+ boolean closed;int closeCalls;
+ LocalModelImport(LocalProbeApplication app,LocalModelEngine engine){this.engine=engine;}
+ boolean isBusy(){return lease!=null;}
+ void beginHostIo(){
+  if(closed||lease!=null)throw new IllegalStateException("host import IO already owned or closed");
+  lease=engine.reserveExternal(java.util.UUID.randomUUID().toString().replace("-",""));
+ }
+ void finishHostIo(){
+  if(lease==null)throw new IllegalStateException("host import IO absent");
+  lease.releaseAfterTerminalPublication(true);lease=null;
+ }
+ public void close(){closed=true;closeCalls++;}
+}
+""",encoding="utf-8")
+    all_sources=actual+[engine_file,settings_file,service_file,import_file]+fixtures
     digest=lambda b:hashlib.sha256(b).hexdigest()
     record={
         "scope":"actual Application and exact Engine external/recovery members; Android/normal IO/Session/permission Session/diagnostic fixtures",
@@ -91,6 +113,7 @@ final class HeptaAccessibilityService {
         "java_inputs":[{"path":str(path),"sha256":digest(path.read_bytes())} for path in all_sources],
         "not_android_runtime":True,"not_session_filesystem_durability":True,
         "runtime_boundary":"Exact RuntimeGeneration class and actual config/profile/verifier types; snapshot IO is opaque, default construction is a fixture; new settings UI throws if entered. Original recovery assertions are unchanged.",
+        "import_boundary":"Explicit host IO lifetime only: beginHostIo owns the exact extracted external Engine slot; close records the Application callback and cannot release that slot; only finishHostIo supplies the host terminal. No URI, filesystem publication or actual SettingsReservation claim. The full importer and actual settings slot have the separate 31-case gate.",
     }
     (output/"EXTRACTION.json").write_text(json.dumps(record,indent=2)+"\n",encoding="utf-8")
     return all_sources

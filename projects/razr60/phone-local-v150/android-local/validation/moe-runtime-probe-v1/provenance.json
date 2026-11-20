@@ -407,6 +407,25 @@
       "Run three paired repetitions plus a bounded sustained session to detect thermal drift, HTP/IOVA errors, LMK/OOM, memory-reserve breaches and foreground responsiveness regressions; include PSS/RSS/global memory and DMA-aware evidence.",
       "Cancellation/timeout/model switch/reload must release native workers and NPU resources. Repeat after an injected bad output/context overflow and verify no stale tool execution.",
       "Change default only if candidate preserves all critical correctness/isolation gates, improves or matches aggregate task success, and stays within the incumbent deadline/memory/thermal envelope. Grammar validity alone is insufficient."
-    ]
+    ],
+    "mnn": {
+      "release": "3.6.2",
+      "release_date": "2026-10-29",
+      "release_reference": "https://github.com/alibaba/MNN/discussions/5068",
+      "source_findings": [
+        "Hexagon fused INT4 GEMV, GatedRMSNorm and norm+RoPE reduce decode dispatch overhead.",
+        "Qwen3.5 gated delta rule and LFM2 short-convolution paths include chunked prefill and HMX computation; release notes add MobileMoE and MiniCPM-V 4.7 export/inference.",
+        "The 233.98 token/s speculative figure in the release is iPad Pro M5, not Snapdragon 8 Elite."
+      ],
+      "lfm3_pr": {
+        "url": "https://github.com/alibaba/MNN/pull/5131",
+        "head": "2f1ca7210de544eb747a1a4ba5bdad58c1b53896",
+        "observed_updated_at": "2026-11-18T11:41:06Z",
+        "state": "closed",
+        "merged": false,
+        "validation_scope": "The PR describes desktop CPU/CUDA validation and explicitly leaves mobile, Metal, OpenCL and Vulkan unvalidated. Its existence is not proof of LFM3 support in the 3.6.2 release."
+      },
+      "decision": "Concrete runtime comparison candidate, especially for Qwen3.5; not an ABI-compatible replacement for the pinned GenieX runtime. No MNN build, phone execution or default change was performed in this turn."
+    }
   }
 }

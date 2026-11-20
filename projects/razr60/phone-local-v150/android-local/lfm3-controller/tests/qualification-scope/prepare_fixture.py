@@ -6,6 +6,7 @@ The fake effect APIs count every actual production call; policy is not reimpleme
 import ast
 import hashlib
 import json
+import re
 from pathlib import Path
 
 
@@ -14,6 +15,29 @@ def section(text, start, end):
         raise RuntimeError(f'nonunique production extraction anchor: {start}')
     i = text.index(start)
     return text[i:text.index(end, i)]
+
+
+JAVA_TOKENS = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\r\n]*|/\*.*?\*/|[{}]', re.S)
+
+
+def java_method(text, signature):
+    """Copy one complete method verbatim; adjacent UI methods are never included."""
+    if text.count(signature) != 1 or not signature.endswith('{'):
+        raise RuntimeError(f'nonunique complete method signature: {signature}')
+    start = text.index(signature)
+    opening = start + len(signature) - 1
+    depth = 0
+    for token in JAVA_TOKENS.finditer(text, opening):
+        if token.group() == '{':
+            depth += 1
+        elif token.group() == '}':
+            depth -= 1
+            if depth == 0:
+                end = token.end()
+                if text[end:end + 1] == '\n':
+                    end += 1
+                return text[start:end]
+    raise RuntimeError(f'unclosed production method: {signature}')
 
 
 def prepare(source, output):
@@ -112,17 +136,31 @@ def prepare(source, output):
     for name, code in session_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'LocalTaskSession.java').write_text(fixture)
     ui = (pkg / 'MainActivity.java').read_text()
-    ui_parts = {
-        'binding': section(ui, '    @Override protected void onSaveInstanceState(', '    @Override protected void onNewIntent('),
-        'intent_start': section(ui, '    private void handleIntent(', '    private void runProbe('),
+    ui_methods = {
+        signature: java_method(ui, signature) for signature in (
+            '    @Override protected void onSaveInstanceState(Bundle state){',
+            '    private void restoreScopeUi(Bundle state){',
+            '    private void acceptScopePrefill(Intent intent,String task,String expected,boolean hasExpected,boolean autoTask){',
+            '    private void handleIntent(Intent intent){',
+            '    private boolean beginTask(String owner,String source,String nonceSha){',
+        )
     }
-    # The actual Intent and beginTask bodies remain exact. Model chooser,
-    # restore and listener UI are tested by the independent settings gate.
-    ui_settings_only = section(ui, '    private void chooseLocalModelFromOwnerButton(){',
-        '    private boolean beginTask(')
-    if ui_parts['intent_start'].count(ui_settings_only) != 1:
-        raise RuntimeError('one model-settings-only UI block in legacy scope fixture')
-    ui_parts['intent_start'] = ui_parts['intent_start'].replace(ui_settings_only, '', 1)
+    ui_parts = {
+        'binding': ''.join(list(ui_methods.values())[:3]),
+        'intent_start': ''.join(list(ui_methods.values())[3:]),
+    }
+    # Every original binding/Intent/beginTask body is copied in full. Separately
+    # declared file-picker/settings UI is outside this legacy fixture's scope.
+    ui_settings_only = ''.join(java_method(ui, signature) for signature in (
+        '    private void chooseLocalModelFromOwnerButton(){',
+        '    private void restoreLocalModelFromOwnerButton(){',
+        '    @Override public void onLocalModelSettingsChanged(){',
+    ))
+    ui_import_only = ''.join(java_method(ui, signature) for signature in (
+        '    private void chooseModelFileFromOwnerButton(){',
+        '    @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){',
+        '    @Override public void onLocalModelImportChanged(){',
+    ))
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     # The legacy scope fixture has no actual Activity/physical identity.
     # Null keeps its existing VD/strict path; the exact capture method has its own gate.
@@ -198,6 +236,13 @@ def prepare(source, output):
             'owner_ui':{'bytes':len(ui_settings_only.encode()),'sha256':hashlib.sha256(ui_settings_only.encode()).hexdigest()},
             'legacy_session_and_intent_methods_modified':False,
             'separate_gate_execution_not_claimed_here':True},
+        'ui_exact_methods':{signature:{'bytes':len(code.encode()),'sha256':hashlib.sha256(code.encode()).hexdigest()}
+            for signature,code in ui_methods.items()},
+        'model_import_helpers_excluded_from_legacy_fixture':{
+            'bytes':len(ui_import_only.encode()),'sha256':hashlib.sha256(ui_import_only.encode()).hexdigest(),
+            'import_transaction_gate':'tests/offline-model-import/run_host.py',
+            'picker_ui_executed_here':False,'production_methods_modified':False,
+            'saved_pending_asset_boundary':'nullable String field only; no URI, picker or import authority'},
         'personal_notes_recovery_fixture_boundary':'Eligibility is explicitly false and the receipt is always null; this legacy IO fixture cannot create or accept personal Notes recovery authority.',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',

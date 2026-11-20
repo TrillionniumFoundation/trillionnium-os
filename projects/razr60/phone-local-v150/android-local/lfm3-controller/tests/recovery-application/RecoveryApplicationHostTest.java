@@ -207,6 +207,38 @@ public final class RecoveryApplicationHostTest {
     public static void main(String[] args)throws Exception{
         try{runCases();}finally{shutdownCancellationWorker();}
     }
+    private static void importBoundaryCases()throws Exception{
+        cases=0;assertions=0;
+        run("import_host_io_excludes_actual_recovery_and_permission_preparation",()->{
+            LocalProbeApplication a=idleApp();LocalModelImport importer=a.modelImport();
+            check(importer!=null&&!importer.isBusy()&&!importer.closed,"Application creates an idle import owner");
+            same(a.modelImport(),importer,"Application retains the same import owner");
+            importer.beginHostIo();
+            check(importer.isBusy()&&a.modelEngine().isBusy(),"explicit host IO occupies the actual Engine slot");
+            a.taskSession().blocked=true;
+            check(!a.canAcknowledgeControlRecovery(),"busy import IO excludes actual recovery admission");
+            rejects(()->a.reserveControlRecovery());
+            same(field(a,"recoveryBarrier"),null,"failed borrow cannot install a replacement barrier");
+            a.taskSession().blocked=false;
+            rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+            check(a.backgroundPermissionPreparation().starts==0,"busy import IO cannot start permission preparation");
+            importer.finishHostIo();
+            check(!importer.isBusy()&&!a.modelEngine().isBusy(),"only explicit host IO terminal releases its slot");
+        });
+        run("actual_application_close_retains_import_io_until_explicit_terminal",()->{
+            LocalProbeApplication a=idleApp();LocalModelImport importer=a.modelImport();importer.beginHostIo();
+            LocalModelEngine.ExternalRunLease lease=importer.lease;
+            a.onTerminate();
+            check(importer.closed&&importer.closeCalls==1,"actual Application closes its importer exactly once");
+            same(a.modelImport(),importer,"closed Application does not reconstruct another importer");
+            check(importer.isBusy()&&a.modelEngine().isBusy()&&lease.isCancellationRequested(),
+                    "Application shutdown cancels Engine owner without claiming IO has ended");
+            rejects(()->a.modelEngine().reserveExternal("11111111111111111111111111111111"));
+            importer.finishHostIo();awaitCancellation(a,lease);
+            check(!importer.isBusy()&&!a.modelEngine().isBusy(),"only explicit terminal and drained cancellation settle import IO");
+        });
+        System.out.println("PASS import_boundary_cases="+cases+" assertions="+assertions);
+    }
     private static void runCases()throws Exception{
         run("control_startup_barrier_can_be_borrowed",()->{
             LocalProbeApplication a=app();check(a.modelEngine().isBusy(),"startup slot held");check(a.canAcknowledgeControlRecovery(),"control confirmation allowed");
@@ -325,5 +357,6 @@ public final class RecoveryApplicationHostTest {
         });
         System.out.println("PASS cases="+cases+" assertions="+assertions);
         permissionCases();
+        importBoundaryCases();
     }
 }

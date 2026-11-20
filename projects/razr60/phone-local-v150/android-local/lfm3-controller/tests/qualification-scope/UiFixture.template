@@ -8,6 +8,8 @@ import android.view.inputmethod.InputMethodManager;
 /** Exact production binding/Intent/beginTask methods; view rendering is synthetic. */
 public final class ScopeUiFixture extends Activity {
     LocalModelEngine engine;LocalTaskSession tasks;
+    // Actual onSaveInstanceState writes this nullable UI value; it grants no import or URI access.
+    String pendingImportAsset;
     Widget taskInput=new Widget(),taskState=new Widget(),probePrompt=new Widget();Widget diagnostics=new Widget();
     Widget backgroundMode=new Widget();
     java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();

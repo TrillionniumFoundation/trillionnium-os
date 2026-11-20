@@ -43,7 +43,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     };
     private TextView backgroundSummary,modelDiagnostics,taskDiagnostics;
     private EditText taskInput, probePrompt;
-    private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
+    private TextView modelIdentity, modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView taskAuthorizationInfo;
     private boolean accessibilityUiStarted;
     private boolean cachedModelFilePresent;
@@ -87,6 +87,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
         TextView title=text("Hepta",25);page.addView(title);
         page.addView(text("用手机本地模型理解指令并操作应用",15));
+        modelIdentity=text("",12);page.addView(modelIdentity);
         modelInfo=text("",12);page.addView(modelInfo);
         LinearLayout modelImportButtons=new LinearLayout(this);page.addView(modelImportButtons);
         importLocalModel=button("导入模型文件");modelImportButtons.addView(importLocalModel);
@@ -844,7 +845,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }catch(Exception error) {
             device="运行参数待修正";modelState="本地配置错误："+HeptaAccessibilityService.message(error);
         }
-        modelInfo.setText("当前模型："+modelName+" · "+device+"\n"+modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
+        modelIdentity.setText("当前模型："+modelName+" · "+device);
+        modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
         LocalProbeApplication modelApp=(LocalProbeApplication)getApplication();
         importLocalModel.setEnabled(pendingImportAsset==null&&!profileCatalogueLoading&&modelApp.canImportLocalModel());

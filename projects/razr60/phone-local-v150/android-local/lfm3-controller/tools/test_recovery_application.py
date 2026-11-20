@@ -25,6 +25,7 @@ class RecoveryApplicationTest(unittest.TestCase):
                                   stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=45)
             self.assertEqual(result.returncode,0,result.stdout)
             self.assertIn("PASS cases=18 ",result.stdout)
+            self.assertIn("PASS import_boundary_cases=2 ",result.stdout)
             print(result.stdout,end="")
 
 if __name__=="__main__":
