@@ -89,7 +89,11 @@ def generate(source,out):
     methods={}
     for name,signature in METHODS.items():methods[name]=body(service,signature)
     text=replace(text,'    // ACTUAL_METHODS','\n'.join(methods.values()))
-    text=replace(text,'{{bridge_cases}}',(source/TEST/'BridgeCases.fragment').read_text())
+    bridge=(source/TEST/'BridgeCases.fragment').read_text()
+    bridge=replace(bridge,'        signatureCases();rejectionCases();effectCases();equalOpenCases();',
+        '        signatureCases();rejectionCases();effectCases();equalOpenCases();publicationActionCases();')
+    bridge+='\n'+(source/TEST/'PublicationActionCases.fragment').read_text()
+    text=replace(text,'{{bridge_cases}}',bridge)
     # Actual Controller handoff is connected to the actual unchanged-tree Service
     # branch. Only Android callback/clock/IO endpoints are synthetic.
     open_parts={

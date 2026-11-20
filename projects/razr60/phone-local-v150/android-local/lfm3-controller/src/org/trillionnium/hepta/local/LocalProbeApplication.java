@@ -6,6 +6,7 @@ public final class LocalProbeApplication extends Application {
     private LocalModelEngine model;
     private LocalTaskSession tasks;
     private LocalModelSettings modelSettings;
+    private LocalModelImport modelImport;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
     private volatile BackgroundPermissionSession backgroundPermission;
@@ -58,6 +59,20 @@ public final class LocalProbeApplication extends Application {
     }
 
     synchronized LocalModelSettings modelSettings(){initializeSessions();return modelSettings;}
+    synchronized LocalModelImport modelImport(){initializeSessions();return modelImport;}
+    boolean canImportLocalModel(){
+        recoveryMainThread();initializeSessions();
+        try{requireModelImportIdle(HeptaAccessibilityService.connected());
+            return !modelImport.isBusy()&&!modelSettings.isBusy()&&model.settingsAdmissionAvailable(false);
+        }catch(RuntimeException unavailable){return false;}
+    }
+    void requireModelImportIdle(HeptaAccessibilityService expected){
+        recoveryMainThread();initializeSessions();
+        if(HeptaAccessibilityService.connected()!=expected||(expected!=null&&!expected.modelSettingsIdle())
+                ||tasks.isRunning()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease()
+                ||!otherDiagnosticsClean()||recoveryBarrier!=null||controlRecoveryAttempt!=null||controlRecoveryCallbackFailed)
+            throw new IllegalStateException("请先结束任务并清理后台空间，再导入模型文件");
+    }
     boolean canChangeLocalModelSettings(boolean restore){
         recoveryMainThread();initializeSessions();
         try{
@@ -193,9 +208,11 @@ public final class LocalProbeApplication extends Application {
         gate.apply(() -> recoveryBarrier = model.reserveRecoveryBarrier());
         initialized = true;
         modelSettings = new LocalModelSettings(this,model);
+        modelImport = new LocalModelImport(this,model);
     }
 
     @Override public void onTerminate() {
+        if(modelImport!=null)modelImport.close();
         if(modelSettings!=null)modelSettings.close();
         if(backgroundPermission!=null)backgroundPermission.close();
         if (visualDiagnostic != null) visualDiagnostic.close();
@@ -204,3 +221,4 @@ public final class LocalProbeApplication extends Application {
         super.onTerminate();
     }
 }
+

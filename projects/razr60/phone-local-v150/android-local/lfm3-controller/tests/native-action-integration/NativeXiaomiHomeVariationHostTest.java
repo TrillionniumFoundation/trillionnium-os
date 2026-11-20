@@ -136,6 +136,7 @@ final class NativeXiaomiHomeVariationHostTest {
             IntegrationChecks.rejects(()->f.dispatch(),"same fields cannot replace the original retained child object");f.noEffect("late actual reference replacement never enters effect");
         });
         runR18Transition(source);
+        runImageCarousel();
     }
     static final String R18_FIXTURE_SHA="b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a";
     static void clip(Fixture f,String path,int left,int top,int right,int bottom){
@@ -236,6 +237,161 @@ final class NativeXiaomiHomeVariationHostTest {
                 if(!f.raw.target.equals(e.getKey())&&e.getValue().effects!=0)untouched=false;
             yes(untouched,"no banner clip or other node receives the effect");
             yes(f.service.events.contains("full_census"),"fresh full census still executes before original target action");
+        });
+    }
+    // This complete shape is HOST_SYNTHETIC, using the observed class/resource
+    // family at different paths. Actual a470 77+77-node pairs are replayed
+    // separately from exact original files; these fixtures do not replace them.
+    static final String IMAGE_CONTENT="0/0/2",IMAGE_HOLDER="0/0/2/0",IMAGE_ROW="0/0/2/0/0";
+    interface ImageChange {void apply(NativeActionSnapshotCheckHostTest.Fixture old,NativeActionSnapshotCheckHostTest.Fixture fresh)throws Exception;}
+    static void imageMetadata(Map<String,Object> n,String... actions){
+        n.put("scroll_actions",ObservedScrollActions.observed(Arrays.asList(actions)).fingerprintInput());
+        n.put("ime_enter",ObservedImeEnter.ABSENT.fingerprintInput());n.put("input_sha256",null);
+    }
+    static void imageHorizontal(NativeActionSnapshotCheckHostTest.Fixture f,String path,int left,int right,boolean visible,boolean leaf){
+        Map<String,Object> n=f.nodes.get(path);n.put("bounds",NativeActionSnapshotCheckHostTest.rect(left,1033,right,1368));
+        n.put("visible",visible);n.put("label",visible?"Image":null);
+        n.put("ref_signature_sha256",!visible?null:leaf?NativeActionBridgeHost.actualBlankLeafReferenceSha(n)
+                :NativeActionSnapshotCheck.hash("explicit-host-card-reference:"+path+":"+left+":"+right));
+    }
+    static NativeActionSnapshotCheckHostTest.Fixture imageBase(){
+        NativeActionSnapshotCheckHostTest.Fixture f=NativeActionSnapshotCheckHostTest.xiaomi();
+        f.nodes.get("0/0").put("bounds",NativeActionSnapshotCheckHostTest.rect(0,0,1224,2992));
+        f.nodes.get("0/0").put("scrollable",true);
+        f.add(IMAGE_CONTENT,"androidx.recyclerview.widget.RecyclerView","com.xiaomi.shop:id/recyclerView","","",NativeActionSnapshotCheckHostTest.rect(0,0,1224,2992));
+        f.nodes.get(IMAGE_CONTENT).put("scrollable",true);imageMetadata(f.nodes.get(IMAGE_CONTENT),"forward");
+        f.add(IMAGE_HOLDER,"android.widget.FrameLayout","","","",NativeActionSnapshotCheckHostTest.rect(0,1033,1224,1395));
+        f.click(IMAGE_HOLDER);imageMetadata(f.nodes.get(IMAGE_HOLDER));
+        f.add(IMAGE_ROW,"androidx.recyclerview.widget.RecyclerView","com.xiaomi.shop:id/recycle_view","","",NativeActionSnapshotCheckHostTest.rect(0,1033,1224,1368));
+        f.nodes.get(IMAGE_ROW).put("scrollable",true);imageMetadata(f.nodes.get(IMAGE_ROW),"forward","backward");
+        int[] left={34,432,830,1228},cardRight={398,796,1194,1224},imageRight={396,794,1192,1224};
+        for(int i=0;i<4;i++){
+            String card=IMAGE_ROW+"/"+i,image=card+"/0";
+            f.add(card,"android.widget.FrameLayout","com.xiaomi.shop.plugin.homepage:id/banner_container","","",NativeActionSnapshotCheckHostTest.rect(0,0,1,1));
+            f.click(card);imageMetadata(f.nodes.get(card));
+            f.add(image,"android.widget.ImageView","com.xiaomi.shop:id/banner_image","","Image",NativeActionSnapshotCheckHostTest.rect(0,0,1,1));
+            imageMetadata(f.nodes.get(image));imageHorizontal(f,card,left[i],cardRight[i],i<3,false);imageHorizontal(f,image,left[i],imageRight[i],i<3,true);
+        }
+        f.link();return f;
+    }
+    static void imageMove(NativeActionSnapshotCheckHostTest.Fixture f,boolean cards){
+        int[] cardLeft={0,159,551,943},cardRight={125,523,915,1224};
+        int[] imageLeft=cards?new int[]{0,93,491,889}:new int[]{0,351,749,1138};
+        int[] imageRight=cards?new int[]{57,455,853,1224}:new int[]{315,713,1111,1224};
+        for(int i=0;i<4;i++){
+            String card=IMAGE_ROW+"/"+i;
+            if(cards)imageHorizontal(f,card,cardLeft[i],cardRight[i],true,false);
+            imageHorizontal(f,card+"/0",imageLeft[i],imageRight[i],true,true);
+        }
+    }
+    static Map<String,Object> imageCompare(NativeActionSnapshotCheckHostTest.Fixture old,NativeActionSnapshotCheckHostTest.Fixture fresh){
+        return NativeActionSnapshotCheck.compare(old.intent(),old.snapshot(),fresh.snapshot(),400L);
+    }
+    static void imageNegative(String name,ImageChange change)throws Exception{
+        IntegrationChecks.one("search_image_carousel_rejects_"+name,()->{
+            NativeActionSnapshotCheckHostTest.Fixture old=imageBase(),fresh=NativeActionSnapshotCheckHostTest.fresh(old);imageMove(fresh,true);
+            yes(Boolean.FALSE.equals(imageCompare(old,fresh).get("grants_dispatch")),"complete unmutated control is comparison-only");
+            change.apply(old,fresh);IntegrationChecks.rejects(()->imageCompare(old,fresh),"changed row predicate refuses "+name);
+        });
+    }
+    static NativeActionBridgeHost.Fixture imageBridge(String name,boolean cards)throws Exception{
+        Map<String,ObservedScrollActions> actions=new TreeMap<String,ObservedScrollActions>();
+        actions.put(IMAGE_CONTENT,ObservedScrollActions.observed(Arrays.asList("forward")));
+        actions.put(IMAGE_ROW,ObservedScrollActions.observed(Arrays.asList("forward","backward")));
+        NativeActionBridgeHost service=new NativeActionBridgeHost();
+        NativeActionBridgeHost.Fixture f=service.new Fixture(NativeActionSnapshotCheck.SEARCH,"host-image-row:"+name,imageBase(),false,null,actions);
+        imageMove(f.fresh,cards);service.exerciseBackgroundPrecheck=true;return f;
+    }
+    static void runImageCarousel()throws Exception{
+        for(final boolean cards:Arrays.asList(Boolean.FALSE,Boolean.TRUE))IntegrationChecks.one("search_image_carousel_horizontal_"+(cards?"cards_and_images":"images_only"),()->{
+            NativeActionSnapshotCheckHostTest.Fixture old=imageBase(),fresh=NativeActionSnapshotCheckHostTest.fresh(old);imageMove(fresh,cards);
+            Map<String,Object> proof=imageCompare(old,fresh);Map<String,Object> variations=map(proof.get("xiaomi_search_home_variations"));
+            yes("same_disjoint_image_carousel_row_horizontal_geometry_only".equals(variations.get(IMAGE_ROW)),"derived family anchor is explicit, not a numeric path whitelist");
+            yes(list(proof.get("changed_paths")).size()==(cards?8:4),"all horizontal differences are enumerated");
+            yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("business_verified"))
+                    &&Boolean.FALSE.equals(proof.get("fully_unoccluded_claimed")),"no action, business or pixel claim");
+            yes(Boolean.TRUE.equals(proof.get("search_entry_original_reference_retained_fresh_signature_required")),"original entry still needs latest full live signature");
+        });
+        IntegrationChecks.one("search_image_carousel_all_visible_leaf_refs_use_actual_service_producer",()->{
+            NativeActionSnapshotCheckHostTest.Fixture f=imageBase();imageMove(f,true);
+            for(int i=0;i<4;i++){Map<String,Object> n=f.nodes.get(IMAGE_ROW+"/"+i+"/0");
+                yes(n.get("ref_signature_sha256").equals(NativeActionBridgeHost.actualBlankLeafReferenceSha(n)),"real extracted NodeRef and child producer bind each Image leaf");}
+        });
+        IntegrationChecks.one("search_image_carousel_container_ref_requires_same_slot_geometry_change",()->{
+            NativeActionSnapshotCheckHostTest.Fixture old=imageBase(),fresh=NativeActionSnapshotCheckHostTest.fresh(old);imageMove(fresh,false);
+            fresh.nodes.get(IMAGE_ROW+"/0").put("ref_signature_sha256",NativeActionSnapshotCheck.hash("host-earlier-child-sample"));
+            yes(Boolean.FALSE.equals(imageCompare(old,fresh).get("grants_dispatch")),"opaque disjoint container hash is not a dispatch reference");
+            fresh.nodes.put(IMAGE_ROW+"/0/0",new TreeMap<String,Object>(old.nodes.get(IMAGE_ROW+"/0/0")));
+            IntegrationChecks.rejects(()->imageCompare(old,fresh),"isolated unexplained card reference change refuses");
+        });
+        imageNegative("other_purpose_icon",(a,z)->{a.purpose=NativeActionSnapshotCheck.SEARCH_ICON;a.target="0/0/1";a.label="搜索";});
+        imageNegative("unrelated_feed_change",(a,z)->z.nodes.get("0/2/0").put("text","unrelated new content"));
+        imageNegative("changed_content_ancestor",(a,z)->z.nodes.get(IMAGE_CONTENT).put("ref_signature_sha256",NativeActionSnapshotCheck.hash("new-content")));
+        imageNegative("changed_holder_ancestor",(a,z)->z.nodes.get(IMAGE_HOLDER).put("clickable",false));
+        imageNegative("changed_row_anchor",(a,z)->z.nodes.get(IMAGE_ROW).put("bounds",NativeActionSnapshotCheckHostTest.rect(0,1034,1224,1368)));
+        imageNegative("row_overlaps_query_entry",(a,z)->{for(NativeActionSnapshotCheckHostTest.Fixture f:Arrays.asList(a,z)){
+            f.nodes.get(IMAGE_HOLDER).put("bounds",NativeActionSnapshotCheckHostTest.rect(0,300,1224,1395));
+            f.nodes.get(IMAGE_ROW).put("bounds",NativeActionSnapshotCheckHostTest.rect(0,300,1224,1368));}});
+        imageNegative("row_overlaps_navigation",(a,z)->{for(NativeActionSnapshotCheckHostTest.Fixture f:Arrays.asList(a,z))f.nodes.get(IMAGE_HOLDER).put("bounds",NativeActionSnapshotCheckHostTest.rect(0,1033,1224,2992));});
+        imageNegative("image_vertical_shift",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("bounds",NativeActionSnapshotCheckHostTest.rect(0,1034,57,1368)));
+        imageNegative("card_vertical_resize",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("bounds",NativeActionSnapshotCheckHostTest.rect(0,1033,125,1369)));
+        imageNegative("image_crosses_row_right",(a,z)->imageHorizontal(z,IMAGE_ROW+"/3/0",889,1225,true,true));
+        imageNegative("image_crosses_row_left",(a,z)->imageHorizontal(z,IMAGE_ROW+"/0/0",-1,57,true,true));
+        imageNegative("overlapping_images",(a,z)->imageHorizontal(z,IMAGE_ROW+"/1/0",56,455,true,true));
+        imageNegative("overlapping_cards",(a,z)->imageHorizontal(z,IMAGE_ROW+"/1",124,523,true,false));
+        imageNegative("hidden_positive_interior_image",(a,z)->imageHorizontal(z,IMAGE_ROW+"/0/0",10,57,false,true));
+        imageNegative("hidden_card_with_label",(a,z)->{imageHorizontal(z,IMAGE_ROW+"/0",1224,1224,false,false);z.nodes.get(IMAGE_ROW+"/0").put("label","Image");});
+        imageNegative("hidden_image_with_reference",(a,z)->{imageHorizontal(z,IMAGE_ROW+"/0/0",1224,1224,false,true);z.nodes.get(IMAGE_ROW+"/0/0").put("ref_signature_sha256",NativeActionSnapshotCheck.hash("hidden-ref"));});
+        imageNegative("visible_zero_width",(a,z)->imageHorizontal(z,IMAGE_ROW+"/0/0",57,57,true,true));
+        imageNegative("no_visible_cards",(a,z)->{for(int i=0;i<4;i++)imageHorizontal(z,IMAGE_ROW+"/"+i,1224,1224,false,false);});
+        imageNegative("no_visible_images",(a,z)->{for(int i=0;i<4;i++)imageHorizontal(z,IMAGE_ROW+"/"+i+"/0",1224,1224,false,true);});
+        imageNegative("unexplained_image_reference",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("ref_signature_sha256",NativeActionSnapshotCheck.hash("not-the-image-reference")));
+        imageNegative("visible_card_missing_reference",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("ref_signature_sha256",null));
+        imageNegative("new_card_text",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("text","立即购买"));
+        imageNegative("new_image_description",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("description","other image"));
+        imageNegative("new_card_label",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("label","other label"));
+        imageNegative("wrong_card_class",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("class","android.view.ViewGroup"));
+        imageNegative("wrong_image_resource",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("view_id","other:image"));
+        imageNegative("wrong_image_parent",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("parent_class","android.view.ViewGroup"));
+        imageNegative("foreign_image_package",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("package","foreign.app"));
+        imageNegative("foreign_image_window",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("window_id",97));
+        for(final String flag:Arrays.asList("editable","password","focused","selected","checkable","checked","scrollable"))
+            imageNegative("image_gains_"+flag,(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put(flag,true));
+        imageNegative("image_gains_click_action",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("action_click",true));
+        imageNegative("card_loses_click_action",(a,z)->z.nodes.get(IMAGE_ROW+"/0").put("action_click",false));
+        imageNegative("image_disabled",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("enabled",false));
+        imageNegative("unknown_image_scroll",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("scroll_actions",ObservedScrollActions.UNKNOWN.fingerprintInput()));
+        imageNegative("unknown_image_ime",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("ime_enter",ObservedImeEnter.UNKNOWN.fingerprintInput()));
+        imageNegative("image_input_hash",(a,z)->z.nodes.get(IMAGE_ROW+"/0/0").put("input_sha256",NativeActionSnapshotCheck.hash("unexpected-input")));
+        imageNegative("missing_image",(a,z)->{z.nodes.remove(IMAGE_ROW+"/0/0");z.link();});
+        imageNegative("extra_image_child",(a,z)->{z.add(IMAGE_ROW+"/0/1","android.widget.ImageView","com.xiaomi.shop:id/banner_image","","Image",NativeActionSnapshotCheckHostTest.rect(0,1033,57,1368));z.link();});
+        imageNegative("duplicate_row_resource",(a,z)->{for(NativeActionSnapshotCheckHostTest.Fixture f:Arrays.asList(a,z))f.nodes.get("0/2").put("view_id","com.xiaomi.shop:id/recycle_view");});
+        imageNegative("changed_search_target_reference",(a,z)->z.nodes.get(z.target).put("ref_signature_sha256",NativeActionSnapshotCheck.hash("changed-search-ref")));
+        imageNegative("incomplete_full_census",(a,z)->z.env.put("child_omissions",1));
+        IntegrationChecks.one("search_image_carousel_actual_service_final_check_original_target_once",()->{
+            NativeActionBridgeHost.Fixture f=imageBridge("effect",true);
+            yes(f.dispatch()&&f.effects()==1,"actual extracted Service reaches one synthetic original query-entry effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"both original complete validation and forced final census execute");
+            yes(f.data.get("0/0/1").effects==0,"adjacent search icon is not clicked");
+            for(Map.Entry<String,NativeActionBridgeHost.NodeData> e:f.data.entrySet())if(e.getKey().startsWith(IMAGE_ROW))yes(e.getValue().effects==0,"no carousel node receives an effect");
+        });
+        IntegrationChecks.one("search_image_carousel_final_live_target_change_refuses",()->{
+            NativeActionBridgeHost.Fixture f=imageBridge("late-target",false);
+            f.service.afterFinalCensus=()->f.data.get(f.raw.target).values.put("bounds",NativeActionSnapshotCheckHostTest.rect(155,287,1000,375));
+            IntegrationChecks.rejects(()->f.dispatch(),"latest original target geometry is checked after final census");f.noEffect("late target change has no effect");
+        });
+        IntegrationChecks.one("search_image_carousel_final_live_ancestor_change_refuses",()->{
+            NativeActionBridgeHost.Fixture f=imageBridge("late-ancestor",true);
+            f.service.afterFinalCensus=()->f.data.get("0/0").values.put("scrollable",false);
+            IntegrationChecks.rejects(()->f.dispatch(),"latest actual ancestor remains exact");f.noEffect("late ancestor change has no effect");
+        });
+        IntegrationChecks.one("search_image_carousel_original_deadline_has_no_refund",()->{
+            NativeActionBridgeHost.Fixture f=imageBridge("deadline",true);NativeActionBridgeHost.SystemClock.now=NativeActionBridgeHost.originalActionDeadline(f);
+            IntegrationChecks.rejects(()->f.dispatch(),"original 8-second action deadline still applies");f.noEffect("no action on expired guard");
+        });
+        IntegrationChecks.one("search_image_carousel_cancellation_remains_closed",()->{
+            NativeActionBridgeHost.Fixture f=imageBridge("cancel",false);f.service.cancelled=true;
+            IntegrationChecks.rejects(()->f.dispatch(),"cancelled action remains refused");f.noEffect("no effect after cancel");
         });
     }
     public static void main(String[] args)throws Exception{

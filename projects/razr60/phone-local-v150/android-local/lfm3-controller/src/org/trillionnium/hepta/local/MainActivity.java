@@ -17,9 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /** Visible owner task UI, application-owned session, and explicit local model diagnostics. */
-public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener,LocalModelSettings.Listener {
+public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener,LocalModelSettings.Listener,LocalModelImport.Listener {
     private LocalModelEngine engine;
     private LocalModelSettings modelSettings;
+    private LocalModelImport modelImport;
+    private Button importLocalModel,cancelModelImport;
+    private TextView localModelImportState;
+    private String pendingImportAsset;
+    private static final int MODEL_FILE_REQUEST=8461;
     private Button chooseLocalModel,restoreLocalModel;
     private TextView localModelSettingsState;
     private LocalTaskSession tasks;
@@ -75,13 +80,22 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
         backgroundPermission=app.backgroundPermissionPreparation();modelSettings=app.modelSettings();
-        uiVenusDiagnostic=app.uiVenusDiagnostic();
+        uiVenusDiagnostic=app.uiVenusDiagnostic();modelImport=app.modelImport();
+        pendingImportAsset=state==null?null:state.getString("pending_model_import_asset");
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
         TextView title=text("Hepta",25);page.addView(title);
         page.addView(text("用手机本地模型理解指令并操作应用",15));
-        modelInfo=text("",12);modelInfo.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);page.addView(modelInfo);
+        modelInfo=text("",12);page.addView(modelInfo);
+        LinearLayout modelImportButtons=new LinearLayout(this);page.addView(modelImportButtons);
+        importLocalModel=button("导入模型文件");modelImportButtons.addView(importLocalModel);
+        chooseLocalModel=button("选择本地模型");modelImportButtons.addView(chooseLocalModel);
+        cancelModelImport=button("取消导入");modelImportButtons.addView(cancelModelImport);
+        chooseLocalModel.setOnClickListener(v -> chooseLocalModelFromOwnerButton());
+        importLocalModel.setOnClickListener(v -> chooseModelFileFromOwnerButton());
+        cancelModelImport.setOnClickListener(v -> modelImport.cancel());
+        localModelImportState=text("",12);page.addView(localModelImportState);
         taskInput=new EditText(this);taskInput.setHint("你想让手机完成什么？");
         taskInput.setText("记一下，明天下午3点看牙，带上检查资料。");taskInput.setMinLines(3);page.addView(taskInput);
         taskAuthorizationInfo=text("",12);
@@ -192,7 +206,6 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         showDiagnostics.setOnClickListener(v -> diagnostics.setVisibility(diagnostics.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE));
         modelDiagnostics=text("",12);diagnostics.addView(modelDiagnostics);
         LinearLayout modelSettingsButtons=new LinearLayout(this);diagnostics.addView(modelSettingsButtons);
-        chooseLocalModel=new Button(this);chooseLocalModel.setText("本地模型设置");modelSettingsButtons.addView(chooseLocalModel);
         restoreLocalModel=new Button(this);restoreLocalModel.setText("恢复上次配置");modelSettingsButtons.addView(restoreLocalModel);
         chooseLocalModel.setOnClickListener(v -> chooseLocalModelFromOwnerButton());
         restoreLocalModel.setOnClickListener(v -> restoreLocalModelFromOwnerButton());
@@ -258,6 +271,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
 
     @Override protected void onSaveInstanceState(Bundle state){
         super.onSaveInstanceState(state);
+        state.putString("pending_model_import_asset",pendingImportAsset);
         state.putBoolean("scope_ui_saved",true);state.putString("scope_ui_task",taskInput.getText().toString());
         state.putString("scope_ui_expected",scopeLaunch.expectedSha256);state.putString("scope_ui_owner",scopeLaunch.ownerSha256);
         state.putBoolean("scope_ui_consumed",scopeLaunch.consumed);state.putString("scope_ui_error",scopeLaunchError);
@@ -335,6 +349,40 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             probePrompt.post(() -> runProbe(image,max));
         }
     }
+    private void chooseModelFileFromOwnerButton(){
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(!hasWindowFocus()||isFinishing()||isDestroyed()||pendingImportAsset!=null
+                ||profileCatalogueLoading||!app.canImportLocalModel()){
+            localModelImportState.setText("请先等待任务结束，并清理上次后台空间。");return;
+        }
+        final java.util.List<LocalModelImportAsset> assets=LocalModelImportAsset.all();
+        String[] labels=new String[assets.size()];
+        for(int i=0;i<labels.length;i++)labels[i]=assets.get(i).label;
+        new AlertDialog.Builder(this).setTitle("选择要导入的模型文件").setItems(labels,(dialog,which)->{
+            if(which<0||which>=assets.size()||!app.canImportLocalModel()||pendingImportAsset!=null)return;
+            LocalModelImportAsset asset=assets.get(which);pendingImportAsset=asset.pin.id;
+            Intent picker=new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType("*/*").putExtra(Intent.EXTRA_LOCAL_ONLY,true)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try{startActivityForResult(picker,MODEL_FILE_REQUEST);localModelImportState.setText("请选择手机中的 "+asset.pin.filename);}
+            catch(RuntimeException unavailable){pendingImportAsset=null;localModelImportState.setText("无法打开手机文件选择器，请稍后重试。");}
+        }).setNegativeButton("取消",null).show();
+    }
+    @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode!=MODEL_FILE_REQUEST)return;
+        String asset=pendingImportAsset;pendingImportAsset=null;
+        if(resultCode!=RESULT_OK){localModelImportState.setText("未选择文件，已有模型保持不变。");return;}
+        try{
+            if(asset==null||data==null||data.getData()==null
+                    ||(data.getFlags()&Intent.FLAG_GRANT_READ_URI_PERMISSION)==0)
+                throw new IllegalArgumentException("没有取得所选文件的只读权限，请重新选择");
+            if(profileCatalogueLoading||!((LocalProbeApplication)getApplication()).canImportLocalModel())
+                throw new IllegalStateException("任务或后台空间尚未空闲，请结束后重新选择文件");
+            modelImport.start(asset,data.getData());refresh();
+        }catch(Exception failure){localModelImportState.setText("导入未开始："+HeptaAccessibilityService.message(failure));}
+    }
+    @Override public void onLocalModelImportChanged(){refresh();}
     private void chooseLocalModelFromOwnerButton(){
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         if(profileCatalogueLoading||!app.canChangeLocalModelSettings(false)){
@@ -796,9 +844,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }catch(Exception error) {
             device="运行参数待修正";modelState="本地配置错误："+HeptaAccessibilityService.message(error);
         }
-        modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
+        modelInfo.setText("当前模型："+modelName+" · "+device+"\n"+modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
         LocalProbeApplication modelApp=(LocalProbeApplication)getApplication();
+        importLocalModel.setEnabled(pendingImportAsset==null&&!profileCatalogueLoading&&modelApp.canImportLocalModel());
+        cancelModelImport.setVisibility(modelImport.isBusy()?View.VISIBLE:View.GONE);
+        cancelModelImport.setEnabled(modelImport.isBusy());localModelImportState.setText(modelImport.state());
         chooseLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(false));
         restoreLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(true));
         localModelSettingsState.setText(modelSettings.state()+"\n设置只使用本机文件；不自动回退 CPU。内存门槛不是实测峰值，8B 仍需同条件验证。");
@@ -831,7 +882,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy&&!modelSettings.isBusy());
+        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy&&!modelSettings.isBusy()&&!modelImport.isBusy());
         runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
@@ -896,7 +947,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             android.system.Os.chmod(file.getBaseFile().getPath(),0600);
         }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
-    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);if(modelSettings!=null)modelSettings.bind(this);
+    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);if(modelSettings!=null)modelSettings.bind(this);if(modelImport!=null)modelImport.bind(this);
         accessibilityUiStarted=true;HeptaAccessibilityService.addConnectionListener(accessibilityConnectionChanged);
         if(profilePermissionService!=null)profilePermissionService.permissionUi().bind(profilePermissionChanged);
         refreshProfilePermission();
@@ -912,6 +963,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             profilePermissionService.permissionUi().ownerVisibility(this,null,false);
             profilePermissionService.permissionUi().unbind(profilePermissionChanged);
         }
-        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);if(modelSettings!=null)modelSettings.unbind(this);super.onStop();
+        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);if(modelSettings!=null)modelSettings.unbind(this);if(modelImport!=null)modelImport.unbind(this);super.onStop();
     }
 }
+

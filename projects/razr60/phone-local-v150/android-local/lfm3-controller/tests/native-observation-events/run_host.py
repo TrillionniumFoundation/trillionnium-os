@@ -16,7 +16,7 @@ TEST=Path('tests/native-observation-events')
 JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','ObservationDiagnostics.java',
       'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java',
       'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java']
-OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment']
+OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment','PublicationRecheckCases.fragment']
 
 def helper(source):
     p=source/'tests/observation-diagnostics/run_host.py'
@@ -91,7 +91,7 @@ def generate(source,out,h):
 def add_saved_graph_seed_cases(source,out,h,extraction):
     # Called only by this existing runner. Other original fixture consumers keep generate() unchanged.
     service=(source/PKG/'HeptaAccessibilityService.java').read_text()
-    case_source=(source/TEST/'SavedGraphSeedCases.fragment').read_text()
+    case_source=(source/TEST/'SavedGraphSeedCases.fragment').read_text()+'\n'+(source/TEST/'PublicationRecheckCases.fragment').read_text()
     factory=h.body(service,'    private static FrozenObservationWindow frozenObservationWindow(Graph graph){')
     path=out/'ObserverPipelineHost.java';text=path.read_text()
     text=replace(text,'        long readStartedElapsedMs,readCompletedElapsedMs;',
@@ -105,7 +105,7 @@ def add_saved_graph_seed_cases(source,out,h,extraction):
         '        return seedFrozenRead.read(request,identity);\n    }')
     text=replace(text,'    public static void main(String[] args)throws Exception{',case_source+'\n    public static void main(String[] args)throws Exception{')
     text=replace(text,'        observationIo.executor.shutdown();EventChecks.finish(args[0]);',
-        '        savedGraphSeedCases();\n        savedGraphSeedAdditionalCases();\n        savedGraphSeedProfileCases();\n        observationIo.executor.shutdown();EventChecks.finish(args[0]);')
+        '        savedGraphSeedCases();\n        savedGraphSeedAdditionalCases();\n        savedGraphSeedProfileCases();\n        publicationRecheckCases();\n        observationIo.executor.shutdown();EventChecks.finish(args[0]);')
     evidence=(source/PKG/'NativeAppEvidence.java').read_text()
     profile_parts={
         'same_owner':h.body(evidence,'    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){'),
@@ -131,6 +131,7 @@ def add_saved_graph_seed_cases(source,out,h,extraction):
         'existing_runner_executes_new_cases':True,
         'original_event_cases_preserved':h.meta(source/TEST/'EventPipelineCases.fragment'),
         'new_cases':h.meta(source/TEST/'SavedGraphSeedCases.fragment'),
+        'publication_recheck_cases':h.meta(source/TEST/'PublicationRecheckCases.fragment'),
         'frozen_window_factory_verbatim':{'bytes':len(factory.encode()),'sha256':h.sha(factory.encode())},
         'no_production_body_rewritten':True,'extra_android_values_are_synthetic':True,
         'whole_actual_observer_section_includes_seed_and_capture':True}

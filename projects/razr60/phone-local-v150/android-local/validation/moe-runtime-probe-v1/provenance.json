@@ -1,0 +1,412 @@
+{
+  "schema": "hepta.moe-probe.public-provenance.v1",
+  "observed_date_utc": "2026-11-20",
+  "scope": "Independent local-file synthetic inference probe; no APK/default changes; no UI or purchase tools.",
+  "sdk": {
+    "repository": "https://github.com/qualcomm/GenieX",
+    "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "version": "0.10.0",
+    "public_header": "sdk/include/geniex.h",
+    "public_header_sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40",
+    "archive_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+    "archive_bytes": 98545327,
+    "archive_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "libraries": [
+      {
+        "path": "lib/libgeniex.so",
+        "bytes": 19781824,
+        "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-cpu.so",
+        "bytes": 936328,
+        "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-base.so",
+        "bytes": 3534496,
+        "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-opencl.so",
+        "bytes": 7886880,
+        "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+      },
+      {
+        "path": "lib/llama_cpp/libmtmd.so",
+        "bytes": 1643536,
+        "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-hexagon.so",
+        "bytes": 3874328,
+        "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-htp-v73.so",
+        "bytes": 842432,
+        "sha256": "e8ed08627e9faa5739c6185187a2c3dbe0a2ac7d0a9aded15fea3f1009de18c8"
+      },
+      {
+        "path": "lib/llama_cpp/libllama-common.so",
+        "bytes": 6242864,
+        "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+      },
+      {
+        "path": "lib/llama_cpp/libgeniex_plugin.so",
+        "bytes": 377040,
+        "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-htp-v85.so",
+        "bytes": 871232,
+        "sha256": "3a4c104a0a12b2b63245f1f866f0f37bff0be5eebc08d104678a71a379618c7a"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-htp-v75.so",
+        "bytes": 838272,
+        "sha256": "bd7837ec03fd123cb0cf33608fb0d8c7d49f86fdd4001683e0918b72f0f1ca07"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-htp-v79.so",
+        "bytes": 858848,
+        "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+      },
+      {
+        "path": "lib/llama_cpp/libllama.so",
+        "bytes": 5642424,
+        "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+      },
+      {
+        "path": "lib/llama_cpp/libggml.so",
+        "bytes": 41088,
+        "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+      },
+      {
+        "path": "lib/llama_cpp/libggml-htp-v81.so",
+        "bytes": 871232,
+        "sha256": "1bd534df154a45a261aeedaf7be316d01e4f6c0d2c18ed2c235e991c74160d00"
+      },
+      {
+        "path": "lib/llama_cpp/libomp.so",
+        "bytes": 1234864,
+        "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+      }
+    ]
+  },
+  "llama": {
+    "repository": "https://github.com/ggml-org/llama.cpp",
+    "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "submodule_evidence": "https://api.github.com/repos/qualcomm/GenieX/git/trees/071f609995470bdb0e0769ab964754adfaab7e47?recursive=1",
+    "geniex_hexagon_patches": [
+      "sdk/patches/llama-hexagon-release-sessions.patch",
+      "sdk/patches/llama-hexagon-power-mode-setter.patch"
+    ],
+    "contains_iova_pr_32144": false,
+    "iova_fix_commit": "9daa0aa22b8aa0143344d7549dee1f0e32f048bb",
+    "moe_q2k_q4k_q8_supported_in_source": true,
+    "all_model_nodes_proven_npu": false
+  },
+  "candidate": {
+    "repository": "LiquidAI/LFM2.5-24B-A2B-GGUF",
+    "filename": "LFM2.5-24B-A2B-QAD-Q2_K_L.gguf",
+    "bytes": 9535455392,
+    "sha256": "7c8e0365ca9cc40df48fd5b7cbc60476cc08e13c48750859751cb45880a2b4ca",
+    "pointer_git_oid": "fac97607b6fadc6eca1e1b6a2f2d573a2ee17199",
+    "source": "https://huggingface.co/api/models/LiquidAI/LFM2.5-24B-A2B-GGUF/tree/main?expand=false",
+    "weights_downloaded": false,
+    "device_memory_admission_observed": false
+  },
+  "probe": {
+    "ctx": 2048,
+    "n_batch": 128,
+    "n_ubatch": 128,
+    "n_seq_max": 1,
+    "n_threads": 4,
+    "n_gpu_layers": -1,
+    "power_mode": 6,
+    "spec_type": "none",
+    "input_ids": 128,
+    "max_generated_tokens": 64,
+    "synthetic_input": true,
+    "tests_tool_quality": false,
+    "reserve_bytes": 3221225472,
+    "estimated_overhead_bytes": 1610612736,
+    "required_candidate_MemAvailable_bytes": 14367293600,
+    "wall_seconds": 240,
+    "cpu_seconds": 180,
+    "device_run_completed": false
+  },
+  "research_audit": {
+    "schema": "hepta.mobile-model.research-audit.v1",
+    "as_of_date_utc": "2026-11-20",
+    "evidence_boundary": "Public source/metadata audit plus host-only probe build. No weights downloaded, phone contact, APK/default changes, or app operations in this audit.",
+    "selection": {
+      "incumbent": "Research alone does not justify replacing the current LFM3-1.7B NPU profile. Incumbent status is not evidence that all app tasks pass.",
+      "small_moe_candidate": "Compare the existing 8B MoE compact-grammar path with the incumbent on identical Chinese tool tasks and actual prompt token counts before changing the default.",
+      "large_moe_priority": "MobiInfer MiniCPM-V 4.7 35B-A3B mixed-Q3 with external tiled experts is the most concrete next independent large-MoE experiment identified here, because public Android source and Snapdragon 8 Elite measurements exist. It is not yet a Hepta-compatible or device-qualified runtime.",
+      "resident_24b": "The pinned GenieX probe answers release-runtime identity, explicit batch configuration, and conservative memory admission. It does not provide expert streaming; its 24B Q2_K_L admission requires about 13.38 GiB MemAvailable and may reject a 16GB-class phone with other apps present.",
+      "papers": "Use EStream for prefill research and BigMoMo for decode/offload design evidence; neither paper's reported results establish availability or performance of a Hepta deployment."
+    },
+    "geniex": {
+      "source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+      "llama_gitlink": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+      "iova_pr_32144_present": false,
+      "existing_quant_paths": "Q2_K/Q4_K/Q8_0 and MUL_MAT_ID exist, subject to types/layout/shapes/VTCM; an accepted backend name is not whole-graph placement proof.",
+      "android_load_mode": "LLAMA_LOAD_MODE_NONE; distinct from FastRPC/IOVA mapping.",
+      "android_default_batch": 2048,
+      "android_default_ubatch": 1024,
+      "benchmark_cli_has_batch_flags": false,
+      "public_api_batch_fields": true,
+      "references": [
+        "https://api.github.com/repos/qualcomm/GenieX/git/trees/071f609995470bdb0e0769ab964754adfaab7e47?recursive=1",
+        "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/src/params.cpp",
+        "https://github.com/ggml-org/llama.cpp/commit/9daa0aa22b8aa0143344d7549dee1f0e32f048bb"
+      ]
+    },
+    "mobiinfer": {
+      "repository": "https://github.com/IPADS-SAI/Mobiinfer-Android",
+      "release": "v0.4.5",
+      "release_published_at": "2026-11-11T16:16:09Z",
+      "tag_and_observed_main_commit": "659c3cb5a38493147444a47e0e0762664aacba06",
+      "tag_ref": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/git/ref/tags/v0.4.5",
+      "release_api": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/releases/tags/v0.4.5",
+      "release_apk_metadata_only": {
+        "bytes": 33842813,
+        "sha256": "95eab591195355807b74e23bf7e75d688c6b9e91bb9d0ac8192d29c36d07c2e0",
+        "downloaded": false
+      },
+      "hardware": {
+        "verified_in_source": "JNI selects two HTP sessions for SM8750 when driver enumeration is unavailable; v79 is outside the low-VMEM branch. Runtime explicitly requires detected HTP devices and uses layer split for two sessions.",
+        "skels": [
+          "v73",
+          "v75",
+          "v79",
+          "v81",
+          "v85"
+        ],
+        "cautions": [
+          "The benchmark shell script fixes ARCH=81 and DEVICES=1; it is not a ready-made razr/v79 command.",
+          "v79 still has opt_dma64=false.",
+          "Source retains pre-32144 mmap and mapped_clones implementation; a 2026-11-10 backend sync is not the 2026-11-13 IOVA fix."
+        ],
+        "references": [
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/cpp/llama_jni.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/build.gradle.kts",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/ggml/src/ggml-hexagon/ggml-hexagon.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/bench/bench.sh"
+        ]
+      },
+      "published_measurements": {
+        "scope": "Author-reported README measurements, not reproduced here. Prompt counts/configurations differ; compare within a matched experiment only.",
+        "rows": [
+          {
+            "soc": "Snapdragon 8 Elite",
+            "phone": "OnePlus 13",
+            "config": "Q3 LES + DSpark; HTP0 + HTP1",
+            "prompt_tokens": 41,
+            "output_tokens": 128,
+            "prefill_tok_s": 22.02,
+            "decode_tok_s": 17.98
+          },
+          {
+            "soc": "Snapdragon 8 Elite",
+            "phone": "OnePlus 13",
+            "config": "Q3 LES + DSpark; HTP0 + HTP1",
+            "prompt_tokens": 512,
+            "output_tokens": 128,
+            "prefill_tok_s": 94.28,
+            "decode_tok_s": 13.65
+          },
+          {
+            "soc": "Snapdragon 8 Elite Gen 5",
+            "phone": "iQOO 15 Ultra",
+            "config": "Q3 tiled, H+2, O_DIRECT, DSpark3",
+            "prompt_tokens": 260,
+            "prefill_tok_s": 38.5,
+            "decode_tok_s": 23.3
+          },
+          {
+            "soc": "Snapdragon 8 Elite Gen 5",
+            "phone": "iQOO 15 Ultra",
+            "config": "same; other app foreground",
+            "prompt_tokens": 260,
+            "decode_tok_s_range": [
+              21.3,
+              21.8
+            ]
+          }
+        ],
+        "limits": "The foreground-app result belongs to Gen 5. It does not prove virtual-display app automation or touch/focus isolation. A current roughly 5K-token agent prompt would exceed the 4096 source default; truncation or simple linear extrapolation is not acceptance.",
+        "source": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/README.md",
+        "earlier_repeated_512_benchmark": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/docs/benchmark-prefill512-decode128.md",
+        "earlier_ui_sample": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/docs/minicpm47-app-benchmark.md"
+      },
+      "memory": {
+        "current_source_budget_decimal_mb": {
+          "min": 5200,
+          "default": 10200,
+          "max": 13000
+        },
+        "source_default_context": 4096,
+        "batch": 512,
+        "ubatch": 128,
+        "bank": 256,
+        "estimated_fixed_bytes": 4650000000,
+        "bytes_per_slot_across_40_layers": 62914560,
+        "default_total_slots": 88,
+        "default_prefetch_slots": 8,
+        "default_demand_window": 80,
+        "limitations": [
+          "Budget is an estimate, not an allocator limit.",
+          "The Kotlin maximum derives from total RAM less a reserve, not current MemAvailable.",
+          "The old HEXAGON_RUNTIME.md 5.2–8.0GB/ctx2048 table is stale relative to the release source.",
+          "The header says draft3 has not been remeasured against its old calibration.",
+          "RSS alone omits some HTP/DMA allocations; monitor global MemAvailable plus PSS/RSS and DMA accounting, while explaining possible double counting."
+        ],
+        "references": [
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_memory.h",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/LlamaEngine.kt",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/HEXAGON_RUNTIME.md"
+        ]
+      },
+      "streaming": {
+        "implementation": "External expert slot bank, phase reuse, lookahead, resident IO workers, and runtime O_DIRECT aligned-read probe are implemented. O_DIRECT failure falls back to buffered IO and must be reported.",
+        "packaging": "Resident GGUF + 40 expert layer files + manifest + Q8_0 DSpark + F16 padded projector are a coordinated bundle. Storage bytes are not resident RAM.",
+        "packer_quant_whitelist": [
+          "Q3_K",
+          "Q4_K",
+          "Q6_K"
+        ],
+        "lfm24_q2_limit": "The current Python packer rejects Q2_K despite backend Q2_K repack support; the pinned LFM2.5-24B QAD Q2_K_L is not a ready-made streaming bundle.",
+        "runtime_integrity_limit": "The native expert manifest parser checks schema/layout/type/shape/file extents, but does not itself enforce conversion.json backend SHA or every file SHA. Hepta admission must pin and verify the coordinated asset set.",
+        "references": [
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/src/llama-moe-slot.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/src/llama-moe-experts.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/tools/moe/pack_hexagon.py",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/tools/moe/HEXAGON.md"
+        ]
+      },
+      "asset_metadata": {
+        "derivative_model_card": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon/resolve/master/README.md",
+        "derivative_card_sha256": "adcd6ada5bd20b0852b0c115baa96918a84c04647b1279956455bd9f23cb5c6e",
+        "upstream_model_card": "https://www.modelscope.cn/models/OpenBMB/MiniCPM-V-4.7-35B-A3B-gguf/resolve/master/README.md",
+        "upstream_card_sha256": "30dc988586e8ccac7decd5ee854898b611964f9f0ac351336cabbba6a2cfbc53",
+        "upstream_base_model": "openbmb/MiniCPM-V-4.7-35B-A3B",
+        "publisher_declared_license": "Apache-2.0 in both upstream and derivative cards; full separate LICENSE URL returned 404.",
+        "declared_bundle_bytes": 19315173512,
+        "checksum_manifest_url": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon/resolve/master/SHA256SUMS",
+        "checksum_manifest_sha256": "83ccf0b0234649a692371f8d54155350e2b27b13bd8d4bbfa4d98ddb917de454",
+        "main_sha256": "a1e700ae07b0d46ccf06b3fc65da503ef3adaeaa149b741a3da04fb48d8f2f83",
+        "draft_sha256": "2fe5bc2ab5c699ab9d4188df649436bfeaa5305d9a0275f180654efae41b3046",
+        "mmproj_sha256": "84b1cac750e38b9b3c075c457c94fd124cbc308685804a255217a38c6ea2b674",
+        "experts_manifest_sha256": "d4feea25ede7712353b6cddb09e4ef5dc292a7e1a22238c633de4dc4bf0d2b2c",
+        "conversion_metadata_sha256": "496c542fba33d1970d4c7ebc63bb82038a2d279f43361eecadb4772139091b7c",
+        "inspected_manifest": {
+          "architecture": "qwen35moe",
+          "experts_per_layer": 256,
+          "routed_experts": 8,
+          "tensor_entries": 120,
+          "quant_types": [
+            "Q3_K"
+          ],
+          "backend_layout": "hexagon-tiled-v1"
+        },
+        "compatibility_not_yet_proven": "Derivative card names an earlier llama.cpp-omni branch. Format name alone does not prove byte/ABI equivalence to the newer MobiInfer release build.",
+        "weights_downloaded": false
+      },
+      "tool_protocol": {
+        "source_support": "Core common sampler includes grammar-constrained sampling; speculative verification calls common_sampler_sample_and_accept_n, which samples and advances grammar one accepted token at a time.",
+        "adapter_gap": "MiniCPM47Runtime public API exposes text/vision/history/cancel/reset. Its submit path omits inputs.tools and fails to copy formatted grammar into task sampling. Dense JNI tool support is not MoE adapter support.",
+        "existing_parser": "oaicompat_chat_params_parse in server-common.cpp already maps tools/schema, chat grammar, triggers, preserved tokens, generation prompt, stops and parser. It needs Jinja for tools and rejects custom grammar combined with tools.",
+        "modes": "Choose one explicit protocol: Hepta action JSON with schema/GBNF and ordinary messages, or native chat tools with the template-generated tool grammar. Do not silently combine incompatible constraint modes.",
+        "references": [
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.h",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/common/sampling.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/tools/server/server-context.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/tools/server/server-common.cpp",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/common/chat.h",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/common/common.h"
+        ]
+      },
+      "minimum_port": {
+        "status": "Proposed integration contract, not an existing GenieX or MobiInfer C API.",
+        "build": "Pin the complete fork; build paired llama/ggml/common/Hexagon host and v79 DSP code, the server queue/context/common/chat/task core and required speculative dependencies. Android CMake already links this core without an HTTP listener. Keep code/ABI separate from GenieX.",
+        "worker": "Headless dedicated worker process with bounded IPC, current-memory admission, bounded output, deadline/cancel/kill/reap, and serialized NPU ownership. Do not import the demo Activity, download manager, image-generation UI or network listener.",
+        "request_contract": [
+          "Open with verified asset descriptors/paths and explicit context, batch, ubatch, expert-bank/window/prefetch/draft choices.",
+          "Submit bounded messages plus exactly one constraint mode and a token/deadline budget.",
+          "Stream tokens and structured stop/error/performance events; report actual backend, parameters, draft enabled state, expert IO and memory observations.",
+          "Cancel, reset and close with observed process cleanup; retain the existing Hepta semantic action validator and virtual-display tool executor."
+        ],
+        "initial_trial": "Text only, context2048, batch128/ubatch128, original top-8 routing, no hidden expert pruning, conservative measured budget and 128 prompt/64 output tokens. Establish DSpark-off identity first, then compare DSpark3 at the same budget; verify bank capacity against worst-case expert unions. Larger actual agent prompts require an explicit later context/budget trial.",
+        "next_gate": "Only add image input after text correctness/cleanup and package compatibility pass. Only connect tools after constrained output/semantic tests pass. No production default change based on throughput alone."
+      },
+      "licenses": {
+        "root": "MIT",
+        "android_app": "MIT; upstream weights excluded",
+        "weights": "Publisher-declared Apache-2.0; preserve notices and the exact model provenance",
+        "references": [
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/LICENSE",
+          "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/Android-App/LICENSE"
+        ]
+      }
+    },
+    "estream": {
+      "paper": "https://arxiv.org/html/2609.06551v1",
+      "abstract": "https://arxiv.org/abs/2609.06551",
+      "version": "v1, 2026-09-06",
+      "retrieval": "Official arXiv abs/html fetched with HTTP200; public metadata/text only.",
+      "hardware": "OnePlus 15 PLK110, Android16, 15.1GiB RAM, Snapdragon 8 Elite Gen5 SM8850, Hexagon v81, UFS4.1.",
+      "scope": "Prefill-only services; 7B–16B primary comparison, 256–4096 input tokens; scale-up includes 46.7B. Weight-only Q4 with floating activations.",
+      "result_scope": "Authors report 2.25–27.57x pure-prefill TTFT speedups and 1.19–12.29x lower peak physical memory against the fastest supported baseline per setting. These are not autoregressive decode or Hepta agent measurements.",
+      "decision": "Useful bounded-arena/group-streaming design. Section7 explicitly leaves decode-specific caching/prediction/speculation to future work.",
+      "runnable_public_mobile_implementation_verified": false
+    },
+    "bigmomo": {
+      "paper": "https://arxiv.org/html/2609.14643v2",
+      "abstract": "https://arxiv.org/abs/2609.14643",
+      "version": "v2, 2026-10-03; v1 search snippets describing up to30B are stale for v2.",
+      "scope": "Custom llama.cpp/Hexagon runtime; Q4_0 targets with speculative drafts. Main experiments use four MoEs and five workloads; results average10 runs.",
+      "hardware": [
+        {
+          "phone": "OnePlus15",
+          "soc": "8 Elite Gen5",
+          "dram_gb": 16,
+          "available_gb": 11.52,
+          "ufs": "4.1"
+        },
+        {
+          "phone": "OnePlus13",
+          "soc": "8 Elite",
+          "dram_gb": 24,
+          "available_gb": 18.23,
+          "ufs": "4.0"
+        },
+        {
+          "phone": "OnePlusAce5",
+          "soc": "8 Gen3",
+          "dram_gb": 12,
+          "available_gb": 6,
+          "ufs": "4.0"
+        }
+      ],
+      "scale_80b": "Section5.6 really includes Qwen3-Next-80B-A3B on the Gen5 platform. It is not evidence for 80B on a 16GB 8 Elite razr.",
+      "reporting_caveat": "Abstract says mean1.82x versus best baseline; section5.2/Conclusion say mean1.76x, while1.82x is the maximum cross-device comparison. Prefer the scoped body values.",
+      "decision": "Supports large-MoE feasibility through movement scheduling and speculative windows; not a drop-in SDK or device qualification.",
+      "runnable_public_mobile_implementation_verified": false
+    },
+    "default_switch_device_gate": [
+      "Pin APK, runtime, model SHA, actual backend and prompt/grammar/template. Separate model-size effects from compact-grammar effects with a matched 2x2 comparison where both grammars are supported.",
+      "Use at least30 matched Chinese cases spanning Notes, shopping browse/cart pre-commit, flight lookup and recovery; critical semantic cases must all pass, including correct tool, arguments, amounts/dates, postconditions and no fabricated completion.",
+      "Measure cold/warm load, prompt tokens, prefill, TTFT, decode, complete valid-action latency, end-to-end task time and p50/p95. All trials must fit the configured request/task deadlines; compare identical work.",
+      "All app tests stay on the owned virtual display. Observe display/task ownership before and after every operation; no agent input/focus/reparent on display0 even when the same app already has a main-screen task.",
+      "Demonstrate zero external-model calls; app internet traffic may remain necessary for live inventory/flights and must not be confused with external inference.",
+      "Run three paired repetitions plus a bounded sustained session to detect thermal drift, HTP/IOVA errors, LMK/OOM, memory-reserve breaches and foreground responsiveness regressions; include PSS/RSS/global memory and DMA-aware evidence.",
+      "Cancellation/timeout/model switch/reload must release native workers and NPU resources. Repeat after an injected bad output/context overflow and verify no stale tool execution.",
+      "Change default only if candidate preserves all critical correctness/isolation gates, improves or matches aggregate task success, and stays within the incumbent deadline/memory/thermal envelope. Grammar validity alone is insufficient."
+    ]
+  }
+}

@@ -776,24 +776,26 @@
         final NativeAppSession nativeTask=new NativeAppSession();final NativeAppSession.PostEffectReadPermit permit;
         final PostEffectReadResult out=new PostEffectReadResult();final PhoneObservation prior;
         final long started,transition,discardElapsed;long taskDeadline;final int priorReads;ObservationRequest request;File discarded;
-        String fault="none";boolean startupWindow;
+        String fault="none";boolean startupWindow;final boolean current1090;
         PostEffectReadScenario()throws Exception{this(false,9827);}
-        PostEffectReadScenario(boolean current1079,long discardElapsed)throws Exception{
-            this.discardElapsed=discardElapsed;
+        PostEffectReadScenario(boolean current1079,long discardElapsed)throws Exception{this(current1079,discardElapsed,false);}
+        PostEffectReadScenario(boolean current1079,long discardElapsed,boolean current1090)throws Exception{
+            this.discardElapsed=discardElapsed;this.current1090=current1090;
             f=seedFixture(null,false);f.ownedController=controller;f.autoScreenshot=true;
             f.readHook=(g,n)->{sealedReadGraph(g,"published-home-before-effect");sealGraph(g);};
             f.seedFrozenRead=(r,i)->i.frozenWindow;twoSamples(f);prior=f.current;priorReads=f.reads.get();
             check(prior!=null&&f.taskObservationAdmissions==1,"prior actual observer admission required");
             // Explicit synthetic clock anchored at the recorded request's start.
-            SystemClock.now=current1079?537992402:531775479;started=SystemClock.now;taskDeadline=started+480000;
-            transition=started-(current1079?77:84)+15000;
+            SystemClock.now=current1090?551568497:current1079?537992402:531775479;started=SystemClock.now;taskDeadline=started+480000;
+            transition=started-(current1090?93:current1079?77:84)+15000;
             permit=new NativeAppSession.PostEffectReadPermit(nativeTask,f.taskAuthorization,f.lease,
                     f.taskBackground.selection,f.taskBackground.generation,f.taskBackground.displayId(),transition);
             f.autoScreenshot=false;f.pendingScreenshot=null;
             f.readHook=(g,n)->{
                 int k=n-priorReads;sealedReadGraph(g,"complete-new-flight-form");g.windowId=8;
                 if(startupWindow&&k==1){SystemClock.now=started+1000;g.windowId=7;g.digest="normal-startup-window";}
-                else {int p=k-(startupWindow?1:0);SystemClock.now=started+(current1079
+                else {int p=k-(startupWindow?1:0);SystemClock.now=started+(current1090
+                        ?(p==1?7467:p==2?8276:p==3?8901:11000):current1079
                         ?(p==1?6039:p==2?6874:p==3?7504:10191):(p==1?7431:p==2?8223:p==3?8858:10246));}
                 if(k==1&&"foreign_start".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
                 if(k==(startupWindow?4:3)&&"unsealed".equals(fault))f.noteObservationEvent(9);
@@ -802,8 +804,8 @@
                 if(k==(startupWindow?4:3)&&"profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
                 sealGraph(g);
             };
-            Bitmap.encodeHook=()->SystemClock.now=started+(current1079?7505:9600);
-            f.hashHook=()->SystemClock.now=started+(current1079?8349:9700);
+            Bitmap.encodeHook=()->SystemClock.now=started+(current1090?8901:current1079?7505:9600);
+            f.hashHook=()->SystemClock.now=started+(current1090?9722:current1079?8349:9700);
             f.seedFrozenRead=(r,i)->{
                 SystemClock.now=started+("expired".equals(fault)?12000:discardElapsed);
                 if("no_window".equals(fault))return null;
@@ -814,7 +816,8 @@
         }
         void start()throws Exception{
             f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
-                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,Math.min(taskDeadline,transition)),taskDeadline,out,null);
+                    ()->f.cancelled.get(),current1090?Math.min(started+11999,Math.min(taskDeadline,transition))
+                            :ObservationStabilityGate.requestDeadline(SystemClock.now,Math.min(taskDeadline,transition)),taskDeadline,out,null);
             f.main.drain();request=f.activeObservation;check(request!=null&&request.taskReadOrdinal==2,"actual post-effect read admission");
             check(request.readBefore==null&&request.readIdentity==null&&request.postEffectIdentity==null,"old home graph must not anchor new page");
             for(int i=0;i<8&&f.pendingScreenshot==null&&!request.finished;i++){
@@ -837,7 +840,7 @@
         }
         PostEffectObservationRetryProof proof()throws Exception{
             queue();accept();released();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one failed post-effect read proof");
-            check(request.failedAt==started+discardElapsed&&request.deadline==Math.min(started+12000,taskDeadline),"actual cut point does not move old terminal/deadline");
+            check(request.failedAt==started+discardElapsed&&request.deadline==Math.min(started+(current1090?11999:12000),taskDeadline),"actual cut point does not move old terminal/deadline");
             check(count(request,"SAMPLE_EXPIRED")==0&&f.reads.get()==priorReads+(startupWindow?4:3),"qualified failed capture drains immediately without another sample");
             PostEffectObservationRetryProof proof=out.proofs.get(0);Map<String,Object> e=proof.evidence();
             check(proof.identity.windowId==8&&((Number)e.get("original_transition_deadline_elapsed_ms")).longValue()==transition,"latest sealed identity and original transition deadline");
@@ -915,7 +918,8 @@
         eventCase("post_effect_actual_serial_worker_return_before_proof",()->{
             PostEffectReadScenario s=new PostEffectReadScenario();s.start();Block hold=new Block();s.f.main.afterWorkerPost=hold;
             s.f.deliverScreenshot();hold.entered();for(File file:s.f.directory.listFiles())if(!file.equals(s.prior.path))s.discarded=file;
-            s.f.main.drain();check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&observationIo.active.get()>=2,"queued callback is not read drain");s.released();
+            s.f.main.drain();check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&observationIo.active.get()>=2,"queued callback is not read drain");
+            check(s.request.postEffectPublicationRecheckAttempted&&!s.request.finished&&s.discarded.exists(),"queued same-request recheck retains only its owned product");
             s.f.main.afterWorkerPost=null;hold.open();s.f.finish();s.f.finish();check(s.out.proofs.size()==1,"actual serial marker grants proof only after worker return");s.dispose();
         });
         eventCase("post_effect_cancel_during_serial_drain",()->{

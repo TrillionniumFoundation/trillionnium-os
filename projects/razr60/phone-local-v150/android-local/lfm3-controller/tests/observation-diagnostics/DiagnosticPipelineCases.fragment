@@ -95,6 +95,30 @@
             f.main.drain();f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
             DiagnosticChecks.check(f.delivered.size()==1&&f.errors.isEmpty(),"diagnostic callback changed observation");f.dispose();
         });
+        for(final int at:new int[]{3,4})for(final boolean available:new boolean[]{false,true})
+            diag("actual_capture_full_census_difference_"+at+"_"+(available?"available":"unavailable"),()->{
+                ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{
+                    if(n==at)g.digest="changed";boundGraph(g);g.nativeObservationComplete=true;
+                    if(available){
+                        DiagnosticGraphHost.Graph values=DiagnosticGraphHost.fullGraph(3);values.windowId=g.windowId;values.displayId=g.displayId;
+                        values.digest=sha(g.digest.getBytes(StandardCharsets.UTF_8));values.state.appTreeSha256=values.digest;
+                        for(int i=0;i<3;i++)DiagnosticGraphHost.change(values,i,"window_id",g.windowId);
+                        if(n==at)DiagnosticGraphHost.change(values,1,"focused",true);
+                        g.diagnosticCensus=DiagnosticGraphHost.fullStamp(values);
+                        DiagnosticChecks.check(g.diagnosticCensus!=null,"actual adapter produced explicit host census values");
+                    }
+                };
+                f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+                int reads=f.reads.get(),shots=f.shots.size();org.json.JSONObject j=report(r),row=j.getJSONObject("last_native_full_graph_change");
+                DiagnosticChecks.check(reads==at&&shots==1&&f.delivered.isEmpty()&&f.directory.list().length==0&&r.deadline==11000,"original read count, discarded product and deadline");
+                DiagnosticChecks.check(j.getJSONObject("events").getInt(at==3?"SCREENSHOT_GRAPH_CHANGED":"SAVED_GRAPH_CHANGED")==1
+                        &&j.getJSONObject("events").getInt("CAPTURE_RETRY")==1,"actual rejected branch and retry unchanged");
+                DiagnosticChecks.check(row.getString("stage").equals(at==3?"screenshot_graph":"saved_graph")
+                        &&row.getBoolean("full_census_compared")==available&&row.getString("status").equals(available?"compared":"full_census_unavailable"),"actual recorder availability and stage");
+                if(available)DiagnosticChecks.check(row.getInt("changed_path_count")==1&&row.getJSONArray("node_differences").getJSONObject(0).getString("native_path").equals("0/0"),"complete copied value difference");
+                new DiagnosticSnapshot(r.trace).call();DiagnosticChecks.check(f.reads.get()==reads&&f.shots.size()==shots&&f.directory.list().length==0,"terminal snapshot adds no IO or capture");
+                f.dispose();
+            });
         observationIo.executor.shutdown();
     }
 
