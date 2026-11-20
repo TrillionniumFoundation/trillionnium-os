@@ -78,9 +78,24 @@ def prepare(source, output, entries):
         return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages,collection,taskBackground==null?null:backgroundSelectionJson(),taskBackground==null?null:taskBackground.ownerSha256);
     }
 '''
-    service_after = service.replace(old_prepare, new_prepare, 1).replace(old_observation, new_observation, 1).encode()
-    require(service.replace(old_prepare, "", 1).replace(old_observation, "", 1)
-            == service_after.decode().replace(new_prepare, "", 1).replace(new_observation, "", 1),
+    old_initial = part(service, "    void observeInitialNative(Object controller,Object nativeTask,String task,Object authorization,BackgroundSession background,\n",
+                       "    /** Type-only legacy boundary; never a successful native-region recheck. */\n")
+    new_initial = '''    void observeInitialNative(Object controller,Object nativeTask,String task,Object authorization,BackgroundSession background,
+            File directory,Cancellation cancel,long deadline,long taskDeadline,ObservationCallback callback,InitialObservationRetryProof proof){
+        // This ordinary-routing IO fixture supplies only its original deterministic first frame.
+        // It cannot mint, consume or simulate a failed-read replacement.
+        if(proof!=null)throw new AssertionError("native routing fixture cannot consume initial-read proof");
+        if(controller==null||nativeTask==null||task==null||!task.equals(lease)
+                ||authorization!=taskAuthorization||background!=taskBackground||taskObservationAdmissions!=0)
+            throw new AssertionError("native routing fixture requires the first bound native read");
+        taskObservationAdmissions++;
+        observe(task,directory,cancel,deadline,callback);
+    }
+'''
+    service_after = (service.replace(old_prepare, new_prepare, 1).replace(old_observation, new_observation, 1)
+                     .replace(old_initial, new_initial, 1).encode())
+    require(service.replace(old_prepare, "", 1).replace(old_observation, "", 1).replace(old_initial, "", 1)
+            == service_after.decode().replace(new_prepare, "", 1).replace(new_observation, "", 1).replace(new_initial, "", 1),
             "production-extracted Service methods changed outside explicit observation IO")
     service_path.write_bytes(service_after)
     paths = [p for p in paths if p not in (legacy.resolve(), config_path.resolve())]
@@ -103,6 +118,7 @@ def prepare(source, output, entries):
         "observation_blocks": [
             {"name": "prepare", "before_sha256": sha(old_prepare.encode()), "after_sha256": sha(new_prepare.encode())},
             {"name": "observation", "before_sha256": sha(old_observation.encode()), "after_sha256": sha(new_observation.encode())},
+            {"name": "initial_native_first_read", "before_sha256": sha(old_initial.encode()), "after_sha256": sha(new_initial.encode())},
         ],
         "production_extracted_service_methods_unchanged": True,
         "actual_native_classes": [metadata(p, p.read_bytes()) for p in actual],

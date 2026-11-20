@@ -22,6 +22,17 @@ public final class HeptaAccessibilityService extends android.content.Context {
         void requireOriginal(Object service,String task,Object authorization,PhoneObservation before){throw new AssertionError("legacy fixture has no failed-read proof");}
         Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no failed-read proof");}
     }
+    /** The new initial-native API is fail-only in these non-native legacy cases. */
+    static final class InitialObservationRetryProof {
+        private InitialObservationRetryProof(){throw new AssertionError("legacy fixture cannot mint initial-read proof");}
+        void requireOriginal(Object service,Object controller,Object nativeTask,String task,Object authorization,
+                BackgroundSession background,long deadline){throw new AssertionError("legacy fixture has no initial-read proof");}
+        Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no initial-read proof");}
+    }
+    void observeInitialNative(Object controller,Object nativeTask,String task,Object authorization,BackgroundSession background,
+            File directory,Cancellation cancel,long deadline,long taskDeadline,ObservationCallback callback,InitialObservationRetryProof proof){
+        throw new AssertionError("legacy fixture cannot submit an initial-native read");
+    }
     /** Type-only legacy boundary; never a successful native-region recheck. */
     static final class NativeRegionCheck {
         private NativeRegionCheck(){throw new AssertionError("legacy fixture has no Web native-region evidence");}
@@ -45,6 +56,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
         throw new AssertionError("legacy fixture has no final native action capability");
     }
     static HeptaAccessibilityService live;
+    private int taskObservationAdmissions;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
     volatile String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;WebFlightSession taskWeb;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;

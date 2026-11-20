@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "a6b6ef3e24d614d66fa2c5458236fad063f44e11",
-  "base_manifest_sha256": "c5594b8f7c22651f5ffeeb1a96b1212829c75829d92ce6d0b1aeeaced20e91a1",
-  "candidate_status": "shopping_navigation_permission_cookie_and_late_event_read_host_validation_pending",
+  "base_head": "dfbbb0c0d1704b3723f39cc11812c4f7ed10ddd5",
+  "base_manifest_sha256": "5f743a5c99d07dcfa8f1bfc79491cfbed9326f8e3a26c7887327b2d330138e88",
+  "candidate_status": "initial_native_drain_retry_and_same_request_saved_graph_seed_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "243cf7acc5beaed35bd7934ae73538336d6f7f2581751802422907d2737f15af",
+  "production_input_map_sha256": "e0cc8bfb4cc2727391bca9e5640ad65f51c19db71b8f80c0aebaa6ebbede084b",
   "complete_source_files": 2251,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain the exact a6b R18 component. Add next_goal only inside the existing one-use pre-query image-modal Back capability. Permit only the reviewed permission-to-target cookie-subset read to be discarded after retained-root-cookie and claimed-leaf checks; re-read the complete graph within the original three-attempt/request deadline and require exact final TaskInfo/cookie equality. Keep ordinary window, permission input, dispatch, ownership and retirement guards. Classify only a sealed, same-identity late target-display capture event as a reason for the existing one-use drained read-only retry; discard unpublished pixels and require new complete evidence and a new model decision. Keep original publisher, unknown-event, task/lease, retry-budget and deadline guards. Extend existing tests and bind their actual digest, including the exact existing home-loading hint. New host and Android qualification remain pending; no Phone operation is authorized by this source manifest.",
+  "scope": "Retain the exact dfbbb installed component. Add one private initial native pre-model read retry only after the latest complete sealed pair, successful persisted-window check, known target event at the original final rejection fence, and actual serial read queue drain. Keep ordinary initial window transitions and original stale-action authority. Permit a consumed retry to seed only its own newly completed full saved graph under the same private proof identity, then require a new complete sample, new PNG and all original publication checks. Preserve the one-use retry budgets, 10s settle, 12s request, 480s task deadline, unknown-event and owner/profile guards. Host and Android qualification remain pending; this source manifest authorizes no Phone operation.",
   "files": [
     {
       "path": ".gitignore",
@@ -6486,8 +6486,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 306302,
-      "sha256": "0aecf0acc8adcfc29ef937d90ad60701e7407901f5426d2bf6de8c2db66728c2"
+      "bytes": 322943,
+      "sha256": "bfb13249345811e0d9d3243c58def0ac891641fc13cbec0320ccf9bfaefbb52d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6526,8 +6526,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 181520,
-      "sha256": "3ea00555e7c566a78277f39c3c8a1e11bca1fcbe997ef8a811154544fd30eebd"
+      "bytes": 187632,
+      "sha256": "214817b88a208a34ac549aa8732b43e891d406b2d61d2fa66f82d02b4160c0ee"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -8196,8 +8196,8 @@
     },
     {
       "path": "tests/native-app-routing/prepare_native_entry.py",
-      "bytes": 8406,
-      "sha256": "141ad488bbf03ffe35611f180c4100ceb3b734cc7ea357a40ddfb20d044a11c9"
+      "bytes": 9906,
+      "sha256": "630556dac23463fffa29495af15ea4a20847c1de9c538572a75dc8efb6b9a39f"
     },
     {
       "path": "tests/native-app-routing/run_host.py",
@@ -8336,8 +8336,8 @@
     },
     {
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "bytes": 34119,
-      "sha256": "2c36ca8abb73bb6acc64006472c6614f2ee583bb98d3caf7313565a7a33c4047"
+      "bytes": 65028,
+      "sha256": "edf41968bd9eca71e14ac9940c0ce560c31f1270097533ecead0baa5bf1d7f74"
     },
     {
       "path": "tests/native-observation-events/run_host.py",
@@ -8346,8 +8346,8 @@
     },
     {
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "bytes": 25954,
-      "sha256": "5f4bbf23717617c312c7fd4ebae0636fe228c216dec7ff2dea96531282024f70"
+      "bytes": 38920,
+      "sha256": "b8258652271c1453643446d07125b055e07c72e445b210c4fd10103727a3e451"
     },
     {
       "path": "tests/native-observation-read-retry/README.md",
@@ -8356,8 +8356,8 @@
     },
     {
       "path": "tests/native-observation-read-retry/run_host.py",
-      "bytes": 7673,
-      "sha256": "e4a9da62a0eea53aeb663a77965812121b6c2c8120c2e02ced177dd208865338"
+      "bytes": 8558,
+      "sha256": "61c4e03f1f07cad5d1b1359f1c1a5ca114068f719b8f529c30d453a16776527b"
     },
     {
       "path": "tests/native-observation-retry/README.md",
@@ -8896,8 +8896,8 @@
     },
     {
       "path": "tests/observation-diagnostics/DiagnosticControllerHost.template",
-      "bytes": 12573,
-      "sha256": "08bbe21273899fc4aa81ba6b6d6eb66ed578057cd16724269bbd89dfc956918d"
+      "bytes": 13642,
+      "sha256": "f76c237607d3ea401dcd0b2e72c2df3410cdc7a7e0980acaca192b7fc8c169c7"
     },
     {
       "path": "tests/observation-diagnostics/DiagnosticGraphHost.template",
@@ -8916,8 +8916,8 @@
     },
     {
       "path": "tests/observation-diagnostics/run_host.py",
-      "bytes": 14669,
-      "sha256": "17ead0984342e6a10707097e215eda5a750f0cc9ec325eb9ce2277bb20b2862f"
+      "bytes": 14838,
+      "sha256": "09bf223206f010034f0b76bd43ecd50b4d5f1c08f85505f1fc0d5e4e78edb3fd"
     },
     {
       "path": "tests/observation-display-scope/ObservationDisplayScopeHostTest.java",
@@ -8946,8 +8946,8 @@
     },
     {
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "bytes": 32425,
-      "sha256": "c43a3baba5f75e10dad1555646114e47f795e4607bf456b30726c6351690c6de"
+      "bytes": 32460,
+      "sha256": "9351b109c0aee32ac106d1a382076d28f5a0053a95a192e3e0854b334b7d15c8"
     },
     {
       "path": "tests/observation-pipeline/run_host_tests.py",
@@ -9606,8 +9606,8 @@
     },
     {
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "bytes": 13090,
-      "sha256": "e7302c27aebad72f20054ec0168cc63105ec0a9eebef586eaf0cca64b413ffe1"
+      "bytes": 14124,
+      "sha256": "a45bcc23cdc4a430f8457fa1c6071fdbbf92dfac7340fa9ef6bdc7925f621629"
     },
     {
       "path": "tests/qualification-scope/SessionFixture.template",

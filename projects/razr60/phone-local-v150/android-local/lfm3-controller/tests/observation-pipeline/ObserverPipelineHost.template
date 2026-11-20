@@ -161,6 +161,7 @@ public final class ObserverPipelineHost {
     static Thread mainThread;static ObserverPipelineHost live;String lease="task-one";
     Object taskScope,taskAuthorization,taskNotesPhase,taskCalculatorInput,taskSubmitAttempts,taskFixedIntentAttempts,appDiscovery;Runnable stopListener;
     final Handler main=new Handler();volatile ObservationRequest activeObservation;
+    int taskObservationAdmissions;
     long lastScreenshotAt,captureSerial;boolean capturePending;
     PhoneObservation current;Graph currentGraph;Bitmap currentBitmap;
     BackgroundSession taskBackground;WebFlightSession taskWeb;LocalTaskController ownedController;boolean locked;

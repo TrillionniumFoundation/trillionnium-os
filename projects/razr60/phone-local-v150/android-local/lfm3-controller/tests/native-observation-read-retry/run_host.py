@@ -37,7 +37,14 @@ def main():
         need(run_task.count('awaitAfterStaleNativeAction(')==1,'one recovery callsite')
         stale=run_task[run_task.index('                if(outcome.stale&&!outcome.dispatched){'):]
         need(stale.index('awaitAfterStaleNativeAction(')<stale.index('                if(!outcome.accepted){'),'recovery only in un-dispatched stale branch')
+        need(run_task.count('awaitInitialNativeObservation(')==1,'one initial native entry')
+        need(run_task.index('awaitInitialNativeObservation(')<run_task.index('taskSteps: while(')<run_task.index('awaitModel('),'initial entry before first model loop')
+        need(run_task.count('initialNativeObservationRetryUsed=false;')==1,'one independent initial budget reset')
         anchors={
+          'initial_context':'    private static final class InitialNativeObservation {',
+          'initial_failure':'    private static final class InitialNativeObservationFailure extends IllegalStateException {',
+          'initial_require':'    private void requireInitialNativeObservation(',
+          'initial_wrapper':'    private PhoneObservation awaitInitialNativeObservation(',
           'retry_failure':'    private static final class NativeObservationTransientFailure extends IllegalStateException {',
           'retry_wrapper':'    private PhoneObservation awaitAfterStaleNativeAction(',
           'await_observation':'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{',
@@ -47,6 +54,7 @@ def main():
           'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
         methods['service_proof']=extractor.body(service,'    static final class NativeObservationRetryProof {')
+        methods['initial_service_proof']=extractor.body(service,'    static final class InitialObservationRetryProof {')
         template=(source/TEST/'ControllerReadRetryHost.template').read_text(encoding='utf-8')
         for key,body in methods.items():
             marker='{{'+key+'}}';need(template.count(marker)==1,'unique marker '+key);template=template.replace(marker,body,1)
