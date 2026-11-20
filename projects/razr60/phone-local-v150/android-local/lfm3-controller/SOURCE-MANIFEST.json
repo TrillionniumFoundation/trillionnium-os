@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "dfbbb0c0d1704b3723f39cc11812c4f7ed10ddd5",
-  "base_manifest_sha256": "5f743a5c99d07dcfa8f1bfc79491cfbed9326f8e3a26c7887327b2d330138e88",
-  "candidate_status": "initial_native_drain_retry_and_same_request_saved_graph_seed_host_validation_pending",
+  "base_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
+  "base_manifest_sha256": "c62a357ec86c6c4f86d83e30e9d86cae386c130a23e4d11f8405b9add24fc3ef",
+  "candidate_status": "sms_login_public_initialization_and_search_hint_host_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "e0cc8bfb4cc2727391bca9e5640ad65f51c19db71b8f80c0aebaa6ebbede084b",
+  "production_input_map_sha256": "603be5b0505ab33250fda8ea1f0ed9fc0b799448dff80c259783ef444d3512d5",
   "complete_source_files": 2251,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Retain the exact dfbbb installed component. Add one private initial native pre-model read retry only after the latest complete sealed pair, successful persisted-window check, known target event at the original final rejection fence, and actual serial read queue drain. Keep ordinary initial window transitions and original stale-action authority. Permit a consumed retry to seed only its own newly completed full saved graph under the same private proof identity, then require a new complete sample, new PNG and all original publication checks. Preserve the one-use retry budgets, 10s settle, 12s request, 480s task deadline, unknown-event and owner/profile guards. Host and Android qualification remain pending; this source manifest authorizes no Phone operation.",
+  "scope": "Retain the exact ebb383 installed component. Recognize the actually observed Ctrip SMS login variant and its exact blank-label return resource only under the original private calendar/query/results proof and one-return budget. Add explicitly versioned public-profile initialization ownership projection while retaining complete physical audit, private PermissionRead and final dispatch checks. Permit only the Xiaomi search icon purpose to compare a changing noninteractive hint term right edge with its changed literal inside the same fixed parent; all other geometry, target identity and action fences remain exact. Host and Android qualification remain pending; this source manifest authorizes no Phone operation.",
   "files": [
     {
       "path": ".gitignore",
@@ -6156,8 +6156,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 101575,
-      "sha256": "b079273a10e986233fc25fbbb6267c5a1b963fd13d175e9ee3110c0d33781cb3"
+      "bytes": 103949,
+      "sha256": "bbd621bb40fa36d56a3731cb9246dc8fdd4b6cbd79564280113e35b751adef24"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6196,8 +6196,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PermissionWindowObservation.java",
-      "bytes": 9075,
-      "sha256": "0020ba395cd2ba050f07d1656bf0454e99fb8d4d5876331e8e4f85db8e731098"
+      "bytes": 19577,
+      "sha256": "b7deba68699311af54ef8e06137ab455f2753201915f1e0e2696f14ac89c8c5a"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PhysicalDisplayFence.java",
@@ -6301,8 +6301,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java",
-      "bytes": 7245,
-      "sha256": "2a333554dc0155b68d649bd21ef6cf36f914a46947e9159320cdeee19eb7475a"
+      "bytes": 12193,
+      "sha256": "a3d14f814b5249ece8ae08f730e3ea1f21232efd2c2e3d8afcf2b0719a6c4998"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java",
@@ -6411,8 +6411,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 112433,
-      "sha256": "66648f9c10dbee82211f26acaa63528b5df2046d1fdd7d12d4bc32301e67d32a"
+      "bytes": 112577,
+      "sha256": "ff7a56d8a243650f017a3a4d40a72601e3f9517606352b6120504558660a3ced"
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
@@ -6586,13 +6586,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "bytes": 48778,
-      "sha256": "de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec"
+      "bytes": 49880,
+      "sha256": "47bb9579f786df0c6043978971b42ef8b4a564f5d9794127b097bf14f8a90ea3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "bytes": 9873,
-      "sha256": "495f9d98854d8137e48e07b074987d81bcfbab8f3b3fe437cdd3239c16719f1a"
+      "bytes": 10085,
+      "sha256": "320c7c6f4f1f4babb2d950cf25ca97b74c9ff2e0719c8a88520f99e4c5c33d02"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
@@ -6621,8 +6621,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "bytes": 47175,
-      "sha256": "61cf52bf5ece6d444a3e570c9c229e9d3992cf5f6e5b0b34e54fc66d52e63a7b"
+      "bytes": 54544,
+      "sha256": "f778b7cafb9ca630e41bd8fe8c2f3ad68ff6d7e5a21a2ad139cf9ca945976ed0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
@@ -6746,13 +6746,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionAndroidAdapter.java",
-      "bytes": 14249,
-      "sha256": "493fbb5c16754b1d1285c2831e3711190160704b7ac3be9fcbb696178dd96c36"
+      "bytes": 14222,
+      "sha256": "e0108c7edbbcb7d4e872c745be7627323d7c6369d8eaa270587e628bf56c6675"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionInitialization.java",
-      "bytes": 27018,
-      "sha256": "24e9c1456caf3df7a83ed3c6575406e80fb2802ffb1c1d4bbc8be253d0c6a0ab"
+      "bytes": 27073,
+      "sha256": "7a36feb5497ddeb323fbdab8dd2cec1e54580b6d8b2006202a494c1b1ffdbae0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionUiSession.java",
@@ -7921,8 +7921,8 @@
     },
     {
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "bytes": 18501,
-      "sha256": "b9dfd34d29b75bb277da1a61eb43b7e8e04cf8b7dbc829b62864cb9d01e32df7"
+      "bytes": 28695,
+      "sha256": "c11ed09e114d2c87076d6990c12f7e1ab43044ba50bf9e4c7883f1abec4f9a18"
     },
     {
       "path": "tests/native-action-integration/IntegrationChecks.java",
@@ -8061,8 +8061,8 @@
     },
     {
       "path": "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java",
-      "bytes": 24505,
-      "sha256": "a32811f5a31d3c17410f44a56df9c79c54ea76dfdaaf59fb4f4514ddb2881447"
+      "bytes": 44075,
+      "sha256": "1e159500616ca8e5175deb5fbbbbcc9dc5350d4dd2b5e234aadd1ec8dd704cda"
     },
     {
       "path": "tests/native-app-provider/NativeResourceHomeHostTest.java",
@@ -8151,8 +8151,8 @@
     },
     {
       "path": "tests/native-app-provider/run_host.py",
-      "bytes": 31167,
-      "sha256": "dda00cacefb31be339a998e7b20bb131cd28b1ee3f3b117e99983008000d31f8"
+      "bytes": 32221,
+      "sha256": "c136a84772f6e6fbf3987cbe86e5f441609b6817bb879673895ee425d951668f"
     },
     {
       "path": "tests/native-app-routing/InstalledIdentityFixture.template",
@@ -8447,7 +8447,7 @@
     {
       "path": "tests/native-stale-recovery/run_budget.py",
       "bytes": 10247,
-      "sha256": "0c08224c33ca7d0be6adf48613b721b8cfa616efc0191acdfb1fe1345169ff52"
+      "sha256": "360e372dab7b2c7c4e09d63af73a1b909afe2fb9505bd39c2434e88946d036a4"
     },
     {
       "path": "tests/native-stale-recovery/run_host.py",
@@ -9216,8 +9216,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java",
-      "bytes": 28270,
-      "sha256": "60970d7b77f22b02bd37be3e6c75ece88b62ebb8280a09c6132c533206d6601e"
+      "bytes": 45087,
+      "sha256": "77f851a4b43301b0b9e85cacf62b686c2da5a39f52562ca54c9c9bac81ec59d4"
     },
     {
       "path": "tests/profile-permission-initialization/README.md",
@@ -9226,8 +9226,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/run_host.py",
-      "bytes": 7396,
-      "sha256": "9ded5cf8bdaee68fbb20c1e4f2619ed055951d98e15c9288a6942377a7f7b007"
+      "bytes": 12204,
+      "sha256": "2d560b5901f006957a55deb7766cd040fa0dbb4f919c6285db7f9a1b29f95fc8"
     },
     {
       "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
@@ -9446,8 +9446,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicOwnGroupSessionHostTest.java",
-      "bytes": 16872,
-      "sha256": "1bd0163d3ae558e80d1bc3fa6204441d986bc96c79f9123015d55257c215d9fb"
+      "bytes": 23315,
+      "sha256": "eccd4bddc336553e4d8b6812ebc2aa7a4499729250686c550687dea0e7ca5392"
     },
     {
       "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
@@ -11062,7 +11062,7 @@
     {
       "path": "tools/run_host_checks.py",
       "bytes": 49708,
-      "sha256": "af20ce6be05ab6834472a8b980cf25c7b6c08a0011e6dc80fd85bbd3a825a61d"
+      "sha256": "6cc9a085db579028c71921a8a9592937745ba0c073ac564ecdf6e91a86be288a"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

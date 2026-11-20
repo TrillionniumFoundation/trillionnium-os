@@ -27,8 +27,10 @@ final class NativeAppDomain {
         this.frame=frame;this.phase=phase;clickIds=Collections.unmodifiableSet(new TreeSet<String>(clicks));
         editValues=Collections.unmodifiableMap(new TreeMap<String,String>(edits));this.purposes=Collections.unmodifiableMap(new TreeMap<String,String>(purposes));
         Set<String> resourceIds=new TreeSet<String>();
-        for(String id:clickIds)if(NativeCtripFlightPage.HOME.equals(phase)&&"open_flight_form".equals(this.purposes.get(id))
-                &&NativeCtripFlightPage.resourceHomeClick(frame,id))resourceIds.add(id);
+        for(String id:clickIds)if((NativeCtripFlightPage.HOME.equals(phase)&&"open_flight_form".equals(this.purposes.get(id))
+                &&NativeCtripFlightPage.resourceHomeClick(frame,id))
+                ||(NativeCtripFlightPage.LOGIN_REQUIRED.equals(phase)&&NativeCtripFlightPage.LOGIN_EXIT.equals(this.purposes.get(id))
+                &&NativeCtripFlightPage.resourceLoginReturnClick(frame,id)))resourceIds.add(id);
         resourceClickIds=Collections.unmodifiableSet(resourceIds);
         for(String id:clickIds)requireNode(id,true,false);
         for(Map.Entry<String,String> e:editValues.entrySet()){requireNode(e.getKey(),false,true);NativeAppEvidence.need(e.getValue()!=null,"native literal edit value");}

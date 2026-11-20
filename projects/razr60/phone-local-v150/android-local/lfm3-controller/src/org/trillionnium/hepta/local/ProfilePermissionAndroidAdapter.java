@@ -146,7 +146,7 @@ final class ProfilePermissionAndroidAdapter implements AutoCloseable {
             }
             check();PermissionWindowObservation after=background.verifyPermissionWindow(pc.getId(),task,cancellation,deadline);
             check();background.requirePermissionWindow(after,SystemClock.elapsedRealtime());
-            need(before.sameRequest(after)&&before.physicalIdentities.equals(after.physicalIdentities),
+            need(before.sameRequest(after)&&before.samePhysicalScope(after),
                     "permission or physical display identity changed while reading nodes");
             requireSameWindowCensus(census);check();
             return new ProfilePermissionInitialization.Snapshot(after,started,SystemClock.elapsedRealtime(),true,

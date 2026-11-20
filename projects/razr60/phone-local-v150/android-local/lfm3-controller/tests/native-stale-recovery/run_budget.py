@@ -33,7 +33,7 @@ assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d5
 assert sha((src/'LocalTaskSession.java').read_bytes()) in {
     '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6',
     '62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc'}
-assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == 'de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec'
+assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == '47bb9579f786df0c6043978971b42ef8b4a564f5d9794127b097bf14f8a90ea3'
 
 # Use the already reviewed real-file IO fixture producer through its complete
 # generation stage. Do not run its unrelated fixture cases or change any source.

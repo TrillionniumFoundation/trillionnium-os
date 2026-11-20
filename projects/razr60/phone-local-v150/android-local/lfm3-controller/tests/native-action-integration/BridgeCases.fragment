@@ -203,5 +203,111 @@
             Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-install");rotateIconHint(f,"电视");f.installedCurrent=false;
             IntegrationChecks.rejects(()->f.dispatch(),"same original installed verifier remains required");f.noEffect("no effect after PM replacement");
         });
+        stableIconWidthCases();
+    }
+
+    /** Synthetic Android endpoints only. Every census/ref below is rebuilt by
+     * the original extracted Service methods, not by editing a signature hash. */
+    interface IconWidthMutation {void change(Fixture fixture);}
+    static void iconTermBounds(Fixture f,int left,int top,int right,int bottom){
+        f.fresh.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(left,top,right,bottom));
+    }
+    static IconCensus iconWidthCensus(String name,String term,IconWidthMutation mutation)throws Exception{
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-width:"+name);
+        if(term!=null)rotateIconHint(f,term);mutation.change(f);
+        Graph fresh=f.graph(f.fresh,f.work.budget());
+        try{return new IconCensus(f.work.nativeGuard.intent(f.work.graph.refs.get(f.action.nodeId).signature),
+                nativeActionSnapshot(f.work.graph,f.work.nativeGuard),nativeActionSnapshot(fresh,f.work.nativeGuard),SystemClock.now);}
+        finally{fresh.close();}
+    }
+    static Map<String,Object> compareIconWidth(IconCensus c){
+        return NativeActionSnapshotCheck.compare(c.intent,c.before,c.fresh,c.now);
+    }
+    static void widthRejected(String name,String term,IconWidthMutation mutation)throws Exception{
+        one("stable_icon_width_rejects_"+name,()->{
+            IconCensus c=iconWidthCensus(name,term,mutation);
+            IntegrationChecks.rejects(()->compareIconWidth(c),"actual full-reference census must reject "+name);
+        });
+    }
+    static void stableIconWidthCases()throws Exception{
+        for(int right:new int[]{250,536,1000}){
+            final int edge=right;
+            one("stable_icon_changed_literal_bounded_right_"+edge,()->{
+                IconCensus c=iconWidthCensus("edge-"+edge,"Type-C快充数据线",f->iconTermBounds(f,156,301,edge,360));
+                Map<String,Object> proof=compareIconWidth(c);
+                NativeActionSnapshotCheck.Node a=c.before.node("0/0/0/0/0"),z=c.fresh.node("0/0/0/0/0");
+                yes(a.bounds.equals(Arrays.asList(156,301,302,360))&&z.bounds.equals(Arrays.asList(156,301,edge,360)),"raw actual bounds are preserved");
+                yes(!a.text.equals(z.text)&&!a.v.get("ref_signature_sha256").equals(z.v.get("ref_signature_sha256")),"actual literal and full Service reference both changed");
+                yes(c.before.node("0/0/1").v.equals(c.fresh.node("0/0/1").v)&&c.before.node("0/0").v.equals(c.fresh.node("0/0").v),"complete target and ancestor stay exact");
+                yes(new TreeSet<Object>((List<?>)proof.get("changed_paths")).equals(new TreeSet<Object>(Arrays.<Object>asList("0/0/0","0/0/0/0","0/0/0/0/0"))),"only three fully recorded hint nodes differ");
+                yes("exact_two_noninteractive_hint_literals_bounded_term_right_and_recomputed_references".equals(((Map<?,?>)proof.get("xiaomi_search_home_variations")).get("0/0/0")),"bounded-width branch has its own evidence tag");
+                yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("business_verified"))&&Boolean.FALSE.equals(proof.get("navigation_semantics_device_verified")),"comparison does not prove a dispatch or navigation");
+            });
+        }
+        one("stable_icon_literal_only_keeps_original_evidence_tag",()->{
+            Map<String,Object> proof=compareIconWidth(iconWidthCensus("literal-only","电视",f->{}));
+            yes("exact_two_noninteractive_hint_literals_and_recomputed_references".equals(((Map<?,?>)proof.get("xiaomi_search_home_variations")).get("0/0/0")),"original literal-only classification remains exact");
+        });
+        one("stable_icon_same_literal_width_change_has_specific_refusal",()->{
+            IconCensus c=iconWidthCensus("same-literal",null,f->iconTermBounds(f,156,301,536,360));
+            yes(c.before.node("0/0/0/0/0").text.equals(c.fresh.node("0/0/0/0/0").text),"literal really did not change");
+            boolean refused=false;try{compareIconWidth(c);}catch(IllegalArgumentException e){
+                refused=true;yes("hint term width changed without a literal change".equals(e.getMessage()),"fresh full ref was valid; refusal is specifically same-text geometry");
+            }yes(refused,"same literal cannot authorize new geometry");
+        });
+        widthRejected("left","电视",f->iconTermBounds(f,157,301,536,360));
+        widthRejected("top","电视",f->iconTermBounds(f,156,302,536,360));
+        widthRejected("bottom","电视",f->iconTermBounds(f,156,301,536,359));
+        widthRejected("outside_fixed_hint","电视",f->iconTermBounds(f,156,301,1001,360));
+        widthRejected("zero_width","电视",f->iconTermBounds(f,156,301,156,360));
+        widthRejected("hint_parent_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0").put("bounds",Arrays.asList(156,301,999,360));});
+        widthRejected("entry_parent_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0").put("bounds",Arrays.asList(156,287,999,375));f.fresh.nodes.get("0/0/0/0").put("bounds",Arrays.asList(156,301,999,360));});
+        for(String flag:Arrays.asList("clickable","action_click","editable","scrollable","focused","selected")){
+            final String field=flag;
+            widthRejected("new_"+field,"电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0/0").put(field,true);});
+        }
+        widthRejected("different_term_resource","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0/0").put("view_id","com.xiaomi.shop:id/other");});
+        widthRejected("new_semantic_role","Xiaomi路由器AX3000T",f->iconTermBounds(f,156,301,536,360));
+        widthRejected("target_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/1").put("bounds",Arrays.asList(1001,290,1156,372));});
+        widthRejected("ancestor_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0").put("bounds",Arrays.asList(0,1,1224,400));});
+        one("stable_icon_bounded_width_does_not_extend_legacy_switcher_intent",()->{
+            IconCensus c=iconWidthCensus("legacy-switcher","电视",f->iconTermBounds(f,156,301,536,360));
+            NativeActionSnapshotCheck.Intent i=c.intent;NativeActionSnapshotCheck.Node entry=c.before.node("0/0/0");
+            NativeActionSnapshotCheck.Intent legacy=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH,i.pkg,entry.path,entry.label,
+                    (String)entry.v.get("ref_signature_sha256"),i.run,i.node,i.actionSha,i.historySha,i.identity,i.started,i.deadline);
+            IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(legacy,c.before,c.fresh,c.now),"legacy switcher purpose keeps its original complete-target equality");
+        });
+        one("stable_icon_width_passes_both_real_service_comparisons_before_one_host_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-live");NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+            long deadline=f.work.state.deadlineElapsed;rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->{rotateIconHint(f,"充电宝");iconTermBounds(f,156,301,250,360);};
+            yes(f.dispatch()&&f.effects()==1,"fresh first and final complete census allow one explicit host effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.work.graph.refs.get(f.action.nodeId)==original,"both original whole-census passes and original retained target remain");
+            yes(f.work.state.deadlineElapsed==deadline&&new JSONObject(f.work.nativeActionProof).getBoolean("final_complete_census_compared"),"original deadline and final comparison remain required");
+        });
+        one("stable_icon_width_final_same_literal_geometry_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-final-same");iconTermBounds(f,156,301,536,360);rotateIconHint(f,"电视");
+            f.service.scopeMutation=()->{rotateIconHint(f,"洗衣机");iconTermBounds(f,156,301,536,360);};
+            IntegrationChecks.rejects(()->f.dispatch(),"final complete census cannot hide original same-text width change");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"refusal occurs in the final complete comparison");f.noEffect("final width refusal has no effect");
+        });
+        one("stable_icon_width_final_other_edge_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-final-top");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->iconTermBounds(f,156,302,536,360);
+            IntegrationChecks.rejects(()->f.dispatch(),"final whole census retains top geometry");f.noEffect("final top refusal has no effect");
+        });
+        one("stable_icon_width_does_not_extend_deadline_or_override_cancel",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-deadline");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->{SystemClock.now=f.work.state.deadlineElapsed;};
+            IntegrationChecks.rejects(()->f.dispatch(),"same original 8s deadline applies");f.noEffect("expired action has no effect");
+            Fixture z=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-cancel");rotateIconHint(z,"电视");iconTermBounds(z,156,301,536,360);
+            z.service.scopeMutation=()->{z.service.cancelled=true;};
+            IntegrationChecks.rejects(()->z.dispatch(),"cancellation still wins before original effect claim");z.noEffect("cancelled action has no effect");
+        });
+        one("stable_icon_width_does_not_replace_original_live_node",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"width-node");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            yes(!f.dispatch(),"equal-looking new icon cannot replace original live reference");f.noEffect("replacement node has no effect");
+        });
     }
 

@@ -112,6 +112,8 @@ public final class BackgroundDisplayBroker {
     private volatile boolean profilePreparing;
     private volatile String profilePreparationState="NOT_STARTED";
     private volatile java.util.Map<Integer,String> permissionPhysicalBaseline;
+    private volatile java.util.Map<Integer,String> permissionPhysicalAudit;
+    private volatile PermissionWindowObservation.PublicInitialization permissionProjectionBaseline,permissionProjectionCurrent;
     private volatile PermissionWindowObservation permissionWindow;
     private volatile String permissionWindowRequest;
     private volatile ProfileTaskPlatform profilePlatform;
@@ -425,7 +427,7 @@ public final class BackgroundDisplayBroker {
                             config.ownerUid,activeRequestPeerPid,BackgroundTaskOrganizer.readOnlyControllerTask(
                             activityTasks,r.controllerUi.task,r.controllerUi.display,()->Math.min(r.deadline,expires)),displayId,SystemClock.elapsedRealtime());
                 }
-                permissionPhysicalBaseline=permissionPhysicalFence(r);profilePreparing=true;
+                permissionPhysicalBaseline=permissionPhysicalFence(r);permissionProjectionBaseline=permissionProjectionCurrent;profilePreparing=true;
                 dispatched=launchProfile(r,true);
             } else if(config.profileTarget!=null&&"prepare_state".equals(r.operation)) {
                 requirePermissionPreparing(r);
@@ -436,8 +438,10 @@ public final class BackgroundDisplayBroker {
                 java.util.Map<Integer,String> before=permissionPhysicalFence(r);requirePermissionPhysicalUnchanged(before);
                 ProfileOwnedTask.PermissionRead read=profileOwnedTask.permissionForInitialization(r.windowId,r.observedTaskId,Math.min(r.deadline,expires));
                 java.util.Map<Integer,String> after=permissionPhysicalFence(r);requirePermissionPhysicalUnchanged(after);
-                if(!before.equals(after))throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PHYSICAL_CHANGED_DURING_READ");
-                guard(r,true);permissionWindow=PermissionWindowObservation.fromLive(read,after,SystemClock.elapsedRealtime());
+                if(config.publicOwnGroupScope==null&&!before.equals(after))throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PHYSICAL_CHANGED_DURING_READ");
+                guard(r,true);permissionWindow=config.publicOwnGroupScope==null
+                        ?PermissionWindowObservation.fromLive(read,after,SystemClock.elapsedRealtime())
+                        :PermissionWindowObservation.fromLive(read,after,permissionProjectionCurrent,SystemClock.elapsedRealtime());
                 permissionWindowRequest=r.requestId;profilePreparationState="PERMISSION_PENDING";refreshProfileTaskEvidence();
             } else if(config.profileTarget!=null&&"prepare_done".equals(r.operation)) {
                 requirePermissionPreparing(r);
@@ -650,6 +654,12 @@ public final class BackgroundDisplayBroker {
             throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PREPARATION_NOT_ACTIVE");
     }
     private java.util.Map<Integer,String> permissionPhysicalFence(BrokerProtocol.Request r)throws Exception{
+        if(config.publicOwnGroupScope!=null){
+            guard(r,true);if(permissionControllerUi!=null)permissionControllerUi.requirePeer(config.ownerUid,activeRequestPeerPid);
+            PublicOwnGroupPhysicalReader.InitializationRead value=PublicOwnGroupPhysicalReader.readInitialization(windowManager,displays,activityTasks,
+                    publicOwnGroupFramework,config.publicOwnGroupScope,config.profileTarget,displayId,displayName,permissionControllerUi,()->Math.min(r.deadline,expires));
+            guard(r,true);permissionProjectionCurrent=value.projection;permissionPhysicalAudit=value.physicalAudit;return value.physicalAudit;
+        }
         if(permissionControllerUi!=null){
             guard(r,true);permissionControllerUi.requirePeer(config.ownerUid,activeRequestPeerPid);
             java.util.Map<Integer,String> value=PublicOwnGroupPhysicalReader.readControllerInitialization(windowManager,displays,
@@ -662,6 +672,12 @@ public final class BackgroundDisplayBroker {
         guard(r,true);return value;
     }
     private void requirePermissionPhysicalUnchanged(java.util.Map<Integer,String> actual)throws Exception{
+        if(config.publicOwnGroupScope!=null){
+            if(permissionPhysicalBaseline==null||actual==null||actual!=permissionPhysicalAudit||permissionProjectionBaseline==null
+                    ||!permissionProjectionBaseline.same(permissionProjectionCurrent))
+                throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PUBLIC_OWNERSHIP_CHANGED");
+            return;
+        }
         if(permissionPhysicalBaseline==null||!permissionPhysicalBaseline.equals(actual))
             throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PHYSICAL_DISPLAY_CHANGED");
     }
@@ -1395,6 +1411,14 @@ public final class BackgroundDisplayBroker {
         if(publicNotesCustody!=null)value.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
                 .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
         if(permissionControllerUi!=null)value.put("permission_controller_ui",new JSONObject(permissionControllerUi.evidence()));
+        if(config.publicOwnGroupScope!=null&&permissionProjectionBaseline!=null){
+            value.put("profile_initialization_physical_audit",new JSONObject().put("schema","hepta.public-profile-initialization-physical-audit.v1")
+                    .put("baseline",new JSONObject().put("0",permissionPhysicalBaseline.get(0)).put("1",permissionPhysicalBaseline.get(1)))
+                    .put("latest_completed",new JSONObject().put("0",permissionPhysicalAudit.get(0)).put("1",permissionPhysicalAudit.get(1)))
+                    .put("whole_physical_snapshot_equal",permissionPhysicalBaseline.equals(permissionPhysicalAudit))
+                    .put("physical_user_activity_frozen",false).put("controls_admission",false)
+                    .put("ownership_projection",new JSONObject(permissionProjectionBaseline.evidence())));
+        }
         if(config.profileTarget!=null){
             ProfilePackages.Readback actual=profileReadback;
             java.util.Map<String,Object> cleanup=profileCleanupReadback;

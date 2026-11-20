@@ -275,6 +275,7 @@ final class BackgroundSession {
         JSONObject response=permissionRpc("permission_window",profileTarget().packageName,windowId,observedTaskId,cancel,deadline);
         PermissionWindowObservation proof=PermissionWindowObservation.fromWire(response.getString("permission_window_wire"),profileTarget());
         long now=SystemClock.elapsedRealtime();proof.requireMatches(profileTarget(),generation,displayId,windowId,observedTaskId,now);
+        proof.requireMode(publicOwnGroupScope,publicScopeReadback,now);
         if(proof.observedElapsedMs<begun||proof.expiresElapsedMs>deadline||cancel.isCancelled())throw new IOException("权限读取超过原始请求或任务已停止");
         synchronized(permissionProofs){
             if(permissionProofs.size()>=BrokerProtocol.MAX_PROFILE_REQUEST_IDS)throw new IOException("权限读取凭据数量超限");
@@ -287,6 +288,7 @@ final class BackgroundSession {
         synchronized(permissionProofs){if(proof==null||!permissionProofs.containsKey(proof))
             throw new IllegalStateException("权限窗口并非来自当前后台服务的实际已认证读取");}
         proof.requireMatches(profileTarget(),generation,displayId,proof.windowId,proof.taskId,now);
+        proof.requireMode(publicOwnGroupScope,publicScopeReadback,now);
     }
     private JSONObject permissionRpc(String op,String pkg,int window,int task,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
         requirePermissionPreparationActive();

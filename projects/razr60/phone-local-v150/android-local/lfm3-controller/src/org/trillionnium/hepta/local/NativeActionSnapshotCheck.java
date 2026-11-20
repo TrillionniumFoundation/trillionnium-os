@@ -278,8 +278,9 @@ final class NativeActionSnapshotCheck {
         }return out;
     }
     /** Only this exact SEARCH icon uses the two known noninteractive hint
-     * descendants as context. The icon, ancestors, all other roles and census
-     * fields stay exact. No path, arbitrary hash, geometry or capability is ignored. */
+     * descendants as context. Their term may change its right edge with its
+     * literal inside the same fixed hint; left/top/bottom remain exact. The
+     * icon, ancestors, all other roles, geometry and capabilities stay exact. */
     private static boolean searchIconTarget(Intent in,Snapshot snapshot){
         return SEARCH_ICON.equals(in.purpose)&&XIAOMI.equals(in.pkg)
                 &&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(snapshot.node(in.path).view);
@@ -287,6 +288,13 @@ final class NativeActionSnapshotCheck {
     private static Map<String,Object> stableHintFacts(Node node,String literal){
         Map<String,Object> value=new TreeMap<String,Object>(node.v);
         if(literal!=null)value.remove(literal);
+        if("text".equals(literal)){
+            // scope() has already checked the unique noninteractive TextView,
+            // its positive actual bounds, fixed parent and full derived ref.
+            // This comparison projection never replaces the raw census bounds.
+            value.remove("bounds");
+            value.put("bounds_left_top_bottom",Arrays.asList(node.bounds.get(0),node.bounds.get(1),node.bounds.get(3)));
+        }
         value.remove("label");value.remove("ref_signature_sha256");return value;
     }
     private static Map<String,String> xiaomiSearchIconHintVariation(Intent in,Snapshot old,Snapshot fresh){
@@ -296,9 +304,17 @@ final class NativeActionSnapshotCheck {
         Node a=oneId(old,"com.xiaomi.shop.plugin.homepage:id/switcher");
         Node z=oneId(fresh,"com.xiaomi.shop.plugin.homepage:id/switcher");
         need(a.path.equals(z.path),"same switcher path");
+        Node term=old.node(a.path+"/0/0"),nextTerm=fresh.node(z.path+"/0/0");
+        boolean boundedTermRightChanged=!term.bounds.equals(nextTerm.bounds);
+        if(boundedTermRightChanged)
+            need(!term.text.equals(nextTerm.text),"hint term width changed without a literal change");
         // scope() on both complete trees already checks these exact three nodes,
         // their child counts, text relationship and recomputed full references.
-        result.put(a.path,"exact_two_noninteractive_hint_literals_and_recomputed_references");
+        // Equal scope facts retain entry/hint geometry and the term's other
+        // three edges. Both actual right edges remain inside the fixed hint.
+        result.put(a.path,boundedTermRightChanged
+                ?"exact_two_noninteractive_hint_literals_bounded_term_right_and_recomputed_references"
+                :"exact_two_noninteractive_hint_literals_and_recomputed_references");
         return result;
     }
     private static void requireSearchHintReferences(Snapshot snapshot,Node entry,Node hint,Node term){
