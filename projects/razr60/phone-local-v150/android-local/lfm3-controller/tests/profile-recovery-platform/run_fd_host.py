@@ -12,10 +12,10 @@ jdk=a.jdk_bin.resolve()
 main=root/"src/org/trillionnium/hepta/background/ProfileRecoveryMain.java"
 private=root/"src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java"
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
-assert sha(main)=="069970c4c1d9350e709d18b7b2da4e204178727efbf1c0894066a02384a4b79f"
+assert sha(main)=="d276645f797b4f6c9a2f1aed1fc5f6b18c0dea5dc0083ed411b1f67a7fe99014"
 assert sha(private)=="9bf20793a50815d82d4a9447f5aaa290ab3dafe506f21179f6bf28b560d0ff9e"
 processes=root/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"
-assert sha(processes)=="14f735150e48c1f2dc985e3a805ae1fde30a0ea828a5d83959c78328b03c2757"
+assert sha(processes)=="9fd0453f33c93094e6ace8fdcdcbb959d47cbac480b2e5f1bbfe03a29a987dc9"
 process_text=processes.read_text()
 gone_start=process_text.index("    static final class ProcessGone")
 gone_block=process_text[gone_start:process_text.index("\n    private static final class SelfPin",gone_start)]

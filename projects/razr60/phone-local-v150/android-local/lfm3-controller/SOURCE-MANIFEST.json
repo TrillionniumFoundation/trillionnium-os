@@ -3,7 +3,7 @@
   "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
   "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r4_complete_host_android_phone_validation_pending",
+  "candidate_status": "integrated_r6_complete_host_android_phone_validation_pending",
   "complete_source_files": 2323,
   "files": [
     {
@@ -8677,9 +8677,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 10619,
+      "bytes": 10714,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "769c10cee071878f5271156b0e12ee8cbb2a2e68f4c23219e8c0b8c7dbf26c72"
+      "sha256": "6927b394b5b54b0b49ea448babfc967bfc87e8d07af581afb024f5631fb7ce80"
     },
     {
       "bytes": 14162,
@@ -8864,7 +8864,7 @@
     {
       "bytes": 7249,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "b7954b8e1659a9f791b9c2fc80c6200e3ad8cac91cd60af6d786b51aa6e3172f"
+      "sha256": "577f439c6a4202564a23b2554b065a912ab524a71edcbceadfe097b62d83e540"
     },
     {
       "bytes": 2443,
@@ -9654,7 +9654,7 @@
     {
       "bytes": 11077,
       "path": "tests/profile-recovery-platform/run_fd_host.py",
-      "sha256": "a53c942ac7f0bf06f1a185bd92110bc29c019830ae831d37c2e65e57b68d4d87"
+      "sha256": "53c59e8588c358fed5847e82ced456255c8c273433bfb848d1847780d389a31a"
     },
     {
       "bytes": 2271,
@@ -11622,9 +11622,9 @@
   "production_build_inputs_count": 371,
   "production_input_map_sha256": "f9b61bb4d2f1d570196a471bd070dcc5ddb21132c96f659b6c6fbc00b9f87875",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved.",
-  "source_parent_head": "76b9ce144a1de99f467ce14faf517ae1fd83f838",
-  "source_parent_manifest_sha256": "f7e69207517cc601330c554f86659f9d4de50095f4bd1fd5af6ce11035957ffe",
+  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved. Rebind exactly three host runner reviewed-source SHA declarations to the reviewed r4 profile and nested-action production. The inherited FD producer pin is also bound to the unchanged current ProcessGone adapter DTO. Historical comparator SHA values, all original cases and assertions, all fixture/provenance pins, and the 21 terminal-method digest remain intact; production files and compiler input map are byte-identical to r4.",
+  "source_parent_head": "78303bb166e72e5392c0c37b6d947ae6a8309ed6",
+  "source_parent_manifest_sha256": "3bb6999bfd153703a8f3810932b445d4fe3b170c6537740cfd1dfa4b90859349",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
