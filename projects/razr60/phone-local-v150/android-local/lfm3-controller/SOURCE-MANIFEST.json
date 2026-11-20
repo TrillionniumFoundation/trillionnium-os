@@ -2,17 +2,17 @@
   "schema": "hepta.local-source.v3",
   "base_head": "4e3d150600f05edaa3b1bcf8ed6fef055254d0ac",
   "base_manifest_sha256": "04486bd299b5e1ccc464e98f23fd8569278007412718dd49c813a599049b1325",
-  "candidate_status": "host_compilation_dependency_successor_not_compiled_or_deployed",
+  "candidate_status": "notes_display_census_and_host_dependency_successor_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "b884ba2817feb0149ca0622c73dc758f6b93290096d866ebdfc73b5fdcd1bd4e",
-  "complete_source_files": 2246,
+  "production_input_map_sha256": "e7354efb50aed0d0c2c41fd4589f63d1554290d442450043e3e3f23a13e9ce91",
+  "complete_source_files": 2247,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Keep every reviewed R16 production and test-case source byte. Share the exact permission-pair host adapter generator between the transient and initialization gates, complete their tracked generated compiler inputs, and pin the initialization gate to the already-reviewed state-settle tests. The old unresolved preparation has no role in this candidate or its new exact-head validation.",
+  "scope": "Retain the 4e3d1506 task/display ownership validators and original host cases. Fix Notes absence display census to enumerate disabled logical displays with complete direct rows and stable ID membership, add 15 synthetic-Binder census cases, and reuse the existing permission-pair host adapter in initialization. Two host compile runners, one Notes producer, one Notes runner, one added test, and this complete manifest change; no device operations. Canonical host integration additionally preserves the original five Notes stages and their exact case contracts while requiring the new display-census stage, its 15 exact cases, 16 assertions and actual Java stdout binding.",
   "files": [
     {
       "path": ".gitignore",
@@ -6331,8 +6331,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
-      "bytes": 14851,
-      "sha256": "11860c24d408195a0b33cee7c6f86a415ee045979f3c44db02082e7b6391d690"
+      "bytes": 16364,
+      "sha256": "cb2d44b73c27bc991fc8276704867081fc7887f471987b9efdf33169c1e9cb41"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
@@ -9085,6 +9085,11 @@
       "sha256": "a89f74fe186af50296cbe658f8f576b3da5b621b9b03b28aa4f862599f68e3d7"
     },
     {
+      "path": "tests/personal-notes-absence/PersonalNotesDisplayCensusHostTest.java",
+      "bytes": 6474,
+      "sha256": "dbda70c2b916aacb7dd188443b8b5715462be8b2a92a741e866d60bfc0432238"
+    },
+    {
       "path": "tests/personal-notes-absence/PersonalNotesPostModelHostTest.java",
       "bytes": 41794,
       "sha256": "6582475c168436ce7975f982372b8ea0e13b03ca38cf44fd42632d63175cc2bc"
@@ -9101,8 +9106,8 @@
     },
     {
       "path": "tests/personal-notes-absence/run_host.py",
-      "bytes": 11188,
-      "sha256": "17047b674c16e097b35e036ce24b884e2a69a234cb6494869b02236c3596af4b"
+      "bytes": 15240,
+      "sha256": "2866dad5e1619456e756a29130828d552fdf106a584754c0c2bbf990f5c16e48"
     },
     {
       "path": "tests/profile-broker/ProfileBrokerHostTest.java",
@@ -11036,8 +11041,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 43862,
-      "sha256": "0e451e9262f36ae09f645130452b8dfb0db059a0a3cce62881274cf73c6f9875"
+      "bytes": 45052,
+      "sha256": "2bb6a77c37b8da96f3e40997d82219d967b125ee47ea49e838bcc19106405e36"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

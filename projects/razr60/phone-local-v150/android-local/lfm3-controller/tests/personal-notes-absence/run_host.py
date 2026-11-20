@@ -27,6 +27,50 @@ def replace_once(path, old, new):
     path.write_text(text.replace(old, new))
 
 
+def display_census_fixture(source, output):
+    """Exact production reader; only Android display/Binder IO is synthetic."""
+    main = (source / 'src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java').read_text()
+    start = '    private static JSONObject displays(DisplayManager dm,PublicPersonalNotesAbsenceRecovery.Request r)throws Exception{'
+    end = '    private static void failure('
+    if main.count(start) != 1 or main.count(end) != 1:
+        raise RuntimeError('nonunique actual Notes display census hunk')
+    census = main[main.index(start):main.index(end)]
+    code = {
+        'android/os/IBinder.java': 'package android.os;public interface IBinder {}',
+        'android/os/ServiceManager.java': '''package android.os;public final class ServiceManager {
+ public static IBinder service;public static IBinder getService(String name){return "display".equals(name)?service:null;}}''',
+        'android/view/DisplayInfo.java': '''package android.view;public final class DisplayInfo {
+ public int displayId,flags,state=2;public String name,uniqueId;public boolean enabled=true;
+ public DisplayInfo(int id,String name){displayId=id;this.name=name;uniqueId="synthetic:"+id;}}''',
+        'android/hardware/display/IDisplayManager.java': '''package android.hardware.display;public interface IDisplayManager {
+ int[] getDisplayIds(boolean includeDisabled);android.view.DisplayInfo getDisplayInfo(int id);
+ final class Stub {public static IDisplayManager asInterface(android.os.IBinder binder){return (IDisplayManager)binder;}}}''',
+        'android/view/Display.java': '''package android.view;public final class Display {
+ private final DisplayInfo info;public Display(DisplayInfo info){this.info=info;}public boolean isValid(){return true;}
+ public int getDisplayId(){return info.displayId;}public String getName(){return info.name;}public String getUniqueId(){return info.uniqueId;}
+ public int getFlags(){return info.flags;}public int getState(){return info.state;}}''',
+        'android/hardware/display/DisplayManager.java': '''package android.hardware.display;public final class DisplayManager {
+ private final IDisplayManager service;public DisplayManager(IDisplayManager service){this.service=service;}
+ public android.view.Display getDisplay(int id){android.view.DisplayInfo info=service.getDisplayInfo(id);return info==null?null:new android.view.Display(info);}
+ public android.view.Display[] getDisplays(){java.util.List<android.view.Display> values=new java.util.ArrayList<android.view.Display>();
+  for(int id:service.getDisplayIds(false)){android.view.Display value=getDisplay(id);if(value!=null)values.add(value);}
+  return values.toArray(new android.view.Display[0]);}}''',
+        'org/trillionnium/hepta/background/PersonalNotesDisplayCensusFixture.java': '''package org.trillionnium.hepta.background;
+import android.hardware.display.DisplayManager;import android.view.Display;import org.json.*;import java.util.TreeMap;
+final class PersonalNotesDisplayCensusFixture {
+ static JSONObject read(DisplayManager dm,PublicPersonalNotesAbsenceRecovery.Request request)throws Exception{return displays(dm,request);}
+ private static void need(boolean ok,String code)throws java.io.IOException{PublicPersonalNotesAbsenceRecovery.need(ok,code);}
+''' + census + '}\n',
+    }
+    files = []
+    for name, text in code.items():
+        path = output / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        files.append(path)
+    return files, census
+
+
 def main():
     parser = argparse.ArgumentParser()
     for name in ('source', 'java-home', 'json-jar', 'output'):
@@ -48,6 +92,8 @@ def main():
                   'PublicPersonalNotesAbsenceRecovery']
     shared_test = source / 'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java'
     pure = [bg / (name + '.java') for name in pure_names] + [shared_test, test / 'PersonalNotesAbsenceHostTest.java']
+    display_files, display_census = display_census_fixture(source, output / 'display-fixture')
+    pure += display_files + [test / 'PersonalNotesDisplayCensusHostTest.java']
     jdk = args.java_home.resolve() / 'bin'
     compiler = [str(jdk / 'javac')]
     if args.java8_syntax_only and not (jdk / 'javac').exists():
@@ -58,7 +104,9 @@ def main():
     pure_classes.mkdir()
     commands = [('policy-compile', [*compile_args, '-d', str(pure_classes), *map(str, pure)]),
                 ('policy', [str(jdk / 'java'), '-cp', str(pure_classes) + os.pathsep + str(args.json_jar.resolve()),
-                            'org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest'])]
+                            'org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest']),
+                ('display-census', [str(jdk / 'java'), '-cp', str(pure_classes) + os.pathsep + str(args.json_jar.resolve()),
+                            'org.trillionnium.hepta.background.PersonalNotesDisplayCensusHostTest'])]
     helper = source / 'tests/background-session/prepare_fixture.py'
     spec = importlib.util.spec_from_file_location('notes_recovery_bg_fixture', helper)
     module = importlib.util.module_from_spec(spec)
@@ -142,6 +190,7 @@ final class PersonalNotesRecoveryIdleFixture {
               'framework_samples_synthetic': True, 'current_installation_pm_fixture_synthetic': True,
               'owned_process_factory_replacements_only': True, 'fixture_derivation': derivation,
               'actual_service_idle_methods_sha256': hashlib.sha256('\n'.join(methods).encode()).hexdigest(),
+              'actual_display_census_hunk_sha256': hashlib.sha256(display_census.encode()).hexdigest(),
               'root_main_compiled_in_android_build_only': True}
     for name, argv in commands:
         (output / (name + '.command.json')).write_text(json.dumps(argv, indent=2) + '\n')
@@ -153,7 +202,7 @@ final class PersonalNotesRecoveryIdleFixture {
                                  'stdout_sha256': hashlib.sha256(run.stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(run.stderr).hexdigest()})
         if run.returncode:
             break
-        if name in ('policy', 'client', 'post-model'):
+        if name in ('policy', 'display-census', 'client', 'post-model'):
             result[name] = json.loads(run.stdout)
     result['inputs_unchanged'] = pins == {str(p): sha(p) for p in sources}
     result['all_pass'] = len(result['stages']) == len(commands) and all(x['exit_code'] == 0 for x in result['stages']) and result['inputs_unchanged']

@@ -8,7 +8,6 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStat;
-import android.view.Display;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -108,10 +107,26 @@ public final class PublicPersonalNotesAbsenceMain {
         PublicPersonalNotesAbsenceRecovery.requireLive(out,r);return out;
     }
     private static JSONObject displays(DisplayManager dm,PublicPersonalNotesAbsenceRecovery.Request r)throws Exception{
-        Display[] all=dm.getDisplays();need(all!=null&&all.length>=2&&all.length<=256,"NOTES_DISPLAY_CENSUS_BOUND");TreeMap<Integer,JSONObject> rows=new TreeMap<Integer,JSONObject>();
-        for(Display d:all){need(d!=null&&d.isValid(),"NOTES_DISPLAY_UNKNOWN");int id=d.getDisplayId();
-            String unique=(String)Display.class.getMethod("getUniqueId").invoke(d);
-            need(rows.put(id,new JSONObject().put("id",id).put("name",d.getName()).put("unique_id",unique).put("flags",d.getFlags()).put("state",d.getState()))==null,"NOTES_DISPLAY_DUPLICATE");}
+        // Match the power-scope reader: getDisplays() omits disabled logical displays.
+        // Read each includeDisabled Binder row directly so missing rows cannot look absent.
+        Class<?> binderType=Class.forName("android.os.IBinder"),api=Class.forName("android.hardware.display.IDisplayManager");
+        Object binder=Class.forName("android.os.ServiceManager").getMethod("getService",String.class).invoke(null,"display");
+        need(binderType.isInstance(binder),"NOTES_DISPLAY_SERVICE_UNAVAILABLE");
+        Object service=Class.forName("android.hardware.display.IDisplayManager$Stub").getMethod("asInterface",binderType).invoke(null,binder);
+        need(service!=null,"NOTES_DISPLAY_SERVICE_UNAVAILABLE");
+        java.lang.reflect.Method idsMethod=api.getMethod("getDisplayIds",boolean.class),infoMethod=api.getMethod("getDisplayInfo",int.class);
+        Class<?> infoType=Class.forName("android.view.DisplayInfo");Object raw=idsMethod.invoke(service,true);
+        need(raw instanceof int[],"NOTES_DISPLAY_CENSUS_BOUND");int[] all=(int[])raw;
+        need(all.length>=2&&all.length<=256,"NOTES_DISPLAY_CENSUS_BOUND");TreeMap<Integer,JSONObject> rows=new TreeMap<Integer,JSONObject>();
+        for(int id:all){Object info=infoMethod.invoke(service,id);
+            need(id>=0&&infoType.isInstance(info)&&infoType.getField("displayId").getInt(info)==id,"NOTES_DISPLAY_UNKNOWN");
+            need(rows.put(id,new JSONObject().put("id",id).put("name",infoType.getField("name").get(info))
+                    .put("unique_id",infoType.getField("uniqueId").get(info)).put("flags",infoType.getField("flags").getInt(info))
+                    .put("state",infoType.getField("state").getInt(info)))==null,"NOTES_DISPLAY_DUPLICATE");}
+        Object ending=idsMethod.invoke(service,true);need(ending instanceof int[],"NOTES_DISPLAY_CENSUS_CHANGED");
+        java.util.Set<Integer> endingIds=new java.util.TreeSet<Integer>();
+        for(int id:(int[])ending)need(id>=0&&endingIds.add(id),"NOTES_DISPLAY_CENSUS_CHANGED");
+        need(rows.keySet().equals(endingIds),"NOTES_DISPLAY_CENSUS_CHANGED");
         JSONObject out=new JSONObject().put("complete",true).put("rows",new JSONArray(rows.values()));PublicPersonalNotesAbsenceRecovery.requireDisplays(out,r);return out;
     }
     private static void failure(AtomicBoolean emitted,PublicPersonalNotesAbsenceRecovery.Request request,String code){try{

@@ -353,14 +353,27 @@ def main():
             original=json.loads((out/"personal-notes-absence"/(key+".stdout")).read_bytes())
             if original!=cases:
                 raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
+        census=notes_absence.get("display-census")
+        if (type(census) is not dict or type(census.get("cases")) is not int or census["cases"]!=15
+                or type(census.get("assertions")) is not int or census["assertions"]!=16
+                or census.get("failed")!=[]
+                or type(census.get("phone_operations")) is not int or census["phone_operations"]!=0):
+            raise RuntimeError("Notes display census case contract changed")
+        census_names=census.get("passed")
+        if (type(census_names) is not list or len(census_names)!=15 or len(set(census_names))!=15
+                or any(type(name) is not str or not name for name in census_names)
+                or hashlib.sha256(json.dumps(census_names,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()!="950c6a97ac544edd3d18116a03a42612aff33ed110c17ab85fa359e6cfaf4a90"):
+            raise RuntimeError("Notes display census case identities changed")
+        if json.loads((out/"personal-notes-absence/display-census.stdout").read_bytes())!=census:
+            raise RuntimeError("Notes display census aggregate differs from actual Java stdout")
         notes_absence_stages=notes_absence.get("stages")
         if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
-                ["policy-compile","policy","client-compile","client","post-model"]
+                ["policy-compile","policy","display-census","client-compile","client","post-model"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
-            raise RuntimeError("Notes absence lacks all five real compile/run stages")
+            raise RuntimeError("Notes absence lacks all six real compile/run stages")
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
-            "policy":notes_absence["policy"],"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+            "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
