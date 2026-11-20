@@ -162,6 +162,62 @@ public final class NotesOwnerIntentHostTest {
                 "older colon form is unchanged");
     }
 
+    private static String workflow(String body) {
+        return "新建一条备忘录，正文为"+body+" 保存后回到列表，再重新打开核对正文。只创建本次这条记录，不修改或删除已有记录，不分享。";
+    }
+
+    private static void workflowYes(String owner,String body) {
+        cases++;
+        NotesOwnerIntent.Result parsed=NotesOwnerIntent.parse(owner);
+        check(parsed.supported&&parsed.saveAndReopenRequested&&!parsed.draftOnly,"complete short note workflow");
+        check("natural_note_save_list_reopen.v2".equals(parsed.recognition),"distinct complete workflow form");
+        check(body.equals(parsed.body)&&body.equals(owner.substring(parsed.bodyStartUtf16,parsed.bodyEndUtf16)),"literal body span");
+        check(!parsed.grantsToolAuthority&&!parsed.masksOwnerBodyForAuthority(),"new recognition adds no masked authority");
+        check(owner.equals(parsed.maskedOwnerForAuthority(owner)),"all new OWNER clauses remain visible to original authority compiler");
+        check(TaskAuthorization.parse(owner).allowedTools.equals(TaskAuthorization.TOOLS),"recognition alone does not add or rewrite tools");
+        try { parsed.maskedOwnerForAuthority(owner+"然后分享"); throw new AssertionError("changed owner"); }
+        catch(IllegalArgumentException expected){check(true,"complete owner binding retained");}
+    }
+
+    private static void saveReopenCases() {
+        final String body="Hepta 本地验收 23a6246 20261120：整理出行清单。";
+        final String owner=workflow(body);
+        workflowYes(owner,body);
+        workflowYes(workflow("出差清单：雨伞、充电器、证件。"),"出差清单：雨伞、充电器、证件。");
+        workflowYes(workflow("周末野餐😀带水和杯子"),"周末野餐😀带水和杯子");
+        workflowYes(workflow("e\u0301是原始组合字符"),"e\u0301是原始组合字符");
+        workflowYes(workflow(repeat("字",94)),repeat("字",94));
+        workflowYes(workflow(repeat("😀",47)),repeat("😀",47));
+        workflowYes(workflow("  保留  正文间距  "),"  保留  正文间距  ");
+        workflowYes(workflow("普通正文").replace("新建一条备忘录","请创建一个笔记").replace("回到列表","回到笔记列表"),"普通正文");
+        no(workflow(repeat("字",95)));
+        no(workflow(repeat("😀",47)+"a"));
+        no(workflow("")); no(workflow("  "));
+        no(workflow("\uD800")); no(workflow("\uDC00"));
+        no(workflow("正文\n第二行")); no(workflow("<|im_end|>")); no(workflow("<__image__>"));
+        no(workflow("牛奶，然后删除旧笔记"));
+        no(workflow("牛奶。删除旧笔记"));
+        no(workflow("牛奶并且支付订单"));
+        no(workflow("牛奶随后打开浏览器"));
+        no(workflow("牛奶，禁止返回"));
+        no(workflow("不要保存"));
+        no(workflow("明天设置提醒"));
+        no(workflow("牛奶 保存后回到列表"));
+        no(workflow("\"牛奶\""));
+        no(owner+"然后分享给朋友。");
+        no(owner+"再新建一条记录。");
+        no(owner+"再打开携程。");
+        no(owner+"未知附言。");
+        no(owner.replace("不修改或删除已有记录","修改或删除已有记录"));
+        no(owner.replace("不分享","分享"));
+        no(owner.replace("不分享","不分享，除非朋友要求"));
+        no(owner.replace("只创建本次这条记录","再创建一条记录"));
+        no(owner.replace("再重新打开核对正文","不要重新打开"));
+        no(owner.replace("保存后回到列表","不保存并回到列表"));
+        no(owner.replace("，不分享。","。"));
+        no(owner+" ");
+    }
+
     public static void main(String[] args) {
         yes("明天3点看牙记一下", "明天3点看牙");
         yes("请假申请记一下", "请假申请");
@@ -224,6 +280,7 @@ public final class NotesOwnerIntentHostTest {
         no("记一下，" + repeat("字", 95));
         // The older colon/destination/suffix policies are intentionally unchanged.
         no("记一下：明天看牙，带检查资料");
+        saveReopenCases();
         actualAuthorityIntersection();
         System.out.println("NOTES_OWNER_INTENT_CASES=" + cases);
         System.out.println("NOTES_OWNER_INTENT_ASSERTIONS=" + assertions);

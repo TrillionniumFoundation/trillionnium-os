@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "f9aec1c2231daece5c421e04464f77b0ae623cf8",
-  "base_manifest_sha256": "bb78d61ca4f848a273defe4059d554c8bdbfc05364b9ddd22362731a8e0ba974",
-  "candidate_status": "f9ae_reconciliation_full_host_and_android_validation_pending",
+  "base_head": "23a6246006fc8b83af2c18304335e92658763552",
+  "base_manifest_sha256": "f45f89fd8d82307aab109eb88325ca80df90419fa63b076b4827ccef5a410c64",
+  "candidate_status": "natural_owner_full_host_and_android_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 192,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "fad87f067e5f32bd1613c2715dc5ce74facdcac6709a903d8f90b1f7e9e0a31e",
+  "production_input_map_sha256": "57a14f56846ef2952a3e6bc20785f64a70017cb32608f11f5db50c8c0b9d1b65",
   "complete_source_files": 2286,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Base is the exact published f9aec1c source, including its RuntimeInferenceAdapter, runtime/native inputs, tests and strict action guards. Merge only the reviewed c8 direct-root Xiaomi search toolbar variant, supported Ctrip OPEN mandatory final-check/claim and immediate first qualified post-effect fresh-read scheduling, with their tests. The Service runtime adapter route and complete foreign BridgeCases prefix are preserved. No limits, once budgets, final publication fences or private handoff conditions are relaxed. Separate CI sibling carries only the reviewed positive host preparation budget and matching manifest. This new source has no combined host, Android, Git publication, Phone or business pass claim.",
+  "scope": "Whole immutable natural OWNER recognition only. Existing AX3000T provider, single-adult literal flight facts, exact short Notes body<=94 UTF16 and save/list/same-item/reopen proof stay unchanged. No authority parser, completion predicate, provider, controller, service, deadline or retry budget changes. Unknown suffix/transaction/second-App goals stay unsupported. Native recognition restores existing initial observation eligibility; it does not prove the historical6004 capture met a recovery cut point or guarantee business success. This materialization adds only the current Xiaomi runner Goal SHA literal and regenerates the complete manifest. All RuntimeInferenceAdapter, provider, Service, Controller, TaskAuthorization, TaskCompletionGate and native runtime bytes are inherited unchanged from published 23a6246. Original full30/canonical123 and Python306, Git CAS, Android compile/signing and actual Phone validation remain pending.",
   "files": [
     {
       "path": ".gitignore",
@@ -6616,8 +6616,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "bytes": 13841,
-      "sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
+      "bytes": 16946,
+      "sha256": "c266f1e3e6ca3d86ad2e8f94c78a4263138822e004b5eab64dafdda5fcb653d5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppObservation.java",
@@ -6656,8 +6656,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "bytes": 12329,
-      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+      "bytes": 13600,
+      "sha256": "a4706c6c89f569e2530aa7a48160d36f34ddd73236c67701424897d288c3486c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
@@ -7601,8 +7601,8 @@
     },
     {
       "path": "tests/completion/TaskCompletionGateHostTest.java",
-      "bytes": 40280,
-      "sha256": "ef66b44b024c04e12796510806c079738f49bc39e11a49e86fd09dc4282a9044"
+      "bytes": 51609,
+      "sha256": "126452bab9fc057612a329c4f777b8e02f0814df306d4050b989a3961a305af2"
     },
     {
       "path": "tests/completion/fixtures/RESULT.json",
@@ -8096,8 +8096,8 @@
     },
     {
       "path": "tests/native-app-goal/NativeAppGoalHostTest.java",
-      "bytes": 11094,
-      "sha256": "674738f8f9de28731dd582344d807667045c9eebc771bccf482a2a12c4718e7e"
+      "bytes": 19613,
+      "sha256": "49b6a760165259ccbfad0e8a5f0881b91cd33cef8bd7acbb60d19cdda946bcba"
     },
     {
       "path": "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
@@ -8106,8 +8106,8 @@
     },
     {
       "path": "tests/native-app-goal/run_host.py",
-      "bytes": 8542,
-      "sha256": "1f845254c01112a1db90b13be0b52688c37dea7f9a131383d1cdbcc5dfdb215e"
+      "bytes": 10028,
+      "sha256": "5312dcc1287c84af0ddc57baf6640a4a0e54509b11b43d16ffe1143e198b675f"
     },
     {
       "path": "tests/native-app-provider/FIXTURES.json",
@@ -8787,7 +8787,7 @@
     {
       "path": "tests/native-xiaomi-product/run_host.py",
       "bytes": 7249,
-      "sha256": "5ac128fb562338aaf98656bc0604a9f15f912c20a69efa969c0583bc212b5102"
+      "sha256": "b7954b8e1659a9f791b9c2fc80c6200e3ad8cac91cd60af6d786b51aa6e3172f"
     },
     {
       "path": "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
@@ -8896,8 +8896,8 @@
     },
     {
       "path": "tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
-      "bytes": 15279,
-      "sha256": "617eb96a0273bd391c45d442d4e4ec50c6cd9eb4f1039b93d015fd814e6ad44e"
+      "bytes": 19020,
+      "sha256": "020426a66c6b8923254509bd8b8dc387022cedf17ae03a166727ead524ad7161"
     },
     {
       "path": "tests/notes-owner-intent/README.md",

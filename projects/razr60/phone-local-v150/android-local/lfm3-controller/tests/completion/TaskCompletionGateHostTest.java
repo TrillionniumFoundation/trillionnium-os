@@ -325,9 +325,121 @@ public final class TaskCompletionGateHostTest {
             Frame f=(Frame)bridge.invoke(null,o);check(f.nodes.get(0).label.isEmpty(),"whitespace direct text must not hide a truncated derived label");
         }
     }
+    static String naturalNoteOwner(String body) {
+        return "新建一条备忘录，正文为"+body+" 保存后回到列表，再重新打开核对正文。只创建本次这条记录，不修改或删除已有记录，不分享。";
+    }
+    static BackgroundSession.Selection explicitOwner(String owner,String pkg) {
+        return new BackgroundSession.Selection(BackgroundTaskTarget.resolveExplicitSelection(owner,pkg,
+                new java.util.TreeSet<String>(Arrays.asList(P,NativeAppGoal.XIAOMI_PACKAGE,NativeAppGoal.CTRIP_PACKAGE))));
+    }
+    static TaskCompletionGate naturalCompletion(String owner,String pkg) {
+        BackgroundSession.Selection selection=explicitOwner(owner,pkg);
+        TaskAuthorization bound=TaskAuthorization.parse(owner).forExecutionSelection(selection);
+        return new TaskCompletionGate(TASK,owner,bound,selection);
+    }
+    static void naturalOwnerCases()throws Exception {
+        final String product="在小米商城搜索小米路由器AX3000T，读取实际商品页面显示的当前售价并说明商品型号。只查询，不购买、不提交订单、不支付。";
+        final String flight="在携程查询2026年11月25日北京到上海的单程机票，1名成人，读取航班列表中可见的航班时间、航司和价格。只查询，不预订、不支付。";
+        test("natural_product_report_same_goal_authority_and_completion",()->{
+            BackgroundSession.Selection selection=explicitOwner(product,NativeAppGoal.XIAOMI_PACKAGE);
+            TaskAuthorization original=TaskAuthorization.parse(product),bound=original.forExecutionSelection(selection);
+            NativeAppGoal goal=selection.taskTarget.nativeGoal;
+            check(goal!=null&&product.equals(goal.immutableOwner)&&product.equals(bound.immutableOwner()),"complete original owner retained");
+            java.util.Set<String> expected=new java.util.TreeSet<String>(original.allowedTools);expected.retainAll(goal.toolCeiling);
+            check(expected.equals(bound.allowedTools)&&!bound.allows("notes.create")&&!bound.allows("web.search")&&!bound.allows("home"),"actual original authorization intersection only");
+            TaskCompletionGate g=new TaskCompletionGate(TASK,product,bound,selection);
+            check(g.contract.nativeGoal==goal&&g.nativeGoal()==goal&&NativeAppGoal.PRODUCT_PRICE.equals(g.contract.kind),"same selection-owned private goal through completion");
+            check(g.contract.executionTargetSha256.equals(selection.taskTarget.targetSha256),"same explicit target identity");
+            check(!g.verified(null)&&!g.notesCreateWorkflowRequested(bound.bind(TASK).frame()),"recognition is neither product completion nor a note workflow");
+        });
+        test("natural_flight_report_same_goal_without_visible_quote_proof",()->{
+            BackgroundSession.Selection selection=explicitOwner(flight,NativeAppGoal.CTRIP_PACKAGE);
+            TaskAuthorization bound=TaskAuthorization.parse(flight).forExecutionSelection(selection);
+            TaskCompletionGate g=new TaskCompletionGate(TASK,flight,bound,selection);
+            check(g.contract.nativeGoal==selection.taskTarget.nativeGoal&&NativeAppGoal.FLIGHT_RESULTS.equals(g.contract.kind),"flight contract retains exact selection goal");
+            check("2026-11-25".equals(g.contract.nativeGoal.departureDate.toString())&&"北京".equals(g.contract.nativeGoal.fromCity)&&"上海".equals(g.contract.nativeGoal.toCity),"no parameter substitution");
+            check(!g.verified(null)&&!Boolean.TRUE.equals(g.contract.evidence().get("grants_tool_authority")),"no observed flight prices or business success inferred");
+        });
+        test("natural_product_separate_original_submit_denial_remains_effective",()->{
+            String owner=product.replace("不购买、不提交订单、不支付","不购买，不提交订单，不支付");
+            TaskAuthorization original=TaskAuthorization.parse(owner);
+            check(!original.allows("submit"),"original standalone submission prohibition is actually recognized");
+            BackgroundSession.Selection selection=explicitOwner(owner,NativeAppGoal.XIAOMI_PACKAGE);
+            check(selection.taskTarget.nativeGoal!=null,"complete report still recognized");
+            TaskAuthorization bound=original.forExecutionSelection(selection);
+            check(!bound.allows("submit")&&bound.allowedTools.size()<=original.allowedTools.size(),"new goal cannot refund a primitive denial");
+        });
+        test("natural_unknown_model_retains_generic_route_without_native_success",()->{
+            String owner=product.replace("AX3000T","BE3600");
+            BackgroundSession.Selection selection=explicitOwner(owner,NativeAppGoal.XIAOMI_PACKAGE);
+            TaskAuthorization original=TaskAuthorization.parse(owner),bound=original.forExecutionSelection(selection);
+            java.util.Set<String> expected=new java.util.TreeSet<String>(original.allowedTools);expected.remove("web.search");
+            check(selection.taskTarget.nativeGoal==null&&bound.allowedTools.equals(expected),"unsupported model not substituted and old generic route preserved");
+            TaskCompletionGate g=new TaskCompletionGate(TASK,owner,bound,selection);
+            check(TaskCompletionGate.UNKNOWN.equals(g.contract.kind)&&!g.verified(null),"unknown model cannot become qualified completion");
+        });
+        test("natural_read_only_tail_never_authorizes_added_transaction_or_second_app",()->{
+            for(String owner:Arrays.asList(product+"查询完下单。",product.replace("不支付","支付"),flight+"然后预订并支付。",flight+"再去小米商城。")){
+                String pkg=owner.startsWith("在小米")?NativeAppGoal.XIAOMI_PACKAGE:NativeAppGoal.CTRIP_PACKAGE;
+                TaskCompletionGate g=naturalCompletion(owner,pkg);
+                check(g.contract.nativeGoal==null&&TaskCompletionGate.UNKNOWN.equals(g.contract.kind)&&!g.verified(null),"whole unconsumed or contradictory owner stays unsupported");
+            }
+        });
+        test("natural_complete_goal_cannot_reuse_another_selection_or_owner",()->{
+            BackgroundSession.Selection selection=explicitOwner(product,NativeAppGoal.XIAOMI_PACKAGE);
+            TaskAuthorization bound=TaskAuthorization.parse(product).forExecutionSelection(selection);
+            boolean wrongSelection=false,wrongOwner=false;
+            try{new TaskCompletionGate(TASK,product,bound,new BackgroundSession.Selection(selection.taskTarget));}catch(TaskAuthorization.Violation expected){wrongSelection=true;}
+            try{new TaskCompletionGate(TASK,product+"。",bound,selection);}catch(TaskAuthorization.Violation expected){wrongOwner=true;}
+            check(wrongSelection&&wrongOwner,"exact private selection and immutable owner remain required");
+        });
+        test("natural_note_full_owner_has_one_exact_body_and_short_workflow",()->{
+            String text="Hepta 本地验收 23a6246 20261120：整理出行清单。",owner=naturalNoteOwner(text);
+            NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
+            BackgroundSession.Selection selection=explicitOwner(owner,P);
+            TaskAuthorization bound=TaskAuthorization.parse(owner).forExecutionSelection(selection);
+            TaskCompletionGate g=new TaskCompletionGate(TASK,owner,bound,selection);
+            check(note.supported&&TaskCompletionGate.NOTES.equals(g.contract.kind)&&text.equals(g.contract.body),"exact frozen natural body recognized by same actual parsers");
+            check(g.contract.bodyStartUtf16==note.bodyStartUtf16&&g.contract.bodyEndUtf16==note.bodyEndUtf16&&text.equals(owner.substring(g.contract.bodyStartUtf16,g.contract.bodyEndUtf16)),"one exact body source span across completion and intent");
+            check("00f6d5f48b8610f0710b25b69d935e0838bead193d1981e8f92573e985f5bbb5".equals(g.contract.bodySha256),"original UTF-8 body hash");
+            check(g.notesCreateWorkflowRequested(bound.bind(TASK).frame())&&!g.verified(null),"short workflow requested but save/list/reopen still unproved");
+            check(owner.equals(note.maskedOwnerForAuthority(owner)),"body and limits not removed from authority source");
+        });
+        test("natural_note_variable_body_and_original_94_utf16_boundary",()->{
+            for(String text:Arrays.asList("普通出行清单：雨伞、充电器。",String.join("",Collections.nCopies(94,"字")),String.join("",Collections.nCopies(47,"😀")))){
+                String owner=naturalNoteOwner(text);BackgroundSession.Selection s=explicitOwner(owner,P);TaskAuthorization a=TaskAuthorization.parse(owner).forExecutionSelection(s);
+                TaskCompletionGate g=new TaskCompletionGate(TASK,owner,a,s);
+                check(text.equals(g.contract.body)&&g.notesCreateWorkflowRequested(a.bind(TASK).frame())&&!g.verified(null),"literal short body is not tied to test marker/date");
+            }
+            String longOwner=naturalNoteOwner(String.join("",Collections.nCopies(95,"字")));
+            TaskCompletionGate tooLong=naturalCompletion(longOwner,P);
+            check(TaskCompletionGate.UNKNOWN.equals(tooLong.contract.kind)&&!tooLong.verified(null),"existing complete-list body bound is not enlarged");
+        });
+        test("natural_note_unknown_or_contradictory_tail_cannot_get_completion",()->{
+            String owner=naturalNoteOwner(BODY);
+            for(String unsupported:Arrays.asList(owner+"然后分享。",owner+"再新建第二条。",owner+"再打开携程。",owner.replace("不修改或删除已有记录","修改或删除已有记录"),owner.replace("再重新打开核对正文","不要重新打开"),naturalNoteOwner("牛奶然后支付订单"))){
+                BackgroundSession.Selection s=explicitOwner(unsupported,P);TaskAuthorization a=TaskAuthorization.parse(unsupported).forExecutionSelection(s);
+                TaskCompletionGate g=new TaskCompletionGate(TASK,unsupported,a,s);
+                check(!NotesOwnerIntent.parse(unsupported).supported&&TaskCompletionGate.UNKNOWN.equals(g.contract.kind)&&!g.notesCreateWorkflowRequested(a.bind(TASK).frame())&&!g.verified(null),"no implicit creation or completed proof from partial parsing");
+            }
+        });
+        test("natural_note_complete_contract_still_requires_ordered_actual_evidence",()->{
+            String owner=naturalNoteOwner(BODY);TaskCompletionGate g=new TaskCompletionGate(TASK,owner,TaskAuthorization.parse(owner));
+            g.bindInstalled(new NotesCompletionEvidence.Installed(P,10382,Collections.singletonMap("base",H)));
+            Frame e=launched(g);check(!g.verified(e),"new form cannot treat one launch/body read as saved and reopened");
+            Frame list=listing(),reopened=editor();
+            g.action(2,id(2),action(e,"back",null,null),true,true,false,e,list,null);
+            check(!g.verified(list),"list alone cannot complete");
+            g.action(3,id(3),action(list,"click",null,"n0"),true,true,false,list,reopened,null);
+            check(g.verified(reopened),"only the existing complete save/list/same-item/body chain qualifies");
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         output=Paths.get(args[0]);Files.createDirectories(output);QualificationScopeHostTest.output=output;
+        naturalOwnerCases();
         pureCases();receiptCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
+        test("actual_controller_complete_natural_note_contract",()->controllerCase("complete",naturalNoteOwner(BODY),true,2));
         test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,2));
         test("actual_controller_external_window_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
         test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",DRAFT_OWNER,false,3));

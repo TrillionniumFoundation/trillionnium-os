@@ -60,6 +60,24 @@ public final class NativeAppGoal {
             + "(?:在|用)小米商城(?:APP|App|app|应用)?(?:里|中|上)?"
             + "(?:查一下|查下|查询|查查|查看)(?:路由器[ ]?)?"
             + "(AX3000T)(?:的)?(?:售价|价格)[。？?]?", Pattern.CASE_INSENSITIVE);
+    // These are complete additional OWNER forms, not suffix stripping. Every
+    // report field and query-only limit must be present, and no remainder is
+    // accepted. Recognition still does not claim a provider or grant a tool.
+    private static final String READ_FLIGHT_ROUTE = "(?:从" + FIELD_SPACE + ")?([\\p{IsHan}]{2,12}?)"
+            + FIELD_SPACE + "到" + FIELD_SPACE + "([\\p{IsHan}]{2,12}?)" + FIELD_SPACE
+            + "(?:的" + FIELD_SPACE + ")?单程" + FIELD_SPACE + "(?:机票|航班)" + FIELD_SPACE
+            + "[，,]" + FIELD_SPACE + "(?:1|一)" + FIELD_SPACE + "(?:名|位)" + FIELD_SPACE + "成人"
+            + "[，,]" + FIELD_SPACE + "读取航班列表中可见的航班时间[、，,]航司和价格[。.]"
+            + FIELD_SPACE + "只查询[，,]不预订[、，,]不支付[。.]?";
+    private static final Pattern READ_FLIGHT_ZH = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})年([0-9]{1,2})月([0-9]{1,2})日" + FIELD_SPACE + READ_FLIGHT_ROUTE);
+    private static final Pattern READ_FLIGHT_ISO = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})-([0-9]{2})-([0-9]{2})" + FIELD_SPACE + READ_FLIGHT_ROUTE);
+    private static final Pattern READ_PRODUCT = Pattern.compile(PREFIX
+            + "(?:在|用)小米商城(?:APP|App|app|应用)?(?:里|中|上)?"
+            + "(?:搜索|查询|查找)(?:小米|Xiaomi)[ ]?(?:路由器[ ]?)?([A-Za-z][A-Za-z0-9-]{1,31})"
+            + "[，,]" + FIELD_SPACE + "读取实际商品页面显示的当前(?:售价|价格)并说明商品型号[。.]"
+            + FIELD_SPACE + "只查询[，,]不购买[、，,]不提交订单[、，,]不支付[。.]?", Pattern.CASE_INSENSITIVE);
     private static final Pattern CITY_CONTROL = Pattern.compile(
             ".*(?:或者|以及|然后|打开|查询|搜索|预订|下单|支付|删除|提醒|闹钟|成人|儿童|婴儿|登录|注册|授权|机票|航班|官网|网页|商城).*");
 
@@ -73,8 +91,12 @@ public final class NativeAppGoal {
     public final int modelStartUtf16, modelEndUtf16;
 
     private NativeAppGoal(String owner, String selectedPackage, Matcher match, LocalDate date, int suffix) {
+        this(owner, selectedPackage, match, date, suffix, "complete_literal_native_single_adult_flight.v1");
+    }
+
+    private NativeAppGoal(String owner, String selectedPackage, Matcher match, LocalDate date, int suffix, String form) {
         kind = FLIGHT_RESULTS; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
-        recognition = "complete_literal_native_single_adult_flight.v1"; toolCeiling = QUERY_TOOLS;
+        recognition = form; toolCeiling = QUERY_TOOLS;
         departureDate = date; fromCity = match.group(5); toCity = match.group(6); productModel = null;
         adults = 1; children = 0; infants = 0;
         dateStartUtf16 = match.start(2); dateEndUtf16 = match.end(4) + suffix;
@@ -85,8 +107,12 @@ public final class NativeAppGoal {
     }
 
     private NativeAppGoal(String owner, String selectedPackage, Matcher match) {
+        this(owner, selectedPackage, match, "complete_literal_native_ax3000t_price.v1");
+    }
+
+    private NativeAppGoal(String owner, String selectedPackage, Matcher match, String form) {
         kind = PRODUCT_PRICE; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
-        recognition = "complete_literal_native_ax3000t_price.v1"; toolCeiling = QUERY_TOOLS;
+        recognition = form; toolCeiling = QUERY_TOOLS;
         departureDate = null; fromCity = toCity = null; productModel = PRODUCT_MODEL;
         adults = children = infants = -1;
         dateStartUtf16 = dateEndUtf16 = fromStartUtf16 = fromEndUtf16 = toStartUtf16 = toEndUtf16 = -1;
@@ -102,6 +128,7 @@ public final class NativeAppGoal {
     public static NativeAppGoal parse(String owner, String explicitlySelectedPackage) {
         if (!valid(owner) || explicitlySelectedPackage == null) return null;
         if (CTRIP_PACKAGE.equals(explicitlySelectedPackage) || CSAIR_PACKAGE.equals(explicitlySelectedPackage)) {
+            String form = "complete_literal_native_single_adult_flight.v1";
             Matcher match = FLIGHT_ZH.matcher(owner); int suffix = 1;
             if (!match.matches()) {
                 match = FLIGHT_ISO.matcher(owner); suffix = 0;
@@ -109,7 +136,14 @@ public final class NativeAppGoal {
                     match = FLIGHT_ZH_SPACED.matcher(owner); suffix = 1;
                     if (!match.matches()) {
                         match = FLIGHT_ISO_SPACED.matcher(owner); suffix = 0;
-                        if (!match.matches()) return null;
+                        if (!match.matches()) {
+                            match = READ_FLIGHT_ZH.matcher(owner); suffix = 1;
+                            if (!match.matches()) {
+                                match = READ_FLIGHT_ISO.matcher(owner); suffix = 0;
+                                if (!match.matches()) return null;
+                            }
+                            form = "complete_literal_native_flight_read_only_report.v2";
+                        }
                     }
                 }
             }
@@ -121,14 +155,24 @@ public final class NativeAppGoal {
                 LocalDate date = LocalDate.of(Integer.parseInt(match.group(2)),
                         Integer.parseInt(match.group(3)), Integer.parseInt(match.group(4)));
                 if (date.getYear() < 1) return null;
-                return new NativeAppGoal(owner, explicitlySelectedPackage, match, date, suffix);
+                return new NativeAppGoal(owner, explicitlySelectedPackage, match, date, suffix, form);
             } catch (DateTimeException | NumberFormatException invalid) {
                 return null;
             }
         }
         if (XIAOMI_PACKAGE.equals(explicitlySelectedPackage)) {
             Matcher match = PRODUCT.matcher(owner);
-            if (!match.matches()) { match = PRODUCT_IN_APP.matcher(owner); if (!match.matches()) return null; }
+            if (!match.matches()) {
+                match = PRODUCT_IN_APP.matcher(owner);
+                if (!match.matches()) {
+                    match = READ_PRODUCT.matcher(owner);
+                    // Preserve the existing qualified product boundary. An
+                    // unsupported literal model must never be substituted.
+                    if (!match.matches() || !PRODUCT_MODEL.equalsIgnoreCase(match.group(1))) return null;
+                    return new NativeAppGoal(owner, explicitlySelectedPackage, match,
+                            "complete_literal_native_product_read_only_report.v2");
+                }
+            }
             return new NativeAppGoal(owner, explicitlySelectedPackage, match);
         }
         return null;
