@@ -1,0 +1,127 @@
+    static void typedContent(ObserverPipelineHost f,int type){
+        f.noteObservationEvent(9,type,7,SnapshotChecks.APP);
+    }
+    static ObservationDiagnostics.EventWatermark watermark(ObservationRequest r){return r.eventWatermark;}
+    static void typedPublicationCases()throws Exception{
+        for(final int type:new int[]{AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED})
+            snapshotCase("sealed_typed_content_during_window_read_"+type+"_publishes_history",()->{
+                ObserverPipelineHost f=fixture(null);f.windowHook=()->{SystemClock.now+=30;typedContent(f,type);};
+                ObservationRequest r=capture(f);f.finish();
+                check(f.delivered.size()==1,"same-window content during identity read discarded history");
+                check(f.reads.get()==3&&f.windowChecks.get()==1,"content restarted graph sampling");
+                check(watermark(r).events==1&&watermark(r).content==1&&watermark(r).structural==0,"content watermark inaccurate");
+                check(r.activeSeal==null,"published request retained active seal");
+                check(f.current.capturedElapsedMillis==1200,"content refreshed capture age");
+                check(Boolean.FALSE.equals(f.current.captureEvidence.get("current_input_state_claimed")),"history mislabeled current input");
+                check(Boolean.FALSE.equals(f.current.captureEvidence.get("grants_action_authority")),"history granted action");f.dispose();
+            });
+        for(final int type:new int[]{AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED})
+            snapshotCase("sealed_typed_content_after_worker_before_main_"+type+"_publishes_history",()->{
+                ObserverPipelineHost f=fixture(null);ObservationRequest r=capture(f);
+                await(()->observationIo.active.get()==0,"sealed publication queued");SystemClock.now+=25;typedContent(f,type);
+                f.main.drain();check(f.delivered.size()==1,"queued same-window content discarded history");
+                check(watermark(r).events==1&&watermark(r).content==1&&watermark(r).structural==0,"queued content epoch missing");
+                check(f.current.capturedElapsedMillis==1200,"queued content relabeled old capture");f.dispose();
+            });
+        snapshotCase("sealed_88_authored_content_events_keep_real_counts_and_original_times",()->{
+            ObserverPipelineHost f=fixture(null);
+            Bitmap.encodeHook=()->{for(int i=0;i<60;i++){SystemClock.now++;typedContent(f,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);}};
+            f.windowHook=()->{for(int i=0;i<28;i++){SystemClock.now++;typedContent(f,AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);}};
+            ObservationRequest r=capture(f);f.finish();
+            check(f.delivered.size()==1&&f.reads.get()==3&&f.windowChecks.get()==1,"continuous content caused full recapture");
+            check(r.events==88&&r.unknownEvents==0&&watermark(r).events==88&&watermark(r).content==88&&watermark(r).structural==0,
+                    "real counter values discarded or synthesized");
+            @SuppressWarnings("unchecked") Map<String,Object> start=(Map<String,Object>)f.current.captureEvidence.get("publication_start_event_watermark");
+            @SuppressWarnings("unchecked") Map<String,Object> end=(Map<String,Object>)f.current.captureEvidence.get("publication_end_event_watermark");
+            @SuppressWarnings("unchecked") Map<String,Object> published=(Map<String,Object>)f.current.captureEvidence.get("published_event_watermark");
+            check(Long.valueOf(60).equals(start.get("events"))&&Long.valueOf(88).equals(end.get("events"))
+                    &&Long.valueOf(88).equals(published.get("events")),"separate actual publication watermarks lost");
+            check(Long.valueOf(1288).equals(published.get("last_event_elapsed_ms")),"callback time relabeled");
+            check(f.current.capturedElapsedMillis==1200&&r.deadline==r.started+12000,"history age/deadline renewed");f.dispose();
+        });
+        snapshotCase("sealed_structural_unknown_and_other_window_events_never_use_content_exception",()->{
+            int[] types={AccessibilityEvent.TYPE_WINDOWS_CHANGED,AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                    AccessibilityEvent.TYPE_VIEW_FOCUSED,AccessibilityEvent.TYPE_VIEW_SCROLLED,
+                    AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED|AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
+                    -1,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+                    AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+                    AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED};
+            int[] windows={7,7,7,7,7,7,8,-1,7,7,7};
+            String[] packages={SnapshotChecks.APP,SnapshotChecks.APP,SnapshotChecks.APP,SnapshotChecks.APP,SnapshotChecks.APP,
+                    SnapshotChecks.APP,SnapshotChecks.APP,SnapshotChecks.APP,null,"","other.package"};
+            for(int i=0;i<types.length;i++){
+                final int t=types[i],w=windows[i];final String pkg=packages[i];
+                ObserverPipelineHost f=fixture(null);f.windowHook=()->f.noteObservationEvent(9,t,w,pkg);
+                ObservationRequest r=capture(f);f.finish();rejected(f,r,"unclassified event "+i);
+                check(watermark(r).content==0&&watermark(r).structural==1&&r.activeSeal==null,"event mislabeled content or seal retained");
+                f.dispose();
+            }
+            ObserverPipelineHost f=fixture(null);f.windowHook=()->f.noteObservationEvent(-1,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,7,SnapshotChecks.APP);
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"unknown display");
+            check(r.unknownEvents==1&&watermark(r).unknown==1&&watermark(r).structural==1,"unknown counter lost");f.dispose();
+        });
+        snapshotCase("sealed_structure_during_encoding_or_main_queue_invalidates_the_whole_seal",()->{
+            for(final boolean queued:new boolean[]{false,true}){
+                ObserverPipelineHost f=fixture(null);
+                if(!queued)Bitmap.encodeHook=()->f.noteObservationEvent(9,AccessibilityEvent.TYPE_VIEW_FOCUSED,7,SnapshotChecks.APP);
+                ObservationRequest r=capture(f);
+                if(queued){await(()->observationIo.active.get()==0,"queued structure");f.noteObservationEvent(9,AccessibilityEvent.TYPE_WINDOWS_CHANGED,7,SnapshotChecks.APP);f.main.drain();}
+                else f.finish();
+                rejected(f,r,"structure after seal");check(r.activeSeal==null,"rejected seal remained current");f.dispose();
+            }
+        });
+        snapshotCase("typed_content_in_pair_check_to_active_seal_gap_is_still_structural",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{
+                if(n==3)g.nativeActionNodes=new AbstractList<Object>(){
+                    public Object get(int index){return this;}public int size(){return 1;}
+                    @Override public boolean isEmpty(){x.pauseAfterPairCheck.set(true);return false;}
+                };
+            });
+            Block block=new Block();f.afterPairBlock=block;ObservationRequest r=capture(f);block.entered();
+            check(r.activeSeal==null,"seal published before completed private construction");
+            typedContent(f,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);block.open();f.finish();
+            rejected(f,r,"event between checked pair and active seal");
+            check(watermark(r).content==0&&watermark(r).structural==1,"pre-seal event reclassified after the fact");
+            check(f.windowChecks.get()==1,"test did not reach actual private seal path");f.dispose();
+        });
+        snapshotCase("typed_content_during_preseal_graph_read_preserves_original_all_event_fence",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==3)typedContent(x,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);if(n==4)g.digest="changed-after-unsealed-pair";});
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"preseal content");
+            check(f.reads.get()==4&&f.windowChecks.get()==0&&watermark(r).structural==1,"preseal event bypassed full graph");f.dispose();
+        });
+        snapshotCase("retired_or_retried_seal_does_not_classify_later_events_as_historical_content",()->{
+            ObserverPipelineHost f=fixture(null);ObservationRequest r=capture(f);
+            await(()->observationIo.active.get()==0,"queued old seal");check(r.activeSeal!=null,"producer never sealed");
+            f.noteObservationEvent(9,AccessibilityEvent.TYPE_VIEW_SCROLLED,7,SnapshotChecks.APP);f.main.drain();
+            check(r.activeSeal==null&&f.delivered.isEmpty(),"retry kept private seal");
+            long structural=watermark(r).structural;typedContent(f,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            check(watermark(r).content==0&&watermark(r).structural==structural+1,"retry inherited old content eligibility");
+            f.retire();long events=watermark(r).events;typedContent(f,AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
+            check(r.activeSeal==null&&watermark(r).events==events,"retired request accepted event authority");f.dispose();
+        });
+        snapshotCase("unmirrored_legacy_raw_counter_change_cannot_fake_an_atomic_watermark",()->{
+            ObserverPipelineHost f=fixture(null);ObservationRequest r=capture(f);
+            await(()->observationIo.active.get()==0,"raw-counter queued product");r.events++;
+            f.main.drain();rejected(f,r,"unmirrored raw event");
+            check(watermark(r).events==0&&r.events==1,"test silently repaired the inconsistent counter");f.dispose();
+        });
+        snapshotCase("optional_diagnostics_are_not_required_for_typed_content_publication",()->{
+            ObserverPipelineHost f=fixture(null);f.diagnosticTask=f.lease;f.diagnosticRequests=96;
+            f.windowHook=()->typedContent(f,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            ObservationRequest r=capture(f);check(r.trace==null,"optional diagnostics fixture remained enabled");f.finish();
+            check(f.delivered.size()==1&&watermark(r).events==1&&watermark(r).content==1,"event fence depended on optional trace");f.dispose();
+        });
+        snapshotCase("earlier_callback_time_does_not_regress_later_worker_diagnostic_phase_clock",()->{
+            ObservationDiagnostics d=new ObservationDiagnostics(SnapshotChecks.TASK,"11111111111111111111111111111111",
+                    SnapshotChecks.OWNER,SnapshotChecks.APP,SnapshotChecks.GENERATION,9,1,1000,13000);
+            ObservationDiagnostics.EventWatermark event=ObservationDiagnostics.EventWatermark.ZERO.next(false,true,1100);
+            d.phase("saved_graph",1200);d.eventWatermark(event);
+            Map<String,Object> out=d.snapshot(1250);
+            check(Boolean.FALSE.equals(out.get("clock_regressed")),"callback lock interleaving forged clock regression");
+            @SuppressWarnings("unchecked") Map<String,Object> saved=(Map<String,Object>)out.get("event_watermark");
+            check(Long.valueOf(1100).equals(saved.get("last_event_elapsed_ms")),"real earlier callback time was replaced");
+            d.finish("failed",1300);d.eventWatermark(event.next(false,true,1400));
+            @SuppressWarnings("unchecked") Map<String,Object> frozen=(Map<String,Object>)d.snapshot(1500).get("event_watermark");
+            check(Long.valueOf(1).equals(frozen.get("events")),"terminal diagnostics were rewritten");
+        });
+    }

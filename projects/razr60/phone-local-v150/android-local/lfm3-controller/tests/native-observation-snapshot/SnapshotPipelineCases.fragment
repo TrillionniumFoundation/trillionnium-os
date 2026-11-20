@@ -77,7 +77,7 @@
     static void normalAndHistoryCases()throws Exception{
         snapshotCase("png_only_content_change_preserves_original_paired_history",()->{
             ObserverPipelineHost f=fixture((x,g,n)->{if(n>=4)g.digest="content-changed-after-pair";});
-            Bitmap.encodeHook=()->{SystemClock.now+=600;f.noteObservationEvent(9);};
+            Bitmap.encodeHook=()->{SystemClock.now+=600;f.noteObservationEvent(9,AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,7,SnapshotChecks.APP);};
             ObservationRequest r=capture(f);f.finish();
             check(f.delivered.size()==1,"paired history was discarded because content changed during PNG");
             check(f.reads.get()==3&&f.windowChecks.get()==1,"sealed path must use three full graphs plus one identity IO");

@@ -86,12 +86,35 @@ public final class ProfilePermissionTransient {
     }
 
     /** A read may be retried only while its original live task capabilities remain identical.
-     * This signal is never a permission proof, a window, or cleanup authority. */
+     * A paired Activity-cookie retirement also needs the coordinator's retained private
+     * capabilities. Neither signal is a permission proof, window, or cleanup authority. */
     static final class ReadChanged extends Exception {
         private static final long serialVersionUID=1L;
         final BackgroundOwnedSingleTask.Task root,leaf;final String code;
+        private final BackgroundOwnedSingleTask.Task beforeRoot,beforeLeaf;
+        private final Object retiredCookie;
         private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code){
-            super(code);this.root=root;this.leaf=leaf;this.code=code;
+            this(root,leaf,root,leaf,null,code);
+        }
+        private ReadChanged(BackgroundOwnedSingleTask.Task beforeRoot,BackgroundOwnedSingleTask.Task beforeLeaf,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,Object retiredCookie,String code){
+            super(code);this.beforeRoot=beforeRoot;this.beforeLeaf=beforeLeaf;
+            this.root=root;this.leaf=leaf;this.retiredCookie=retiredCookie;this.code=code;
+        }
+        void requireRetainedCookieRetirement(BackgroundOwnedSingleTask.Task retainedRoot,
+                BackgroundOwnedSingleTask.Task retainedLeaf,Object rootCookie,Object launchCookie)throws Exception{
+            if(retiredCookie==null)return;
+            need(sameTaskCapability(retainedRoot,beforeRoot)&&sameTaskCapability(retainedRoot,root)
+                    &&rootCookie!=null&&!Objects.equals(rootCookie,launchCookie)
+                    &&retainedRoot.cookies.contains(rootCookie)&&beforeRoot.cookies.contains(rootCookie)
+                    &&root.cookies.contains(rootCookie),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+            // Initial admission still needs its live launch cookie. Only an already
+            // claimed leaf may lose that Activity cookie, on the very same Binder.
+            need(sameTaskCapability(retainedLeaf,beforeLeaf)&&sameTaskCapability(retainedLeaf,leaf)
+                    &&launchCookie!=null&&Objects.equals(retiredCookie,launchCookie)
+                    &&beforeRoot.cookies.contains(launchCookie)&&beforeLeaf.cookies.contains(launchCookie)
+                    &&!root.cookies.contains(launchCookie)&&!leaf.cookies.contains(launchCookie),
+                    "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
         }
         void requireRoot(BackgroundOwnedSingleTask.Task current)throws Exception{
             need(sameReadIdentity(root,current),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
@@ -99,7 +122,9 @@ public final class ProfilePermissionTransient {
         void requireLeaf(BackgroundOwnedSingleTask.Task current)throws Exception{
             need(sameReadIdentity(leaf,current),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
         }
-        void requireAttempt(ReadChanged current)throws Exception{requireRoot(current.root);requireLeaf(current.leaf);}
+        void requireAttempt(ReadChanged current)throws Exception{
+            requireRoot(current.beforeRoot);requireLeaf(current.beforeLeaf);
+        }
     }
     static boolean sameReadIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
         return a!=null&&b!=null&&a.id>0&&a.token!=null&&b.token!=null
@@ -107,6 +132,40 @@ public final class ProfilePermissionTransient {
                 &&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)
                 &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.base,b.base)
                 &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static boolean sameTaskCapability(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return a!=null&&b!=null&&a.id>0&&a.token!=null&&b.token!=null
+                &&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent&&a.uid==b.uid
+                &&Objects.equals(a.token,b.token);
+    }
+    private static boolean sameReadCapability(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return sameTaskCapability(a,b)&&Objects.equals(a.intentComponent,b.intentComponent)
+                &&Objects.equals(a.base,b.base)&&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static Object singleRemovedCookie(BackgroundOwnedSingleTask.Task before,BackgroundOwnedSingleTask.Task after){
+        if(before==null||after==null||before.cookies.size()!=after.cookies.size()+1
+                ||before.cookies.contains(null)||after.cookies.contains(null)
+                ||new HashSet<Object>(before.cookies).size()!=before.cookies.size()
+                ||new HashSet<Object>(after.cookies).size()!=after.cookies.size()
+                ||!before.cookies.containsAll(after.cookies))return null;
+        List<Object> removed=new ArrayList<Object>(before.cookies);removed.removeAll(after.cookies);
+        if(removed.size()!=1)return null;
+        List<Object> kept=new ArrayList<Object>(before.cookies);kept.remove(removed.get(0));
+        return kept.equals(after.cookies)?removed.get(0):null;
+    }
+    private static boolean permissionExitPresentation(ProfileTarget target,BackgroundOwnedSingleTask.Task before,
+            BackgroundOwnedSingleTask.Task after){
+        return target!=null&&before!=null&&after!=null&&COMPONENT.equals(before.top)
+                &&before.topUid==(long)target.profile.userId*100000+10335
+                &&after.topUid==target.fullUid&&targetComponent(target,after.top)
+                &&before.activities>=2&&before.activities<=2048&&after.activities==before.activities-1
+                &&before.running&&before.visible&&after.running&&after.visible;
+    }
+    /** This admits only another read of the actual leaf; it grants no retry or authority. */
+    static boolean mayReadRetiringPermissionRoot(ProfileTarget target,BackgroundOwnedSingleTask.Task before,
+            BackgroundOwnedSingleTask.Task after){
+        return sameReadCapability(before,after)&&permissionExitPresentation(target,before,after)
+                &&singleRemovedCookie(before,after)!=null;
     }
     private static boolean knownReadPresentation(ProfileTarget target,BackgroundOwnedSingleTask.Task task,int permissionUid){
         return task!=null&&task.activities>0&&task.activities<=2048
@@ -116,6 +175,17 @@ public final class ProfilePermissionTransient {
     static void requireSameRead(ProfileTarget target,BackgroundOwnedSingleTask.Task root,
             BackgroundOwnedSingleTask.Task leaf,BackgroundOwnedSingleTask.Task currentRoot,
             BackgroundOwnedSingleTask.Task currentLeaf)throws Exception{
+        if(!sameReadIdentity(root,currentRoot)&&mayReadRetiringPermissionRoot(target,root,currentRoot)){
+            Object removed=singleRemovedCookie(root,currentRoot);
+            need(sameReadCapability(leaf,currentLeaf)&&permissionExitPresentation(target,leaf,currentLeaf)
+                    &&root.activities==leaf.activities&&currentRoot.activities==currentLeaf.activities
+                    &&Objects.equals(removed,singleRemovedCookie(leaf,currentLeaf)),
+                    "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+            // The coordinator must still prove the exact retained root/leaf and its own
+            // two cookies. Pin the after pair; none of this unstable read may be used.
+            throw new ReadChanged(root,leaf,currentRoot,currentLeaf,removed,
+                    "PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        }
         need(sameReadIdentity(root,currentRoot),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
         need(sameReadIdentity(leaf,currentLeaf),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
         boolean rootSame=sameTaskInfo(root,currentRoot),leafSame=sameTaskInfo(leaf,currentLeaf);

@@ -1,0 +1,6 @@
+{
+  "run_id": "8f37d2c41a5c46b483ecd6a7318bde15",
+  "raw_text": "{\n  \"reason\": \"Current screen shows native app phase 'image_modal' with missing image modal content.\",\n  \"action\": \"wait\",\n  \"observation_id\": \"4473cffbe9894a69967e775e3f4b2183\",\n  \"package\": \"com.xiaomi.shop\",\n  \"duration_ms\": 1000\n}",
+  "observation_id": "4473cffbe9894a69967e775e3f4b2183",
+  "original_instruction_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad"
+}

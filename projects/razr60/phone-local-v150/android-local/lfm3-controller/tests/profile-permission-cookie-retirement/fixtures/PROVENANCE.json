@@ -1,0 +1,13 @@
+{
+  "actual_after_leaf_available": false,
+  "actual_business_success": false,
+  "fixture_sha256": "06dbf806886ffde8834afa20bc3444db31214e2ecb7e75bb1c6f96b7e78c9837",
+  "phone_contacted_for_this_gate": false,
+  "schema": "hepta.ctrip-cookie-race-fixture.v1",
+  "source_json_path": "background_session.last_broker_response.profile_permission_first_read_mismatch",
+  "source_result_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/ctrip-evidence-r1/raw/task/files/control-tasks/08be409289364962bb5ea506a51c344b/result.json",
+  "source_result_sha256": "6484c4c15146e59717d2d8b136a7ee35aa470431419ccd1b306e217f970cf682",
+  "synthetic_binders_and_cookies": true,
+  "synthetic_test_after_leaf": true,
+  "task_id": "08be409289364962bb5ea506a51c344b"
+}

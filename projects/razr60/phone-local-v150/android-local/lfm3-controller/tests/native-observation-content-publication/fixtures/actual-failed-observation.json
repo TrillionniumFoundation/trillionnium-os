@@ -1,0 +1,231 @@
+{
+  "background_generation": "36bfcc2e-5e4e-40d5-b32f-d330c351be64",
+  "changes_deadline": false,
+  "clock_regressed": false,
+  "deadline_elapsed_ms": 513965127,
+  "deadline_reached_at_snapshot": false,
+  "diagnostic_updates_frozen_at_terminal": true,
+  "display_id": 250,
+  "elapsed_ms": 10581,
+  "events": {
+    "CAPTURE_CALLBACK_OK": 2,
+    "CAPTURE_EVENT_RESET": 2,
+    "CAPTURE_RETRY": 2,
+    "CAPTURE_START": 2,
+    "EVENT_TARGET": 88,
+    "REQUEST_ERROR": 1,
+    "SAMPLE_EVENT_RECHECKED": 5,
+    "SAMPLE_EXPIRED": 1,
+    "SAMPLE_KEY_CHANGED": 1,
+    "SAMPLE_MISSING": 1,
+    "SAMPLE_READY": 2,
+    "SAMPLE_STALE_ROOT": 1,
+    "SAMPLE_START": 10,
+    "SAMPLE_WAIT": 7
+  },
+  "grants_action_authority": false,
+  "graph_record_count": 11,
+  "graph_record_limit": 6,
+  "graph_records_truncated": true,
+  "last_graphs": [
+    {
+      "app_tree_sha256": "4c468f3a48afa84a3186431b855cd78ae6995dd38672295808ce3cd398c797cd",
+      "elapsed_ms": 5789,
+      "frame_key_sha256": "c9b08972f3566a0a854fec747cf7484a1c96f50eb0f5f1992626e0b7602e2120",
+      "observation_state_sha256": "f4e04a8285623060a723b50a52d4d4fa95b75f0d6b5d0f93d512a77bd331a44e",
+      "stage": "sample_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    },
+    {
+      "app_tree_sha256": "e771d6c93eef940d28ec1f3fc60669fddc9704d5a05bc5573a7b0c8cfa7c270c",
+      "elapsed_ms": 6594,
+      "frame_key_sha256": "f94dd0330de310a19355b84e797299ad5fa20fd81052765da7247a8a139408e9",
+      "observation_state_sha256": "8abb0fda7f47ffe11a55406873ea22b201411009db9ce144d1a755e637d2de29",
+      "stage": "sample_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    },
+    {
+      "app_tree_sha256": "4c468f3a48afa84a3186431b855cd78ae6995dd38672295808ce3cd398c797cd",
+      "elapsed_ms": 7282,
+      "frame_key_sha256": "c9b08972f3566a0a854fec747cf7484a1c96f50eb0f5f1992626e0b7602e2120",
+      "observation_state_sha256": "f4e04a8285623060a723b50a52d4d4fa95b75f0d6b5d0f93d512a77bd331a44e",
+      "stage": "sample_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    },
+    {
+      "app_tree_sha256": "4c468f3a48afa84a3186431b855cd78ae6995dd38672295808ce3cd398c797cd",
+      "elapsed_ms": 7925,
+      "frame_key_sha256": "c9b08972f3566a0a854fec747cf7484a1c96f50eb0f5f1992626e0b7602e2120",
+      "observation_state_sha256": "f4e04a8285623060a723b50a52d4d4fa95b75f0d6b5d0f93d512a77bd331a44e",
+      "stage": "sample_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    },
+    {
+      "app_tree_sha256": "4c468f3a48afa84a3186431b855cd78ae6995dd38672295808ce3cd398c797cd",
+      "elapsed_ms": 8422,
+      "frame_key_sha256": "c9b08972f3566a0a854fec747cf7484a1c96f50eb0f5f1992626e0b7602e2120",
+      "observation_state_sha256": "f4e04a8285623060a723b50a52d4d4fa95b75f0d6b5d0f93d512a77bd331a44e",
+      "stage": "screenshot_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    },
+    {
+      "app_tree_sha256": "976f14df9a6a70abe5777a33eee5b3830694dca706e067c828011214a3c9ce34",
+      "elapsed_ms": 10580,
+      "frame_key_sha256": "ababd6ce7d9ff1eb928ae84ab2fb061d79fd4266eeaed24e788051b4dad1362c",
+      "observation_state_sha256": "9be8aa3d5f7f7d5af7a93388dd1c37ac0c987e882ed3916a3dfec3b7964e2237",
+      "stage": "sample_graph",
+      "truncated": false,
+      "window_metadata_sha256": "c7291e361a2a54b2a7bb1a2ab5f7363949168d6c28971532422f8d1aaa816806"
+    }
+  ],
+  "last_transitions": [
+    {
+      "elapsed_ms": 5025,
+      "phase": "sample_graph"
+    },
+    {
+      "elapsed_ms": 5789,
+      "phase": "sample_gap"
+    },
+    {
+      "elapsed_ms": 5990,
+      "phase": "sample_graph"
+    },
+    {
+      "elapsed_ms": 6595,
+      "phase": "sample_gap"
+    },
+    {
+      "elapsed_ms": 6795,
+      "phase": "sample_graph"
+    },
+    {
+      "elapsed_ms": 7283,
+      "phase": "sample_gap"
+    },
+    {
+      "elapsed_ms": 7483,
+      "phase": "sample_graph"
+    },
+    {
+      "elapsed_ms": 7926,
+      "phase": "screenshot_callback"
+    },
+    {
+      "elapsed_ms": 7936,
+      "phase": "screenshot_copy"
+    },
+    {
+      "elapsed_ms": 7956,
+      "phase": "screenshot_graph"
+    },
+    {
+      "elapsed_ms": 8423,
+      "phase": "png_encode"
+    },
+    {
+      "elapsed_ms": 9398,
+      "phase": "png_fsync"
+    },
+    {
+      "elapsed_ms": 9413,
+      "phase": "png_hash"
+    },
+    {
+      "elapsed_ms": 9416,
+      "phase": "saved_graph"
+    },
+    {
+      "elapsed_ms": 9474,
+      "phase": "retry_gap"
+    },
+    {
+      "elapsed_ms": 9675,
+      "phase": "sample_graph"
+    }
+  ],
+  "node_text_recorded": false,
+  "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+  "package": "com.xiaomi.shop",
+  "phase": "sample_graph",
+  "phase_times_are_elapsed_not_cpu": true,
+  "phases": {
+    "png_encode": {
+      "count": 2,
+      "max_ms": 975,
+      "total_ms": 1930
+    },
+    "png_fsync": {
+      "count": 2,
+      "max_ms": 20,
+      "total_ms": 35
+    },
+    "png_hash": {
+      "count": 2,
+      "max_ms": 3,
+      "total_ms": 6
+    },
+    "queued": {
+      "count": 1,
+      "max_ms": 1,
+      "total_ms": 1
+    },
+    "retry_gap": {
+      "count": 2,
+      "max_ms": 201,
+      "total_ms": 401
+    },
+    "sample_gap": {
+      "count": 7,
+      "max_ms": 201,
+      "total_ms": 1405
+    },
+    "sample_graph": {
+      "count": 10,
+      "max_ms": 906,
+      "total_ms": 5708
+    },
+    "saved_graph": {
+      "count": 2,
+      "max_ms": 61,
+      "total_ms": 119
+    },
+    "screenshot_callback": {
+      "count": 2,
+      "max_ms": 10,
+      "total_ms": 20
+    },
+    "screenshot_copy": {
+      "count": 2,
+      "max_ms": 20,
+      "total_ms": 39
+    },
+    "screenshot_graph": {
+      "count": 2,
+      "max_ms": 467,
+      "total_ms": 917
+    }
+  },
+  "published_observation_id": null,
+  "record_byte_limit": 16384,
+  "record_limit_per_task": 96,
+  "request_id": "cb1a3db0db054626b484b4349f0b9fa0",
+  "request_sequence": 2,
+  "request_terminal_observed": true,
+  "schema": "hepta.observation-diagnostic.v1",
+  "screenshot_pixels_recorded": false,
+  "snapshot_elapsed_ms": 513963708,
+  "started_elapsed_ms": 513953127,
+  "task_id": "c36e89aaff8c48aeac49bf45a11afd5f",
+  "terminal": "failed",
+  "transition_count": 33,
+  "transition_limit": 16,
+  "transitions_truncated": true,
+  "worker_active_at_last_diagnostic_update": false,
+  "worker_drained_proved_by_this_record": false
+}

@@ -12,6 +12,11 @@ import java.util.concurrent.atomic.*;
 public final class ObserverPipelineHost {
 {{observation_callback}}
     interface Cancellation {boolean isCancelled();}
+    static final class AccessibilityEvent {
+        static final int TYPE_VIEW_TEXT_CHANGED=16,TYPE_WINDOW_STATE_CHANGED=32,
+                TYPE_VIEW_FOCUSED=8,TYPE_WINDOW_CONTENT_CHANGED=2048,TYPE_VIEW_SCROLLED=4096,
+                TYPE_WINDOWS_CHANGED=4194304;
+    }
     interface GraphBudget {void check();}
     /** Scheduling-only legacy boundary: no profile proof can be minted or admitted here. */
     static final class WindowOwnership {

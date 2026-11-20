@@ -344,9 +344,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             "LFM3-1.7B · Hexagon NPU（基线）\nQAD Q4_0 · 可用内存门槛 3 GiB",
             "LFM3-1.7B · Adreno GPU\nQAD Q4_0 · 可用内存门槛 3 GiB",
             "LFM2.5-8B-A1B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
-            "LFM2.5-8B-A1B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 7 GiB"};
+            "LFM2.5-8B-A1B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
+            "GUI-Owl 4B · 语言 NPU + 图像 GPU（实验）\nQ4_0 + F16 视觉投影 · 可用内存门槛 6 GiB"};
         int current=0;
-        try{LocalRuntimeConfig config=engine.configuration();current=(config.profile==ModelProfile.LFM25_8B_A1B?2:0)+("gpu".equals(config.compute)?1:0);}
+        try{LocalRuntimeConfig config=engine.configuration();current=config.profile==ModelProfile.GUI_OWL_4B?4:
+                (config.profile==ModelProfile.LFM25_8B_A1B?2:0)+("gpu".equals(config.compute)?1:0);}
         catch(Exception unavailable){/* The actual apply still rejects an unreadable prior configuration. */}
         final int[] selected={current};
         new AlertDialog.Builder(this).setTitle("选择本地模型 · 8192 上下文 / 4 线程")
@@ -354,10 +356,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 .setNegativeButton("取消",null).setPositiveButton("保存",(dialog,which)->{
                     int choice=selected[0];
                     try{
-                        if(choice<0||choice>=4||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
+                        if(choice<0||choice>=labels.length||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
                             throw new IllegalStateException("设置范围或当前空闲状态已变化");
-                        modelSettings.start((choice<2?ModelProfile.LFM3:ModelProfile.LFM25_8B_A1B).id,
-                                choice%2==0?"npu":"gpu",false);refresh();
+                        modelSettings.start((choice==4?ModelProfile.GUI_OWL_4B:
+                                (choice<2?ModelProfile.LFM3:ModelProfile.LFM25_8B_A1B)).id,
+                                choice==4||choice%2==0?"npu":"gpu",false);refresh();
                     }catch(Exception error){localModelSettingsState.setText("未更改配置："+HeptaAccessibilityService.message(error));}
                 }).show();
     }

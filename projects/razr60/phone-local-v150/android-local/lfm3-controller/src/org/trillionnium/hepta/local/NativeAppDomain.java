@@ -54,10 +54,15 @@ final class NativeAppDomain {
         return Collections.unmodifiableSet(new TreeSet<String>(java.util.Arrays.asList(resultReady
                 ?new String[]{"failure","partial","success"}:new String[]{"failure","partial"})));
     }
+    /** Only the owning Session can expose a pending dispatched effect here.
+     * Waiting never restores Back or extends the original transition deadline. */
+    private boolean modalAllowsWait(){return !NativeXiaomiProductPage.IMAGE_MODAL.equals(phase)
+            ||providerView.get("pending_purpose") instanceof String;}
     Set<String> toolMask(Set<String> original){Set<String> out=new TreeSet<String>(
             java.util.Arrays.asList("click","type","back","wait","done"));
         if(original!=null)out.retainAll(original);
         if(clickIds.isEmpty())out.remove("click");if(editValues.isEmpty())out.remove("type");if(!backAllowed)out.remove("back");
+        if(!modalAllowsWait())out.remove("wait");
         if(NativeXiaomiProductPage.HOME_LOADING.equals(phase))out.retainAll(Collections.singleton("wait"));
         if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase))out.retainAll(Collections.singleton("done"));
         if(NativeXiaomiProductPage.LOGIN.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
@@ -88,7 +93,8 @@ final class NativeAppDomain {
                         "native login admits only its explicit return control or failure");
             }
             if("done".equals(action.action)){NativeAppEvidence.need(!"success".equals(action.status)||resultReady,"native result not verified");return;}
-            if("wait".equals(action.action))return;
+            if("wait".equals(action.action)){NativeAppEvidence.need(modalAllowsWait(),
+                    "image modal wait requires an actual pending dispatched transition");return;}
             NativeAppEvidence.need(frame.collectionComplete&&!frame.nodesTruncated,"incomplete native frame cannot grant action");
             if("back".equals(action.action)){NativeAppEvidence.need(backAllowed,"native Back not in current phase");return;}
             NativeAppEvidence.Node n=frame.byId.get(action.nodeId);

@@ -1,0 +1,18 @@
+{
+  "actual_action_dispatched": false,
+  "actual_action_sha256": "ad73d95fc5e21d22debfb44a32437a0e7f6fd5140b7a4b4e1b4afedfb4c30cf8",
+  "actual_action_source": "/home/alex/hepta-razr-da34-evidence-r18-r1/moe-xiaomi-evidence-r1/raw/task/files/control-tasks/c36e89aaff8c48aeac49bf45a11afd5f/step-01-action.json",
+  "actual_effect_entered": false,
+  "actual_event_types_recorded": false,
+  "actual_result_sha256": "c5bc337844913cc01c63b1a25832ef1683263cc7b075971d3a040fb79757394f",
+  "actual_result_source": "/home/alex/hepta-razr-da34-evidence-r18-r1/moe-xiaomi-evidence-r1/raw/task/files/control-tasks/c36e89aaff8c48aeac49bf45a11afd5f/result.json",
+  "authored_88_event_case_metadata_and_distribution_synthetic": true,
+  "candidate_phone_verified": false,
+  "files": {
+    "actual-failed-observation.json": "1a95a26c209b4a23bd58ff2ffbe3a59f0ea861d9d5a3164e18c927beb10e7641",
+    "actual-stale-action.json": "ad73d95fc5e21d22debfb44a32437a0e7f6fd5140b7a4b4e1b4afedfb4c30cf8"
+  },
+  "projection": "observation_diagnostics.records[1]",
+  "schema": "hepta.sealed-publication-fixture.v1",
+  "task_id": "c36e89aaff8c48aeac49bf45a11afd5f"
+}

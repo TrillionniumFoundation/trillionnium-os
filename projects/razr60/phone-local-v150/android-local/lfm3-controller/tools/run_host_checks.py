@@ -47,6 +47,10 @@ def main():
         paths=set(ROOT.glob("*.py"))
         paths.add(ROOT/"tests/vlm-contract/requirements.txt")
         paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
+        paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","README.md"))
+        paths.update(ROOT/"tests/profile-permission-cookie-retirement"/name for name in ("CASE-CONTRACT.json","README.md"))
+        paths.update(p for p in (ROOT/"tests/profile-permission-cookie-retirement/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/native-observation-content-publication").rglob("*") if p.is_file())
         paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
@@ -171,6 +175,83 @@ def main():
                 raise RuntimeError("Local model settings original cases differ: "+name)
         report["local_model_settings_gate"]={"bytes":len(settings_raw),"sha256":hashlib.sha256(settings_raw).hexdigest(),
             "cases":settings_gate["cases"]}
+        run("local-model-settings-visual",[sys.executable,"-B",ROOT/"tests/local-model-settings-visual/run_host.py",
+            "--source",ROOT,"--output",out/"local-model-settings-visual","--java-home",java_home,"--json-jar",json_jar],timeout=360)
+        visual_raw=(out/"local-model-settings-visual/RESULT.json").read_bytes()
+        visual_gate=json.loads(visual_raw)
+        if (visual_gate.get("schema")!="hepta.local-model-settings-visual-host-gate.v1"
+                or visual_gate.get("all_pass") is not True or visual_gate.get("inputs_unchanged") is not True
+                or visual_gate.get("original_settings_cases_retained") is not True
+                or visual_gate.get("actual_settings_and_runtime_router") is not True
+                or visual_gate.get("view_inventory_and_positive_model_loading_are_host_ports") is not True
+                or type(visual_gate.get("phone_operations")) is not int or visual_gate["phone_operations"]!=0
+                or visual_gate.get("native_model_executed") is not False
+                or visual_gate.get("positive_backend_qualified") is not False):
+            raise RuntimeError("Visual settings and runtime routing host scope or receipt differs")
+        if ([row.get("name") for row in visual_gate.get("stages",[])]!=["javac-version","original-settings","compile","visual-settings"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in visual_gate["stages"])):
+            raise RuntimeError("Visual settings mandatory compile/run stages differ")
+        visual_cases=visual_gate.get("cases",{})
+        visual_rows=visual_cases.get("case_results")
+        if (visual_cases.get("schema")!="hepta.local-model-settings-visual-cases.v1"
+                or visual_cases.get("passed") is not True
+                or type(visual_cases.get("cases")) is not int or visual_cases["cases"]!=22
+                or type(visual_cases.get("assertions")) is not int or visual_cases["assertions"]!=169
+                or type(visual_rows) is not list or len(visual_rows)!=22
+                or any(type(row) is not dict or row.get("passed") is not True
+                    or type(row.get("name")) is not str or type(row.get("assertions")) is not int
+                    or row["assertions"]<1 for row in visual_rows)
+                or sum(row["assertions"] for row in visual_rows)!=169):
+            raise RuntimeError("Visual settings exact original/new case assertions differ")
+        visual_names=[row["name"] for row in visual_rows]
+        visual_names_sha=hashlib.sha256(json.dumps(visual_names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()
+        visual_contract=json.loads((ROOT/"tests/local-model-settings-visual/CASE-CONTRACT.json").read_bytes())
+        if (len(set(visual_names))!=22 or visual_names_sha!="7afd16285a00eb25340ef178f2b9c11b2e036e8bde8bd810e5c3d1ddc31adf73"
+                or visual_gate.get("case_names_sha256")!=visual_names_sha
+                or visual_contract.get("schema")!="hepta.local-model-settings-visual-case-contract.v1"
+                or visual_contract.get("case_schema")!=visual_cases["schema"]
+                or visual_contract.get("cases")!=22 or visual_contract.get("assertions")!=169
+                or visual_contract.get("names")!=visual_names
+                or json.loads((out/"local-model-settings-visual/cases/RESULT.json").read_bytes())!=visual_cases
+                or json.loads((out/"local-model-settings-visual/visual-settings.stdout").read_bytes())!=visual_cases):
+            raise RuntimeError("Visual settings case identity or actual Java output differs")
+        if (type(visual_cases.get("phone_operations")) is not int or visual_cases["phone_operations"]!=0
+                or visual_cases.get("native_model_executed") is not False or visual_cases.get("positive_backend_qualified") is not False
+                or any(visual_cases.get(key) is not True for key in ("actual_owner_button_methods",
+                    "actual_application_idle_methods","actual_service_controller_factory","actual_settings_transaction_and_engine",
+                    "actual_runtime_generation_binding","same_service_and_controller_roundtrip",
+                    "positive_weight_verification_is_host_boundary","vlm_model_loading_is_host_boundary",
+                    "actual_negative_asset_and_hash_checks","android_view_and_inventory_are_host_boundaries"))):
+            raise RuntimeError("Visual settings actual methods or explicit host boundary differs")
+        engine_boundary=visual_gate.get("engine_host_type_boundary",{})
+        if (any(engine_boundary.get(key) is not True for key in ("only_class_final_removed",
+                "all_fields_and_method_bodies_unchanged","unmodified_final_engine_executed_in_original_gate"))
+                or engine_boundary.get("original_sha256")!=hashlib.sha256((ROOT/"src/org/trillionnium/hepta/local/LocalModelEngine.java").read_bytes()).hexdigest()):
+            raise RuntimeError("Visual settings unmodified production Engine identity differs")
+        original_visual_settings=json.loads((out/"local-model-settings-visual/original-settings/RESULT.json").read_bytes())
+        if (original_visual_settings.get("all_pass") is not True or original_visual_settings.get("inputs_unchanged") is not True
+                or set(original_visual_settings.get("cases",{}))!={"transaction","generation","context_files"}):
+            raise RuntimeError("Visual routing gate did not retain the complete original settings gate")
+        for name,count,assertions in (("transaction",43,196),("generation",15,100),("context_files",8,36)):
+            original_case=original_visual_settings["cases"][name]
+            if (original_case.get("passed") is not True or type(original_case.get("cases")) is not int
+                    or original_case["cases"]!=count or type(original_case.get("assertions")) is not int
+                    or original_case["assertions"]!=assertions):
+                raise RuntimeError("Visual routing gate original settings case contract differs: "+name)
+        visual_inputs=visual_gate.get("source_inputs")
+        if type(visual_inputs) is not list or not visual_inputs:
+            raise RuntimeError("Visual settings actual source and tool pins missing")
+        visual_input_paths=set()
+        for item in visual_inputs:
+            path=Path(item["path"])
+            if not path.is_absolute() or path.is_symlink() or str(path) in visual_input_paths:
+                raise RuntimeError("Visual settings duplicate or aliased input")
+            visual_input_paths.add(str(path));data=path.read_bytes()
+            if len(data)!=item["bytes"] or hashlib.sha256(data).hexdigest()!=item["sha256"]:
+                raise RuntimeError("Visual settings source or tool changed after its gate")
+        report["local_model_settings_visual_gate"]={"bytes":len(visual_raw),
+            "sha256":hashlib.sha256(visual_raw).hexdigest(),"cases":visual_cases,
+            "case_names_sha256":visual_names_sha,"original_settings_cases_retained":True}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("public-screen-lease",[sys.executable,"-B",ROOT/"tests/public-screen-lease/run_host.py",
@@ -239,6 +320,100 @@ def main():
             "--source",ROOT,"--output",out/"calculator-completion-pure","--release8"])
         run("observation-collection",[sys.executable,"-B",ROOT/"tests/observation-collection/run_host_tests.py",
             "--source",ROOT,"--output",out/"observation-collection","--release8"])
+        run("native-observation-content-publication",[sys.executable,"-B",ROOT/"tests/native-observation-content-publication/run_host.py",
+            "--source",ROOT,"--output",out/"native-observation-content-publication","--java-home",java_home,"--json-jar",json_jar],timeout=360)
+        publication_root=out/"native-observation-content-publication"
+        publication_raw=(publication_root/"RESULT.json").read_bytes();publication_gate=json.loads(publication_raw)
+        if (publication_gate.get("schema")!="hepta.native-observation-content-publication-host.v1"
+                or publication_gate.get("all_pass") is not True or publication_gate.get("inputs_unchanged") is not True
+                or publication_gate.get("inputs_before")!=publication_gate.get("inputs_after")
+                or type(publication_gate.get("phone_operations")) is not int or publication_gate["phone_operations"]!=0
+                or any(publication_gate.get(key) is not False for key in ("android_execution","model_executed",
+                    "business_completion_verified","dispatch_freshness_changed","actual_event_types_available_in_old_failure"))
+                or publication_gate.get("authored_typed_event_metadata_is_synthetic") is not True):
+            raise RuntimeError("Sealed observation publication actual host scope or input identity differs")
+        if ([row.get("name") for row in publication_gate.get("stages",[])]!=["observer-pipeline","fresh-action-integration"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in publication_gate["stages"])):
+            raise RuntimeError("Sealed observation publication mandatory real stages differ")
+        for stage,label in zip(publication_gate["stages"],("observer-pipeline","fresh-action")):
+            if hashlib.sha256((publication_root/(label+".stdout")).read_bytes()).hexdigest()!=stage.get("stdout_sha256"):
+                raise RuntimeError("Sealed observation publication raw stdout differs")
+        if ((publication_root/"fresh-action.stderr").read_bytes()!=b""
+                or publication_gate["stages"][1].get("stderr_sha256")!=hashlib.sha256(b"").hexdigest()):
+            raise RuntimeError("Unchanged fresh-action regression emitted stderr")
+        publication_contract_raw=(ROOT/"tests/native-observation-content-publication/CASE-CONTRACT.json").read_bytes()
+        publication_contract=json.loads(publication_contract_raw)
+        if (hashlib.sha256(publication_contract_raw).hexdigest()!="b40f5c3253c72c8ac891640e5d1541836cefce29aedf1ff88644a792227094e6"
+                or publication_contract.get("schema")!="hepta.native-observation-content-publication-case-contract.v1"
+                or publication_contract.get("original_cases")!=49 or publication_contract.get("original_assertions")!=213
+                or publication_contract.get("expected_new_cases")!=13
+                or publication_contract.get("expected_total_cases")!=62 or publication_contract.get("expected_total_assertions")!=341):
+            raise RuntimeError("Sealed observation publication exact original/new source contract differs")
+        publication_cases=publication_gate.get("cases",{});publication_names=publication_cases.get("case_names")
+        publication_assertions=publication_cases.get("case_assertions")
+        if (publication_cases.get("schema")!="hepta.native-observation-snapshot-cases.v1" or publication_cases.get("all_pass") is not True
+                or type(publication_cases.get("cases")) is not int or publication_cases["cases"]!=62
+                or type(publication_cases.get("assertions")) is not int or publication_cases["assertions"]!=341
+                or type(publication_names) is not list or len(publication_names)!=62 or len(set(publication_names))!=62
+                or any(type(name) is not str for name in publication_names)
+                or type(publication_assertions) is not dict or set(publication_assertions)!=set(publication_names)
+                or any(type(value) is not int or value<1 for value in publication_assertions.values())
+                or sum(publication_assertions.values())!=341
+                or publication_names[:49]!=publication_contract["original_case_names"]
+                or any(publication_assertions.get(name)!=value for name,value in publication_contract["original_case_assertions"].items())):
+            raise RuntimeError("Sealed observation publication removed or changed an original/new case assertion")
+        publication_names_sha=hashlib.sha256("\n".join(publication_names).encode()).hexdigest()
+        if (publication_names_sha!="610c4a33e0d618703d8b4b0564f7fd79c55f4cdef5ef9a487519f066a2d0f370"
+                or publication_gate.get("case_names_sha256")!=publication_names_sha
+                or publication_contract.get("case_names_sha256")!=publication_names_sha):
+            raise RuntimeError("Sealed observation publication exact case names differ")
+        publication_pipeline_raw=(publication_root/"pipeline/RESULT.json").read_bytes()
+        publication_pipeline=json.loads(publication_pipeline_raw)
+        if (publication_gate.get("pipeline_result_sha256")!=hashlib.sha256(publication_pipeline_raw).hexdigest()
+                or publication_pipeline.get("all_pass") is not True or publication_pipeline.get("inputs_unchanged") is not True
+                or publication_pipeline.get("tools_unchanged") is not True
+                or publication_pipeline.get("action_freshness_relaxed") is not False or publication_pipeline.get("deadline_expanded") is not False
+                or publication_pipeline.get("cases")!=publication_cases):
+            raise RuntimeError("Actual observer pipeline result or unchanged action/deadline boundary differs")
+        publication_lines=(publication_root/"pipeline/cases.stdout").read_text().splitlines()
+        publication_pass=[line[5:] for line in publication_lines if line.startswith("PASS ")]
+        publication_emitted=[json.loads(line) for line in publication_lines if line.startswith("{")]
+        if (publication_pass!=publication_contract["original_stdout_pass_names"]+publication_names[49:]
+                or len(publication_pass)!=55 or len(publication_lines)!=56 or publication_emitted!=[publication_cases]):
+            raise RuntimeError("Observer's original 42 PASS plus seven JSON-only cases and 13 new cases differ")
+        publication_fresh_raw=(publication_root/"fresh-action/RESULT.json").read_bytes()
+        publication_fresh=json.loads(publication_fresh_raw);publication_fresh_summary=publication_gate.get("fresh_action_summary",{})
+        if (publication_gate.get("fresh_action_result_sha256")!=hashlib.sha256(publication_fresh_raw).hexdigest()
+                or publication_fresh.get("all_pass") is not True or publication_fresh.get("inputs_unchanged") is not True
+                or publication_fresh.get("tools_unchanged") is not True
+                or publication_fresh_summary.get("pure_cases")!=76 or publication_fresh_summary.get("pure_assertions")!=157
+                or publication_fresh_summary.get("integration_cases")!=231 or publication_fresh_summary.get("integration_assertions")!=576
+                or publication_fresh["pure"]["cases"]!=76 or publication_fresh["pure"]["assertions"]!=157
+                or publication_fresh["cases"]["cases"]!=231 or publication_fresh["cases"]["assertions"]!=576
+                or publication_fresh_summary.get("case_names")!=publication_fresh["cases"]["case_names"]
+                or [row.get("name") for row in publication_fresh.get("stages",[])]!=["compile","pure-cases","integration-cases"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0
+                    or row["stderr"]["sha256"]!=hashlib.sha256(b"").hexdigest() for row in publication_fresh["stages"])):
+            raise RuntimeError("Sealed publication did not retain the complete original real fresh-action gate")
+        publication_service=(ROOT/"src/org/trillionnium/hepta/local/HeptaAccessibilityService.java").read_text()
+        publication_marker="    private static final class StaleObservation extends IllegalStateException {"
+        if (publication_service.count(publication_marker)!=1
+                or hashlib.sha256(publication_service[publication_service.index(publication_marker):].encode()).hexdigest()!=
+                    "285a07fbe2620f59fbad72ed91d42652f92e5fa2a28f2e235d3b2e93efca68f5"
+                or publication_gate.get("dispatch_and_following_android_io_sha256")!=
+                    "285a07fbe2620f59fbad72ed91d42652f92e5fa2a28f2e235d3b2e93efca68f5"):
+            raise RuntimeError("Original Service dispatch and following Android IO methods changed")
+        publication_inputs=publication_gate.get("inputs_before")
+        if type(publication_inputs) is not dict or not publication_inputs:
+            raise RuntimeError("Sealed publication actual source pins missing")
+        for name,expected in publication_inputs.items():
+            path=Path(name)
+            if (path.is_absolute() or ".." in path.parts or (ROOT/path).is_symlink()
+                    or hashlib.sha256((ROOT/path).read_bytes()).hexdigest()!=expected):
+                raise RuntimeError("Sealed publication source changed after its gate")
+        report["native_observation_content_publication_gate"]={"bytes":len(publication_raw),
+            "sha256":hashlib.sha256(publication_raw).hexdigest(),"cases":publication_cases,
+            "case_names_sha256":publication_names_sha,"fresh_action_summary":publication_fresh_summary}
         run("notes-owner-intent",[sys.executable,"-B",ROOT/"tests/notes-owner-intent/run_host_tests.py",
             "--source",ROOT,"--output",out/"notes-owner-intent","--release8"])
         run("notes-task-info-reader",[sys.executable,"-B",ROOT/"tests/notes-task-info-reader/run_host.py",
@@ -353,14 +528,27 @@ def main():
             original=json.loads((out/"personal-notes-absence"/(key+".stdout")).read_bytes())
             if original!=cases:
                 raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
+        census=notes_absence.get("display-census")
+        if (type(census) is not dict or type(census.get("cases")) is not int or census["cases"]!=15
+                or type(census.get("assertions")) is not int or census["assertions"]!=16
+                or census.get("failed")!=[]
+                or type(census.get("phone_operations")) is not int or census["phone_operations"]!=0):
+            raise RuntimeError("Notes display census case contract changed")
+        census_names=census.get("passed")
+        if (type(census_names) is not list or len(census_names)!=15 or len(set(census_names))!=15
+                or any(type(name) is not str or not name for name in census_names)
+                or hashlib.sha256(json.dumps(census_names,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()!="950c6a97ac544edd3d18116a03a42612aff33ed110c17ab85fa359e6cfaf4a90"):
+            raise RuntimeError("Notes display census case identities changed")
+        if json.loads((out/"personal-notes-absence/display-census.stdout").read_bytes())!=census:
+            raise RuntimeError("Notes display census aggregate differs from actual Java stdout")
         notes_absence_stages=notes_absence.get("stages")
         if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
-                ["policy-compile","policy","client-compile","client","post-model"]
+                ["policy-compile","policy","display-census","client-compile","client","post-model"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
-            raise RuntimeError("Notes absence lacks all five real compile/run stages")
+            raise RuntimeError("Notes absence lacks all six real compile/run stages")
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
-            "policy":notes_absence["policy"],"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+            "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
@@ -393,6 +581,51 @@ def main():
             raise RuntimeError("Foreground concurrency compile/run stages incomplete")
         report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
+        run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",
+            "--source",ROOT,"--output",out/"public-profile-terminal-bridge","--java-home",java_home,"--json-jar",json_jar])
+        bridge_raw=(out/"public-profile-terminal-bridge/RESULT.json").read_bytes()
+        bridge=json.loads(bridge_raw)
+        if (bridge.get("schema")!="hepta.public-profile-terminal-bridge-host.v1" or bridge.get("all_pass") is not True
+                or bridge.get("strict_release8") is not True or bridge.get("source_inputs_unchanged") is not True
+                or bridge.get("tools_unchanged") is not True or bridge.get("android_runtime") is not False
+                or bridge.get("native_model_executed") is not False or bridge.get("full_android_controller_compiled_or_executed") is not False
+                or bridge.get("controller_bridge_verbatim_extraction") is not True
+                or bridge.get("actual_profile_owned_task_producer") is not True or bridge.get("actual_background_session_consumer") is not True
+                or bridge.get("actual_native_session_terminal") is not True or bridge.get("framework_model_installed_and_worker_io_synthetic") is not True
+                or type(bridge.get("phone_operations")) is not int or bridge["phone_operations"]!=0):
+            raise RuntimeError("Public profile terminal bridge receipt differs")
+        bridge_contracts={'legacy': (1, 28, 'ad7777f8f55f49c6fdf31b255460e7526ce4449eaec94a2378ce3e7f6ebdf864', 0, 1), 'candidate': (33, 412, '5f2b560320c45a07a342a67ef1e8e703b2cf390494ca1406ebe549814322312d', 11, 17)}
+        if set(bridge.get("cases",{}))!=set(bridge_contracts):
+            raise RuntimeError("Public profile terminal bridge case groups differ")
+        bridge_summary={}
+        for name,(count,assertions,names_sha,refusals,terminals) in bridge_contracts.items():
+            cases=bridge["cases"][name];names=cases.get("case_names")
+            if (cases.get("schema")!="hepta.public-profile-terminal-bridge-cases.v1" or cases.get("all_pass") is not True
+                    or type(cases.get("cases")) is not int or cases["cases"]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions
+                    or type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or cases.get("case_names_sha256")!=names_sha
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()!=names_sha
+                    or type(cases.get("real_nested_consumer_refusals")) is not int or cases["real_nested_consumer_refusals"]!=refusals
+                    or type(cases.get("full_native_terminal_calls")) is not int or cases["full_native_terminal_calls"]!=terminals
+                    or cases.get("old_bridge_full_terminal_reproduced") is not (name=="legacy")):
+                raise RuntimeError("Public profile terminal bridge exact case contract differs: "+name)
+            actual=json.loads((out/"public-profile-terminal-bridge"/(name+"-CASES.json")).read_bytes())
+            aggregate=dict(cases);aggregate.pop("case_names_sha256")
+            lines=(out/"public-profile-terminal-bridge"/(name+".stdout")).read_text().splitlines()
+            emitted=[line for line in lines if line.startswith("{")]
+            if (aggregate!=actual or len(emitted)!=1 or json.loads(emitted[0])!=actual
+                    or [line[5:] for line in lines if line.startswith("PASS ")]!=names):
+                raise RuntimeError("Public profile terminal bridge cases differ from actual Java output: "+name)
+            bridge_summary[name]={key:cases[key] for key in ("cases","assertions","case_names_sha256",
+                "real_nested_consumer_refusals","full_native_terminal_calls","old_bridge_full_terminal_reproduced")}
+        if ([row.get("name") for row in bridge.get("stages",[])]!=["compile","legacy","candidate"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in bridge["stages"])
+                or bridge.get("controller_bridge",{}).get("verbatim_method_and_helpers") is not True
+                or bridge["controller_bridge"].get("source",{}).get("sha256")!=hashlib.sha256((ROOT/"src/org/trillionnium/hepta/local/LocalTaskController.java").read_bytes()).hexdigest()):
+            raise RuntimeError("Public profile terminal bridge actual source or compile/run stages differ")
+        report["public_profile_terminal_bridge_gate"]={"bytes":len(bridge_raw),
+            "sha256":hashlib.sha256(bridge_raw).hexdigest(),"cases":bridge_summary}
         run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",
@@ -442,6 +675,84 @@ def main():
             raise RuntimeError("Mandatory permission transient gate receipt differs")
         report["permission_transient_gate"]={"bytes":len(permission_raw),
             "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases}
+        run("profile-permission-cookie-retirement",[sys.executable,"-B",ROOT/"tests/profile-permission-cookie-retirement/run_host.py",
+            "--source",ROOT,"--output",out/"profile-permission-cookie-retirement","--java-home",java_home])
+        cookie_root=out/"profile-permission-cookie-retirement"
+        cookie_raw=(cookie_root/"RESULT.json").read_bytes();cookie_gate=json.loads(cookie_raw)
+        if (cookie_gate.get("schema")!="hepta.profile-permission-cookie-retirement-canonical-host.v1"
+                or cookie_gate.get("all_pass") is not True or cookie_gate.get("source_inputs_unchanged") is not True
+                or any(cookie_gate.get(key) is not False for key in ("phone_contacted","android_build","business_success_claimed"))):
+            raise RuntimeError("Permission cookie retirement host scope or receipt differs")
+        cookie_stage_names=["original-permission-and-state","compile-cookie-retirement","cookie-retirement"]
+        if ([row.get("name") for row in cookie_gate.get("stages",[])]!=cookie_stage_names
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0
+                    or row.get("stderr_sha256")!=hashlib.sha256(b"").hexdigest() for row in cookie_gate["stages"])):
+            raise RuntimeError("Permission cookie retirement mandatory compile/run stages differ")
+        for stage in cookie_gate["stages"]:
+            for stream in ("stdout","stderr"):
+                data=(cookie_root/(stage["name"]+"."+stream)).read_bytes()
+                if hashlib.sha256(data).hexdigest()!=stage[stream+"_sha256"] or (stream=="stderr" and data):
+                    raise RuntimeError("Permission cookie retirement raw stage output differs")
+        cookie_summary=cookie_gate.get("summary",{});cookie_names=cookie_summary.get("case_names")
+        if (cookie_summary.get("schema")!="hepta.profile-permission-cookie-retirement-host.v1"
+                or cookie_summary.get("passed") is not True
+                or type(cookie_summary.get("cases")) is not int or cookie_summary["cases"]!=10
+                or type(cookie_summary.get("assertions")) is not int or cookie_summary["assertions"]!=316
+                or type(cookie_names) is not list or len(cookie_names)!=10 or len(set(cookie_names))!=10
+                or any(type(name) is not str for name in cookie_names)
+                or any(cookie_summary.get(key) is not True for key in ("real_coordinator_executed",
+                    "real_platform_pair_executed","after_leaf_synthetic","binders_and_cookies_synthetic"))
+                or any(cookie_summary.get(key) is not False for key in ("phone_contacted","android_build","business_success_claimed"))):
+            raise RuntimeError("Permission cookie retirement exact typed case contract differs")
+        cookie_names_sha=hashlib.sha256("\n".join(cookie_names).encode()).hexdigest()
+        cookie_contract_raw=(ROOT/"tests/profile-permission-cookie-retirement/CASE-CONTRACT.json").read_bytes()
+        cookie_contract=json.loads(cookie_contract_raw)
+        cookie_fixture_sha="06dbf806886ffde8834afa20bc3444db31214e2ecb7e75bb1c6f96b7e78c9837"
+        if (cookie_names_sha!="45d88559042fb70b3ae72c56b87e3e5fba22d8a1be184b480bb15146ede8b909"
+                or cookie_gate.get("case_names_sha256")!=cookie_names_sha
+                or hashlib.sha256(cookie_contract_raw).hexdigest()!="a92564e239a18d423cdaabd2c17f015013899a2d0bf79a8ab04b3e26b65f314b"
+                or cookie_gate.get("case_contract_sha256")!=hashlib.sha256(cookie_contract_raw).hexdigest()
+                or cookie_contract.get("case_names")!=cookie_names or cookie_contract.get("stages")!=cookie_stage_names
+                or cookie_summary.get("fixture_sha256")!=cookie_fixture_sha
+                or hashlib.sha256((ROOT/"tests/profile-permission-cookie-retirement/fixtures/observed-pair.json").read_bytes()).hexdigest()!=cookie_fixture_sha):
+            raise RuntimeError("Permission cookie retirement original names/fixture/contract differ")
+        cookie_lines=(cookie_root/"cookie-retirement.stdout").read_text().splitlines()
+        cookie_emitted=[line for line in cookie_lines if line.startswith("{")]
+        if (len(cookie_lines)!=11 or len(cookie_emitted)!=1 or json.loads(cookie_emitted[0])!=cookie_summary
+                or [line[5:] for line in cookie_lines if line.startswith("PASS ")]!=cookie_names):
+            raise RuntimeError("Permission cookie retirement summary differs from actual Java output")
+        cookie_fixture=cookie_gate.get("fixture",{})
+        if (cookie_fixture.get("sha256")!=cookie_fixture_sha
+                or cookie_fixture.get("actual_root_before_after_and_leaf_before") is not True
+                or cookie_fixture.get("actual_after_leaf_available") is not False
+                or cookie_fixture.get("test_after_leaf_synthetic") is not True
+                or cookie_fixture.get("binders_cookies_clock_synthetic") is not True):
+            raise RuntimeError("Permission cookie retirement real/synthetic evidence boundary differs")
+        cookie_original_raw=(cookie_root/"original/RESULT.json").read_bytes()
+        cookie_original=json.loads(cookie_original_raw)
+        if (cookie_gate.get("original_result_sha256")!=hashlib.sha256(cookie_original_raw).hexdigest()
+                or cookie_original.get("all_pass") is not True or cookie_original.get("source_inputs_unchanged") is not True
+                or cookie_original.get("private_actual_unchanged") is not True or cookie_original.get("phone_contacted") is not False
+                or json.loads((cookie_root/"original-permission-and-state.stdout").read_bytes())!=cookie_original
+                or cookie_gate.get("original_summaries")!={name:cookie_original[name] for name in ("synthetic_summary","state_settle_summary")}):
+            raise RuntimeError("Permission cookie gate did not retain exact original permission/state results")
+        for name,count,assertions in (("synthetic_summary",16,348),("state_settle_summary",29,626)):
+            original_case=cookie_original[name]
+            if (original_case.get("passed") is not True or type(original_case.get("cases")) is not int
+                    or original_case["cases"]!=count or type(original_case.get("assertions")) is not int
+                    or original_case["assertions"]!=assertions):
+                raise RuntimeError("Permission cookie gate original case contract differs: "+name)
+        cookie_inputs=cookie_gate.get("source_inputs")
+        if type(cookie_inputs) is not dict or not cookie_inputs:
+            raise RuntimeError("Permission cookie gate actual source pins missing")
+        for name,expected in cookie_inputs.items():
+            path=Path(name)
+            if (path.is_absolute() or ".." in path.parts or (ROOT/path).is_symlink()
+                    or hashlib.sha256((ROOT/path).read_bytes()).hexdigest()!=expected):
+                raise RuntimeError("Permission cookie gate source changed after its gate")
+        report["profile_permission_cookie_retirement_gate"]={"bytes":len(cookie_raw),
+            "sha256":hashlib.sha256(cookie_raw).hexdigest(),"summary":cookie_summary,
+            "original_summaries":cookie_gate["original_summaries"],"case_names_sha256":cookie_names_sha}
         # The new preparation route does not change any ordinary ownership gate.
         # Execute its core and actual worker separately; Android IO remains explicit.
         permission_contracts={

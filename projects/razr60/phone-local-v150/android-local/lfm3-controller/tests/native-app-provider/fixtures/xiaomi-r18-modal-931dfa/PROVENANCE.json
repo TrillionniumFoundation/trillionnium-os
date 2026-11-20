@@ -1,0 +1,273 @@
+{
+  "schema": "hepta.xiaomi-r18-modal-wait-regression.v1",
+  "original_task_id": "931dfa0a1c3e4896a96b79c9d19b696d",
+  "original_display_id": 244,
+  "original_window_id": 1296,
+  "original_background_generation": "3ab0306e-2927-4a6b-a319-573ce05fd00b",
+  "original_steps": 15,
+  "original_waits": 14,
+  "original_last_action": "done_failure",
+  "original_collector_manifest_sha256": "8da1c51612aabf00c2335da43d40d09cee96d2d9479b706b9a2ecb5c6f48bb55",
+  "original_fixture_bytes_modified": false,
+  "host_replay_uses_synthetic_task_lease_and_installation": true,
+  "model_executed_during_host_replay": false,
+  "phone_operations": 0,
+  "files": [
+    {
+      "path": "step-01-before.json",
+      "bytes": 7233,
+      "sha256": "be610ca5b1648106b2ee0697463dfecd6abce2ccd8bc52870747d7ab305bc53b",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-01-model-0.json",
+      "bytes": 483,
+      "sha256": "0c486e20658e8f1203789887631039c508eb65cb24efa48543e81454103579e8",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-02-before.json",
+      "bytes": 7230,
+      "sha256": "5aafefcde52c7891cda73524b098303a774644cffed43d8fa013279a23edf944",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-02-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-02-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-02-model-0.json",
+      "bytes": 478,
+      "sha256": "1c85283fb2f35e26b48a26b8c859d8aa3943169673ce6718d2a6927aa6f53fbc",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-02-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-02-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-03-before.json",
+      "bytes": 7230,
+      "sha256": "742200293cdf61c0d64099490eb878d08161c97c7c119079e03778e629ad483b",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-03-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-03-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-03-model-0.json",
+      "bytes": 474,
+      "sha256": "52eef951c9dc7e097670d4531d99c60c973cea7ee2b8fd1c7e24708374139a9d",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-03-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-03-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-04-before.json",
+      "bytes": 7230,
+      "sha256": "17a2f65c455f34518b2feb97fa16d5ffdb91c36d8b547904dc5d54cc3fe82ce7",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-04-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-04-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-04-model-0.json",
+      "bytes": 474,
+      "sha256": "849625d0c7fc00889a5126a94e5e6fec022bc65d7c52698b0ba7088dcf82d3c3",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-04-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-04-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-05-before.json",
+      "bytes": 7229,
+      "sha256": "06bf6c76e8a5b6222d6ae20dad20517d4d7590544160305436f67dc459c805ca",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-05-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-05-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-05-model-0.json",
+      "bytes": 506,
+      "sha256": "a5e51ef86b7f87f23a8e88bf91ea3f0c5188a41b7df147b4d79dd4eb10a452a3",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-05-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-05-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-06-before.json",
+      "bytes": 7230,
+      "sha256": "c49da97061854931dc943965d71504d8230c4fb8145047173d7a3cde91d6d069",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-06-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-06-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-06-model-0.json",
+      "bytes": 468,
+      "sha256": "abf887c1bfdc4e4eaa92c96cefa044bc4b10c918346e727882fe5b04d911763b",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-06-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-06-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-07-before.json",
+      "bytes": 7229,
+      "sha256": "09b90f9a6ca4ec18f7ae55942e6e906a2526f76054cb4bdcafd8d22f3044a199",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-07-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-07-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-07-model-0.json",
+      "bytes": 503,
+      "sha256": "2f94f429e2b2987ee6127e2676385312d881bcdcd2a239b77955608dca6ddca1",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-07-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-07-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-08-before.json",
+      "bytes": 7230,
+      "sha256": "e889d81ae98c3abd6449f15f0cf6dc7ac43ca9b37abf09197217bb27595542eb",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-08-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-08-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-08-model-0.json",
+      "bytes": 468,
+      "sha256": "f09e6b963839c19b5e99aa71c9ba20781625d04fecf27472fa94b5c01e171362",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-08-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-08-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-09-before.json",
+      "bytes": 7229,
+      "sha256": "08e4900bde3ec52db8e447314fde002d5efcd5f7d31b90bf502f5010e9f78922",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-09-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-09-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-09-model-0.json",
+      "bytes": 470,
+      "sha256": "3dfbaf7506005c168bc79eff6e503a503c708f5abe1479e16d3420164f8eb411",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-09-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-09-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-10-before.json",
+      "bytes": 7229,
+      "sha256": "2c15aaba0e662dc5d11f82ca76c803bafed77fc0da32adf961fb35f0d889cfb0",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-10-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-10-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-10-model-0.json",
+      "bytes": 468,
+      "sha256": "b5669f8cc2229cc4eb7e6d8b7ff64dcc60909d4388702a242dec36911e0de7d7",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-10-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-10-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-11-before.json",
+      "bytes": 7229,
+      "sha256": "a1f1142cf172dcac8f53504958fc8cdde1cbe00c3ec1433171da035b524c7667",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-11-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-11-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-11-model-0.json",
+      "bytes": 474,
+      "sha256": "eb164b8ee849892e0272453935a0427e0664be716dd574bf16fde31ccfffec60",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-11-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-11-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-12-before.json",
+      "bytes": 7230,
+      "sha256": "a496c59d34d979598735e26af9896472e41d6c8a82a9606b48b76b152d2ea6fc",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-12-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-12-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-12-model-0.json",
+      "bytes": 468,
+      "sha256": "5c1a5ea8b990d7a90ee043f0cce666459afad23c115efc3ffbe5727928b601c7",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-12-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-12-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-13-before.json",
+      "bytes": 7229,
+      "sha256": "86f62d11664f551547b12c6956a00ea917557f974b83e9f7412c62d1ecc4bedf",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-13-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-13-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-13-model-0.json",
+      "bytes": 501,
+      "sha256": "0d01a12f827d9be1ee169119798a28eac24c8f644821c43b69030d4438185652",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-13-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-13-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-14-before.json",
+      "bytes": 7229,
+      "sha256": "f330e71cfb38f0571e271c869c74311cbdee4ca566e9ae6d499bfd215747dedd",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-14-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-14-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-14-model-0.json",
+      "bytes": 470,
+      "sha256": "3a05b6339d5f1274380fd9c69209e77a1f9db5bc62b3a8393ebaeb330250b85b",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-14-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-14-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-15-before.json",
+      "bytes": 7229,
+      "sha256": "7ce0db394c23d2c7d6d8a3d4546b11d1962efaf7c5915d22a4e37869c1a7731f",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-before.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-before.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-15-model-0.json",
+      "bytes": 566,
+      "sha256": "e6f19b64ab510ef9760608b2cbd0c79cdbc3eed2a7bdcc4fe54d5ab29a244bb8",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-model-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-model-0.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-15-after.json",
+      "bytes": 7230,
+      "sha256": "bce26f5fcb2ebd18ef269b7b6e723150914227554fa4c1066c9af3f5cde0ac29",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-after.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-15-after.json",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "step-01-native-prompt-source-0.json",
+      "bytes": 8327,
+      "sha256": "454d189937bd25b757edd98f8e149abe7d95a6275fd3f72869e36c2e4f005394",
+      "original_host_path": "/home/alex/hepta-razr-da34-evidence-r18-r1/xiaomi-evidence-r1/raw/task/files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-native-prompt-source-0.json",
+      "phone_path": "files/control-tasks/931dfa0a1c3e4896a96b79c9d19b696d/step-01-native-prompt-source-0.json",
+      "source_bytes_modified": false
+    }
+  ]
+}

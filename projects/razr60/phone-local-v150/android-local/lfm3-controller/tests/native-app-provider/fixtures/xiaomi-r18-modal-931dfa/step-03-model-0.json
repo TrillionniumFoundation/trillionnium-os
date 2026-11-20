@@ -1,0 +1,6 @@
+{
+  "run_id": "1ae829d3a476456e85429ea463d31e13",
+  "raw_text": "{\n  \"reason\": \"当前屏幕显示小米商城AX3000T页面，需查询产品价格信息。\",\n  \"action\": \"wait\",\n  \"observation_id\": \"e03238f78c4a4917aca231ade5565bde\",\n  \"package\": \"com.xiaomi.shop\",\n  \"duration_ms\": 1000\n}",
+  "observation_id": "e03238f78c4a4917aca231ade5565bde",
+  "original_instruction_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad"
+}

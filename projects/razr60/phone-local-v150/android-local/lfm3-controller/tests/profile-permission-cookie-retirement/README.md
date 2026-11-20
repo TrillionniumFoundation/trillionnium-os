@@ -1,0 +1,9 @@
+# Retained permission-cookie retirement host gate
+
+This gate preserves the original permission-transient and state-settle tests (16/348 and 29/626) unchanged and executes them before its ten additional cases. It compiles the production ProfileOwnedTask and ProfilePermissionTransient and the complete current platform pair method extracted by the existing runner.
+
+The saved fixture is an exact JSON projection of the real R18 task 08be409289364962bb5ea506a51c344b mismatch. Its root before/after and leaf before rows were observed; the platform rejected the root before reading a same-read after-leaf. That after-leaf remains null in the fixture. Tests use explicitly synthetic Binder/cookie objects and a synthetic post-permission after-leaf with the same retained capability and a missing launch cookie. Coordinator integration uses the existing host rig's explicitly remapped display/root/leaf IDs 7/200/300. No test claims a new phone observation or business success.
+
+The changed path can only request a bounded read-only retry from init/state. A single cookie must disappear from both complete task rows as PermissionController returns to the target, with unchanged underlying task identity and component fields. The coordinator then checks its private retained actual root/leaf, the original root cookie remaining, and the removed object being the original launch cookie. A first unclaimed leaf is excluded. The next sample must match the full after-cookie sets and pass all original complete graph, profile installation, package/UID, recents, cancellation and deadline checks. The unstable pair is never a permission proof, input window or cleanup authority.
+
+The tests cover ownership and cookie counterexamples, complete next-sample guards, the original three-sample limit, deadline/cancellation, and the ordinary window/permission/cleanup APIs never acquiring this retry. Actual business verification remains a separate subsequent phone run.

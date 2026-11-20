@@ -90,7 +90,8 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
             String phase)throws Exception{
         List<BackgroundOwnedSingleTask.Task> roots=organizer.roots();
         BackgroundOwnedSingleTask.Task currentRoot=roots!=null&&roots.size()==1?roots.get(0):null;
-        if(!ProfilePermissionTransient.sameReadIdentity(root,currentRoot)){
+        if(!ProfilePermissionTransient.sameReadIdentity(root,currentRoot)
+                &&!ProfilePermissionTransient.mayReadRetiringPermissionRoot(expected,root,currentRoot)){
             recordPermissionMismatch(phase,roots,null,root,leaf);
             throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
         }

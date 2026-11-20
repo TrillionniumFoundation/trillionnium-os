@@ -25,7 +25,7 @@ final class NativeXiaomiModalSessionHostTest {
     private static final String DISMISS="dismiss_image_modal_once";
     private static final String APK="95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373";
     private static final List<String> names=new ArrayList<String>();
-    private static Path fixtures;private static int checks;
+    private static Path fixtures,replayFixtures;private static int checks;
     private interface Test {void run()throws Exception;}
     private static String sha(String value){return NativeAppEvidence.hash(value);}
     private static String id(String value){return sha(value).substring(0,32);}
@@ -77,6 +77,35 @@ final class NativeXiaomiModalSessionHostTest {
         }
         void observe(NativeAppEvidence.Frame next)throws Exception{frame=next;session.observed(frame);completionGate.observed(completion);}
         void modal()throws Exception{observe(modalFrame());}
+        void actualModal(JSONObject raw)throws Exception{
+            JSONArray actual=raw.getJSONArray("nodes");check(actual.length()==2,"actual R18 modal has two retained nodes");
+            JSONObject census=raw.getJSONObject("collection");
+            check(!raw.getBoolean("nodes_truncated")&&census.getInt("visited_nodes")==3&&census.getInt("retained_nodes")==2
+                    &&census.getInt("retained_text_utf16")==0&&census.getInt("pending_nodes_at_stop")==0
+                    &&census.getInt("child_slots_omitted_by_traversal_limit")==0&&census.getInt("nodes_omitted_by_node_limit")==0
+                    &&census.getInt("nodes_omitted_by_text_limit")==0,"complete actual image-only traversal");
+            List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();
+            for(int i=0;i<actual.length();i++){
+                JSONObject n=actual.getJSONObject(i),position=n.getJSONObject("native_tree_position"),selected=n.getJSONObject("native_selection_state");
+                JSONArray bounds=n.getJSONArray("bounds");
+                check(!n.has("text")&&!n.has("description")&&!n.has("view_id")&&n.getBoolean("clickable")
+                        &&selected.getBoolean("observed"),"original unlabeled clickable image facts retained");
+                nodes.add(new NativeAppEvidence.Node(n.getString("id"),n.getString("package"),n.getString("class_name"),"","","",
+                        position.getString("path"),position.getString("parent_class"),n.getString("node_app_tree_sha256"),"",
+                        bounds.getInt(0),bounds.getInt(1),bounds.getInt(2),bounds.getInt(3),
+                        !n.optBoolean("disabled",false),n.optBoolean("editable",false),n.getBoolean("clickable"),
+                        n.optBoolean("scrollable",false),n.optBoolean("password",false),
+                        Boolean.valueOf(selected.getBoolean("selected")),Boolean.valueOf(selected.getBoolean("checkable")),
+                        Boolean.valueOf(selected.getBoolean("checked")),Collections.<String>emptySet()));
+            }
+            JSONObject window=raw.getJSONObject("window");JSONArray b=window.getJSONArray("root_bounds");
+            check(window.getInt("display_id")==244&&window.getInt("window_id")==1296&&window.getInt("type")==1,
+                    "fixture remains the actual business display/window");
+            observe(make(nodes,raw.getString("app_tree_sha256"),703,raw.getInt("screen_width"),raw.getInt("screen_height"),
+                    b.getInt(0),b.getInt(1),b.getInt(2),b.getInt(3)));
+        }
+        ActionDecision waitAction()throws Exception{return ActionDecision.parse(new JSONObject().put("action","wait")
+                .put("observation_id",frame.observationId).put("package",PACKAGE).put("duration_ms",1000).toString(),ActionDecision.IME_ACTION_SCHEMA);}
         void xml(String leaf)throws Exception{observe(xmlFrame(leaf));}
         String node(String purpose){for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(purpose.equals(e.getValue()))return e.getKey();return null;}
         ActionDecision action(String purpose)throws Exception{
@@ -124,13 +153,13 @@ final class NativeXiaomiModalSessionHostTest {
                 f.left,f.top,f.right,f.bottom,f.capturedElapsedMs,truncated,complete,f.nodes,f.windowType,f.metadataObserved);
     }
     public static void main(String[] args)throws Exception{
-        fixtures=Paths.get(args[0]);
+        fixtures=Paths.get(args[0]);replayFixtures=Paths.get(args[2]);
         one("modal_session_grants_only_one_context_bound_back_not_image_click_or_result",()->{
             Harness h=new Harness("backonly");h.modal();NativeAppDomain d=h.session.domain();
             check(NativeXiaomiProductPage.IMAGE_MODAL.equals(d.phase)&&d.backAllowed,"actual modal shape can offer Back");
             check(d.clickIds.isEmpty()&&d.editValues.isEmpty()&&d.purposes.equals(Collections.singletonMap("back",DISMISS)),"no image target or search command");
-            check(d.toolMask(null).equals(new TreeSet<String>(Arrays.asList("back","wait","done"))),"native five-tool ceiling is narrowed");
-            check(d.toolMask(Collections.singleton("wait")).equals(Collections.singleton("wait"))&&d.toolMask(Collections.<String>emptySet()).isEmpty(),"original mask is still intersected");h.noQueryOrResult();
+            check(d.toolMask(null).equals(new TreeSet<String>(Arrays.asList("back","done"))),"static modal admits navigation or truthful end, not loading waits");
+            check(d.toolMask(Collections.singleton("wait")).isEmpty()&&d.toolMask(Collections.<String>emptySet()).isEmpty(),"original mask is still intersected");h.noQueryOrResult();
         });
         one("modal_back_closes_only_on_fresh_supported_home_without_query_proof",()->{
             Harness h=new Harness("returnhome");h.returnedHome();check(h.progress().get("pending")==null&&h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"fresh home restores original search action");
@@ -209,10 +238,74 @@ final class NativeXiaomiModalSessionHostTest {
         one("modal_completed_price_chain_still_refuses_unknown_cleanup",()->{
             Harness h=new Harness("cleanup");h.queryAndDetail();h.claim();check(!Boolean.TRUE.equals(h.terminal(false).get("completion_verified")),"navigation fix never weakens cleanup");
         });
+        one("actual_r18_fourteen_waits_are_refused_before_one_modal_back",()->{
+            Harness h=new Harness("actual-r18-waits");
+            for(int i=1;i<=14;i++){
+                JSONObject before=readReplay(String.format(java.util.Locale.ROOT,"step-%02d-before.json",i));
+                JSONObject model=readReplay(String.format(java.util.Locale.ROOT,"step-%02d-model-0.json",i));
+                JSONObject action=new JSONObject(model.getString("raw_text"));
+                check(before.getString("observation_id").equals(model.getString("observation_id"))
+                        &&before.getString("observation_id").equals(action.getString("observation_id"))
+                        &&"wait".equals(action.getString("action"))&&action.getInt("duration_ms")==1000,
+                        "preserved R18 model really chose a one-second wait on this frame");
+                h.actualModal(before);NativeAppDomain domain=h.session.domain();
+                check(domain.backAllowed&&domain.toolMask(null).equals(new TreeSet<String>(Arrays.asList("back","done")))
+                        &&domain.purposes.equals(Collections.singletonMap("back",DISMISS)),"same actual shape retains only its original Back");
+                action.put("observation_id",h.frame.observationId); // Explicit host identity rebinding, never a live capability.
+                ActionDecision replay=ActionDecision.parse(action.toString(),ActionDecision.IME_ACTION_SCHEMA);
+                rejects(()->domain.requireCurrent(replay),"actual repeated wait cannot enter candidate domain");h.noQueryOrResult();
+            }
+            JSONObject before=readReplay("step-15-before.json"),model=readReplay("step-15-model-0.json");
+            JSONObject done=new JSONObject(model.getString("raw_text"));
+            check("done".equals(done.getString("action"))&&"failure".equals(done.getString("status"))
+                    &&before.getString("observation_id").equals(done.getString("observation_id")),"actual final incomplete end is retained");
+            h.actualModal(before);done.put("observation_id",h.frame.observationId);
+            h.session.domain().requireCurrent(ActionDecision.parse(done.toString(),ActionDecision.IME_ACTION_SCHEMA));
+            check(h.progress().get("pending")==null&&!Boolean.TRUE.equals(h.progress().get("product_modal_exit_attempted")),
+                    "host replay performs no Back and fabricates no effect");h.noQueryOrResult();
+        });
+        one("modal_back_animation_wait_preserves_real_pending_and_original_deadline",()->{
+            Harness h=new Harness("pending-wait");h.modal();h.issue(h.action(DISMISS),true,true,false);
+            Map<?,?> original=(Map<?,?>)h.progress().get("pending");Object finished=original.get("dispatch_finished_elapsed_ms");
+            h.modal();h.pendingOnly();NativeAppDomain waiting=h.session.domain();
+            check(waiting.toolMask(null).equals(new TreeSet<String>(Arrays.asList("wait","done"))),
+                    "fresh still-visible modal after actual Back may settle without another navigation");
+            waiting.requireCurrent(h.waitAction());h.issue(h.waitAction(),true,false,false);h.modal();h.pendingOnly();
+            check(finished.equals(((Map<?,?>)h.progress().get("pending")).get("dispatch_finished_elapsed_ms")),
+                    "a model wait does not replace or renew the actual Back receipt");
+            h.clock=((Number)finished).longValue()+14980;h.modal();h.session.domain().requireCurrent(h.waitAction());
+            check(!h.session.domain().backAllowed,"near-deadline animation wait still cannot repeat Back");
+            h.clock=((Number)finished).longValue()+15001;h.xml("home.xml");
+            rejects(()->h.session.domain(),"waiting did not extend the original fifteen-second observation deadline");
+        });
+        one("modal_stale_unentered_back_cannot_be_retried_or_waited_indefinitely",()->{
+            Harness h=new Harness("stale-wait");h.modal();h.issue(h.action(DISMISS),false,false,true);h.modal();
+            check(h.progress().get("pending")==null&&Boolean.TRUE.equals(h.progress().get("product_modal_exit_attempted")),
+                    "stale proposal consumed without invented dispatch");
+            check(h.session.domain().toolMask(null).equals(Collections.singleton("done")),"no loading wait or retry after unentered consumed proposal");
+            rejects(()->h.session.domain().requireCurrent(h.waitAction()),"no real pending effect permits waiting");h.noQueryOrResult();
+        });
+        one("modal_navigation_and_pending_guidance_survive_native_projection",()->{
+            Harness h=new Harness("projected-hint");h.modal();
+            Map<?,?> provider=(Map<?,?>)h.session.domain().promptEvidence().get("provider");
+            check(provider.get("next_goal") instanceof String&&((String)provider.get("next_goal")).contains("back"),
+                    "one existing Back is described as a model decision, not an inferred image control");
+            JSONObject original=new JSONObject().put("completion",new JSONObject().put("native_app",new JSONObject(h.session.domain().promptEvidence())));
+            JSONObject projected=VisualPromptProjection.projectNative(original).getJSONObject("completion").getJSONObject("native_app");
+            check(projected.getBoolean("back_allowed")&&DISMISS.equals(projected.getJSONObject("read_only_query_targets").getString("back"))
+                    &&provider.get("next_goal").equals(projected.getJSONObject("provider").getString("next_goal")),
+                    "metadata projection retains exact existing Back and navigation guidance");
+            h.issue(h.action(DISMISS),true,true,false);h.modal();
+            JSONObject pending=new JSONObject(h.session.domain().promptEvidence()).getJSONObject("provider");
+            check(DISMISS.equals(pending.getString("pending_purpose"))&&pending.getString("next_goal").contains("wait"),
+                    "real dispatched transition retains explicit animation waiting guidance");
+            check(!h.session.domain().backAllowed&&h.session.domain().clickIds.isEmpty(),"waiting guidance grants no second Back or image click");
+        });
         JSONObject out=new JSONObject().put("schema","hepta.native-xiaomi-modal-session-host.v1").put("all_pass",true).put("cases",names.size()).put("assertions",checks).put("case_names",new JSONArray(names))
                 .put("phone_operations",0).put("android_runtime",false).put("model_executed",false).put("business_verified",false)
                 .put("boundary","Original modal DTO nodes and public XML; actual production Session/Domain/TCG; synthetic task, lease, installed verifier, action receipt and SDK/cleanup. No Back dispatched.");
         Files.write(Paths.get(args[1]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);System.out.println(out.toString());
     }
+    private static JSONObject readReplay(String name)throws Exception{return new JSONObject(new String(Files.readAllBytes(replayFixtures.resolve(name)),StandardCharsets.UTF_8));}
     private NativeXiaomiModalSessionHostTest(){}
 }

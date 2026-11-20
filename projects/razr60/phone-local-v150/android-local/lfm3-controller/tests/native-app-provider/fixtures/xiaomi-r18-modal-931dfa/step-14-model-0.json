@@ -1,0 +1,6 @@
+{
+  "run_id": "ad6162f301bf420491b042c7ff77e804",
+  "raw_text": "{\n  \"reason\": \"当前页面为小米商城AX3000T产品Modal，需判断下一步操作\",\n  \"action\": \"wait\",\n  \"observation_id\": \"b0e57a83bc5b428d82a8a72ddca28541\",\n  \"package\": \"com.xiaomi.shop\",\n  \"duration_ms\": 1000\n}",
+  "observation_id": "b0e57a83bc5b428d82a8a72ddca28541",
+  "original_instruction_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad"
+}

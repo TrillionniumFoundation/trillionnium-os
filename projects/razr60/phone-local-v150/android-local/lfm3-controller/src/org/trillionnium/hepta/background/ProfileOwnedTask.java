@@ -368,15 +368,18 @@ public final class ProfileOwnedTask {
         try{return observeTreeSample(visible);}
         catch(VerifiedPermissionPending pending){throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");}
     }
-    /** Retry only a typed, identity-stable presentation change while reading init/state.
-     * Every retry re-reads the complete graph. The first live pair stays pinned even
-     * before the first leaf claim; ordinary window, permission input and cleanup do not retry. */
+    /** Retry only a typed, identity-stable change while reading init/state. Paired launch-cookie
+     * retirement additionally requires the private retained root/leaf and original cookies.
+     * Every retry re-reads the complete graph with its full current cookie sets pinned;
+     * ordinary window, permission input and cleanup do not retry. */
     private BackgroundOwnedSingleTask.Task observeStateSample(boolean visible,long deadline,String deadlineCode)throws Exception{
         ProfilePermissionTransient.ReadChanged pinned=null;
         for(int attempt=0;attempt<3;attempt++){
             try{return observeTreeSample(visible,pinned);}
             catch(ProfilePermissionTransient.ReadChanged changed){
-                if(pinned==null)pinned=changed;else pinned.requireAttempt(changed);
+                changed.requireRetainedCookieRetirement(root,leaf,rootCookie,launchCookie);
+                if(pinned!=null)pinned.requireAttempt(changed);
+                pinned=changed;
                 need(attempt<2,changed.code);
                 platform.guard();long now=platform.now();
                 need(now<deadline&&deadline-now>20,deadlineCode);platform.pause();

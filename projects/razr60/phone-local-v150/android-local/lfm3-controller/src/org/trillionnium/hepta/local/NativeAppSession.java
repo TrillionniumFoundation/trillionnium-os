@@ -188,7 +188,11 @@ final class NativeAppSession {
                 missing.add("native_login_with_unresolved_transition");
             }
         }
-        else if(pending!=null){missing.add("waiting_for_actual_post_action_page");view.put("pending_purpose",pending.purpose);}
+        else if(pending!=null){
+            missing.add("waiting_for_actual_post_action_page");view.put("pending_purpose",pending.purpose);
+            if(NativeXiaomiProductPage.IMAGE_MODAL.equals(phase))view.put("next_goal",
+                    "前序操作已实际派发，当前仍为图片弹层；可由模型 wait 等待新的实际页面，原观察期限不延长。不要重试已用的返回或猜点图片；尚未取得商品价格结果。");
+        }
         else if(flight!=null){
             view.put("from",goal.fromCity);view.put("to",goal.toCity);view.put("requested_departure_date",goal.departureDate.toString());
             view.put("adults",goal.adults);view.put("calendar_year_proved",calendarYearProof!=null);
@@ -240,7 +244,11 @@ final class NativeAppSession {
             view.put("modal_exit_requires_fresh_home",true);
             if(!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null){
                 back=true;purposes.put("back","dismiss_image_modal_once");
-            }else missing.add("one_prequery_modal_exit_attempt_unavailable");
+                view.put("next_goal","当前仅观察到无标签图片弹层，图片内容和商品价格未知。本轮可由模型选择已允许的 back 一次退出弹层，再读取实际首页；不能等待出图片文字，也不能猜点图片或把弹层当成目标商品。");
+            }else{
+                missing.add("one_prequery_modal_exit_attempt_unavailable");
+                view.put("next_goal","当前图片弹层没有可用的一次返回权限，也没有待确认的已派发操作；如实结束 failure 或 partial，说明尚未取得可核验的商品价格，不重试返回或猜点图片。");
+            }
             missing.addAll(product.missing);
         }else{
             view.putAll(product.modelView());

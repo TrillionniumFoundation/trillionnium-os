@@ -1,0 +1,6 @@
+{
+  "run_id": "ed8cad9a380c4d2a8504a15cff8eae58",
+  "raw_text": "{\n  \"reason\": \"当前页面为com.xiaomi.shop，native_app phase为image_modal，需要处理图像模态内容未分类。\",\n  \"action\": \"wait\",\n  \"observation_id\": \"39b2f97fcf76410b9a791456595612be\",\n  \"package\": \"com.xiaomi.shop\",\n  \"duration_ms\": 1000\n}",
+  "observation_id": "39b2f97fcf76410b9a791456595612be",
+  "original_instruction_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad"
+}

@@ -1,0 +1,215 @@
+{
+  "observation_id": "f060658baec140ed8c644c00e9fef14c",
+  "package": "com.xiaomi.shop",
+  "captured_elapsed_ms": 511572625,
+  "capture": {
+    "schema": "hepta.observation-capture.v1",
+    "mode": "pre_encoding_paired_history",
+    "sample_graph_started_elapsed_ms": 511572610,
+    "sample_graph_completed_elapsed_ms": 511572624,
+    "capture_requested_elapsed_ms": 511572625,
+    "screenshot_callback_elapsed_ms": 511572632,
+    "pair_graph_started_elapsed_ms": 511572661,
+    "pair_graph_completed_elapsed_ms": 511572680,
+    "pair_sealed_elapsed_ms": 511572680,
+    "png_encode_started_elapsed_ms": 511572681,
+    "png_encode_completed_elapsed_ms": 511573720,
+    "png_persisted_and_hashed_elapsed_ms": 511573731,
+    "post_persistence_check": "window_identity_geometry_permissions_and_reported_windows",
+    "publication_check_started_elapsed_ms": 511573731,
+    "publication_check_completed_elapsed_ms": 511573770,
+    "published_elapsed_ms": 511573771,
+    "capture_age_at_publication_ms": 1146,
+    "pair_graph_event_watermark": 0,
+    "pair_sealed_event_watermark": 0,
+    "unknown_events_at_capture": 0,
+    "publication_check_event_watermark": 0,
+    "post_encoding_whole_graph_rechecked": false,
+    "same_instant_pixels_and_ax_claimed": false,
+    "publication_refreshes_capture_age": false,
+    "fresh_action_validation_required": true,
+    "grants_action_authority": false,
+    "business_completion_verified": false
+  },
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 1296,
+  "screen_sha256": "00badd9c609a063a772eb8ecbb67adff1a8693d1edabf6037bd824b65bf2d18f",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 1296,
+    "root_bounds": [
+      186,
+      694,
+      1038,
+      2298
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 244,
+    "bounds": [
+      186,
+      694,
+      1038,
+      2298
+    ],
+    "title": null,
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "com.xiaomi.shop"
+    ],
+    "bootstrap_package": "com.xiaomi.shop",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "8c02ad30e96b0dbc5d6743b8b5ca9574d801f4862178981302a72a5dc5fe33ad",
+      "recognition": "complete_literal_native_ax3000t_price.v1",
+      "original_ui_initial_package": "com.xiaomi.shop",
+      "original_ui_allowed_packages": [
+        "com.xiaomi.shop"
+      ],
+      "effective_initial_package": "com.xiaomi.shop",
+      "effective_allowed_packages": [
+        "com.xiaomi.shop"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": false,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "display_scope_mode": "public_own_group_personal_no_credentials_v1",
+    "display_scope_mode_source": "immutable_start_selection",
+    "display_scope_mode_grants_authority": false,
+    "generation": "3ab0306e-2927-4a6b-a319-573ce05fd00b",
+    "display_id": 244
+  },
+  "app_tree_sha256": "f171a39d5eafa8c22a647357f1b7850b7129a84b1353de99dfb318efff713223",
+  "observation_state_sha256": "5dd61ebdb61916f013278baaaa1fd8c8fa40505a5737279906b45589205143ca",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 512,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 3,
+    "retained_nodes": 2,
+    "retained_text_utf16": 0,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 6,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        186,
+        694,
+        1038,
+        2122
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "855254d1d7c132997d4c7bdf2f3e7287d4aec5c3f0d6b899488a4fc35723aa5f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        554,
+        2182,
+        670,
+        2298
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.ImageView",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "6b80bcd0f226f60fb83f71a92a11220486b264e467860328d0291c7efbf4820c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/1",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}
