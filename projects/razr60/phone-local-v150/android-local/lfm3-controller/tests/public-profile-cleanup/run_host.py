@@ -67,6 +67,14 @@ def main():
         spec.loader.exec_module(module)
         fixture = out / (label + '-fixture')
         files, extraction = module.prepare(root, fixture)
+        search_inputs = []
+        # Old archived baselines without the new grammar keep their original closure.
+        # Current grammar adds explicit failing legacy ports, never a typed authority.
+        if 'NativeSearchSession.Offer' in (root/'src/org/trillionnium/hepta/local/DecisionGrammar.java').read_text():
+            search_helper = root/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+            search_spec = importlib.util.spec_from_file_location('public_cleanup_search_pure_'+label, search_helper)
+            search_pure = importlib.util.module_from_spec(search_spec); search_spec.loader.exec_module(search_pure)
+            files = search_pure.add(root, files); search_inputs.append(search_helper)
         # App UID and matching host-file UID are explicit Android IO ports. The
         # production public-scope constructor still enforces the real App range.
         process_java = fixture / 'android/os/Process.java'
@@ -85,13 +93,13 @@ def main():
         files = [f for f in files if not (fixture / 'org/json') in f.parents]
         files.append(source / 'tests/public-profile-cleanup/PublicProfileCleanupHostTest.java')
         files = list(dict.fromkeys(files))
-        inputs = {str(f.resolve()): digest(f) for f in files}
+        inputs = {str(f.resolve()): digest(f) for f in files + search_inputs}
         classes = out / (label + '-classes')
         classes.mkdir()
         flags = ['-source', '8', '-target', '8'] if a.java8_syntax_only else ['--release', '8']
         run(label + '-compile', [javac, *flags, '-encoding', 'UTF-8', '-proc:none', '-Xlint:all,-options',
                                  '-Werror', '-cp', jar, '-d', classes, *files])
-        if inputs != {str(f.resolve()): digest(f) for f in files}:
+        if inputs != {str(f.resolve()): digest(f) for f in files + search_inputs}:
             raise RuntimeError('compile source bytes changed')
         return classes, inputs, extraction
 

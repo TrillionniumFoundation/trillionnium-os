@@ -212,6 +212,16 @@ public final class ObserverPipelineHost {
     /** Explicit fail-only port: legacy scheduling fixtures cannot admit scoped form pairs.
      * The dedicated form-observation gate substitutes both actual production helpers. */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
+    // No native search Session is bound in these original observer fixtures.
+    // Unexpected binding is refused; these ports cannot create planning or an Offer.
+    private final Object nativeSearchSession=null,activeNativeSearchObservation=null;
+    private void noteNativeSearchEvent(int display,int window,String pkg,boolean content,boolean typed){
+        if(nativeSearchSession!=null||activeNativeSearchObservation!=null)
+            throw new AssertionError("legacy observer cannot route a bound native search event");
+    }
+    private boolean nativeSearchAllowsLegacyObservation(String taskId){
+        return nativeSearchSession==null&&activeNativeSearchObservation==null;
+    }
     // Legacy scheduling fakes never bind a text-native model. The AX gate substitutes
     // the actual production mode admission, worker and publisher at these three ports.
     private void bindNativeAxObservationRequest(ObservationRequest request){}

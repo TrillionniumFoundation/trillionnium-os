@@ -12,7 +12,8 @@ PKG=Path('src/org/trillionnium/hepta/local')
 TEST=Path('tests/native-action-integration')
 JSON_SHA='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 METHODS={
- 'snapshot_node':'    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(',
+ 'snapshot_node':'    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference){',
+ 'snapshot_node_raw':'    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference,Graph rawOwner){',
  'windows':'    private Map<String,Object> readNativeActionWindows(',
  'begin_census':'    private void beginNativeActionCensus(',
  'collect_node':'    private static void collectNativeActionNode(',
@@ -132,10 +133,34 @@ def sources(source,out):
     query=load(source/'tests/web-flight/run_query_host_tests.py','integration_query_closure')
     bg=load(source/'tests/background-session/prepare_fixture.py','integration_background_fixture')
     bgfiles,bgrecord=bg.prepare(source,out/'platform-fixture')
+    # The legacy action gate compiles the actual new Session type without
+    # pretending to offer the new planning/dispatch protocol. This generated
+    # signature-only port is unconstructible and can never accept an effect.
+    service_port=out/'platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java'
+    service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
+    need(bgfiles.count(service_port)==1 and service_text.endswith('}')
+         and 'class ActionOutcome' not in service_text,'one original Service type port required')
+    outcome_port="""    public static final class ActionOutcome {
+        public final boolean accepted=false,dispatched=false,stale=true;
+        public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
+        private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy action fixture");}
+    }"""
+    service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+'}').encode('utf-8')
+    need(service_after.decode('utf-8').replace(chr(10)+outcome_port+chr(10),'',1)==service_text,
+         'original Service port changed outside the refusing type boundary')
+    service_port.write_bytes(service_after)
+    bgrecord=dict(bgrecord)
+    bgrecord['native_search_legacy_type_boundary']={
+        'generated_service':str(service_port),'original_service_sha256':sha(service_before),
+        'compiled_service_sha256':sha(service_after),'type_block_sha256':sha(outcome_port.encode('utf-8')),
+        'original_service_bytes_reversible':True,'constructor_always_throws':True,
+        'accepted_and_dispatched_always_false':True,'authority_and_execution_always_null':True,
+        'new_search_dispatch_tested':False}
     bgfiles=[p for p in bgfiles if not(p.parent.name=='json' and p.parent.parent.name=='org') and 'terminal' not in p.parts]
     paths=[source/p for p in query.PURE_PATHS if p not in ('tests/web-flight/WebFlightQueryHostTest.java','tests/native-app/legacy-boundary/NativeAppSession.java')]+bgfiles
     names=['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',
       'NativeCtripFlightPage','NativeXiaomiProductPage','NativeActionSnapshotCheck','ActionExecutionState',
+      'NativeSearchRole','NativeSearchPlanning','NativeSearchDecision','NativeSearchSession',
       'ObservationDiagnostics','ActionPolicy','PersistentActionPolicy']
     paths += [source/PKG/(name+'.java') for name in names]
     paths += [source/'tests/native-app-fixtures/NativeXmlFixture.java',

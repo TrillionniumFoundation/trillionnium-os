@@ -23,6 +23,10 @@ def main():
     spec.loader.exec_module(module)
     files, extraction = module.prepare(source, out / "fixture")
     files.append(Path(__file__).with_name("BackgroundPermissionSessionHostTest.java"))
+    port_spec = importlib.util.spec_from_file_location("old_search_pure", source / "tests/native-app/legacy-boundary/prepare_search_pure.py")
+    legacy_search = importlib.util.module_from_spec(port_spec)
+    port_spec.loader.exec_module(legacy_search)
+    files = legacy_search.add(source, files)
     pins = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
     classes = out / "classes"
     classes.mkdir()

@@ -61,6 +61,9 @@ def main():
         # Use the fixed real org.json jar in this pure gate. Android IO fakes remain explicit.
         bgfiles=[p for p in bgfiles if not (p.parent.name=="json" and p.parent.parent.name=="org")]
         pure=[source/p for p in query.PURE_PATHS if p!="tests/web-flight/WebFlightQueryHostTest.java"]+bgfiles
+        # Old pure cases cannot construct new planning or Offer authority.
+        pure += [pkg/"NativeSearchDecision.java",source/"tests/native-app/legacy-boundary/NativeSearchPlanning.java",
+                 source/"tests/native-app/legacy-boundary/NativeSearchSession.java"]
         web_raw=(pkg/"WebFlightSession.java").read_bytes();web=web_raw.decode()
         signatures=["static void validateSelection(String owner,BackgroundSession.Selection selection)",
                     "static void requireWebSelection(String owner,BackgroundSession.Selection selection)",

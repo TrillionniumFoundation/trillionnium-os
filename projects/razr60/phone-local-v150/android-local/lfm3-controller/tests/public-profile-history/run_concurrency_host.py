@@ -63,6 +63,9 @@ def main():
     spec.loader.exec_module(fixture_module)
     fixture = out / 'android-io-fixture'
     files, projection = fixture_module.prepare(source, fixture)
+    search_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    port_spec=importlib.util.spec_from_file_location('old_search_pure',search_helper)
+    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)
     (fixture / 'android/os/Process.java').write_text(
         'package android.os;public final class Process {public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')
     io = fixture / 'android/system/Os.java'
@@ -84,7 +87,7 @@ def main():
         'tests/public-profile-history/ForegroundConcurrencySessionHostTest.java',
         'tests/public-profile-history/ForegroundConcurrencyRecoveryHostTest.java'))
     files = list(dict.fromkeys(path.resolve() for path in files))
-    tracked = files + [Path(__file__).resolve(), source / 'tests/background-session/prepare_fixture.py']
+    tracked = files + [Path(__file__).resolve(), search_helper, source / 'tests/background-session/prepare_fixture.py']
     inputs = {str(path): ref(path) for path in tracked}
     classes = out / 'classes'
     classes.mkdir()

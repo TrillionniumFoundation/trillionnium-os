@@ -12,6 +12,8 @@ final class NativeAppSession {
     final String generation=null;
     final int displayId=-1;
     final NativeAppGoal goal=null;
+    // Required only by the exact new eligibility predicate; construction still always throws.
+    final NativeAppEvidence.Installed installed=null;
     final BackgroundTaskTarget target=null;
     final BackgroundTaskTarget.SelectionBinding selection=null;
     final TaskAuthorization.Gate authorization=null;

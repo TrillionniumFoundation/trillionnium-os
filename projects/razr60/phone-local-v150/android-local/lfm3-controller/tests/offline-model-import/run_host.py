@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Offline import contract, real file publication and actual Engine slot checks; no phone or model."""
-import argparse,hashlib,json,os,shutil,subprocess,time
+import argparse,hashlib,importlib.util,json,os,shutil,subprocess,time
 from pathlib import Path
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def need(value,message):
@@ -31,6 +31,13 @@ def main():
         need(len(names)==43 and len(set(names))==43,"exact production dependency list differs")
         actual=[source/name for name in names]
         for path in actual: take(path)
+        # Keep the exact original 43-source contract; append only explicit new
+        # parser/type dependencies with nonconstructible legacy-only search ports.
+        search_helper=source/"tests/native-app/legacy-boundary/prepare_search_pure.py";take(search_helper)
+        search_spec=importlib.util.spec_from_file_location("offline_import_search_pure",search_helper)
+        search_pure=importlib.util.module_from_spec(search_spec);search_spec.loader.exec_module(search_pure)
+        compile_sources=search_pure.add(source,actual)
+        for path in compile_sources[len(actual):]: take(path)
         fixtures=out/"fixtures";shutil.copytree(source/"tests/local-model-settings/fixtures",fixtures)
         for path in sorted((source/"tests/local-model-settings/fixtures").rglob("*.java")): take(path)
         for path in sorted((test/"fixtures").rglob("*.java")):
@@ -55,7 +62,7 @@ def main():
         java=args.java_home/"bin/java";javac=args.java_home/"bin/javac"
         classes=out/"classes";classes.mkdir();empty=out/"empty-sourcepath";empty.mkdir()
         run("compile",[javac,"--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-proc:none",
-            "-sourcepath",empty,"-cp",args.json_jar,"-d",classes,*actual,*generated,host])
+            "-sourcepath",empty,"-cp",args.json_jar,"-d",classes,*compile_sources,*generated,host])
         run("cases",[java,"-Dhepta.fixture.host_uid="+str(os.getuid()),"-cp",str(classes)+os.pathsep+str(args.json_jar),
             "org.trillionnium.hepta.local.OfflineModelImportHostTest",out/"cases"])
         cases=json.loads((out/"cases/RESULT.json").read_text())

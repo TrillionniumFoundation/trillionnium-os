@@ -64,6 +64,8 @@ final class ControllerGuardClosureHost {
     final NativeActionBridgeHost.Fixture fixture;final PhoneObservation before;final ActionDecision action;
     final String decisionRunId;final File evidence;final HeptaAccessibilityService service;
     final AtomicBoolean cancelled=new AtomicBoolean();NativeAppSession activeNativeTask;
+    // Explicit absent typed search binding; the actual Controller retirement remains verbatim.
+    final NativeSearchSession activeNativeSearch=null;
     final Object handleLock=new Object();final LocalInference inference=new LocalInference();
     final AtomicLong stopRequestedElapsed=new AtomicLong(-1);final TaskCancellationQueue.Ticket taskCancellation=new TaskCancellationQueue.Ticket();
     LocalInference.Handle activeInference;boolean running=true,terminalDecisionSealed;String currentTaskId;

@@ -2,7 +2,7 @@
 """Repeat the actual transaction and full Engine admission tests with explicit host ports.
 No Android SDK, phone, native model, network or dependency download is used.
 """
-import argparse,hashlib,json,os,stat,subprocess,time
+import argparse,hashlib,importlib.util,json,os,stat,subprocess,time
 from pathlib import Path
 
 def need(value,message):
@@ -75,6 +75,11 @@ def main():
         tests=[test/"RuntimeConfigTransactionHostTest.java",test/"RuntimeGenerationHostTest.java",
                test/"RuntimeContextFilesHostTest.java"]
         for path in fixture+tests:take(path)
+        search_helper=source/"tests/native-app/legacy-boundary/prepare_search_pure.py";take(search_helper)
+        port_spec=importlib.util.spec_from_file_location("settings_search_pure",search_helper)
+        legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search)
+        compile_inputs=legacy_search.add(source,actual+fixture+tests)
+        for path in compile_inputs:take(path)
         jar=take(a.json_jar)
         need(len(jar)==78332 and sha(jar)=="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
              "existing pinned org.json 20240303 required; no download is attempted")
@@ -83,7 +88,7 @@ def main():
         need(run("javac-version",[javac,"-version"])==0,"javac version failed")
         classes=out/"classes";classes.mkdir();empty=out/"empty-sourcepath";empty.mkdir()
         command=[javac,"--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-proc:none",
-                 "-sourcepath",empty,"-cp",a.json_jar,"-d",classes,*actual,*fixture,*tests]
+                 "-sourcepath",empty,"-cp",a.json_jar,"-d",classes,*compile_inputs]
         need(run("compile",command)==0,"strict Java 8 compilation failed")
         result["java_release_api_check"]=True
         result["cases"]={};result["case_receipts"]={}

@@ -2,6 +2,7 @@
 """Compile the actual pure NotesOwnerIntent and fixed-payload validator, Java 8."""
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -30,7 +31,11 @@ def main():
     files += [source / 'src/org/trillionnium/hepta/local/web' / (name + '.java')
               for name in ('WebFlightGoal', 'WebShoppingGoal')]
     files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')
+    search_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    port_spec=importlib.util.spec_from_file_location('old_search_pure',search_helper)
+    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)
     pins = {str(p.relative_to(source)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    pins[str(search_helper.relative_to(source))]=hashlib.sha256(search_helper.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']

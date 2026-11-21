@@ -281,11 +281,13 @@ public final class TaskAuthorization {
 
     /** Immutable grammar/policy view. Its contract can only be narrowed by task evidence. */
     public static final class Frame {
+        private final Gate sourceGate;
         public final TaskAuthorization authorization;
         public final String taskId,discoveryRunId,openedPackage;
         public final Set<String> foundPackages;
-        private Frame(Gate gate){authorization=gate.authorization;taskId=gate.taskId;discoveryRunId=gate.discoveryRunId;
+        private Frame(Gate gate){sourceGate=gate;authorization=gate.authorization;taskId=gate.taskId;discoveryRunId=gate.discoveryRunId;
             openedPackage=gate.openedPackage;foundPackages=Collections.unmodifiableSet(new TreeSet<String>(gate.foundPackages));}
+        boolean belongsTo(Gate gate){return sourceGate==gate;}
         public boolean allows(String tool){
             if("done".equals(tool))return true; // partial/failure are always safe termination controls.
             if(!authorization.allows(tool))return false;
@@ -323,6 +325,31 @@ public final class TaskAuthorization {
         public synchronized Frame frame(){ready();return new Frame(this);}
         public synchronized void ready(){require(!retired,"任务授权已退休");require(refusal==null,refusal==null?"":refusal);}
         public synchronized void retire(){retired=true;}
+        /** A finite derived navigation intent for the already selected native
+         * read-only product goal. It does not add a global tool, relax a deny,
+         * or grant generic click authority to a planning-only observation. */
+        synchronized void requireNativeSearchIntent(BackgroundTaskTarget.SelectionBinding selection,NativeAppGoal goal){
+            ready();authorization.requireExecutionSelection(selection);
+            BackgroundTaskTarget target=selection.executionTarget();
+            require(target!=null&&target.nativeGoal==goal&&target.explicitSelection&&!target.webHelper()
+                    &&BackgroundTaskTarget.NATIVE_APP.equals(target.route)&&target.effectivePackages.size()==1
+                    &&NativeAppGoal.XIAOMI_PACKAGE.equals(target.packageName)&&target.effectivePackages.contains(target.packageName)
+                    &&goal!=null&&NativeAppGoal.PRODUCT_PRICE.equals(goal.kind)&&NativeAppGoal.PRODUCT_MODEL.equalsIgnoreCase(goal.productModel)
+                    &&goal.ownerSha256.equals(authorization.instructionSha256),"native.open_search requires the same explicit immutable read-only Xiaomi goal");
+            target.requireOwner(authorization.immutableOwner());
+            require(goal.toolCeiling.contains("click")&&new Frame(this).allows("click"),"native.open_search cannot bypass a click deny or method prerequisite");
+        }
+        synchronized void checkNativeSearchIntent(BackgroundTaskTarget.SelectionBinding selection,NativeAppGoal goal,
+                String modelRunId,String observationId,String roleId){
+            requireNativeSearchIntent(selection,goal);
+            require(modelRunId!=null&&modelRunId.matches("[0-9a-f]{32}")&&observationId!=null&&observationId.matches("[0-9a-f]{32}")
+                    &&roleId!=null&&roleId.matches("[0-9a-f]{64}"),"real new native search run/observation/role required");
+            Map<String,Object> proof=new LinkedHashMap<String,Object>();proof.put("schema","hepta.owner-native-search-check.v1");
+            proof.put("task_id",taskId);proof.put("authorization_sha256",authorization.sha256);proof.put("model_run_id",modelRunId);
+            proof.put("action","native.open_search");proof.put("source_tool_permission","click");proof.put("mapping","same_explicit_native_read_only_search_navigation.v1");
+            proof.put("observation_id",observationId);proof.put("role_id",roleId);proof.put("target_package",goal.packageName);
+            proof.put("allowed",true);proof.put("generic_action_authority",false);lastCheck=Collections.unmodifiableMap(proof);
+        }
         public synchronized void bindCatalogue(AppCatalogueRanker.Page page){
             ready();require(page!=null&&catalogueSha==null,"初始应用目录缺失或重复");catalogueSha=page.catalogueSha256;
             // Initial projection is deliberately not a successful model-issued lookup.

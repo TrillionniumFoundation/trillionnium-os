@@ -22,6 +22,7 @@ final class ObservationDiagnostics {
     private static final long MAX_PRIVATE_PAIR_VALUES=MAX_PRIVATE_JSON_BYTES-16384L;
     enum Event {
         AX_CAPTURE_START,AX_GRAPH_MISSING,AX_GRAPH_STALE,AX_GRAPH_CHANGED,AX_PAIR_REJECTED,
+        AX_PUBLICATION_RECHECK_STARTED,AX_PUBLICATION_RECHECK_PASSED,AX_PUBLICATION_RECHECK_REJECTED,
         SAMPLE_START,SAMPLE_NO_ROOT,SAMPLE_STALE_ROOT,SAMPLE_ERROR,SAMPLE_EVENT_RESET,SAMPLE_EVENT_RECHECKED,
         SAMPLE_KEY_CHANGED,SAMPLE_MISSING,SAMPLE_READY,SAMPLE_WAIT,SAMPLE_EXPIRED,SAMPLE_CANCELLED,
         SCREENSHOT_INTERVAL_WAIT,CAPTURE_START,CAPTURE_CALLBACK_OK,CAPTURE_CALLBACK_FAIL,
@@ -31,7 +32,7 @@ final class ObservationDiagnostics {
         POST_EFFECT_WINDOW_RECHECK_REJECTED,PUBLISHED,EVENT_TARGET,EVENT_UNKNOWN,EVENT_TARGET_CONTENT,EVENT_TARGET_BOUNDARY,REQUEST_ERROR,WORKER_ABANDONED
     }
     private static final String[] PHASES={"queued","sample_graph","sample_gap","screenshot_callback",
-        "screenshot_copy","screenshot_graph","png_encode","png_fsync","png_hash","saved_graph","publish","retry_gap","publication_window_recheck","ax_seal_graph","ax_receipt_persist","ax_publication_window"};
+        "screenshot_copy","screenshot_graph","png_encode","png_fsync","png_hash","saved_graph","publish","retry_gap","publication_window_recheck","ax_seal_graph","ax_receipt_persist","ax_publication_window","ax_publication_graph_recheck"};
     final String taskId,requestId,ownerSha,packageName,generation;
     final int displayId,sequence;
     final long started,deadline;
@@ -51,6 +52,8 @@ final class ObservationDiagnostics {
     private Map<String,Object> privateBeforeSummary,privateAfterSummary;
     private String privatePairStage,privatePairStatus="no_complete_difference_pair";
     private long privatePairAt=-1,privatePairOrdinal;
+    private Map<String,Object> lastAxPublicationRejection,privatePairPublication;
+    private long axPublicationRejections;
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -75,7 +78,7 @@ final class ObservationDiagnostics {
     synchronized void worker(boolean active){if(!ended)workerActive=active;}
     synchronized void reset(){if(!ended){previousSampleKey=null;previousSampleStamp=null;}}
     synchronized void graph(String stage,String key,String appTree,String state,String window,boolean truncated,long now){
-        if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage))
+        if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage)||"ax_publication_graph_recheck".equals(stage))
                 ||!sha(key)||!sha(appTree)||!sha(state)||!sha(window))return;
         now=clock(now);
         if("sample_graph".equals(stage)){
@@ -118,7 +121,7 @@ final class ObservationDiagnostics {
     }
     /** Existing immutable census values only. This never admits an observation or action. */
     synchronized void fullGraphChange(String stage,CensusStamp before,CensusStamp after,long now){
-        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage)))return;
+        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage)||"ax_publication_graph_recheck".equals(stage)))return;
         Map<String,Object> delta=map();delta.put("schema","hepta.native-observation-census-difference.v1");
         delta.put("stage",stage);delta.put("elapsed_ms",clock(now)-started);
         delta.put("full_census_compared",false);delta.put("node_difference_limit",MAX_NODE_DIFFS);
@@ -165,7 +168,7 @@ final class ObservationDiagnostics {
                 ||!before.state.equals(after.state)||!before.window.equals(after.window))){
             // A later complete pair replaces the old pair, including an explicit
             // budget refusal. An incomplete/foreign comparison cannot replace it.
-            privateBefore=null;privateAfter=null;privatePairStage=stage;privatePairAt=lastClock;
+            privateBefore=null;privateAfter=null;privatePairPublication=null;privatePairStage=stage;privatePairAt=lastClock;
             privatePairOrdinal=fullGraphChanges;privateBeforeSummary=before.summary();privateAfterSummary=after.summary();
             if(!before.privateContextReady(this,lastClock)||!after.privateContextReady(this,lastClock))
                 privatePairStatus="complete_pair_context_unavailable";
@@ -174,12 +177,174 @@ final class ObservationDiagnostics {
             else{privateBefore=before;privateAfter=after;privatePairStatus="complete_difference_pair";}
         }
     }
+    /** Actual refusal only. Converts copied AX values after the critical publication
+     * path has already refused; never changes a gate, watermark, action or deadline. */
+    synchronized void axPublicationRejected(String stage,Map<String,Object> first,Map<String,Object> second,
+                                            Map<String,Object> facts,long now){
+        if(ended||!AX_REJECTION_STAGES.contains(stage))return;
+        final long observedAt=now;now=clock(now);axPublicationRejections=plus(axPublicationRejections,1);
+        Map<String,Object> record=map();record.put("schema","hepta.ax-publication-rejection.v1");
+        record.put("stage",stage);record.put("observed_elapsed_ms",observedAt);
+        record.put("recorded_elapsed_ms",now);record.put("ordinal",axPublicationRejections);
+        record.put("grants_action_authority",false);record.put("grants_publication",false);
+        record.put("business_verified",false);record.put("changes_deadline",false);
+        Map<String,Object> frozen=null;
+        try{
+            frozen=axRejectionFacts(facts,observedAt);
+            for(String key:Arrays.asList("reason_codes","window_checked","window_matched","capture_watermark",
+                    "completed_watermark","current_watermark","captured_elapsed_ms","complete_endpoint_elapsed_ms",
+                    "sealed_elapsed_ms","persisted_elapsed_ms","window_started_elapsed_ms","window_completed_elapsed_ms",
+                    "publication_recheck_count","receipt_sha256"))
+                record.put(key,frozen.get(key));
+            record.put("rejection_facts_valid",true);
+            record.put("rejection_history_count",((List<?>)frozen.get("rejections")).size());
+            record.put("previous_pair_present",frozen.get("previous_pair")!=null);
+        }catch(RuntimeException invalid){
+            record.put("status","invalid_rejection_facts");record.put("rejection_facts_valid",false);
+        }
+        if(frozen!=null)try{
+            CensusStamp a=axCensus(first,(String)frozen.get("first_ime_visibility"));
+            CensusStamp b=axCensus(second,(String)frozen.get("second_ime_visibility"));
+            if(a==null||b==null)record.put("status","complete_ax_pair_unavailable");
+            else if(!a.belongs(this)||!b.belongs(this)||!a.identity.equals(b.identity))
+                record.put("status","ax_pair_identity_mismatch");
+            else if(!a.privateContextReady(this,observedAt)||!b.privateContextReady(this,observedAt)
+                    ||integer(a.privateReadContext,"read_completed_elapsed_ms")>integer(b.privateReadContext,"read_started_elapsed_ms"))
+                record.put("status","complete_pair_context_unavailable");
+            else{
+                boolean equal=a.nodes.equals(b.nodes)&&a.appTree.equals(b.appTree)&&a.state.equals(b.state)
+                        &&a.window.equals(b.window)&&first.get("reported_windows").equals(second.get("reported_windows"))
+                        &&first.get("window").equals(second.get("window"));
+                record.put("pair_equal",equal);record.put("before",a.summary());record.put("after",b.summary());
+                privateBefore=null;privateAfter=null;privatePairStage=stage;privatePairAt=now;
+                privatePairOrdinal=axPublicationRejections;privateBeforeSummary=a.summary();privateAfterSummary=b.summary();
+                Map<String,Object> publication=map();publication.put("schema","hepta.ax-publication-rejection.v1");
+                publication.put("stage",stage);publication.put("observed_elapsed_ms",observedAt);
+                publication.put("ordinal",axPublicationRejections);publication.put("pair_equal",equal);
+                publication.put("facts",frozen);publication.put("grants_action_authority",false);
+                publication.put("grants_publication",false);publication.put("business_verified",false);
+                publication.put("changes_deadline",false);privatePairPublication=Collections.unmodifiableMap(publication);
+                long extra=privateBudget(privatePairPublication);
+                if(extra>MAX_PRIVATE_PAIR_VALUES||a.privateValueBudget>MAX_PRIVATE_PAIR_VALUES-extra-b.privateValueBudget)
+                    privatePairStatus="complete_pair_value_budget_exceeded";
+                else{
+                    privateBefore=a;privateAfter=b;
+                    privatePairStatus=equal?"complete_equal_pair_publication_rejected":"complete_difference_pair_publication_rejected";
+                }
+                record.put("status",privatePairStatus);
+            }
+        }catch(RuntimeException invalid){record.put("status","invalid_or_incomplete_ax_census");}
+        lastAxPublicationRejection=Collections.unmodifiableMap(record);
+    }
+    private static final Set<String> AX_REJECTION_STAGES=keys(
+            "ax_seal_graph,ax_receipt_persist,ax_publication_window,ax_main_handoff,ax_before_transfer,ax_publication_graph_recheck");
+    private static final Set<String> AX_REJECTION_REASONS=keys(
+            "graph_missing,graph_stale,graph_changed,pair_coverage,event_before_persistence,window_mismatch,late_content,boundary_or_unknown_event,late_untyped_event,persistence_or_read_error,ownership_or_deadline,recheck_exhausted");
+    private static final Set<String> AX_FACT_KEYS=keys(
+            "reason_codes,rejections,capture_watermark,completed_watermark,current_watermark,window_checked,window_matched,captured_elapsed_ms,complete_endpoint_elapsed_ms,sealed_elapsed_ms,persisted_elapsed_ms,window_started_elapsed_ms,window_completed_elapsed_ms,publication_recheck_count,receipt_sha256,previous_pair,first_ime_visibility,second_ime_visibility");
+    private static final Set<String> AX_FACT_CLOCKS=keys(
+            "captured_elapsed_ms,complete_endpoint_elapsed_ms,sealed_elapsed_ms,persisted_elapsed_ms,window_started_elapsed_ms,window_completed_elapsed_ms");
+    private static final Set<String> AX_PREVIOUS_CLOCKS=keys(
+            "pair_graph_started_elapsed_ms,pair_graph_completed_elapsed_ms,complete_endpoint_elapsed_ms,pair_sealed_elapsed_ms,receipt_persisted_and_hashed_elapsed_ms,publication_check_started_elapsed_ms,publication_check_completed_elapsed_ms,captured_elapsed_ms,recheck_admitted_elapsed_ms");
+    private static final Set<String> AX_CENSUS_KEYS=keys(
+            "identity,complete,truncated,read_started_elapsed_ms,read_completed_elapsed_ms,census_captured_elapsed_ms,visited,retained,pending,child_slots_omitted,node_budget_omissions,text_budget_omissions,reported_windows,window,profile_window,profile_owner,nodes");
+    private static final Set<String> AX_IDENTITY_KEYS=keys(
+            "task_id,owner_sha256,execution_target_sha256,task_authorization_sha256,actual_selection_sha256,native_goal_sha256,package,background_generation,app_tree_sha256,observation_state_sha256,display_id,window_id,rotation,width,height,left,top,right,bottom");
+    @SuppressWarnings("unchecked")
+    private static Map<String,Object> object(Object value){require(value instanceof Map);return (Map<String,Object>)value;}
+    private static void axWatermark(Object value,boolean nullable){
+        if(value==null){require(nullable);return;}
+        Map<String,Object> m=object(value);require(m.keySet().equals(keys("events,unknown,content,boundary")));
+        long e=integer(m,"events"),u=integer(m,"unknown"),c=integer(m,"content"),b=integer(m,"boundary");
+        require(e>=0&&u>=0&&c>=0&&b>=0&&u<=e&&c<=e&&b<=e&&c<=e-b);
+    }
+    private static void axClock(Map<String,Object> facts,String key,long start,long now,boolean missing){
+        long t=integer(facts,key);require((missing&&t==-1)||(t>=start&&t<=now));
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String,Object> axRejectionFacts(Map<String,Object> source,long now){
+        require(source!=null&&source.keySet().equals(AX_FACT_KEYS)&&now>=started);
+        long[] budget={0};Map<String,Object> f=(Map<String,Object>)privateCopy(source,0,budget);
+        require(budget[0]<=32768);
+        Object reasons=f.get("reason_codes");require(reasons instanceof List&&((List<?>)reasons).size()>0&&((List<?>)reasons).size()<=12);
+        Set<String> seen=new TreeSet<String>();
+        for(Object reason:(List<?>)reasons)require(reason instanceof String&&AX_REJECTION_REASONS.contains(reason)&&seen.add((String)reason));
+        Object history=f.get("rejections");require(history instanceof List&&((List<?>)history).size()<=6);
+        long previous=-1;
+        for(Object entry:(List<?>)history){
+            Map<String,Object> r=object(entry);require(r.keySet().equals(keys("stage,reason,checked_elapsed_ms,watermark"))
+                    &&AX_REJECTION_STAGES.contains(r.get("stage"))&&AX_REJECTION_REASONS.contains(r.get("reason")));
+            axClock(r,"checked_elapsed_ms",started,now,false);long t=integer(r,"checked_elapsed_ms");require(t>=previous);previous=t;
+            axWatermark(r.get("watermark"),false);
+        }
+        for(String key:AX_FACT_CLOCKS)axClock(f,key,started,now,true);
+        require(integer(f,"captured_elapsed_ms")>=started);
+        axWatermark(f.get("capture_watermark"),false);axWatermark(f.get("completed_watermark"),true);
+        axWatermark(f.get("current_watermark"),false);
+        require(f.get("window_checked") instanceof Boolean&&f.get("window_matched") instanceof Boolean
+                &&(!Boolean.TRUE.equals(f.get("window_matched"))||Boolean.TRUE.equals(f.get("window_checked"))));
+        long count=integer(f,"publication_recheck_count");require(count==0||count==1);
+        require(f.get("receipt_sha256")==null||(f.get("receipt_sha256") instanceof String&&sha((String)f.get("receipt_sha256"))));
+        for(String key:Arrays.asList("first_ime_visibility","second_ime_visibility"))
+            require(f.get(key)==null||Arrays.asList("hidden","visible","unknown").contains(f.get(key)));
+        if(f.get("previous_pair")!=null){
+            Map<String,Object> p=object(f.get("previous_pair"));Set<String> allowed=new TreeSet<String>(AX_PREVIOUS_CLOCKS);
+            allowed.addAll(keys("completed_watermark,receipt_sha256,recheck_admission_watermark,reason"));
+            require(p.keySet().equals(allowed)&&count==1&&"late_typed_content".equals(p.get("reason"))
+                    &&p.get("receipt_sha256") instanceof String&&sha((String)p.get("receipt_sha256")));
+            for(String key:AX_PREVIOUS_CLOCKS)axClock(p,key,started,now,false);
+            require(integer(p,"captured_elapsed_ms")==integer(f,"captured_elapsed_ms"));
+            axWatermark(p.get("completed_watermark"),false);axWatermark(p.get("recheck_admission_watermark"),false);
+        }
+        return f;
+    }
+    /** Only the refusal path converts the already-frozen AX census. The real
+     * original clocks and hidden-IME fact are required; missing values are not invented. */
+    @SuppressWarnings("unchecked")
+    private static CensusStamp axCensus(Map<String,Object> c,String ime){
+        if(c==null)return null;
+        require(c.keySet().equals(AX_CENSUS_KEYS)&&Boolean.TRUE.equals(c.get("complete"))&&Boolean.FALSE.equals(c.get("truncated")));
+        long visited=integer(c,"visited"),retained=integer(c,"retained");
+        require(visited>0&&visited<=MAX_CENSUS_NODES&&retained>0&&retained<=visited);
+        for(String key:Arrays.asList("pending","child_slots_omitted","node_budget_omissions","text_budget_omissions"))require(integer(c,key)==0);
+        long begin=integer(c,"read_started_elapsed_ms"),end=integer(c,"read_completed_elapsed_ms"),captured=integer(c,"census_captured_elapsed_ms");
+        require(begin>=0&&end>=begin&&captured>=begin&&captured<=end);
+        Map<String,Object> source=object(c.get("identity"));require(source.keySet().equals(AX_IDENTITY_KEYS));
+        Map<String,Object> ids=map();
+        for(String key:Arrays.asList("task_id","owner_sha256","package","background_generation","display_id","window_id","rotation","width","height"))ids.put(key,source.get(key));
+        ids.put("root_bounds",bounds(Arrays.asList(source.get("left"),source.get("top"),source.get("right"),source.get("bottom"))));
+        ids.put("authorization_sha256",source.get("task_authorization_sha256"));ids.put("selection_sha256",source.get("actual_selection_sha256"));
+        ids.put("target_sha256",source.get("execution_target_sha256"));ids.put("goal_sha256",source.get("native_goal_sha256"));
+        if(c.get("profile_owner")!=null){
+            Map<String,Object> owner=object(c.get("profile_owner")),window=object(c.get("profile_window"));require(owner.keySet().equals(CENSUS_PROFILE));
+            String[] a={"profile_target_sha256","profile_user_id","profile_user_serial","profile_full_uid","profile_task_id","profile_parent_task_id","profile_task_token_id"};
+            String[] b={"target_identity_sha256","user_id","user_serial","full_uid","task_id","parent_task_id","task_token_id"};
+            for(int i=0;i<a.length;i++)require(Objects.equals(owner.get(a[i]),window.get(b[i])));
+            ids.putAll(owner);
+        }else require(c.get("profile_window")==null);
+        Map<String,Object> w=object(c.get("window"));
+        require(w.keySet().equals(keys("metadata,package,window_id,display_id,rotation,left,top,right,bottom,width,height")));
+        for(String key:Arrays.asList("package","window_id","display_id","rotation","left","top","right","bottom","width","height"))
+            require(Objects.equals(source.get(key),w.get(key)));
+        String metadata=string(w,"metadata",MAX_PRIVATE_CONTEXT_BYTES);
+        Object sourceNodes=c.get("nodes");require(sourceNodes instanceof List&&((List<?>)sourceNodes).size()==visited);
+        List<Map<String,Object>> nodes=new ArrayList<Map<String,Object>>();
+        for(Object row:(List<?>)sourceNodes)nodes.add(object(row));
+        Map<String,Object> context=map();context.put("read_started_elapsed_ms",begin);context.put("read_completed_elapsed_ms",end);
+        context.put("native_observation_complete",true);context.put("truncated",false);
+        context.put("visited_nodes",visited);context.put("retained_nodes",retained);context.put("pending_nodes_at_stop",0);
+        context.put("nodes_omitted_by_node_limit",0);context.put("nodes_omitted_by_text_limit",0);context.put("child_slots_omitted_by_traversal_limit",0);
+        context.put("reported_windows_complete",true);context.put("reported_windows",object(c.get("reported_windows")));
+        context.put("ime_visibility",ime);
+        return new CensusStamp(ids,string(source,"app_tree_sha256",64),string(source,"observation_state_sha256",64),
+                contentHash(metadata),(int)visited,nodes,context);
+    }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;previousSampleStamp=null;}}
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
         if(ended)return;if(!"published".equals(status)&&!"failed".equals(status))return;
         now=clock(now);closePhase(now);terminal=status;ended=true;previousSampleStamp=null;
-        if("published".equals(status)){privateBefore=null;privateAfter=null;}
+        if("published".equals(status)){privateBefore=null;privateAfter=null;privatePairPublication=null;}
     }
     synchronized Map<String,Object> snapshot(long now){
         long end=ended?lastClock:Math.max(lastClock,now);
@@ -209,6 +374,8 @@ final class ObservationDiagnostics {
         if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",new LinkedHashMap<String,Object>(lastSavedGraphChange));
         if(lastFullGraphChange!=null){value.put("last_native_full_graph_change",new LinkedHashMap<String,Object>(lastFullGraphChange));
             value.put("native_full_graph_change_count",fullGraphChanges);}
+        if(lastAxPublicationRejection!=null){value.put("last_ax_publication_rejection",lastAxPublicationRejection);
+            value.put("ax_publication_rejection_count",axPublicationRejections);}
         if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
             value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
@@ -227,6 +394,10 @@ final class ObservationDiagnostics {
         out.put("full_graph_change_count",fullGraphChanges);out.put("selected_pair_ordinal",privatePairOrdinal);
         out.put("selected_pair_stage",privatePairStage);out.put("selected_pair_compared_elapsed_ms",privatePairAt<0?null:Long.valueOf(privatePairAt));
         out.put("before_summary",privateBeforeSummary);out.put("after_summary",privateAfterSummary);
+        if(privatePairPublication!=null){out.put("selected_pair_ordinal_kind","ax_publication_rejection");
+            out.put("selected_pair_publication_rejection",privatePairPublication);}
+        if(lastAxPublicationRejection!=null){out.put("ax_publication_rejection_count",axPublicationRejections);
+            out.put("last_ax_publication_rejection",lastAxPublicationRejection);}
         String status=!ended?"request_not_terminal":"failed".equals(terminal)?privatePairStatus:"request_published";
         boolean complete=ended&&"failed".equals(terminal)&&privateBefore!=null&&privateAfter!=null;
         out.put("status",status);out.put("complete_pair_recorded",complete);out.put("raw_pair_count",complete?1:0);

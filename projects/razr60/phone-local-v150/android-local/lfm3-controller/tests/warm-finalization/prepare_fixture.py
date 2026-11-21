@@ -51,6 +51,14 @@ public final class ControllerFinalizationFixture {
     private volatile boolean running=true,blocked;
     private boolean terminalDecisionSealed;
     private LocalInference.Handle activeInference;
+    /** No new search work exists in these legacy cleanup cases.
+     * The exact production Stop body sees a permanently absent holder. */
+    private NativeSearchSession activeNativeSearch;
+    private static final class NativeSearchSession {
+        final String taskId=null;
+        private NativeSearchSession(){throw new AssertionError("legacy cleanup has no native search Session");}
+        void retire(){throw new AssertionError("legacy cleanup cannot retire typed search work");}
+    }
     private final String currentTaskId="33333333333333333333333333333333";
     private final AtomicLong stopRequestedElapsed=new AtomicLong(-1);
     private final CancellationServiceFixture service=new CancellationServiceFixture(currentTaskId);

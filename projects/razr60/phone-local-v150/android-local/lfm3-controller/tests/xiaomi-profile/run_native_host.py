@@ -42,6 +42,26 @@ def main():
     background = module(source / "tests/background-session/prepare_fixture.py", "xiaomi_native_background")
     bgfiles, extraction = background.prepare(source, output / "ports", include_terminal=False)
     bgfiles = [p for p in bgfiles if not (p.parent.name == "json" and p.parent.parent.name == "org")]
+    # New typed search signatures need only this refusing result type in the
+    # retained profile-identity fixture. No search authority/effect is modeled.
+    service_port = output / "ports/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+    service_before = service_port.read_bytes()
+    service_text = service_before.decode("utf-8")
+    assert bgfiles.count(service_port) == 1 and service_text.endswith("}")
+    assert "class ActionOutcome" not in service_text
+    outcome_port = """    public static final class ActionOutcome {
+        public final boolean accepted=false,dispatched=false,stale=true;
+        public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
+        private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy profile fixture");}
+    }"""
+    service_after = (service_text[:-1] + chr(10) + outcome_port + chr(10) + "}").encode("utf-8")
+    assert service_after.decode("utf-8").replace(chr(10) + outcome_port + chr(10), "", 1) == service_text
+    service_port.write_bytes(service_after)
+    search_type_boundary = {"original_service_sha256": sha(service_before),
+        "compiled_service_sha256": sha(service_after), "type_block_sha256": sha(outcome_port.encode()),
+        "original_service_bytes_reversible": True, "constructor_always_throws": True,
+        "accepted_and_dispatched_always_false": True, "authority_and_execution_always_null": True,
+        "new_search_path_executed": False}
     config_path = output / "ports/org/trillionnium/hepta/local/QualificationScopeConfig.java"
     config_source = source / "src/org/trillionnium/hepta/local/QualificationScopeConfig.java"
     actual_completion = query.java_block(config_source.read_bytes(), "static final class CompletionInstalledIdentity {")
@@ -76,7 +96,7 @@ def main():
     excluded = {"tests/web-flight/WebFlightQueryHostTest.java", "tests/native-app/legacy-boundary/NativeAppSession.java"}
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in
-              ('ObservationCaptureEvidence', "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
+              ('ObservationCaptureEvidence', "NativeSearchRole", "NativeSearchPlanning", "NativeSearchDecision", "NativeSearchSession", "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
                "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths.append(Path(__file__).resolve().with_name("NativeProfileIdentityHostTest.java"))
     paths = list(dict.fromkeys(p.resolve() for p in paths))
@@ -88,7 +108,7 @@ def main():
     tools_before = [record(p) for p in (jdk / "bin/javac", jdk / "bin/java", jdk / "lib/modules", jar)]
     report = {"schema": "hepta.xiaomi-profile-native-identity-gate.v1", "all_pass": False,
               "source": str(source), "production_inputs": originals, "compile_inputs": [record(p) for p in paths],
-              "background_fixture": extraction, "tools_before": tools_before, "stages": [],
+              "background_fixture": extraction, "native_search_legacy_type_boundary": search_type_boundary, "tools_before": tools_before, "stages": [],
               "exact_completion_installed_identity_sha256": sha(actual_completion.encode()),
               "client_port_methods": [{"signature": s, "sha256": sha(v.encode())} for s, v in zip(signatures, fixture_methods)],
               "boundary": "Actual full NativeAppSession/BackgroundSession. Exact complete CompletionInstalledIdentity; ordinary PM/Apk endpoints throw. Existing Android display/socket/clock test ports are synthetic. No phone, root process, model or business result.",

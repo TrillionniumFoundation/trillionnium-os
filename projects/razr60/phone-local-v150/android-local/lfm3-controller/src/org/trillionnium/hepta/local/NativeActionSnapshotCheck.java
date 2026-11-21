@@ -253,20 +253,25 @@ final class NativeActionSnapshotCheck {
             String root=commonParent(values);need(!"0".equals(root)&&!root.equals(parent(originalScope)),"bounded whole form container");
             out.protect(s,root);for(Node n:values)need(n.within(s.node(root)),"all semantic fields within actual form");
             out.facts.put("literal_departure_date",date.text);out.facts.put("year_inferred",false);
-        }else{
+        }else return searchScope(in.purpose,in.path,s);
+        return out;
+    }
+    /** Shared pure SEARCH structure/hint contract. Legacy compare still uses its original full protected roots. */
+    private static Scope searchScope(String purpose,String targetPath,Snapshot s){
+        Scope out=new Scope();
             for(Node n:s.nodes.values())if(n.visible())need(!b(n.v,"editable")&&!"加入购物车".equals(n.text)&&!"立即购买".equals(n.text),"fresh home only, no input/detail phase");
             Node home=oneIdText(s,"com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页"),icon=oneId(s,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
             Node entry=oneId(s,"com.xiaomi.shop.plugin.homepage:id/switcher"),pager=oneId(s,"com.xiaomi.shop.plugin.homepage:id/home_3_vp");
             Node container=s.node(parent(entry.path));
             need("android.widget.TextView".equals(home.cls)&&b(home.v,"selected")&&"android.widget.ImageView".equals(icon.cls)&&"搜索".equals(icon.desc)&&icon.click()
                     &&icon.bounds.get(3)<home.bounds.get(1)&&entry.bounds.get(3)<home.bounds.get(1),"same actual selected home/search");
-            need("android.widget.ViewSwitcher".equals(entry.cls)&&entry.click()&&(SEARCH_ICON.equals(in.purpose)?icon.path.equals(in.path):entry.path.equals(in.path))
+            need("android.widget.ViewSwitcher".equals(entry.cls)&&entry.click()&&(SEARCH_ICON.equals(purpose)?icon.path.equals(targetPath):entry.path.equals(targetPath))
                     &&entry.text.isEmpty()&&entry.desc.isEmpty()&&entry.label!=null&&!entry.label.isEmpty()
                     &&"androidx.viewpager.widget.ViewPager".equals(pager.cls)&&"com.xiaomi.shop.plugin.homepage:id/home_3_vp".equals(pager.view)
                     &&parent(icon.path).equals(container.path)&&index(icon.path)==index(entry.path)+1
                     &&entry.within(pager)&&icon.within(pager)&&entry.bounds.get(2)<=icon.bounds.get(0)
                     &&icon.bounds.get(0)-entry.bounds.get(2)<=Math.max(entry.bounds.get(3)-entry.bounds.get(1),icon.bounds.get(3)-icon.bounds.get(1))
-                    &&Math.min(entry.bounds.get(3),icon.bounds.get(3))>Math.max(entry.bounds.get(1),icon.bounds.get(1)),SEARCH_ICON.equals(in.purpose)?"actual native stable search icon":"actual native query entry, not adjacent search icon");
+                    &&Math.min(entry.bounds.get(3),icon.bounds.get(3))>Math.max(entry.bounds.get(1),icon.bounds.get(1)),SEARCH_ICON.equals(purpose)?"actual native stable search icon":"actual native query entry, not adjacent search icon");
             need(container.path.equals(pager.path)||"android.widget.RelativeLayout".equals(container.cls)
                     &&"com.xiaomi.shop.plugin.homepage:id/searchContainer".equals(container.view)
                     &&container.usable()&&container.within(pager)&&entry.within(container)&&icon.within(container)
@@ -286,29 +291,43 @@ final class NativeActionSnapshotCheck {
             for(Node n:Arrays.asList(entry,icon,hint,term))need(n.usable()&&neutralFlags(n)&&!b(n.v,"scrollable"),"neutral actual query-entry controls");
             need(!(hasText(s,"综合")&&hasText(s,"销量")&&hasText(s,"价格")),"not a results page");
             out.facts.put("home",home.v);
-            if(icon.path.equals(in.path)||searchEntryTarget(in,s)){
+            if(icon.path.equals(targetPath)||SEARCH.equals(purpose)){
                 need(icon.text.isEmpty()&&"搜索".equals(icon.label)&&icon.children==0,"exact stable leaf search icon");
                 requireSearchHintReferences(s,entry,hint,term);
                 out.facts.put("query_entry",stableHintFacts(entry,null));
                 out.facts.put("entry_hint",stableHintFacts(hint,"description"));
                 out.facts.put("entry_hint_term",stableSearchIconTermFacts(term));
-                out.facts.put("navigation_target",searchEntryTarget(in,s)?"same_resource_query_entry":"stable_search_icon_candidate");
+                out.facts.put("navigation_target",SEARCH.equals(purpose)?"same_resource_query_entry":"stable_search_icon_candidate");
             }else{
                 out.facts.put("query_entry",entry.v);out.facts.put("entry_hint",hint.v);out.facts.put("entry_hint_term",term.v);
             }
             out.facts.put("adjacent_search_icon",icon.v);out.protect(s,pager.path);out.protect(s,parent(home.path));
-        }return out;
+        return out;
     }
-    private static Map<String,Object> roleFacts(Intent in,Snapshot s){Map<String,Object> out=new TreeMap<String,Object>();
+    private static Map<String,Object> roleFacts(Intent in,Snapshot s){return roleFacts(in.purpose,in.pkg,in.path,s);}
+    private static Map<String,Object> roleFacts(String purpose,String pkg,String targetPath,Snapshot s){Map<String,Object> out=new TreeMap<String,Object>();
         Set<String> xiaomi=keys("首页,搜索,加入购物车,立即购买,综合,销量,价格,Xiaomi路由器AX3000T,xiaomi路由器ax3000t");
         for(Node n:s.nodes.values()){
             boolean relevant;
-            if(CTRIP.equals(in.pkg)){String shortId=n.view.startsWith(CP)?n.view.substring(CP.length()):"";
+            if(CTRIP.equals(pkg)){String shortId=n.view.startsWith(CP)?n.view.substring(CP.length()):"";
                 relevant=FORM_IDS.contains(shortId)||Arrays.asList(TILE_IDS).contains(shortId)||"calendar_month_title_left_tv".equals(shortId)||"calendar_list".equals(shortId)||ROLES.contains(n.view)||ROLES.contains(n.desc)||"机票".equals(n.text);
             }else relevant=n.view.equals("com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/searchIcon")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/switcher")||xiaomi.contains(n.text)||n.text.startsWith("Xiaomi路由器")||"android.widget.EditText".equals(n.cls)||b(n.v,"editable");
-            if(relevant)out.put(n.path,(searchIconTarget(in,s)||searchEntryTarget(in,s))&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.view)
+            if(relevant)out.put(n.path,((SEARCH_ICON.equals(purpose)||SEARCH.equals(purpose))&&XIAOMI.equals(pkg))&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.view)
                     ?stableHintFacts(n,null):n.v);
         }return out;
+    }
+    /** Planning-role facts derived directly from a complete actual census. No old Intent/Frame is fabricated. */
+    static Map<String,Object> searchPlanningRoleFacts(Snapshot snapshot){
+        need(snapshot!=null&&XIAOMI.equals(s(snapshot.env,"package")),"native search planning package");
+        Node entry=oneId(snapshot,"com.xiaomi.shop.plugin.homepage:id/switcher");
+        Scope role=searchScope(SEARCH,entry.path,snapshot);
+        Node icon=oneId(snapshot,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
+        Node home=oneIdText(snapshot,"com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页");
+        Map<String,Object> out=new TreeMap<String,Object>();
+        out.put("target_path",entry.path);out.put("hint_path",entry.path+"/0");out.put("term_path",entry.path+"/0/0");
+        out.put("icon_path",icon.path);out.put("home_path",home.path);out.put("navbar_path",parent(home.path));
+        out.put("facts",role.facts);out.put("global_role_facts",roleFacts(SEARCH,XIAOMI,entry.path,snapshot));
+        return freeze(out);
     }
     /** Only these exact SEARCH and SEARCH_ICON controls use the two known
      * noninteractive hint descendants as context. The icon, ancestors, all other

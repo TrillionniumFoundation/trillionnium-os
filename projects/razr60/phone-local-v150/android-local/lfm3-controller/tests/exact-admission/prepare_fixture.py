@@ -22,6 +22,21 @@ def prepare(source, output):
     service = (package / "HeptaAccessibilityService.java").read_text(encoding="utf-8")
     await_block = section(controller, "    private ModelAnswer awaitModel(", "        long remaining=taskDeadline-SystemClock.elapsedRealtime();")
     await_guard = await_block[await_block.index("{") + 1:]
+    # This original fixture accepts only prompt/config, never a typed Offer or
+    # grammar. Keep the actual ordinary/visual branch; the new independent search
+    # admission is exercised by its actual Session/producer gates.
+    full_await_guard=await_guard
+    search_start='        final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);'
+    system_selection='        final String system=searchProtocol?NATIVE_SEARCH_SYSTEM:systemPrompt(runtime,nativeApp);'
+    search_only=section(await_guard,search_start,system_selection)
+    if await_guard.count(search_only)!=1 or await_guard.count(system_selection)!=1:
+        raise RuntimeError("one complete native-search-only admission branch required")
+    await_guard=await_guard.replace(search_only,"",1)
+    legacy_system_selection='        final String system=systemPrompt(runtime,nativeApp);'
+    await_guard=await_guard.replace(system_selection,legacy_system_selection,1)
+    if (await_guard.replace(legacy_system_selection,search_only+system_selection,1)
+            !=full_await_guard):
+        raise RuntimeError("ordinary admission projection changed bytes outside the new branch")
     limited = section(service, "    static String limited(", "    static String message(")
     parts = {
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
@@ -106,6 +121,8 @@ public final class PromptAdmissionFixture {
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java", package / "VisualPromptProjection.java"]
     files += [source / "tests/native-app/legacy-boundary/NativeAppSession.java"]
+    files += [source / "tests/native-app/legacy-boundary/NativeSearchSession.java",
+              source / "tests/native-app/legacy-boundary/NativeSearchPlanning.java"]
     web_fixture_source=source/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
     web_fixture_raw=web_fixture_source.read_bytes()
     web_fixture_compile=output/"WebTaskDomain.java"
@@ -117,13 +134,22 @@ public final class PromptAdmissionFixture {
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
-        "scope": "Exact production full prompt builder, Java pre-native guard and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",
+        "scope": "Exact production full prompt builder, original ordinary/visual pre-native guard projection and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",
         "controller_sha256": digest(controller.encode()),
         "engine_sha256": digest(engine.encode()),
         "budget_sha256": digest((package / "ConservativeTokenBudget.java").read_bytes()),
         "extracted_parts": {name: {"bytes": len(value.encode()), "sha256": digest(value.encode())}
                             for name, value in parts.items()},
         "text_byte_limit": int(text_limit[0]),
+        "native_search_admission_excluded_from_original_fixture": {
+            "full_current_await_guard_sha256": digest(full_await_guard.encode()),
+            "excluded_search_branch_bytes": len(search_only.encode()),
+            "excluded_search_branch_sha256": digest(search_only.encode()),
+            "actual_system_selection_sha256": digest(system_selection.encode()),
+            "ordinary_system_prompt_expression": "systemPrompt(runtime,nativeApp)",
+            "projection_reverse_bytes_equal": True,
+            "new_search_admission_tested_here": False,
+            "new_search_types_unconstructible_and_all_operations_refuse": True},
         "web_fixture_boundary": "Type-only WebTaskDomain; every Web capability method throws",
         "native_app_fixture_boundary": "Real DTO/domain compile; all NativeAppSession operations/constructors throw in this original non-native prompt gate",
         "web_fixture_compiler_copy": {"source_path":str(web_fixture_source.relative_to(source)),

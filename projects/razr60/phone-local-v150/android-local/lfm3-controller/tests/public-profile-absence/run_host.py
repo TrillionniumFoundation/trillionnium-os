@@ -64,6 +64,11 @@ def main():
     spec.loader.exec_module(fixture_module)
     fixture = output / 'fixture'
     files, derivation = fixture_module.prepare(source, fixture)
+    # This legacy recovery fixture binds no typed search Session or Offer.
+    search_helper = source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    search_spec = importlib.util.spec_from_file_location('public_absence_search_pure', search_helper)
+    search_pure = importlib.util.module_from_spec(search_spec); search_spec.loader.exec_module(search_pure)
+    files = search_pure.add(source, files)
     files = [p for p in files if '/org/json/' not in str(p)]
     replace_once(fixture / 'android/os/Looper.java', 'public static Looper myLooper(){return L;}',
                  'public static boolean worker;public static Looper myLooper(){return worker?null:L;}')
@@ -119,6 +124,8 @@ final class PublicRecoveryIdleFixture {
  static final class Web {boolean released(){return false;}}
  PublicRecoveryIdleFixture live=this;LocalTaskController ownedController=new LocalTaskController();
  Object activeObservation;boolean capturePending,pendingObservation,pendingAction,pendingNative;
+ // Explicit absent readonly port; the actual extracted idle predicates remain unchanged.
+ final Object activeNativeSearchObservation=null;
  BackgroundSession taskBackground;Web taskWeb;String lease=ownedController.currentTaskId();
  PublicRecoveryIdleFixture(BackgroundSession background){taskBackground=background;}
  boolean observationReadWorkPending(){return pendingObservation;}boolean actionWorkPending(){return pendingAction;}boolean nativeCancellationWorkPending(){return pendingNative;}
@@ -131,7 +138,7 @@ final class PublicRecoveryIdleFixture {
     commands += [('client-compile', [*compile_args, '-d', str(classes), *map(str, files)]),
                  ('client', [str(jdk / 'java'), '-cp', cp, 'org.trillionnium.hepta.local.PublicProfileRecoveryClientHostTest', str(originals)]),
                  ('legacy-profile', [str(jdk / 'java'), '-cp', cp, 'org.trillionnium.hepta.local.ProfileSessionHostTest', str(output / 'legacy-profile.json')])]
-    sources = list(dict.fromkeys(pure_sources + files + [client, local / 'HeptaAccessibilityService.java', local / 'LocalTaskSession.java',
+    sources = list(dict.fromkeys(pure_sources + files + [search_helper, client, local / 'HeptaAccessibilityService.java', local / 'LocalTaskSession.java',
                                 bg / 'PublicProfileRecoveryMain.java', bg / 'RecoveryControllerIdentity.java']))
     pins = {str(p): sha(p) for p in sources}
     actual_leaves = ['background-session.json', 'owner.json', 'background-bootstrap.json', 'background-cleanup.json', 'result.json',

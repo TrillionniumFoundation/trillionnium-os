@@ -79,7 +79,51 @@ def prepare(source, output):
     pieces['scope_validate_dispatch'] = pieces['scope_validate_dispatch'].replace(ax_observer_only, '', 1)
     if pieces['scope_validate_dispatch'].count(ax_mode_binding) != 1:
         raise RuntimeError('actual native AX mode admission must remain byte-identical')
+    # The new typed search observer/dispatcher has its own actual-method gate.
+    # Keep every old method, actual AX admission and actual legacy-read gate exact.
+    search_observer_only=section(s,
+        '    /** A separate historical planning channel. It never writes current/currentGraph. */',
+        '    /** Native text capture mode is bound once')
+    search_dispatch_only=section(s,
+        '    private volatile SearchActionWork activeSearchAction;',
+        '    private final class ActionWork {')
+    for block in (search_observer_only,search_dispatch_only):
+        if pieces['scope_validate_dispatch'].count(block)!=1:
+            raise RuntimeError('one exact typed-search-only block in old Service extraction')
+        pieces['scope_validate_dispatch']=pieces['scope_validate_dispatch'].replace(block,'',1)
+    search_legacy_gate=java_method(s,'    private boolean nativeSearchAllowsLegacyObservation(String taskId){')
+    search_retire=java_method(s,'    private void retireNativeSearch(String taskId,String reason){')
+    search_raw=(pkg/'NativeSearchSession.java').read_text()
+    search_eligible=java_method(search_raw,'    static boolean eligible(NativeAppSession task){')
+    search_boundaries=source/'tests/native-app/legacy-boundary/search-controller'
+    for name in ('NativeSearchSession','NativeSearchPlanning'):
+        raw=(search_boundaries/(name+'.template')).read_text()
+        if name=='NativeSearchSession':
+            if raw.count('{{actual_eligible}}')!=1:raise RuntimeError('one exact native-search eligibility port')
+            raw=raw.replace('{{actual_eligible}}',search_eligible,1)
+        (output/(name+'.java')).write_text(raw)
+    search_io_ports='''    // Permanently absent typed workers; all constructors and effect endpoints refuse.
+    private volatile NativeSearchSession nativeSearchSession;
+    private volatile NativeSearchRequest activeNativeSearchObservation;
+    private volatile SearchActionWork activeSearchAction;
+    private boolean nativeSearchPlanningAdmitted;
+    private static final class NativeSearchRequest {
+        final String taskId=null;
+        private NativeSearchRequest(){throw new AssertionError("No typed planning request in old fixture");}
+    }
+    private static final class SearchActionWork {
+        final ActionExecutionState state=null;
+        private SearchActionWork(){throw new AssertionError("No typed action work in old fixture");}
+    }
+    synchronized void bindNativeSearchSession(NativeSearchSession session){throw new AssertionError("No typed Session binding in old fixture");}
+    void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){throw new AssertionError("No typed planning IO in old fixture");}
+    void performNativeOpenSearch(String task,NativeSearchSession.Attempt attempt,Cancellation cancel,NativeSearchSession.ActionCallback callback){throw new AssertionError("No typed effect IO in old fixture");}
+    private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning planning,String error){throw new AssertionError("No typed publication in old fixture");}
+'''+search_legacy_gate+search_retire
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
+    marker='{{service_interfaces_outcome}}\n'
+    if fixture.count(marker)!=1:raise RuntimeError('one legacy Service interface boundary')
+    fixture=fixture.replace(marker,marker+search_io_ports,1)
     for name, code in pieces.items():
         fixture = fixture.replace('{{' + name + '}}', code)
     if '{{' in fixture:
@@ -207,7 +251,7 @@ def prepare(source, output):
           'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','SessionTerminalEvidence','ObservationDiagnostics','NativeActionSnapshotCheck']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
-    files += [source/'tests/native-app/legacy-boundary/NativeAppSession.java']
+    files += [source/'tests/native-app/legacy-boundary/NativeAppSession.java',pkg/'NativeSearchDecision.java']
     web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'
     web_fixture_raw=web_fixture_source.read_bytes()
     web_fixture_compile=output/'WebTaskDomain.java'
@@ -244,6 +288,16 @@ def prepare(source, output):
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'preferences_'+n:v for n,v in mode_parts.items()},**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
+        'native_search_legacy_boundary':{
+            'observer_only_sha256':hashlib.sha256(search_observer_only.encode()).hexdigest(),
+            'dispatcher_only_sha256':hashlib.sha256(search_dispatch_only.encode()).hexdigest(),
+            'actual_eligibility_sha256':hashlib.sha256(search_eligible.encode()).hexdigest(),
+            'actual_legacy_read_gate_sha256':hashlib.sha256(search_legacy_gate.encode()).hexdigest(),
+            'actual_retire_sha256':hashlib.sha256(search_retire.encode()).hexdigest(),
+            'typed_ports_constructible':False,'typed_operations_all_refuse':True,
+            'legacy_dispatch_methods_modified':False,
+            'covered_by':'tests/native-search-producer/run_producer.py',
+            'separate_typed_gate_execution_not_claimed_here':True},
         'native_ax_observer_only_excluded_from_legacy_dispatch':{
             'bytes':len(ax_observer_only.encode()),'sha256':hashlib.sha256(ax_observer_only.encode()).hexdigest(),
             'covered_by':'tests/native-ax-observation/run_host.py',

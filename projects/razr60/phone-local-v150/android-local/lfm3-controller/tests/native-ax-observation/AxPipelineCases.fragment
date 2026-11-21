@@ -65,7 +65,7 @@
     static void axCase(String name,Case body)throws Exception{SnapshotChecks.run(name,()->test(name,body));}
     static void noPixels(ObserverPipelineHost f){check(f.shots.isEmpty()&&Bitmap.made.isEmpty(),"AX called screenshot/bitmap IO");}
     static void reject(ObserverPipelineHost f,ObservationRequest r)throws Exception{
-        f.main.drain();check(f.delivered.isEmpty(),"bad AX pair published");noPixels(f);
+        drainAx(f);check(f.delivered.isEmpty(),"bad AX pair published");noPixels(f);
         check(r.deadline==r.started+12000,"AX deadline expanded");check(f.directory.list().length==0,"unpublished receipt leaked");f.dispose();
     }
     static void boundBadCapture(String kind)throws Exception{
@@ -82,6 +82,185 @@
         f.captureObservation(r);await(()->observationIo.active.get()==0,"refused AX");f.main.drain();
         check(!f.errors.isEmpty()&&f.delivered.isEmpty(),"bound invalid AX was not refused");noPixels(f);f.dispose();
     }
+
+    volatile Runnable phoneConstructHook;
+    static void drainAx(ObserverPipelineHost f)throws Exception{
+        for(int i=0;i<8;i++){
+            f.main.drain();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"AX recheck worker drain");
+            if(!f.main.hasReady())return;
+        }
+        throw new AssertionError("AX callback loop did not drain");
+    }
+    static org.json.JSONObject onlyAxReceipt(ObserverPipelineHost f)throws Exception{
+        File[] paths=f.directory.listFiles();check(paths!=null&&paths.length==1,"one actual final AX receipt required");
+        return new org.json.JSONObject(new String(Files.readAllBytes(paths[0].toPath()),StandardCharsets.UTF_8));
+    }
+    static void axRejectedFinally(ObserverPipelineHost f,ObservationRequest r)throws Exception{
+        drainAx(f);check(f.delivered.isEmpty(),"rejected final AX product published");noPixels(f);
+        check(r.deadline==r.started+12000,"recheck changed request budget");
+        check(f.directory.list().length==0,"failed recheck left a published-looking receipt");f.dispose();
+    }
+    static void assertOneRecheckPublication(ObserverPipelineHost f,ObservationRequest r)throws Exception{
+        drainAx(f);check(f.delivered.size()==1&&f.errors.isEmpty(),"one complete recheck did not publish: "+f.errors);
+        check(r.nativeAxPublicationRecheckAttempted,"successful recheck did not consume the one-use mark");
+        check(f.reads.get()==4&&MobiMindPrivateFiles.writes==2&&MobiMindPrivateFiles.reads==2,"recheck must read complete C and persist/readback a new receipt");
+        check(((Number)f.current.captureEvidence.get("publication_full_graph_recheck_count")).intValue()==1,"recheck count missing");
+        check("final_published_complete_census".equals(f.current.captureEvidence.get("events_after_complete_census_admitted_endpoint")),"final endpoint is ambiguous");
+        check(Boolean.FALSE.equals(f.current.captureEvidence.get("events_after_complete_census_admitted")),"late event admitted after final C");
+        check(f.current.captureEvidence.get("publication_original_pair") instanceof Map,"actual original B provenance missing");
+        noPixels(f);
+    }
+    static void publicationRecheckCases()throws Exception{
+        axCase("late_content_at_main_requires_real_new_complete_receipt",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
+            org.json.JSONObject old=onlyAxReceipt(f);String oldId=old.getJSONObject("binding").getString("observation_id");
+            long capture=old.getJSONObject("binding").getLong("captured_elapsed_ms");
+            r.recordEvent(false,1);assertOneRecheckPublication(f,r);
+            org.json.JSONObject next=onlyAxReceipt(f);
+            check(!oldId.equals(next.getJSONObject("binding").getString("observation_id")),"old receipt was relabelled");
+            check(next.getJSONObject("binding").getLong("captured_elapsed_ms")==capture&&f.current.capturedElapsedMillis==capture,"A capture age refreshed");
+            check(old.getJSONObject("first").toString().equals(next.getJSONObject("first").toString()),"original A changed");
+            check(next.getJSONObject("second_completed_watermark").getLong("content")==1,"C endpoint did not cover actual content event");
+            check(r.deadline==r.started+12000,"original total budget changed");f.dispose();
+        });
+        axCase("late_content_during_first_persist_has_one_full_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);
+            MobiMindPrivateFiles.writeHook=()->{if(MobiMindPrivateFiles.writes==1)f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);assertOneRecheckPublication(f,r);f.dispose();
+        });
+        axCase("late_content_during_first_window_check_has_one_full_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{if(windows.incrementAndGet()==1)f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);assertOneRecheckPublication(f,r);f.dispose();
+        });
+        axCase("late_content_after_dto_requires_new_pair_before_transfer",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger dtos=new AtomicInteger();
+            f.phoneConstructHook=()->{if(dtos.incrementAndGet()==1)f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);assertOneRecheckPublication(f,r);
+            check(dtos.get()==2,"first stale DTO was transferred or C was not constructed");f.dispose();
+        });
+        axCase("qualified_pair_rechecks_after_settle_with_original_total_deadline",()->{
+            ObserverPipelineHost f=axFixture((x,g,n)->{
+                if(n==2)SystemClock.now=x.activeObservation.started+8772;
+                if(n==3)SystemClock.now=x.activeObservation.started+9381;
+                if(n==4)SystemClock.now=x.activeObservation.started+10600;
+            },false,false);
+            MobiMindPrivateFiles.writeHook=()->{if(MobiMindPrivateFiles.writes==1){
+                SystemClock.now=f.activeObservation.started+9941;f.activeObservation.recordEvent(false,1);}};
+            ObservationRequest r=axPair(f);assertOneRecheckPublication(f,r);
+            org.json.JSONObject finalReceipt=onlyAxReceipt(f);
+            check(SystemClock.now-r.started>10000&&SystemClock.now<r.deadline,"capture margin case did not cross old settle limit");
+            check(f.current.capturedElapsedMillis==r.started+8772,"capture clock replaced by recheck clock");
+            check(finalReceipt.getJSONObject("second").getLong("read_completed_elapsed_ms")==r.started+10600,"C clock not actual");
+            Map<?,?> previous=(Map<?,?>)f.current.captureEvidence.get("publication_original_pair");
+            check(((Number)previous.get("pair_graph_completed_elapsed_ms")).longValue()==r.started+9381,"old B clock lost");
+            check(((Number)previous.get("recheck_admitted_elapsed_ms")).longValue()==r.started+9941,"admission clock fabricated");
+            check(r.deadline==r.started+12000,"capture margin extended total request");f.dispose();
+        });
+        axCase("typed_content_during_C_read_requires_complete_equal_C",()->{
+            ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)x.activeObservation.recordEvent(false,1);},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);assertOneRecheckPublication(f,r);
+            check(onlyAxReceipt(f).getJSONObject("second_completed_watermark").getLong("content")==2,"actual C read content not sealed");f.dispose();
+        });
+        for(final int kind:new int[]{0,2,3})axCase("late_noncontent_kind_"+kind+"_never_enters_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
+            r.recordEvent(kind==3,kind==3?1:kind);drainAx(f);
+            check(!r.nativeAxPublicationRecheckAttempted&&f.reads.get()==3,"untyped/boundary/unknown event got recheck credit");
+            axRejectedFinally(f,r);
+        });
+        axCase("window_mismatch_even_with_content_never_enters_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);
+            f.windowHook=()->{FrozenObservationWindow w=f.windowValue;
+                f.windowValue=new FrozenObservationWindow(w.packageName,w.windowId+1,w.displayId,w.rotation,w.left,w.top,w.right,w.bottom,
+                        w.width,w.height,w.metadata,w.windows,w.profileWindow);
+                f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);drainAx(f);
+            check(!r.nativeAxPublicationRecheckAttempted&&f.reads.get()==3,"window mismatch relabelled as content");
+            check(r.trace.snapshot(SystemClock.now).toString().contains("window_mismatch"),"window mismatch diagnostic absent");
+            check(r.trace.snapshot(SystemClock.now).toString().contains("late_content"),"independent content fact absent");
+            axRejectedFinally(f,r);
+        });
+        axCase("invalid_persisted_pair_cannot_enter_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);
+            MobiMindPrivateFiles.readHook=bytes->{bytes[0]='!';f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);drainAx(f);
+            check(!r.nativeAxPublicationRecheckAttempted&&f.reads.get()==3,"invalid persisted bytes admitted recheck");
+            axRejectedFinally(f,r);
+        });
+        for(final String kind:new String[]{"missing","stale","truncated","node","window","identity"})
+            axCase("complete_C_"+kind+"_refused",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n!=4)return;
+                    if("missing".equals(kind))throw new NoActiveWindow();
+                    if("stale".equals(kind))throw new StaleObservation("actual C stale");
+                    if("truncated".equals(kind))g.truncated=true;
+                    if("node".equals(kind))g.nativeActionNodes=axNodes("different complete C node");
+                    if("window".equals(kind)){Map<String,Object> w=new LinkedHashMap<String,Object>(g.nativeActionWindows);w.put("unexpected",true);g.nativeActionWindows=immutableMap(w);}
+                    if("identity".equals(kind))g.nativeActionAuthorizationSha="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+                },false,false);
+                ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+                check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4,"complete C failure did not use exactly one real read");
+                check(MobiMindPrivateFiles.writes==1,"invalid C persisted as a complete replacement");
+                axRejectedFinally(f,r);
+            });
+        for(final int kind:new int[]{2,3})axCase("boundary_or_unknown_during_C_"+kind+"_refused",()->{
+            ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)x.activeObservation.recordEvent(kind==3,kind==3?1:2);},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"C boundary got a replacement receipt");
+            axRejectedFinally(f,r);
+        });
+        for(final String point:new String[]{"persist","window","dto"})axCase("second_late_content_at_"+point+"_cannot_recheck_again",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger dtos=new AtomicInteger(),windows=new AtomicInteger();
+            if("persist".equals(point))MobiMindPrivateFiles.writeHook=()->{if(MobiMindPrivateFiles.writes==2)f.activeObservation.recordEvent(false,1);};
+            if("window".equals(point))f.windowHook=()->{if(windows.incrementAndGet()==2)f.activeObservation.recordEvent(false,1);};
+            if("dto".equals(point))f.phoneConstructHook=()->{dtos.incrementAndGet();f.activeObservation.recordEvent(false,1);};
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4&&MobiMindPrivateFiles.writes==2,"second recheck or missing full C");
+            axRejectedFinally(f,r);
+        });
+        axCase("second_late_content_at_main_cannot_recheck_again",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
+            r.recordEvent(false,1);f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"C queued callback");
+            r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==2,"late main event got third census");axRejectedFinally(f,r);
+        });
+        axCase("C_finishing_at_original_deadline_is_rejected",()->{
+            ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)SystemClock.now=x.activeObservation.deadline;},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(!f.errors.isEmpty()&&r.finished,"original deadline did not retire request");axRejectedFinally(f,r);
+        });
+        for(final String owner:new String[]{"controller","authorization","background"})axCase("late_"+owner+"_change_cannot_enter_recheck",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);r.recordEvent(false,1);
+            if("controller".equals(owner))f.ownedController=new LocalTaskController();
+            if("authorization".equals(owner))f.taskAuthorization=new TaskAuthorization.Gate();
+            if("background".equals(owner))f.taskBackground=new BackgroundSession(9);
+            drainAx(f);check(!r.nativeAxPublicationRecheckAttempted&&f.reads.get()==3,"changed owner entered C");axRejectedFinally(f,r);
+        });
+        axCase("cancel_before_recheck_admission_never_reads_C",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);r.recordEvent(false,1);f.cancelled.set(true);
+            drainAx(f);check(!r.nativeAxPublicationRecheckAttempted&&f.reads.get()==3,"cancelled request entered C");axRejectedFinally(f,r);
+        });
+        axCase("cancel_during_C_never_publishes_or_leaks",()->{
+            Block b=new Block();ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)b.run();},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);b.entered();
+            f.cancelled.set(true);f.main.drain();b.open();drainAx(f);
+            check(r.finished&&f.delivered.isEmpty(),"cancelled C transferred");axRejectedFinally(f,r);
+        });
+        axCase("recheck_queue_rejection_restores_busy_and_ownership",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);r.recordEvent(false,1);observationIo.reject=true;
+            drainAx(f);check(r.nativeAxPublicationRecheckAttempted&&!observationIoBusy.get()&&!f.errors.isEmpty(),"recheck queue failure leaked");
+            axRejectedFinally(f,r);
+        });
+        for(final boolean throwing:new boolean[]{false,true})axCase("recheck_main_post_"+(throwing?"throws":"rejects")+"_closes_unpublished_file",()->{
+            Block b=new Block();ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)b.run();},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);b.entered();
+            f.main.rejectWorkerPosts=!throwing;f.main.throwWorkerPosts=throwing;b.open();
+            await(()->observationIo.active.get()==0&&!observationIoBusy.get(),"unposted C exits");
+            check(f.delivered.isEmpty()&&f.directory.list().length==0,"unposted C receipt leaked");
+            SystemClock.now=r.deadline;f.main.drain();check(r.finished,"original watchdog did not retire unposted C");f.dispose();
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         mainThread=Thread.currentThread();
         try{
@@ -123,7 +302,13 @@
                 ObservationRequest r=axPair(f);reject(f,r);
             });
             axCase("any_content_after_complete_endpoint_rejects",()->{
-                ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);r.recordEvent(false,1);reject(f,r);
+                // The original A/B must be discarded. Hold the newly allowed C read
+                // to observe that boundary, then cancel it rather than racing its callback.
+                Block b=new Block();ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)b.run();},false,false);
+                ObservationRequest r=axPair(f);r.recordEvent(false,1);
+                f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);b.entered();
+                check(f.delivered.isEmpty(),"original stale A/B was published");
+                f.cancelled.set(true);b.open();reject(f,r);
             });
             axCase("event_during_receipt_write_rejects",()->{
                 ObserverPipelineHost f=axFixture(null,false,false);MobiMindPrivateFiles.writeHook=()->f.activeObservation.recordEvent(false,1);
@@ -157,6 +342,7 @@
             axCase("unknown_goal_not_opted_into_ax",()->{
                 check(!ObservationCaptureEvidence.nativeTextMode(false,false,false),"unknown goal enabled AX");
             });
+            publicationRecheckCases();
         }finally{
             SnapshotChecks.finish(args[0]);observationIo.executor.shutdownNow();
             expect(observationIo.executor.awaitTermination(4,TimeUnit.SECONDS),"AX worker executor leaked");

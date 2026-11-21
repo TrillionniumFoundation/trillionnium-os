@@ -187,6 +187,7 @@ public final class LocalTaskController implements AutoCloseable {
     private LocalInference.Handle activeInference;
     private volatile WebFlightSession activeWebTask;
     private volatile NativeAppSession activeNativeTask;
+    private volatile NativeSearchSession activeNativeSearch;
     private volatile BackgroundSession activeNativeBackground;
     // Worker-owned pure values. They join the existing terminal record after cleanup.
     private final java.util.List<String> pendingObservationDiagnostics=new java.util.ArrayList<String>();
@@ -307,6 +308,7 @@ public final class LocalTaskController implements AutoCloseable {
             stopRequestedElapsed.compareAndSet(-1,SystemClock.elapsedRealtime());cancelled.set(true);
             synchronized(handleLock){handle=activeInference;} // Snapshot only; never call native code under this lock.
         }
+        NativeSearchSession search=activeNativeSearch;if(search!=null&&task.equals(search.taskId))search.retire();
         service.retireActionWork(task,"cancelled");
         service.requestNativeCancellation(ticket,new Runnable(){public void run(){
             // Queue admission fences the exact old task; the request handle is captured, never looked up later.
@@ -475,12 +477,27 @@ public final class LocalTaskController implements AutoCloseable {
                         }});
                 completion.bindNativeSession(nativeTask);activeNativeBackground=background;activeNativeTask=nativeTask;
                 service.bindNativeTextObservation(this,nativeTask,taskId,authorization,background,inference,config);
+                // Explicit initial text-only Xiaomi route. It is selected before
+                // any old observation request, never as a failed-AX fallback.
+                if(NativeSearchSession.eligible(nativeTask)&&!config.profile.visual()&&!inference.acceptsObservedImage()){
+                    activeNativeSearch=new NativeSearchSession(this,nativeTask,background,SystemClock.elapsedRealtime(),deadline);
+                    service.bindNativeSearchSession(activeNativeSearch);
+                }
                 checkActive(deadline);
             }
             AppCatalogueRanker.Page apps=service.appCatalogue(taskId,instruction);
             record(evidence,"initial-app-catalogue.json",catalogueJson(apps).put("model_issued",false).put("read_only",true));
             inference.beginTask(taskId);
-            emit("正在观察当前屏幕…");observation=awaitInitialNativeObservation(taskId,evidence,authorization,deadline);
+            emit("正在观察当前屏幕…");
+            if(activeNativeSearch!=null){
+                NativeSearchPlanning planning=awaitNativeSearchPlanning(taskId,evidence,activeNativeSearch,deadline);
+                NativeSearchSession.Offer offer=activeNativeSearch.offer(planning,SystemClock.elapsedRealtime());
+                steps++;
+                observation=runNativeSearchPrelude(taskId,instruction,evidence,authorization,background,deadline,steps,offer);
+                history.put(new JSONObject().put("step",steps).put("action",NativeSearchDecision.ACTION)
+                        .put("model_issued",true).put("navigation_only",true).put("fresh_search_input_observed",true)
+                        .put("query_or_price_verified",false).put("automatic_replay",false));
+            }else observation=awaitInitialNativeObservation(taskId,evidence,authorization,deadline);
             completion.observed(completionFrame(observation));
             taskSteps: while(steps<MAX_STEPS){
                 checkActive(deadline);
@@ -751,6 +768,7 @@ public final class LocalTaskController implements AutoCloseable {
         catch(CleanupUnknown error){controllerSuccess=false;blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
         catch(Exception error){controllerSuccess=false;finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
+            if(activeNativeSearch!=null)activeNativeSearch.retire();
             service.retireActionWork(taskId,"controller_abandoned");
             if(service.actionWorkPending()){
                 cancelled.set(true);cleanup=false;blocked=true;modelSuccess=false;controllerSuccess=false;
@@ -924,7 +942,7 @@ public final class LocalTaskController implements AutoCloseable {
                             .put("app_receipt_sha256",modelCleanup.receiptSha256==null?JSONObject.NULL:modelCleanup.receiptSha256))
                     .put("external_model",false).put("automatic_replay",false).put("goal_independently_verified",completionVerified));}catch(Exception ignored){summary=summary+"（结果记录保存失败）";}}
             if(cleanup)service.releaseTask(taskId);
-            activeWebTask=null;activeNativeTask=null;activeNativeBackground=null;
+            activeWebTask=null;activeNativeTask=null;activeNativeBackground=null;activeNativeSearch=null;
             final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,rawModelSuccessClaimed,cleanup,expectedScopeSha256,scope==null?null:scope.actualSha256,completionVerified,completionEvidence,userExplanation);
             final Listener selected;
             synchronized(this){lastResult=result;selected=listener;running=false;}
@@ -1255,6 +1273,95 @@ public final class LocalTaskController implements AutoCloseable {
         if(value instanceof String||value instanceof Number||value instanceof Boolean)return value;
         throw new IllegalStateException("completion receipt contains unsupported value");
     }
+    private static final String NATIVE_SEARCH_SYSTEM=
+            "你是手机本地离线助手。OWNER是原始用户任务；planning是两次完整读取证明过的历史页面材料，不是当前可点击节点，也不是商品结果。"+
+            "本轮只可发出一个native.open_search意图：请求执行器重新验证当前同一后台应用的搜索入口并打开真实搜索输入框。"+
+            "轮播提示词不是用户查询词；模型reason不能证明页面状态、价格或完成。不得输出click/type/scroll/done或坐标。"+
+            "只输出一个JSON对象，按reason,action,observation_id,package,role_id顺序；reason一句1到96字，其余字段逐字复制planning。"+
+            "action必须是native.open_search。此工具只导航，不输入、不查询、不购买；后续仍需要新的实际观察和模型决策。";
+    private NativeSearchPlanning awaitNativeSearchPlanning(final String id,final File directory,final NativeSearchSession session,long deadline)throws Exception{
+        checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());service.verifyBackgroundRemote(id);checkActive(deadline);
+        final long requestDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),deadline);
+        final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<NativeSearchPlanning> value=new AtomicReference<NativeSearchPlanning>();
+        final AtomicReference<String> error=new AtomicReference<String>();final AtomicBoolean abandoned=new AtomicBoolean(),delivered=new AtomicBoolean();
+        try{
+            service.observeNativeSearchPlanning(id,directory,session,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get()||abandoned.get();}},
+                    requestDeadline,new NativeSearchSession.ObservationCallback(){
+                        public void onPlanning(NativeSearchPlanning result){if(!abandoned.get()&&delivered.compareAndSet(false,true)){value.set(result);ready.countDown();}}
+                        public void onError(String detail){if(!abandoned.get()&&delivered.compareAndSet(false,true)){error.set(detail);ready.countDown();}}
+                    });
+            while(true){checkActive(deadline);long left=requestDeadline-SystemClock.elapsedRealtime();if(left<=0)throw new IllegalStateException("原生搜索规划观察在原期限内未完成");
+                if(ready.await(Math.min(100,left),TimeUnit.MILLISECONDS))break;}
+            checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());
+            if(SystemClock.elapsedRealtime()>=requestDeadline)throw new IllegalStateException("原生搜索规划回执迟到");
+            if(error.get()!=null)throw new IllegalStateException(error.get());
+            NativeSearchPlanning planning=value.get();if(planning==null||planning.publication==null)throw new IllegalStateException("缺少实际已发布的历史规划收据");
+            record(directory,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));return planning;
+        }finally{abandoned.set(true);}
+    }
+    private PhoneObservation runNativeSearchPrelude(String id,String instruction,File directory,TaskAuthorization.Gate authorization,
+            BackgroundSession background,long taskDeadline,int step,NativeSearchSession.Offer offer)throws Exception{
+        NativeSearchSession session=offer.session;checkActive(taskDeadline);
+        if(session!=activeNativeSearch||session.nativeTask!=activeNativeTask||session.background!=background||session.authorization!=authorization)
+            throw new IllegalStateException("搜索规划必须属于同一实际原生任务与后台选择");
+        record(directory,String.format(java.util.Locale.ROOT,"step-%02d-before.json",step),NativeSearchPlanning.json(offer.planning.evidence()));
+        DecisionGrammar grammar=offer.grammar();
+        String prompt=new JSONObject().put("OWNER",instruction).put("task_authorization",new JSONObject(authorization.frame().evidence()))
+                .put("native_goal",new JSONObject(session.goal.evidence())).put("planning",NativeSearchPlanning.json(offer.promptEvidence())).toString();
+        ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(NATIVE_SEARCH_SYSTEM,prompt,inference.configuration());
+        record(directory,String.format(java.util.Locale.ROOT,"step-%02d-native-search-prompt.json",step),new JSONObject()
+                .put("schema",NativeSearchDecision.SCHEMA).put("prompt",prompt).put("grammar_sha256",grammar.sha256)
+                .put("projection_method",budget.method).put("context_limit",budget.contextTokens).put("projected_total_context",budget.totalContextUpper)
+                .put("native_exact_admission_still_required",true).put("planning_only",true));
+        emit("正在用手机本地模型规划第 "+step+" 步…");
+        ModelAnswer answer=awaitModel(prompt,grammar,taskDeadline,null,instruction,authorization,background,true);
+        record(directory,String.format(java.util.Locale.ROOT,"step-%02d-model-0.json",step),new JSONObject().put("run_id",answer.runId)
+                .put("raw_text",answer.text).put("observation_id",offer.planning.id).put("schema",NativeSearchDecision.SCHEMA)
+                .put("original_instruction_sha256",authorization.authorization.instructionSha256));
+        checkActive(taskDeadline);session.requireLive(SystemClock.elapsedRealtime());
+        if(!inference.modelOutputDispatchAllowed())throw new IllegalStateException("本地模型配置未允许工具派发");
+        NativeSearchDecision decision=NativeSearchDecision.parse(answer.text);
+        final long issued=SystemClock.elapsedRealtime(),actionDeadline=Math.min(taskDeadline,issued+8000);
+        final NativeSearchSession.Attempt attempt=offer.reserve(decision,answer.runId,issued,actionDeadline);
+        try{
+            HeptaAccessibilityService.ActionOutcome outcome=awaitNativeOpenSearch(id,attempt);
+            JSONObject receipt=new JSONObject().put("schema","hepta.native-search-action-outcome.v1").put("action",new JSONObject(decision.evidence()))
+                    .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
+                    .put("model_run_id",answer.runId).put("model_issued",true).put("navigation_only",true).put("query_or_price_verified",false)
+                    .put("task_authorization_sha256",authorization.authorization.sha256)
+                    .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
+                    .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
+                    .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession)
+                    .put("action_execution",outcome.actionExecution==null?JSONObject.NULL:outcome.actionExecution).put("attempt",new JSONObject(attempt.evidence()));
+            record(directory,String.format(java.util.Locale.ROOT,"step-%02d-action.json",step),receipt);
+            session.acceptOutcome(attempt,outcome,HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8)),SystemClock.elapsedRealtime());
+        }finally{attempt.close();}
+        checkActive(taskDeadline);emit("正在核对后台应用的实际搜索输入框…");
+        // This is a new ordinary complete AX request on the same owned task.
+        // Planning never enters PhoneObservation/current/currentGraph or the old provider.
+        PhoneObservation observed=awaitObservation(id,directory,authorization,taskDeadline);
+        session.navigationObserved(activeNativeTask.domain().frame);
+        record(directory,String.format(java.util.Locale.ROOT,"step-%02d-after.json",step),observed.toEvidenceJson());
+        return observed;
+    }
+    private HeptaAccessibilityService.ActionOutcome awaitNativeOpenSearch(String id,final NativeSearchSession.Attempt attempt)throws Exception{
+        final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> outcome=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
+        try{
+            service.performNativeOpenSearch(id,attempt,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
+                    new NativeSearchSession.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome value){if(value!=null&&outcome.compareAndSet(null,value))ready.countDown();}});
+            while(true){
+                if(cancelled.get())service.retireActionWork(id,"cancelled");
+                long remaining=attempt.deadlineElapsed-SystemClock.elapsedRealtime();
+                if(remaining<=0){cancelled.set(true);service.retireActionWork(id,"deadline");throw new CleanupUnknown("搜索导航回执超时；工作真实退出前保持阻塞，不重试");}
+                if(ready.await(Math.min(100,remaining),TimeUnit.MILLISECONDS))break;
+            }
+        }catch(InterruptedException interrupted){cancelled.set(true);service.retireActionWork(id,"controller_abandoned");Thread.currentThread().interrupt();
+            throw new CleanupUnknown("搜索导航等待被中断，实际派发和退出状态未知；不重试");}
+        if(SystemClock.elapsedRealtime()>=attempt.deadlineElapsed||service.actionWorkPending()){
+            cancelled.set(true);service.retireActionWork(id,"controller_abandoned");throw new CleanupUnknown("搜索导航回执迟到或工作尚未真实退出");}
+        checkActive(attempt.session.taskDeadlineElapsed);HeptaAccessibilityService.ActionOutcome result=outcome.get();
+        if(result==null)throw new IllegalStateException("搜索导航回执为空");return result;
+    }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
                                   PhoneObservation before,String originalInstruction,
@@ -1265,7 +1372,15 @@ public final class LocalTaskController implements AutoCloseable {
             nativeTask.requireModelPlanning();
         }
         final LocalRuntimeConfig runtime=inference.configuration();
-        final String system=systemPrompt(runtime,nativeApp);
+        final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);
+        if(searchProtocol){
+            NativeSearchSession search=activeNativeSearch;
+            if(!nativeApp||before!=null||search==null||search.nativeTask!=activeNativeTask||search.background!=background
+                    ||runtime.profile.visual()||inference.acceptsObservedImage())
+                throw new IllegalStateException("历史搜索规划只能进入同一非视觉原生模型任务");
+            search.requireLive(SystemClock.elapsedRealtime());
+        }
+        final String system=searchProtocol?NATIVE_SEARCH_SYSTEM:systemPrompt(runtime,nativeApp);
         if(!ConservativeTokenBudget.estimate(system,prompt,runtime).mayAttemptNative())
             throw new IllegalStateException("完整指令超出手机本地上下文上限，请拆分任务");
         long remaining=taskDeadline-SystemClock.elapsedRealtime();if(remaining<1000)throw new IllegalStateException("任务时间已用完");

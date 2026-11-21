@@ -46,6 +46,42 @@ public final class DecisionGrammar {
         }catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
     }
 
+    /** A separate planning-only protocol has no legacy node or terminal domain. */
+    private DecisionGrammar(NativeSearchSession.Offer offer,TaskAuthorization.Frame authorization,String text){
+        this.schema=NativeSearchDecision.SCHEMA;this.authorization=authorization;this.appLabels=null;
+        this.observationId=offer.planning.id;this.currentPackage=offer.planning.packageName;
+        this.targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observationId,currentPackage,
+                Collections.<String,String>emptyMap());
+        this.actions=Collections.singletonList(NativeSearchDecision.ACTION);
+        this.scrollDirections=Collections.emptyMap();this.submitNodes=Collections.emptySet();
+        this.fixedIntentTargets=Collections.emptyMap();this.doneStatuses=Collections.emptySet();this.successAllowed=false;
+        this.text=text;byte[] bytes=text.getBytes(StandardCharsets.UTF_8);
+        if(bytes.length>65536)throw new IllegalArgumentException("native search intent grammar exceeds bound");
+        try{
+            StringBuilder hash=new StringBuilder(64);
+            for(byte value:MessageDigest.getInstance("SHA-256").digest(bytes))hash.append(String.format(Locale.ROOT,"%02x",value&255));
+            this.sha256=hash.toString();
+        }catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
+    }
+
+    /** Only the current real Session Offer and its Gate frame can mint this
+     * grammar. It cannot reuse a PhoneObservation or enable old action branches. */
+    static DecisionGrammar createNativeSearchAuthorized(NativeSearchSession.Offer offer,TaskAuthorization.Frame authorization){
+        if(offer==null||authorization==null)throw new IllegalArgumentException("actual search Offer and authorization required");
+        offer.requireForGrammar(authorization);
+        NativeSearchPlanning planning=offer.planning;
+        if(planning==null||!NativeAppEvidence.id(planning.id)||!NativeAppGoal.XIAOMI_PACKAGE.equals(planning.packageName)
+                ||planning.role==null||!NativeAppEvidence.sha(planning.role.roleId))
+            throw new IllegalArgumentException("actual search planning identity required");
+        StringBuilder rules=new StringBuilder();
+        rule(rules,"native-open-search",prefix(NativeSearchDecision.ACTION,planning.id)
+                +field("package",jsonValue(planning.packageName))+comma()+field("role_id",jsonValue(planning.role.roleId))+ending());
+        rule(rules,"reason-string",literal("\"")+" json-char{1,96} "+literal("\""));
+        rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
+        rule(rules,"ws","[ \\t\\n\\r]{0,8}");
+        return new DecisionGrammar(offer,authorization,"root ::= ws native-open-search ws\n"+rules.toString());
+    }
+
     /** A format-only subset of this already observed and OWNER-bound grammar.
      * The schema and every immutable authority/domain object remain identical. */
     DecisionGrammar compactReasonAndWhitespace(){

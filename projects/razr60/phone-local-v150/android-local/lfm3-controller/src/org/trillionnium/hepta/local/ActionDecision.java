@@ -376,6 +376,13 @@ public final class ActionDecision {
         }
     }
 
+    /** Shared strict flat decoding for a separate explicitly selected protocol. This never constructs an old action. */
+    static Map<String,Object> strictFields(String raw)throws InvalidActionException{
+        require(raw!=null&&!raw.isEmpty()&&raw.length()<=MAX_JSON_UTF8_BYTES,"Empty or oversized model output");
+        validateUnicode(raw);require(utf8Bytes(raw)<=MAX_JSON_UTF8_BYTES,"Model output exceeds 16384 UTF-8 bytes");
+        return new JsonParser(raw).readObject();
+    }
+
     /** Only JSON strings and canonical integral tokens are admitted as values. */
     private static final class JsonParser {
         private final String source;

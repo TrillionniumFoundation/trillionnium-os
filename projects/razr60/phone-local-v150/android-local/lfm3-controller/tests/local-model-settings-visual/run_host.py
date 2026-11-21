@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Ordinary GUI-Owl settings and cached-controller routing; explicit host ports, no device."""
-import argparse,hashlib,json,os,re,stat,subprocess,time
+import argparse,hashlib,importlib.util,json,os,re,stat,subprocess,time
 from pathlib import Path
 
 def need(value,message):
@@ -141,9 +141,14 @@ def main():
             "unmodified_final_engine_executed_in_original_gate":True}
         tests=[test/"VisualSettingsHostTest.java"]
         for path in tests:take(path)
+        search_helper=source/"tests/native-app/legacy-boundary/prepare_search_pure.py";take(search_helper)
+        port_spec=importlib.util.spec_from_file_location("visual_settings_search_pure",search_helper)
+        legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search)
+        compile_inputs=legacy_search.add(source,production+fixture+generated_paths+tests)
+        for path in compile_inputs:take(path)
         classes=out/"classes";classes.mkdir();empty=out/"empty-sourcepath";empty.mkdir()
         run("compile",[javac,"--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-proc:none",
-            "-sourcepath",empty,"-cp",a.json_jar,"-d",classes,*production,*fixture,*generated_paths,*tests])
+            "-sourcepath",empty,"-cp",a.json_jar,"-d",classes,*compile_inputs])
         stdout=run("visual-settings",[java,"-Dhepta.fixture.host_uid="+str(os.getuid()),"-cp",
             str(classes)+os.pathsep+str(a.json_jar),"org.trillionnium.hepta.local.VisualSettingsHostTest",out/"cases"],timeout=240)
         raw=(out/"cases/RESULT.json").read_bytes();cases=json.loads(raw)

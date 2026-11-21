@@ -7,6 +7,8 @@ def main():
     root=pathlib.Path(__file__).resolve().parent;source=(args.source or root.parent).resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     helper=source/'tests/background-session/prepare_fixture.py';spec=importlib.util.spec_from_file_location('scope_fixture',helper)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);files,record=module.prepare(source,out/'fixture')
+    port_spec=importlib.util.spec_from_file_location('old_search_pure',source/'tests/native-app/legacy-boundary/prepare_search_pure.py')
+    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)
     fixture=out/'fixture'
     (fixture/'android/app/KeyguardManager.java').write_text('package android.app;public final class KeyguardManager {public boolean locked,secure,deviceSecure,deviceLocked;public boolean isKeyguardLocked(){return locked;}public boolean isKeyguardSecure(){return secure;}public boolean isDeviceSecure(){return deviceSecure;}public boolean isDeviceLocked(){return deviceLocked;}}\n')
     (fixture/'android/os/Looper.java').write_text('package android.os;public final class Looper {public static boolean worker;private static final Looper MAIN=new Looper();public static Looper myLooper(){return worker?null:MAIN;}public static Looper getMainLooper(){return MAIN;}}\n')

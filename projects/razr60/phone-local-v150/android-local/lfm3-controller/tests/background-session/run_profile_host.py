@@ -21,11 +21,16 @@ def main():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     files, extraction = module.prepare(source, out / 'fixture')
+    # Explicit legacy-only grammar closure; no typed search authority is issued.
+    search_helper = source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    search_spec = importlib.util.spec_from_file_location('profile_session_search_pure', search_helper)
+    search_pure = importlib.util.module_from_spec(search_spec); search_spec.loader.exec_module(search_pure)
+    files = search_pure.add(source, files)
     files += [Path(__file__).with_name(name) for name in ('BackgroundSessionHostTest.java', 'ProfileSessionHostTest.java')]
     files = list(dict.fromkeys(files))
     def key(path):
         return ('source/' + str(path.relative_to(source))) if source in path.parents else ('fixture/' + str(path.relative_to(out)))
-    pins = {key(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in files}
+    pins = {key(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in files + [search_helper]}
     classes = out / 'classes'
     classes.mkdir()
     stages = []
@@ -44,7 +49,7 @@ def main():
             (out / 'RESULT.json').write_text(json.dumps({'all_pass': False, 'stages': stages, 'source_inputs': pins}, indent=2) + '\n')
             print(r.stderr.decode('utf-8', errors='replace')[-10000:])
             return r.returncode
-    assert pins == {key(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in files}
+    assert pins == {key(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in files + [search_helper]}
     cases = json.loads((out / 'CASES.json').read_text())
     result = {'schema': 'hepta.profile-client-host-validation.v1', 'all_pass': True, 'cases': cases,
               'stages': stages, 'source_inputs': pins, 'source_inputs_unchanged': True,

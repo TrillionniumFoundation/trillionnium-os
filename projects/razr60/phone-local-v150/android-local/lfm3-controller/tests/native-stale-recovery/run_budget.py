@@ -42,7 +42,9 @@ assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) in {
     '39fed7241743499db4fa5f6c3c5fef71ee80eb354281bb6f8a888fc63b29b756',
     'd4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500',
     # Reviewed typed AX rejection evidence overload; legacy comparator and all budgets remain.
-    '1d2278784b70f4e57857f8a2cdc89d8e5d2471726e68f57b1d75a659f47a24c1'}
+    '1d2278784b70f4e57857f8a2cdc89d8e5d2471726e68f57b1d75a659f47a24c1',
+    # Reviewed shared search role helpers; original comparator/projection budgets remain.
+    '829bbcb2b7ad39c37acfde5493fcf5195acaaa7e461327d915f656a5b90fc25c'}
 
 # Use the already reviewed real-file IO fixture producer through its complete
 # generation stage. Do not run its unrelated fixture cases or change any source.

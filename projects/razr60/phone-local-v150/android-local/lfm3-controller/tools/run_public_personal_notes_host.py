@@ -7,6 +7,11 @@ def main():
     source=(args.source or pathlib.Path(__file__).resolve().parent.parent).resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec=importlib.util.spec_from_file_location('notes_fixture',source/'tests/background-session/prepare_fixture.py')
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);files,record=module.prepare(source,out/'fixture')
+    # Explicit legacy-only grammar ports; no search Session/Offer can be constructed.
+    search_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    search_spec=importlib.util.spec_from_file_location('personal_notes_search_pure',search_helper)
+    search_pure=importlib.util.module_from_spec(search_spec);search_spec.loader.exec_module(search_pure)
+    files=search_pure.add(source,files)
     # Android App UID and matching private-file UID are explicit host ports.
     (out/'fixture/android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 10123;}public static int myPid(){return 123;}}\n')
     os_file=out/'fixture/android/system/Os.java';os_source=os_file.read_text();assert os_source.count('r.st_uid=((Number)a.get("uid")).intValue();')==1
@@ -146,7 +151,7 @@ public final class NotesCleanupAdapterHostTest {
     flags=['--release','8','-Xlint:all'] if args.release8 else ['-source','8','-target','8','-Xlint:all,-options']
     stages=[('compile',compiler+flags+['-Werror','-d',str(classes),*map(str,files)]),('notes-cleanup',[java,'-cp',str(classes),'org.trillionnium.hepta.background.NotesCleanupAdapterHostTest']),('notes-session',[java,'-cp',str(classes),'org.trillionnium.hepta.local.PersonalNotesSessionHostTest'])]
     pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
-    provenance_paths=[source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',reader_source,source/'src/org/trillionnium/hepta/local/BackgroundSession.java',pathlib.Path(__file__).resolve()]
+    provenance_paths=[source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',reader_source,source/'src/org/trillionnium/hepta/local/BackgroundSession.java',pathlib.Path(__file__).resolve(),search_helper]
     provenance={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in provenance_paths}
     report={'schema':'hepta.personal-notes.adapter-host.v1','phone_contacted':False,'status':'NOT_DEPLOYED','actual_cleanup_deadline_ms':cleanup_ms,'actual_broker_hunk_sha256':hashlib.sha256(hunk.encode()).hexdigest(),'actual_reader_diagnostics_hunk_sha256':hashlib.sha256(diagnostics_hunk.encode()).hexdigest(),'actual_broker_diagnostics_field_sha256':hashlib.sha256(diagnostics_field.encode()).hexdigest(),'source_sha256':pins,'extraction_provenance_sha256':provenance,'fake_ports':['VD release','DisplayManager','TaskInfo and Binder tokens','full recents input','root transport','Android App UID and corresponding private-file UID','owned Process wait/destroy'],'fixture_extraction':record,'stages':[]}
     for name,argv in stages:

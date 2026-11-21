@@ -151,6 +151,10 @@ final class NativeActionBridgeHost {
     static final class Graph {
         PhoneObservation.CollectionStats collectionStats;ObservationDiagnostics.GraphStamp diagnosticStamp;
         WindowOwnership profileWindow;
+        // Same-census carriers are populated only by the verbatim production
+        // collect/snapshot helpers below; legacy normalized visible is unchanged.
+        boolean nativeSearchInvalidRawVisibility;int nativeSearchRawVisibilityChecked;
+        String nativeSearchFirstInvalidRawPath;java.util.List<Integer> nativeSearchFirstInvalidRawBounds;
         boolean nativeObservationComplete,truncated;String packageName,digest,backgroundGeneration,backgroundBootstrapPackage,backgroundSelectionRaw,backgroundOwnerSha;
         int windowId,rotation,displayId;Rect bounds;ObservationState state;ObservedWindowMetadata windowMetadata;
         List<String> backgroundAllowedPackages=Collections.emptyList();final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();

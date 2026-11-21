@@ -54,6 +54,13 @@ final class NativeAppSession {
     private Map<String,Object> calendarInspection,calendarYearProof,lastQueryProof,productQueryProof,productOpenProof;
     private String productSemantic;
     private SuccessClaim acceptedClaim;
+    // Separate planning/navigation state; never an old executable Frame or pending click.
+    private NativeSearchSession searchPlanning;
+    private NativeSearchSession.Attempt searchNavigationAttempt;
+    private Map<String,Object> searchNavigationEffect;
+    private boolean searchNavigationObserved;
+    private long searchNavigationEffectElapsed=-1;
+
 
     NativeAppSession(String task,TaskAuthorization.Gate auth,BackgroundTaskTarget.SelectionBinding selected,
             NativeAppEvidence.Installed installed,String selectionSha,String generation,int display,
@@ -74,6 +81,52 @@ final class NativeAppSession {
         e.put("goal",goal.evidence());e.put("background_generation",generation);e.put("display_id",display);
         e.put("model_actions_required",true);e.put("screenshots_used_as_text",false);e.put("automatic_actions_or_replay",false);
         e.put("query_result_verified",false);journal.write("native-app-binding.json",e);
+    }
+    void bindSearchPlanning(NativeSearchSession session){
+        live();need(session!=null&&session.nativeTask==this&&searchPlanning==null&&current==null&&observations.isEmpty()
+                &&inFlight==null&&pending==null&&ordinal==0&&NativeSearchSession.eligible(this),"one explicit initial native search planning Session required");
+        searchPlanning=session;
+    }
+    void requireSearchPlanningCurrent(NativeSearchSession session){
+        live();need(session!=null&&searchPlanning==session&&session.nativeTask==this&&session.authorization==authorization
+                &&session.selection==selection&&session.goal==goal,"actual native search Session differs");
+    }
+    void reserveSearchNavigation(NativeSearchSession session,NativeSearchSession.Attempt attempt)throws Exception{
+        requireSearchPlanningCurrent(session);need(current==null&&inFlight==null&&pending==null&&searchNavigationAttempt==null
+                &&searchNavigationEffect==null&&attempt!=null&&attempt.session==session
+                &&usedRuns.add(attempt.modelRunId)&&++ordinal<=MAX_ACTIONS,"one new model search navigation attempt required");
+        searchNavigationAttempt=attempt;
+        Map<String,Object> e=base();e.put("schema","hepta.native-search-reservation.v1");e.put("attempt",attempt.evidence());
+        e.put("model_issued",true);e.put("automatic_replay",false);e.put("navigation_only",true);e.put("query_or_price_verified",false);
+        journal.write("native-search-navigation-attempt.json",e);
+    }
+    void recordSearchNavigationEffect(NativeSearchSession session,NativeSearchSession.Attempt attempt,String receiptSha,
+            Map<String,Object> execution,long at)throws Exception{
+        requireSearchPlanningCurrent(session);need(searchNavigationAttempt==attempt&&attempt!=null&&attempt.session==session
+                &&searchNavigationEffect==null&&current==null&&NativeAppEvidence.sha(receiptSha)&&execution!=null
+                &&at>=attempt.startedElapsed&&at<attempt.deadlineElapsed,"same first typed navigation effect required");
+        Map<String,Object> e=base();e.put("schema","hepta.native-search-navigation-effect.v1");e.put("attempt",attempt.evidence());
+        e.put("action_receipt_sha256",receiptSha);e.put("action_execution",execution);e.put("recorded_elapsed_ms",at);
+        e.put("navigation_only",true);e.put("fresh_search_input_still_required",true);e.put("query_or_price_verified",false);
+        Map<String,Object> sealed=NativeAppEvidence.immutableMap(e);journal.write("native-search-navigation-effect.json",sealed);
+        searchNavigationEffect=sealed;searchNavigationEffectElapsed=at;
+    }
+    private void observeSearchNavigation(NativeAppEvidence.Frame frame)throws Exception{
+        if(searchPlanning==null||searchNavigationObserved)return;
+        need(searchNavigationAttempt!=null&&searchNavigationEffect!=null&&current==null&&inFlight==null&&pending==null
+                &&frame.capturedElapsedMs>=searchNavigationEffectElapsed,"fresh observed input must follow the actual typed navigation effect");
+        need(product!=null&&product.quote==null&&product.missing.isEmpty()
+                &&java.util.Arrays.asList("search_input","search_submit","search_suggestion").contains(product.phase),
+                "typed navigation did not produce a fresh actual native search-input contract");
+        Map<String,Object> e=base();e.put("schema","hepta.native-search-navigation-observed.v1");e.put("effect",searchNavigationEffect);
+        e.put("fresh_frame",frame.evidence());e.put("provider",product.evidence());e.put("navigation_only",true);
+        e.put("fresh_search_contract_phase",product.phase);e.put("query_or_result_proof_created",false);e.put("business_transition_verified",false);
+        Map<String,Object> sealed=NativeAppEvidence.immutableMap(e);journal.write("native-search-navigation-observed.json",sealed);
+        transitions.add(sealed);searchNavigationObserved=true;
+    }
+    void requireSearchNavigationObserved(NativeSearchSession session,NativeAppEvidence.Frame frame){
+        requireSearchPlanningCurrent(session);need(searchNavigationObserved&&searchNavigationEffect!=null&&current!=null
+                &&frame!=null&&current.frame.sameSource(frame),"actual same Session search-input handoff not verified");
     }
     private static void requireInstalled(NativeAppGoal goal,NativeAppEvidence.Installed value){
         need(value!=null&&goal.packageName.equals(value.packageName)&&value.apkHashes.size()==1,"complete admitted native APK identity required");
@@ -118,6 +171,7 @@ final class NativeAppSession {
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
         product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
+        observeSearchNavigation(frame);
         if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
             productHomeLoadingSince=frame.capturedElapsedMs;
         if(pending!=null)advancePending(frame);
@@ -444,7 +498,7 @@ final class NativeAppSession {
         if(now>=end){invalidate("actual_native_transition_observation_deadline");live();}
         return Math.min(taskDeadline,end);
     }
-    void requireModelPlanning(){live();need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
+    void requireModelPlanning(){live();need(searchNavigationAttempt==null||searchNavigationObserved,"native search navigation requires a fresh actual input observation before another model decision");need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
 
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
@@ -925,7 +979,7 @@ final class NativeAppSession {
         out.put("display_summary","小米商城原生应用当前展示 "+product.quote.modelRaw+"：人民币"+product.quote.amountDecimal+"元。已从本次搜索结果进入同商品详情核对；未下单，最终结算和库存未确认。");return out;}
     private Map<String,Object> resultBase(NativeAppEvidence.Frame f,String schema){Map<String,Object> e=base();e.put("schema",schema);e.put("goal",goal.evidence());
         e.put("installed_app",installed.evidence());e.put("current_frame",f.evidence());e.put("business_verified_before_terminal",false);e.put("external_model",false);return e;}
-    private Map<String,Object> progress(){Map<String,Object> e=NativeAppEvidence.map();e.put("actual_model_actions",ordinal);e.put("calendar_year_proved",calendarYearProof!=null);
+    private Map<String,Object> progress(){Map<String,Object> e=NativeAppEvidence.map();e.put("actual_model_actions",ordinal);e.put("typed_search_navigation_observed",searchNavigationObserved);e.put("typed_search_navigation_pending",searchPlanning!=null&&!searchNavigationObserved);e.put("calendar_year_proved",calendarYearProof!=null);
         e.put("proved_form_date",confirmedFormDate==null?null:confirmedFormDate.toString());e.put("last_query_date",lastQueryDate==null?null:lastQueryDate.toString());
         List<String> dates=new ArrayList<String>();for(LocalDate d:queryAttempts)dates.add(d.toString());e.put("explicit_query_attempt_dates",dates);
         e.put("product_modal_exit_attempted",productModalExitAttempted);

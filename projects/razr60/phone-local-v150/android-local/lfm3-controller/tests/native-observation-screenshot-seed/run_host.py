@@ -47,23 +47,44 @@ def verify_original_fixtures(source, before):
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
 '''
     raw = (source / template).read_bytes()
-    current_sha = '2fedec818e4fb21c0260580658e225da5cc34443ec8928988f34b80f6cbb9a01'
+    current_sha = '1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57'
     need(before[template]['sha256'] == sha(raw) == current_sha,
          'reviewed fail-only fixture template differs')
+    # Proof copy only: actual observer compilation retains every current port.
+    search_ports = b'    // No native search Session is bound in these original observer fixtures.\n    // Unexpected binding is refused; these ports cannot create planning or an Offer.\n    private final Object nativeSearchSession=null,activeNativeSearchObservation=null;\n    private void noteNativeSearchEvent(int display,int window,String pkg,boolean content,boolean typed){\n        if(nativeSearchSession!=null||activeNativeSearchObservation!=null)\n            throw new AssertionError("legacy observer cannot route a bound native search event");\n    }\n    private boolean nativeSearchAllowsLegacyObservation(String taskId){\n        return nativeSearchSession==null&&activeNativeSearchObservation==null;\n    }\n'
+    need(raw.count(search_ports) == 1, 'exact unbound native-search fixture ports required')
+    legacy_search = raw.replace(search_ports, b'', 1)
+    need(sha(legacy_search) == '2fedec818e4fb21c0260580658e225da5cc34443ec8928988f34b80f6cbb9a01',
+         'complete pre-search AX fixture bytes differ')
     need(raw.count(port) == 1, 'exact single fail-only form port required')
     ax_ports = b'    // Legacy scheduling fakes never bind a text-native model. The AX gate substitutes\n    // the actual production mode admission, worker and publisher at these three ports.\n    private void bindNativeAxObservationRequest(ObservationRequest request){}\n    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){return false;}\n    private void captureNativeAxObservation(ObservationRequest request){throw new AssertionError("legacy fixture cannot enter AX capture");}\n'
     need(raw.count(ax_ports) == 1, 'exact reviewed fail-only AX ports required')
-    legacy = raw.replace(ax_ports, b'', 1)
+    legacy = legacy_search.replace(ax_ports, b'', 1)
     need(sha(legacy) == '50b7d239c4e76334894082dd01ecad1a7a207eb1e776f82f9916d3ea1e62de1d', 'original form-port fixture bytes differ')
     original_sha = sha(legacy.replace(port, b'', 1))
     need(original_sha == PINNED_FIXTURES[template],
          'original complete fixture body differs after exact port removal')
     diagnostic = 'tests/observation-diagnostics/run_host.py'
     diagnostic_raw = (source / diagnostic).read_bytes()
-    need(before[diagnostic]['sha256'] == sha(diagnostic_raw) == '8bc73b57369ffedd8681101c86ba096856f36b6dcba08d3a973f1cb72720209e',
-         'exact reviewed diagnostic source-list and private-artifact test changes required')
+    need(before[diagnostic]['sha256'] == sha(diagnostic_raw) == 'a8db4f43d84235c8af729415a37e1c696057498517b00e2d90a03db373432637',
+         'exact reviewed diagnostic source and search-retirement anchor required')
+    # These fixed reversals affect only the historical proof; actual tests keep all
+    # AX publication cases and the real Controller retirement/finalization block.
+    diagnostic_legacy = diagnostic_raw
+    search_anchor_replacements = [(b"    finalization=section(controller,'        finally{\\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')\n", b"    finalization=section(controller,'        finally{\\n            if(activeNativeSearch!=null)activeNativeSearch.retire();\\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')\n")]
+    for prior, revised in search_anchor_replacements:
+        need(diagnostic_legacy.count(revised) == 1, 'unique actual search-retirement anchor required')
+        diagnostic_legacy = diagnostic_legacy.replace(revised, prior, 1)
+    need(sha(diagnostic_legacy) == 'f15d8aab75c26e0e4dc9da87a326fbca54de54e63596bedc0592629139937f5d',
+         'complete pre-search diagnostic runner bytes differ')
+    ax_publication_replacements = [(b"       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template']\n", b"       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template','AxPublicationDiagnosticsHostTest.java']\n"), (b"        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java',source/TEST/'PrivateCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))\n", b"        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java',source/TEST/'PrivateCensusDiagnosticsHostTest.java',source/TEST/'AxPublicationDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))\n"), (b'', b"        ax=stage('ax-publication-cases',[str(java),'-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.AxPublicationDiagnosticsHostTest',str(output/'AX-PUBLICATION-CASES.json')],output);report['stages'].append(ax)\n        if ax['exit_code']!=0:raise RuntimeError('actual AX publication diagnostic cases failed')\n        ax_cases=json.loads((output/'AX-PUBLICATION-CASES.json').read_text())\n        if ax_cases['all_pass'] is not True or ax_cases['cases']!=18 or len(ax_cases['case_names'])!=18 or len(set(ax_cases['case_names']))!=18 or ax_cases['assertions']<=0:\n            raise RuntimeError('complete unique AX publication diagnostic case identity required')\n        if ax_cases['actual_tracker_and_Service_serializers'] is not True or ax_cases['deadline_or_sampling_changed'] is not False or ax_cases['android_execution'] is not False or ax_cases['phone_operations']!=0 or ax_cases['business_completion_verified'] is not False:\n            raise RuntimeError('AX publication diagnostic boundary changed')\n        report['ax_publication_cases']=ax_cases;report['ax_publication_cases_file']=meta(output/'AX-PUBLICATION-CASES.json')\n")]
+    for prior, revised in ax_publication_replacements:
+        need(diagnostic_legacy.count(revised) == 1, 'unique reviewed AX diagnostic test addition required')
+        diagnostic_legacy = diagnostic_legacy.replace(revised, prior, 1)
+    need(sha(diagnostic_legacy) == '8bc73b57369ffedd8681101c86ba096856f36b6dcba08d3a973f1cb72720209e',
+         'complete pre-AX-publication diagnostic runner bytes differ')
     diagnostic_replacements = [(b"JAVA = ['HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',\n", b"JAVA = ['ObservationCaptureEvidence.java', 'HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',\n"), (b"       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java']\n", b"       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template']\n"), (b'', b"        'private_census_holder':body(controller,'    private static final class FailedCensusDiagnostic {'),\n        'persist_private_census':body(controller,'    private JSONObject persistFailedCensusDiagnostic(String task,String status,boolean verified,File directory){'),\n        'private_census_write':body(controller,'    private static void recordPrivateCensus(File directory,String name,byte[] bytes)throws Exception{'),\n"), (b"    for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics'])]:\n", b"    for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics','private_census_holder','persist_private_census']),('PrivateCensusFileHost',['private_census_write'])]:\n"), (b'    positions=[finalization.index(token) for token in [\'backgroundCleanup=background.close();\',\'modelCleanup=inference.endTask(taskId);\',\'terminalDecisionSealed=true;\',\'record(evidence,"result.json"\',\'takeObservationDiagnostics(taskId)\',\'if(cleanup)service.releaseTask(taskId);\',\'running=false;\',\'selected.onFinished(result)\']]\n', b'    positions=[finalization.index(token) for token in [\'backgroundCleanup=background.close();\',\'modelCleanup=inference.endTask(taskId);\',\'terminalDecisionSealed=true;\',\'persistFailedCensusDiagnostic(taskId,finalStatus,completionVerified,evidence)\',\'record(evidence,"result.json"\',\'takeObservationDiagnostics(taskId)\',\'if(cleanup)service.releaseTask(taskId);\',\'running=false;\',\'selected.onFinished(result)\']]\n'), (b"        'diagnostic_finally_has_no_IO_or_wait':True,'terminal_diagnostic_uses_only_existing_result_write':True,\n", b"        'diagnostic_finally_has_no_IO_or_wait':True,'terminal_summary_uses_only_existing_result_write':True,'private_failure_artifact_after_original_cleanup_and_terminal':True,\n"), (b"        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))\n", b"        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java',source/TEST/'PrivateCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))\n")]
-    restored = diagnostic_raw
+    restored = diagnostic_legacy
     for prior, revised in diagnostic_replacements:
         need(restored.count(revised) == 1, 'unique reversible diagnostic fixture change required')
         restored = restored.replace(revised, prior, 1)
@@ -71,7 +92,7 @@ def verify_original_fixtures(source, before):
     need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic)),
          'original reviewed fixture bytes differ')
     return {'template': template, 'current_sha256': current_sha,
-            'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports),
+            'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports) + len(search_ports),
             'diagnostic_runner_current_sha256': sha(diagnostic_raw),
             'diagnostic_runner_original_sha256': sha(restored),
             'diagnostic_runner_reverse_original_byte_equality': True,

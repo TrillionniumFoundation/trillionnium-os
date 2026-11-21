@@ -113,6 +113,9 @@ def main():
     spec.loader.exec_module(module)
     fixture = output / 'fixture'
     files, derivation = module.prepare(source, fixture, include_terminal=False)
+    search_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    port_spec=importlib.util.spec_from_file_location('old_search_pure',search_helper)
+    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)
     files = [p for p in files if '/org/json/' not in str(p)]
     replace_once(fixture / 'android/os/Looper.java', 'public static Looper myLooper(){return L;}',
                  'public static boolean worker;public static Looper myLooper(){return worker?null:L;}')
@@ -166,7 +169,7 @@ final class PersonalNotesRecoveryIdleFixture {
  static final class LocalTaskController {boolean running;boolean isRunning(){return running;}String currentTaskId(){return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";}}
  static final class Web {boolean released(){return false;}}
  PersonalNotesRecoveryIdleFixture live=this;LocalTaskController ownedController=new LocalTaskController();
- Object activeObservation;boolean capturePending,pendingObservation,pendingAction,pendingNative;
+ Object activeObservation;final Object activeNativeSearchObservation=null;boolean capturePending,pendingObservation,pendingAction,pendingNative;
  BackgroundSession taskBackground;Web taskWeb;String lease=ownedController.currentTaskId();
  PersonalNotesRecoveryIdleFixture(BackgroundSession background){taskBackground=background;}
  boolean observationReadWorkPending(){return pendingObservation;}boolean actionWorkPending(){return pendingAction;}boolean nativeCancellationWorkPending(){return pendingNative;}
@@ -180,7 +183,7 @@ final class PersonalNotesRecoveryIdleFixture {
                              'org.trillionnium.hepta.local.PersonalNotesRecoveryClientHostTest']),
                  ('post-model', [str(jdk / 'java'), '-cp', str(classes) + os.pathsep + str(args.json_jar.resolve()),
                              'org.trillionnium.hepta.local.PersonalNotesPostModelHostTest'])]
-    sources = list(dict.fromkeys(pure + files + [helper, client, service, local / 'LocalTaskSession.java',
+    sources = list(dict.fromkeys(pure + files + [helper, search_helper, client, service, local / 'LocalTaskSession.java',
                                                bg / 'PublicPersonalNotesAbsenceMain.java']))
     pins = {str(p): sha(p) for p in sources}
     result = {'schema': 'hepta.personal-notes-absence-host-validation.v1', 'all_pass': False,

@@ -73,6 +73,7 @@ def generate(source,out,h,snap):
             this(id,pkg,at,width,height,rotation,window,bounds,image,hash,tree,state,metadata,truncated,rows,generation,initial,allowed,stats,selection,owner,evidence,profile);
             expect(image==null&&hash==null&&capture!=null,"explicit AX carrier is not pixels");
             this.capture=capture;captureKind=ObservationCaptureEvidence.NATIVE_AX;
+            if(live.phoneConstructHook!=null)live.phoneConstructHook.run();
         }''')
  h.write(path,s)
  return {'schema':'hepta.native-ax-extraction.v1','production_ax_methods_verbatim':True,

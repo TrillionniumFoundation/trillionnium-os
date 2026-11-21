@@ -8,6 +8,8 @@ def main():
  source=a.source.resolve();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
  spec=importlib.util.spec_from_file_location('background_client_fixture',Path(__file__).with_name('prepare_fixture.py'));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
  files,extraction=m.prepare(source,out/'fixture');files.append(Path(__file__).with_name('BackgroundSessionHostTest.java'));classes=out/'classes';classes.mkdir()
+ spec=importlib.util.spec_from_file_location('old_search_pure',source/'tests/native-app/legacy-boundary/prepare_search_pure.py')
+ legacy_search=importlib.util.module_from_spec(spec);spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)
  before={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in files}
  flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
  compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']

@@ -56,6 +56,7 @@ final class HeptaAccessibilityService extends Context {
     final LocalProbeApplication app;
     LocalTaskController ownedController;
     Object lease,activeObservation;
+    final Object activeNativeSearchObservation=null;
     boolean capturePending,readPending,actionPending,cancelPending;
     CloseBoundary taskBackground,taskWeb;
     HeptaAccessibilityService(LocalProbeApplication app){super(app.getFilesDir());this.app=app;live=this;}

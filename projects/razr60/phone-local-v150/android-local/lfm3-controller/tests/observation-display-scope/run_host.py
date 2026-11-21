@@ -32,13 +32,18 @@ def main():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     files, extraction = module.prepare(source, fixture)
+    # Explicit legacy-only grammar closure; actual typed search has separate gates.
+    search_helper = source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+    search_spec = importlib.util.spec_from_file_location('display_scope_search_pure', search_helper)
+    search_pure = importlib.util.module_from_spec(search_spec); search_spec.loader.exec_module(search_pure)
+    files = search_pure.add(source, files)
     pkg = source/'src/org/trillionnium/hepta/local'
     files += [pkg/(name+'.java') for name in ('ObservationCaptureEvidence', 'PhoneObservation', 'ObservationState', 'ImeVisibility',
                                             'ObservedWindowMetadata', 'ObservedChildText')]
     files += [source/'tests/qualification-scope/fixtures/android/graphics/Rect.java',
               source/'tests/observation-display-scope/ObservationDisplayScopeHostTest.java']
     files = list(dict.fromkeys(files))
-    before = {str(path): sha(path.read_bytes()) for path in files}
+    before = {str(path): sha(path.read_bytes()) for path in files + [search_helper]}
     java = str(args.java_home.resolve()/'bin/java') if args.java_home else shutil.which('java')
     javac = str(args.java_home.resolve()/'bin/javac') if args.java_home else shutil.which('javac')
     if not java:

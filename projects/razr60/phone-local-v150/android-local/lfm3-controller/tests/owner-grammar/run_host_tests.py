@@ -2,6 +2,7 @@
 """Actual Owner GBNF emission plus independent recognition; no Android/SDK/phone."""
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -23,6 +24,8 @@ def main():
     inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget')]
     inputs += [source/'src/org/trillionnium/hepta/local/web'/(name+'.java') for name in ('WebFlightGoal','WebShoppingGoal')]
     inputs.append(source/'tests/owner-grammar/OwnerGrammarHostTest.java')
+    port_spec=importlib.util.spec_from_file_location('old_search_pure',source/'tests/native-app/legacy-boundary/prepare_search_pure.py')
+    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);inputs=legacy_search.add(source,inputs)
     pins={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
     for p in (source/'tests/owner-grammar/test_owner_grammar.py',source/'tests/action-grammar/gbnf_recognizer.py'):
         pins[str(p.relative_to(source))]=hashlib.sha256(p.read_bytes()).hexdigest()

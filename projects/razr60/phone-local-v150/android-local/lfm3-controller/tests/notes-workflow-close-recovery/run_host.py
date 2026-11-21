@@ -57,6 +57,24 @@ def pin(path, expected=None):
  raw=read(path);value={'path':str(path),'bytes':len(raw),'sha256':digest(raw)}
  need(expected is None or value['sha256']==expected,'source pin differs: '+str(path))
  return value
+def source_pin(source, relative, expected):
+ path=source/relative
+ if relative!='tests/personal-notes-absence/run_host.py':return pin(path,expected)
+ # Validate the exact reviewed current driver; inverse-transform only this local
+ # proof string. The real current driver and all original cases are executed.
+ value=pin(path,'4903995a4896367bb7fcac9531b1db430d6f98671385742bc700b88d01e50211')
+ raw=read(path);need(digest(raw)==value['sha256'],'pinned driver changed before inverse proof')
+ proof=raw.decode('utf-8')
+ changes=(
+  ("    search_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'\n    port_spec=importlib.util.spec_from_file_location('old_search_pure',search_helper)\n    legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search);files=legacy_search.add(source,files)\n",''),
+  (' Object activeObservation;final Object activeNativeSearchObservation=null;boolean',' Object activeObservation;boolean'),
+  ('[helper, search_helper, client, service','[helper, client, service'))
+ for current, previous in changes:
+  need(proof.count(current)==1,'unique reviewed legacy driver inverse required')
+  proof=proof.replace(current,previous,1)
+ need(digest(proof.encode('utf-8'))==expected,'full original legacy driver pin differs after inverse')
+ return value
+
 def pairs(rows):
  out={}
  for key,value in rows:
@@ -137,7 +155,7 @@ def main():
  before=tree(source);parent_refs={str(parent/p):pin(parent/p,h) for p,h in PARENTS.items()}
  refs=input_map(args.private_input_map.resolve());map_ref=pin(args.private_input_map.resolve())
  tools={str(p):pin(p) for p in (jdk/'java',jdk/'javac',jars)};need(tools[str(jars)]['sha256']==JSON_SHA,'pinned JSON required')
- source_inputs={str(source/p):pin(source/p,h)['sha256'] for p,h in PINS.items()}
+ source_inputs={str(source/p):source_pin(source,p,h)['sha256'] for p,h in PINS.items()}
  for path in (own/'NotesWorkflowCloseRecoveryHostTest.java',own/'run_host.py',own/'README.md'):
   source_inputs[str(path)]=pin(path)['sha256']
  result.update(source_inputs=source_inputs,parent_inputs=parent_refs,tool_inputs=tools,input_map=map_ref,
