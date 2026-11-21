@@ -162,6 +162,10 @@ final class BrokerProtocol {
         return path
     org=(source/INPUTS[3]).read_text(encoding="utf-8")
     unlocked=part(broker,'    private void requireUnlocked()','    private void verifyDisplay()')
+    policy_audit=part(broker,'    /** First unexpected policy failure only. This evidence never changes admission or cleanup. */',
+                     '    private static String code(')
+    policy_audit_field='    private final PublicPolicyFailureAudit publicPolicyFailures=new PublicPolicyFailureAudit();\n'
+    if broker.count(policy_audit_field)!=1:raise RuntimeError("public policy audit field boundary changed")
     locations=part(broker,'    private void verifyLaunchedLocations(','    /** Read the actual exported component twice;')
     profile=part(org,'    /** Strict parallel arrays from RootTaskInfo,','    /** Read-only Notes census:')
     helpers=part(org,'    private static Object field(','    private String dump(')
@@ -184,7 +188,7 @@ final class BrokerProtocol {
     final class BackgroundTaskOrganizer {
     '''+profile+helpers+'}\n'))
     generated.append(put('fixture/BrokerPolicyFixture.java','''package org.trillionnium.hepta.background;
-    import java.util.*;import java.lang.reflect.Method;import java.util.concurrent.atomic.AtomicBoolean;import android.content.ComponentName;
+    import java.util.*;import java.lang.reflect.Method;import java.lang.reflect.InvocationTargetException;import java.io.IOException;import java.util.concurrent.atomic.AtomicBoolean;import android.content.ComponentName;
     /** Complete original broker methods; only Android framework/clock ports below are doubles. */
     public final class BrokerPolicyFixture {
      static final class Config {Object publicOwnGroupScope=new Object(),profileTarget;String generation="12345678-1234-1234-1234-123456789012";}
@@ -216,7 +220,7 @@ final class BrokerProtocol {
      final TaskService activityTasks;final Method allRootTasks;
      BrokerPolicyFixture(RootInfo... roots)throws Exception{activityTasks=new TaskService(roots);allRootTasks=TaskService.class.getMethod("getAllRootTaskInfos");publicTaskFence=new PublicOwnGroupTaskFence(BackgroundTaskOrganizer.profileSnapshot(activityTasks),0,config.generation);}
      void policy()throws Exception{requireUnlocked();}String visibleTop()throws Exception{return snapshot().singleVisibleTop(displayId);}
-    '''+unlocked+locations+snapshot+'}\n'))
+    '''+policy_audit_field+unlocked+locations+snapshot+policy_audit+'}\n'))
 
     extraction = {"schema": "hepta.owned-task-reconciliation-extraction.v1",
                   "source_path": INPUTS[9], "source_sha256": before[INPUTS[9]]["sha256"],
@@ -236,6 +240,9 @@ final class BrokerProtocol {
                                       "root_task_info_and_component_io_synthetic": True,
                                       "coordinator_fresh_read_predicate_compiled_unmodified": True},
                   "public_scope_policy": {"require_unlocked_sha256": hashlib.sha256(unlocked.encode()).hexdigest(),
+                                         "public_policy_audit_sha256": hashlib.sha256(policy_audit.encode()).hexdigest(),
+                                         "public_policy_audit_field_sha256": hashlib.sha256(policy_audit_field.encode()).hexdigest(),
+                                         "actual_policy_audit_compiled_verbatim": True,
                                          "verify_launched_locations_sha256": hashlib.sha256(locations.encode()).hexdigest(),
                                          "framework_profile_and_location_readers_sha256": hashlib.sha256(profile.encode()).hexdigest(),
                                          "framework_field_helpers_sha256": hashlib.sha256(helpers.encode()).hexdigest(),

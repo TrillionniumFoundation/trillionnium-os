@@ -3,7 +3,7 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "c98f4b30_r1_complete_host_android_phone_validation_pending",
+  "candidate_status": "c98f4b30_r2_complete_host_android_phone_validation_pending",
   "complete_source_files": 2335,
   "files": [
     {
@@ -9347,9 +9347,9 @@
       "sha256": "99143bd0a8d5489361c6af990f43c6b604afe77fc05cb0239154db5dcfae84d2"
     },
     {
-      "bytes": 21547,
+      "bytes": 22419,
       "path": "tests/owned-single-task/run_host.py",
-      "sha256": "a407730d559dff1410d8d224f9406f930b2fa43dfdd25dff640d7573dd7da68a"
+      "sha256": "426e79fa2880c5e3c91e0bb9edaaa1cbe56a1be48189428a91b3e328b33bc0fa"
     },
     {
       "bytes": 7754,
@@ -11682,9 +11682,9 @@
   "production_build_inputs_count": 371,
   "production_input_map_sha256": "4dc7e7dab87296a3546e03bc49ca8c63c950d10cd94686c6a5fd7200225b3eb6",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact 8df successor. Preserve all existing runtime/model files, broker admission, virtual-display/task identity, deadlines and original host regressions. Add a strictly version-bound Xiaomi optional-location decline with public derived fixtures; never offer the enable-location action. Record the first unexpected public-policy check with fixed operation phase, class and closed categories without arbitrary exception text; keep all refusal decisions unchanged. Add recovery only for an expired zero-model startup whose last authenticated APP_READY prepare_state response is ACTIVE but the original owned process subsequently proves RELEASED, matching root/leaf/token/UID/cookie and preserved history; keep current double absence samples and durable archives mandatory. Scroll cleanup feedback within its own Activity window only. No phone or Android qualification is asserted by this manifest.",
-  "source_parent_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
-  "source_parent_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
+  "scope": "Exact 8df successor. Preserve all existing runtime/model files, broker admission, virtual-display/task identity, deadlines and original host regressions. Add a strictly version-bound Xiaomi optional-location decline with public derived fixtures; never offer the enable-location action. Record the first unexpected public-policy check with fixed operation phase, class and closed categories without arbitrary exception text; keep all refusal decisions unchanged. Add recovery only for an expired zero-model startup whose last authenticated APP_READY prepare_state response is ACTIVE but the original owned process subsequently proves RELEASED, matching root/leaf/token/UID/cookie and preserved history; keep current double absence samples and durable archives mandatory. Scroll cleanup feedback within its own Activity window only. No phone or Android qualification is asserted by this manifest. The 7e8 successor changes only the owned-single-task host fixture runner to compile the exact existing PublicPolicyFailureAudit class and field transitively with requireUnlocked; all production inputs, original cases, and assertions remain identical.",
+  "source_parent_head": "7e8d95623d09cae06ad46665fcd9ed9dca8be92b",
+  "source_parent_manifest_sha256": "beb48ddd14d2157572a94940458c7f7af6488c1a2dc6ad7e55d2d3c781ea0558",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
