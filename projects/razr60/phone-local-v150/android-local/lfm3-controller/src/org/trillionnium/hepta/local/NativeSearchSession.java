@@ -9,7 +9,10 @@ import org.json.JSONObject;
  * No Android nodes live here. Neither planning data nor a pure role comparison
  * can be dispatched through the old click/type/scroll/done entry point. */
 final class NativeSearchSession {
-    interface ObservationCallback {void onPlanning(NativeSearchPlanning value);void onError(String detail);}
+    interface ObservationCallback {
+        void onPlanning(NativeSearchPlanning value);void onError(String detail);
+        default void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){onError(detail);}
+    }
     interface ActionCallback {void onResult(HeptaAccessibilityService.ActionOutcome value);}
     final Object controller;
     final NativeAppSession nativeTask;
@@ -52,6 +55,10 @@ final class NativeSearchSession {
                 &&taskId.equals(background.taskId)&&nativeTask.generation.equals(background.generation)
                 &&nativeTask.displayId==background.displayId()&&nativeTask.installed.profileTarget.same(background.profileTarget()),"actual task/Gate/Selection/background object binding changed");
         nativeTask.requireSearchPlanningCurrent(this);
+    }
+    synchronized void requireBeforeFirstPlanning(long now){
+        requireLive(now);need(offered==null&&attempted==null&&!navigationEffectRecorded&&!navigationObserved,
+                "loading read recovery cannot cross a planning Offer, model intent or navigation effect");
     }
     Map<String,Object> binding(){return binding;}
     void verifyInstalled()throws Exception{nativeTask.verifyInstalled();}

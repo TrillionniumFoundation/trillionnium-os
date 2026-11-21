@@ -47,13 +47,18 @@ def verify_original_fixtures(source, before):
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
 '''
     raw = (source / template).read_bytes()
-    current_sha = '1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57'
+    current_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
     need(before[template]['sha256'] == sha(raw) == current_sha,
          'reviewed fail-only fixture template differs')
     # Proof copy only: actual observer compilation retains every current port.
+    business_port = "    // Observer-only fixture has no business recovery flight or receipt.\n    // Actual held/drained recovery queues are covered by the dedicated lifecycle gate.\n    static final class PublicProfileBusinessRecoveryClient {\n        private PublicProfileBusinessRecoveryClient(){throw new AssertionError(\"no business recovery authority in observer fixture\");}\n        static boolean workPending(){return false;}\n    }\n".encode()
+    need(raw.count(business_port) == 1, 'exact absent business-recovery queue carrier required')
+    before_business = raw.replace(business_port, b'', 1)
+    need(sha(before_business) == '1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57',
+         'business queue port must reverse to the complete prior observer fixture')
     search_ports = b'    // No native search Session is bound in these original observer fixtures.\n    // Unexpected binding is refused; these ports cannot create planning or an Offer.\n    private final Object nativeSearchSession=null,activeNativeSearchObservation=null;\n    private void noteNativeSearchEvent(int display,int window,String pkg,boolean content,boolean typed){\n        if(nativeSearchSession!=null||activeNativeSearchObservation!=null)\n            throw new AssertionError("legacy observer cannot route a bound native search event");\n    }\n    private boolean nativeSearchAllowsLegacyObservation(String taskId){\n        return nativeSearchSession==null&&activeNativeSearchObservation==null;\n    }\n'
     need(raw.count(search_ports) == 1, 'exact unbound native-search fixture ports required')
-    legacy_search = raw.replace(search_ports, b'', 1)
+    legacy_search = before_business.replace(search_ports, b'', 1)
     need(sha(legacy_search) == '2fedec818e4fb21c0260580658e225da5cc34443ec8928988f34b80f6cbb9a01',
          'complete pre-search AX fixture bytes differ')
     need(raw.count(port) == 1, 'exact single fail-only form port required')
@@ -109,7 +114,7 @@ def verify_original_fixtures(source, before):
     need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner)),
          'original reviewed fixture bytes differ')
     return {'template': template, 'current_sha256': current_sha,
-            'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports) + len(search_ports),
+            'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports) + len(search_ports) + len(business_port),
             'diagnostic_runner_current_sha256': sha(diagnostic_raw),
             'diagnostic_runner_original_sha256': sha(restored),
             'diagnostic_runner_reverse_original_byte_equality': True,

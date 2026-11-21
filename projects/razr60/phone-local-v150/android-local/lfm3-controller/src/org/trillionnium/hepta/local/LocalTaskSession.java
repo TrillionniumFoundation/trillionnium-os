@@ -491,6 +491,9 @@ public final class LocalTaskSession {
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("background cleanup must begin on main thread");
         if(isRunning()||recovering||journalQueue.pending())throw new IllegalStateException("请先停止任务并等待会话记录真实退出");
+        try{
+            if(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(context)){reconcileBusinessBackgroundFromOwnerButton();return;}
+        }catch(Exception unavailable){blocked=true;setState("业务后台恢复无法开始："+HeptaAccessibilityService.message(unavailable));return;}
         final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         final LocalTaskController priorController=controller;
         final BackgroundSession.ReconciliationCheck prelaunchCheck=new BackgroundSession.ReconciliationCheck(){
@@ -529,6 +532,68 @@ public final class LocalTaskSession {
                 setState("后台空间已确认释放。旧任务不会恢复；若会话仍中断，请确认中断后建立新会话。");
             }});
         }});
+    }
+
+    /** A distinct owner-button cleanup. It never completes control acknowledgement. */
+    private void reconcileBusinessBackgroundFromOwnerButton(){
+        final LocalProbeApplication application=(LocalProbeApplication)context;
+        final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
+        final LocalTaskController priorController=controller;final String priorTask=taskId,priorOwner=instructionSha;
+        if(service==null||priorTask==null||priorOwner==null||!blocked||pending||isRunning()||recovering||journalQueue.pending()
+                ||PublicProfileBusinessRecoveryClient.workPending())throw new IllegalStateException("业务恢复需要原阻塞任务及真实空闲服务");
+        final LocalProbeApplication.BackgroundRecoveryReservation reservation=application.reserveBackgroundRecovery();
+        final long epoch=++generation;recovering=true;
+        final BackgroundSession.BusinessReconciliationCheck check=new BackgroundSession.BusinessReconciliationCheck(){
+            public void check()throws Exception{checkBusiness(priorTask,priorOwner);}
+            public void checkBusiness(String task,String owner)throws Exception{
+                reservation.check();
+                if(!recovering||generation!=epoch||!blocked||pending||controller!=priorController||taskId==null||instructionSha==null
+                        ||!priorTask.equals(task)||!priorOwner.equals(owner)||!priorTask.equals(taskId)||!priorOwner.equals(instructionSha)
+                        ||priorController!=null&&priorController.isRunning()||journalQueue.pending()
+                        ||service!=HeptaAccessibilityService.connected()||!service.publicProfileBusinessReconciliationIdle(priorController,task,owner))
+                    throw new IOException("业务恢复的实际任务、服务或队列预约发生变化");
+            }
+        };
+        setState("正在独立核验旧业务退出与后台空间缺席；原任务结果和中断标记保持不变…");
+        Runnable worker=new Runnable(){public void run(){
+            BackgroundSession.Cleanup result=null;WebFlightSession.Cleanup webResult=null;Exception failure=null;
+            try{check.check();result=BackgroundSession.reconcileBusiness(context,check);
+                if(result!=null&&result.known)webResult=WebFlightSession.reconcile(context);
+            }catch(Exception error){failure=error;}
+            readLeaseState();
+            final BackgroundSession.Cleanup observed=result;final WebFlightSession.Cleanup observedWeb=webResult;final Exception error=failure;
+            PublicProfileBusinessRecoveryClient.afterOwnedCheckerDrain(new Runnable(){public void run(){
+                Runnable completion=new Runnable(){public void run(){
+                    try{
+                        check.check();
+                        if(error!=null)throw error;
+                        if(observed==null||observed.businessRecovery==null||!observed.known||observedWeb==null||!observedWeb.known)
+                            throw new IOException("业务恢复或独立网页工具尚未确认退出");
+                        service.acceptBackgroundReconciliation(observed);service.acceptWebReconciliation(observedWeb);
+                        // Deliberately keep blocked and all old journal fields. The
+                        // existing two-stage owner acknowledgement is a later action.
+                        setState("后台空间已独立确认释放；旧任务结果仍保留。请另行确认中断后建立新会话。");
+                    }catch(Exception mismatch){blocked=true;setState("业务后台恢复未完成："+HeptaAccessibilityService.message(mismatch));}
+                    finally{
+                        try{reservation.close();}
+                        catch(RuntimeException retained){blocked=true;setState("后台恢复预约未确认归还，仍暂停新任务："+HeptaAccessibilityService.message(retained));}
+                        finally{recovering=false;publish();}
+                    }
+                }};
+                if(!main.post(completion)){
+                    // No UI acceptance is invented. Return only the actual model
+                    // reservation, after the owned process/reader have really drained.
+                    try{reservation.close();}finally{blocked=true;recovering=false;}
+                }
+            }});
+        }};
+        try{recoveryWorker.execute(worker);}
+        catch(RejectedExecutionException refused){try{reservation.close();}finally{recovering=false;blocked=true;}throw refused;}
+        catch(RuntimeException unknown){
+            // An indeterminate submission may still own the worker. Its actual
+            // completion alone may return the held reservation; keep the barrier.
+            blocked=true;setState("业务恢复提交状态未知；仍保留原预约与中断记录。");throw unknown;
+        }
     }
 
     /** Ordinary UI callbacks capture values only; the serial writer owns all disk operations. */

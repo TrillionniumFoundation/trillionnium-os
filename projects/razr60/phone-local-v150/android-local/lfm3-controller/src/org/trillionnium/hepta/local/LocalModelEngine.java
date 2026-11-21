@@ -649,6 +649,34 @@ public final class LocalModelEngine implements AutoCloseable {
         return reservation;
     }
 
+    /**
+     * Current in-process drain under a retained recovery reservation. Historical
+     * process-exit receipts are checked separately by the background protocol.
+     * Holding both admission slots prevents a new task or diagnostic between
+     * this check and the caller's final private-evidence commit.
+     */
+    void requireBackgroundRecoveryQuiescent(RecoveryReservation reservation){
+        synchronized(PROCESS_ADMISSION){
+            if(reservation==null||reservation.barrier.owner!=this)
+                throw new IllegalStateException("background recovery belongs to another engine");
+            reservation.requireOwnedBy(reservation.barrier);
+            if(closed.get()||PROCESS_ACTIVE.get()!=reservation.handle||active.get()!=reservation.handle
+                    ||reservation.handle.child.get()!=null||warmActive.get()!=null
+                    ||settingsReservation!=null||ACTIVE_CANCELLATION.pending()||!executorIdle()
+                    ||LocalProbeApplication.permissionPreparationBlocks(context))
+                throw new IllegalStateException("background recovery model work has not actually drained");
+        }
+    }
+
+    /** Checks actual close ownership; it does not release or acknowledge any barrier. */
+    boolean backgroundRecoveryReturnedToBarrier(RecoveryReservation reservation){
+        synchronized(PROCESS_ADMISSION){
+            return reservation!=null&&reservation.barrier.owner==this&&reservation.isCloseFinished()
+                    &&!reservation.wasReleased()&&reservation.barrier.handle.child.get()==null
+                    &&reservation.barrier.handoff.canBorrow();
+        }
+    }
+
     public RunHandle start(final Request request, final Listener listener) {
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if (request == null || listener == null) throw new IllegalArgumentException("request and listener required");

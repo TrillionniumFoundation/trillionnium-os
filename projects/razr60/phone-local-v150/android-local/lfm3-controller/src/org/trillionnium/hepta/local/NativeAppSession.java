@@ -46,6 +46,7 @@ final class NativeAppSession {
     private boolean productLoginExitReserved;
     private String productLoginProposalObservation;
     private boolean flightLoginExitAttempted;
+    private boolean flightLoginReturnedToForm;
     private String flightLoginProposalObservation;
     private String invalidReason;
     private String reservationReobserveId;
@@ -190,6 +191,16 @@ final class NativeAppSession {
         Map<String,Object> view=NativeAppEvidence.map(),result=null;List<String> missing=new ArrayList<String>();boolean back=false;
         String phase=flight!=null?flight.phase:product.phase;
         if(!frame.metadataObserved||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated){missing.add("complete_actual_native_application_frame_required");}
+        else if(flight!=null&&flightLoginReturnedToForm){
+            // This is a proved navigation destination, never a flight-result proof.
+            // The one login exit has been spent; do not query or enter login again.
+            view.put("login_returned_to_form_without_target_result",true);
+            view.put("actual_return_destination",NativeCtripFlightPage.FORM);
+            view.put("query_or_result_proof_created",false);
+            view.put("credentials_or_agreement_actions_available",false);
+            view.put("next_goal","本任务实际查询后出现登录页面；唯一一次返回已观察到机票表单，尚未取得目标日期的完整航班结果。只能结束 failure 或 partial 并说明本次未完成；不能再次查询、登录、返回、等待或声称查票成功。");
+            missing.add("native_ctrip_login_returned_to_form_without_target_result");
+        }
         else if(NativeCtripFlightPage.FIRST_LAUNCH_PRIVACY.equals(phase)){
             boolean queryAttempted=!queryAttempts.isEmpty()||lastQueryProof!=null;
             view.put("observed_first_launch_privacy",true);view.put("initialization_required",true);
@@ -932,6 +943,20 @@ final class NativeAppSession {
                 proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);
                 proof.put("prior_actual_query_proof_sha256",NativeAppEvidence.fingerprint(lastQueryProof));
                 proof.put("returned_query_date",a.date.toString());complete=true;
+            }else if(NativeCtripFlightPage.LOGIN_EXIT.equals(p)&&a.flight!=null
+                    &&NativeCtripFlightPage.LOGIN_REQUIRED.equals(a.flight.phase)&&NativeCtripFlightPage.FORM.equals(flight.phase)
+                    &&installed.profileTarget!=null&&frame.capture!=null&&frame.capture.nativeText()
+                    &&frame.metadataObserved&&frame.windowType==1&&frame.collectionComplete&&!frame.nodesTruncated
+                    &&a.date!=null&&a.date.equals(lastQueryDate)&&lastQueryProof!=null&&flight.form.matches(a.date)
+                    &&NativeAppEvidence.sameProfileOwner(a.before.frame.profileWindow,frame.profileWindow)){
+                // The full typed post-effect census proves only where the one
+                // return arrived. It does not promote history to current result
+                // authority, renew a clock, or reset any proposal/query budget.
+                proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);
+                proof.put("business_transition_verified",false);proof.put("login_exit_ended_without_target_result",true);
+                proof.put("actual_return_destination",NativeCtripFlightPage.FORM);proof.put("form_after",flight.form.evidence());
+                proof.put("prior_actual_query_proof_sha256",NativeAppEvidence.fingerprint(lastQueryProof));
+                proof.put("returned_form_date",a.date.toString());flightLoginReturnedToForm=true;complete=true;
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
@@ -992,7 +1017,7 @@ final class NativeAppSession {
         e.put("product_modal_exit_attempted",productModalExitAttempted);
         e.put("product_login_exit_reserved",productLoginExitReserved);
         e.put("product_login_proposal_observation",productLoginProposalObservation);
-        e.put("flight_login_exit_attempted",flightLoginExitAttempted);
+        e.put("flight_login_exit_attempted",flightLoginExitAttempted);e.put("flight_login_returned_to_form",flightLoginReturnedToForm);
         e.put("flight_login_proposal_observation",flightLoginProposalObservation);
         e.put("product_home_loading_since_elapsed_ms",productHomeLoadingSince<0?null:Long.valueOf(productHomeLoadingSince));
         e.put("product_home_loading_wait_attempts",productHomeLoadingWaits);
@@ -1011,12 +1036,12 @@ final class NativeAppSession {
             profileWindow=frame.profileWindow;this.result=NativeAppEvidence.immutableMap(result);
         }
     }
-    boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&current!=null&&current.resultReady
+    boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&!flightLoginReturnedToForm&&current!=null&&current.resultReady
             &&(current.frame.capture==null||!current.frame.capture.formHistory())&&frame!=null
             &&current.frame.observationId.equals(frame.observationId)&&current.frame.completionFrameSha.equals(TaskCompletionGate.webFrameSha(frame))&&pending==null&&inFlight==null;}
     SuccessClaim acceptSuccess(int step,String run,NotesCompletionEvidence.Frame frame,boolean finalWholeTreeStable){
         live();acceptedClaim=null;
-        if(current!=null&&current.frame.capture!=null&&current.frame.capture.formHistory())return null;
+        if(flightLoginReturnedToForm||current!=null&&current.frame.capture!=null&&current.frame.capture.formHistory())return null;
         if(!finalWholeTreeStable||!ready(frame)||lastDone==null||lastDone.step!=step||!lastDone.run.equals(run)
                 ||!"success".equals(lastDone.action.status)||!lastDone.before.resultReady
                 ||!lastDone.before.frame.treeSha.equals(current.frame.treeSha)||lastDone.before.frame.windowId!=current.frame.windowId

@@ -13,6 +13,7 @@ def write(p,text):
 def main():
  ap=argparse.ArgumentParser()
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
+ ap.add_argument('--loading-original',type=Path)
  args=ap.parse_args();source=args.source.resolve();out=args.output.resolve();jdk=args.java_home.resolve();jar=args.json_jar.resolve()
  if out.exists() or source in out.parents:raise RuntimeError('fresh outside-source output required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
@@ -48,7 +49,8 @@ def main():
   raise RuntimeError('actual incomplete graph and queue cleanup must remain')
  parts['background_child_guard']=child_guard[0];parts['read_graph_failure_cleanup']=cleanup
  signatures=[
- '    private synchronized boolean ownsBackground(', '    private synchronized boolean ownsAuthorization(',
+  '    private synchronized BackgroundSession backgroundFor(', '    void verifyBackgroundRemote(',
+  '    private synchronized boolean ownsBackground(', '    private synchronized boolean ownsAuthorization(',
  '    void requireTaskAuthorization(', '    private synchronized QualificationScopeConfig.Bound scopeFor(',
  '    private synchronized boolean ownsScope(', '    private static JSONObject callbackScopeEvidence(',
  '    private JSONObject callbackAuthorizationEvidence(', '    boolean actionWorkPending(){',
@@ -70,6 +72,7 @@ def main():
  if raw.count(start)!=1 or raw.count(end)!=1:raise RuntimeError('legacy callback anchors')
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
+ parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()
  template=(test/'SearchProducerHost.template').read_text()
  for key,value in parts.items():
   if template.count('{{'+key+'}}')!=1:raise RuntimeError('unique template slot '+key)
@@ -98,15 +101,29 @@ def main():
   'android/util/Log.java':'package android.util;public final class Log{public static int i(String tag,String text){return 0;}}\n',
  }.items():
   p=ports/path;write(p,text);additional.append(p)
+ controller_raw=(pkg/'LocalTaskController.java').read_text()
+ controller_signatures=['    private static final class NativeSearchLoadingReadFailure extends IllegalStateException {',
+  '    private void requireInitialSearchPlanningRead(', '    private NativeSearchPlanning awaitNativeSearchPlanning(',
+  '    private NativeSearchPlanning awaitNativeSearchPlanningOnce(', '    private void checkActive(',
+  '    private static final class Stopped extends Exception {','    private static void record(']
+ controller_parts={key:body(controller_raw,key) for key in controller_signatures}
+ controller_template=(test/'LoadingControllerHost.template').read_text()
+ if controller_template.count('{{actual_controller_methods}}')!=1:raise RuntimeError('exact controller method slot')
+ controller_source=ports/'org/trillionnium/hepta/local/NativeSearchLoadingControllerHost.java'
+ write(controller_source,controller_template.replace('{{actual_controller_methods}}','\n'.join(controller_parts.values())))
+ additional.append(controller_source)
  paths+=additional+[pkg/'PersistentActionPolicy.java',pkg/'ObservationStabilityGate.java']
  paths=list(dict.fromkeys(paths));inputs=[meta(p) for p in paths]
  tools=[meta(p) for p in (jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar)]
  if tools[-1]['sha256']!=closure.JSON_SHA:raise RuntimeError('actual JSON jar pin')
  report={'schema':'hepta.native-search-actual-producer-host.v1','all_pass':False,'phone_operations':0,'android_execution':False,'business_verified':False,'stages':[],
  'source':str(source),'actual_service':meta(pkg/'HeptaAccessibilityService.java'),'compile_inputs_before':inputs,'tools_before':tools,
- 'source_inputs':provenance['production_inputs']+[meta(p) for p in test.iterdir() if p.is_file()],
+ 'source_inputs':provenance['production_inputs']+[meta(pkg/'LocalTaskController.java')]+[meta(p) for p in test.iterdir() if p.is_file()],
  'boundary':'Real full Session/Gate/Offer/Attempt/Role/Planning plus verbatim HA new producer, typed effect, ownership guards, raw census, original callback and actual scope Bound. Explicit synthetic Android nodes/windows/socket/clock/queues. No permissive Offer or action guard surrogate.'}
  extraction={'parts':{k:{'bytes':len(v.encode()),'sha256':sha(v.encode())} for k,v in parts.items() if k!='cases'},'actual_methods':{k:sha(v.encode()) for k,v in methodparts.items()},'actual_scope_bound_sha256':sha(bound.encode()),'read_graph_failure_source_sha256':sha(read_graph.encode()),'shared_closure':provenance}
+ extraction['actual_controller_methods']={key:sha(value.encode()) for key,value in controller_parts.items()}
+ original_before=meta(args.loading_original) if args.loading_original else None
+ report['external_loading_original']=original_before
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
  env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1'
  for key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH'):env.pop(key,None)
@@ -119,12 +136,13 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture'])==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']
-  report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged']
+  report['external_original_unchanged']=original_before is None or original_before==meta(args.loading_original)
+  report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged'] and report['external_original_unchanged']
   write(out/'RESULT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')
  print(json.dumps({'all_pass':report['all_pass'],'stages':[{k:s[k] for k in ('name','exit_code','seconds')} for s in report['stages']],'result':meta(out/'RESULT.json')}))
  return 0 if report['all_pass'] else 1

@@ -48,12 +48,15 @@ def main():
     service_before = service_port.read_bytes()
     service_text = service_before.decode("utf-8")
     assert bgfiles.count(service_port) == 1 and service_text.endswith("}")
-    assert "class ActionOutcome" not in service_text
+    assert "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text
     outcome_port = """    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
         public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy profile fixture");}
+    }
+    public static final class NativeSearchReadRetryProof {
+        private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy profile fixture");}
     }"""
     service_after = (service_text[:-1] + chr(10) + outcome_port + chr(10) + "}").encode("utf-8")
     assert service_after.decode("utf-8").replace(chr(10) + outcome_port + chr(10), "", 1) == service_text
@@ -62,7 +65,8 @@ def main():
         "compiled_service_sha256": sha(service_after), "type_block_sha256": sha(outcome_port.encode()),
         "original_service_bytes_reversible": True, "constructor_always_throws": True,
         "accepted_and_dispatched_always_false": True, "authority_and_execution_always_null": True,
-        "new_search_path_executed": False}
+        "new_search_path_executed": False, "loading_read_retry_proof_constructor_always_throws": True,
+        "loading_read_retry_proof_minted": False}
     config_path = output / "ports/org/trillionnium/hepta/local/QualificationScopeConfig.java"
     config_source = source / "src/org/trillionnium/hepta/local/QualificationScopeConfig.java"
     actual_completion = query.java_block(config_source.read_bytes(), "static final class CompletionInstalledIdentity {")

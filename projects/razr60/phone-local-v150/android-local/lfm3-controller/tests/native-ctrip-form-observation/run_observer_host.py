@@ -76,9 +76,15 @@ def generate(source,output,h):
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    if h.sha(template.encode())!='1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57':
+    if h.sha(template.encode())!='662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333':
         raise RuntimeError('reviewed current observer fixture changed')
-    legacy_search_template=once(template,SEARCH_UNBOUND_PORTS,'')
+    # Restore only a proof copy; generated code keeps the actual pending method
+    # and the explicit absent-business queue carrier. No recovery can run here.
+    business_port="    // Observer-only fixture has no business recovery flight or receipt.\n    // Actual held/drained recovery queues are covered by the dedicated lifecycle gate.\n    static final class PublicProfileBusinessRecoveryClient {\n        private PublicProfileBusinessRecoveryClient(){throw new AssertionError(\"no business recovery authority in observer fixture\");}\n        static boolean workPending(){return false;}\n    }\n"
+    legacy_business_template=once(template,business_port,'')
+    if h.sha(legacy_business_template.encode())!='1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57':
+        raise RuntimeError('business queue port must reverse to the complete prior observer fixture')
+    legacy_search_template=once(legacy_business_template,SEARCH_UNBOUND_PORTS,'')
     if h.sha(legacy_search_template.encode())!='2fedec818e4fb21c0260580658e225da5cc34443ec8928988f34b80f6cbb9a01':
         raise RuntimeError('unbound search ports must reverse to exact prior AX fixture')
     legacy_template=once(legacy_search_template,AX_PORTS,'')

@@ -97,17 +97,22 @@ def main():
         bgfiles=[p for p in bgfiles if not (p.parent.name=="json" and p.parent.parent.name=="org") and "terminal" not in p.parts]
         # The retained provider cases do not construct a new search Session or
         # dispatch its intent.  Its signature needs only an unconstructible
-        # outcome type here; no accepting action/authorization fixture is added.
+        # outcome and loading-read-retry proof types here; both constructors
+        # always throw. No accepting action/authorization fixture is added.
         service_port=out/"platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
         service_before=service_port.read_bytes()
         service_text=service_before.decode("utf-8")
         require(bgfiles.count(service_port)==1 and service_text.endswith("}")
-                and "class ActionOutcome" not in service_text,"one original Service type port required")
+                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text,
+                "one original Service type port required")
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
         public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy provider fixture");}
+    }
+    public static final class NativeSearchReadRetryProof {
+        private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy provider fixture");}
     }"""
         service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+"}").encode("utf-8")
         require(service_after.decode("utf-8").replace(chr(10)+outcome_port+chr(10),"",1)==service_text,
@@ -118,7 +123,8 @@ def main():
             "compiled_service_sha256":sha(service_after),"type_block_sha256":sha(outcome_port.encode("utf-8")),
             "original_service_bytes_reversible":True,"constructor_always_throws":True,
             "accepted_and_dispatched_always_false":True,"authority_and_execution_always_null":True,
-            "new_search_path_executed":False,"phone_operations":0}
+            "new_search_path_executed":False,"loading_read_retry_proof_constructor_always_throws":True,
+            "loading_read_retry_proof_minted":False,"phone_operations":0}
         paths=[source/p for p in query.PURE_PATHS if p!="tests/web-flight/WebFlightQueryHostTest.java" and p!="tests/native-app/legacy-boundary/NativeAppSession.java"]+bgfiles
         paths += [source/("src/org/trillionnium/hepta/local/"+name+".java") for name in EXTRA_SOURCES]
         paths += [source/"tests/native-app-fixtures/NativeXmlFixture.java",own/"NativeAppProviderHostTest.java",own/"NativeAppObservationHostTest.java",own/"NativeResourceHomeHostTest.java"]

@@ -1279,22 +1279,62 @@ public final class LocalTaskController implements AutoCloseable {
             "轮播提示词不是用户查询词；模型reason不能证明页面状态、价格或完成。不得输出click/type/scroll/done或坐标。"+
             "只输出一个JSON对象，按reason,action,observation_id,package,role_id顺序；reason一句1到96字，其余字段逐字复制planning。"+
             "action必须是native.open_search。此工具只导航，不输入、不查询、不购买；后续仍需要新的实际观察和模型决策。";
+    private static final class NativeSearchLoadingReadFailure extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        final HeptaAccessibilityService.NativeSearchReadRetryProof proof;
+        NativeSearchLoadingReadFailure(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){
+            super(detail);if(proof==null)throw new IllegalArgumentException("actual typed initial planning read proof required");this.proof=proof;
+        }
+    }
+    private void requireInitialSearchPlanningRead(String id,NativeSearchSession session,long deadline)throws Exception{
+        checkActive(deadline);session.requireBeforeFirstPlanning(SystemClock.elapsedRealtime());
+        if(session!=activeNativeSearch||session.nativeTask!=activeNativeTask||session.background!=activeNativeBackground
+                ||session.controller!=this||!id.equals(currentTaskId)||session.taskDeadlineElapsed!=deadline||activeWebTask!=null)
+            throw new IllegalStateException("initial search planning task/Session/background changed");
+        synchronized(handleLock){if(activeInference!=null)throw new IllegalStateException("initial planning recovery cannot cross a model request");}
+    }
     private NativeSearchPlanning awaitNativeSearchPlanning(final String id,final File directory,final NativeSearchSession session,long deadline)throws Exception{
-        checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());service.verifyBackgroundRemote(id);checkActive(deadline);
+        requireInitialSearchPlanningRead(id,session,deadline);
+        try{return awaitNativeSearchPlanningOnce(id,directory,session,deadline,null);}
+        catch(NativeSearchLoadingReadFailure failed){
+            requireInitialSearchPlanningRead(id,session,deadline);
+            failed.proof.requireOriginal(service,this,session,id,directory,deadline);
+            record(directory,"native-search-initial-read-retry-01.json",new JSONObject()
+                    .put("schema","hepta.native-search-initial-read-retry-intent.v1").put("task_id",id)
+                    .put("failed_read_terminal",new JSONObject(failed.proof.evidence()).put("error",failed.getMessage()))
+                    .put("original_task_deadline_elapsed_ms",deadline).put("new_read_ordinal",2).put("retry_ordinal",1)
+                    .put("old_request_renewed",false).put("old_census_reused",false).put("action_replayed",false)
+                    .put("first_model_request_not_submitted",true).put("fresh_full_pair_required",true).put("business_verified",false));
+            requireInitialSearchPlanningRead(id,session,deadline);
+            failed.proof.requireOriginal(service,this,session,id,directory,deadline);
+            emit("首页加载已完成，正在重新采集搜索规划…");
+            return awaitNativeSearchPlanningOnce(id,directory,session,deadline,failed.proof);
+        }
+    }
+    private NativeSearchPlanning awaitNativeSearchPlanningOnce(final String id,final File directory,final NativeSearchSession session,
+            long deadline,final HeptaAccessibilityService.NativeSearchReadRetryProof retry)throws Exception{
+        requireInitialSearchPlanningRead(id,session,deadline);service.verifyBackgroundRemote(id);checkActive(deadline);
         final long requestDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),deadline);
         final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<NativeSearchPlanning> value=new AtomicReference<NativeSearchPlanning>();
         final AtomicReference<String> error=new AtomicReference<String>();final AtomicBoolean abandoned=new AtomicBoolean(),delivered=new AtomicBoolean();
+        final AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof> retryAvailable=new AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof>();
         try{
             service.observeNativeSearchPlanning(id,directory,session,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get()||abandoned.get();}},
                     requestDeadline,new NativeSearchSession.ObservationCallback(){
                         public void onPlanning(NativeSearchPlanning result){if(!abandoned.get()&&delivered.compareAndSet(false,true)){value.set(result);ready.countDown();}}
                         public void onError(String detail){if(!abandoned.get()&&delivered.compareAndSet(false,true)){error.set(detail);ready.countDown();}}
-                    });
+                        public void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){
+                            if(!abandoned.get()&&delivered.compareAndSet(false,true)){retryAvailable.set(proof);error.set(detail);ready.countDown();}
+                        }
+                    },retry);
             while(true){checkActive(deadline);long left=requestDeadline-SystemClock.elapsedRealtime();if(left<=0)throw new IllegalStateException("原生搜索规划观察在原期限内未完成");
                 if(ready.await(Math.min(100,left),TimeUnit.MILLISECONDS))break;}
             checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());
             if(SystemClock.elapsedRealtime()>=requestDeadline)throw new IllegalStateException("原生搜索规划回执迟到");
-            if(error.get()!=null)throw new IllegalStateException(error.get());
+            if(error.get()!=null){
+                if(retryAvailable.get()!=null)throw new NativeSearchLoadingReadFailure(error.get(),retryAvailable.get());
+                throw new IllegalStateException(error.get());
+            }
             NativeSearchPlanning planning=value.get();if(planning==null||planning.publication==null)throw new IllegalStateException("缺少实际已发布的历史规划收据");
             record(directory,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));return planning;
         }finally{abandoned.set(true);}

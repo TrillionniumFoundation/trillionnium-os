@@ -105,11 +105,18 @@ def prepare(source, output):
     search_io_ports='''    // Permanently absent typed workers; all constructors and effect endpoints refuse.
     private volatile NativeSearchSession nativeSearchSession;
     private volatile NativeSearchRequest activeNativeSearchObservation;
+    private volatile NativeSearchRequest nativeSearchRetryPending;
+    private final java.util.concurrent.atomic.AtomicBoolean observationIoBusy=new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile SearchActionWork activeSearchAction;
     private boolean nativeSearchPlanningAdmitted;
     private static final class NativeSearchRequest {
         final String taskId=null;
         private NativeSearchRequest(){throw new AssertionError("No typed planning request in old fixture");}
+    }
+    static final class NativeSearchReadRetryProof {
+        private NativeSearchReadRetryProof(){throw new AssertionError("No initial planning retry capability in old fixture");}
+        void requireOriginal(HeptaAccessibilityService service,Object controller,NativeSearchSession session,String task,File directory,long deadline){throw new AssertionError("No initial planning retry authority in old fixture");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("No initial planning retry evidence in old fixture");}
     }
     private static final class SearchActionWork {
         final ActionExecutionState state=null;
@@ -117,6 +124,7 @@ def prepare(source, output):
     }
     synchronized void bindNativeSearchSession(NativeSearchSession session){throw new AssertionError("No typed Session binding in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){throw new AssertionError("No typed planning IO in old fixture");}
+    void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchReadRetryProof retry){throw new AssertionError("No typed planning recovery IO in old fixture");}
     void performNativeOpenSearch(String task,NativeSearchSession.Attempt attempt,Cancellation cancel,NativeSearchSession.ActionCallback callback){throw new AssertionError("No typed effect IO in old fixture");}
     private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning planning,String error){throw new AssertionError("No typed publication in old fixture");}
 '''+search_legacy_gate+search_retire
@@ -271,6 +279,30 @@ def prepare(source, output):
     legacy_selection=section(background_fixture, '    static final class Selection ', '    static final class Cleanup ')
     background_fixture=background_fixture.replace(legacy_selection,actual_selection+actual_package_check,1)
     background_fixture=background_fixture.replace('import org.json.JSONObject;', 'import org.json.JSONObject;\nimport org.json.JSONArray;\nimport java.util.*;',1)
+    cleanup_marker='static final class Cleanup {'
+    if background_fixture.count(cleanup_marker)!=1:raise RuntimeError('one legacy Cleanup type required')
+    background_fixture=background_fixture.replace(cleanup_marker,cleanup_marker+'final PublicProfileBusinessRecoveryClient.Receipt businessRecovery=null;',1)
+    # These legacy cases never own a checker or a business receipt. Keep the
+    # actual Service branches intact, with an impossible typed receipt boundary.
+    (output/'PublicProfileBusinessRecoveryClient.java').write_text('''package org.trillionnium.hepta.local;
+final class PublicProfileBusinessRecoveryClient {
+    private PublicProfileBusinessRecoveryClient(){throw unavailable();}
+    static boolean workPending(){return false;} // No checker can be constructed in this fixture.
+    static final class Request {
+        final String taskId=null,ownerSha256=null;
+        private Request(){throw unavailable();}
+        String source(){throw unavailable();}
+    }
+    static final class Receipt {
+        final Request request=null;
+        private Receipt(){throw unavailable();}
+        String receiptSha256(){throw unavailable();}
+        void requirePersisted(){throw unavailable();}
+        void requireOriginals(boolean leasePresent){throw unavailable();}
+    }
+    private static UnsupportedOperationException unavailable(){return new UnsupportedOperationException("No business recovery authority in legacy qualification fixture");}
+}
+''')
     (output/'BackgroundSession.java').write_text(background_fixture)
     # Native entry validation is extracted verbatim; all Web IO remains throwing.
     web_entry=(pkg/'WebFlightSession.java').read_text()
@@ -319,6 +351,11 @@ def prepare(source, output):
             'import_transaction_gate':'tests/offline-model-import/run_host.py',
             'picker_ui_executed_here':False,'production_methods_modified':False,
             'saved_pending_asset_boundary':'nullable String field only; no URI, picker or import authority'},
+        'business_recovery_legacy_boundary':{
+            'receipt_and_request_constructible':False,'cleanup_receipt_always_null':True,
+            'all_authority_operations_refuse':True,'checker_slot_permanently_absent':True,
+            'actual_service_admission_and_acceptance_methods_modified':False,
+            'recovery_success_or_phone_qualification_claimed':False},
         'personal_notes_recovery_fixture_boundary':'Eligibility is explicitly false and the receipt is always null; this legacy IO fixture cannot create or accept personal Notes recovery authority.',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',

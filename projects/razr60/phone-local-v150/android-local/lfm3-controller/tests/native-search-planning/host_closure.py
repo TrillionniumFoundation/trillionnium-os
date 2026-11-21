@@ -87,7 +87,8 @@ def prepare(source, output, extra_tests=()):
         raise RuntimeError("nonunique original service IO port")
     service_path.write_text(service[:-1].replace("package org.trillionnium.hepta.local;",
                             "package org.trillionnium.hepta.local;import org.json.JSONObject;")
-                            + "\n" + outcome + "\n}\n")
+                            + "\n" + outcome + "\n"
+                            + "static final class NativeSearchReadRetryProof { private NativeSearchReadRetryProof(){throw new AssertionError(\"Android initial-read proof is unavailable in this pure consumer gate\");} }\n}\n")
     excluded = {"tests/web-flight/WebFlightQueryHostTest.java", "tests/native-app/legacy-boundary/NativeAppSession.java"}
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in (

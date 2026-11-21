@@ -97,6 +97,69 @@ final class NativeSearchRole {
         out.put("query_or_price_verified",false);out.put("grants_dispatch",false);proof=immutable(out);
     }
 
+    /** Classifies a complete loading shell becoming a supported search home.
+     * This is only a reason to end an unsuccessful initial read. It creates no
+     * planning Role, Frame, node permission, Offer or effect; a successor must
+     * collect a completely new pair. Never classify an exception message. */
+    static Map<String,Object> loadingToSearch(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+        need(a!=null&&b!=null&&stableEnvelope(a).equals(stableEnvelope(b)),"loading transition ownership/window changed");
+        need(NativeAppGoal.XIAOMI_PACKAGE.equals(a.env.get("package")),"loading transition App");
+        Map<String,Object> currentRole=NativeActionSnapshotCheck.searchPlanningRoleFacts(b);
+        String prefix="com.xiaomi.shop.plugin.homepage:id/";
+        Set<String> expectedButtons=new TreeSet<String>(Arrays.asList("main_bottom_home","main_bottom_category",
+                "main_bottom_discovery","main_bottom_cart","main_bottom_mine"));
+        Set<String> expectedLabels=new TreeSet<String>(Arrays.asList("首页","分类","服务","购物车","我的"));
+        Set<String> buttons=new TreeSet<String>(),labels=new TreeSet<String>();
+        NativeActionSnapshotCheck.Node root=a.node("0");
+        int width=((Number)a.env.get("width")).intValue(),height=((Number)a.env.get("height")).intValue();
+        need(root.cls.equals("android.widget.FrameLayout")&&root.bounds.equals(Arrays.asList(0,0,width,height))
+                &&root.children==13&&a.nodes.size()==14&&root.parent.isEmpty()&&root.view.isEmpty(),"complete flat home loading shell required");
+        int pagers=0,tabs=0,messages=0;
+        for(NativeActionSnapshotCheck.Node n:a.nodes.values()){
+            need(Boolean.TRUE.equals(n.v.get("enabled"))&&!Boolean.TRUE.equals(n.v.get("editable"))
+                    &&!Boolean.TRUE.equals(n.v.get("scrollable"))&&!Boolean.TRUE.equals(n.v.get("focused"))
+                    &&!Boolean.TRUE.equals(n.v.get("password"))&&!Boolean.TRUE.equals(n.v.get("checkable"))
+                    &&!Boolean.TRUE.equals(n.v.get("checked"))&&"hepta.observed-scroll-actions.v1|observed".equals(n.v.get("scroll_actions")),
+                    "loading shell capabilities are not neutral");
+            if(n==root){need(n.visible()&&neutralLoadingContainer(n),"loading root must be a visible neutral container");continue;}
+            need("0".equals(parent(n.path))&&n.children==0&&n.parent.equals(root.cls),"complete direct loading child slots required");
+            if((prefix+"sliding_layout").equals(n.view)){
+                need(++tabs==1&&n.cls.equals("android.widget.HorizontalScrollView")&&Boolean.FALSE.equals(n.v.get("visible"))
+                        &&neutralLoadingContainer(n),"loading tab placeholder differs");continue;
+            }
+            need(Boolean.TRUE.equals(n.v.get("visible"))&&positive(n.bounds)&&contains(root.bounds,n.bounds),"actual visible loading node bounds");
+            if((prefix+"home_3_vp").equals(n.view)){
+                need(++pagers==1&&n.cls.equals("androidx.viewpager.widget.ViewPager")&&n.bounds.equals(root.bounds)
+                        &&neutralLoadingContainer(n),"loading pager is not empty");
+            }else if((prefix+"msgLayout").equals(n.view)){
+                need(++messages==1&&n.cls.equals("android.widget.RelativeLayout")&&n.click()&&n.text.isEmpty()
+                        &&"消息".equals(n.desc)&&"消息".equals(n.label)&&Boolean.FALSE.equals(n.v.get("selected")),"loading message control differs");
+            }else if((prefix+"main_view_nav_bar_text").equals(n.view)){
+                need(n.cls.equals("android.widget.TextView")&&!Boolean.TRUE.equals(n.v.get("clickable"))
+                        &&!Boolean.TRUE.equals(n.v.get("action_click"))&&expectedLabels.contains(n.text)&&labels.add(n.text)
+                        &&n.desc.isEmpty()&&n.text.equals(n.label)&&Boolean.valueOf("首页".equals(n.text)).equals(n.v.get("selected"))
+                        &&(long)n.bounds.get(1)*3>=(long)height*2,"complete selected-home labels required");
+            }else if(n.view.startsWith(prefix)&&expectedButtons.contains(n.view.substring(prefix.length()))){
+                String key=n.view.substring(prefix.length());
+                need(n.cls.equals("android.view.View")&&n.click()&&n.text.isEmpty()&&buttons.add(key)
+                        &&Boolean.valueOf("main_bottom_home".equals(key)).equals(n.v.get("selected"))
+                        &&(long)n.bounds.get(1)*3>=(long)height*2,"complete loading navigation controls required");
+            }else throw new IllegalArgumentException("native search role: unknown loading-shell content: "+n.path);
+        }
+        need(pagers==1&&tabs==1&&messages==1&&buttons.equals(expectedButtons)&&labels.equals(expectedLabels),"all loading-shell roles required");
+        need(((Number)b.env.get("captured_elapsed_ms")).longValue()>((Number)a.env.get("captured_elapsed_ms")).longValue(),"actual forward loading transition");
+        Map<String,Object> evidence=new LinkedHashMap<String,Object>();
+        evidence.put("schema","hepta.native-search-loading-transition.v1");evidence.put("first_census_sha256",a.sha);
+        evidence.put("second_census_sha256",b.sha);evidence.put("first_phase","complete_navigation_only_home");
+        evidence.put("second_phase","complete_supported_search_home");evidence.put("current_role_facts_sha256",NativeAppEvidence.fingerprint(currentRole));
+        evidence.put("original_pair_accepted",false);evidence.put("planning_created",false);evidence.put("grants_action_authority",false);
+        evidence.put("fresh_full_pair_required",true);return immutable(evidence);
+    }
+    private static boolean neutralLoadingContainer(NativeActionSnapshotCheck.Node n){
+        return n.text.isEmpty()&&n.desc.isEmpty()&&n.label==null&&!Boolean.TRUE.equals(n.v.get("clickable"))
+                &&!Boolean.TRUE.equals(n.v.get("action_click"))&&Boolean.FALSE.equals(n.v.get("selected"));
+    }
+
     static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b);}
     void requireSameRole(NativeSearchRole current){need(current!=null&&roleId.equals(current.roleId),"new current search role differs from the offered role");}
     Map<String,Object> evidence(){return proof;}

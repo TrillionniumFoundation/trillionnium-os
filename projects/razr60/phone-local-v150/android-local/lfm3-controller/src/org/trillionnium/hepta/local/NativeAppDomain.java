@@ -17,7 +17,7 @@ final class NativeAppDomain {
     final String phase;
     final Set<String> clickIds,resourceClickIds;
     final Map<String,String> editValues,purposes;
-    final boolean backAllowed,resultReady;
+    final boolean backAllowed,resultReady,incompleteLoginReturn;
     final List<String> missing;
     private final Map<String,Object> providerView,result;
 
@@ -43,6 +43,11 @@ final class NativeAppDomain {
                     ||NativeActionSnapshotCheck.QUERY.equals(purpose),"historical form can propose only inspected date/query purposes");
             for(String id:clickIds)frame.capture.requireFormHistoryTarget(frame.byId.get(id).path);
         }
+        incompleteLoginReturn=Boolean.TRUE.equals(providerView.get("login_returned_to_form_without_target_result"));
+        if(incompleteLoginReturn)NativeAppEvidence.need(NativeCtripFlightPage.PACKAGE.equals(frame.packageName)
+                &&clickIds.isEmpty()&&editValues.isEmpty()&&this.purposes.isEmpty()&&!back&&result==null
+                &&missing.contains("native_ctrip_login_returned_to_form_without_target_result"),
+                "a completed login-return navigation admits only incomplete termination");
         backAllowed=back;this.providerView=NativeAppEvidence.immutableMap(providerView);
         this.result=result==null?null:NativeAppEvidence.immutableMap(result);resultReady=result!=null;
         this.missing=Collections.unmodifiableList(new ArrayList<String>(missing));
@@ -72,6 +77,7 @@ final class NativeAppDomain {
         if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase))out.retainAll(Collections.singleton("done"));
         if(NativeXiaomiProductPage.LOGIN.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
         if(NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))out.retainAll(Collections.singleton("done"));
+        if(incompleteLoginReturn)out.retainAll(Collections.singleton("done"));
         return out;}
     DecisionGrammar boundedWaitGrammar(ObservedTargetLabels targets,ObservedAppLabels apps,TaskAuthorization.Frame authorization,Set<String> original){
         NativeAppEvidence.need(NativeXiaomiProductPage.HOME_LOADING.equals(phase)&&frame.metadataObserved&&frame.windowType==1
@@ -84,6 +90,10 @@ final class NativeAppDomain {
         try{
             NativeAppEvidence.need(action!=null&&action.toolChildOrigin==null&&frame.observationId.equals(action.observationId)
                     &&frame.packageName.equals(action.packageName),"same native model/frame/package required");
+            if(incompleteLoginReturn){
+                NativeAppEvidence.need("done".equals(action.action)&&("failure".equals(action.status)||"partial".equals(action.status)),
+                        "login returned to the form without target results; incomplete termination only");return;
+            }
             if(NativeXiaomiProductPage.HOME_LOADING.equals(phase)){
                 NativeAppEvidence.need("wait".equals(action.action),"home content is loading; bounded model wait required");return;
             }

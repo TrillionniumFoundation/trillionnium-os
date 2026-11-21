@@ -53,6 +53,12 @@ public final class ObserverPipelineHost {
     // These original scheduling cases create no permission worker. The separate
     // permission-ui gate executes the real shared worker and its pending state.
     static final class ProfilePermissionUiSession {static boolean workPending(){return false;}}
+    // Observer-only fixture has no business recovery flight or receipt.
+    // Actual held/drained recovery queues are covered by the dedicated lifecycle gate.
+    static final class PublicProfileBusinessRecoveryClient {
+        private PublicProfileBusinessRecoveryClient(){throw new AssertionError("no business recovery authority in observer fixture");}
+        static boolean workPending(){return false;}
+    }
     // Explicit IO boundary only: these states stand for the existing Web journal,
     // controller lifecycle and Android looper. No admission policy is duplicated.
     static final class WebFlightSession {

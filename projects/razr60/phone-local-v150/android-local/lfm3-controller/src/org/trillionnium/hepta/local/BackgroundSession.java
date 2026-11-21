@@ -158,12 +158,18 @@ final class BackgroundSession {
         }
     }
     interface ReconciliationCheck {void check()throws Exception;}
+    interface BusinessReconciliationCheck extends ReconciliationCheck {void checkBusiness(String task,String owner)throws Exception;}
     static final class Cleanup {
         final boolean known;final JSONObject evidence;
         final ProfileRecoveryClient.Receipt prelaunchRecovery;
         final ProfilePostlaunchRecoveryClient.Receipt postlaunchRecovery;
         final PublicProfileRecoveryClient.Receipt publicProfileRecovery;
         final PublicPersonalNotesRecoveryClient.Receipt personalNotesRecovery;
+        final PublicProfileBusinessRecoveryClient.Receipt businessRecovery;
+        private Cleanup(boolean known,JSONObject evidence,PublicProfileBusinessRecoveryClient.Receipt business,boolean typed){
+            if(!typed||business==null)throw new IllegalArgumentException("typed business receipt required");
+            this.known=known;this.evidence=evidence;prelaunchRecovery=null;postlaunchRecovery=null;publicProfileRecovery=null;personalNotesRecovery=null;businessRecovery=business;
+        }
         Cleanup(boolean known,JSONObject evidence){this(known,evidence,null,null);}
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
             this(known,evidence,receipt,null);
@@ -180,7 +186,7 @@ final class BackgroundSession {
                 ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile,
                 PublicPersonalNotesRecoveryClient.Receipt personalNotes){
             this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;
-            publicProfileRecovery=publicProfile;personalNotesRecovery=personalNotes;
+            publicProfileRecovery=publicProfile;personalNotesRecovery=personalNotes;businessRecovery=null;
         }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
@@ -363,6 +369,16 @@ final class BackgroundSession {
             &&requiresPersonalNotesRetirement()&&retired&&(bootstrapDispatched||spawnAttempted)&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.businessRecovery!=null){
+            PublicProfileBusinessRecoveryClient.Receipt receipt=result.businessRecovery;
+            if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null||result.personalNotesRecovery!=null
+                    ||!result.known||!publicProfileRecoveryEligible()||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                    ||!generation.equals(result.evidence.getString("generation"))||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("business_receipt_sha256")))
+                throw new IOException("业务恢复凭据不属于当前原始停止租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),publicOwnGroupScope,displayId);
+            retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
         if(result.personalNotesRecovery!=null){
             PublicPersonalNotesRecoveryClient.Receipt receipt=result.personalNotesRecovery;
             if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null
@@ -1166,6 +1182,34 @@ final class BackgroundSession {
     static boolean hasUnreleased(Context context){
         try{return MobiMindPrivateFiles.exists(new File(new QualificationScopeConfig.FilesRoot(context).path,JOURNAL));}
         catch(Exception unknown){return true;}
+    }
+    /** Distinct positive-step absence contract; the ordinary zero-step path below is unchanged. */
+    static Cleanup reconcileBusiness(Context context,BusinessReconciliationCheck check)throws Exception{
+        if(check==null)throw new IOException("业务恢复缺少真实任务与队列预约");
+        QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);File path=new File(root.path,JOURNAL);
+        MobiMindPrivateFiles.Read original=MobiMindPrivateFiles.read(path,16384,true);JSONObject old=parseJournal(original.bytes);
+        String generation=old.getString("generation"),name=old.getString("display_name"),task=old.getString("task_id"),owner=old.getString("owner_sha256");
+        int display=old.getInt("display_id"),boot=old.getInt("boot_count");long expiry=old.getLong("expires_elapsed_ms");
+        ProfileTarget target=journalProfileTarget(old);PublicOwnGroupPolicy.Scope scope=journalPublicScope(old);
+        if(!isUuid(generation)||!("hepta-bg-"+generation).equals(name)||!name.equals(old.getString("socket"))
+                ||scope==null||target==null||target.profile.userId!=10||!ProfileTarget.supportsPackage(target.packageName)
+                ||display<=1||!Boolean.TRUE.equals(old.get("profile_launch_attempted"))||!"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                ||readBootCount(context)!=boot||expiry>=Long.MAX_VALUE-2000||SystemClock.elapsedRealtime()<=expiry+2000)
+            throw new IOException("业务恢复仅适用于同一启动内已到期的已支持公共资料租约");
+        check.checkBusiness(task,owner);root.unchanged(context);original.unchangedPath();
+        PublicProfileBusinessRecoveryClient.Receipt receipt=PublicProfileBusinessRecoveryClient.collect(context,original,check);
+        receipt.persist();JSONObject evidence=receipt.evidence();
+        check.checkBusiness(task,owner);root.unchanged(context);receipt.requireOriginals(true);original.unchangedPath();
+        byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
+        if(!java.util.Arrays.equals(original.bytes,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
+                ||receipt.request.displayId!=display||!displayAbsent(context,display,name))throw new IOException("业务恢复提交前原租约或实际显示发生变化");
+        receipt.requireCurrentClock();check.checkBusiness(task,owner);root.unchanged(context);receipt.requireOriginals(true);original.unchangedPath();
+        receipt.requireCurrentClock();
+        // The serial owner and reservation still hold. This is the sole mutation:
+        // retire the exact expired active lease, leaving task/result/latch bytes intact.
+        Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+        if(MobiMindPrivateFiles.exists(path))throw new IOException("业务恢复租约退休未确认");
+        return new Cleanup(true,evidence,receipt,true);
     }
     /** Recovery never restarts a task or creates a display. It can only close the recorded lease. */
     static Cleanup reconcile(Context context)throws Exception{return reconcile(context,null);}

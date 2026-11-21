@@ -69,6 +69,23 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
+        # Strip only the fixed new refusing retry type on this proof copy.
+        # Compilation below continues to use the actual current provider bytes.
+        if sha(legacy_provider_bytes) == "726b8bf8a77d28ab694f662b0e3fb1e32ecff67568c87e06fd85cce9782350c6":
+            retry_type_comment = b'        # The retained provider cases do not construct a new search Session or\n        # dispatch its intent.  Its signature needs only an unconstructible\n        # outcome and loading-read-retry proof types here; both constructors\n        # always throw. No accepting action/authorization fixture is added.\n'
+            assert legacy_provider_bytes.count(retry_type_comment) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(retry_type_comment, b'        # The retained provider cases do not construct a new search Session or\n        # dispatch its intent.  Its signature needs only an unconstructible\n        # outcome type here; no accepting action/authorization fixture is added.\n', 1)
+            retry_type_guard = b'        require(bgfiles.count(service_port)==1 and service_text.endswith("}")\n                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text,\n                "one original Service type port required")\n'
+            assert legacy_provider_bytes.count(retry_type_guard) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(retry_type_guard, b'        require(bgfiles.count(service_port)==1 and service_text.endswith("}")\n                and "class ActionOutcome" not in service_text,"one original Service type port required")\n', 1)
+            retry_type_declaration = b'\n    public static final class NativeSearchReadRetryProof {\n        private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy provider fixture");}\n    }'
+            assert legacy_provider_bytes.count(retry_type_declaration) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(retry_type_declaration, b'', 1)
+            retry_type_metadata = b'        report["native_search_legacy_type_boundary"]={"schema":"hepta.native-search-legacy-type-boundary.v1",\n            "generated_service":str(service_port),"original_service_sha256":sha(service_before),\n            "compiled_service_sha256":sha(service_after),"type_block_sha256":sha(outcome_port.encode("utf-8")),\n            "original_service_bytes_reversible":True,"constructor_always_throws":True,\n            "accepted_and_dispatched_always_false":True,"authority_and_execution_always_null":True,\n            "new_search_path_executed":False,"loading_read_retry_proof_constructor_always_throws":True,\n            "loading_read_retry_proof_minted":False,"phone_operations":0}\n'
+            assert legacy_provider_bytes.count(retry_type_metadata) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(retry_type_metadata, b'        report["native_search_legacy_type_boundary"]={"schema":"hepta.native-search-legacy-type-boundary.v1",\n            "generated_service":str(service_port),"original_service_sha256":sha(service_before),\n            "compiled_service_sha256":sha(service_after),"type_block_sha256":sha(outcome_port.encode("utf-8")),\n            "original_service_bytes_reversible":True,"constructor_always_throws":True,\n            "accepted_and_dispatched_always_false":True,"authority_and_execution_always_null":True,\n            "new_search_path_executed":False,"phone_operations":0}\n', 1)
+            assert sha(legacy_provider_bytes) == "91934e3e55b488f7ffbd172aeacb28530165404a4671b80869c8855c0902da3a"
+            report["retained_provider_loading_retry_type_additions_exactly_reversible"] = True
         # Normalize only the exact reviewed null detail field on the proof copy.
         # The real provider below still compiles the unchanged current driver.
         if sha(legacy_provider_bytes) == "91934e3e55b488f7ffbd172aeacb28530165404a4671b80869c8855c0902da3a":

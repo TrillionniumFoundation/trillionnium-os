@@ -78,13 +78,19 @@ def extract_bridge(source, output):
     # The newly adjacent planning/model/dispatch runtime is not a cleanup-copy helper.
     # Preserve all original bridge/copy method bytes, and execute new typed paths only
     # in their separate actual Session/producer gates.
-    search_start='    private NativeSearchPlanning awaitNativeSearchPlanning('
+    search_start='    private static final String NATIVE_SEARCH_SYSTEM='
     need(raw.count(search_start)==1,'one complete new search runtime boundary')
     search_at=raw.index(search_start)
     need(b<search_at<c,'new search runtime is adjacent after original cleanup-copy helpers')
     search_runtime=raw[search_at:c]
     need(helpers.count(search_runtime)==1,'one exact search-only block in legacy cleanup fixture')
     helpers=helpers.replace(search_runtime,'',1)
+    helper_signatures=('    private static java.util.Map<String,Object> completionFixed(',
+                       '    private static java.util.Map<String,Object> completionMap(',
+                       '    private static Object completionValue(')
+    need(all(helpers.count(signature)==1 for signature in helper_signatures)
+         and 'NativeSearch' not in helpers and 'NATIVE_SEARCH' not in helpers,
+         'exact original cleanup-copy helpers without search runtime required')
     call = 'TaskCompletionGate.Check terminal=completion.terminalNativeCheck(activeNativeTask,finalFrame,terminalOwnerFrame,'
     need(raw.count(call) == raw.count('nativeProfileCleanup(backgroundCleanup)') == 1, 'actual controller native terminal bridge disconnected')
     call_start = raw.index(call)
@@ -108,6 +114,7 @@ def extract_bridge(source, output):
                 'generated': ref(path), 'verbatim_method_and_helpers': True,
                 'full_android_controller_compiled_or_executed': False,
                 'new_search_runtime_excluded_sha256': sha(search_runtime.encode()),
+                'excluded_search_runtime_start': search_start, 'copy_helper_signatures': list(helper_signatures),
                 'new_search_controller_execution_claimed': False}
     return path, evidence
 
@@ -156,22 +163,28 @@ def main():
         service_port=fixture/'org/trillionnium/hepta/local/HeptaAccessibilityService.java'
         service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
         need(files.count(service_port)==1 and service_text.endswith('}')
-                and 'class ActionOutcome' not in service_text,'one original Service type port required')
+                and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text,
+                'one original Service type port without new dispatch/retry types required')
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
         public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy terminal fixture");}
     }"""
-        service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+'}').encode('utf-8')
-        need(service_after.decode('utf-8').replace(chr(10)+outcome_port+chr(10),'',1)==service_text,
+        retry_port="""    public static final class NativeSearchReadRetryProof {
+        private NativeSearchReadRetryProof(){throw new AssertionError("native search retry proof is outside the legacy terminal fixture");}
+    }"""
+        type_ports=outcome_port+chr(10)+retry_port
+        service_after=(service_text[:-1]+chr(10)+type_ports+chr(10)+'}').encode('utf-8')
+        need(service_after.decode('utf-8').replace(chr(10)+type_ports+chr(10),'',1)==service_text,
                 'original Service port changed outside the refusing type boundary')
         service_port.write_bytes(service_after)
         report['native_search_type_boundary']={'original_service_sha256':sha(service_before),
                 'compiled_service_sha256':sha(service_after),'type_block_sha256':sha(outcome_port.encode()),
                 'original_service_bytes_reversible':True,'constructor_always_throws':True,
                 'accepted_and_dispatched_always_false':True,'authority_and_execution_always_null':True,
-                'new_search_path_executed':False}
+                'new_search_path_executed':False,'retry_proof_type_block_sha256':sha(retry_port.encode()),
+                'retry_proof_constructor_always_throws':True,'retry_authority_executed':False}
         (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')
         io = fixture / 'android/system/Os.java'
         body, seam = io.read_text(), 'r.st_uid=((Number)a.get("uid")).intValue();'

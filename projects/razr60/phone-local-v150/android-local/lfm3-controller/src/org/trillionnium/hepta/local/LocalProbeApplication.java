@@ -13,6 +13,8 @@ public final class LocalProbeApplication extends Application {
     private volatile boolean permissionInitialized;
     private LocalModelEngine.RecoveryBarrier recoveryBarrier;
     private LocalModelEngine.RecoveryReservation controlRecoveryAttempt;
+    private BackgroundRecoveryReservation backgroundRecoveryAttempt;
+    private boolean backgroundRecoveryCloseFailed;
     private boolean controlRecoveryCallbackFailed;
     private boolean reconcilingRecoveryClose;
     private boolean initialized;
@@ -98,6 +100,7 @@ public final class LocalProbeApplication extends Application {
     }
     private boolean controlRecoveryEligible(){
         return !tasks.isRunning()&&otherDiagnosticsClean()
+                &&backgroundRecoveryAttempt==null&&!backgroundRecoveryCloseFailed
                 &&(tasks.isBlocked()||recoveryBarrier!=null);
     }
 
@@ -147,6 +150,69 @@ public final class LocalProbeApplication extends Application {
         recoveryMainThread();initializeSessions();reconcileControlRecoveryClose();
         if(controlRecoveryCallbackFailed||controlRecoveryAttempt!=null||!controlRecoveryEligible())return false;
         return recoveryBarrier==null?!model.isBusy():model.canReserveRecovery(recoveryBarrier);
+    }
+
+    /**
+     * A background-absence check borrows the same no-child process slot, but can
+     * only return it to the original interrupted-session barrier. It has no
+     * commit, child attachment, journal acknowledgement or task-resume API.
+     */
+    final class BackgroundRecoveryReservation implements AutoCloseable {
+        private final LocalModelEngine.RecoveryBarrier barrier;
+        private final LocalModelEngine.RecoveryReservation reservation;
+        private boolean closed;
+        private BackgroundRecoveryReservation(LocalModelEngine.RecoveryBarrier barrier,
+                LocalModelEngine.RecoveryReservation reservation){
+            this.barrier=barrier;this.reservation=reservation;
+        }
+        /** May run on the serial recovery worker; every admission remains exclusive. */
+        void check(){
+            synchronized(LocalProbeApplication.this){
+                if(closed||backgroundRecoveryAttempt!=this||recoveryBarrier!=barrier
+                        ||backgroundRecoveryCloseFailed||controlRecoveryAttempt!=null
+                        ||controlRecoveryCallbackFailed||!tasks.isBlocked()||tasks.isRunning()
+                        ||!otherDiagnosticsClean()||modelSettings.isBusy()||modelImport.isBusy())
+                    throw new IllegalStateException("background recovery no longer owns a drained blocked session");
+                model.requireBackgroundRecoveryQuiescent(reservation);
+            }
+        }
+        /** Failure and success both retain the barrier for a separate owner acknowledgement. */
+        @Override public void close(){
+            synchronized(LocalProbeApplication.this){
+                if(closed)return;
+                closed=true;
+                boolean returned=false;
+                try{
+                    boolean same=backgroundRecoveryAttempt==this&&recoveryBarrier==barrier;
+                    reservation.close();
+                    if(!same||!model.backgroundRecoveryReturnedToBarrier(reservation))
+                        throw new IllegalStateException("background recovery did not return its original barrier");
+                    returned=true;
+                }finally{
+                    if(returned)backgroundRecoveryAttempt=null;
+                    else backgroundRecoveryCloseFailed=true;
+                }
+            }
+        }
+    }
+
+    /** Called only by the ordinary cleanup owner path, on the main thread. */
+    synchronized BackgroundRecoveryReservation reserveBackgroundRecovery(){
+        recoveryMainThread();initializeSessions();
+        if(backgroundRecoveryAttempt!=null||backgroundRecoveryCloseFailed
+                ||controlRecoveryAttempt!=null||controlRecoveryCallbackFailed
+                ||!tasks.isBlocked()||tasks.isRunning()||!otherDiagnosticsClean()
+                ||modelSettings.isBusy()||modelImport.isBusy())
+            throw new IllegalStateException("background recovery or another local operation is not quiescent");
+        if(recoveryBarrier==null)recoveryBarrier=model.reserveRecoveryBarrier();
+        final LocalModelEngine.RecoveryReservation reservation=model.reserveRecovery(recoveryBarrier);
+        final BackgroundRecoveryReservation value=new BackgroundRecoveryReservation(recoveryBarrier,reservation);
+        backgroundRecoveryAttempt=value;
+        try{value.check();return value;}
+        catch(RuntimeException error){
+            try{value.close();}catch(RuntimeException close){error.addSuppressed(close);}
+            throw error;
+        }
     }
 
     /** Only an explicit control confirmation can borrow this Application's aggregate barrier. */

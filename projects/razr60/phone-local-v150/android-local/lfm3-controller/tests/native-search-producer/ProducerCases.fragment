@@ -385,6 +385,7 @@
                 noEffect(f,"replacement cannot buy new eight seconds");check(f.graphReads==4&&f.outcome.actionExecution.getLong("queued_elapsed_ms")==attempt.startedElapsed,"original reservation retained");
             }
         });
+        loadingRetryCases(args);
         boolean all=true;for(Map<String,Object> row:cases)all&=Boolean.TRUE.equals(row.get("passed"));
         Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("schema","hepta.native-search-actual-producer-cases.v1");
         report.put("cases",cases.size());report.put("assertions",assertions);report.put("all_pass",all);report.put("results",cases);

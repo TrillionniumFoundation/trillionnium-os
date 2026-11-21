@@ -139,12 +139,16 @@ def sources(source,out):
     service_port=out/'platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java'
     service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
     need(bgfiles.count(service_port)==1 and service_text.endswith('}')
-         and 'class ActionOutcome' not in service_text,'one original Service type port required')
+         and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text,
+         'one original Service type port required')
     outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
         public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy action fixture");}
+    }
+    public static final class NativeSearchReadRetryProof {
+        private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy action fixture");}
     }"""
     service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+'}').encode('utf-8')
     need(service_after.decode('utf-8').replace(chr(10)+outcome_port+chr(10),'',1)==service_text,
@@ -156,7 +160,8 @@ def sources(source,out):
         'compiled_service_sha256':sha(service_after),'type_block_sha256':sha(outcome_port.encode('utf-8')),
         'original_service_bytes_reversible':True,'constructor_always_throws':True,
         'accepted_and_dispatched_always_false':True,'authority_and_execution_always_null':True,
-        'new_search_dispatch_tested':False}
+        'new_search_dispatch_tested':False,'loading_read_retry_proof_constructor_always_throws':True,
+        'loading_read_retry_proof_minted':False}
     bgfiles=[p for p in bgfiles if not(p.parent.name=='json' and p.parent.parent.name=='org') and 'terminal' not in p.parts]
     paths=[source/p for p in query.PURE_PATHS if p not in ('tests/web-flight/WebFlightQueryHostTest.java','tests/native-app/legacy-boundary/NativeAppSession.java')]+bgfiles
     names=['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',

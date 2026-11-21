@@ -32,7 +32,9 @@ assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d5
 # 21 terminal method bodies below remain byte-identical to the legacy contract.
 assert sha((src/'LocalTaskSession.java').read_bytes()) in {
     '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6',
-    '62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc'}
+    '62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc',
+    # Reviewed separate positive-step recovery; the original 21 method digest below remains mandatory.
+    '091e0a17fd8f9399bbe50743d74a7755ac227138a2f5d817b95ed98bc1dae057'}
 # Preserve the audited legacy comparators and the reviewed Xiaomi SEARCH_ICON
 # and Ctrip nested-disjoint successors. The unchanged Ctrip OPEN ancestor rejection, 21
 # terminal method digests and all maximum-census/projection/IO checks remain.

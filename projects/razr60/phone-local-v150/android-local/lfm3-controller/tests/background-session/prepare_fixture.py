@@ -21,6 +21,10 @@ def prepare(source,output,*,include_terminal=True):
     if text.count(anchor)!=1:raise RuntimeError('nonunique JSON optString compatibility insertion point')
     text=text.replace(anchor,one_arg_method+anchor)
    text=text.replace('    private static String quote(', '    public static String quote(')
+  if name=='android/system/OsConstants.java':
+   anchor='ENOENT=2,O_RDONLY=0,O_WRONLY=1,'
+   if text.count(anchor)!=1:raise RuntimeError('nonunique legacy OsConstants insertion point')
+   text=text.replace(anchor,'ENOENT=2,EEXIST=17,O_RDONLY=0,O_WRONLY=1,O_RDWR=2,')
   if name=='android/system/Os.java':
    text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void remove(String s)throws Exception{if(failUnlink)throw new IOException("synthetic remove failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')
   dst.write_text(text);files.append(dst)
@@ -66,9 +70,11 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope',
  'BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker','WorkerGenerationProof')]
+ files += [pkg/(name+'.java') for name in ('RecoveryJournalStore','RecoveryJournalTransaction','RecoveryQuiescence','SessionRecovery')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory')]
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PublicPersonalNotesAbsenceRecovery','PublicPersonalNotesHistory','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
+ files.append(source/'src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java')
  # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.
  # The dedicated recovery gate replaces the same factory with its explicit owned-process fixture.
  recovery_source=pkg/'ProfileRecoveryClient.java';recovery_raw=recovery_source.read_text()
@@ -94,6 +100,13 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  notes_projection=output/'org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java'
  notes_projection.write_text(notes_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
  files.append(notes_projection)
+ # Complete business recovery parsing remains actual; the generic fixture cannot
+ # start its root checker or construct an opaque accepted Receipt.
+ business_source=pkg/'PublicProfileBusinessRecoveryClient.java';business_raw=business_source.read_text()
+ if business_raw.count(recovery_seam)!=1:raise RuntimeError('nonunique business recovery process factory seam')
+ business_projection=output/'org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java'
+ business_projection.write_text(business_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
+ files.append(business_projection)
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  terminal_record={'included':False,'reason':'dedicated recovery gate does not exercise controller finalization'}
@@ -107,5 +120,7 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','PublicPermissionControllerUi','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False},'postlaunch_client_projection':{'source_sha256':hashlib.sha256(post_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(post_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
  records['public_profile_client_projection']={'source_sha256':hashlib.sha256(public_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(public_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','installed_identity_boundary':'explicit always-unavailable PackageManager/APK test double','recovery_success_or_phone_qualification_claimed':False}
  records['personal_notes_client_projection']={'source_sha256':hashlib.sha256(notes_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(notes_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}
+ records['business_client_projection']={'source_sha256':hashlib.sha256(business_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(business_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','installed_identity_boundary':'explicit always-unavailable PackageManager/APK test double','recovery_success_or_phone_qualification_claimed':False}
+ records['actual_full_classes'] += ['PublicProfileBusinessAbsenceRecovery','RecoveryJournalStore','RecoveryJournalTransaction','RecoveryQuiescence','SessionRecovery']
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

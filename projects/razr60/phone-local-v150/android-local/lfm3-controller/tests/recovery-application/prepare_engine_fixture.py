@@ -20,6 +20,8 @@ def prepare(source,output):
         "process_admission":_section(engine,"    private void claimProcess(","    public Result lastResult()"),
         "runtime_generation":_section(engine,"    static final class RuntimeGeneration {","    private volatile RuntimeGeneration runtime;"),
         "captured_cancellation":_section(engine,"    public void cancelActive() {","    JSONObject cancellationEvidence()"),
+        "executor_declaration":_section(engine,"    private final java.util.concurrent.ThreadPoolExecutor executor","    private static final AtomicReference<RunHandle> PROCESS_ACTIVE"),
+        "executor_idle":_section(engine,"    private boolean executorIdle()","    boolean settingsAdmissionAvailable("),
     }
     declarations=[]
     for prefix in (
@@ -27,6 +29,8 @@ def prepare(source,output):
         "    private static final TaskCancellationQueue ACTIVE_CANCELLATION",
         "    private static final Object PROCESS_ADMISSION",
         "    private final AtomicReference<RunHandle> active",
+        "    private final AtomicReference<WarmTask> warmActive",
+        "    private SettingsReservation settingsReservation;",
         "    private final AtomicBoolean closed",
         "    private volatile TaskCancellationQueue.Ticket lastCancellation",
         "    private final Context context;",
@@ -41,9 +45,12 @@ def prepare(source,output):
     # Every recovery ownership/cancellation/close member below is copied verbatim from production.
     rendered=(
         "package org.trillionnium.hepta.local;\n"
-        "import android.content.Context;\nimport java.util.UUID;\nimport java.util.concurrent.atomic.*;\n"
+        "import android.content.Context;\nimport java.util.UUID;\nimport java.util.concurrent.atomic.*;\nimport java.util.concurrent.TimeUnit;\n"
         "public final class LocalModelEngine implements AutoCloseable {\n"
         +"\n".join(declarations)+"\n"
+        +parts["executor_declaration"]+parts["executor_idle"]
+        +"// Type-only negative-drain carriers. They expose no inference/settings operations.\n"
+        +"private static final class WarmTask {}\nprivate static final class SettingsReservation {}\n"
         +"public LocalModelEngine(Context context){this.context=context.getApplicationContext();runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),null);}\n"
         +"private static final class RuntimeConfigTransaction {static final class Snapshot{}}\n"
         +"boolean settingsAdmissionAvailable(boolean restoring){throw new AssertionError(\"settings admission is outside the legacy recovery fixture\");}\n"
@@ -112,6 +119,7 @@ final class LocalModelImport implements AutoCloseable {
         "generated_engine_fixture_sha256":digest(rendered.encode()),
         "java_inputs":[{"path":str(path),"sha256":digest(path.read_bytes())} for path in all_sources],
         "not_android_runtime":True,"not_session_filesystem_durability":True,
+        "background_drain_carriers":"Exact executor declaration and executorIdle; WarmTask/SettingsReservation are type-only occupancy carriers, never authority or native/settings execution.",
         "runtime_boundary":"Exact RuntimeGeneration class and actual config/profile/verifier types; snapshot IO is opaque, default construction is a fixture; new settings UI throws if entered. Original recovery assertions are unchanged.",
         "import_boundary":"Explicit host IO lifetime only: beginHostIo owns the exact extracted external Engine slot; close records the Application callback and cannot release that slot; only finishHostIo supplies the host terminal. No URI, filesystem publication or actual SettingsReservation claim. The full importer and actual settings slot have the separate 31-case gate.",
     }
