@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Execute the actual observer with independent screenshot-mismatch seed cases.
 
-All original event cases and assertions run first, from byte-pinned unmodified
-fixtures. Android traversal, pixels, Session issuance and device success remain
+All original event cases and assertions run first, from byte-pinned original
+fixture bodies. The exact fail-only form port is separately pinned; removing it
+must restore the complete original fixture bytes. Android traversal, pixels, Session issuance and device success remain
 outside this host boundary. An optional final manifest/map pair binds a frozen
 reviewed source; every run records the complete source inventory before/after.
 """
@@ -37,6 +38,27 @@ def need(value, message):
 
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def verify_original_fixtures(source, before):
+    template = 'tests/observation-pipeline/ObserverPipelineHost.template'
+    port = b'''    /** Explicit fail-only port: legacy scheduling fixtures cannot admit scoped form pairs.
+     * The dedicated form-observation gate substitutes both actual production helpers. */
+    private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
+'''
+    raw = (source / template).read_bytes()
+    current_sha = '50b7d239c4e76334894082dd01ecad1a7a207eb1e776f82f9916d3ea1e62de1d'
+    need(before[template]['sha256'] == sha(raw) == current_sha,
+         'reviewed fail-only fixture template differs')
+    need(raw.count(port) == 1, 'exact single fail-only form port required')
+    original_sha = sha(raw.replace(port, b'', 1))
+    need(original_sha == PINNED_FIXTURES[template],
+         'original complete fixture body differs after exact port removal')
+    need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name != template),
+         'original reviewed fixture bytes differ')
+    return {'template': template, 'current_sha256': current_sha,
+            'original_sha256': original_sha, 'exact_removed_bytes': len(port),
+            'fail_only_port': True, 'reverse_original_byte_equality': True}
 
 
 def packed(value):
@@ -143,7 +165,7 @@ def main():
               'new_action_authority': False, 'action_replayed': False, 'read_permit_expanded': False,
               'deadline_expanded_by_this_candidate': False,
               'compiler_contract': 'JDK17 --release 8 -Xlint:all -Werror',
-              'boundary': 'Actual complete observer plus unchanged original fixtures; synthetic Android graph/window/clock/pixel IO and synthetic Session carrier. Device traversal, Session permit issuance, currentness and business completion are not proved.'}
+              'boundary': 'Actual complete observer plus unchanged original fixture bodies and an exact pinned fail-only form port; synthetic Android graph/window/clock/pixel IO and synthetic Session carrier. Device traversal, Session permit issuance, currentness and business completion are not proved.'}
     before = None
     tool_before = None
     try:
@@ -154,7 +176,7 @@ def main():
         result['complete_source_files'] = len(before)
         result['component_git_tree_sha1'] = component_tree(before)
         result['source_manifest'] = helper.meta(source / 'SOURCE-MANIFEST.json')
-        need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items()), 'original reviewed fixture bytes differ')
+        result['fixture_fail_only_port'] = verify_original_fixtures(source, before)
         result['original_fixture_pins'] = PINNED_FIXTURES
         identity = module(source / 'tools/build_identity.py', 'actual_seed_gate_build_identity')
         production = identity.source_inputs(source)

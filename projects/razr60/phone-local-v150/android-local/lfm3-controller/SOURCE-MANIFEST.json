@@ -3,8 +3,8 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "c98f4b30_r5_fixture_port_pass_full_host_android_phone_validation_pending",
-  "complete_source_files": 2344,
+  "candidate_status": "c98f4b30_r6_ctrip_form_observation_full_host_android_phone_pending",
+  "complete_source_files": 2351,
   "files": [
     {
       "bytes": 100,
@@ -2642,6 +2642,16 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
+      "bytes": 1696,
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "bytes": 0,
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "bytes": 3187,
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -2680,16 +2690,6 @@
       "bytes": 1882,
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
-    },
-    {
-      "bytes": 1696,
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "bytes": 0,
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "bytes": 0,
@@ -5752,6 +5752,11 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
+      "bytes": 3066,
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
+    },
+    {
       "bytes": 1257,
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -5860,11 +5865,6 @@
       "bytes": 3372,
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
-    },
-    {
-      "bytes": 3066,
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "bytes": 607,
@@ -6492,9 +6492,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 355796,
+      "bytes": 363347,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "c9f6852618998be7365db7636456c42fafa3e573a0414c400806ec1524a72056"
+      "sha256": "218cbcd535c37a7e4635f6b15473d2eabea2f78b53b50bed8211fecbed3036cd"
     },
     {
       "bytes": 711,
@@ -6650,6 +6650,11 @@
       "bytes": 55419,
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
       "sha256": "fcce736df40dfc29fe8b2b31e6c37d58e9e820ca075727dd6fd4a05aea1ae3a7"
+    },
+    {
+      "bytes": 18148,
+      "path": "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java",
+      "sha256": "0f720fa7ca452d3b3622ca6d757a04949481fd0d4736441f468d03cdcc0c9490"
     },
     {
       "bytes": 51970,
@@ -7602,6 +7607,16 @@
       "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
     },
     {
+      "bytes": 29532,
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "bytes": 148856,
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
+    },
+    {
       "bytes": 51609,
       "path": "tests/completion/TaskCompletionGateHostTest.java",
       "sha256": "126452bab9fc057612a329c4f777b8e02f0814df306d4050b989a3961a305af2"
@@ -7645,16 +7660,6 @@
       "bytes": 22278,
       "path": "tests/completion/test_notes_completion.py",
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
-    },
-    {
-      "bytes": 29532,
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "bytes": 148856,
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "bytes": 18220,
@@ -7852,6 +7857,36 @@
       "sha256": "6a73c6a91dca0841e4331b84a5e10ac9cf06b2d4bec2a138461c4e010ea3ec0a"
     },
     {
+      "bytes": 1562,
+      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
+      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
+    },
+    {
+      "bytes": 698,
+      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
+      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+    },
+    {
+      "bytes": 1927,
+      "path": "tests/local-model-settings-visual/README.md",
+      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+    },
+    {
+      "bytes": 9112,
+      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
+      "sha256": "ca7cc191703239847add13edc25405a994ea37871f12d16b3d5584911f513c2a"
+    },
+    {
+      "bytes": 42001,
+      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
+    },
+    {
+      "bytes": 13265,
+      "path": "tests/local-model-settings-visual/run_host.py",
+      "sha256": "5d7920f4c296789c8c7b16f90b92a41b9f3a29dd57017ad4a8211091c48212d0"
+    },
+    {
       "bytes": 3794,
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
       "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
@@ -7950,36 +7985,6 @@
       "bytes": 8421,
       "path": "tests/local-model-settings/run_host.py",
       "sha256": "f2cb8a2af82ffa073d359ec46a3eee294374d1905055da2309dfcea43fc23725"
-    },
-    {
-      "bytes": 1562,
-      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
-      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
-    },
-    {
-      "bytes": 698,
-      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
-      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
-    },
-    {
-      "bytes": 1927,
-      "path": "tests/local-model-settings-visual/README.md",
-      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
-    },
-    {
-      "bytes": 9112,
-      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
-      "sha256": "ca7cc191703239847add13edc25405a994ea37871f12d16b3d5584911f513c2a"
-    },
-    {
-      "bytes": 42001,
-      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
-    },
-    {
-      "bytes": 13265,
-      "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "5d7920f4c296789c8c7b16f90b92a41b9f3a29dd57017ad4a8211091c48212d0"
     },
     {
       "bytes": 3621,
@@ -8105,11 +8110,6 @@
       "bytes": 19523,
       "path": "tests/native-action-integration/run_host.py",
       "sha256": "7c584301833b2f67e4a61616cb01c7c37f1dc77cd79e00c92494bc88e7e33cca"
-    },
-    {
-      "bytes": 6444,
-      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "9a4da483ae1591278637094560bed4563f5200b2db1ffbbc28a5f3a57f70a497"
     },
     {
       "bytes": 717,
@@ -8427,6 +8427,11 @@
       "sha256": "98d166056d434785dde61a6150145c0cc56fbf1519e88770e3319ed3b50f2b93"
     },
     {
+      "bytes": 6444,
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "sha256": "9a4da483ae1591278637094560bed4563f5200b2db1ffbbc28a5f3a57f70a497"
+    },
+    {
       "bytes": 8666,
       "path": "tests/native-change-diagnostic/NativeChangeDiagnosticHostTest.java",
       "sha256": "a493d982c62c3376b8ef52277e7cade80ec6beb16988e67220b1e47bd7f513dc"
@@ -8505,6 +8510,36 @@
       "bytes": 8332,
       "path": "tests/native-ctrip-calendar/run_host.py",
       "sha256": "bd703e93f159a32eb7c26c9501881dcf7982c6ec13fab37f98548f43239b588c"
+    },
+    {
+      "bytes": 17521,
+      "path": "tests/native-ctrip-form-observation/FormPairHostTest.java",
+      "sha256": "9874629b7c95bdbeef2942712aab6974b8cb366e32690d149624d85d0cb7e757"
+    },
+    {
+      "bytes": 7520,
+      "path": "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
+      "sha256": "6f84e90c7e4a0cd3e9fdea7f4910cb054a61320b0414c59887e82f0325b2b84e"
+    },
+    {
+      "bytes": 3397,
+      "path": "tests/native-ctrip-form-observation/README.md",
+      "sha256": "3a6a00929b9fa5fd552d30114c7a30801ec4737e0157915234fe5168a5e0fe31"
+    },
+    {
+      "bytes": 2515,
+      "path": "tests/native-ctrip-form-observation/run_host.py",
+      "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
+    },
+    {
+      "bytes": 37249,
+      "path": "tests/native-ctrip-form-observation/run_observer_host.py",
+      "sha256": "b3f54d7f4b9877f1ef5fd04469807e3f9649084eee3485e6d8e47424c8525fa0"
+    },
+    {
+      "bytes": 3489,
+      "path": "tests/native-ctrip-form-observation/run_pure_host.py",
+      "sha256": "91eb36912a90fb71ff81e93ee2acb0b6d701e0a8a889297e4d754c924511a661"
     },
     {
       "bytes": 15555,
@@ -8602,9 +8637,9 @@
       "sha256": "71814de4f7537fffa9834579817c7f2c435bfc82aeb8ada43b22d59f3213683f"
     },
     {
-      "bytes": 15602,
+      "bytes": 17050,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "77c44ec133034c1ba20d010bfdecabb3ced9a82d4209f7b146577473c1c75546"
+      "sha256": "94424206ec95d29cb2500651f445eeab0c1c0ee901cf9660ec243aa8c478f19e"
     },
     {
       "bytes": 7722,
@@ -9252,9 +9287,9 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 34676,
+      "bytes": 34988,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "c13a2152891f7f7a4373421b8060f683c1d7d6dd92725bee86081cda9c660799"
+      "sha256": "50b7d239c4e76334894082dd01ecad1a7a207eb1e776f82f9916d3ea1e62de1d"
     },
     {
       "bytes": 5883,
@@ -9702,36 +9737,6 @@
       "sha256": "d8696b940d62d69be2afaaa7c18b87e59c1f55e6cd06d5fd76dd5b208d443f9b"
     },
     {
-      "bytes": 2271,
-      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
-      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
-    },
-    {
-      "bytes": 12421,
-      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
-      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
-    },
-    {
-      "bytes": 7006,
-      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
-      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
-    },
-    {
-      "bytes": 326,
-      "path": "tests/profile-recovery/RecoveryProofFixture.java",
-      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
-    },
-    {
-      "bytes": 3372,
-      "path": "tests/profile-recovery/run_host.py",
-      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
-    },
-    {
-      "bytes": 5291,
-      "path": "tests/profile-recovery/run_session_host.py",
-      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
-    },
-    {
       "bytes": 9798,
       "path": "tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java",
       "sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c"
@@ -9770,6 +9775,36 @@
       "bytes": 11077,
       "path": "tests/profile-recovery-platform/run_fd_host.py",
       "sha256": "53c59e8588c358fed5847e82ced456255c8c273433bfb848d1847780d389a31a"
+    },
+    {
+      "bytes": 2271,
+      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
+      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
+    },
+    {
+      "bytes": 12421,
+      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
+      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
+    },
+    {
+      "bytes": 7006,
+      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
+      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
+    },
+    {
+      "bytes": 326,
+      "path": "tests/profile-recovery/RecoveryProofFixture.java",
+      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
+    },
+    {
+      "bytes": 3372,
+      "path": "tests/profile-recovery/run_host.py",
+      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
+    },
+    {
+      "bytes": 5291,
+      "path": "tests/profile-recovery/run_session_host.py",
+      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
     },
     {
       "bytes": 18748,
@@ -11722,14 +11757,20 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
-  "main_java_sources": 196,
+  "fixture_compatibility": {
+    "inverse_original_template_sha256": "c13a2152891f7f7a4373421b8060f683c1d7d6dd92725bee86081cda9c660799",
+    "only_removed_fail_only_port_bytes": 312,
+    "original_case_bodies_and_assertions_unchanged": true,
+    "seed_runner_requires_complete_current_template_sha256": "50b7d239c4e76334894082dd01ecad1a7a207eb1e776f82f9916d3ea1e62de1d"
+  },
+  "main_java_sources": 197,
   "phone_qualified": false,
-  "production_build_inputs_count": 371,
-  "production_input_map_sha256": "8f764fff93732b319758a7aa81a8fe9c7b4d376e138b61521e5af045cbec987c",
+  "production_build_inputs_count": 372,
+  "production_input_map_sha256": "2e890ee59c82fda140c64a5b584d0aa5e83e69d6eab69df444e4278192f7b198",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact cumulative successor to source base 8df, reviewed against parent 328a. Preserve local model runtimes, public-derived Xiaomi optional-location decline, diagnostic refusal codes and prior expired-startup recovery. Add one strictly bounded whole fresh ready-confirmation read for the same owned permission-to-target transition only. After a successful owned display release, read complete global actual TaskInfo censuses bound to opaque released custody, allowing only bounded monotonic disappearance of retained identities; keep current absence checks mandatory. Admit only the exact one-request, two-drained-child Notes workflow history whose final close failed, preserving original failed result and unknown historical broker exit. Require the unchanged independent current-absence producer, durable archives, control CAS and ordinary user acknowledgement. No phone or Android qualification is asserted. This successor changes only the explicit inert PublicPersonalNotesReader test port: accept the actual opaque ReleasedRead scope before returning the existing frame fixture. All 371 production compiler inputs, 196 Java sources and original adapter case bodies remain byte-identical to parent 5160.",
-  "source_parent_head": "5160f74310629475999ba326d464a47945441a96",
-  "source_parent_manifest_sha256": "5ea9bf40b62dce399243afc8933d436e75465990563f44cbc5805aa116e1f6e4",
+  "scope": "Exact cumulative successor to source base 8df, reviewed against parent 716f. Preserve local model runtimes, Notes runtime/recovery, task admission, ordinary-background isolation and all existing native action validation. Add only a read-only managed Ctrip 1779/base-APK-bound form observation fallback for two complete actual native censuses: retain the whole form subtree, ancestors, route/date/passenger/economy/query roles and complete window/profile/authorization identity; classify every remaining difference into dynamically derived disjoint neutral branches. Freeze target/unknown event counters immediately after the after-census read and reject subsequent events before seal; retain the existing publication-window/event fence, original screenshot/capture age and request deadlines. No Action Intent, selected-node replacement, action replay, query proof or business completion is created. Add complete-census and actual-observer host gates plus one explicitly fail-only legacy fixture port. No Android or phone qualification is asserted.",
+  "source_parent_head": "716f7ee4de4f2e795d1436939cb6dbf177ccf591",
+  "source_parent_manifest_sha256": "573fb993e713e9b2f19d6cc51a8b4e3bcfea17131b6f2c3a5b2558bcfa3e2ef6",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

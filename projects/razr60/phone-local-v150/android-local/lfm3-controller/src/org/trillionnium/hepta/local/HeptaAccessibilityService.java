@@ -992,12 +992,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long firstPublicationCheckStartedAt=-1,firstPublicationCheckCompletedAt=-1,firstPublicationCheckEvents=-1;
         int postEffectPublicationRechecks;
         ObservationPairSeal seal;NativeResampleSeed seed;
+        Map<String,Object> formPair; // Complete read-only form comparison; never whole-tree equality.
+        long formPairCompletedEvents=-1; // Frozen immediately after the complete census, before comparison.
         ObservationProduct(CaptureIdentity identity,long callbackAt){
             this.identity=identity;this.callbackAt=callbackAt;events=identity.events;unknownEvents=identity.unknownEvents;capturedAt=identity.capturedAt;
         }
         Map<String,Object> captureEvidence(long publishedAt){
             Map<String,Object> e=new java.util.LinkedHashMap<String,Object>();
-            e.put("schema","hepta.observation-capture.v1");e.put("mode",seal==null?"post_encoding_whole_graph":"pre_encoding_paired_history");
+            e.put("schema","hepta.observation-capture.v1");e.put("mode",formPair!=null?"pre_encoding_form_pair_history":seal==null?"post_encoding_whole_graph":"pre_encoding_paired_history");
             e.put("sample_graph_started_elapsed_ms",identity.graphStartedAt);e.put("sample_graph_completed_elapsed_ms",identity.graphCompletedAt);
             e.put("capture_requested_elapsed_ms",capturedAt);e.put("screenshot_callback_elapsed_ms",callbackAt);
             e.put("pair_graph_started_elapsed_ms",pairStartedAt);e.put("pair_graph_completed_elapsed_ms",pairCompletedAt);
@@ -1014,6 +1016,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 e.put("first_publication_check_completed_elapsed_ms",firstPublicationCheckCompletedAt);
                 e.put("first_publication_check_event_watermark",firstPublicationCheckEvents);
                 e.put("historical_pair_after_known_target_event",true);
+            }
+            if(formPair!=null){
+                e.put("form_pair_comparison",formPair);
+                e.put("form_pair_target_events_at_read_start",pairEvents);
+                e.put("form_pair_target_events_at_census_completion",formPairCompletedEvents);
+                e.put("form_pair_events_after_census_completion_admitted",false);
             }
             e.put("published_pair_is_current_tree_claimed",false);
             e.put("pair_graph_event_watermark",pairEvents);e.put("pair_sealed_event_watermark",seal==null?null:Long.valueOf(seal.events));
@@ -1578,27 +1586,38 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 try{after=readGraph(observationBudget(request),request.background);}
                 catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_MISSING);retry=true;}
                 catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE);retry=true;}
+                // Freeze the read endpoint before diagnostics or pure comparison.
+                // A later event is not covered by this completed raw census.
+                final long completedPairEvents=request.events,completedPairUnknown=request.unknownEvents;
+                product.formPairCompletedEvents=completedPairEvents;
                 product.pairCompletedAt=SystemClock.elapsedRealtime();
                 request.graph("screenshot_graph",after);
-                if(!retry&&!identity.matches(after)){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);retry=true;
+                if(!retry&&!identity.matches(after))product.formPair=nativeCtripFormPair(request,identity,after);
+                if(!retry&&!identity.matches(after)&&product.formPair==null){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);retry=true;
                     // The rejected pixels are never published. This complete fresh read may
                     // only seed the next same-request pair; all later reads/capture stay new.
                     product.seed=nativeSavedGraphSeed(request,identity,after,request.events,request.unknownEvents);
                     if(product.seed!=null)request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_SEED_CANDIDATE);
                     recordNativeFullGraphChange(request,"screenshot_graph",request.captured,after);}
-                product.nativeGraphRechecked=!retry&&identity.nativeRecheck&&nativeObservationRecheckAllowed(request,after);
-                if(product.nativeGraphRechecked&&identity.frozenWindow!=null
+                product.nativeGraphRechecked=product.formPair==null&&!retry&&identity.nativeRecheck&&nativeObservationRecheckAllowed(request,after);
+                // A scoped historical pair may span known target events only when ALL
+                // actual census differences were classified. Unknown events still veto.
+                boolean scopedPair=product.formPair!=null&&identity.unknownEvents==0&&pairUnknownEvents==0
+                        &&completedPairUnknown==0&&request.unknownEvents==0
+                        &&product.pairEvents>=identity.events&&completedPairEvents>=product.pairEvents;
+                if((product.nativeGraphRechecked||scopedPair)&&identity.frozenWindow!=null
                         &&identity.frozenWindow.matches(frozenObservationWindow(after))
                         &&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
-                        &&product.pairEvents==request.events&&pairUnknownEvents==request.unknownEvents
+                        &&(scopedPair?completedPairEvents==request.events:product.pairEvents==request.events)&&pairUnknownEvents==request.unknownEvents
                         &&identity.unknownEvents==request.unknownEvents
                         &&identity.graphStartedAt>=request.started&&identity.graphCompletedAt>=identity.graphStartedAt
                         &&identity.graphCompletedAt<=identity.capturedAt&&identity.capturedAt<=callbackAt
                         &&callbackAt<=product.pairStartedAt&&product.pairStartedAt<=product.pairCompletedAt){
                     requireObservationWork(request);
                     product.seal=new ObservationPairSeal(identity,request.readAuthorization,product.pairStartedAt,
-                            product.pairCompletedAt,SystemClock.elapsedRealtime(),product.pairEvents,pairUnknownEvents);
+                            product.pairCompletedAt,SystemClock.elapsedRealtime(),scopedPair?completedPairEvents:product.pairEvents,pairUnknownEvents);
                 }
+                if(product.formPair!=null&&product.seal==null)retry=true;
                 if(after!=null){after.close();after=null;}
                 if(!retry){
                     if(product.bitmap.getWidth()<1||product.bitmap.getHeight()<1||(long)product.bitmap.getWidth()*product.bitmap.getHeight()>16000000L)
@@ -2303,6 +2322,69 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||!original.observationId.equals(action.observationId)||!guard.targetNode.id.equals(action.nodeId))
             throw new StaleObservation("原生动作原观察、目标或任务身份变化");
         background.requireActive();actionCheck(work);
+    }
+    /** Read-only fallback for one already-observed managed Ctrip form.
+     * Complete raw censuses, never diagnostic summaries, supply both sides.
+     * No ActionGuard/Intent, model action, query history or NodeRef is minted.
+     */
+    private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){
+        if(request.initialController!=null||request.postEffectController!=null
+                ||request.readBefore==null||request.readBefore!=current||request.readIdentity==null
+                ||request.readRecoveryRejected||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
+                ||request.background==null||!identity.nativeRecheck||identity.frozenWindow==null
+                ||request.captured==null||after==null||identity.unknownEvents!=0||request.unknownEvents!=0
+                ||!nativeObservationRecheckAllowed(request,request.captured)||!nativeObservationRecheckAllowed(request,after)
+                ||!request.readIdentity.matches(request.captured)||!request.readIdentity.matches(after)
+                ||!identity.frozenWindow.matches(frozenObservationWindow(after)))return null;
+        ProfileTarget target=request.background.profileTarget();
+        BackgroundTaskTarget task=request.background.selection.taskTarget;
+        if(target==null||!NativeCtripFlightPage.PACKAGE.equals(target.packageName)
+                ||target.versionCode!=NativeCtripFlightPage.VERSION_CODE
+                ||!NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
+                ||task==null||!NativeCtripFlightPage.supported(task.nativeGoal))return null;
+        requireObservationWork(request);
+        long now=SystemClock.elapsedRealtime();
+        if(identity.graphStartedAt<request.started||identity.graphCompletedAt<identity.graphStartedAt
+                ||identity.graphCompletedAt>identity.capturedAt||after.readStartedElapsedMs<identity.capturedAt
+                ||after.readCompletedElapsedMs<after.readStartedElapsedMs||after.readCompletedElapsedMs>now)return null;
+        try{
+            Map<String,Object> proof=NativeCtripFormObservation.compare(
+                    nativeCtripFormSnapshot(request,request.captured,target),nativeCtripFormSnapshot(request,after,target));
+            if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144)return null;
+            requireObservationWork(request);return proof;
+        }catch(IllegalArgumentException unclassified){return null;}
+    }
+    /** Actual ownership and complete raw rows are copied; expected facts never
+     * fill a missing census. The old observation id is lineage, not a new frame. */
+    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target){
+        PhoneObservation.CollectionStats stats=graph.collectionStats;
+        BackgroundTaskTarget task=request.background.selection.taskTarget;
+        if(graph.nativeActionNodes==null||graph.nativeActionWindows==null||graph.truncated||stats==null||stats.truncated()
+                ||graph.state==null||graph.state.imeVisibility!=ImeVisibility.HIDDEN||graph.windowMetadata==null
+                ||graph.profileWindow==null||!request.taskId.equals(graph.nativeActionTaskId)
+                ||!taskAuthorization.authorization.sha256.equals(graph.nativeActionAuthorizationSha)
+                ||!NativeAppObservation.selectionSha(request.background.selection).equals(graph.nativeActionSelectionSha)
+                ||!task.targetSha256.equals(graph.nativeActionTargetSha)||!task.nativeGoal.contractSha256.equals(graph.nativeActionGoalSha)
+                ||stats.childSlotsOmitted>Integer.MAX_VALUE||graph.nativeActionCapturedAt<request.started)
+            throw new IllegalArgumentException("complete current read-only native census required");
+        NativeAppEvidence.requireProfileTarget(target,graph.profileWindow);
+        Map<String,Object> env=new java.util.TreeMap<String,Object>();
+        env.put("task_id",graph.nativeActionTaskId);env.put("owner_sha256",graph.backgroundOwnerSha);
+        env.put("target_sha256",graph.nativeActionTargetSha);env.put("authorization_sha256",graph.nativeActionAuthorizationSha);
+        env.put("selection_sha256",graph.nativeActionSelectionSha);env.put("installed_set_sha256",target.apkSetSha256);
+        env.put("goal_sha256",graph.nativeActionGoalSha);env.put("background_generation",graph.backgroundGeneration);
+        env.put("origin_observation_id",request.readBefore.id);
+        env.putAll(NativeAppEvidence.profileActionIdentity(graph.profileWindow));
+        env.put("package",graph.packageName);env.put("display_id",graph.displayId);env.put("window_id",graph.windowId);
+        env.put("rotation",graph.rotation);env.put("width",graph.nativeActionWidth);env.put("height",graph.nativeActionHeight);
+        env.put("root_bounds",java.util.Arrays.asList(graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom));
+        env.put("window_metadata_sha256",sha(graph.windowMetadata.bindFreshness("").getBytes(StandardCharsets.UTF_8)));
+        env.put("reported_windows_sha256",NativeAppEvidence.fingerprint(graph.nativeActionWindows));env.put("reported_windows_complete",true);
+        env.put("ime_visibility","hidden");env.put("captured_elapsed_ms",Long.valueOf(graph.nativeActionCapturedAt));
+        env.put("full_native_complete",true);env.put("visited",stats.visited);env.put("pending",stats.pending);
+        env.put("node_omissions",stats.nodeBudgetOmissions);env.put("text_omissions",stats.textBudgetOmissions);
+        env.put("child_omissions",Integer.valueOf((int)stats.childSlotsOmitted));
+        return new NativeActionSnapshotCheck.Snapshot(env,graph.nativeActionNodes);
     }
     /** A fresh census remains a census, never a replacement PhoneObservation. */
     private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){
