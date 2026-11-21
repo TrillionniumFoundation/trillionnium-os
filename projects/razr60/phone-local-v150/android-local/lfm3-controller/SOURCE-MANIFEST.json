@@ -3,7 +3,7 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "c98f4b30_r4_targeted_host_pass_full_host_android_phone_validation_pending",
+  "candidate_status": "c98f4b30_r5_fixture_port_pass_full_host_android_phone_validation_pending",
   "complete_source_files": 2344,
   "files": [
     {
@@ -11532,9 +11532,9 @@
       "sha256": "be48cdb7680dccff232263403fc7f299405424aff2ba3c8dbd24dcba0c7e259c"
     },
     {
-      "bytes": 21995,
+      "bytes": 22243,
       "path": "tools/run_public_personal_notes_host.py",
-      "sha256": "22281a33a75b6e8e22717107c2a9938b23e1daeb0b978a564a24f734ffb8e3b0"
+      "sha256": "452a126c8ad549746d2682490f9cae2f36ae75203de9db8e4603c3e861e86451"
     },
     {
       "bytes": 1243,
@@ -11727,9 +11727,9 @@
   "production_build_inputs_count": 371,
   "production_input_map_sha256": "8f764fff93732b319758a7aa81a8fe9c7b4d376e138b61521e5af045cbec987c",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact cumulative successor to source base 8df, reviewed against parent 328a. Preserve local model runtimes, public-derived Xiaomi optional-location decline, diagnostic refusal codes and prior expired-startup recovery. Add one strictly bounded whole fresh ready-confirmation read for the same owned permission-to-target transition only. After a successful owned display release, read complete global actual TaskInfo censuses bound to opaque released custody, allowing only bounded monotonic disappearance of retained identities; keep current absence checks mandatory. Admit only the exact one-request, two-drained-child Notes workflow history whose final close failed, preserving original failed result and unknown historical broker exit. Require the unchanged independent current-absence producer, durable archives, control CAS and ordinary user acknowledgement. No phone or Android qualification is asserted.",
-  "source_parent_head": "328a12750cd677065f1f8f2a5fadf23e7a02238d",
-  "source_parent_manifest_sha256": "24323be8f2fc0805dbd718397cde9981e26d93c2f113ec16561ef2adf37f0971",
+  "scope": "Exact cumulative successor to source base 8df, reviewed against parent 328a. Preserve local model runtimes, public-derived Xiaomi optional-location decline, diagnostic refusal codes and prior expired-startup recovery. Add one strictly bounded whole fresh ready-confirmation read for the same owned permission-to-target transition only. After a successful owned display release, read complete global actual TaskInfo censuses bound to opaque released custody, allowing only bounded monotonic disappearance of retained identities; keep current absence checks mandatory. Admit only the exact one-request, two-drained-child Notes workflow history whose final close failed, preserving original failed result and unknown historical broker exit. Require the unchanged independent current-absence producer, durable archives, control CAS and ordinary user acknowledgement. No phone or Android qualification is asserted. This successor changes only the explicit inert PublicPersonalNotesReader test port: accept the actual opaque ReleasedRead scope before returning the existing frame fixture. All 371 production compiler inputs, 196 Java sources and original adapter case bodies remain byte-identical to parent 5160.",
+  "source_parent_head": "5160f74310629475999ba326d464a47945441a96",
+  "source_parent_manifest_sha256": "5ea9bf40b62dce399243afc8933d436e75465990563f44cbc5805aa116e1f6e4",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

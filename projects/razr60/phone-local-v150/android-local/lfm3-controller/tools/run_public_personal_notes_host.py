@@ -69,6 +69,10 @@ final class PublicPersonalNotesReader {
   return new PublicPersonalNotesCustody.Frame(PersonalNotesCustodyHostTest.global(300),Collections.singletonList(
    new PublicPersonalNotesCustody.Node(PersonalNotesCustodyHostTest.task(300,actualToken,uid,PersonalNotesCustodyHostTest.COMP),Collections.emptyList())),now,now);
  }
+ // This is the existing inert TaskInfo port, not the actual Reader algorithm.
+ PublicPersonalNotesCustody.Frame frameAfterRelease(PublicPersonalNotesCustody.ReleasedRead released)throws Exception{
+  released.requireScope(7,uid);return frame();
+ }
  ProfileTaskPolicy.Snapshot global()throws Exception{return PersonalNotesCustodyHostTest.global(liveReads++<pendingLiveReads?300:-1);}
  PublicOwnGroupPhysicalFence.RecentCensus recents(){String current=recentsSequence==null?raw:recentsSequence[Math.min(recentsReads,recentsSequence.length-1)];recentsReads++;return PublicOwnGroupPhysicalFence.inspectRecents(current);}
 }
