@@ -3,7 +3,7 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "c98f4b30_r6_ctrip_form_observation_full_host_android_phone_pending",
+  "candidate_status": "e59_successor_typed_content_census_full_host_android_phone_pending",
   "complete_source_files": 2351,
   "files": [
     {
@@ -6492,9 +6492,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 363347,
+      "bytes": 371858,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "218cbcd535c37a7e4635f6b15473d2eabea2f78b53b50bed8211fecbed3036cd"
+      "sha256": "c0a7ef7c616322560d4b13216fce4fae7d007591959f5f2e8639616e853b79a3"
     },
     {
       "bytes": 711,
@@ -6682,9 +6682,9 @@
       "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
     },
     {
-      "bytes": 31099,
+      "bytes": 31142,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "1e54a60f8ea053e510745dcdf79cbb5ef8d11a41d1950d0de659badf7ff2bab3"
+      "sha256": "db8b97b73265e88c64db29914fd935a14ef3e127c1692528a27b4f4e3472e0ed"
     },
     {
       "bytes": 4368,
@@ -8517,9 +8517,9 @@
       "sha256": "9874629b7c95bdbeef2942712aab6974b8cb366e32690d149624d85d0cb7e757"
     },
     {
-      "bytes": 7520,
+      "bytes": 7567,
       "path": "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
-      "sha256": "6f84e90c7e4a0cd3e9fdea7f4910cb054a61320b0414c59887e82f0325b2b84e"
+      "sha256": "d7013d9c3d62c883408b4bbdbf15092b004e6ef883f3646666faf4ed01afc036"
     },
     {
       "bytes": 3397,
@@ -8532,9 +8532,9 @@
       "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
     },
     {
-      "bytes": 37249,
+      "bytes": 37645,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "b3f54d7f4b9877f1ef5fd04469807e3f9649084eee3485e6d8e47424c8525fa0"
+      "sha256": "18e52793ddcaa6cbbab52c99b6f8619c883801002c01f8963c72c2a544b2b0a8"
     },
     {
       "bytes": 3489,
@@ -8652,9 +8652,9 @@
       "sha256": "ba9340a9a3014017d513ed7a77e3d80a23442de01c33b01d4f52a809009e2ca1"
     },
     {
-      "bytes": 18092,
+      "bytes": 29520,
       "path": "tests/native-observation-snapshot/SnapshotPipelineCases.fragment",
-      "sha256": "949f168c1c546ff9b113f0c0b580b2bb77d47307ed603eb880595dcb2e01f274"
+      "sha256": "8409606030bd29e26664e2bde1f5c407e1b91bc4f0a711f109b30944ec7e1eb0"
     },
     {
       "bytes": 14361,
@@ -11766,11 +11766,11 @@
   "main_java_sources": 197,
   "phone_qualified": false,
   "production_build_inputs_count": 372,
-  "production_input_map_sha256": "2e890ee59c82fda140c64a5b584d0aa5e83e69d6eab69df444e4278192f7b198",
+  "production_input_map_sha256": "81ffd959a5acf4c60272699e3380a89c406f24608a59ed416669e81f066c9463",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact cumulative successor to source base 8df, reviewed against parent 716f. Preserve local model runtimes, Notes runtime/recovery, task admission, ordinary-background isolation and all existing native action validation. Add only a read-only managed Ctrip 1779/base-APK-bound form observation fallback for two complete actual native censuses: retain the whole form subtree, ancestors, route/date/passenger/economy/query roles and complete window/profile/authorization identity; classify every remaining difference into dynamically derived disjoint neutral branches. Freeze target/unknown event counters immediately after the after-census read and reject subsequent events before seal; retain the existing publication-window/event fence, original screenshot/capture age and request deadlines. No Action Intent, selected-node replacement, action replay, query proof or business completion is created. Add complete-census and actual-observer host gates plus one explicitly fail-only legacy fixture port. No Android or phone qualification is asserted.",
-  "source_parent_head": "716f7ee4de4f2e795d1436939cb6dbf177ccf591",
-  "source_parent_manifest_sha256": "573fb993e713e9b2f19d6cc51a8b4e3bcfea17131b6f2c3a5b2558bcfa3e2ef6",
+  "scope": "Exact successor to published e59. Retain all source-base 8df controls, local runtimes, admission, background ownership, deadlines and native action validation. Fix the checked selection fingerprint exception with local fail-closed handling. Classify target content events from actual SDK event metadata and require the entire interval to have no unknown or boundary events. A complete equal native graph may cover only those typed content events; after PNG encoding and persistence, perform a new complete graph and window census before a final main-thread event fence. Never credit a typed content event with a window-only check, transfer late typed events into the old window-only retry, grant action freshness, or infer business completion. Append actual-observer regression cases. Real Android SDK full-source javac is recorded separately; final APK and phone qualification remain pending.",
+  "source_parent_head": "e59b36967b2c4560647730e804d676aaf4a39361",
+  "source_parent_manifest_sha256": "12b7c5c678bf290f045ddd434bc25b6f3bb2a6fd4070db77c5f9663fbf490c3c",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

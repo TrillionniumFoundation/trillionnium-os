@@ -13,7 +13,8 @@ sys.dont_write_bytecode=True
 PKG=Path('src/org/trillionnium/hepta/local')
 HERE=Path(__file__).resolve().parent
 TEST=Path('tests/native-ctrip-form-observation')
-BASELINE_BODY_SHA256={'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){': '3c333501044116981cd0522e5f97a693228553c76a8bdd6471f1fce3dd94fae5', '    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{': 'a3a85b9845dd2c954adafa9769e9b6f183ce476916b5dd80b05cbc629ed7261b', '    private NativeResampleSeed nativeSavedGraphSeed(ObservationRequest request,CaptureIdentity identity,Graph graph,': '3f36b20a4e45aff418c90822bf347a76a91c795638a054696eaec6854f11e993', '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': '9a0816eff581f9d03e15dcce23c7f5e04896dc47293273bb856ff5470b834218', '    private void sampleObservation(final ObservationRequest request){': '1ce51a7e36ba0af59b43605c09b7066d20476c56cc587f9bdf8f745e298178ec', '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){': 'e6f064173cbafb1995c99c03f8873ad29e720d8c73b1c7c88098b90b644153da', '    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){': '9c0d88bffdd13ad27dc78046b3fbf30c1e9665d5e84b09493a726cda38f5198c', '    private boolean nativeObservationRecheckAllowed(ObservationRequest request,Graph graph){': '047494d32858affc85c7c45d21b6740b942f20465dcffe0d19476b65d11806ec', '    private static void requireSameProfileOwner(': 'd7e53c1e6adb723a2f33ee7cb58f426dd7cdf7b35267eafa81f3cb5ce1baf8be'}
+# acceptScreenshot pin is the reviewed typed-content publication fence successor; other baseline bodies are unchanged.
+BASELINE_BODY_SHA256={'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){': '3c333501044116981cd0522e5f97a693228553c76a8bdd6471f1fce3dd94fae5', '    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{': 'a3a85b9845dd2c954adafa9769e9b6f183ce476916b5dd80b05cbc629ed7261b', '    private NativeResampleSeed nativeSavedGraphSeed(ObservationRequest request,CaptureIdentity identity,Graph graph,': '3f36b20a4e45aff418c90822bf347a76a91c795638a054696eaec6854f11e993', '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': '9a0816eff581f9d03e15dcce23c7f5e04896dc47293273bb856ff5470b834218', '    private void sampleObservation(final ObservationRequest request){': '1ce51a7e36ba0af59b43605c09b7066d20476c56cc587f9bdf8f745e298178ec', '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){': 'd86064ad2a7361af1e3be8e1b601b542d3faa73795b849c742b86397a76d710f', '    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){': '9c0d88bffdd13ad27dc78046b3fbf30c1e9665d5e84b09493a726cda38f5198c', '    private boolean nativeObservationRecheckAllowed(ObservationRequest request,Graph graph){': '047494d32858affc85c7c45d21b6740b942f20465dcffe0d19476b65d11806ec', '    private static void requireSameProfileOwner(': 'd7e53c1e6adb723a2f33ee7cb58f426dd7cdf7b35267eafa81f3cb5ce1baf8be'}
 BASELINE_FILES={
  'NativeActionSnapshotCheck.java':'d4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500',
  'ObservationStabilityGate.java':'426100c4f31e825c9e0f0c556c8c89d23aa45a40593978cb5fd8d5946a4beeb8',
@@ -77,7 +78,7 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode())
-        if actual!=expected:raise RuntimeError('protected original production body changed: '+anchor)
+        if actual!=expected:raise RuntimeError('protected reviewed production body changed: '+anchor)
         protected[anchor]={'bytes':len(raw.encode()),'sha256':actual}
     for name,expected in BASELINE_FILES.items():
         if h.sha((source/PKG/name).read_bytes())!=expected:raise RuntimeError('protected production file changed: '+name)
@@ -206,7 +207,8 @@ BRIDGE = r'''
     static final class AuthorizationValue {String sha256=TEST_SHA;}
     static final class AuthorizationGate {final AuthorizationValue authorization=new AuthorizationValue();}
     static final class NativeAppObservation {
-        static String selectionSha(Selection selection){
+        static String selectionSha(Selection selection)throws Exception{
+            if(live!=null&&live.selectionCheckedFailure)throw new Exception("synthetic checked selection failure");
             Runnable hook=live==null?null:live.selectionHook;
             if(hook!=null){live.selectionHook=null;hook.run();}
             return selection.sha;
@@ -214,6 +216,7 @@ BRIDGE = r'''
     }
     static final class NodeRef {String appTreeSignature;NodeRef(String value){appTreeSignature=value;}}
     volatile Runnable selectionHook,afterReadHook,windowHook;
+    volatile boolean selectionCheckedFailure;
     volatile FrozenObservationWindow windowValue;
     final AtomicInteger windowChecks=new AtomicInteger();
     boolean authorizationReady=true;
@@ -274,6 +277,7 @@ BRIDGE = r'''
             else if("unknown_event_during_census".equals(scenario))f.noteObservationEvent(-1);
             else if("known_event_after_census_return".equals(scenario))f.afterReadHook=()->f.noteObservationEvent(15);
             else if("known_event_in_snapshot_adapter".equals(scenario))f.selectionHook=()->f.noteObservationEvent(15);
+            else if("selection_checked_exception".equals(scenario))f.selectionCheckedFailure=true;
             else if("unknown_event_in_snapshot_adapter".equals(scenario))f.selectionHook=()->f.noteObservationEvent(-1);
             else if("authorization_replaced".equals(scenario))f.taskAuthorization=new AuthorizationGate();
             else if("lease_retired".equals(scenario))bg.closed=true;

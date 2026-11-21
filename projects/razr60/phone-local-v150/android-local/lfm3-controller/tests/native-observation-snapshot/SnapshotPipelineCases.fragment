@@ -210,8 +210,153 @@
             check(Boolean.TRUE.equals(f.current.captureEvidence.get("post_encoding_whole_graph_rechecked")),"legacy metadata mislabeled native-only result");f.dispose();
         });
     }
+
+    static void typedContent(ObserverPipelineHost f){
+        f.noteObservationEvent(9,7,SnapshotChecks.APP,true);
+    }
+    static ObservationRequest initialContentCapture(ObserverPipelineHost f)throws Exception{
+        LocalTaskController controller=new LocalTaskController();f.ownedController=controller;
+        long taskDeadline=SystemClock.now+480000;
+        f.observeInitialNative(controller,new Object(),f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline),taskDeadline,
+                new ObservationCallback(){
+                    public void onObservation(PhoneObservation value){expect(isMain(),"initial publish off main");f.delivered.add(value);}
+                    public void onError(String error){expect(isMain(),"initial error off main");f.errors.add(error);}
+                },null);
+        f.main.drain();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;
+        f.main.drainUntil(()->f.pendingScreenshot!=null);
+        await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"initial stable pair");
+        f.main.drainUntil(()->f.pendingScreenshot!=null);
+        check(r!=null&&r.taskReadOrdinal==1&&r.initialController==controller,"actual initial native admission");
+        check(f.pendingScreenshot!=null,"initial stable pair reached capture");return r;
+    }
+
+    static ObservationRequest postEffectContentCapture(ObserverPipelineHost f)throws Exception{
+        LocalTaskController controller=new LocalTaskController();f.ownedController=controller;
+        NativeAppSession task=new NativeAppSession();SystemClock.now+=1000;long taskDeadline=SystemClock.now+480000;
+        NativeAppSession.PostEffectReadPermit permit=new NativeAppSession.PostEffectReadPermit(task,
+                f.taskAuthorization,f.lease,f.taskBackground.selection,f.taskBackground.generation,9,SystemClock.now+15000);
+        f.pendingScreenshot=null;
+        f.observePostEffectNative(controller,task,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline),taskDeadline,
+                new ObservationCallback(){
+                    public void onObservation(PhoneObservation value){expect(isMain(),"post-effect publish off main");f.delivered.add(value);}
+                    public void onError(String error){expect(isMain(),"post-effect error off main");f.errors.add(error);}
+                },null);
+        f.main.drain();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;
+        f.main.drainUntil(()->f.pendingScreenshot!=null);
+        await(()->f.pendingScreenshot!=null||(!observationIoBusy.get()&&observationIo.active.get()==0),"post-effect stable pair");
+        f.main.drainUntil(()->f.pendingScreenshot!=null);
+        check(r!=null&&r.taskReadOrdinal==2&&r.postEffectController==controller,"actual post-effect admission");
+        check(f.pendingScreenshot!=null,"post-effect stable pair reached capture");return r;
+    }
+
+    static void typedContentCases()throws Exception{
+        snapshotCase("typed_initial_content_events_around_961ms_encoding_require_final_complete_native_census",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==3||n==4)typedContent(x);});
+            Bitmap.encodeHook=()->{SystemClock.now+=961;for(int i=0;i<20;i++)typedContent(f);};
+            ObservationRequest r=initialContentCapture(f);f.finish();
+            check(f.delivered.size()==1&&f.errors.isEmpty(),"initial complete native observation did not publish");
+            check(f.reads.get()==4&&f.windowChecks.get()==0,"typed content must use final full graph, never window-only credit");
+            Map<String,Object> e=f.current.captureEvidence;
+            check(Boolean.TRUE.equals(e.get("post_encoding_complete_native_graph_rechecked")),"final complete census proof missing");
+            check(Boolean.TRUE.equals(e.get("post_encoding_whole_graph_rechecked")),"complete read mislabeled identity-only");
+            check(((Long)e.get("capture_age_at_publication_ms")).longValue()==961,"capture timestamp refreshed");
+            check(((Long)e.get("post_encoding_content_events_covered")).longValue()==1,"final-read event not recorded");
+            check(Boolean.FALSE.equals(e.get("published_pair_is_current_tree_claimed"))&&Boolean.FALSE.equals(e.get("grants_action_authority")),"read claimed currentness or authority");
+            check(r.deadline==r.started+12000,"initial budget changed");f.dispose();
+        });
+        snapshotCase("typed_post_encoding_native_tree_change_still_refuses",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==4)g.digest="actual-new-content";});
+            Bitmap.encodeHook=()->typedContent(f);ObservationRequest r=capture(f);f.finish();
+            rejected(f,r,"actual post-encode graph change");check(f.reads.get()==4&&f.windowChecks.get()==0,"full changed graph was not read");f.dispose();
+        });
+        for(final String kind:new String[]{"window","package","incomplete","permission","unknown"}){
+            snapshotCase("typed_post_encoding_census_refuses_"+kind,()->{
+                ObserverPipelineHost f=fixture((x,g,n)->{
+                    if(n==4){
+                        if("window".equals(kind))g.windowId++;
+                        else if("package".equals(kind))g.packageName="other.app";
+                        else if("incomplete".equals(kind))g.truncated=true;
+                        else if("permission".equals(kind))throw new StaleObservation("permission unavailable");
+                        else x.noteObservationEvent(-1,7,SnapshotChecks.APP,true);
+                    }
+                });
+                Bitmap.encodeHook=()->typedContent(f);ObservationRequest r=capture(f);f.finish();
+                rejected(f,r,"final census "+kind);check(f.reads.get()==4,"final census missing");f.dispose();
+            });
+        }
+        for(final String kind:new String[]{"window_boundary","view_focus","missing_window","wrong_window","wrong_package","unknown_display"}){
+            snapshotCase("typed_event_classification_refuses_"+kind,()->{
+                ObserverPipelineHost f=fixture(null);
+                Bitmap.encodeHook=()->{
+                    int display="unknown_display".equals(kind)?-1:9;
+                    int window="missing_window".equals(kind)?-1:"wrong_window".equals(kind)?8:7;
+                    String pkg="wrong_package".equals(kind)?"other.app":SnapshotChecks.APP;
+                    boolean content=!("window_boundary".equals(kind)||"view_focus".equals(kind));
+                    f.noteObservationEvent(display,window,pkg,content);
+                };
+                ObservationRequest r=capture(f);f.finish();rejected(f,r,kind);
+                check(r.eventWatermark().boundaryEvents==1&&r.eventWatermark().contentEvents==0,"boundary misclassified as content");f.dispose();
+            });
+        }
+        snapshotCase("typed_content_after_final_complete_census_keeps_main_publication_fence",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->typedContent(f);
+            ObservationRequest r=capture(f);await(()->observationIo.active.get()==0,"final complete census queued");
+            typedContent(f);f.main.drain();rejected(f,r,"event after final complete census");f.dispose();
+        });
+        snapshotCase("untyped_capture_gap_then_typed_pair_cannot_acquire_new_coverage",()->{
+            ObserverPipelineHost f=fixture((x,g,n)->{if(n==3)typedContent(x);});
+            Bitmap.copyHook=()->f.noteObservationEvent(9);
+            ObservationRequest r=capture(f);f.finish();
+            check(f.delivered.size()==1&&f.reads.get()==4&&f.windowChecks.get()==0,"legacy full-graph fallback changed");
+            Map<String,Object> e=f.current.captureEvidence;
+            check("post_encoding_whole_graph".equals(e.get("mode"))
+                    &&Boolean.FALSE.equals(e.get("native_content_pair_sealed"))
+                    &&Boolean.FALSE.equals(e.get("post_encoding_complete_native_graph_rechecked")),"untyped gap entered new content coverage");
+            check(r.eventWatermark().contentEvents==1,"typed pair hook missed");f.dispose();
+        });
+        snapshotCase("untyped_encoding_gap_then_typed_event_cannot_acquire_new_coverage",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->{f.noteObservationEvent(9);typedContent(f);};
+            ObservationRequest r=capture(f);f.finish();rejected(f,r,"untyped encoding gap");f.dispose();
+        });
+
+        for(final boolean content:new boolean[]{false,true}){
+            snapshotCase("post_effect_late_typed_"+(content?"content":"boundary")+"_cannot_transfer_to_window_only_retry",()->{
+                ObserverPipelineHost f=fixture(null);capture(f);f.finish();
+                check(f.delivered.size()==1,"prior observation missing");f.delivered.clear();
+                int priorReads=f.reads.get(),priorWindows=f.windowChecks.get();
+                if(content)Bitmap.encodeHook=()->typedContent(f);
+                ObservationRequest r=postEffectContentCapture(f);
+                await(()->observationIo.active.get()==0,"post-effect publication queued");
+                int windows=f.windowChecks.get(),completedReads=f.reads.get();
+                SystemClock.now=r.started+10500;
+                f.noteObservationEvent(9,7,SnapshotChecks.APP,content);f.main.drain();
+                check(f.delivered.isEmpty(),"late typed event published through window-only transfer");
+                check(f.windowChecks.get()==windows&&!r.postEffectPublicationRecheckAttempted,"window-only transfer attempted");
+                check(f.directory.list().length==1,"prior evidence removed or unpublished evidence leaked");
+                check(completedReads-priorReads==(content?4:3),"wrong complete-read count before final event");
+                check(f.windowChecks.get()-priorWindows==(content?0:1),"wrong first publication check");
+                check(r.deadline==r.started+12000,"post-effect budget changed");f.dispose();
+            });
+        }
+
+        snapshotCase("typed_other_display_content_preserves_owned_native_history",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->f.noteObservationEvent(0,7,SnapshotChecks.APP,true);
+            capture(f);f.finish();check(f.delivered.size()==1&&f.reads.get()==3&&f.windowChecks.get()==1,"other display changed owner evidence");f.dispose();
+        });
+        snapshotCase("typed_unknown_baseline_never_enters_new_content_coverage",()->{
+            ObserverPipelineHost f=fixture(null);Bitmap.encodeHook=()->typedContent(f);
+            f.snapshotBegin();ObservationRequest r=f.activeObservation;f.awaitSample();f.noteObservationEvent(-1);
+            SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"unknown-baseline second sample");
+            f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"unknown baseline capture");f.finish();
+            rejected(f,r,"unknown baseline");f.dispose();
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         mainThread=Thread.currentThread();
-        try{normalAndHistoryCases();pairAndFenceCases();identityAndLifetimeCases();persistenceAndLegacyCases();ObservationEvidenceHost.run();}
+        try{normalAndHistoryCases();pairAndFenceCases();identityAndLifetimeCases();persistenceAndLegacyCases();typedContentCases();ObservationEvidenceHost.run();}
         finally{SnapshotChecks.finish(args[0]);observationIo.executor.shutdown();}
     }

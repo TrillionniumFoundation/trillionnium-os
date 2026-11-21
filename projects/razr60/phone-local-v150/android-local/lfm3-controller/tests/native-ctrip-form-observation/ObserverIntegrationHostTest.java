@@ -64,6 +64,7 @@ public final class ObserverIntegrationHostTest {
         run("unchanged_pair_keeps_legacy_mode",true,false);
         for(String scenario:Arrays.asList(
                 "protected_form_change","missing_child","visited_count_mismatch",
+                "selection_checked_exception",
                 "known_event_after_census_return","known_event_in_snapshot_adapter",
                 "unknown_event_during_census","unknown_event_in_snapshot_adapter",
                 "known_event_during_publication_check","unknown_event_during_publication_check",
