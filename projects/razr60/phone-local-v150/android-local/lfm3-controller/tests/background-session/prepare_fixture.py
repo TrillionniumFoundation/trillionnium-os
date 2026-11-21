@@ -11,7 +11,15 @@ def prepare(source,output,*,include_terminal=True):
  for name in copies:
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);text=(fixtures/name).read_text()
   if name=='org/json/JSONObject.java':
-   text=text.replace('    public boolean has(String key)', '    public String optString(String key){return optString(key,"");}\n    public boolean has(String key)')
+   one_arg_signature='public String optString(String key)'
+   one_arg_method='    public String optString(String key){return optString(key,"");}\n'
+   if one_arg_signature in text:
+    if text.count(one_arg_signature)!=1 or text.count(one_arg_method)!=1:
+     raise RuntimeError('nonunique or changed JSON optString single-argument fixture')
+   else:
+    anchor='    public boolean has(String key)'
+    if text.count(anchor)!=1:raise RuntimeError('nonunique JSON optString compatibility insertion point')
+    text=text.replace(anchor,one_arg_method+anchor)
    text=text.replace('    private static String quote(', '    public static String quote(')
   if name=='android/system/Os.java':
    text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void remove(String s)throws Exception{if(failUnlink)throw new IOException("synthetic remove failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')

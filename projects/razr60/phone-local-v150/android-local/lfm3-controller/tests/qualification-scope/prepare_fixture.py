@@ -64,6 +64,21 @@ def prepare(source, output):
                           + section(s, '    private static void requireSubmitWindow(', '    private static String fileSha256(')),
         'strings': section(s, '    private static String string(', '\n}'),
     }
+    # This legacy fixture executes the actual native mode admission and every
+    # original dispatch method. Its observation IO has no asynchronous worker.
+    # Exclude only the adjacent AX request/census/worker/publication block;
+    # the separate native-ax-observation gate executes those exact methods.
+    ax_observer_only = section(s,
+        '    private synchronized void bindNativeAxObservationRequest(',
+        '    synchronized TaskAuthorization.Gate bindTaskAuthorization(')
+    ax_mode_binding = section(s,
+        '    /** Native text capture mode is bound once',
+        '    private synchronized void bindNativeAxObservationRequest(')
+    if pieces['scope_validate_dispatch'].count(ax_observer_only) != 1:
+        raise RuntimeError('one complete AX observer-only block in legacy dispatch extraction')
+    pieces['scope_validate_dispatch'] = pieces['scope_validate_dispatch'].replace(ax_observer_only, '', 1)
+    if pieces['scope_validate_dispatch'].count(ax_mode_binding) != 1:
+        raise RuntimeError('actual native AX mode admission must remain byte-identical')
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
     for name, code in pieces.items():
         fixture = fixture.replace('{{' + name + '}}', code)
@@ -183,7 +198,7 @@ def prepare(source, output):
         '    static final class Preferences {Map<String,?> getAll(){return saved;}}\n'
         '    private static Preferences preferences(Context context){return new Preferences();}\n'
         +mode_parts['mode_key']+mode_parts['mode']+'}\n')
-    pure=['BackgroundTaskTarget','NativeAppGoal','NativeAppEvidence','NativeAppDomain','NativeCtripFlightPage','NativeXiaomiProductPage','NativeAppObservation','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','ObservationStabilityGate','RecentActionProjection',
+    pure=['ObservationCaptureEvidence', 'BackgroundTaskTarget','NativeAppGoal','NativeAppEvidence','NativeAppDomain','NativeCtripFlightPage','NativeXiaomiProductPage','NativeAppObservation','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','ObservationStabilityGate','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig','VlmPins','VlmResultContract',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
@@ -229,6 +244,13 @@ def prepare(source, output):
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'preferences_'+n:v for n,v in mode_parts.items()},**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
+        'native_ax_observer_only_excluded_from_legacy_dispatch':{
+            'bytes':len(ax_observer_only.encode()),'sha256':hashlib.sha256(ax_observer_only.encode()).hexdigest(),
+            'covered_by':'tests/native-ax-observation/run_host.py',
+            'actual_mode_admission_retained':True,
+            'actual_mode_admission_sha256':hashlib.sha256(ax_mode_binding.encode()).hexdigest(),
+            'legacy_dispatch_methods_modified':False,
+            'separate_ax_gate_execution_not_claimed_here':True},
         'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},
         'model_settings_helpers_excluded_from_legacy_fixture':{
             'covered_by':'tests/local-model-settings/run_host.py',

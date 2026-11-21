@@ -40,7 +40,9 @@ assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) in {
     'de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec',
     'ee304f12980f51c87dfe031e55c5a34d4d7466e963a5f5f6bd18b633718b4fc2',
     '39fed7241743499db4fa5f6c3c5fef71ee80eb354281bb6f8a888fc63b29b756',
-    'd4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500'}
+    'd4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500',
+    # Reviewed typed AX rejection evidence overload; legacy comparator and all budgets remain.
+    '1d2278784b70f4e57857f8a2cdc89d8e5d2471726e68f57b1d75a659f47a24c1'}
 
 # Use the already reviewed real-file IO fixture producer through its complete
 # generation stage. Do not run its unrelated fixture cases or change any source.
@@ -108,14 +110,14 @@ harness_path = generated/'CensusBudgetAudit.java'
 harness_path.write_bytes(template.read_bytes())
 
 inputs = [root/row['path'] for row in ns['record']['source_inputs']]
-inputs += [src/name for name in ['LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+inputs += [src/name for name in ['ObservationCaptureEvidence.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 inputs += [Path(__file__).resolve(), template, a.json_jar.resolve()]
 before = [identity(path) for path in inputs]
 # Real org.json is deliberately used: the legacy host fixture's toString(2)
 # delegates to compact JSON and cannot establish pretty-file byte counts.
 sources = [path for path in sorted((out/'terminal-fixtures/src').rglob('*.java'))
            if 'org/json' not in path.as_posix()]
-sources += [src/name for name in ['SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+sources += [src/name for name in ['ObservationCaptureEvidence.java', 'SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 sources += [bridge_path, harness_path]
 classes = out/'classes'
 classes.mkdir()

@@ -134,7 +134,7 @@ def sources(source,out):
     bgfiles,bgrecord=bg.prepare(source,out/'platform-fixture')
     bgfiles=[p for p in bgfiles if not(p.parent.name=='json' and p.parent.parent.name=='org') and 'terminal' not in p.parts]
     paths=[source/p for p in query.PURE_PATHS if p not in ('tests/web-flight/WebFlightQueryHostTest.java','tests/native-app/legacy-boundary/NativeAppSession.java')]+bgfiles
-    names=['PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',
+    names=['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',
       'NativeCtripFlightPage','NativeXiaomiProductPage','NativeActionSnapshotCheck','ActionExecutionState',
       'ObservationDiagnostics','ActionPolicy','PersistentActionPolicy']
     paths += [source/PKG/(name+'.java') for name in names]

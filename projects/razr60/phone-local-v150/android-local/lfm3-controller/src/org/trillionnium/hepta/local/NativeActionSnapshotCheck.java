@@ -163,8 +163,34 @@ final class NativeActionSnapshotCheck {
      * acquired here and no predicate, action permission or original refusal changes. */
     static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,
             String operation,String originalScreen,String originalFrameRecord,String reason){
-        need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalScreen)&&sha(originalFrameRecord),
+        return rejectionEvidence(in,old,fresh,comparedAt,operation,originalScreen,originalFrameRecord,reason,null);
+    }
+    static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,
+            String operation,String originalScreen,String originalFrameRecord,String reason,ObservationCaptureEvidence capture){
+        need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalFrameRecord),
                 "same-operation original frame diagnostic binding required");
+        if(capture==null)need(sha(originalScreen),"same-operation original pixel diagnostic binding required");
+        else{
+            need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,
+                    "same-operation typed AX diagnostic binding required");
+            Map<String,Object> bound=new TreeMap<String,Object>();
+            bound.put("task_id",old.env.get("task_id"));bound.put("owner_sha256",old.env.get("owner_sha256"));
+            bound.put("execution_target_sha256",old.env.get("target_sha256"));
+            bound.put("task_authorization_sha256",old.env.get("authorization_sha256"));
+            bound.put("actual_selection_sha256",old.env.get("selection_sha256"));
+            bound.put("native_goal_sha256",old.env.get("goal_sha256"));bound.put("observation_id",old.env.get("origin_observation_id"));
+            for(String k:Arrays.asList("package","background_generation","display_id","window_id","rotation","width","height"))
+                bound.put(k,old.env.get(k));
+            List<Integer> bounds=rect(old.env.get("root_bounds"));
+            bound.put("left",bounds.get(0));bound.put("top",bounds.get(1));bound.put("right",bounds.get(2));bound.put("bottom",bounds.get(3));
+            // The original census read clock and PhoneObservation capture clock are distinct.
+            bound.put("original_census_captured_elapsed_ms",old.env.get("captured_elapsed_ms"));
+            Map<String,Object> profile=null;
+            if(old.env.containsKey("profile_target_sha256")){
+                profile=new TreeMap<String,Object>();for(String k:PROFILE_IDENTITY)profile.put(k,old.env.get(k));
+            }
+            bound.put("profile_action_identity",profile);capture.requireBinding(bound);
+        }
         need(old.env.keySet().equals(fresh.env.keySet())
                 &&old.env.containsKey("profile_target_sha256")==in.identity.containsKey("profile_target_sha256"),"diagnostic profile mode changed");
         for(String k:in.identity.keySet())need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),
@@ -179,6 +205,9 @@ final class NativeActionSnapshotCheck {
         out.put("original_observation_id",in.identity.get("origin_observation_id"));out.put("purpose",in.purpose);
         out.put("target_path",in.path);out.put("original_node_id",in.node);out.put("comparison_refusal",reason);
         out.put("compared_elapsed_ms",comparedAt);out.put("original_screen_sha256",originalScreen);
+        out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX);
+        out.put("original_screenshot_observed",capture==null);
+        if(capture!=null)out.put("original_capture",capture.evidence());
         out.put("original_phone_observation_record_sha256",originalFrameRecord);
         out.put("before",diagnosticSnapshot(old));out.put("fresh",diagnosticSnapshot(fresh));
         out.put("fresh_screenshot_observed",false);out.put("complete_two_censuses",true);out.put("nodes_truncated",false);

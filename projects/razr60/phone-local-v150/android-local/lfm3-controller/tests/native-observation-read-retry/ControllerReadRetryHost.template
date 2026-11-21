@@ -297,6 +297,8 @@ final class ControllerReadRetryHost {
     final List<String> events=new ArrayList<String>(),messages=new ArrayList<String>();
     final Set<Long> checkedTaskDeadlines=new HashSet<Long>();final Map<String,JSONObject> written=new LinkedHashMap<String,JSONObject>();
     final List<String> pendingObservationDiagnostics=new ArrayList<String>();int observationDiagnosticErrors;
+    FailedCensusDiagnostic pendingFailedCensusDiagnostic;
+{{private_census_holder}}
     IntegrationChecks.Work afterDurableIntent;Runnable onEmit;boolean failIntentBeforeWrite;
     ControllerReadRetryHost(String label,boolean eligible)throws Exception{
         fixture=NativeActionBridgeHost.recoveryHome("controller:"+label);authorization=fixture.gate;

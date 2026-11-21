@@ -65,7 +65,12 @@ def main():
             assert row["derived_fixture"] is True and row["exact_original_capture"] is False
         report["public_derived_fixture_provenance"] = provenance
         original = source / "tests/native-app-provider/run_host.py"
-        assert sha(original.read_bytes()) == "8f98d2f335f1a4b2dd659a9b0c5478a87e313247b261a1d32c8ce0535fa32064"
+        original_bytes = original.read_bytes()
+        assert sha(original_bytes) == '7f57be43bbbf43ae0cbaca63569c723b42199b98d6819f5707981dcc978e7a4f'
+        helper_source_entry = b"'ObservationCaptureEvidence', "
+        assert original_bytes.count(helper_source_entry) == 1
+        assert sha(original_bytes.replace(helper_source_entry, b"", 1)) == "8f98d2f335f1a4b2dd659a9b0c5478a87e313247b261a1d32c8ce0535fa32064"
+        report["retained_provider_original_bytes_restored_without_only_helper_source_entry"] = True
         retained = output / "retained-provider"
         run("retained-provider", [sys.executable, original, "--source", source, "--output", retained,
                                   "--java-home", jdk, "--json-jar", jar])

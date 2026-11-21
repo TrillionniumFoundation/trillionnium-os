@@ -30,6 +30,13 @@ final class NativeAppObservation {
                 observed.windowId,observed.profileWindow.taskId,observed.capturedElapsedMillis);
         String expected=selectionSha(selected),actual=NativeAppEvidence.fingerprint(value(observed.backgroundSelectionEvidence()));
         NativeAppEvidence.need(expected.equals(actual),"actual observed native Selection projection differs");
+        if(ObservationCaptureEvidence.NATIVE_AX.equals(observed.captureKind)){
+            NativeAppEvidence.need(observed.capture!=null&&observed.screenshot==null&&observed.screenshotSha256==null,
+                    "typed AX observation cannot claim pixels");
+            Map<String,Object> goalBinding=NativeAppEvidence.map();goalBinding.put("native_goal_sha256",target.nativeGoal.contractSha256);
+            observed.capture.requireBinding(goalBinding);
+        }else NativeAppEvidence.need(ObservationCaptureEvidence.PIXELS.equals(observed.captureKind)&&observed.capture==null
+                &&observed.screenshot!=null&&NativeAppEvidence.sha(observed.screenshotSha256),"actual original pixel observation required");
         List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();
         for(PhoneObservation.Node n:observed.nodes){
             String label=n.label();if(n.text.trim().isEmpty()&&n.description.trim().isEmpty()
@@ -48,7 +55,7 @@ final class NativeAppObservation {
                 observed.screenshotSha256,originalRecordSha,TaskCompletionGate.webFrameSha(completion),completion.displayId,
                 observed.windowId,observed.rotation,observed.width,observed.height,observed.windowBounds.left,observed.windowBounds.top,
                 observed.windowBounds.right,observed.windowBounds.bottom,observed.capturedElapsedMillis,observed.nodesTruncated,complete,nodes,
-                completion.windowType,completion.metadataObserved,observed.profileWindow);
+                completion.windowType,completion.metadataObserved,observed.profileWindow,observed.capture);
     }
     private static Object value(Object v)throws Exception{
         if(v==null||v==JSONObject.NULL)return null;

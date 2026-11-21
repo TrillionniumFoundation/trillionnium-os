@@ -26,18 +26,40 @@ final class DiagnosticControllerHost {
         static final class NativeObservationRetryProof {}
         static final class InitialObservationRetryProof {}
         static final class PostEffectObservationRetryProof {}
-        interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){}
+        interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){} default void onPrivateCensusDiagnostic(Callable<String> value){}
             default void onReadRetryAvailable(String e,NativeObservationRetryProof proof){onError(e);}
             default void onInitialReadRetryAvailable(String e,InitialObservationRetryProof proof){onError(e);}
             default void onPostEffectReadRetryAvailable(String e,PostEffectObservationRetryProof proof){onError(e);}}
         String mutation,originalError;boolean omitDiagnostic,throwDiagnostic,timeout;int observeCalls,remoteChecks,authorityChecks,snapshotCalls;PhoneObservation value=new PhoneObservation();
-        Callable<String> lastSnapshot;ObservationCallback callback;Cancellation cancellation;
+        Callable<String> lastSnapshot,lastPrivateSnapshot;ObservationCallback callback;Cancellation cancellation;
+        String privateTerminal,privateMutation;boolean privatePair;int privateSnapshotCalls;
+        ObservationDiagnostics diagnosticValues;
+        static String sha(byte[] bytes){return DiagnosticGraphHost.sha(bytes);}
         long observedDeadline,callbackAt=-1;boolean duplicateCallback;
         void verifyBackgroundRemote(String id){remoteChecks++;}
         void observe(String id,File dir,Cancellation cancel,long deadline,ObservationCallback cb){
             observeCalls++;callback=cb;cancellation=cancel;observedDeadline=deadline;
             ObservationDiagnostics values=new ObservationDiagnostics(id,DiagnosticChecks.REQUEST,DiagnosticChecks.OWNER,DiagnosticChecks.APP,DiagnosticChecks.GENERATION,9,1,1000,deadline);
+            diagnosticValues=values;
+            if(privatePair){
+                DiagnosticGraphHost.Graph a=DiagnosticGraphHost.fullGraph(12),b=DiagnosticGraphHost.fullGraph(12);
+                DiagnosticGraphHost.change(b,11,"text","RAW_PRIVATE_CENSUS_ONLY");
+                values.fullGraphChange("saved_graph",DiagnosticGraphHost.fullStamp(a),DiagnosticGraphHost.fullStamp(b),1200);
+            }
+            if(privateTerminal!=null)values.finish(privateTerminal,1300);
             Callable<String> production=ObserverPipelineHost.actualSnapshot(values);
+            Callable<String> privateProduction=ObserverPipelineHost.actualPrivateSnapshot(values);
+            lastPrivateSnapshot=()->{
+                privateSnapshotCalls++;JSONObject raw=new JSONObject(privateProduction.call());
+                if(privateMutation!=null){
+                    if("oversize".equals(privateMutation))return DiagnosticChecks.repeat('x',2097153);
+                    if("throw".equals(privateMutation))throw new IOException("raw secret must not be exposed");
+                    if("unfinished_raw".equals(privateMutation))raw.put("request_terminal_observed",false);
+                    else raw.put(privateMutation,"foreign");
+                }
+                return raw.toString();
+            };
+            cb.onPrivateCensusDiagnostic(lastPrivateSnapshot);
             lastSnapshot=()->{snapshotCalls++;if(throwDiagnostic)throw new IllegalStateException("fixture snapshot failed");JSONObject proof=new JSONObject(production.call());
                 if(mutation!=null){if(mutation.equals("oversize"))proof.put("extra",DiagnosticChecks.repeat('x',17000));
                     else if(mutation.equals("sequence"))proof.put("request_sequence",97);
@@ -71,6 +93,9 @@ final class DiagnosticControllerHost {
     final HeptaAccessibilityService service=new HeptaAccessibilityService();BackgroundSession activeNativeBackground=new BackgroundSession();
     final AtomicBoolean cancelled=new AtomicBoolean();final Map<String,JSONObject> written=new LinkedHashMap<String,JSONObject>();
     final java.util.List<String> pendingObservationDiagnostics=new java.util.ArrayList<String>();int observationDiagnosticErrors;
+    FailedCensusDiagnostic pendingFailedCensusDiagnostic;boolean failPrivateWrite;
+{{private_census_holder}}
+{{persist_private_census}}
     // These diagnostic cases never enable the separate initial-native entry.
     static final class InitialNativeObservation {Object nativeTask;BackgroundSession background;HeptaAccessibilityService.InitialObservationRetryProof retryProof;}
     InitialNativeObservation initialNativeObservation;
@@ -81,7 +106,8 @@ final class DiagnosticControllerHost {
 
     void requireInitialNativeObservation(InitialNativeObservation expected,String id,TaskAuthorization.Gate auth,long deadline){throw new AssertionError("initial mode not enabled by diagnostic fixtures");}
     void checkActive(long deadline){if(cancelled.get()||SystemClock.now>=deadline)throw new IllegalStateException("original task stopped");}
-    void record(File dir,String name,JSONObject body)throws Exception{if(name.startsWith("observation-diagnostic-"))throw new AssertionError("diagnostic must use existing result only");written.put(name,body);}
+    void recordPrivateCensus(File dir,String name,byte[] bytes)throws Exception{record(dir,name,new JSONObject(new String(bytes,StandardCharsets.UTF_8)));}
+    void record(File dir,String name,JSONObject body)throws Exception{if(failPrivateWrite&&name.equals("failed-native-census.json"))throw new IOException("host private write fails");if(name.startsWith("observation-diagnostic-"))throw new AssertionError("diagnostic must use existing result only");written.put(name,body);}
 {{await_observation}}
 {{await_observation_request}}
 {{read_retry_failure}}
@@ -92,6 +118,15 @@ final class DiagnosticControllerHost {
     PhoneObservation call()throws Exception{return call(21000);}
     PhoneObservation call(long taskDeadline)throws Exception{return awaitObservationRaw(DiagnosticChecks.TASK,new File("host-diagnostic-no-actual-write"),new TaskAuthorization.Gate(),taskDeadline);}
     int diagnostics(){return pendingObservationDiagnostics.size();}
+    static DiagnosticControllerHost failedPrivate(boolean terminal)throws Exception{
+        DiagnosticControllerHost f=fresh();f.service.originalError="original immutable failure";f.service.privatePair=true;
+        if(terminal)f.service.privateTerminal="failed";
+        try{f.call();throw new AssertionError("failure lost");}catch(IllegalStateException expected){
+            DiagnosticChecks.check(expected.getMessage().equals(f.service.originalError),"diagnostic changed original error");
+        }
+        return f;
+    }
+    static JSONObject persist(DiagnosticControllerHost f){return f.persistFailedCensusDiagnostic(DiagnosticChecks.TASK,"failed",false,new File("host-private-no-actual-write"));}
     static void runTests()throws Exception{
         DiagnosticChecks.run("actual_controller_consumes_static_Service_snapshot_and_original_result",()->{
             DiagnosticControllerHost f=fresh();PhoneObservation o=f.call();DiagnosticChecks.check(o==f.service.value&&f.service.observeCalls==1&&f.service.remoteChecks==1&&f.service.authorityChecks==4,"original success path");
@@ -145,6 +180,46 @@ final class DiagnosticControllerHost {
             f.record(new File("fixture-terminal"),"result.json",new JSONObject().put("observation_diagnostics",collected));
             DiagnosticChecks.check(f.written.size()==2&&collected.getInt("additional_file_writes")==0&&collected.getJSONArray("records").length()==1,"existing result only");
             DiagnosticChecks.check(f.diagnostics()==0&&f.observationDiagnosticErrors==0&&f.takeObservationDiagnostics(DiagnosticChecks.TASK)==null,"take clears once");
+        });
+        DiagnosticChecks.run("private_actual_controller_defers_source_and_one_write_until_terminal",()->{
+            DiagnosticControllerHost f=failedPrivate(true);
+            DiagnosticChecks.check(f.service.privateSnapshotCalls==0&&f.written.isEmpty()&&f.pendingFailedCensusDiagnostic!=null,"no private snapshot or IO before cleanup");
+            JSONObject receipt=persist(f),raw=f.written.get("failed-native-census.json");
+            DiagnosticChecks.check(receipt.getBoolean("artifact_written")&&receipt.getBoolean("complete_pair_recorded")&&f.service.privateSnapshotCalls==1&&f.written.size()==1,"one terminal source and private file");
+            DiagnosticChecks.check(raw.toString().contains("RAW_PRIVATE_CENSUS_ONLY")&&!receipt.toString().contains("RAW_PRIVATE_CENSUS_ONLY"),"raw confined to private artifact");
+            byte[] bytes=raw.toString(2).getBytes(StandardCharsets.UTF_8);
+            DiagnosticChecks.check(bytes.length==receipt.getInt("bytes")&&HeptaAccessibilityService.sha(bytes).equals(receipt.getString("sha256")),"receipt pins exact pretty bytes");
+            DiagnosticChecks.check(persist(f)==null&&f.written.size()==1&&f.service.privateSnapshotCalls==1,"no replay or duplicate private write");
+        });
+        DiagnosticChecks.run("private_actual_controller_success_drops_pending_without_source_or_IO",()->{
+            DiagnosticControllerHost f=failedPrivate(true);
+            DiagnosticChecks.check(f.persistFailedCensusDiagnostic(DiagnosticChecks.TASK,"model_reported_done",true,new File("unused"))==null,"successful task has no raw artifact");
+            DiagnosticChecks.check(f.pendingFailedCensusDiagnostic==null&&f.service.privateSnapshotCalls==0&&f.written.isEmpty(),"success clears source without invoking it");
+        });
+        DiagnosticChecks.run("private_actual_controller_unfinished_worker_records_metadata_only",()->{
+            DiagnosticControllerHost f=failedPrivate(false);JSONObject receipt=persist(f),raw=f.written.get("failed-native-census.json");
+            DiagnosticChecks.check(receipt.getBoolean("artifact_written")&&!receipt.getBoolean("complete_pair_recorded")&&!raw.getBoolean("request_terminal_observed"),"unfinished trace is not completed evidence");
+            DiagnosticChecks.check(!raw.has("before")&&!raw.has("after")&&raw.getInt("raw_pair_count")==0&&raw.getString("status").equals("request_not_terminal"),"late worker values withheld");
+            DiagnosticChecks.check(!receipt.getBoolean("request_terminal_observed")&&!receipt.toString().contains("RAW_PRIVATE"),"metadata only receipt");
+        });
+        DiagnosticChecks.run("private_actual_controller_late_callback_cannot_replace_source",()->{
+            DiagnosticControllerHost f=failedPrivate(true);AtomicInteger late=new AtomicInteger();
+            f.service.callback.onPrivateCensusDiagnostic(()->{late.incrementAndGet();throw new IOException("late");});
+            DiagnosticChecks.check(persist(f).getBoolean("complete_pair_recorded")&&late.get()==0&&f.service.privateSnapshotCalls==1,"abandoned callback cannot replace bound source");
+        });
+        for(final String mutation:new String[]{"task_id","request_id","owner_sha256","package","background_generation","oversize","throw","unfinished_raw"})
+            DiagnosticChecks.run("private_actual_controller_rejects_"+mutation+"_without_write_or_failure_change",()->{
+                DiagnosticControllerHost f=failedPrivate(true);f.service.privateMutation=mutation;JSONObject receipt=persist(f);
+                DiagnosticChecks.check(!receipt.getBoolean("artifact_written")&&f.written.isEmpty()&&f.pendingFailedCensusDiagnostic==null,"invalid private source rejected once");
+                DiagnosticChecks.check(receipt.getString("status").equals("private_census_unavailable")&&!receipt.toString().contains("raw secret"),"stable status with no raw error text");
+            });
+        DiagnosticChecks.run("private_actual_controller_write_failure_is_optional_and_not_retried",()->{
+            DiagnosticControllerHost f=failedPrivate(true);f.failPrivateWrite=true;JSONObject receipt=persist(f);
+            DiagnosticChecks.check(!receipt.getBoolean("artifact_written")&&f.written.isEmpty()&&persist(f)==null,"private file failure cannot replace or retry original task failure");
+        });
+        DiagnosticChecks.run("private_actual_controller_foreign_task_receives_no_old_values",()->{
+            DiagnosticControllerHost f=failedPrivate(true);JSONObject receipt=f.persistFailedCensusDiagnostic("99999999999999999999999999999999","failed",false,new File("unused"));
+            DiagnosticChecks.check(!receipt.getBoolean("artifact_written")&&f.service.privateSnapshotCalls==0&&f.written.isEmpty(),"foreign task refused before source call");
         });
         DiagnosticChecks.run("actual_controller_terminal_discards_foreign_and_invalid_buffer_entries",()->{
             DiagnosticControllerHost f=fresh();f.call();f.pendingObservationDiagnostics.add("not JSON");f.observationDiagnosticErrors=1;

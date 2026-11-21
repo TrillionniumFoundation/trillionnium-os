@@ -169,6 +169,8 @@ public final class PhoneObservation {
         }
     }
     public final String id, packageName, screenshotSha256, treeSha256;
+    public final String captureKind;
+    final ObservationCaptureEvidence capture;
     public final long capturedElapsedMillis;
     private final String captureEvidenceRaw;
     public final int width, height, rotation, windowId;
@@ -228,6 +230,37 @@ public final class PhoneObservation {
                       String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
                       CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
                       java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,state,windowMetadata,
+                truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,collectionStats,
+                actualSelection,actualOwnerSha256,captureEvidence,actualProfileWindow,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
+                      CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
+                      java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow,ObservationCaptureEvidence capture) {
+        this.capture=capture;captureKind=capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX;
+        if(capture!=null){
+            if(!ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)||screenshot!=null||screenshotSha256!=null
+                    ||captureEvidence==null||actualSelection==null||actualOwnerSha256==null||backgroundGeneration==null
+                    ||state==null||windowMetadata==null||windowMetadata.displayId==null||windowMetadata.displayId.intValue()<=0
+                    ||truncated||collectionStats==null||collectionStats.truncated())
+                throw new IllegalArgumentException("native AX evidence requires complete bound background values and no pixels");
+            java.util.Map<String,Object> bound=new java.util.LinkedHashMap<String,Object>();
+            bound.put("observation_id",id);bound.put("package",packageName);bound.put("owner_sha256",actualOwnerSha256);
+            bound.put("background_generation",backgroundGeneration);bound.put("app_tree_sha256",state.appTreeSha256);
+            bound.put("observation_state_sha256",treeSha256);bound.put("display_id",windowMetadata.displayId);
+            bound.put("window_id",windowId);bound.put("rotation",rotation);bound.put("width",width);bound.put("height",height);
+            bound.put("left",bounds.left);bound.put("top",bounds.top);bound.put("right",bounds.right);bound.put("bottom",bounds.bottom);
+            bound.put("captured_elapsed_ms",at);bound.put("profile_window",actualProfileWindow==null?null:actualProfileWindow.evidence());
+            capture.requireBinding(bound);
+            if(!capture.receiptSha256.equals(captureEvidence.get("receipt_sha256"))
+                    ||!capture.kind.equals(captureEvidence.get("kind")))
+                throw new IllegalArgumentException("AX capture metadata differs from real receipt");
+        }else if(captureEvidence!=null&&(screenshot==null||screenshotSha256==null||!screenshotSha256.matches("[0-9a-f]{64}"))){
+            throw new IllegalArgumentException("legacy pixel capture requires actual image and hash");
+        }
         if(collectionStats!=null&&(collectionStats.retained!=nodes.size()||collectionStats.truncated()!=truncated))
             throw new IllegalArgumentException("collection counters differ from actual observed nodes");
         this.collectionStats=collectionStats;
@@ -258,9 +291,9 @@ public final class PhoneObservation {
         profileTarget=selectedProfile;profileWindow=actualProfileWindow;
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
         if(captureEvidence!=null){
-            Object capture=captureEvidence.get("capture_requested_elapsed_ms");
-            if(!(capture instanceof Long)||((Long)capture).longValue()!=at
-                    ||!"hepta.observation-capture.v1".equals(captureEvidence.get("schema"))
+            Object captureClock=captureEvidence.get("capture_requested_elapsed_ms");
+            if(!(captureClock instanceof Long)||((Long)captureClock).longValue()!=at
+                    ||!(capture==null?"hepta.observation-capture.v1":"hepta.observation-capture.native-ax.v1").equals(captureEvidence.get("schema"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("publication_refreshes_capture_age"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("grants_action_authority"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("business_completion_verified")))
@@ -414,7 +447,12 @@ public final class PhoneObservation {
             if(captureEvidenceRaw!=null)value.put("capture",new JSONObject(captureEvidenceRaw));
         }
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
-        value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256);
+        value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256==null?JSONObject.NULL:screenshotSha256);
+        value.put("capture_kind",captureKind);
+        if(capture!=null){
+            value.put("ax_capture",new JSONObject(capture.evidence()));
+            value.put("screenshot_observed",false);value.put("screenshot_path",JSONObject.NULL);
+        }
         value.put("window",windowJson());
         if(backgroundGeneration!=null)value.put("background_session",backgroundJson());
         value.put("app_tree_sha256",state.appTreeSha256);value.put("observation_state_sha256",treeSha256);

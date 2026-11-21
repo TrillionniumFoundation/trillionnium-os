@@ -1,0 +1,164 @@
+    static ObservationCaptureEvidence phoneCapture;static org.json.JSONObject phoneBinding;
+    volatile FrozenObservationWindow windowValue;volatile Runnable windowHook;volatile String windowFailure;
+    volatile boolean authorizationReady=true;final AtomicInteger windowChecks=new AtomicInteger();
+    static Map<String,Object> rawWindows(){
+        Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("window_id",7);row.put("display_id",9);row.put("type",1);
+        row.put("layer",2);row.put("bounds",Arrays.asList(0,0,1080,2400));row.put("focused",true);row.put("active",true);
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("display_id",9);out.put("target_window_id",7);out.put("target_layer",2);
+        out.put("windows",Collections.singletonList(row));out.put("other_window_roots_traversed",false);out.put("unreported_windows_excluded",false);return out;
+    }
+    interface AxChange {void apply(ObserverPipelineHost f,Graph graph,int ordinal);}
+    static List<NativeActionSnapshotCheck.Node> axNodes(String text){
+        List<NativeActionSnapshotCheck.Node> nodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(String path:new String[]{"0","0/0","0/1"}){
+            Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("path",path);
+            row.put("text","0/1".equals(path)?text:"");row.put("window_id",7);row.put("package",SnapshotChecks.APP);
+            nodes.add(new NativeActionSnapshotCheck.Node(row));
+        }return Collections.unmodifiableList(nodes);
+    }
+    static void axGraph(Graph g){
+        g.packageName=SnapshotChecks.APP;g.backgroundGeneration=SnapshotChecks.GENERATION;g.backgroundOwnerSha=SnapshotChecks.OWNER;
+        g.backgroundSelectionRaw="{\"fixture\":\"explicit_host_native_selection\"}";
+        g.backgroundBootstrapPackage=SnapshotChecks.APP;g.backgroundAllowedPackages=Collections.singletonList(SnapshotChecks.APP);
+        g.state=new ObservationState(SnapshotChecks.OWNER,ImeVisibility.HIDDEN);
+        g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,g.displayId,new int[]{0,0,1080,2400},SnapshotChecks.APP);
+        g.rows.add(new PhoneObservation.Node("n0",SnapshotChecks.APP,"0/0",SnapshotChecks.OWNER));g.refs.put("n0",new NodeRef(SnapshotChecks.OWNER));
+        g.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,3,1,10,0,0,0,0,1);
+        g.nativeActionNodes=axNodes("中文实际完整AX证据");g.nativeActionWidth=1080;g.nativeActionHeight=2400;g.nativeActionWindows=immutableMap(rawWindows());
+        g.nativeActionTaskId=SnapshotChecks.TASK;g.nativeActionAuthorizationSha=SnapshotChecks.OWNER;
+        g.nativeActionSelectionSha=SnapshotChecks.OWNER;g.nativeActionTargetSha=SnapshotChecks.OWNER;g.nativeActionGoalSha=SnapshotChecks.OWNER;
+        g.nativeActionCapturedAt=SystemClock.now;
+    }
+    static ObserverPipelineHost axFixture(final AxChange change,boolean profileVisual,boolean adapterVisual)throws Exception{
+        ObserverPipelineHost f=new ObserverPipelineHost();f.lease=SnapshotChecks.TASK;TaskAuthorization.Gate auth=new TaskAuthorization.Gate();f.taskAuthorization=auth;
+        BackgroundSession bg=new BackgroundSession(9);bg.ownerSha256=SnapshotChecks.OWNER;bg.generation=SnapshotChecks.GENERATION;
+        BackgroundTaskTarget target=new BackgroundTaskTarget();target.route=BackgroundTaskTarget.NATIVE_APP;target.explicitSelection=true;
+        target.ownerSha256=bg.ownerSha256;target.packageName=SnapshotChecks.APP;target.nativeGoal=new NativeAppGoal();
+        target.nativeGoal.ownerSha256=target.ownerSha256;target.nativeGoal.packageName=target.packageName;target.nativeGoal.kind=NativeAppGoal.PRODUCT_PRICE;
+        bg.selection.taskTarget=target;bg.selection.initialPackage=target.packageName;bg.selection.allowedPackages=Collections.singletonList(target.packageName);
+        f.taskBackground=bg;LocalTaskController controller=new LocalTaskController();f.ownedController=controller;
+        NativeAppSession session=new NativeAppSession();session.authorization=auth;session.taskId=f.lease;session.selection=bg.selection;
+        session.target=target;session.goal=target.nativeGoal;session.displayId=9;session.generation=bg.generation;
+        f.bindNativeTextObservation(controller,session,f.lease,auth,bg,new LocalInference(adapterVisual),new LocalRuntimeConfig(profileVisual));
+        f.readHook=(g,n)->{axGraph(g);if(change!=null)change.apply(f,g,n);
+            String key=g.packageName+"|"+g.digest+"|"+g.windowMetadata.bindFreshness("");
+            g.digest=sha(key.getBytes(StandardCharsets.UTF_8));g.nativeObservationComplete=completeNativeObservationGraph(g);
+            if(n==2)f.windowValue=frozenObservationWindow(g);
+        };
+        MobiMindPrivateFiles.writeHook=null;MobiMindPrivateFiles.readHook=null;MobiMindPrivateFiles.writes=0;MobiMindPrivateFiles.reads=0;return f;
+    }
+    void axBegin(){
+        observe(lease,directory,()->cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,SystemClock.now+100000),new ObservationCallback(){
+            public void onObservation(PhoneObservation o){expect(isMain(),"AX published off main");delivered.add(o);}
+            public void onError(String error){expect(isMain(),"AX error off main");errors.add(error);}
+        });main.drain();
+    }
+    static ObservationRequest axPair(ObserverPipelineHost f)throws Exception{
+        f.axBegin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;
+        f.main.drainUntil(()->!f.errors.isEmpty()||(f.activeObservation!=null&&f.activeObservation.captured!=null));
+        await(()->f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0,"second AX sample exit");
+        f.main.drainUntil(()->!f.errors.isEmpty()||(f.activeObservation!=null&&f.activeObservation.captured!=null));
+        await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"AX pair and private persistence exit");
+        return r;
+    }
+    static void check(boolean ok,String why){SnapshotChecks.check(ok,why);}
+    static void axCase(String name,Case body)throws Exception{SnapshotChecks.run(name,()->test(name,body));}
+    static void noPixels(ObserverPipelineHost f){check(f.shots.isEmpty()&&Bitmap.made.isEmpty(),"AX called screenshot/bitmap IO");}
+    static void reject(ObserverPipelineHost f,ObservationRequest r)throws Exception{
+        f.main.drain();check(f.delivered.isEmpty(),"bad AX pair published");noPixels(f);
+        check(r.deadline==r.started+12000,"AX deadline expanded");check(f.directory.list().length==0,"unpublished receipt leaked");f.dispose();
+    }
+    static void boundBadCapture(String kind)throws Exception{
+        ObserverPipelineHost f=axFixture(null,false,false);
+        ObservationRequest r=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+            public void onObservation(PhoneObservation o){f.delivered.add(o);}public void onError(String e){f.errors.add(e);}
+        },()->false,SystemClock.now+12000,f.taskBackground);
+        r.readAuthorization=f.taskAuthorization;f.bindNativeAxObservationRequest(r);f.activeObservation=r;r.nativeSample=true;
+        Graph g=new Graph(1,9);axGraph(g);g.readStartedElapsedMs=SystemClock.now;g.readCompletedElapsedMs=SystemClock.now;
+        g.nativeObservationComplete=true;f.graphs.add(g);r.captured=g;
+        if("incomplete".equals(kind))g.nativeObservationComplete=false;
+        if("missing".equals(kind)){g.close();r.captured=null;}
+        if("retired".equals(kind))f.ownedController=new LocalTaskController();
+        f.captureObservation(r);await(()->observationIo.active.get()==0,"refused AX");f.main.drain();
+        check(!f.errors.isEmpty()&&f.delivered.isEmpty(),"bound invalid AX was not refused");noPixels(f);f.dispose();
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        try{
+            axCase("text_native_complete_pair_publishes_actual_receipt_without_png",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);f.main.drain();
+                check(f.delivered.size()==1&&f.errors.isEmpty(),"complete AX pair failed: "+f.errors);
+                noPixels(f);check(f.reads.get()==3&&f.windowChecks.get()==1,"two stable samples plus complete pair and window gate required");
+                check(f.current.capture!=null&&ObservationCaptureEvidence.NATIVE_AX.equals(f.current.captureKind),"typed AX missing");
+                check(f.current.path==null&&f.currentBitmap==null,"AX masqueraded as image");
+                File[] artifacts=f.directory.listFiles();check(artifacts!=null&&artifacts.length==1&&artifacts[0].getName().endsWith("-native-ax.json"),"real AX receipt absent");
+                byte[] bytes=Files.readAllBytes(artifacts[0].toPath());check(f.current.capture.receiptSha256.equals(ObservationCaptureEvidence.hash(bytes)),"persisted receipt hash mismatch");
+                org.json.JSONObject raw=new org.json.JSONObject(new String(bytes,StandardCharsets.UTF_8));
+                phoneCapture=f.current.capture;phoneBinding=raw.getJSONObject("binding");
+                check(raw.getJSONObject("first").getJSONArray("nodes").length()==3,"only retained model rows persisted");
+                check(raw.getJSONObject("second").getJSONArray("nodes").length()==3,"second census missing");
+                check(f.current.capturedElapsedMillis==1200&&r.deadline==r.started+12000,"capture age/deadline refreshed");
+                check(Boolean.FALSE.equals(f.current.captureEvidence.get("screenshot_observed")),"missing explicit no-image evidence");
+                check(MobiMindPrivateFiles.writes==1&&MobiMindPrivateFiles.reads==1,"receipt not read back");f.dispose();
+            });
+            ActualAxPhoneChecks.run(phoneCapture,phoneBinding);
+            axCase("equal_complete_pair_covers_only_typed_content_during_read",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n==3)x.activeObservation.recordEvent(false,1);},false,false);
+                axPair(f);f.main.drain();check(f.delivered.size()==1,"equal complete typed-content pair refused");noPixels(f);f.dispose();
+            });
+            axCase("complete_raw_node_change_rejects_even_when_retained_graph_matches",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n==3)g.nativeActionNodes=axNodes("changed nonretained child");},false,false);
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("pair_reported_window_change_rejected",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n==3){Map<String,Object> w=new LinkedHashMap<String,Object>(g.nativeActionWindows);w.put("changed",true);g.nativeActionWindows=immutableMap(w);}},false,false);
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("unknown_event_during_pair_rejected",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n==3)x.activeObservation.recordEvent(true,1);},false,false);
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("boundary_event_during_pair_rejected",()->{
+                ObserverPipelineHost f=axFixture((x,g,n)->{if(n==3)x.activeObservation.recordEvent(false,2);},false,false);
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("any_content_after_complete_endpoint_rejects",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);r.recordEvent(false,1);reject(f,r);
+            });
+            axCase("event_during_receipt_write_rejects",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);MobiMindPrivateFiles.writeHook=()->f.activeObservation.recordEvent(false,1);
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("persisted_receipt_corruption_rejected",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);MobiMindPrivateFiles.readHook=bytes->bytes[0]='!';
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("identity_window_changed_after_persistence_rejected",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);f.windowHook=()->{
+                    FrozenObservationWindow w=f.windowValue;f.windowValue=new FrozenObservationWindow(w.packageName,w.windowId+1,w.displayId,w.rotation,
+                            w.left,w.top,w.right,w.bottom,w.width,w.height,w.metadata,w.windows,w.profileWindow);};
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            axCase("deadline_during_receipt_persistence_not_extended",()->{
+                ObserverPipelineHost f=axFixture(null,false,false);MobiMindPrivateFiles.writeHook=()->SystemClock.now+=12000;
+                ObservationRequest r=axPair(f);reject(f,r);
+            });
+            for(final String kind:new String[]{"missing","incomplete","retired"})
+                axCase("bound_ax_"+kind+"_never_falls_back_to_pixels",()->boundBadCapture(kind));
+            axCase("visual_profile_keeps_legacy_pixel_path",()->{
+                ObserverPipelineHost f=axFixture(null,true,true);check(f.nativeAxMode==null,"visual bound AX");
+                f.startCapture();f.finish();check(f.shots.size()==1&&!Bitmap.made.isEmpty(),"visual lost screenshot path");
+                check(f.delivered.size()==1&&f.current.capture==null,"visual published AX");f.dispose();
+            });
+            axCase("actual_adapter_profile_disagreement_rejected",()->{
+                boolean refused=false;try{axFixture(null,false,true);}catch(IllegalArgumentException expected){refused=true;}
+                check(refused,"visual adapter incorrectly bound AX");if(live!=null)live.dispose();
+            });
+            axCase("unknown_goal_not_opted_into_ax",()->{
+                check(!ObservationCaptureEvidence.nativeTextMode(false,false,false),"unknown goal enabled AX");
+            });
+        }finally{
+            SnapshotChecks.finish(args[0]);observationIo.executor.shutdownNow();
+            expect(observationIo.executor.awaitTermination(4,TimeUnit.SECONDS),"AX worker executor leaked");
+        }
+    }

@@ -95,6 +95,10 @@ final class NativeAppSession {
                 &&target.targetSha256.equals(f.targetSha)&&authorization.authorization.sha256.equals(f.authorizationSha)
                 &&selectionSha.equals(f.selectionSha)&&goal.packageName.equals(f.packageName)&&generation.equals(f.generation)
                 &&displayId==f.displayId,"native observation task/owner/target/authorization/lease differs");
+        if(f.capture!=null){
+            Map<String,Object> bound=NativeAppEvidence.map();bound.put("native_goal_sha256",goal.contractSha256);
+            f.capture.requireBinding(bound);
+        }
         NativeAppEvidence.requireProfileTarget(installed.profileTarget,f.profileWindow);
         if(f.profileWindow!=null)f.profileWindow.requireMatches(installed.profileTarget,generation,displayId,f.windowId,
                 f.profileWindow.taskId,f.capturedElapsedMs);

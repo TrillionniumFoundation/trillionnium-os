@@ -4,7 +4,7 @@ This is not an Android/installed-App/dispatch/completion test."""
 from pathlib import Path
 import argparse, hashlib, json, os, stat, subprocess, time, traceback
 SCHEMA="hepta.native-xiaomi-product-compiled-gate.v1"
-SHARED={
+ORIGINAL_SHARED={
 "src/org/trillionnium/hepta/local/NativeAppGoal.java":"c266f1e3e6ca3d86ad2e8f94c78a4263138822e004b5eab64dafdda5fcb653d5",
 "src/org/trillionnium/hepta/local/NativeAppEvidence.java":"5ddf2055e23f96efcbc223a17b21d0a7a8e8d0fc2aae788b5d316e7f9eb006b3",
 "src/org/trillionnium/hepta/background/ProfileIdentity.java":"7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd",
@@ -12,6 +12,11 @@ SHARED={
 "src/org/trillionnium/hepta/background/WindowOwnership.java":"60ccf09113a3463179dfa64cc463eeca363006a30f5518747751420cfc1fb80c",
 "src/org/trillionnium/hepta/local/ObservedChildText.java":"56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5",
 "src/org/trillionnium/hepta/local/ObservedTargetLabels.java":"c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"}
+# The original parser fixtures/cases retain their bytes. The shared Frame DTO now
+# has the reviewed typed capture contract; bind the actual current DTO/helper.
+SHARED=dict(ORIGINAL_SHARED)
+SHARED["src/org/trillionnium/hepta/local/NativeAppEvidence.java"]="2f7895c8314959aaafeaa827b1d64f8ce8a8aca62c1de4b7eb82060e567c87be"
+SHARED["src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java"]="ba48a7788e308d987b96923aa4f15fd837b4f11a642b484ff02453af93a5035f"
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -56,7 +61,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

@@ -17,11 +17,11 @@ import time
 
 PKG = Path('src/org/trillionnium/hepta/local')
 TEST = Path('tests/observation-diagnostics')
-JAVA = ['HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
+JAVA = ['ObservationCaptureEvidence.java', 'HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
         'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java',
         'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
-       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java']
+       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template']
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def meta(path):
@@ -86,12 +86,15 @@ def generate(source,output):
         'stale_record':body(service,'    private static void recordStaleDiagnostic(ActionWork work,Graph before,Graph after,String selectedId){'),
         'action_evidence':body(service,'    private static JSONObject actionDiagnosticEvidence(ActionWork work){'),
         'take_diagnostics':body(controller,'    private JSONObject takeObservationDiagnostics(String task){'),
+        'private_census_holder':body(controller,'    private static final class FailedCensusDiagnostic {'),
+        'persist_private_census':body(controller,'    private JSONObject persistFailedCensusDiagnostic(String task,String status,boolean verified,File directory){'),
+        'private_census_write':body(controller,'    private static void recordPrivateCensus(File directory,String name,byte[] bytes)throws Exception{'),
         'await_observation':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{'),
         'await_observation_request':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n'),
         'read_retry_failure':body(controller,'    private static final class NativeObservationTransientFailure extends IllegalStateException {'),
         'initial_read_failure':body(controller,'    private static final class InitialNativeObservationFailure extends IllegalStateException {'),
         'post_effect_read_failure':body(controller,'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {')}
-    for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics'])]:
+    for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics','private_census_holder','persist_private_census']),('PrivateCensusFileHost',['private_census_write'])]:
         text=(source/TEST/(fixture+'.template')).read_text()
         for name in names:
             marker='{{'+name+'}}'
@@ -115,7 +118,7 @@ def generate(source,output):
     await_body=methods['await_observation_request'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
     if any(token in finally_body for token in ('record(', 'System.err', 'System.out', '.wait(', '.sleep(')):raise RuntimeError('diagnostic finally must not perform IO or wait')
     finalization=section(controller,'        finally{\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')
-    positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask(taskId);','terminalDecisionSealed=true;','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
+    positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask(taskId);','terminalDecisionSealed=true;','persistFailedCensusDiagnostic(taskId,finalStatus,completionVerified,evidence)','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
     if positions!=sorted(positions) or finalization.count('takeObservationDiagnostics(taskId)')!=1:raise RuntimeError('original cleanup then existing terminal record order required')
     if controller.count('pendingObservationDiagnostics.add(')!=1 or controller.count('pendingObservationDiagnostics.size()<96')!=1:raise RuntimeError('bounded single memory admission required')
     extraction={'schema':'hepta.observation-diagnostics-extraction.v1','bodies_verbatim':True,
@@ -125,7 +128,7 @@ def generate(source,output):
         'action_callback_callsite':{'bytes':len(callback.encode()),'sha256':sha(callback.encode())},
         'legacy_pipeline_main_not_replaced_in_source':True,
         'default_whole_graph_action_refusal_retained':True,'native_action_guard_qualification_claimed':False,
-        'diagnostic_finally_has_no_IO_or_wait':True,'terminal_diagnostic_uses_only_existing_result_write':True,
+        'diagnostic_finally_has_no_IO_or_wait':True,'terminal_summary_uses_only_existing_result_write':True,'private_failure_artifact_after_original_cleanup_and_terminal':True,
         'cleanup_terminal_order_source_sha256':sha(finalization.encode()),
         'boundary':'Actual Service/Controller bodies, pure tracker and stability gate. Android graph/clock, already-observed row carriers, Session carrier, callback/authorization and disk endpoints are explicit host fakes; no Android/currentness or business qualification.'}
     return extraction
@@ -157,7 +160,7 @@ def main():
         generated=output/'generated';generated.mkdir();extraction=generate(source,generated);save(output/'EXTRACTION.json',extraction)
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/x for x in JAVA if x not in ('HeptaAccessibilityService.java','LocalTaskController.java')]
-        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))
+        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java',source/TEST/'PrivateCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))
         command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))
         compiled=stage('compile',command,output);report['stages'].append(compiled)
         if compiled['exit_code']!=0:raise RuntimeError('actual diagnostic wiring compilation failed')

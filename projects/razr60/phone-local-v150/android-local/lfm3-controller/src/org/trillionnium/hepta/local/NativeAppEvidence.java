@@ -98,7 +98,8 @@ final class NativeAppEvidence {
 
     static final class Frame {
         final String taskId,ownerSha,targetSha,authorizationSha,selectionSha,observationId,packageName,generation;
-        final String treeSha,stateSha,screenshotSha,sourceRecordSha,completionFrameSha;
+        final String treeSha,stateSha,screenshotSha,sourceRecordSha,completionFrameSha,captureKind;
+        final ObservationCaptureEvidence capture;
         final int displayId,windowId,rotation,width,height,left,top,right,bottom,windowType;
         final long capturedElapsedMs;
         final boolean nodesTruncated,collectionComplete,metadataObserved;
@@ -123,13 +124,39 @@ final class NativeAppEvidence {
                 String tree,String state,String screen,String source,String completion,int display,int window,int rotation,
                 int width,int height,int left,int top,int right,int bottom,long captured,boolean truncated,
                 boolean countersComplete,List<Node> nodes,int windowType,boolean metadataObserved,WindowOwnership actualProfileWindow){
+            this(task,owner,target,auth,selection,observation,pkg,generation,tree,state,screen,source,completion,
+                    display,window,rotation,width,height,left,top,right,bottom,captured,truncated,countersComplete,nodes,
+                    windowType,metadataObserved,actualProfileWindow,null);
+        }
+        Frame(String task,String owner,String target,String auth,String selection,String observation,String pkg,String generation,
+                String tree,String state,String screen,String source,String completion,int display,int window,int rotation,
+                int width,int height,int left,int top,int right,int bottom,long captured,boolean truncated,
+                boolean countersComplete,List<Node> nodes,int windowType,boolean metadataObserved,WindowOwnership actualProfileWindow,
+                ObservationCaptureEvidence actualCapture){
             if(actualProfileWindow!=null)need(actualProfileWindow.generation.equals(generation)
                     &&actualProfileWindow.displayId==display&&actualProfileWindow.windowId==window
                     &&actualProfileWindow.observedElapsedMs<=captured&&captured<actualProfileWindow.expiresElapsedMs,
                     "actual profile frame window/lease/capture binding differs");
             profileWindow=actualProfileWindow;
             need(id(task)&&sha(owner)&&sha(target)&&sha(auth)&&sha(selection)&&id(observation)&&pkg!=null&&backgroundGeneration(generation),"native task/frame identities required");
-            need(sha(tree)&&sha(state)&&sha(screen)&&sha(source)&&sha(completion),"native original frame hashes required");
+            need(sha(tree)&&sha(state)&&sha(source)&&sha(completion),"native original frame hashes required");
+            if(actualCapture==null)need(sha(screen),"native original pixel frame hash required");
+            else{
+                need(ObservationCaptureEvidence.NATIVE_AX.equals(actualCapture.kind)&&sha(actualCapture.receiptSha256)
+                        &&screen==null&&!truncated&&countersComplete&&metadataObserved,
+                        "complete typed AX capture without pixel claims required");
+                Map<String,Object> bound=map();
+                bound.put("task_id",task);bound.put("owner_sha256",owner);bound.put("execution_target_sha256",target);
+                bound.put("task_authorization_sha256",auth);bound.put("actual_selection_sha256",selection);
+                bound.put("observation_id",observation);bound.put("package",pkg);bound.put("background_generation",generation);
+                bound.put("app_tree_sha256",tree);bound.put("observation_state_sha256",state);
+                bound.put("display_id",display);bound.put("window_id",window);bound.put("rotation",rotation);
+                bound.put("width",width);bound.put("height",height);bound.put("left",left);bound.put("top",top);
+                bound.put("right",right);bound.put("bottom",bottom);bound.put("captured_elapsed_ms",captured);
+                bound.put("profile_window",actualProfileWindow==null?null:actualProfileWindow.evidence());
+                actualCapture.requireBinding(bound);
+            }
+            capture=actualCapture;captureKind=actualCapture==null?ObservationCaptureEvidence.PIXELS:actualCapture.kind;
             need(display>0&&window>=0&&rotation>=0&&rotation<=3&&width>0&&height>0&&right>left&&bottom>top&&captured>=0,"actual background window required");
             need(nodes!=null&&nodes.size()<=MAX_NODES,"bounded retained native graph required");
             Map<String,Node> ids=new LinkedHashMap<String,Node>();Set<String> paths=new TreeSet<String>();
@@ -143,18 +170,27 @@ final class NativeAppEvidence {
             this.nodes=Collections.unmodifiableList(new ArrayList<Node>(nodes));byId=Collections.unmodifiableMap(ids);
         }
         boolean usable(Node n){return n!=null&&n.direct()&&packageName.equals(n.packageName)&&n.left>=left&&n.top>=top&&n.right<=right&&n.bottom<=bottom;}
-        boolean sameSource(Frame f){return f!=null&&taskId.equals(f.taskId)&&ownerSha.equals(f.ownerSha)&&targetSha.equals(f.targetSha)
+        /** Same typed source only. Two absent screenshots never prove a source. */
+        boolean sameCapture(ObservationCaptureEvidence actual,String screen){
+            if(ObservationCaptureEvidence.PIXELS.equals(captureKind))
+                return capture==null&&actual==null&&sha(screenshotSha)&&sha(screen)&&screenshotSha.equals(screen);
+            return ObservationCaptureEvidence.NATIVE_AX.equals(captureKind)&&capture!=null&&actual!=null
+                    &&screenshotSha==null&&screen==null&&capture.sameSource(actual);
+        }
+        boolean sameSource(Frame f){return f!=null&&captureKind.equals(f.captureKind)&&taskId.equals(f.taskId)&&ownerSha.equals(f.ownerSha)&&targetSha.equals(f.targetSha)
                 &&authorizationSha.equals(f.authorizationSha)&&selectionSha.equals(f.selectionSha)&&observationId.equals(f.observationId)
                 &&packageName.equals(f.packageName)&&generation.equals(f.generation)&&displayId==f.displayId&&windowId==f.windowId
                 &&rotation==f.rotation&&treeSha.equals(f.treeSha)&&stateSha.equals(f.stateSha)&&sourceRecordSha.equals(f.sourceRecordSha)
                 &&windowType==f.windowType&&metadataObserved==f.metadataObserved&&sameProfileWindow(profileWindow,f.profileWindow)
-                &&completionFrameSha.equals(f.completionFrameSha)&&screenshotSha.equals(f.screenshotSha);}
+                &&completionFrameSha.equals(f.completionFrameSha)&&sameCapture(f.capture,f.screenshotSha);}
         Map<String,Object> evidence(){
             Map<String,Object> o=map();o.put("schema",SCHEMA);o.put("task_id",taskId);o.put("owner_sha256",ownerSha);o.put("execution_target_sha256",targetSha);
             o.put("task_authorization_sha256",authorizationSha);o.put("actual_selection_sha256",selectionSha);o.put("observation_id",observationId);
             o.put("package",packageName);o.put("background_generation",generation);o.put("display_id",displayId);o.put("window_id",windowId);o.put("rotation",rotation);
             o.put("window_type",metadataObserved?Integer.valueOf(windowType):null);o.put("window_metadata_observed",metadataObserved);
             o.put("app_tree_sha256",treeSha);o.put("observation_state_sha256",stateSha);o.put("screen_sha256",screenshotSha);
+            o.put("capture_kind",captureKind);o.put("screenshot_observed",capture==null);
+            if(capture!=null)o.put("capture",capture.evidence());
             o.put("phone_observation_record_sha256",sourceRecordSha);o.put("completion_frame_sha256",completionFrameSha);o.put("captured_elapsed_ms",capturedElapsedMs);
             o.put("retained_nodes",nodes.size());o.put("nodes_truncated",nodesTruncated);o.put("actual_collection_complete",collectionComplete);
             if(profileWindow!=null)o.put("actual_profile_window",profileWindow.evidence());

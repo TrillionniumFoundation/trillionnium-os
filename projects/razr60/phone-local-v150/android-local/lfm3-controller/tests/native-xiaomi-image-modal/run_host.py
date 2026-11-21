@@ -70,7 +70,7 @@ def main():
     need(java.is_file(),'real Java runtime required')
     ct=home/'lib/ct.sym';release=ct.is_file()
     flags=['--release','8','-Xlint:all','-Werror'] if release else ['-source','8','-target','8','-Xlint:all,-options','-Werror']
-    deps=[src/PACKAGE/n for n in ('NativeAppGoal.java','NativeAppEvidence.java','NativeXiaomiProductPage.java')]
+    deps=[src/PACKAGE/n for n in ('ObservationCaptureEvidence.java', 'NativeAppGoal.java','NativeAppEvidence.java','NativeXiaomiProductPage.java')]
     tests=[test/n for n in ('ActualXiaomiImageModalFixture.java','NativeXiaomiImageModalHostTest.java')]
     inputs=deps+tests+[Path(__file__).resolve()]+sorted((test/'fixtures').iterdir())
     if a.previous_source:

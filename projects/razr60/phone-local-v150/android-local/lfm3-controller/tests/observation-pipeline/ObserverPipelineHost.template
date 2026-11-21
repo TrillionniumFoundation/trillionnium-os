@@ -212,6 +212,11 @@ public final class ObserverPipelineHost {
     /** Explicit fail-only port: legacy scheduling fixtures cannot admit scoped form pairs.
      * The dedicated form-observation gate substitutes both actual production helpers. */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
+    // Legacy scheduling fakes never bind a text-native model. The AX gate substitutes
+    // the actual production mode admission, worker and publisher at these three ports.
+    private void bindNativeAxObservationRequest(ObservationRequest request){}
+    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){return false;}
+    private void captureNativeAxObservation(ObservationRequest request){throw new AssertionError("legacy fixture cannot enter AX capture");}
     // Legacy fixtures do not supply the additional complete native window census.
     private static FrozenObservationWindow frozenObservationWindow(Graph graph){return null;}
     private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){

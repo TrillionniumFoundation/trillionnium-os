@@ -76,7 +76,7 @@ def main():
     excluded = {"tests/web-flight/WebFlightQueryHostTest.java", "tests/native-app/legacy-boundary/NativeAppSession.java"}
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in
-              ("PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
+              ('ObservationCaptureEvidence', "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
                "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths.append(Path(__file__).resolve().with_name("NativeProfileIdentityHostTest.java"))
     paths = list(dict.fromkeys(p.resolve() for p in paths))

@@ -126,7 +126,7 @@ def main():
                       'body_sha256': hashlib.sha256(button.encode()).hexdigest()})
     generated = output / 'ActionWorkerHost.java'
     generated.write_text(fixture)
-    relative = ['local/ActionExecutionState.java', 'local/TaskCancellationQueue.java', 'local/ObservationDiagnostics.java', 'local/NativeActionSnapshotCheck.java', 'local/ObservedChildText.java',
+    relative = ['local/ObservationCaptureEvidence.java', 'local/ActionExecutionState.java', 'local/TaskCancellationQueue.java', 'local/ObservationDiagnostics.java', 'local/NativeActionSnapshotCheck.java', 'local/ObservedChildText.java',
                 'local/FixedIntentAttemptGuard.java', 'local/ObservedImeEnter.java',
                 'background/FixedIntentTarget.java', 'background/FixedIntentTools.java',
                 'background/BrokerProtocol.java', 'background/PublicPermissionControllerUi.java', 'background/ProfileIdentity.java', 'background/ProfileTarget.java',

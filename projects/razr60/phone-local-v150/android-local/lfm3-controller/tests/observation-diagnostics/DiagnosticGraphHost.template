@@ -11,7 +11,7 @@ final class DiagnosticGraphHost {
     static final class Fingerprint {String value="observed";String fingerprintInput(){return value;}}
     static final class PhoneObservation {
         static final class CollectionStats {
-            int visited,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean incomplete;
+            int visited,retained,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean incomplete;
             boolean truncated(){return incomplete;}
         }
         static final class Node {
@@ -36,7 +36,7 @@ final class DiagnosticGraphHost {
         String nativeActionTaskId=DiagnosticChecks.TASK,nativeActionAuthorizationSha=DiagnosticChecks.OWNER,
             nativeActionSelectionSha=DiagnosticChecks.OWNER,nativeActionTargetSha=DiagnosticChecks.OWNER,nativeActionGoalSha=DiagnosticChecks.OWNER;
         List<NativeActionSnapshotCheck.Node> nativeActionNodes;Map<String,Object> nativeActionWindows;
-        ProfileIdentity profileWindow;
+        ProfileIdentity profileWindow;long readStartedElapsedMs=1000,readCompletedElapsedMs=1100;
     }
     /** Explicit already-read profile value carrier, not a private WindowOwnership proof. */
     static final class ProfileIdentity {final Map<String,Object> fields;ProfileIdentity(Map<String,Object> fields){this.fields=fields;}}

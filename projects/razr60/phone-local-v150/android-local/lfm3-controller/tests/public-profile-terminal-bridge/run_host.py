@@ -21,7 +21,7 @@ JSON_SHA = '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 LEGACY_SHA = '0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47'
 CONTRACTS = {'legacy': (1, 28, 'ad7777f8f55f49c6fdf31b255460e7526ce4449eaec94a2378ce3e7f6ebdf864'), 'candidate': (33, 412, '5f2b560320c45a07a342a67ef1e8e703b2cf390494ca1406ebe549814322312d')}
 
-EXTRA = ['PromptActionDomain', 'NativeAppEvidence', 'NativeAppDomain', 'NativeAppSession',
+EXTRA = ['ObservationCaptureEvidence', 'PromptActionDomain', 'NativeAppEvidence', 'NativeAppDomain', 'NativeAppSession',
          'NativeActionSnapshotCheck', 'NativeAppObservation', 'NativeCtripFlightPage', 'NativeXiaomiProductPage']
 
 

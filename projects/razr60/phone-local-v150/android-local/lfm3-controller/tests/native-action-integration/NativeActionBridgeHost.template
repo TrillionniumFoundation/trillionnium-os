@@ -88,6 +88,7 @@ final class NativeActionBridgeHost {
     }
     static final class PhoneObservation {
         String id,packageName,treeSha256,screenshotSha256,backgroundBootstrapPackage;
+        ObservationCaptureEvidence capture;
         WindowOwnership profileWindow;
         int windowId,rotation,width,height;long capturedElapsedMillis;
         ObservationState state;ObservedWindowMetadata windowMetadata;List<String> backgroundAllowedPackages;
@@ -389,7 +390,7 @@ final class NativeActionBridgeHost {
         void observeGraph(NativeActionSnapshotCheckHostTest.Fixture values)throws Exception{
             SystemClock.now+=10;Graph g=graph(values,null);frame=frame(retained(g),g.digest);session.observed(frame);if(currentGraph!=null)currentGraph.close();currentGraph=g;
             current=new PhoneObservation();current.id=frame.observationId;current.packageName=frame.packageName;current.treeSha256=frame.stateSha;
-            current.screenshotSha256=frame.screenshotSha;current.capturedElapsedMillis=frame.capturedElapsedMs;current.windowId=frame.windowId;
+            current.capture=frame.capture;current.screenshotSha256=frame.screenshotSha;current.capturedElapsedMillis=frame.capturedElapsedMs;current.windowId=frame.windowId;
             current.width=frame.width;current.height=frame.height;current.rotation=frame.rotation;current.state=new ObservationState(frame.treeSha,ImeVisibility.HIDDEN);
             current.windowMetadata=metadata();current.backgroundBootstrapPackage=raw.pkg;current.backgroundAllowedPackages=Collections.singletonList(raw.pkg);
         }

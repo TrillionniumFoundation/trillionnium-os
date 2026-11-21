@@ -191,6 +191,17 @@ public final class LocalTaskController implements AutoCloseable {
     // Worker-owned pure values. They join the existing terminal record after cleanup.
     private final java.util.List<String> pendingObservationDiagnostics=new java.util.ArrayList<String>();
     private int observationDiagnosticErrors;
+    // At most one pure-value source; never invoked by the observation callback.
+    private FailedCensusDiagnostic pendingFailedCensusDiagnostic;
+    private static final class FailedCensusDiagnostic {
+        final java.util.concurrent.Callable<String> snapshot;final String task,request,owner,pkg,generation;
+        final int sequence,display;final long deadline;
+        FailedCensusDiagnostic(java.util.concurrent.Callable<String> snapshot,JSONObject proof)throws Exception{
+            this.snapshot=snapshot;task=proof.getString("task_id");request=proof.getString("request_id");
+            owner=proof.getString("owner_sha256");pkg=proof.getString("package");generation=proof.getString("background_generation");
+            sequence=proof.getInt("request_sequence");display=proof.getInt("display_id");deadline=proof.getLong("deadline_elapsed_ms");
+        }
+    }
     // Worker-owned, spent before the durable retry intent; never reset within a task.
     private boolean nativeObservationRetryUsed;
     private boolean initialNativeObservationRetryUsed;
@@ -324,7 +335,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
 
     private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection){
-        pendingObservationDiagnostics.clear();observationDiagnosticErrors=0;nativeObservationRetryUsed=false;
+        pendingObservationDiagnostics.clear();observationDiagnosticErrors=0;pendingFailedCensusDiagnostic=null;nativeObservationRetryUsed=false;
         initialNativeObservationRetryUsed=false;initialNativeObservation=null;postEffectNativeObservation=null;
         QualificationScopeConfig.Bound scope=null;
         BackgroundSession background=null;BackgroundSession.Cleanup backgroundCleanup=null;
@@ -463,6 +474,7 @@ public final class LocalTaskController implements AutoCloseable {
                             record(nativeEvidence,leaf,new JSONObject(value));
                         }});
                 completion.bindNativeSession(nativeTask);activeNativeBackground=background;activeNativeTask=nativeTask;
+                service.bindNativeTextObservation(this,nativeTask,taskId,authorization,background,inference,config);
                 checkActive(deadline);
             }
             AppCatalogueRanker.Page apps=service.appCatalogue(taskId,instruction);
@@ -876,11 +888,13 @@ public final class LocalTaskController implements AutoCloseable {
                     finalStatus,cleanup,completionVerified,completionFrame(observation),completionEvidence,background==null?null:background.evidence());}
             catch(Exception unavailable){/* A display-only explanation cannot replace the original result or cleanup. */}
             JSONObject lastActionExecution=service.actionExecutionEvidence(taskId);
+            JSONObject privateCensusArtifact=persistFailedCensusDiagnostic(taskId,finalStatus,completionVerified,evidence);
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("stop_requested_elapsed_ms",stopRequestedElapsed.get()<0?JSONObject.NULL:Long.valueOf(stopRequestedElapsed.get()))
                     .put("terminal_decided_elapsed_ms",SystemClock.elapsedRealtime())
                     .put("last_action_execution",lastActionExecution==null?JSONObject.NULL:lastActionExecution)
                     .put("observation_diagnostics",takeObservationDiagnostics(taskId))
+                    .put("failed_native_census_artifact",privateCensusArtifact)
                     .put("summary",summary).put("display_summary",OutcomeExplanation.display(summary,userExplanation))
                     .put("user_explanation",new JSONObject(userExplanation)).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
                     .put("model_done_status",lastModelDoneStatus==null?JSONObject.NULL:lastModelDoneStatus)
@@ -1263,6 +1277,9 @@ public final class LocalTaskController implements AutoCloseable {
         final AtomicBoolean delivered=new AtomicBoolean();
         LocalInference.CurrentFrame currentFrame=null;
         if(visual){
+            if(before==null||before.capture!=null||!ObservationCaptureEvidence.PIXELS.equals(before.captureKind)
+                    ||before.screenshot==null||before.screenshotSha256==null)
+                throw new IllegalStateException("本地视觉推理不能使用纯AX观察，必须取得真实截图");
             if(before==null||before.windowMetadata==null||before.windowMetadata.displayId==null
                     ||grammar.authorization==null||!before.id.equals(grammar.observationId)
                     ||!before.packageName.equals(grammar.currentPackage))
@@ -1545,6 +1562,7 @@ public final class LocalTaskController implements AutoCloseable {
         final AtomicReference<HeptaAccessibilityService.PostEffectObservationRetryProof> failedPostEffectRead=new AtomicReference<HeptaAccessibilityService.PostEffectObservationRetryProof>();
         final InitialNativeObservation initial=initialNativeObservation;
         final AtomicReference<java.util.concurrent.Callable<String>> diagnostic=new AtomicReference<java.util.concurrent.Callable<String>>();
+        final AtomicReference<java.util.concurrent.Callable<String>> privateCensus=new AtomicReference<java.util.concurrent.Callable<String>>();
         final BackgroundSession diagnosticBackground=activeNativeBackground;
         final AtomicBoolean abandoned=new AtomicBoolean(false),delivered=new AtomicBoolean(false);
         try{
@@ -1552,6 +1570,9 @@ public final class LocalTaskController implements AutoCloseable {
             HeptaAccessibilityService.ObservationCallback callback=new HeptaAccessibilityService.ObservationCallback(){
                         public void onDiagnostic(java.util.concurrent.Callable<String> snapshot){
                             if(!abandoned.get()&&snapshot!=null)diagnostic.compareAndSet(null,snapshot);
+                        }
+                        public void onPrivateCensusDiagnostic(java.util.concurrent.Callable<String> snapshot){
+                            if(!abandoned.get()&&snapshot!=null)privateCensus.compareAndSet(null,snapshot);
                         }
                         public void onObservation(PhoneObservation o){if(!abandoned.get()&&delivered.compareAndSet(false,true)){value.set(o);ready.countDown();}}
                         public void onError(String e){if(!abandoned.get()&&delivered.compareAndSet(false,true)){error.set(e);ready.countDown();}}
@@ -1615,6 +1636,8 @@ public final class LocalTaskController implements AutoCloseable {
                         ||proof.toString(2).getBytes(StandardCharsets.UTF_8).length>16384)
                     throw new IllegalStateException("observation diagnostic binding or bound differs");
                 if(pendingObservationDiagnostics.size()<96)pendingObservationDiagnostics.add(proof.toString());
+                if(privateCensus.get()!=null&&value.get()==null&&!"published".equals(proof.optString("terminal")))
+                    pendingFailedCensusDiagnostic=new FailedCensusDiagnostic(privateCensus.get(),proof);
             }catch(Exception unavailable){
                 // Diagnostic failure never replaces the original observation/result/exception.
                 if(observationDiagnosticErrors<96)observationDiagnosticErrors++;
@@ -1640,6 +1663,49 @@ public final class LocalTaskController implements AutoCloseable {
         evidence.put("additional_file_writes",0);evidence.put("snapshot_errors",snapshotErrors);
         evidence.put("discarded_records",discarded);evidence.put("records",records);
         return new JSONObject(evidence);
+    }
+    /** One optional private file after original cleanup and terminal decision.
+     * It has no task result, retry, publication, prompt or effect authority. */
+    private JSONObject persistFailedCensusDiagnostic(String task,String status,boolean verified,File directory){
+        FailedCensusDiagnostic selected=pendingFailedCensusDiagnostic;pendingFailedCensusDiagnostic=null;
+        if(selected==null||verified||!("failed".equals(status)||"partial".equals(status))||directory==null)return null;
+        JSONObject receipt=new JSONObject();String filename="failed-native-census.json";
+        try{
+            receipt.put("schema","hepta.failed-native-census-artifact.v1").put("task_id",task)
+                    .put("file_limit",1).put("byte_limit",2097152).put("artifact_written",false)
+                    .put("raw_sent_to_model",false).put("grants_action_authority",false).put("changes_deadline",false);
+            if(!task.equals(selected.task))throw new IllegalStateException("private census task differs");
+            String text=selected.snapshot.call();
+            if(text==null||text.getBytes(StandardCharsets.UTF_8).length>2097152)throw new IllegalStateException("private census bound differs");
+            JSONObject raw=new JSONObject(text);
+            if(!"hepta.failed-native-census.v1".equals(raw.getString("schema"))
+                    ||!task.equals(raw.getString("task_id"))||!selected.request.equals(raw.getString("request_id"))
+                    ||!selected.owner.equals(raw.getString("owner_sha256"))||!selected.pkg.equals(raw.getString("package"))
+                    ||!selected.generation.equals(raw.getString("background_generation"))||selected.display!=raw.getInt("display_id")
+                    ||selected.sequence!=raw.getInt("request_sequence")||selected.deadline!=raw.getLong("deadline_elapsed_ms")
+                    ||raw.getInt("pair_limit_per_task")!=1||raw.getInt("artifact_byte_limit")!=2097152
+                    ||raw.getBoolean("sent_to_model")||raw.getBoolean("grants_action_authority")||raw.getBoolean("grants_publication")
+                    ||raw.getBoolean("changes_deadline")||raw.getInt("additional_node_samples")!=0||raw.getInt("additional_screenshots")!=0)
+                throw new IllegalStateException("private census binding differs");
+            boolean complete=raw.getBoolean("complete_pair_recorded");
+            if(complete&&(!raw.getBoolean("request_terminal_observed")||!"failed".equals(raw.getString("request_terminal"))
+                    ||!raw.getBoolean("diagnostic_updates_frozen_at_terminal")||raw.getInt("raw_pair_count")!=1
+                    ||!raw.has("before")||!raw.has("after")))
+                throw new IllegalStateException("private census terminal differs");
+            if(!complete&&(raw.has("before")||raw.has("after")||raw.getInt("raw_pair_count")!=0))
+                throw new IllegalStateException("incomplete census contains raw pair");
+            byte[] bytes=raw.toString(2).getBytes(StandardCharsets.UTF_8);
+            if(bytes.length>2097152)throw new IllegalStateException("private census pretty bound differs");
+            recordPrivateCensus(directory,filename,bytes);
+            receipt.put("artifact_written",true).put("filename",filename).put("bytes",bytes.length)
+                    .put("sha256",HeptaAccessibilityService.sha(bytes)).put("complete_pair_recorded",complete)
+                    .put("request_id",selected.request).put("request_terminal_observed",raw.getBoolean("request_terminal_observed"))
+                    .put("raw_pair_omitted_for_budget",raw.getBoolean("raw_pair_omitted_for_budget")).put("status",raw.getString("status"));
+        }catch(Exception unavailable){
+            // Do not expose raw contents, retry the write or replace the original failure.
+            try{receipt.put("status","private_census_unavailable");}catch(Exception ignored){}
+        }
+        return receipt;
     }
     /** Read-only diagnosis after an uncertain dispatched effect. It never
      * retries that effect, promotes acceptance, advances completion or replaces
@@ -2137,6 +2203,13 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static String chineseAction(String action){switch(action){case "notes.create":return "打开本地笔记草稿";case "web.search":return "打开网页查询";case "find_app":return "搜索本机应用";case "open":return "打开应用";case "click":return "点击";case "type":return "输入文字";case "submit":return "提交查询字段";case "scroll":return "滚动";case "back":return "返回";case "home":return "回到桌面";case "wait":return "等待页面";default:return "检查完成状态";}}
     private static void privateDirectory(File directory)throws Exception{if(!directory.isDirectory()&&!directory.mkdirs())throw new IllegalStateException("无法建立任务目录");android.system.Os.chmod(directory.getPath(),0700);}
+    private static void recordPrivateCensus(File directory,String name,byte[] bytes)throws Exception{
+        File file=new File(directory,name);if(!file.createNewFile())throw new IllegalStateException("private census evidence file already exists");
+        // A failed chmod cannot be followed by raw bytes, and a later write/fsync
+        // failure leaves only a 0600 file in the original private task directory.
+        android.system.Os.chmod(file.getPath(),0600);
+        try(FileOutputStream stream=new FileOutputStream(file)){stream.write(bytes);stream.getFD().sync();}
+    }
     private static void record(File directory,String name,JSONObject value)throws Exception{
         File file=new File(directory,name);if(!file.createNewFile())throw new IllegalStateException("证据文件标识重复");
         try(FileOutputStream stream=new FileOutputStream(file)){stream.write(value.toString(2).getBytes(StandardCharsets.UTF_8));stream.getFD().sync();}

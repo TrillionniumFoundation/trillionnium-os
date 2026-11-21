@@ -88,7 +88,8 @@ public final class NativeAppRoutingEntryHostTest {
             BackgroundSession.controllerDisplay=6;
             try{
                 QualificationScopeHostTest.CountingModel model=new QualificationScopeHostTest.CountingModel(e,"done",CTRIP,null);
-                e.controller=new LocalTaskController(e.service,model);
+                // Use the existing Service-owned Controller lifecycle before binding a native observation mode.
+                e.service.testInference=model;e.controller=e.service.taskController(engine(e));
                 BackgroundSession.Selection s=selection(owner);TaskAuthorization auth=TaskAuthorization.parse(owner).forExecutionSelection(s);
                 final LocalTaskController.TaskResult[] terminal={null};CountDownLatch done=new CountDownLatch(1);
                 check(e.controller.start(owner,null,auth,s,new LocalTaskController.Listener(){

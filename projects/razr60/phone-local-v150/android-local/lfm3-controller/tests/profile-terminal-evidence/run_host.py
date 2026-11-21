@@ -18,7 +18,7 @@ import time
 sys.dont_write_bytecode = True
 JSON_SHA = '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 TARGET = 'src/org/trillionnium/hepta/background/ProfileTarget.java'
-EXTRA = ['PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession',
+EXTRA = ['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession',
          'NativeActionSnapshotCheck','NativeAppObservation','NativeCtripFlightPage','NativeXiaomiProductPage']
 
 def require(ok, message):

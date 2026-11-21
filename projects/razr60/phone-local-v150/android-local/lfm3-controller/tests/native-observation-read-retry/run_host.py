@@ -44,6 +44,7 @@ def main():
         need(run_task.count('awaitPostEffectNativeObservation(')==1,'one post-effect observation callsite')
         need(run_task.index('activeNativeTask.modelActionOutcome(')<run_task.index('awaitPostEffectNativeObservation('),'durable outcome precedes post-effect read')
         anchors={
+          'private_census_holder':'    private static final class FailedCensusDiagnostic {',
           'pending_require':'    private void requirePendingNativeObservation(',
           'pending_wrapper':'    private PhoneObservation awaitPendingNativeTransition(',
           'post_context':'    private static final class PostEffectNativeObservation {',

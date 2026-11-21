@@ -25,7 +25,21 @@ PORT='''    /** Explicit fail-only port: legacy scheduling fixtures cannot admit
      * The dedicated form-observation gate substitutes both actual production helpers. */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
 '''
-JAVA=['ObservationDiagnostics.java','ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java',
+# Exact reviewed AX differences are reversed only in proof copies.
+# Actual production extraction, current typed guards and legacy cases remain intact.
+AX_PORTS='    // Legacy scheduling fakes never bind a text-native model. The AX gate substitutes\n    // the actual production mode admission, worker and publisher at these three ports.\n    private void bindNativeAxObservationRequest(ObservationRequest request){}\n    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){return false;}\n    private void captureNativeAxObservation(ObservationRequest request){throw new AssertionError("legacy fixture cannot enter AX capture");}\n'
+REVIEWED_AX_BODY_INVERSE={'    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{': {'sha256': '4ff4399af8965f25601a0c494a97d5101d41d4f5031dc4413dc57cdb2baa5bab',
+                                                                                                                                          'current': '||!original.sameCapture(frame.capture,frame.screenshotSha256)||',
+                                                                                                                                          'legacy': '||!original.screenshotSha.equals(frame.screenshotSha256)||'},
+ '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': {'sha256': '9efece9a8d9c103aa6c794911a6eb01cdbdb949567406cbfb435d1341da3285a',
+                                                                                                                              'current': 'long '
+                                                                                                                                         'screenshotDelay=nativeTextObservationAllowed(request,graph)?0:Math.max(0,400-(now-lastScreenshotAt));',
+                                                                                                                              'legacy': 'long '
+                                                                                                                                        'screenshotDelay=Math.max(0,400-(now-lastScreenshotAt));'}}
+AX_REJECTION_PREFIX='    static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,\n            String operation,String originalScreen,String originalFrameRecord,String reason){\n        return rejectionEvidence(in,old,fresh,comparedAt,operation,originalScreen,originalFrameRecord,reason,null);\n    }\n    static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,\n            String operation,String originalScreen,String originalFrameRecord,String reason,ObservationCaptureEvidence capture){\n        need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalFrameRecord),\n                "same-operation original frame diagnostic binding required");\n        if(capture==null)need(sha(originalScreen),"same-operation original pixel diagnostic binding required");\n        else{\n            need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,\n                    "same-operation typed AX diagnostic binding required");\n            Map<String,Object> bound=new TreeMap<String,Object>();\n            bound.put("task_id",old.env.get("task_id"));bound.put("owner_sha256",old.env.get("owner_sha256"));\n            bound.put("execution_target_sha256",old.env.get("target_sha256"));\n            bound.put("task_authorization_sha256",old.env.get("authorization_sha256"));\n            bound.put("actual_selection_sha256",old.env.get("selection_sha256"));\n            bound.put("native_goal_sha256",old.env.get("goal_sha256"));bound.put("observation_id",old.env.get("origin_observation_id"));\n            for(String k:Arrays.asList("package","background_generation","display_id","window_id","rotation","width","height"))\n                bound.put(k,old.env.get(k));\n            List<Integer> bounds=rect(old.env.get("root_bounds"));\n            bound.put("left",bounds.get(0));bound.put("top",bounds.get(1));bound.put("right",bounds.get(2));bound.put("bottom",bounds.get(3));\n            // The original census read clock and PhoneObservation capture clock are distinct.\n            bound.put("original_census_captured_elapsed_ms",old.env.get("captured_elapsed_ms"));\n            Map<String,Object> profile=null;\n            if(old.env.containsKey("profile_target_sha256")){\n                profile=new TreeMap<String,Object>();for(String k:PROFILE_IDENTITY)profile.put(k,old.env.get(k));\n            }\n            bound.put("profile_action_identity",profile);capture.requireBinding(bound);\n        }\n'
+LEGACY_REJECTION_PREFIX='    static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,\n            String operation,String originalScreen,String originalFrameRecord,String reason){\n        need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalScreen)&&sha(originalFrameRecord),\n                "same-operation original frame diagnostic binding required");\n'
+AX_REJECTION_METADATA='        out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX);\n        out.put("original_screenshot_observed",capture==null);\n        if(capture!=null)out.put("original_capture",capture.evidence());\n'
+JAVA=['ObservationCaptureEvidence.java', 'ObservationDiagnostics.java','ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java',
       'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java','NativeActionSnapshotCheck.java',
       'ObservedChildText.java','ObservedTargetLabels.java','ObservedScrollActions.java','ObservedImeEnter.java',
       'NativeAppGoal.java','NativeCtripFormObservation.java']
@@ -43,8 +57,13 @@ def generate(source,output,h):
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    if template.count(PORT)!=1:raise RuntimeError('explicit fail-only old fixture port required')
-    if h.sha(template.replace(PORT,'',1).encode())!='c13a2152891f7f7a4373421b8060f683c1d7d6dd92725bee86081cda9c660799':
+    if h.sha(template.encode())!='2fedec818e4fb21c0260580658e225da5cc34443ec8928988f34b80f6cbb9a01':
+        raise RuntimeError('reviewed current observer fixture changed')
+    legacy_template=once(template,AX_PORTS,'')
+    if h.sha(legacy_template.encode())!='50b7d239c4e76334894082dd01ecad1a7a207eb1e776f82f9916d3ea1e62de1d':
+        raise RuntimeError('AX fail-only ports must reverse to the exact prior fixture')
+    if legacy_template.count(PORT)!=1:raise RuntimeError('explicit fail-only old fixture port required')
+    if h.sha(legacy_template.replace(PORT,'',1).encode())!='c13a2152891f7f7a4373421b8060f683c1d7d6dd92725bee86081cda9c660799':
         raise RuntimeError('old fixture must differ only by fail-only port; old cases intact')
     parts={
       'observation_callback':h.section(service,'    public interface ObservationCallback','    public interface Cancellation'),
@@ -78,10 +97,26 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode())
-        if actual!=expected:raise RuntimeError('protected reviewed production body changed: '+anchor)
-        protected[anchor]={'bytes':len(raw.encode()),'sha256':actual}
+        if actual!=expected:
+            reviewed=REVIEWED_AX_BODY_INVERSE.get(anchor)
+            if reviewed is None or actual!=reviewed['sha256']:
+                raise RuntimeError('protected reviewed production body changed: '+anchor)
+            legacy=once(raw,reviewed['current'],reviewed['legacy'])
+            if h.sha(legacy.encode())!=expected:
+                raise RuntimeError('reviewed AX body must reverse to exact legacy body: '+anchor)
+        protected[anchor]={'bytes':len(raw.encode()),'sha256':actual,'legacy_sha256':expected,
+                           'reviewed_ax_inverse_verified':actual!=expected}
+    protected_files={}
     for name,expected in BASELINE_FILES.items():
-        if h.sha((source/PKG/name).read_bytes())!=expected:raise RuntimeError('protected production file changed: '+name)
+        current=(source/PKG/name).read_bytes();actual=h.sha(current)
+        if actual!=expected:
+            if name!='NativeActionSnapshotCheck.java' or actual!='1d2278784b70f4e57857f8a2cdc89d8e5d2471726e68f57b1d75a659f47a24c1':
+                raise RuntimeError('protected production file changed: '+name)
+            legacy=once(current.decode(),AX_REJECTION_PREFIX,LEGACY_REJECTION_PREFIX)
+            legacy=once(legacy,AX_REJECTION_METADATA,'')
+            if h.sha(legacy.encode())!=expected:
+                raise RuntimeError('typed AX rejection evidence must reverse to exact legacy file')
+        protected_files[name]=actual
     for name in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
         template=once(template,'{{'+name+'}}',parts[name])
     main=h.body(template,'    public static void main(String[] args)throws Exception{')
@@ -148,7 +183,8 @@ def generate(source,output,h):
     h.write(output/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.ctrip-form-observer-extraction.v1','production_bodies_verbatim':True,
             'parts':{name:{'bytes':len(raw.encode()),'sha256':h.sha(raw.encode())} for name,raw in parts.items()},
-            'protected_production_bodies':protected,'protected_files':BASELINE_FILES,
+            'protected_production_bodies':protected,'protected_files':protected_files,
+            'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
             'legacy_fixture_only_fail_closed_port':True,'initial_current_frame_created_by_actual_observer':True,
             'pair_snapshot_uses_actual_full_node_and_snapshot_classes':True,
             'actual_profile_value_types_compiled':True,'actual_owner_parser_compiled':True,

@@ -8,6 +8,9 @@ import java.util.Map;
  * New native provider/session gates must compile the actual production class. */
 final class NativeAppSession {
     final String taskId=null;
+    // Type-only lease fields for the actual mode binder; no Session can be constructed.
+    final String generation=null;
+    final int displayId=-1;
     final NativeAppGoal goal=null;
     final BackgroundTaskTarget target=null;
     final BackgroundTaskTarget.SelectionBinding selection=null;

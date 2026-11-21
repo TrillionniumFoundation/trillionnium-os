@@ -89,6 +89,6 @@ final class ObservationDiagnosticsHostTest {
         });
     }
     public static void main(String[] args)throws Exception{
-        pure();ObserverPipelineHost.diagnosticTests();DiagnosticGraphHost.runTests();DiagnosticControllerHost.runTests();DiagnosticChecks.finish(args[0]);
+        pure();ObserverPipelineHost.diagnosticTests();DiagnosticGraphHost.runTests();DiagnosticControllerHost.runTests();PrivateCensusDiagnosticsHostTest.run();DiagnosticChecks.finish(args[0]);
     }
 }

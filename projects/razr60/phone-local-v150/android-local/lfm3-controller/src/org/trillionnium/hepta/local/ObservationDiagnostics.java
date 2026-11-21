@@ -17,7 +17,11 @@ final class ObservationDiagnostics {
     // Same existing full native-census limits; these do not expand observation collection.
     static final int MAX_CENSUS_NODES=1536,MAX_CENSUS_TEXT=32768;
     static final int MAX_COMPACT_NODE_DIFFS=64;
+    // Separate failure-only private artifact. Never shares the 16 KiB summary channel.
+    static final int MAX_PRIVATE_JSON_BYTES=2097152,MAX_PRIVATE_CONTEXT_BYTES=65536;
+    private static final long MAX_PRIVATE_PAIR_VALUES=MAX_PRIVATE_JSON_BYTES-16384L;
     enum Event {
+        AX_CAPTURE_START,AX_GRAPH_MISSING,AX_GRAPH_STALE,AX_GRAPH_CHANGED,AX_PAIR_REJECTED,
         SAMPLE_START,SAMPLE_NO_ROOT,SAMPLE_STALE_ROOT,SAMPLE_ERROR,SAMPLE_EVENT_RESET,SAMPLE_EVENT_RECHECKED,
         SAMPLE_KEY_CHANGED,SAMPLE_MISSING,SAMPLE_READY,SAMPLE_WAIT,SAMPLE_EXPIRED,SAMPLE_CANCELLED,
         SCREENSHOT_INTERVAL_WAIT,CAPTURE_START,CAPTURE_CALLBACK_OK,CAPTURE_CALLBACK_FAIL,
@@ -27,7 +31,7 @@ final class ObservationDiagnostics {
         POST_EFFECT_WINDOW_RECHECK_REJECTED,PUBLISHED,EVENT_TARGET,EVENT_UNKNOWN,EVENT_TARGET_CONTENT,EVENT_TARGET_BOUNDARY,REQUEST_ERROR,WORKER_ABANDONED
     }
     private static final String[] PHASES={"queued","sample_graph","sample_gap","screenshot_callback",
-        "screenshot_copy","screenshot_graph","png_encode","png_fsync","png_hash","saved_graph","publish","retry_gap","publication_window_recheck"};
+        "screenshot_copy","screenshot_graph","png_encode","png_fsync","png_hash","saved_graph","publish","retry_gap","publication_window_recheck","ax_seal_graph","ax_receipt_persist","ax_publication_window"};
     final String taskId,requestId,ownerSha,packageName,generation;
     final int displayId,sequence;
     final long started,deadline;
@@ -42,6 +46,11 @@ final class ObservationDiagnostics {
     private Map<String,Object> lastSavedGraphChange,lastSeedDecision,lastSampleGraphChange;private long seedAdmissions;
     private GraphStamp previousSampleStamp;
     private Map<String,Object> lastFullGraphChange;private long fullGraphChanges;
+    // At most one pair of already completed immutable values; no Android objects.
+    private CensusStamp privateBefore,privateAfter;
+    private Map<String,Object> privateBeforeSummary,privateAfterSummary;
+    private String privatePairStage,privatePairStatus="no_complete_difference_pair";
+    private long privatePairAt=-1,privatePairOrdinal;
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -66,7 +75,7 @@ final class ObservationDiagnostics {
     synchronized void worker(boolean active){if(!ended)workerActive=active;}
     synchronized void reset(){if(!ended){previousSampleKey=null;previousSampleStamp=null;}}
     synchronized void graph(String stage,String key,String appTree,String state,String window,boolean truncated,long now){
-        if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage))
+        if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage))
                 ||!sha(key)||!sha(appTree)||!sha(state)||!sha(window))return;
         now=clock(now);
         if("sample_graph".equals(stage)){
@@ -109,7 +118,7 @@ final class ObservationDiagnostics {
     }
     /** Existing immutable census values only. This never admits an observation or action. */
     synchronized void fullGraphChange(String stage,CensusStamp before,CensusStamp after,long now){
-        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)))return;
+        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)||"ax_seal_graph".equals(stage)))return;
         Map<String,Object> delta=map();delta.put("schema","hepta.native-observation-census-difference.v1");
         delta.put("stage",stage);delta.put("elapsed_ms",clock(now)-started);
         delta.put("full_census_compared",false);delta.put("node_difference_limit",MAX_NODE_DIFFS);
@@ -151,12 +160,26 @@ final class ObservationDiagnostics {
             delta.put("compact_truncated",changed>compact.size());delta.put("compact_omitted_for_budget",false);
         }
         lastFullGraphChange=Collections.unmodifiableMap(delta);fullGraphChanges=plus(fullGraphChanges,1);
+        if(Boolean.TRUE.equals(delta.get("full_census_compared"))
+                &&(!before.nodes.equals(after.nodes)||!before.appTree.equals(after.appTree)
+                ||!before.state.equals(after.state)||!before.window.equals(after.window))){
+            // A later complete pair replaces the old pair, including an explicit
+            // budget refusal. An incomplete/foreign comparison cannot replace it.
+            privateBefore=null;privateAfter=null;privatePairStage=stage;privatePairAt=lastClock;
+            privatePairOrdinal=fullGraphChanges;privateBeforeSummary=before.summary();privateAfterSummary=after.summary();
+            if(!before.privateContextReady(this,lastClock)||!after.privateContextReady(this,lastClock))
+                privatePairStatus="complete_pair_context_unavailable";
+            else if(before.privateValueBudget>MAX_PRIVATE_PAIR_VALUES-after.privateValueBudget)
+                privatePairStatus="complete_pair_value_budget_exceeded";
+            else{privateBefore=before;privateAfter=after;privatePairStatus="complete_difference_pair";}
+        }
     }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;previousSampleStamp=null;}}
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
         if(ended)return;if(!"published".equals(status)&&!"failed".equals(status))return;
         now=clock(now);closePhase(now);terminal=status;ended=true;previousSampleStamp=null;
+        if("published".equals(status)){privateBefore=null;privateAfter=null;}
     }
     synchronized Map<String,Object> snapshot(long now){
         long end=ended?lastClock:Math.max(lastClock,now);
@@ -190,6 +213,30 @@ final class ObservationDiagnostics {
             value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
     }
+    /** Called only by the separate terminal private-artifact channel. A running
+     * request exposes metadata only, even if it already holds a complete pair. */
+    synchronized Map<String,Object> privateCensusSnapshot(long now){
+        Map<String,Object> out=map();out.put("schema","hepta.failed-native-census.v1");
+        out.put("task_id",taskId);out.put("request_id",requestId);out.put("owner_sha256",ownerSha);
+        out.put("package",packageName);out.put("background_generation",generation);out.put("display_id",displayId);
+        out.put("request_sequence",sequence);out.put("started_elapsed_ms",started);out.put("deadline_elapsed_ms",deadline);
+        out.put("snapshot_elapsed_ms",ended?lastClock:Math.max(lastClock,now));out.put("request_terminal_observed",ended);
+        out.put("request_terminal",terminal);out.put("diagnostic_updates_frozen_at_terminal",ended);
+        out.put("worker_drained_proved_by_this_record",false);out.put("worker_active_at_last_diagnostic_update",workerActive);
+        out.put("artifact_byte_limit",MAX_PRIVATE_JSON_BYTES);out.put("pair_limit_per_task",1);
+        out.put("full_graph_change_count",fullGraphChanges);out.put("selected_pair_ordinal",privatePairOrdinal);
+        out.put("selected_pair_stage",privatePairStage);out.put("selected_pair_compared_elapsed_ms",privatePairAt<0?null:Long.valueOf(privatePairAt));
+        out.put("before_summary",privateBeforeSummary);out.put("after_summary",privateAfterSummary);
+        String status=!ended?"request_not_terminal":"failed".equals(terminal)?privatePairStatus:"request_published";
+        boolean complete=ended&&"failed".equals(terminal)&&privateBefore!=null&&privateAfter!=null;
+        out.put("status",status);out.put("complete_pair_recorded",complete);out.put("raw_pair_count",complete?1:0);
+        out.put("node_text_recorded",complete);out.put("raw_pair_omitted_for_budget","complete_pair_value_budget_exceeded".equals(status));
+        if(complete){out.put("before",privateBefore.privateEvidence());out.put("after",privateAfter.privateEvidence());}
+        out.put("source","already_completed_native_diagnostic_censuses");
+        out.put("additional_node_samples",0);out.put("additional_screenshots",0);out.put("screenshot_pixels_recorded",false);
+        out.put("sent_to_model",false);out.put("grants_action_authority",false);out.put("grants_publication",false);
+        out.put("business_verified",false);out.put("changes_deadline",false);return out;
+    }
     private static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}
     private static void append(List<Map<String,Object>> rows,Map<String,Object> row,int limit){
         if(rows.size()==limit)rows.remove(0);rows.add(Collections.unmodifiableMap(row));
@@ -212,7 +259,13 @@ final class ObservationDiagnostics {
     static final class CensusStamp {
         final Map<String,Object> identity;final Map<String,Map<String,Object>> nodes;
         final String appTree,state,window;
+        final Map<String,Object> privateReadContext;final long privateValueBudget;
         CensusStamp(Map<String,Object> identity,String appTree,String state,String window,int visited,List<Map<String,Object>> source){
+            this(identity,appTree,state,window,visited,source,null);
+        }
+        @SuppressWarnings("unchecked")
+        CensusStamp(Map<String,Object> identity,String appTree,String state,String window,int visited,List<Map<String,Object>> source,
+                    Map<String,Object> readContext){
             require(identity!=null&&source!=null&&!source.isEmpty()&&source.size()<=MAX_CENSUS_NODES&&visited==source.size()
                     &&sha(appTree)&&sha(state)&&sha(window));
             TreeSet<String> allowed=new TreeSet<String>(CENSUS_IDENTITY);
@@ -252,11 +305,79 @@ final class ObservationDiagnostics {
                 for(long i=0;i<integer(row,"children");i++)require(rows.containsKey(path+"/"+i));
             }
             nodes=Collections.unmodifiableMap(rows);
+            Map<String,Object> context=null;long contextBudget=MAX_PRIVATE_PAIR_VALUES+1;
+            try{
+                long[] budget={0};
+                if(readContext!=null){context=(Map<String,Object>)privateCopy(readContext,0,budget);contextBudget=budget[0];}
+            }catch(IllegalArgumentException unavailable){context=null;}
+            privateReadContext=context;
+            privateValueBudget=Math.min(MAX_PRIVATE_PAIR_VALUES+1,
+                    privateBudget(this.identity)+privateBudget(new ArrayList<Map<String,Object>>(nodes.values()))+contextBudget+1024);
+        }
+        private boolean privateContextReady(ObservationDiagnostics d,long now){
+            if(privateReadContext==null)return false;
+            try{
+                long begin=integer(privateReadContext,"read_started_elapsed_ms"),end=integer(privateReadContext,"read_completed_elapsed_ms");
+                return begin>=d.started&&end>=begin&&end<=now
+                    &&Boolean.TRUE.equals(privateReadContext.get("native_observation_complete"))
+                    &&Boolean.FALSE.equals(privateReadContext.get("truncated"))
+                    &&Boolean.TRUE.equals(privateReadContext.get("reported_windows_complete"))
+                    &&"hidden".equals(privateReadContext.get("ime_visibility"))
+                    &&integer(privateReadContext,"visited_nodes")==nodes.size()
+                    &&integer(privateReadContext,"pending_nodes_at_stop")==0
+                    &&integer(privateReadContext,"nodes_omitted_by_node_limit")==0
+                    &&integer(privateReadContext,"nodes_omitted_by_text_limit")==0
+                    &&integer(privateReadContext,"child_slots_omitted_by_traversal_limit")==0
+                    &&privateReadContext.get("reported_windows") instanceof Map;
+            }catch(IllegalArgumentException unavailable){return false;}
+        }
+        private Map<String,Object> privateEvidence(){
+            Map<String,Object> out=map();out.putAll(summary());out.put("identity",identity);
+            out.put("read",privateReadContext);out.put("native_nodes",Collections.unmodifiableList(new ArrayList<Map<String,Object>>(nodes.values())));
+            out.put("native_nodes_complete",true);out.put("raw_node_count",nodes.size());
+            return Collections.unmodifiableMap(out);
         }
         boolean belongs(ObservationDiagnostics d){return d.taskId.equals(identity.get("task_id"))&&d.ownerSha.equals(identity.get("owner_sha256"))
                 &&d.packageName.equals(identity.get("package"))&&d.generation.equals(identity.get("background_generation"))&&d.displayId==integer(identity,"display_id");}
         Map<String,Object> summary(){Map<String,Object> out=map();out.put("app_tree_sha256",appTree);out.put("observation_state_sha256",state);
             out.put("window_metadata_sha256",window);out.put("full_native_nodes",nodes.size());return Collections.unmodifiableMap(out);}
+    }
+    private static long privateBudget(Object value){
+        long n;
+        if(value==null)return 4;
+        if(value instanceof String)return 2+6L*((String)value).length();
+        if(value instanceof Boolean)return 5;
+        if(value instanceof Integer||value instanceof Long)return 21;
+        if(value instanceof Map){
+            n=2;for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet()){
+                n+=privateBudget(e.getKey())+privateBudget(e.getValue())+2;
+                if(n>MAX_PRIVATE_PAIR_VALUES)return MAX_PRIVATE_PAIR_VALUES+1;
+            }return n;
+        }
+        if(value instanceof List){
+            n=2;for(Object item:(List<?>)value){n+=privateBudget(item)+1;if(n>MAX_PRIVATE_PAIR_VALUES)return MAX_PRIVATE_PAIR_VALUES+1;}return n;
+        }
+        return MAX_PRIVATE_PAIR_VALUES+1;
+    }
+    private static Object privateCopy(Object value,int depth,long[] budget){
+        require(depth<=12);
+        if(value==null||value instanceof String||value instanceof Boolean||value instanceof Integer||value instanceof Long){
+            budget[0]+=privateBudget(value);require(budget[0]<=MAX_PRIVATE_CONTEXT_BYTES);return value;
+        }
+        if(value instanceof Map){
+            require(((Map<?,?>)value).size()<=256);Map<String,Object> copy=new TreeMap<String,Object>();budget[0]+=2;
+            for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet()){
+                require(e.getKey() instanceof String&&((String)e.getKey()).length()<=128);
+                privateCopy(e.getKey(),depth+1,budget);budget[0]+=2;
+                copy.put((String)e.getKey(),privateCopy(e.getValue(),depth+1,budget));
+            }require(budget[0]<=MAX_PRIVATE_CONTEXT_BYTES);return Collections.unmodifiableMap(copy);
+        }
+        if(value instanceof List){
+            require(((List<?>)value).size()<=256);List<Object> copy=new ArrayList<Object>();budget[0]+=2;
+            for(Object item:(List<?>)value){budget[0]++;copy.add(privateCopy(item,depth+1,budget));}
+            require(budget[0]<=MAX_PRIVATE_CONTEXT_BYTES);return Collections.unmodifiableList(copy);
+        }
+        throw new IllegalArgumentException("bounded primitive census context required");
     }
     /** Field names, changed geometry and content hashes only. This is a bounded
      * diagnostic projection of copied full censuses, never a comparison policy. */

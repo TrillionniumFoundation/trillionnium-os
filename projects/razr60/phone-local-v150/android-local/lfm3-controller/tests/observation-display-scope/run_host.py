@@ -33,7 +33,7 @@ def main():
     spec.loader.exec_module(module)
     files, extraction = module.prepare(source, fixture)
     pkg = source/'src/org/trillionnium/hepta/local'
-    files += [pkg/(name+'.java') for name in ('PhoneObservation', 'ObservationState', 'ImeVisibility',
+    files += [pkg/(name+'.java') for name in ('ObservationCaptureEvidence', 'PhoneObservation', 'ObservationState', 'ImeVisibility',
                                             'ObservedWindowMetadata', 'ObservedChildText')]
     files += [source/'tests/qualification-scope/fixtures/android/graphics/Rect.java',
               source/'tests/observation-display-scope/ObservationDisplayScopeHostTest.java']
