@@ -132,9 +132,23 @@ def generate(source,output,h):
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         if actual!=expected:
-            if name!='NativeActionSnapshotCheck.java' or actual!='829bbcb2b7ad39c37acfde5493fcf5195acaaa7e461327d915f656a5b90fc25c':
+            proof_current=current
+            if name=='NativeActionSnapshotCheck.java' and actual=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412':
+                # Proof copy only: exact typed-history diagnostic changes. The
+                # unchanged current source and all original cases compile below.
+                proof=current.decode()
+                inverse=[
+                    ('need(capture.nativeText()&&sha(capture.receiptSha256)&&originalScreen==null,',
+                     'need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,'),
+                    ('out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:capture.kind);',
+                     'out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX);')]
+                for revised,prior in inverse:proof=once(proof,revised,prior)
+                proof_current=proof.encode()
+                if h.sha(proof_current)!='829bbcb2b7ad39c37acfde5493fcf5195acaaa7e461327d915f656a5b90fc25c':
+                    raise RuntimeError('typed-history diagnostics must reverse to complete prior search file')
+            if name!='NativeActionSnapshotCheck.java' or h.sha(proof_current)!='829bbcb2b7ad39c37acfde5493fcf5195acaaa7e461327d915f656a5b90fc25c':
                 raise RuntimeError('protected production file changed: '+name)
-            legacy_search=current.decode()
+            legacy_search=proof_current.decode()
             for prior,revised in REVIEWED_SEARCH_NAS_INVERSE:
                 legacy_search=once(legacy_search,revised,prior)
             if h.sha(legacy_search.encode())!='1d2278784b70f4e57857f8a2cdc89d8e5d2471726e68f57b1d75a659f47a24c1':

@@ -12,7 +12,7 @@ HERE=Path(__file__).resolve().parent
 BUNDLE=HERE.parents[1]
 JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','LocalTaskController.java',
       'ObservationDiagnostics.java','ObservationStabilityGate.java','ActionExecutionState.java','ObservedChildText.java','ObservedScrollActions.java','ObservedImeEnter.java',
-      'TaskCancellationQueue.java','ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java','NativeAppEvidence.java','ObservationCaptureEvidence.java']
+      'TaskCancellationQueue.java','ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java','NativeAppEvidence.java','ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']
 def load(path,name):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 def once(text,before,after):

@@ -35,6 +35,14 @@ final class NativeAppDomain {
         for(String id:clickIds)requireNode(id,true,false);
         for(Map.Entry<String,String> e:editValues.entrySet()){requireNode(e.getKey(),false,true);NativeAppEvidence.need(e.getValue()!=null,"native literal edit value");}
         for(String id:this.purposes.keySet())NativeAppEvidence.need("back".equals(id)||clickIds.contains(id)||editValues.containsKey(id),"purpose without granted target");
+        if(frame.capture!=null&&frame.capture.formHistory()){
+            NativeAppEvidence.need(NativeCtripFlightPage.FORM.equals(phase)&&NativeCtripFlightPage.PACKAGE.equals(frame.packageName)
+                    &&result==null&&!back&&editValues.isEmpty()&&resourceIds.isEmpty(),
+                    "historical form is planning-only and cannot supply another phase, edit, Back or result");
+            for(String purpose:this.purposes.values())NativeAppEvidence.need(NativeActionSnapshotCheck.YEAR.equals(purpose)
+                    ||NativeActionSnapshotCheck.QUERY.equals(purpose),"historical form can propose only inspected date/query purposes");
+            for(String id:clickIds)frame.capture.requireFormHistoryTarget(frame.byId.get(id).path);
+        }
         backAllowed=back;this.providerView=NativeAppEvidence.immutableMap(providerView);
         this.result=result==null?null:NativeAppEvidence.immutableMap(result);resultReady=result!=null;
         this.missing=Collections.unmodifiableList(new ArrayList<String>(missing));
@@ -113,6 +121,10 @@ final class NativeAppDomain {
                 r.put("provider_base_apk_sha256",NativeCtripFlightPage.BASE_APK_SHA256);r.put("purpose",purposes.get(id));
                 r.put("node_label",frame.byId.get(id).label);r.put("visible_label_inferred",false);resources.put(id,r);}
             out.put("resource_clicks",resources);
+        }
+        if(frame.capture!=null&&frame.capture.formHistory()){
+            out.put("historical_form_planning_only",true);out.put("published_pair_is_current_tree_claimed",false);
+            out.put("form_history",frame.capture.formHistoryEvidence());out.put("fresh_complete_census_and_native_guard_required",true);
         }
         out.put("result_ready",resultReady);out.put("missing",missing);out.put("booking_purchase_or_payment_allowed",false);
         out.put("web_helper_allowed",false);out.put("external_model_allowed",false);return out;}

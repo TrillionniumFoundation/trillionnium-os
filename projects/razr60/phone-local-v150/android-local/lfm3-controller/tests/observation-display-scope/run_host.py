@@ -38,7 +38,7 @@ def main():
     search_pure = importlib.util.module_from_spec(search_spec); search_spec.loader.exec_module(search_pure)
     files = search_pure.add(source, files)
     pkg = source/'src/org/trillionnium/hepta/local'
-    files += [pkg/(name+'.java') for name in ('ObservationCaptureEvidence', 'PhoneObservation', 'ObservationState', 'ImeVisibility',
+    files += [pkg/(name+'.java') for name in ('NativeActionSnapshotCheck', 'NativeCtripFormObservation', 'ObservationCaptureEvidence', 'PhoneObservation', 'ObservationState', 'ImeVisibility',
                                             'ObservedWindowMetadata', 'ObservedChildText')]
     files += [source/'tests/qualification-scope/fixtures/android/graphics/Rect.java',
               source/'tests/observation-display-scope/ObservationDisplayScopeHostTest.java']

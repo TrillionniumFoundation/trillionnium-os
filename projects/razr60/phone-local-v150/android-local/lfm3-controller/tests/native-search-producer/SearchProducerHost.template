@@ -141,6 +141,9 @@ public final class HeptaAccessibilityService {
     static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){return ObservedScrollActions.observed(node.isScrollable()?Arrays.asList("forward","backward"):Collections.<String>emptyList());}
     static ObservedImeEnter readImeEnter(AccessibilityNodeInfo node){return ObservedImeEnter.UNKNOWN;}
     Graph readGraph(GraphBudget budget,BackgroundSession background){return fixture.graph(budget,background);}
+    static void actualBackgroundChildRefresh(AccessibilityNodeInfo node,AccessibilityNodeInfo root,BackgroundSession background){
+        {{background_child_guard}}
+    }
     static String string(CharSequence v){return v==null?"":v.toString();}
     static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
     static String sha(byte[] bytes){return QualificationScope.hash(bytes);}
@@ -156,7 +159,7 @@ public final class HeptaAccessibilityService {
         NativeActionSnapshotCheckHostTest.Fixture values;NativeSearchPlanning planning;String error;ActionOutcome outcome;
         int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
         String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
-        Runnable graphHook,windowHook,effectHook;long profileLifetime=1000;boolean replaceTargetOnSecond;
+        Runnable graphHook,windowHook,effectHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren;
         Fixture()throws Exception{
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("previous physical capacity leaked");
             actionIo=new FakeExecutor();observationIo=new FakeExecutor();ProfilePermissionUiSession.pending=false;
@@ -198,7 +201,7 @@ public final class HeptaAccessibilityService {
         Graph graph(GraphBudget budget,BackgroundSession background){
             checkReadBudget(budget);graphReads++;if(graphHook!=null)graphHook.run();if(rootMissing)throw new NoActiveWindow();syncNodes();
             if(replaceTargetOnSecond&&graphReads%2==0){NodeData replacement=new NodeData(HeptaAccessibilityService.this,nodes.get("0/0/0").v);NodeData old=nodes.put("0/0/0",replacement);replacement.parent=old.parent;replacement.children.addAll(old.children);replacement.parent.children.set(0,replacement);for(NodeData child:replacement.children)child.parent=replacement;}
-            Graph g=new Graph();g.readStartedElapsedMs=SystemClock.now;SystemClock.now+=graphDuration/3;checkReadBudget(budget);
+            Graph g=new Graph();Graph graph=g;try{g.readStartedElapsedMs=SystemClock.now;SystemClock.now+=graphDuration/3;checkReadBudget(budget);
             g.packageName=NativeAppGoal.XIAOMI_PACKAGE;g.windowId=actualWindow;g.displayId=7;g.bounds=new Rect(0,0,1224,2992);g.state=new StateCarrier();
             g.backgroundGeneration=background.generation;g.backgroundOwnerSha=background.ownerSha256;g.backgroundBootstrapPackage=background.selection.initialPackage;g.backgroundAllowedPackages=background.selection.allowedPackages;
             g.nativeActionTaskId=background.taskId;g.nativeActionAuthorizationSha=taskAuthorization.authorization.sha256;g.nativeActionSelectionSha=base.nativeTask.selectionSha;
@@ -210,6 +213,7 @@ public final class HeptaAccessibilityService {
             for(Map.Entry<String,NodeData> entry:nodes.entrySet()){
                 AccessibilityNodeInfo node=new AccessibilityNodeInfo(entry.getValue());
                 try{
+                    if(refreshGraphChildren)actualBackgroundChildRefresh(node,"0".equals(entry.getKey())?node:null,background);
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);PhoneObservation.Node retained=null;NodeRef ref=null;
                     if(node.isVisibleToUser()&&!bounds.isEmpty()){
                         retained=new PhoneObservation.Node();retained.id="n"+g.rows.size();retained.packageName=string(node.getPackageName());retained.nativeTreePath=entry.getKey();
@@ -224,6 +228,7 @@ public final class HeptaAccessibilityService {
             g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=true;
             SystemClock.now+=graphDuration/3;g.nativeActionCapturedAt=SystemClock.now;g.nativeActionNodes=g.nativeActionBuilding;g.nativeActionBuilding=null;
             SystemClock.now+=graphDuration/3;g.readCompletedElapsedMs=SystemClock.now;checkReadBudget(budget);return g;
+            }{{read_graph_failure_cleanup}}
         }
         Cancellation cancel(){return ()->cancelled;}
         NativeSearchRequest startPlanning(){

@@ -78,7 +78,16 @@ def generate(source,out,h):
                             return "stale:原生目的复核失败："+message(mismatch);}
                     }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
                 }'''
-    if service.count(branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
+    # The reviewed history source now requires the same native guard even when
+    # its historical whole-tree digest happens to match. Prove the only call-site
+    # change against the complete legacy branch above; execute actual bodies.
+    legacy_condition='}else if(!graph.digest.equals(now.digest)){'
+    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'
+    if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')
+    actual_branch=branch.replace(legacy_condition,history_condition,1)
+    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:
+        raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
+    if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     h.write(out/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.native-observation-events-extraction.v1','bodies_verbatim':True,
         'methods':{n:{'bytes':len(s.encode()),'sha256':h.sha(s.encode())} for n,s in parts.items()},

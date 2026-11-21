@@ -240,9 +240,9 @@ public final class PhoneObservation {
                       String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
                       CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
                       java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow,ObservationCaptureEvidence capture) {
-        this.capture=capture;captureKind=capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX;
+        this.capture=capture;captureKind=capture==null?ObservationCaptureEvidence.PIXELS:capture.kind;
         if(capture!=null){
-            if(!ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)||screenshot!=null||screenshotSha256!=null
+            if(!capture.nativeText()||screenshot!=null||screenshotSha256!=null
                     ||captureEvidence==null||actualSelection==null||actualOwnerSha256==null||backgroundGeneration==null
                     ||state==null||windowMetadata==null||windowMetadata.displayId==null||windowMetadata.displayId.intValue()<=0
                     ||truncated||collectionStats==null||collectionStats.truncated())
@@ -254,7 +254,7 @@ public final class PhoneObservation {
             bound.put("window_id",windowId);bound.put("rotation",rotation);bound.put("width",width);bound.put("height",height);
             bound.put("left",bounds.left);bound.put("top",bounds.top);bound.put("right",bounds.right);bound.put("bottom",bounds.bottom);
             bound.put("captured_elapsed_ms",at);bound.put("profile_window",actualProfileWindow==null?null:actualProfileWindow.evidence());
-            capture.requireBinding(bound);
+            capture.requireBinding(bound);capture.requireHistoricalPublication(captureEvidence);
             if(!capture.receiptSha256.equals(captureEvidence.get("receipt_sha256"))
                     ||!capture.kind.equals(captureEvidence.get("kind")))
                 throw new IllegalArgumentException("AX capture metadata differs from real receipt");
@@ -293,7 +293,7 @@ public final class PhoneObservation {
         if(captureEvidence!=null){
             Object captureClock=captureEvidence.get("capture_requested_elapsed_ms");
             if(!(captureClock instanceof Long)||((Long)captureClock).longValue()!=at
-                    ||!(capture==null?"hepta.observation-capture.v1":"hepta.observation-capture.native-ax.v1").equals(captureEvidence.get("schema"))
+                    ||!(capture==null?"hepta.observation-capture.v1":capture.metadataSchema()).equals(captureEvidence.get("schema"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("publication_refreshes_capture_age"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("grants_action_authority"))
                     ||!Boolean.FALSE.equals(captureEvidence.get("business_completion_verified")))

@@ -66,11 +66,19 @@ def verify_original_fixtures(source, before):
          'original complete fixture body differs after exact port removal')
     diagnostic = 'tests/observation-diagnostics/run_host.py'
     diagnostic_raw = (source / diagnostic).read_bytes()
-    need(before[diagnostic]['sha256'] == sha(diagnostic_raw) == 'a8db4f43d84235c8af729415a37e1c696057498517b00e2d90a03db373432637',
+    need(before[diagnostic]['sha256'] == sha(diagnostic_raw) == '3f764b22fa2173f5985423eaa39119ee38edc6e69c1ee9481c74d8572d743815',
          'exact reviewed diagnostic source and search-retirement anchor required')
     # These fixed reversals affect only the historical proof; actual tests keep all
     # AX publication cases and the real Controller retirement/finalization block.
     diagnostic_legacy = diagnostic_raw
+    # Proof only: actual dependency list and exact history-guard source contract
+    # are retained by the real generator. Preserve every earlier full-file pin.
+    form_history_replacements = [(b"        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java']\n", b"        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java']\n"), (b"    if service.count(branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')\n", b"    # The reviewed history source now requires the same native guard even when\n    # its historical whole-tree digest happens to match. Prove the only call-site\n    # change against the complete legacy branch above; execute actual bodies.\n    legacy_condition='}else if(!graph.digest.equals(now.digest)){'\n    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'\n    if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')\n    actual_branch=branch.replace(legacy_condition,history_condition,1)\n    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:\n        raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')\n    if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')\n"), (b"        'stale_refusal_callsite':{'bytes':len(branch.encode()),'sha256':sha(branch.encode())},\n", b"        'stale_refusal_callsite':{'bytes':len(actual_branch.encode()),'sha256':sha(actual_branch.encode())},\n        'stale_refusal_legacy_inverse':{'bytes':len(branch.encode()),'sha256':sha(branch.encode()),'exact_inverse':True},\n")]
+    for prior, revised in form_history_replacements:
+        need(diagnostic_legacy.count(revised) == 1, 'unique reviewed form-history diagnostic runner delta required')
+        diagnostic_legacy = diagnostic_legacy.replace(revised, prior, 1)
+    need(sha(diagnostic_legacy) == 'a8db4f43d84235c8af729415a37e1c696057498517b00e2d90a03db373432637',
+         'complete pre-form-history diagnostic runner bytes differ')
     search_anchor_replacements = [(b"    finalization=section(controller,'        finally{\\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')\n", b"    finalization=section(controller,'        finally{\\n            if(activeNativeSearch!=null)activeNativeSearch.retire();\\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')\n")]
     for prior, revised in search_anchor_replacements:
         need(diagnostic_legacy.count(revised) == 1, 'unique actual search-retirement anchor required')
@@ -89,13 +97,24 @@ def verify_original_fixtures(source, before):
         need(restored.count(revised) == 1, 'unique reversible diagnostic fixture change required')
         restored = restored.replace(revised, prior, 1)
     need(sha(restored) == PINNED_FIXTURES[diagnostic], 'original diagnostic runner bytes not restored')
-    need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic)),
+    event_runner = 'tests/native-observation-events/run_host.py'
+    event_raw = (source / event_runner).read_bytes()
+    need(before[event_runner]['sha256'] == sha(event_raw) == 'acc08946e27093f36defb5d4e304131d66062e230399cdec5bb98620b25ef446',
+         'exact reviewed event-generator history guard required')
+    event_guard_current = b"    # The reviewed history source now requires the same native guard even when\n    # its historical whole-tree digest happens to match. Prove the only call-site\n    # change against the complete legacy branch above; execute actual bodies.\n    legacy_condition='}else if(!graph.digest.equals(now.digest)){'\n    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'\n    if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')\n    actual_branch=branch.replace(legacy_condition,history_condition,1)\n    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:\n        raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')\n    if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')"
+    event_guard_legacy = b"    if service.count(branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')"
+    need(event_raw.count(event_guard_current) == 1, 'unique exact event-generator history guard delta required')
+    event_original = event_raw.replace(event_guard_current, event_guard_legacy, 1)
+    need(sha(event_original) == PINNED_FIXTURES[event_runner], 'complete original event generator bytes differ')
+    need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner)),
          'original reviewed fixture bytes differ')
     return {'template': template, 'current_sha256': current_sha,
             'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports) + len(search_ports),
             'diagnostic_runner_current_sha256': sha(diagnostic_raw),
             'diagnostic_runner_original_sha256': sha(restored),
             'diagnostic_runner_reverse_original_byte_equality': True,
+            'event_runner_current_sha256': sha(event_raw), 'event_runner_original_sha256': sha(event_original),
+            'event_runner_reverse_original_byte_equality': True,
             'fail_only_port': True, 'reverse_original_byte_equality': True}
 
 

@@ -40,6 +40,13 @@ def main():
  'observation':section(raw,'    /** A separate historical planning channel.','    /** Native text capture mode is bound once'),
  'action':section(raw,'    private volatile SearchActionWork activeSearchAction;','    private final class ActionWork {'),
  }
+ read_graph=body(raw,'    private Graph readGraph(GraphBudget budget,BackgroundSession background){')
+ child_guard=[line.strip() for line in read_graph.splitlines() if line.strip().startswith('if(background!=null&&node!=root&&!node.refresh())')]
+ if len(child_guard)!=1:raise RuntimeError('one actual descendant refresh failure branch required')
+ cleanup='catch(RuntimeException e){graph.close();throw e;}'
+ if read_graph.count(cleanup)!=1 or read_graph.count('finally{while(!queue.isEmpty())queue.removeFirst().recycle();}')!=1:
+  raise RuntimeError('actual incomplete graph and queue cleanup must remain')
+ parts['background_child_guard']=child_guard[0];parts['read_graph_failure_cleanup']=cleanup
  signatures=[
  '    private synchronized boolean ownsBackground(', '    private synchronized boolean ownsAuthorization(',
  '    void requireTaskAuthorization(', '    private synchronized QualificationScopeConfig.Bound scopeFor(',
@@ -99,7 +106,7 @@ def main():
  'source':str(source),'actual_service':meta(pkg/'HeptaAccessibilityService.java'),'compile_inputs_before':inputs,'tools_before':tools,
  'source_inputs':provenance['production_inputs']+[meta(p) for p in test.iterdir() if p.is_file()],
  'boundary':'Real full Session/Gate/Offer/Attempt/Role/Planning plus verbatim HA new producer, typed effect, ownership guards, raw census, original callback and actual scope Bound. Explicit synthetic Android nodes/windows/socket/clock/queues. No permissive Offer or action guard surrogate.'}
- extraction={'parts':{k:{'bytes':len(v.encode()),'sha256':sha(v.encode())} for k,v in parts.items() if k!='cases'},'actual_methods':{k:sha(v.encode()) for k,v in methodparts.items()},'actual_scope_bound_sha256':sha(bound.encode()),'shared_closure':provenance}
+ extraction={'parts':{k:{'bytes':len(v.encode()),'sha256':sha(v.encode())} for k,v in parts.items() if k!='cases'},'actual_methods':{k:sha(v.encode()) for k,v in methodparts.items()},'actual_scope_bound_sha256':sha(bound.encode()),'read_graph_failure_source_sha256':sha(read_graph.encode()),'shared_closure':provenance}
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
  env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1'
  for key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH'):env.pop(key,None)

@@ -96,12 +96,14 @@ public final class PromptAdmissionFixture {
         return new Result(prompt(owner,apps,observation,history,null,prior,null,config,
                 new RepeatActionGuard(),new SameStateNoEffectGuard(),TaskAuthorization.parse(owner).bind("cccccccccccccccccccccccccccccccc").frame(),null));
     }
-    private interface InferenceConfig { LocalRuntimeConfig configuration(); }
+    private interface InferenceConfig { LocalRuntimeConfig configuration(); boolean acceptsObservedImage(); }
     public static void awaitAdmission(String prompt,final LocalRuntimeConfig config)throws Exception{
         final NativeAppSession activeNativeTask=null; // Type-only native boundary; every operation throws.
         final boolean nativeApp=false; // This original fixture exercises ordinary/visual admission.
+        final PhoneObservation before=null; // No historical native observation can enter this original fixture.
         InferenceConfig inference=new InferenceConfig(){
             public LocalRuntimeConfig configuration(){return config;}
+            public boolean acceptsObservedImage(){throw new AssertionError("native form-history image admission is outside this ordinary fixture");}
         };
 """ + parts["await_guard"] + """
     }
@@ -150,6 +152,12 @@ public final class PromptAdmissionFixture {
             "projection_reverse_bytes_equal": True,
             "new_search_admission_tested_here": False,
             "new_search_types_unconstructible_and_all_operations_refuse": True},
+        "form_history_legacy_boundary": {
+            "actual_current_history_guard_retained_verbatim": True,
+            "before_observation_is_final_null": True,
+            "image_admission_endpoint_always_throws": True,
+            "native_app_false_and_active_native_task_null": True,
+            "new_form_history_admission_tested_here": False},
         "web_fixture_boundary": "Type-only WebTaskDomain; every Web capability method throws",
         "native_app_fixture_boundary": "Real DTO/domain compile; all NativeAppSession operations/constructors throw in this original non-native prompt gate",
         "web_fixture_compiler_copy": {"source_path":str(web_fixture_source.relative_to(source)),

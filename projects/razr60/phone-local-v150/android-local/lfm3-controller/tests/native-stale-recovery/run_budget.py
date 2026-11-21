@@ -36,7 +36,23 @@ assert sha((src/'LocalTaskSession.java').read_bytes()) in {
 # Preserve the audited legacy comparators and the reviewed Xiaomi SEARCH_ICON
 # and Ctrip nested-disjoint successors. The unchanged Ctrip OPEN ancestor rejection, 21
 # terminal method digests and all maximum-census/projection/IO checks remain.
-assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) in {
+native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
+native_snapshot_proof=native_snapshot_raw
+if sha(native_snapshot_raw)=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412':
+    # Only the two reviewed typed-history diagnostic changes are reversed in a
+    # proof copy. Current source still enters javac and every original case.
+    proof=native_snapshot_raw.decode('utf-8')
+    inverse=[
+        ('need(capture.nativeText()&&sha(capture.receiptSha256)&&originalScreen==null,',
+         'need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,'),
+        ('out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:capture.kind);',
+         'out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX);')]
+    for current,legacy in inverse:
+        assert proof.count(current)==1, 'unique reviewed NAS history diagnostic delta'
+        proof=proof.replace(current,legacy,1)
+    native_snapshot_proof=proof.encode('utf-8')
+    assert sha(native_snapshot_proof)=='829bbcb2b7ad39c37acfde5493fcf5195acaaa7e461327d915f656a5b90fc25c'
+assert sha(native_snapshot_proof) in {
     'de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec',
     'ee304f12980f51c87dfe031e55c5a34d4d7466e963a5f5f6bd18b633718b4fc2',
     '39fed7241743499db4fa5f6c3c5fef71ee80eb354281bb6f8a888fc63b29b756',
@@ -112,14 +128,14 @@ harness_path = generated/'CensusBudgetAudit.java'
 harness_path.write_bytes(template.read_bytes())
 
 inputs = [root/row['path'] for row in ns['record']['source_inputs']]
-inputs += [src/name for name in ['ObservationCaptureEvidence.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+inputs += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 inputs += [Path(__file__).resolve(), template, a.json_jar.resolve()]
 before = [identity(path) for path in inputs]
 # Real org.json is deliberately used: the legacy host fixture's toString(2)
 # delegates to compact JSON and cannot establish pretty-file byte counts.
 sources = [path for path in sorted((out/'terminal-fixtures/src').rglob('*.java'))
            if 'org/json' not in path.as_posix()]
-sources += [src/name for name in ['ObservationCaptureEvidence.java', 'SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+sources += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java', 'SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 sources += [bridge_path, harness_path]
 classes = out/'classes'
 classes.mkdir()
@@ -128,7 +144,8 @@ compile_command = [str(java), '-m', 'jdk.compiler/com.sun.tools.javac.Main', '-e
 record = {'schema':'hepta.native-census-boundary-audit.v1','all_pass':False,
           'synthetic_fixture':True,'phone_operations':0,'production_source_mutations':0,
           'scope':'diagnostic contribution through actual projection methods and actual terminal IO; not a global maximum of unrelated app text or a phone task',
-          'source_inputs':before,'terminal_extracted_methods':ns['record']['extracted_methods'],
+          'source_inputs':before,'native_snapshot_actual_sha256':sha(native_snapshot_raw),'native_snapshot_legacy_proof_sha256':sha(native_snapshot_proof),
+          'terminal_extracted_methods':ns['record']['extracted_methods'],
           'projection_extracted_methods':[{'path':name,'signature':signature,'sha256':sha(code.encode())} for (name,_,signature),code in zip(methods,extracted)],
           'stale_history_block_sha256':sha(stale.encode()),'fixture_producer_prefix_sha256':sha(prefix.encode()),
           'compile_command':compile_command,

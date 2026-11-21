@@ -314,6 +314,77 @@
                 ActionExecutionState next=legacyState("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",SystemClock.now);check(actionSlot.acquire(next),"no permanent unpublished-state latch");next.drained();actionSlot.release(next);
             }
         });
+        one("unavailable_first_C_is_discarded_before_one_fresh_C_D_and_real_Session_handoff",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                final NodeData oldTarget=f.nodes.get("0/0/0");final boolean[] discarded={false};
+                f.graphHook=()->{
+                    if(f.graphReads==3){f.nodes.get("0/2/0").refresh=false;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}
+                    if(f.graphReads==4){for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all partial C references recycled before replacement read");discarded[0]=true;f.nodes.clear();f.syncNodes();}
+                };
+                f.action(attempt);check(f.outcome.accepted&&f.outcome.dispatched&&discarded[0],"same intent obtains a complete replacement C/D");
+                check(f.graphReads==5&&f.effects==1&&oldTarget.effects==0,"A/B, failed C, fresh C/D, and exactly one new-reference effect");
+                JSONObject execution=f.outcome.actionExecution,proof=execution.getJSONObject("native_search_execution");JSONArray reads=proof.getJSONArray("current_C_read_attempts");
+                check(reads.length()==2&&!reads.getJSONObject(0).getBoolean("completed")&&reads.getJSONObject(0).getBoolean("partial_graph_discarded")&&reads.getJSONObject(0).getBoolean("fresh_complete_read_next"),"failed partial C honestly recorded and discarded");
+                check(reads.getJSONObject(1).getBoolean("completed")&&proof.getLong("original_attempt_deadline_elapsed_ms")==attempt.deadlineElapsed,"complete new C retains original reserved deadline");
+                check(proof.getJSONObject("pair_start_watermark").getLong("content")==0&&proof.getJSONObject("D_completed_watermark").getLong("content")==1,"earliest event interval is not reset for replacement");
+                check(execution.getLong("queued_elapsed_ms")==attempt.startedElapsed&&execution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed,"neither queue clock nor eight-second deadline refreshed");
+                f.base.search.acceptOutcome(attempt,f.outcome,sha(execution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(s.nativeSearchAllowsLegacyObservation(s.lease),"actual Session accepts only the newly claimed full C/D effect");
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"successful replacement references physically drained");
+            }
+        });
+        one("second_unavailable_C_stops_and_actual_Session_preserves_first_real_failure_kind",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;f.nodes.get("0/2/0").refresh=false;f.action(attempt);
+                noEffect(f,"second unavailable child cannot create a third C");check(f.graphReads==4,"at most two initial C reads");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&attempt.evidence().get("revalidation")==null,"C/D and claim never fabricated");
+                JSONObject proof=f.outcome.actionExecution.getJSONObject("native_search_execution");check(proof.isNull("current_C")&&proof.isNull("latest_D")&&proof.getJSONArray("current_C_read_attempts").length()==2,"no partial C/D promoted");
+                boolean correct=false;try{f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);}catch(IllegalStateException rejected){correct=rejected.getMessage().contains("后台子节点已不可用")&&!rejected.getMessage().contains("once-claimed");}
+                check(correct,"actual rejected outcome retains unavailable child cause instead of success-only claim error");
+                check(!s.nativeSearchAllowsLegacyObservation(s.lease),"failure cannot enter ordinary AX navigation handoff");
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"both failed graphs drain all references");
+            }
+        });
+        one("unavailable_D_does_not_restart_C_or_reuse_any_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;f.graphHook=()->{if(f.graphReads==4)f.nodes.get("0/2/0").refresh=false;};f.action(attempt);
+                noEffect(f,"second full read D is outside first-C recovery");check(f.graphReads==4&&f.outcome.stale,"D fails exactly once");
+                JSONObject proof=f.outcome.actionExecution.getJSONObject("native_search_execution");check(!proof.isNull("current_C")&&proof.isNull("latest_D")&&proof.getJSONArray("current_C_read_attempts").length()==1,"complete C preserved as failed diagnostic only");
+            }
+        });
+        one("identical_unavailable_child_text_without_typed_reason_cannot_resample",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.graphHook=()->{if(f.graphReads==3)throw new StaleObservation("后台子节点已不可用，需重新观察");};f.action(attempt);
+                noEffect(f,"generic stale is not a retry capability");check(f.graphReads==3&&f.outcome.detail.contains("后台子节点已不可用，需重新观察"),"one failing read only");
+            }
+        });
+        for(int event=0;event<3;event++){final int kind=event;one("failed_C_resample_retains_original_"+new String[]{"unknown","boundary","untyped"}[event]+"_fence",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->{if(f.graphReads==3){f.nodes.get("0/2/0").refresh=false;s.noteNativeSearchEvent(kind==0?-1:7,96,NativeAppGoal.XIAOMI_PACKAGE,kind==0,kind!=2);}};f.action(attempt);
+                noEffect(f,"partial read cannot erase authority/unknown events");check(f.graphReads==3&&f.outcome.detail.contains("unknown, boundary or untyped"),"no replacement read after forbidden event");
+            }
+        });}
+        one("unavailable_C_at_reserved_deadline_does_not_extend_or_retry",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;NodeData child=f.nodes.get("0/2/0");child.refresh=false;child.beforeRefresh=()->SystemClock.now=attempt.deadlineElapsed;f.action(attempt);
+                noEffect(f,"expired initial read cannot restart");check(f.graphReads==3&&f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed,"original deadline consumed");
+            }
+        });
+        one("unavailable_C_cancelled_during_refresh_does_not_restart",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;NodeData child=f.nodes.get("0/2/0");child.refresh=false;child.beforeRefresh=()->f.cancelled=true;f.action(attempt);
+                noEffect(f,"Stop cannot be bypassed by a read-only restart");check(f.graphReads==3,"cancelled attempt reads no replacement");
+            }
+        });
+        one("replacement_C_still_consumes_the_original_absolute_deadline",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->{if(f.graphReads==3)f.nodes.get("0/2/0").refresh=false;if(f.graphReads==4)SystemClock.now=attempt.deadlineElapsed;};f.action(attempt);
+                noEffect(f,"replacement cannot buy new eight seconds");check(f.graphReads==4&&f.outcome.actionExecution.getLong("queued_elapsed_ms")==attempt.startedElapsed,"original reservation retained");
+            }
+        });
         boolean all=true;for(Map<String,Object> row:cases)all&=Boolean.TRUE.equals(row.get("passed"));
         Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("schema","hepta.native-search-actual-producer-cases.v1");
         report.put("cases",cases.size());report.put("assertions",assertions);report.put("all_pass",all);report.put("results",cases);

@@ -151,6 +151,8 @@ final class NativeAppSession {
         if(f.capture!=null){
             Map<String,Object> bound=NativeAppEvidence.map();bound.put("native_goal_sha256",goal.contractSha256);
             f.capture.requireBinding(bound);
+            if(f.capture.formHistory())need(NativeCtripFlightPage.supported(goal)&&installed.profileTarget!=null,
+                    "historical form requires the supported installed Ctrip profile");
         }
         NativeAppEvidence.requireProfileTarget(installed.profileTarget,f.profileWindow);
         if(f.profileWindow!=null)f.profileWindow.requireMatches(installed.profileTarget,generation,displayId,f.windowId,
@@ -170,6 +172,8 @@ final class NativeAppSession {
         if(current!=null)need(frame.capturedElapsedMs>=current.frame.capturedElapsedMs,"native observation clock moved backwards");
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
+        if(frame.capture!=null&&frame.capture.formHistory())need(flight!=null&&NativeCtripFlightPage.FORM.equals(flight.phase),
+                "historical form cannot become results, calendar, login or business evidence");
         product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
         observeSearchNavigation(frame);
         if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
@@ -651,6 +655,9 @@ final class NativeAppSession {
         need(a!=null&&a.journaled&&a.action==action&&a.run.equals(run)&&a.before==current
                 &&a.before.frame.observationId.equals(observation)&&a.started<=issued,
                 "guard requires the same journaled in-flight original Attempt");
+        if(a.before.frame.capture!=null&&a.before.frame.capture.formHistory()&&!java.util.Arrays.asList("wait","done").contains(action.action))need("click".equals(action.action)
+                &&(NativeActionSnapshotCheck.YEAR.equals(a.purpose)||NativeActionSnapshotCheck.QUERY.equals(a.purpose)),
+                "history effect requires the original date/query native Guard");
         if(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
                 NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose))return null;
         need(action.toolChildOrigin==null&&a.guard==null&&deadline>issued&&deadline-issued<=8000,
@@ -1004,10 +1011,12 @@ final class NativeAppSession {
             profileWindow=frame.profileWindow;this.result=NativeAppEvidence.immutableMap(result);
         }
     }
-    boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&current!=null&&current.resultReady&&frame!=null
+    boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&current!=null&&current.resultReady
+            &&(current.frame.capture==null||!current.frame.capture.formHistory())&&frame!=null
             &&current.frame.observationId.equals(frame.observationId)&&current.frame.completionFrameSha.equals(TaskCompletionGate.webFrameSha(frame))&&pending==null&&inFlight==null;}
     SuccessClaim acceptSuccess(int step,String run,NotesCompletionEvidence.Frame frame,boolean finalWholeTreeStable){
         live();acceptedClaim=null;
+        if(current!=null&&current.frame.capture!=null&&current.frame.capture.formHistory())return null;
         if(!finalWholeTreeStable||!ready(frame)||lastDone==null||lastDone.step!=step||!lastDone.run.equals(run)
                 ||!"success".equals(lastDone.action.status)||!lastDone.before.resultReady
                 ||!lastDone.before.frame.treeSha.equals(current.frame.treeSha)||lastDone.before.frame.windowId!=current.frame.windowId

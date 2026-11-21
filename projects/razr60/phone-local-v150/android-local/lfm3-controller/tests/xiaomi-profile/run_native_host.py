@@ -51,6 +51,7 @@ def main():
     assert "class ActionOutcome" not in service_text
     outcome_port = """    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
+        public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy profile fixture");}
     }"""
@@ -96,7 +97,7 @@ def main():
     excluded = {"tests/web-flight/WebFlightQueryHostTest.java", "tests/native-app/legacy-boundary/NativeAppSession.java"}
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in
-              ('ObservationCaptureEvidence', "NativeSearchRole", "NativeSearchPlanning", "NativeSearchDecision", "NativeSearchSession", "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
+              ('NativeCtripFormObservation', 'ObservationCaptureEvidence', "NativeSearchRole", "NativeSearchPlanning", "NativeSearchDecision", "NativeSearchSession", "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
                "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths.append(Path(__file__).resolve().with_name("NativeProfileIdentityHostTest.java"))
     paths = list(dict.fromkeys(p.resolve() for p in paths))

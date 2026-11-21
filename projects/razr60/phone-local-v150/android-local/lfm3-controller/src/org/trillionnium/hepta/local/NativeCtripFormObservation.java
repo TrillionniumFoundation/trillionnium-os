@@ -21,6 +21,58 @@ final class NativeCtripFormObservation {
     private static final Pattern DATE=NativeActionSnapshotCheck.DATE;
     private NativeCtripFormObservation(){}
 
+    /** Reconstruct the exact comparison envelope from two complete AX values.
+     * This adapter grants nothing and does not discard or rewrite any node. */
+    static Map<String,Object> compareAxCensuses(Map<String,Object> first,Map<String,Object> second,
+            Map<String,Object> binding,String installedSet){
+        return compare(axSnapshot(first,binding,installedSet),axSnapshot(second,binding,installedSet));
+    }
+    private static Snapshot axSnapshot(Map<String,Object> census,Map<String,Object> binding,String installedSet){
+        Map<String,Object> id=axMap(census,"identity"),window=axMap(census,"window"),profile=axMap(census,"profile_owner");
+        need(CTRIP.equals(id.get("package"))&&installedSet!=null&&installedSet.matches("[0-9a-f]{64}"),"actual Ctrip installed AX form");
+        Map<String,Object> env=new TreeMap<String,Object>();
+        String[][] names={{"task_id","task_id"},{"owner_sha256","owner_sha256"},{"target_sha256","execution_target_sha256"},
+                {"authorization_sha256","task_authorization_sha256"},{"selection_sha256","actual_selection_sha256"},
+                {"goal_sha256","native_goal_sha256"},{"background_generation","background_generation"},{"package","package"},
+                {"display_id","display_id"},{"window_id","window_id"},{"rotation","rotation"},{"width","width"},{"height","height"}};
+        for(String[] pair:names)env.put(pair[0],id.get(pair[1]));
+        env.put("installed_set_sha256",installedSet);env.put("origin_observation_id",binding.get("observation_id"));
+        for(String key:NativeActionSnapshotCheck.PROFILE_IDENTITY)env.put(key,profile.get(key));
+        env.put("root_bounds",Arrays.asList(id.get("left"),id.get("top"),id.get("right"),id.get("bottom")));
+        env.put("window_metadata_sha256",NativeActionSnapshotCheck.hash(s(window,"metadata")));
+        env.put("reported_windows_sha256",axFingerprint(census.get("reported_windows")));
+        env.put("reported_windows_complete",Boolean.TRUE);env.put("ime_visibility","hidden");
+        env.put("captured_elapsed_ms",census.get("census_captured_elapsed_ms"));env.put("full_native_complete",census.get("complete"));
+        env.put("visited",census.get("visited"));env.put("pending",census.get("pending"));
+        env.put("node_omissions",census.get("node_budget_omissions"));env.put("text_omissions",census.get("text_budget_omissions"));
+        long omitted=time(census,"child_slots_omitted");need(omitted>=0&&omitted<=Integer.MAX_VALUE,"complete child slots");
+        env.put("child_omissions",Integer.valueOf((int)omitted));
+        need("hidden".equals(census.get("ime_visibility")),"actual known hidden IME required");
+        Object raw=census.get("nodes");need(raw instanceof List,"all actual AX node values required");
+        List<Node> nodes=new ArrayList<Node>();for(Object item:(List<?>)raw){
+            need(item instanceof Map,"actual node map");nodes.add(new Node(axObject(item)));}
+        return new Snapshot(env,nodes);
+    }
+    private static Map<String,Object> axMap(Map<String,Object> parent,String key){return axObject(parent.get(key));}
+    private static Map<String,Object> axObject(Object value){
+        need(value instanceof Map,"actual AX object required");Map<String,Object> out=new TreeMap<String,Object>();
+        for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet()){need(e.getKey() instanceof String,"actual AX string key");out.put((String)e.getKey(),e.getValue());}
+        return out;
+    }
+    /** Same length-prefixed value digest as the existing native action envelope. */
+    private static String axFingerprint(Object value){StringBuilder out=new StringBuilder();axCanonical(value,out,0);return NativeActionSnapshotCheck.hash(out.toString());}
+    private static void axCanonical(Object value,StringBuilder out,int depth){
+        need(depth<=16,"actual AX window nesting bound");
+        if(value==null){out.append('n');return;}
+        if(value instanceof String){String text=(String)value;out.append('s').append(text.getBytes(java.nio.charset.StandardCharsets.UTF_8).length).append(':').append(text);return;}
+        if(value instanceof Boolean){out.append(Boolean.TRUE.equals(value)?'t':'f');return;}
+        if(value instanceof Integer||value instanceof Long){out.append('i').append(value).append(';');return;}
+        if(value instanceof Map){out.append('{');for(Map.Entry<String,Object> e:axObject(value).entrySet()){
+            axCanonical(e.getKey(),out,depth+1);axCanonical(e.getValue(),out,depth+1);}out.append('}');return;}
+        if(value instanceof List){out.append('[');for(Object item:(List<?>)value)axCanonical(item,out,depth+1);out.append(']');return;}
+        throw new IllegalArgumentException("actual AX window scalar type");
+    }
+
     static Map<String,Object> compare(Snapshot before,Snapshot after){
         need(before!=null&&after!=null,"two complete actual form censuses");
         need(before.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE)

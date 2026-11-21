@@ -24,11 +24,25 @@ def generate(source,out,h,snap):
  '''        List<NativeActionSnapshotCheck.Node> nativeActionNodes;Map<String,Object> nativeActionWindows;int nativeActionWidth,nativeActionHeight;
         String nativeActionTaskId,nativeActionAuthorizationSha,nativeActionSelectionSha,nativeActionTargetSha,nativeActionGoalSha;
         long nativeActionCapturedAt;''')
+ s=once(s,'import java.util.*;','import java.util.*;\nimport org.trillionnium.hepta.background.ProfileTarget;')
+ provider=(source/PKG/'NativeCtripFlightPage.java').read_text()
+ goal=(source/PKG/'NativeAppGoal.java').read_text()
+ import re
+ goal_kind=re.findall(r'FLIGHT_RESULTS\s*=\s*"([^"]+)"',goal)
+ if len(goal_kind)!=1:raise RuntimeError('actual native flight goal boundary')
+ supported=h.body(provider,'    static boolean supported(NativeAppGoal goal){')
+ constants=[]
+ for marker in ['static final String PACKAGE=', 'static final long VERSION_CODE=', 'static final String BASE_APK_SHA256=', 'static final String HOME=']:
+  matches=[line.strip() for line in provider.splitlines() if marker in line]
+  if len(matches)!=1:raise RuntimeError('actual Ctrip provider constant boundary')
+  constants.append(matches[0])
  s=once(s,'    static final class NativeAppGoal {String ownerSha256,packageName;}',
  '''    static final class NativeAppGoal {
-        static final String PRODUCT_PRICE="native_product_price",XIAOMI_PACKAGE="com.xiaomi.shop";String ownerSha256,packageName,kind;
+        static final String PRODUCT_PRICE="native_product_price",XIAOMI_PACKAGE="com.xiaomi.shop";
+        static final String CTRIP_PACKAGE="ctrip.android.view",FLIGHT_RESULTS="native_flight_results";
+        String ownerSha256,packageName,kind,fromCity,toCity;int adults,children,infants;
     }
-    static final class NativeCtripFlightPage {static boolean supported(NativeAppGoal goal){return false;}}
+    static final class NativeCtripFlightPage { ACTUAL_CTRIP_PROVIDER_VALUE_PREDICATE }
     static final class LocalInference {final boolean visual;LocalInference(boolean v){visual=v;}boolean acceptsObservedImage(){return visual;}}
     static final class LocalRuntimeConfig {
         static final class Profile {final boolean visual;Profile(boolean v){visual=v;}boolean visual(){return visual;}}
@@ -58,6 +72,14 @@ def generate(source,out,h,snap):
             return new Read(path,bytes);
         }
     }''')
+ s=once(s,'ACTUAL_CTRIP_PROVIDER_VALUE_PREDICATE','\n'.join(constants)+'\n'+supported)
+ s=once(s,'FLIGHT_RESULTS="native_flight_results"','FLIGHT_RESULTS="'+goal_kind[0]+'"')
+ s=once(s,'        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.',
+     '        ProfileTarget observedProfileTarget;ProfileTarget profileTarget(){return observedProfileTarget;} // Explicit synthetic profile transport; no phone permission.')
+ profile_adapter=h.body((source/PKG/'NativeAppEvidence.java').read_text(),'    static Map<String,Object> profileActionIdentity(WindowOwnership actual){')
+ s=once(s,'import org.trillionnium.hepta.background.ProfileTarget;','import org.trillionnium.hepta.background.ProfileTarget;\nimport org.trillionnium.hepta.background.WindowOwnership;')
+ s=once(s,h.body(s,'    static final class WindowOwnership {'),'')
+
  s=once(s,'    static final class NativeAppSession {',
  '''    static final class NativeAppSession {
         Object authorization;String taskId,generation;Selection selection;BackgroundTaskTarget target;NativeAppGoal goal;int displayId;''')
@@ -72,9 +94,10 @@ def generate(source,out,h,snap):
             List<String> allowed,Object stats,JSONObject selection,String owner,Map<String,Object> evidence,WindowOwnership profile,ObservationCaptureEvidence capture){
             this(id,pkg,at,width,height,rotation,window,bounds,image,hash,tree,state,metadata,truncated,rows,generation,initial,allowed,stats,selection,owner,evidence,profile);
             expect(image==null&&hash==null&&capture!=null,"explicit AX carrier is not pixels");
-            this.capture=capture;captureKind=ObservationCaptureEvidence.NATIVE_AX;
+            this.capture=capture;captureKind=capture.kind;
             if(live.phoneConstructHook!=null)live.phoneConstructHook.run();
         }''')
+ s=once(s,'        static Map<String,Object> profileActionIdentity(WindowOwnership ignored){throw new AssertionError("host user0 has no profile proof");}',profile_adapter)
  h.write(path,s)
  return {'schema':'hepta.native-ax-extraction.v1','production_ax_methods_verbatim':True,
          'production_observer_original_methods_verbatim':True,'actual_helper_compiled':True,
@@ -88,11 +111,11 @@ def main():
  snap=load(source/'tests/native-observation-snapshot/run_host.py','ax_snapshot')
  java=a.java_home/'bin/java';javac=a.java_home/'bin/javac';jar=a.json_jar.resolve()
  if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
- deps=[source/PKG/n for n in snap.JAVA]
+ deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
  profiles=[source/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  rect=source/'tests/qualification-scope/fixtures/android/graphics/Rect.java'
  fixtures=[source/'tests/native-observation-snapshot'/n for n in ['SnapshotChecks.java','ObservationEvidenceHost.java']]+[HERE/'ActualAxPhoneChecks.java']
- inputs=deps+profiles+[rect,*fixtures,HERE/'run_host.py',HERE/'AxPipelineCases.fragment',source/'tests/native-observation-snapshot/run_host.py',source/'tests/native-observation-snapshot/SnapshotPipelineCases.fragment',source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
+ inputs=deps+[source/PKG/'NativeCtripFlightPage.java',source/PKG/'NativeAppGoal.java']+profiles+[rect,*fixtures,HERE/'run_host.py',HERE/'AxPipelineCases.fragment',source/'tests/native-observation-snapshot/run_host.py',source/'tests/native-observation-snapshot/SnapshotPipelineCases.fragment',source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
  tools=[java,javac,a.java_home/'lib/modules',a.java_home/'lib/ct.sym',jar]
  before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
  result={'schema':'hepta.native-ax-host.v1','all_pass':False,'stages':[],'input_before':before,'tools_before':tool_before,

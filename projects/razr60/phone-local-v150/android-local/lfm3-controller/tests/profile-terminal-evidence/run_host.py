@@ -18,7 +18,7 @@ import time
 sys.dont_write_bytecode = True
 JSON_SHA = '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 TARGET = 'src/org/trillionnium/hepta/background/ProfileTarget.java'
-EXTRA = ['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession',
+EXTRA = ['NativeCtripFormObservation', 'NativeSearchPlanning', 'NativeSearchRole', 'NativeSearchDecision', 'NativeSearchSession', 'ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession',
          'NativeActionSnapshotCheck','NativeAppObservation','NativeCtripFlightPage','NativeXiaomiProductPage']
 
 def require(ok, message):
@@ -128,6 +128,28 @@ def main():
         query = load(baseline/'tests/web-flight/run_query_host_tests.py', 'profile_terminal_query_closure')
         bg = load(baseline/'tests/background-session/prepare_fixture.py', 'profile_terminal_background_fixture')
         bgfiles, bgrecord = bg.prepare(baseline, out/'platform-fixture')
+        # This old terminal gate never constructs a new search outcome. Real new
+        # Session classes compile against an explicitly nonconstructible value port.
+        service_port=out/'platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java'
+        service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
+        require(bgfiles.count(service_port)==1 and service_text.endswith('}')
+                and 'class ActionOutcome' not in service_text,'one original Service type port required')
+        outcome_port="""    public static final class ActionOutcome {
+        public final boolean accepted=false,dispatched=false,stale=true;
+        public final String detail=null;
+        public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
+        private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy profile terminal fixture");}
+    }"""
+        service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+'}').encode('utf-8')
+        require(service_after.decode('utf-8').replace(chr(10)+outcome_port+chr(10),'',1)==service_text,
+                'original Service port changed outside the refusing type boundary')
+        service_port.write_bytes(service_after)
+        report['native_search_type_boundary']={'original_service_sha256':sha(service_before),
+                'compiled_service_sha256':sha(service_after),'type_block_sha256':sha(outcome_port.encode()),
+                'original_service_bytes_reversible':True,'constructor_always_throws':True,
+                'accepted_and_dispatched_always_false':True,'authority_and_execution_always_null':True,
+                'new_search_path_executed':False}
+
         bgfiles = [p for p in bgfiles if not (p.parent.name == 'json' and p.parent.parent.name == 'org') and 'terminal' not in p.parts]
         paths = [baseline/p for p in query.PURE_PATHS if p not in
                  ('tests/web-flight/WebFlightQueryHostTest.java', 'tests/native-app/legacy-boundary/NativeAppSession.java')] + bgfiles

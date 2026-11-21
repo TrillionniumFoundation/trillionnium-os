@@ -1372,6 +1372,14 @@ public final class LocalTaskController implements AutoCloseable {
             nativeTask.requireModelPlanning();
         }
         final LocalRuntimeConfig runtime=inference.configuration();
+        if(before!=null&&before.capture!=null&&before.capture.formHistory()){
+            if(!nativeApp||activeNativeTask==null||runtime.profile.visual()||inference.acceptsObservedImage())
+                throw new IllegalStateException("历史表单只能进入同一非视觉原生模型任务");
+            NativeAppDomain domain=activeNativeTask.domain();
+            if(!NativeCtripFlightPage.FORM.equals(domain.phase)||!before.id.equals(domain.frame.observationId)
+                    ||!domain.frame.sameCapture(before.capture,null)||domain.resultReady)
+                throw new IllegalStateException("历史表单与实际当前原生规划域不一致");
+        }
         final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);
         if(searchProtocol){
             NativeSearchSession search=activeNativeSearch;

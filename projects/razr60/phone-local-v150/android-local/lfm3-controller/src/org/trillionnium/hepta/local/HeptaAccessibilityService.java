@@ -2455,7 +2455,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final CaptureIdentity identity;final Graph original;final String id=UUID.randomUUID().toString().replace("-","");
         final Object mode;final int publicationRecheckCount;final Map<String,Object> previousPair;
         ObservationPairSeal seal;ObservationCaptureEvidence capture;File path;
-        Map<String,Object> first,second;String firstIme,secondIme;
+        Map<String,Object> first,second,formHistory;String firstIme,secondIme;
+        ObservationEventWatermark publicationWatermark;
         ObservationEventWatermark completed;long completedAt=-1,persistedAt=-1,windowStarted=-1,windowCompleted=-1;
         boolean windowChecked,windowMatched,published;String stage="ax_seal_graph";
         final List<Map<String,Object>> rejections=new ArrayList<Map<String,Object>>();
@@ -2500,7 +2501,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         Map<String,Object> evidence(long at){
             Map<String,Object> e=new java.util.LinkedHashMap<String,Object>(capture.evidence());
-            e.put("schema","hepta.observation-capture.native-ax.v1");e.put("mode","complete_native_ax_pair");
+            e.put("schema",capture.metadataSchema());e.put("mode",capture.formHistory()?"complete_native_ax_form_history":"complete_native_ax_pair");
             e.put("capture_requested_elapsed_ms",identity.capturedAt);e.put("published_elapsed_ms",at);
             e.put("capture_age_at_publication_ms",at-identity.capturedAt);
             e.put("sample_graph_started_elapsed_ms",identity.graphStartedAt);e.put("sample_graph_completed_elapsed_ms",identity.graphCompletedAt);
@@ -2514,6 +2515,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("events_after_complete_census_admitted_endpoint","final_published_complete_census");
             e.put("screenshot_observed",false);e.put("screenshot_path",null);
             e.put("screenshot_is_diagnostic_only",true);e.put("events_after_complete_census_admitted",false);
+            if(capture.formHistory()){
+                e.put("historical_form_planning_only",true);e.put("published_pair_is_current_tree_claimed",false);
+                e.put("form_history",capture.formHistoryEvidence());
+                e.put("publication_event_watermark",nativeAxWatermark(publicationWatermark));
+                e.put("events_after_complete_census_admitted",publicationWatermark.events!=completed.events);
+                e.put("post_census_events_use","historical_form_planning_only");e.put("publication_window_matched",windowMatched);
+                e.put("events_after_complete_census_admitted_endpoint","recorded_publication_watermark");
+            }
             e.put("fresh_action_validation_required",true);return e;
         }
         void close(){first=null;second=null;if(path!=null&&!published){path.delete();path=null;}}
@@ -2548,6 +2557,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         e.put("identity",nativeAxIdentity(graph));e.put("complete",true);e.put("truncated",graph.truncated);
         e.put("read_started_elapsed_ms",graph.readStartedElapsedMs);e.put("read_completed_elapsed_ms",graph.readCompletedElapsedMs);
         e.put("census_captured_elapsed_ms",graph.nativeActionCapturedAt);
+        e.put("ime_visibility",graph.state.imeVisibility.name().toLowerCase(java.util.Locale.ROOT));
         e.put("visited",graph.collectionStats.visited);e.put("retained",graph.collectionStats.retained);
         e.put("pending",graph.collectionStats.pending);e.put("child_slots_omitted",graph.collectionStats.childSlotsOmitted);
         e.put("node_budget_omissions",graph.collectionStats.nodeBudgetOmissions);e.put("text_budget_omissions",graph.collectionStats.textBudgetOmissions);
@@ -2566,6 +2576,36 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         for(String key:new String[]{"identity","nodes","reported_windows","window","profile_owner"})
             if(!java.util.Objects.equals(before.get(key),after.get(key)))return false;
         return true;
+    }
+    /** A complete historical form pair is a planning source only. The actual
+     * bound native Session/installed profile and every full raw node remain required.
+     * The pixel reader and the ordinary equal-AX factory are not widened. */
+    private Map<String,Object> nativeAxFormHistory(ObservationRequest request,NativeAxProduct product,Graph after){
+        if(!nativeTextObservationAllowed(request,product.original)||!nativeTextObservationAllowed(request,after)
+                ||request.captured!=product.original||request.nativeAxMode!=product.mode
+                ||request.background==null||product.identity.frozenWindow==null
+                ||!product.identity.frozenWindow.matches(frozenObservationWindow(after)))return null;
+        ProfileTarget target=request.background.profileTarget();BackgroundTaskTarget task=request.background.selection.taskTarget;
+        if(target==null||task==null||!NativeCtripFlightPage.supported(task.nativeGoal)
+                ||!NativeCtripFlightPage.PACKAGE.equals(target.packageName)
+                ||target.versionCode!=NativeCtripFlightPage.VERSION_CODE
+                ||!NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base")))return null;
+        requireObservationWork(request);
+        try{
+            Map<String,Object> binding=new java.util.LinkedHashMap<String,Object>(nativeAxIdentity(product.original));
+            binding.put("observation_id",product.id);
+            Map<String,Object> proof=NativeCtripFormObservation.compareAxCensuses(product.first,product.second,binding,target.apkSetSha256);
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            value.put("phase",NativeCtripFlightPage.FORM);value.put("installed_set_sha256",target.apkSetSha256);
+            value.put("provider_version_code",target.versionCode);value.put("provider_base_apk_sha256",target.apkHashes.get("base"));
+            value.put("comparison",proof);requireObservationWork(request);
+            return ObservationCaptureEvidence.freezeMap(value);
+        }catch(IllegalArgumentException unclassified){return null;}
+    }
+    private static boolean nativeAxPublicationCovered(NativeAxProduct product,ObservationEventWatermark now){
+        return product.formHistory==null?sameAxWatermark(product.completed,now):
+                product.completed!=null&&now!=null&&now.onlyContentSince(product.completed)
+                &&now.onlyContentSince(product.identity.eventWatermark);
     }
     private void captureNativeAxObservation(final ObservationRequest request){
         if(!observationActive(request))return;
@@ -2600,16 +2640,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.first=nativeAxCensus(product.original);product.second=nativeAxCensus(after);
                     product.firstIme=product.original.state.imeVisibility.name().toLowerCase(java.util.Locale.ROOT);
                     product.secondIme=after.state.imeVisibility.name().toLowerCase(java.util.Locale.ROOT);
+                    product.formHistory=nativeAxFormHistory(request,product,after);
                     boolean equal=request.captured==product.original&&identity.matches(after)&&nativeObservationRecheckAllowed(request,after)
                             &&identity.frozenWindow!=null&&identity.frozenWindow.matches(frozenObservationWindow(after))
                             &&nativeAxEqual(product.first,product.second);
-                    if(!equal){request.note(ObservationDiagnostics.Event.AX_GRAPH_CHANGED);retry=true;
+                    if(!equal&&product.formHistory==null){request.note(ObservationDiagnostics.Event.AX_GRAPH_CHANGED);retry=true;
                         product.reject(product.stage,"graph_changed",request.eventWatermark(),SystemClock.elapsedRealtime());
                         recordNativeFullGraphChange(request,product.stage,product.original,after);}
                 }
                 boolean covered=!retry&&product.completed.onlyContentSince(start)
                         &&product.completed.onlyContentSince(identity.eventWatermark)
-                        &&sameAxWatermark(product.completed,request.eventWatermark());
+                        &&nativeAxPublicationCovered(product,request.eventWatermark());
                 if(!covered){request.note(ObservationDiagnostics.Event.AX_PAIR_REJECTED);retry=true;
                     product.reject(product.stage,"pair_coverage",request.eventWatermark(),SystemClock.elapsedRealtime());}
                 if(!retry){
@@ -2626,7 +2667,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     binding.put("profile_window",product.original.profileWindow==null?null:product.original.profileWindow.evidence());
                     binding.put("profile_action_identity",product.original.profileWindow==null?null:NativeAppEvidence.profileActionIdentity(product.original.profileWindow));
                     Map<String,Object> receipt=new java.util.LinkedHashMap<String,Object>();
-                    receipt.put("schema","hepta.native-ax-capture.v1");receipt.put("kind",ObservationCaptureEvidence.NATIVE_AX);
+                    receipt.put("schema",product.formHistory==null?"hepta.native-ax-capture.v1":"hepta.native-ax-form-history.v1");
+                    receipt.put("kind",product.formHistory==null?ObservationCaptureEvidence.NATIVE_AX:ObservationCaptureEvidence.NATIVE_AX_FORM_HISTORY);
+                    if(product.formHistory!=null){
+                        receipt.put("form_history",product.formHistory);receipt.put("historical_form_planning_only",true);
+                        receipt.put("published_pair_is_current_tree_claimed",false);
+                    }
                     receipt.put("binding",binding);receipt.put("first",product.first);receipt.put("second",product.second);
                     receipt.put("request_started_elapsed_ms",request.started);receipt.put("request_deadline_elapsed_ms",request.deadline);
                     receipt.put("sealed_elapsed_ms",sealed);receipt.put("complete_census_endpoint_elapsed_ms",product.completedAt);
@@ -2634,8 +2680,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     receipt.put("second_completed_watermark",nativeAxWatermark(product.completed));receipt.put("complete_census_endpoint_frozen",true);
                     receipt.put("visual_model",false);receipt.put("screenshot_present",false);receipt.put("publication_refreshes_capture_age",false);
                     receipt.put("grants_action_authority",false);receipt.put("business_completion_verified",false);
-                    byte[] bytes=ObservationCaptureEvidence.nativeAxBytes(receipt);requireObservationWork(request);
-                    if(!sameAxWatermark(product.completed,request.eventWatermark())){
+                    byte[] bytes=product.formHistory==null?ObservationCaptureEvidence.nativeAxBytes(receipt):
+                            ObservationCaptureEvidence.nativeAxFormHistoryBytes(receipt);requireObservationWork(request);
+                    if(!nativeAxPublicationCovered(product,request.eventWatermark())){
                         retry=true;product.reject(product.stage,"event_before_persistence",request.eventWatermark(),SystemClock.elapsedRealtime());
                     }else{
                         product.stage="ax_receipt_persist";request.phase(product.stage);
@@ -2643,7 +2690,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         MobiMindPrivateFiles.writeNew(path,bytes);product.path=path;
                         requireObservationWork(request);
                         MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(path,ObservationCaptureEvidence.MAX_RECEIPT_BYTES,true);
-                        product.capture=ObservationCaptureEvidence.fromSealedNativeAx(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes));
+                        product.capture=product.formHistory==null?
+                                ObservationCaptureEvidence.fromSealedNativeAx(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes)):
+                                ObservationCaptureEvidence.fromSealedNativeAxFormHistory(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes));
                         read.unchangedPath();product.persistedAt=SystemClock.elapsedRealtime();requireObservationWork(request);
                         product.stage="ax_publication_window";request.phase(product.stage);product.windowStarted=SystemClock.elapsedRealtime();
                         FrozenObservationWindow liveWindow=readFrozenObservationWindow(request,identity);
@@ -2652,7 +2701,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         if(!product.windowMatched){retry=true;
                             product.reject(product.stage,"window_mismatch",request.eventWatermark(),SystemClock.elapsedRealtime());}
                         ObservationEventWatermark checked=request.eventWatermark();
-                        if(!sameAxWatermark(product.completed,checked)){
+                        if(!nativeAxPublicationCovered(product,checked)){
                             retry=true;product.reject(product.stage,nativeAxLateEventReason(product,checked),checked,SystemClock.elapsedRealtime());
                         }
                     }
@@ -2688,7 +2737,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Only a genuinely persisted equal pair and a successful actual window check
      * can enter one complete A/C recheck for later typed-content events. */
     private boolean recheckNativeAxPublication(ObservationRequest request,NativeAxProduct product){
-        if(request.nativeAxPublicationRecheckAttempted||product.publicationRecheckCount!=0
+        if(product.formHistory!=null||request.nativeAxPublicationRecheckAttempted||product.publicationRecheckCount!=0
                 ||!observationActive(request)||!request.nativeSample||request.captured!=product.original
                 ||!nativeTextObservationAllowed(request,request.captured)||request.nativeAxMode!=product.mode
                 ||product.seal==null||product.seal.identity!=product.identity
@@ -2738,7 +2787,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 {failObservation(request,"封存AX观察的授权或后台租约已变化");return;}
             requireTaskAuthorization(request.taskId,taskAuthorization);
             ObservationEventWatermark accepted=request.eventWatermark();
-            if(retry||!sameAxWatermark(product.completed,accepted)){
+            if(retry||!nativeAxPublicationCovered(product,accepted)){
                 if(!sameAxWatermark(product.completed,accepted))
                     product.reject("ax_main_handoff",nativeAxLateEventReason(product,accepted),accepted,SystemClock.elapsedRealtime());
                 recordNativeAxPublicationRejection(request,product,"ax_main_handoff");
@@ -2754,6 +2803,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||product.windowStarted<product.persistedAt||product.persistedAt<product.seal.sealedAt)
                 throw new IllegalStateException("AX完整封存或发布窗口证据缺失");
             request.phase("publish");Graph graph=request.captured;
+            product.publicationWatermark=accepted;
             PhoneObservation observation=new PhoneObservation(product.id,graph.packageName,product.identity.capturedAt,
                     graph.nativeActionWidth,graph.nativeActionHeight,graph.rotation,graph.windowId,graph.bounds,null,null,graph.digest,
                     graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,
@@ -2761,7 +2811,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.evidence(SystemClock.elapsedRealtime()),graph.profileWindow,product.capture);
             if(!observationActive(request))return;
             ObservationEventWatermark transferred=request.eventWatermark();
-            if(!sameAxWatermark(product.completed,transferred)){
+            // History may include typed content already recorded before DTO construction.
+            // Any later event still refuses this publication rather than hiding its watermark.
+            if(!sameAxWatermark(product.formHistory==null?product.completed:product.publicationWatermark,transferred)){
                 product.reject("ax_before_transfer",nativeAxLateEventReason(product,transferred),transferred,SystemClock.elapsedRealtime());
                 recordNativeAxPublicationRejection(request,product,"ax_before_transfer");
                 request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
@@ -2846,7 +2898,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Only freshness failures before an effect may request a new observation/model decision. */
     private static final class StaleObservation extends IllegalStateException {
         private static final long serialVersionUID=1L;
-        StaleObservation(String detail){super("stale:"+detail);}
+        final boolean backgroundChildUnavailable;
+        StaleObservation(String detail){this(detail,false);}
+        StaleObservation(String detail,boolean backgroundChildUnavailable){super("stale:"+detail);this.backgroundChildUnavailable=backgroundChildUnavailable;}
     }
     /** Rechecks the complete original scope immediately before dispatch, on the selected action thread. */
     private void scopeBeforeDispatch(String taskId,QualificationScopeConfig.Bound dispatchScope,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired,ActionWork work){
@@ -3090,6 +3144,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final Cancellation cancel;final ActionExecutionState state;final SearchEvents events;
         Graph currentGraph;boolean platformCallInvoked;JSONObject sealedDiagnostic;
         Map<String,Object> currentCensus,latestCensus,roleProof;
+        final List<Map<String,Object>> currentReadAttempts=new ArrayList<Map<String,Object>>();
         NativeSearchPlanning.EventMark pairStart,pairCompleted,effectWatermark;
         WindowOwnership profileBeforeEffect;boolean currentNodeIdentityChecked,ancestorChainChecked,windowsChecked;
         SearchActionWork(NativeSearchSession.Attempt attempt,QualificationScopeConfig.Bound scope,Cancellation cancel){
@@ -3219,6 +3274,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Map<String,Object> proof=new LinkedHashMap<String,Object>();proof.put("schema","hepta.native-search-current-execution.v1");
             proof.put("action",NativeSearchDecision.ACTION);proof.put("planning_receipt_sha256",work.attempt.offer.planning.receiptSha256);
             proof.put("attempt",work.attempt.evidence());proof.put("current_C",work.currentCensus);proof.put("latest_D",work.latestCensus);
+            proof.put("current_C_read_attempts",work.currentReadAttempts);proof.put("current_C_resample_limit",1);
+            proof.put("original_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
             proof.put("role_comparison",work.roleProof);proof.put("pair_start_watermark",work.pairStart==null?null:work.pairStart.evidence());
             proof.put("D_completed_watermark",work.pairCompleted==null?null:work.pairCompleted.evidence());
             proof.put("before_effect_watermark",work.effectWatermark==null?null:work.effectWatermark.evidence());
@@ -3231,14 +3288,39 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(value.toString().getBytes(StandardCharsets.UTF_8).length<=NativeSearchPlanning.MAX_BYTES)work.sealedDiagnostic=value;
         }catch(Exception unavailable){/* Missing diagnostic evidence never grants an effect or permits a retry. */}
     }
+    /** At most one read-only restart of an incomplete first C. readGraph has
+     * already closed its partial Graph and recycled its queue before it throws.
+     * Nothing returned from that read may become C or contribute a NodeRef.
+     * The original event interval and reserved eight-second deadline never move. */
+    private Graph readNativeSearchCurrentGraph(SearchActionWork work){
+        for(int ordinal=1;;ordinal++){
+            work.phase("graph_read");work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
+            if(work.currentGraph!=null||work.currentCensus!=null||work.latestCensus!=null||work.platformCallInvoked)
+                throw new IllegalStateException("new search current C read cannot reuse a prior graph or effect");
+            Map<String,Object> read=new LinkedHashMap<String,Object>();read.put("ordinal",ordinal);
+            read.put("started_elapsed_ms",SystemClock.elapsedRealtime());read.put("completed",false);
+            read.put("fresh_complete_read_next",false);work.currentReadAttempts.add(read);
+            try{
+                Graph graph=readGraph(work.budget(),work.session.background);read.put("completed",true);return graph;
+            }catch(RuntimeException failure){
+                boolean unavailableChild=failure instanceof StaleObservation&&((StaleObservation)failure).backgroundChildUnavailable;
+                read.put("background_child_unavailable",unavailableChild);read.put("failure",message(failure));
+                read.put("partial_graph_discarded",unavailableChild);
+                if(!unavailableChild||ordinal!=1)throw failure;
+                work.check();work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
+                // A replacement sample cannot hide an unknown, boundary or untyped event.
+                requireNativeSearchPairEvents(work.pairStart,work.events.mark());
+                read.put("fresh_complete_read_next",true);
+            }finally{read.put("ended_elapsed_ms",SystemClock.elapsedRealtime());}
+        }
+    }
     private ActionOutcome executeNativeOpenSearch(SearchActionWork work)throws Exception{
         work.phase("scope_read");work.scope.verifyUnchanged();
         QualificationScope.require(!work.scope.restricted(),"typed search cannot extend a qualification scope");
         requireTaskAuthorization(work.session.taskId,work.session.authorization);work.attempt.verifyInstalled();work.check();
         Graph fresh=null;
         try{
-            work.phase("graph_read");work.pairStart=work.events.mark();
-            work.currentGraph=readGraph(work.budget(),work.session.background);
+            work.pairStart=work.events.mark();work.currentGraph=readNativeSearchCurrentGraph(work);
             NativeActionSnapshotCheck.Snapshot current=nativeSearchSnapshot(work.currentGraph,work.session,work.attempt.offer.planning.id,work.attempt.startedElapsed);
             work.currentCensus=NativeAppEvidence.immutableMap(NativeSearchPlanning.snapshot(current));
             NativeSearchRole currentRole=NativeSearchRole.compare(current,current);work.attempt.offer.planning.role.requireSameRole(currentRole);
@@ -3738,6 +3820,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(locked(work.background))return "当前显示范围的锁状态或后台显示凭据不可用";
         try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
         if(expected!=current||graph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
+        if(expected.capture!=null&&expected.capture.formHistory()&&!"wait".equals(action.action)&&!"done".equals(action.action)){
+            if(work==null||work.nativeGuard==null||!"click".equals(action.action)
+                    ||!(NativeActionSnapshotCheck.YEAR.equals(work.nativeGuard.purpose)
+                    ||NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)))
+                return "stale:历史表单只能经本次日期或查询原生Guard重新完整校验";
+        }
         String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
@@ -3757,7 +3845,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 requireLiveFlightNativeStability(taskId,expected,action,permit,now,cancel,work));
                         actionCheck(work);
                     }catch(Exception mismatch){throw new StaleObservation("stale:首页目标局部复核失败："+message(mismatch));}
-                }else if(!graph.digest.equals(now.digest)){
+                }else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){
                     if(work!=null&&work.nativeGuard!=null){
                         try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
                         catch(ProfileOwnershipViolation identityChanged){throw identityChanged;}
@@ -3879,7 +3967,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
-                if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work))){
+                if(expected.capture!=null&&expected.capture.formHistory()
+                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));
@@ -4660,7 +4749,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 try{
                     // selectedRoot refreshed the root before graph metadata was read.
                     // Descendants may still be cached; never publish an old body as a new frame.
-                    if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察");
+                    if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察",true);
                     checkReadBudget(budget);Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
                     // Preserve at most94 owner units plus the exact40-LF provider
                     // form for the already selected background Notes app. The

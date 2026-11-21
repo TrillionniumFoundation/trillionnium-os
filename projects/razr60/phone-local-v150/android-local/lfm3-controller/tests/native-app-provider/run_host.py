@@ -105,6 +105,7 @@ def main():
                 and "class ActionOutcome" not in service_text,"one original Service type port required")
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
+        public final String detail=null;
         public final org.json.JSONObject taskAuthorization=null,actionExecution=null;
         private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy provider fixture");}
     }"""

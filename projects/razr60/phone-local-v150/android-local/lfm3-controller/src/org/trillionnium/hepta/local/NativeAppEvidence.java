@@ -142,7 +142,7 @@ final class NativeAppEvidence {
             need(sha(tree)&&sha(state)&&sha(source)&&sha(completion),"native original frame hashes required");
             if(actualCapture==null)need(sha(screen),"native original pixel frame hash required");
             else{
-                need(ObservationCaptureEvidence.NATIVE_AX.equals(actualCapture.kind)&&sha(actualCapture.receiptSha256)
+                need(actualCapture.nativeText()&&sha(actualCapture.receiptSha256)
                         &&screen==null&&!truncated&&countersComplete&&metadataObserved,
                         "complete typed AX capture without pixel claims required");
                 Map<String,Object> bound=map();
@@ -174,7 +174,7 @@ final class NativeAppEvidence {
         boolean sameCapture(ObservationCaptureEvidence actual,String screen){
             if(ObservationCaptureEvidence.PIXELS.equals(captureKind))
                 return capture==null&&actual==null&&sha(screenshotSha)&&sha(screen)&&screenshotSha.equals(screen);
-            return ObservationCaptureEvidence.NATIVE_AX.equals(captureKind)&&capture!=null&&actual!=null
+            return capture!=null&&actual!=null&&capture.nativeText()&&captureKind.equals(capture.kind)
                     &&screenshotSha==null&&screen==null&&capture.sameSource(actual);
         }
         boolean sameSource(Frame f){return f!=null&&captureKind.equals(f.captureKind)&&taskId.equals(f.taskId)&&ownerSha.equals(f.ownerSha)&&targetSha.equals(f.targetSha)

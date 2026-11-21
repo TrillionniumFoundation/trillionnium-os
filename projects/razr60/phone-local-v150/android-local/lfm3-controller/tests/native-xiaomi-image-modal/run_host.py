@@ -71,6 +71,10 @@ def main():
     ct=home/'lib/ct.sym';release=ct.is_file()
     flags=['--release','8','-Xlint:all','-Werror'] if release else ['-source','8','-target','8','-Xlint:all,-options','-Werror']
     deps=[src/PACKAGE/n for n in ('ObservationCaptureEvidence.java', 'NativeAppGoal.java','NativeAppEvidence.java','NativeXiaomiProductPage.java')]
+    deps += [src/PACKAGE/n for n in ('NativeCtripFormObservation.java','NativeActionSnapshotCheck.java',
+             'ObservedChildText.java','ObservedScrollActions.java','ObservedImeEnter.java','ObservedTargetLabels.java')]
+    deps += [src/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ('ProfileIdentity','ProfileTarget','WindowOwnership')]
+
     tests=[test/n for n in ('ActualXiaomiImageModalFixture.java','NativeXiaomiImageModalHostTest.java')]
     inputs=deps+tests+[Path(__file__).resolve()]+sorted((test/'fixtures').iterdir())
     if a.previous_source:
@@ -96,7 +100,7 @@ def main():
         r['cases']=json.loads((out/'CASES.json').read_text());need(r['cases']['cases']==29 and len(set(r['cases']['names']))==29,'complete declared 29 cases')
         if a.previous_source:
             previous=out/'previous-classes';previous.mkdir()
-            run('previous-compile',compile_prefix+flags+['-encoding','UTF-8','-d',str(previous)]+list(map(str,deps[:2]+[old]+tests)))
+            run('previous-compile',compile_prefix+flags+['-encoding','UTF-8','-d',str(previous)]+list(map(str,[old if x==src/PACKAGE/'NativeXiaomiProductPage.java' else x for x in deps]+tests)))
             run('previous-cases',[str(java),'-cp',str(previous),'org.trillionnium.hepta.local.NativeXiaomiImageModalHostTest',str(out/'PREVIOUS-CASES.json'),'legacy'])
             r['previous_cases']=json.loads((out/'PREVIOUS-CASES.json').read_text())
         r['source_inputs_after']=[record(p) for p in inputs];r['tool_inputs_after']=[record(p) for p in tools]

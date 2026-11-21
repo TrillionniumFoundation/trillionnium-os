@@ -17,6 +17,17 @@ ORIGINAL_SHARED={
 SHARED=dict(ORIGINAL_SHARED)
 SHARED["src/org/trillionnium/hepta/local/NativeAppEvidence.java"]="2f7895c8314959aaafeaa827b1d64f8ce8a8aca62c1de4b7eb82060e567c87be"
 SHARED["src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java"]="ba48a7788e308d987b96923aa4f15fd837b4f11a642b484ff02453af93a5035f"
+# Preserve the preceding reviewed capture pins; only the complete current
+# Frame/capture dependency closure changes. Parser cases/fixtures stay exact.
+PRE_FORM_HISTORY_SHARED=dict(SHARED)
+SHARED.update({
+  "src/org/trillionnium/hepta/local/NativeAppEvidence.java": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14",
+  "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java": "b89d0adf0c1cf0b7f4e13375b570b670e78fd5ee64d6a66cdb64cb303a94e155",
+  "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java": "1fbedb6ffed519a402e265640fab241cfee655ea47863769cc1538cf53ddd983",
+  "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412",
+  "src/org/trillionnium/hepta/local/ObservedScrollActions.java": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
+  "src/org/trillionnium/hepta/local/ObservedImeEnter.java": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+})
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -61,7 +72,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

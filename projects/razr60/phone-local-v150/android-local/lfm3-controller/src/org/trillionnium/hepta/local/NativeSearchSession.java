@@ -134,6 +134,8 @@ final class NativeSearchSession {
         void requireLive(long now){session.requireLive(now);session.requireOffer(offer);
             synchronized(this){need(session.attempted==this&&state<2&&now>=startedElapsed&&now<deadlineElapsed,"original one-use search Attempt unavailable");}}
         void verifyInstalled()throws Exception{session.verifyInstalled();}
+        void requireUnvalidatedRead(long now){requireLive(now);synchronized(this){
+            need(state==0&&!claimed&&revalidation==null,"current C reads require the original unclaimed, unvalidated Attempt");}}
         /** Pure C/D proof is retained only for this already reserved intent. It
          * does not replace HA's C original NodeRef, D latest full signature,
          * actual ancestor/window reread, or final event/ownership fence. */
@@ -162,10 +164,10 @@ final class NativeSearchSession {
 
     void acceptOutcome(Attempt attempt,HeptaAccessibilityService.ActionOutcome outcome,String actualReceiptSha,long now)throws Exception{
         requireLive(now);need(attempt==attempted&&attempt!=null&&outcome!=null&&NativeAppEvidence.sha(actualReceiptSha),"same actual navigation outcome/receipt");
-        synchronized(attempt){need(attempt.claimed&&attempt.state==1&&attempt.revalidation!=null,"actual once-claimed C/D search intent required");}
         need(outcome.accepted&&outcome.dispatched&&!outcome.stale&&outcome.actionExecution!=null
                 &&outcome.taskAuthorization!=null&&outcome.taskAuthorization.optBoolean("callback_lease_current",false)
-                &&!outcome.taskAuthorization.optBoolean("callback_cancelled",true),"search navigation not dispatched with current authority");
+                &&!outcome.taskAuthorization.optBoolean("callback_cancelled",true),"search navigation not dispatched with current authority: "+outcome.detail);
+        synchronized(attempt){need(attempt.claimed&&attempt.state==1&&attempt.revalidation!=null,"actual once-claimed C/D search intent required");}
         JSONObject e=outcome.actionExecution;
         need("hepta.action-execution.v1".equals(e.optString("schema",""))&&taskId.equals(e.optString("task_id",""))
                 &&attempt.modelRunId.equals(e.optString("model_run_id",""))&&attempt.offer.planning.id.equals(e.optString("observation_id",""))

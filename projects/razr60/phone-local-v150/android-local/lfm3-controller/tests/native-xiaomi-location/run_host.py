@@ -69,7 +69,15 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
-        if sha(original_bytes) == "dee48aa5a628e67b8f6813fa947e595b4d891719b1ab1782f95593267044a75d":
+        # Normalize only the exact reviewed null detail field on the proof copy.
+        # The real provider below still compiles the unchanged current driver.
+        if sha(legacy_provider_bytes) == "91934e3e55b488f7ffbd172aeacb28530165404a4671b80869c8855c0902da3a":
+            detail_port = b"        public final String detail=null;\n"
+            assert legacy_provider_bytes.count(detail_port) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(detail_port, b"", 1)
+            assert sha(legacy_provider_bytes) == "dee48aa5a628e67b8f6813fa947e595b4d891719b1ab1782f95593267044a75d"
+            report["retained_provider_null_detail_addition_exactly_reversible"] = True
+        if sha(legacy_provider_bytes) == "dee48aa5a628e67b8f6813fa947e595b4d891719b1ab1782f95593267044a75d":
             search_sources = b'"NativeSearchRole","NativeSearchPlanning","NativeSearchDecision","NativeSearchSession",'
             refusing_type_block = b'        # The retained provider cases do not construct a new search Session or\n        # dispatch its intent.  Its signature needs only an unconstructible\n        # outcome type here; no accepting action/authorization fixture is added.\n        service_port=out/"platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java"\n        service_before=service_port.read_bytes()\n        service_text=service_before.decode("utf-8")\n        require(bgfiles.count(service_port)==1 and service_text.endswith("}")\n                and "class ActionOutcome" not in service_text,"one original Service type port required")\n        outcome_port="""    public static final class ActionOutcome {\n        public final boolean accepted=false,dispatched=false,stale=true;\n        public final org.json.JSONObject taskAuthorization=null,actionExecution=null;\n        private ActionOutcome(){throw new AssertionError("native search dispatch is outside the legacy provider fixture");}\n    }"""\n        service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+"}").encode("utf-8")\n        require(service_after.decode("utf-8").replace(chr(10)+outcome_port+chr(10),"",1)==service_text,\n                "original Service port changed outside the refusing type boundary")\n        service_port.write_bytes(service_after)\n        report["native_search_legacy_type_boundary"]={"schema":"hepta.native-search-legacy-type-boundary.v1",\n            "generated_service":str(service_port),"original_service_sha256":sha(service_before),\n            "compiled_service_sha256":sha(service_after),"type_block_sha256":sha(outcome_port.encode("utf-8")),\n            "original_service_bytes_reversible":True,"constructor_always_throws":True,\n            "accepted_and_dispatched_always_false":True,"authority_and_execution_always_null":True,\n            "new_search_path_executed":False,"phone_operations":0}\n'
             assert legacy_provider_bytes.count(search_sources) == 1

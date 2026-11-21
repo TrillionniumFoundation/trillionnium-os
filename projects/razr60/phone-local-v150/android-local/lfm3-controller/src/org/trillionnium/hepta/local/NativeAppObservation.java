@@ -30,11 +30,13 @@ final class NativeAppObservation {
                 observed.windowId,observed.profileWindow.taskId,observed.capturedElapsedMillis);
         String expected=selectionSha(selected),actual=NativeAppEvidence.fingerprint(value(observed.backgroundSelectionEvidence()));
         NativeAppEvidence.need(expected.equals(actual),"actual observed native Selection projection differs");
-        if(ObservationCaptureEvidence.NATIVE_AX.equals(observed.captureKind)){
+        if(observed.capture!=null&&observed.capture.nativeText()&&observed.capture.kind.equals(observed.captureKind)){
             NativeAppEvidence.need(observed.capture!=null&&observed.screenshot==null&&observed.screenshotSha256==null,
                     "typed AX observation cannot claim pixels");
             Map<String,Object> goalBinding=NativeAppEvidence.map();goalBinding.put("native_goal_sha256",target.nativeGoal.contractSha256);
             observed.capture.requireBinding(goalBinding);
+            if(observed.capture.formHistory())NativeAppEvidence.need(NativeCtripFlightPage.supported(target.nativeGoal)
+                    &&background.profileTarget()!=null,"historical form requires the actual supported Ctrip profile goal");
         }else NativeAppEvidence.need(ObservationCaptureEvidence.PIXELS.equals(observed.captureKind)&&observed.capture==null
                 &&observed.screenshot!=null&&NativeAppEvidence.sha(observed.screenshotSha256),"actual original pixel observation required");
         List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();

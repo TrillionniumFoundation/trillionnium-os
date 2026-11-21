@@ -171,7 +171,7 @@ final class NativeActionSnapshotCheck {
                 "same-operation original frame diagnostic binding required");
         if(capture==null)need(sha(originalScreen),"same-operation original pixel diagnostic binding required");
         else{
-            need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,
+            need(capture.nativeText()&&sha(capture.receiptSha256)&&originalScreen==null,
                     "same-operation typed AX diagnostic binding required");
             Map<String,Object> bound=new TreeMap<String,Object>();
             bound.put("task_id",old.env.get("task_id"));bound.put("owner_sha256",old.env.get("owner_sha256"));
@@ -205,7 +205,7 @@ final class NativeActionSnapshotCheck {
         out.put("original_observation_id",in.identity.get("origin_observation_id"));out.put("purpose",in.purpose);
         out.put("target_path",in.path);out.put("original_node_id",in.node);out.put("comparison_refusal",reason);
         out.put("compared_elapsed_ms",comparedAt);out.put("original_screen_sha256",originalScreen);
-        out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:ObservationCaptureEvidence.NATIVE_AX);
+        out.put("original_capture_kind",capture==null?ObservationCaptureEvidence.PIXELS:capture.kind);
         out.put("original_screenshot_observed",capture==null);
         if(capture!=null)out.put("original_capture",capture.evidence());
         out.put("original_phone_observation_record_sha256",originalFrameRecord);
