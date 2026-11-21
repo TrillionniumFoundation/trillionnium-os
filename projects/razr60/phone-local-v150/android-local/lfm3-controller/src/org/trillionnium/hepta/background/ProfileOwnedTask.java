@@ -111,6 +111,35 @@ public final class ProfileOwnedTask {
         catch(VerifiedPermissionPending pending){result="PERMISSION_PENDING";}
         platform.guard();need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");return result;
     }
+    /** Read-only final preparation confirmation. Only an exact, already owned
+     * permission-to-target transition may discard one mixed sample. It grants no
+     * permission/window/input authority; the replacement graph is read in full. */
+    public synchronized boolean confirmInitializationReady(long deadline)throws Exception{
+        need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
+        platform.guard();actual(true);need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+        BackgroundOwnedSingleTask.Task current;
+        try{
+            try{current=observeTreeSample(true);}
+            catch(ProfilePermissionTransient.ReadChanged changed){
+                ProfilePermissionTransient.ReadChanged pinned=changed.readyConfirmationExit(target);
+                requireRootIdentity(pinned.exitedRoot);requireRootIdentity(pinned.root);
+                need(leaf!=null&&sameTask(leaf,pinned.exitedLeaf)&&sameTask(leaf,pinned.leaf)
+                        &&pinned.exitedLeaf.uid==target.fullUid&&pinned.leaf.uid==target.fullUid,
+                        "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+                platform.guard();actual(true);long now=platform.now();
+                need(now<deadline&&deadline-now>20,"PROFILE_PERMISSION_READ_DEADLINE");
+                platform.pause();platform.guard();actual(true);
+                need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+                // No second retry: every field of the complete after-pair must
+                // still match, followed by the normal global/recents/leaf checks.
+                current=observeTreeSample(true,pinned);
+            }
+        }catch(VerifiedPermissionPending pending){
+            throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+        }
+        platform.guard();actual(true);need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+        return current!=null;
+    }
     /** Read-only state coordination inside the caller's original request deadline.
      * A verified permission top is only a reason to read again, never a business
      * window or input grant. Ordinary observe/window and retirement stay separate. */

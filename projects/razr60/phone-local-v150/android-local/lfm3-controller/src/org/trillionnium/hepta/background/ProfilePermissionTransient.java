@@ -91,13 +91,30 @@ public final class ProfilePermissionTransient {
         private static final long serialVersionUID=1L;
         final BackgroundOwnedSingleTask.Task root,leaf;final String code;
         final BackgroundOwnedSingleTask.Task exitedRoot,exitedLeaf;
+        private final BackgroundOwnedSingleTask.Task observedRoot,observedLeaf;
         private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code){
             this(root,leaf,code,null,null);
         }
         private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code,
                 BackgroundOwnedSingleTask.Task exitedRoot,BackgroundOwnedSingleTask.Task exitedLeaf){
+            this(root,leaf,code,exitedRoot,exitedLeaf,null,null);
+        }
+        private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code,
+                BackgroundOwnedSingleTask.Task exitedRoot,BackgroundOwnedSingleTask.Task exitedLeaf,
+                BackgroundOwnedSingleTask.Task observedRoot,BackgroundOwnedSingleTask.Task observedLeaf){
             super(code);this.root=root;this.leaf=leaf;this.code=code;
             this.exitedRoot=exitedRoot;this.exitedLeaf=exitedLeaf;
+            this.observedRoot=observedRoot;this.observedLeaf=observedLeaf;
+        }
+        /** The ready-confirmation path is narrower than the original state retry:
+         * both live pairs keep every capability/cookie, and both permission tops
+         * become the same target. No cookie exit, other presentation or first claim. */
+        ReadChanged readyConfirmationExit(ProfileTarget target)throws Exception{
+            need(exitedRoot==null&&sameReadIdentity(root,observedRoot)&&sameReadIdentity(leaf,observedLeaf)
+                    &&permissionToTarget(target,root,observedRoot)&&permissionToTarget(target,leaf,observedLeaf)
+                    &&leaf.user==target.profile.userId&&leaf.uid==target.fullUid
+                    &&leaf.parent==root.id&&leaf.display==root.display,code);
+            return new ReadChanged(observedRoot,observedLeaf,code,root,leaf);
         }
         void requireRoot(BackgroundOwnedSingleTask.Task current)throws Exception{
             need(sameReadIdentity(root,current)&&(exitedRoot==null||sameTaskInfo(root,current)),
@@ -163,7 +180,7 @@ public final class ProfilePermissionTransient {
         String code=rootSame?"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ":"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ";
         need(target!=null&&knownReadPresentation(target,currentRoot,root.topUid)
                 &&knownReadPresentation(target,currentLeaf,root.topUid),code);
-        throw new ReadChanged(root,leaf,code);
+        throw new ReadChanged(root,leaf,code,null,null,currentRoot,currentLeaf);
     }
     /** Fixed-size, read-only mismatch diagnostics. Binder/cookie objects never leave the process. */
     static Map<String,Object> readMismatch(String phase,long observed,int rootCount,int leafCount,

@@ -151,6 +151,60 @@ final class PublicPersonalNotesReader {
         }
         throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
     }
+    /** Post-release sampling keeps the actual custody snapshot. Missing display
+     * organizer calls are never made, and no failed/partial read becomes absence.
+     * Only disappearance of these same retained tasks may discard a whole triple;
+     * the original budget remains fixed and cleanup still needs two full absences. */
+    synchronized PublicPersonalNotesCustody.Frame frameAfterRelease(PublicPersonalNotesCustody.ReleasedRead released)throws Exception{
+        long begin=SystemClock.elapsedRealtime();check();
+        need(released!=null,"NOTES_RELEASED_READ_UNAVAILABLE");released.requireScope(display,uid);
+        java.util.Set<Integer> remaining=null;
+        for(int attempt=1;attempt<=MAX_TASKINFO_SAMPLES;attempt++){
+            check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+            BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
+            BackgroundTaskOrganizer.ReadOnlyRootCensus middleCensus=reader.readOnlyRootCensus();
+            BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
+            Map<Integer,BackgroundOwnedSingleTask.Task> first=releasedIndex(before,released,"released_before",attempt);
+            Map<Integer,BackgroundOwnedSingleTask.Task> middle=releasedIndex(middleCensus,released,"released_middle",attempt);
+            Map<Integer,BackgroundOwnedSingleTask.Task> last=releasedIndex(after,released,"released_after",attempt);
+            need(first.keySet().containsAll(middle.keySet())&&middle.keySet().containsAll(last.keySet())
+                    &&(remaining==null||remaining.containsAll(first.keySet())),"NOTES_ROOT_CENSUS_CHANGED");
+            boolean shrinking=!first.keySet().equals(middle.keySet())||!middle.keySet().equals(last.keySet())
+                    ||(remaining!=null&&!remaining.equals(first.keySet()));
+            remaining=new java.util.LinkedHashSet<Integer>(last.keySet());
+            if(shrinking){
+                need(attempt<MAX_TASKINFO_SAMPLES,"NOTES_ROOT_CENSUS_CHANGED");
+                check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                Thread.sleep(20);continue;
+            }
+            try{
+                List<PublicPersonalNotesCustody.Node> nodes=new ArrayList<PublicPersonalNotesCustody.Node>();
+                for(BackgroundOwnedSingleTask.Task task:middle.values()){
+                    sameActualTask(first.get(task.id),task,"before_vs_global_middle",attempt);
+                    sameActualTask(task,last.get(task.id),"global_middle_vs_after",attempt);
+                    nodes.add(new PublicPersonalNotesCustody.Node(task,Collections.<PublicPersonalNotesCustody.Node>emptyList()));
+                }
+                check();
+                return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
+            }catch(ActivityStateChanged changed){
+                if(attempt==MAX_TASKINFO_SAMPLES)throw changed;
+                check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                Thread.sleep(20);
+            }
+        }
+        throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
+    }
+    private Map<Integer,BackgroundOwnedSingleTask.Task> releasedIndex(BackgroundTaskOrganizer.ReadOnlyRootCensus census,
+            PublicPersonalNotesCustody.ReleasedRead released,String stage,int attempt)throws Exception{
+        need(census!=null&&census.global!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
+        released.requireGlobal(census.global);
+        Map<Integer,BackgroundOwnedSingleTask.Task> rows=index(census.displayRoots,stage);
+        for(BackgroundOwnedSingleTask.Task task:rows.values()){
+            sameIdentity(released.retained(task.id),task,stage,attempt);
+            requireSoleLeaf(census.global,task);
+        }
+        return rows;
+    }
     private Map<Integer,BackgroundOwnedSingleTask.Task> index(List<BackgroundOwnedSingleTask.Task> tasks,String stage)throws Exception{
         need(tasks!=null&&tasks.size()<=PublicPersonalNotesCustody.MAX_TASKS,"NOTES_ROOT_CENSUS_UNAVAILABLE");
         Map<Integer,BackgroundOwnedSingleTask.Task> out=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();

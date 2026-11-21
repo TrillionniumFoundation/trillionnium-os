@@ -40,7 +40,7 @@ def main():
     tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='38089d685875781319cec9b159822470d7b507c0fa8df6ceb13a00be158ee46f','approved reader differs')
+    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='eb966bf1cb76822b6c694aa11d6f772158448abc3396f86152ec97ba28ab390c','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)

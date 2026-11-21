@@ -449,7 +449,7 @@ public final class BackgroundDisplayBroker {
                 if(!"APP_READY".equals(profileOwnedTask.initializationState(Math.min(r.deadline,expires))))
                     throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
                 requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));
-                if(!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
+                if(!profileOwnedTask.confirmInitializationReady(Math.min(r.deadline,expires)))throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
                 profilePreparing=false;profilePreparationState="COMPLETE";refreshProfileTaskEvidence();
             } else if(config.profileTarget!=null&&"launch".equals(r.operation)) {
                 dispatched=launchProfile(r);
@@ -1256,7 +1256,7 @@ public final class BackgroundDisplayBroker {
                     long begin=SystemClock.elapsedRealtime();
                     ProfileTaskPolicy.Snapshot live=publicNotesReader.global();
                     PublicPersonalNotesCustody.Frame remaining=null;
-                    if(custody.needsActualTasks(live)){remaining=publicNotesReader.frame();live=remaining.global;}
+                    if(custody.needsActualTasks(live)){remaining=publicNotesReader.frameAfterRelease(custody.releasedRead());live=remaining.global;}
                     PublicOwnGroupPhysicalFence.RecentCensus recents=publicNotesReader.recents();
                     long finish=SystemClock.elapsedRealtime();
                     custody.observeAbsence(live,recents,remaining,publicOwnedDisplayAbsent(),begin,finish,SystemClock.elapsedRealtime());

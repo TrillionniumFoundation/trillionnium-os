@@ -24,6 +24,7 @@ import org.json.JSONObject;
 public final class PublicPersonalNotesAbsenceRecovery {
     public static final String REQUEST_SCHEMA="hepta.personal-notes-absence-request.v1";
     public static final String DRAINED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v2";
+    public static final String WORKFLOW_CLOSE_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v3";
     public static final String SCHEMA="hepta.personal-notes-current-absence.v2";
     public static final String SOURCE="fresh_personal_notes_absence_with_preserved_failure";
     public static final String PACKAGE="com.motorola.stylus";
@@ -33,6 +34,10 @@ public final class PublicPersonalNotesAbsenceRecovery {
     private static final String[] DRAINED_INPUTS={"journal","owner","bootstrap","cleanup","result","broker_receipt","broker_output",
             "step_model","step_action","fixed_intent_attempt","model_request_receipt","model_session_receipt",
             "native_session_receipt","generation_identity","generation_cleanup_receipt"};
+    private static final String[] WORKFLOW_CLOSE_INPUTS={"journal","owner","bootstrap","cleanup","result","broker_receipt","broker_output",
+            "step_model","step_action","fixed_intent_attempt","model_request_receipt","model_session_receipt",
+            "native_session_receipt","generation_identity","generation_cleanup_receipt","workflow_result","workflow_grant",
+            "child_1_action","child_2_action","child_1_proof","child_2_proof","completion_candidate","completion_identity"};
     private PublicPersonalNotesAbsenceRecovery(){}
     public static final class Request {
         public final int ownerUid,oldBoot,requestBoot,displayId,targetUid;
@@ -40,7 +45,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final String requestId,taskId,generation,ownerSha256,displayName,journalSha256,originalsSha256,currentControlSha256;
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final java.util.Set<Integer> recordedTaskIds;
-        public final boolean postModelDrained;
+        public final boolean postModelDrained,workflowCloseFailed;
         private final boolean prelaunchCreateFailure;
         private final boolean releasedPostModelTerminal;
         private final Map<String,byte[]> originals;
@@ -49,10 +54,11 @@ public final class PublicPersonalNotesAbsenceRecovery {
         private Request(Map<String,byte[]> input,byte[] control,JSONObject controller,int uid,String id,long now,int boot)throws Exception{
             need(uid>=10000&&uid<90000&&ProfileIdentity.uuid(id)&&now>=0&&boot>=0,"NOTES_REQUEST_IDENTITY");
             need(input!=null,"NOTES_INPUT_SET");
-            postModelDrained=input.keySet().equals(new TreeSet<String>(Arrays.asList(DRAINED_INPUTS)));
+            workflowCloseFailed=input.keySet().equals(new TreeSet<String>(Arrays.asList(WORKFLOW_CLOSE_INPUTS)));
+            postModelDrained=workflowCloseFailed||input.keySet().equals(new TreeSet<String>(Arrays.asList(DRAINED_INPUTS)));
             need(postModelDrained||input.keySet().equals(new TreeSet<String>(Arrays.asList(INPUTS))),"NOTES_INPUT_SET");
             LinkedHashMap<String,byte[]> copy=new LinkedHashMap<String,byte[]>();int total=0;
-            for(String name:postModelDrained?DRAINED_INPUTS:INPUTS){byte[] raw=input.get(name);need(raw!=null&&raw.length>0&&raw.length<=MAX_ORIGINAL,"NOTES_INPUT_BOUND");
+            for(String name:workflowCloseFailed?WORKFLOW_CLOSE_INPUTS:postModelDrained?DRAINED_INPUTS:INPUTS){byte[] raw=input.get(name);need(raw!=null&&raw.length>0&&raw.length<=MAX_ORIGINAL,"NOTES_INPUT_BOUND");
                 total+=raw.length;need(total<=MAX_BUNDLE,"NOTES_INPUT_BOUND");copy.put(name,raw.clone());}
             originals=Collections.unmodifiableMap(copy);
             JSONObject j=object(originals.get("journal"));
@@ -147,19 +153,22 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         &&number(location,"initial_task_count")>=0,"NOTES_PRELAUNCH_LOCATION_CLOCK");
                 no(location,"retired","physical_user_activity_frozen","recents_unchanged_claimed");
             }else{
-                JSONObject launch=last.getJSONObject("task_launch_policy");
+                JSONObject launched=workflowCloseFailed?object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"):last;
+                JSONObject launch=launched.getJSONObject("task_launch_policy");
                 need("hepta.background-task-launch-policy.v1".equals(string(launch,"schema"))&&generation.equals(string(launch,"generation"))
                         &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
-                        &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(last,"request_id"))
+                        &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(launched,"request_id"))
                         &&Boolean.TRUE.equals(launch.get("activity_info_rechecked_before_dispatch")),"NOTES_ORIGINAL_LAUNCH_TARGET");
             }
-            if(postModelDrained)requireDrainedBootstrap(bootstrap.getJSONObject("last_broker_response"),last,ids);
+            if(workflowCloseFailed)requireWorkflowBootstrap(bootstrap.getJSONObject("last_broker_response"),
+                    object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
+            else if(postModelDrained)requireDrainedBootstrap(bootstrap.getJSONObject("last_broker_response"),last,ids);
             else need(same(bootstrap.getJSONObject("last_broker_response"),last),"NOTES_ORIGINAL_RESPONSE_CHANGED");
             recordedTaskIds=Collections.unmodifiableSet(ids);
             need(taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status"))&&number(result,"steps")== (postModelDrained?1:0)
                     &&Boolean.FALSE.equals(result.get("cleanup_known"))&&Boolean.FALSE.equals(result.get("completion_verified"))
                     &&Boolean.FALSE.equals(result.get("model_reported_success"))&&Boolean.FALSE.equals(result.get("external_model"))
-                    &&Boolean.FALSE.equals(result.get("automatic_replay"))&&Boolean.FALSE.equals(result.get("controller_completion_requested"))
+                    &&Boolean.FALSE.equals(result.get("automatic_replay"))&&Boolean.valueOf(workflowCloseFailed).equals(result.get("controller_completion_requested"))
                     &&(postModelDrained||(result.get("last_action_execution")==JSONObject.NULL&&result.get("final_observation_id")==JSONObject.NULL))
                     &&result.get("model_done_status")==JSONObject.NULL&&result.get("completion_actor")==JSONObject.NULL,
                     "NOTES_RECOVERY_BUSINESS_OR_MODEL_DISPATCH");
@@ -172,7 +181,9 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     &&nativeWork.get("run_id")==JSONObject.NULL,"NOTES_RECOVERY_NATIVE_UNKNOWN");
             for(String key:new String[]{"request_reserved","executor_accepted","worker_started","signal_entered","submission_unknown"})
                 need(Boolean.FALSE.equals(nativeWork.get(key)),"NOTES_RECOVERY_NATIVE_DISPATCH");
-            if(postModelDrained)requireDrainedModel(result,owner,model,last);
+            if(workflowCloseFailed)requireWorkflowModel(result,owner,model,
+                    object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"));
+            else if(postModelDrained)requireDrainedModel(result,owner,model,last);
             else need(taskId.equals(string(model,"task_id"))&&Boolean.FALSE.equals(model.get("process_started"))&&Boolean.FALSE.equals(model.get("process_exit_observed"))
                     &&model.get("worker_generation")==JSONObject.NULL&&model.get("exit_code")==JSONObject.NULL
                     &&Boolean.TRUE.equals(model.get("receipt_valid"))&&model.get("app_receipt_sha256")==JSONObject.NULL,
@@ -287,6 +298,219 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     &&authorization.equals(string(check,"authorization_sha256"))&&run.equals(string(check,"model_run_id"))
                     &&"notes.create".equals(string(check,"action"))&&PACKAGE.equals(string(check,"target_package")),"NOTES_DRAINED_AUTHORIZATION");yes(check,"allowed");
             requireNormalModelClose(projection,run,observation,step,drained,terminal);
+        }
+        /** A completed Notes workflow may still fail its final close. This binds
+         * the already drained history only. No historical workflow or exit record
+         * replaces the independent current absence observations below. */
+        private void requireWorkflowBootstrap(JSONObject early,JSONObject createdResponse,JSONObject last,JSONObject terminal,
+                java.util.Set<Integer> ids)throws Exception{
+            need(!prelaunchCreateFailure&&!releasedPostModelTerminal&&"close".equals(string(last,"operation"))
+                    &&"CLEANUP_UNKNOWN".equals(string(last,"state"))&&"client_close".equals(string(last,"terminal_reason"))
+                    &&"CLEANUP_NOT_CONFIRMED".equals(string(last,"error")),"NOTES_WORKFLOW_CLOSE_PHASE");
+            no(last,"ok","dispatched");yes(last,"public_scope_admission_retired","public_scope_closing");
+            JSONObject finalCustody=last.getJSONObject("personal_notes_cleanup");
+            need(same(finalCustody,terminal.getJSONObject("personal_notes_cleanup")),"NOTES_WORKFLOW_CLOSE_CUSTODY");
+            yes(finalCustody,"pre_release_tasks_verified","release_api_entered","release_api_returned","identity_unknown","custodian_retained");
+            need("NOTES_CLEANUP_UNKNOWN".equals(string(finalCustody,"failure")),"NOTES_WORKFLOW_CLOSE_FAILURE");
+            java.util.Set<String> requests=new TreeSet<String>();requests.add(string(last,"request_id"));
+            long prior=created;
+            for(int stage=0;stage<2;stage++){
+                JSONObject response=stage==0?early:createdResponse;
+                need(number(response,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION&&generation.equals(string(response,"generation"))
+                        &&number(response,"display_id")==displayId&&publicScope.sha256.equals(string(response,"display_scope_sha256"))
+                        &&"ACTIVE".equals(string(response,"state"))&&(stage==0?"launch":"notes.create").equals(string(response,"operation"))
+                        &&ProfileIdentity.uuid(string(response,"request_id"))&&requests.add(string(response,"request_id")),"NOTES_WORKFLOW_RESPONSE");
+                yes(response,"ok","dispatched");no(response,"public_scope_admission_retired","public_scope_closing");
+                JSONObject custody=response.getJSONObject("personal_notes_cleanup"),location=response.getJSONObject("public_task_location");
+                need(notesCustody(custody,false)==targetUid,"NOTES_TARGET_UID_CHANGED");
+                no(custody,"identity_unknown","pre_release_tasks_verified","release_api_entered","release_api_returned");
+                need(string(custody,"failure").isEmpty(),"NOTES_WORKFLOW_RESPONSE_CUSTODY");
+                need("hepta.public-own-group.task-location.v1".equals(string(location,"schema"))&&generation.equals(string(location,"generation"))
+                        &&number(location,"display_id")==displayId&&number(location,"target_user_id")==0
+                        &&number(location,"observed_elapsed_ms")>=prior&&number(location,"observed_elapsed_ms")<=number(last.getJSONObject("public_task_location"),"observed_elapsed_ms"),
+                        "NOTES_WORKFLOW_RESPONSE_LOCATION");
+                no(location,"task_mutation_authority","retired","physical_user_activity_frozen","recents_unchanged_claimed");
+                prior=number(location,"observed_elapsed_ms");
+                JSONArray oldRows=custody.getJSONArray("actual_observed_tasks"),finalRows=finalCustody.getJSONArray("actual_observed_tasks");
+                need(oldRows.length()>0&&oldRows.length()<=32&&(stage==0||oldRows.length()==finalRows.length()),"NOTES_WORKFLOW_TASK_SET");
+                java.util.Set<Integer> oldIds=new TreeSet<Integer>();
+                for(int i=0;i<oldRows.length();i++){JSONObject row=oldRows.getJSONObject(i);long task=number(row,"task_id");boolean found=false;
+                    need(task>0&&task<=Integer.MAX_VALUE&&oldIds.add((int)task),"NOTES_WORKFLOW_TASK_SET");
+                    for(int n=0;n<finalRows.length();n++)if(task==number(finalRows.getJSONObject(n),"task_id")){
+                        need(!found&&same(row,finalRows.getJSONObject(n)),"NOTES_WORKFLOW_OWNED_IDENTITY_CHANGED");found=true;}
+                    need(found,"NOTES_WORKFLOW_OWNED_IDENTITY_LOST");}
+                JSONArray located=location.getJSONArray("observed_owned_task_ids");java.util.Set<Integer> locations=new TreeSet<Integer>();
+                for(int i=0;i<located.length();i++){long task=numberAt(located,i);
+                    need(task>0&&task<=Integer.MAX_VALUE&&locations.add((int)task),"NOTES_WORKFLOW_TASK_SET");}
+                need(locations.equals(oldIds)&&ids.containsAll(oldIds)&&(stage==0||ids.equals(oldIds)),"NOTES_WORKFLOW_TASK_SET");
+                JSONObject launch=response.getJSONObject("task_launch_policy");
+                need("hepta.background-task-launch-policy.v1".equals(string(launch,"schema"))&&generation.equals(string(launch,"generation"))
+                        &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
+                        &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(response,"request_id")),
+                        "NOTES_WORKFLOW_LAUNCH_TARGET");yes(launch,"activity_info_rechecked_before_dispatch");
+            }
+            need(ProfileIdentity.uuid(string(last,"request_id"))&&number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")<=started,
+                    "NOTES_WORKFLOW_CLOSE_CLOCK");
+        }
+        private void requireWorkflowModel(JSONObject result,JSONObject owner,JSONObject projection,JSONObject response)throws Exception{
+            JSONObject step=object(originals.get("step_model")),action=object(originals.get("step_action")),attempt=object(originals.get("fixed_intent_attempt"));
+            JSONObject fixed=result.getJSONArray("fixed_intent_attempts").getJSONObject(0),work=action.getJSONObject("action_execution");
+            String run=string(step,"run_id"),observation=string(step,"observation_id"),authorization=string(owner,"task_authorization_sha256");
+            long terminal=number(result,"terminal_decided_elapsed_ms");
+            need(run.matches("[0-9a-f]{32}")&&observation.matches("[0-9a-f]{32}")&&ownerSha256.equals(string(step,"original_instruction_sha256"))
+                    &&run.equals(string(action,"model_run_id"))&&same(fixed,without(action.getJSONObject("fixed_intent"),"broker_response"))
+                    &&same(response,action.getJSONObject("fixed_intent").getJSONObject("broker_response")),"NOTES_WORKFLOW_PARENT_BINDING");
+            yes(action,"accepted","dispatched","model_issued");no(action,"stale","done_success_eligible");
+            JSONObject issued=object(string(step,"raw_text").getBytes(StandardCharsets.UTF_8));
+            need(same(issued,action.getJSONObject("action"))&&"notes.create".equals(string(issued,"action"))
+                    &&PACKAGE.equals(string(issued,"package"))&&observation.equals(string(issued,"observation_id")),"NOTES_WORKFLOW_MODEL_ACTION");
+            long drained=requireWorkflowDrainedAction(work,run,observation,authorization,created,terminal);
+            bindBackground(action.getJSONObject("background_session"));
+            requireWorkflowAuthorization(action.getJSONObject("task_authorization"),result.getJSONObject("task_authorization"),run,authorization,"notes.create",false);
+            need(authorization.equals(string(action,"task_authorization_sha256")),"NOTES_WORKFLOW_PARENT_AUTHORIZATION");
+            need("hepta.fixed-intent-attempt.v1".equals(string(attempt,"schema"))&&"consumed_before_call".equals(string(attempt,"stage"))
+                    &&"hepta.fixed-intent-result.v1".equals(string(fixed,"schema")),"NOTES_WORKFLOW_ATTEMPT_SCHEMA");
+            Iterator<String> attemptKeys=attempt.keys();while(attemptKeys.hasNext()){String key=attemptKeys.next();
+                if(!"schema".equals(key)&&!"stage".equals(key))need(same(attempt.get(key),fixed.get(key)),"NOTES_WORKFLOW_ATTEMPT_CHANGED");}
+            need(taskId.equals(string(attempt,"task_id"))&&run.equals(string(attempt,"model_run_id"))&&observation.equals(string(attempt,"observation_id"))
+                    &&number(attempt,"source_window_id")==number(work,"window_id")&&PACKAGE.equals(string(attempt,"source_package"))
+                    &&number(attempt,"display_id")==displayId&&generation.equals(string(attempt,"background_generation"))
+                    &&"notes.create".equals(string(attempt,"action"))&&number(attempt,"attempt_ordinal")==1
+                    &&ProfileIdentity.hash(string(attempt,"attempt_id"))&&ProfileIdentity.sha(string(issued,"text")).equals(string(attempt,"payload_sha256")),
+                    "NOTES_WORKFLOW_ATTEMPT_IDENTITY");
+            yes(attempt,"attempt_consumed");no(attempt,"automatic_retry_allowed");yes(fixed,"dispatch_attempted","api_accepted");
+            no(fixed,"goal_independently_verified","saved_or_search_results_verified");
+            need("launch_accepted".equals(string(fixed,"result"))&&"draft_opened".equals(string(fixed,"requested_outcome")),"NOTES_WORKFLOW_PARENT_RESULT");
+            JSONObject target=attempt.getJSONObject("target"),brokerFixed=response.getJSONObject("fixed_intent"),launch=response.getJSONObject("task_launch_policy");
+            need("installed_package_manager".equals(string(target,"source"))&&"notes.create".equals(string(target,"action"))
+                    &&PACKAGE.equals(string(target,"package"))&&number(target,"target_uid")==targetUid&&string(target,"component").startsWith(PACKAGE+"/")
+                    &&string(target,"component").equals(string(launch,"component"))&&target.get("required_permission")==JSONObject.NULL,"NOTES_WORKFLOW_TARGET");
+            yes(target,"exported","activity_enabled","application_enabled","declared_intent_filter_matched","ordinary_caller_permission_checked");
+            need("hepta.background-fixed-intent.v1".equals(string(brokerFixed,"schema"))&&same(target,brokerFixed.getJSONObject("target"))
+                    &&string(response,"request_id").equals(string(brokerFixed,"request_id"))&&generation.equals(string(brokerFixed,"generation"))
+                    &&number(brokerFixed,"display_id")==displayId&&number(brokerFixed,"ordinary_caller_uid")==ownerUid
+                    &&"notes.create".equals(string(brokerFixed,"action"))&&string(attempt,"attempt_id").equals(string(brokerFixed,"attempt_id"))
+                    &&string(attempt,"payload_sha256").equals(string(brokerFixed,"payload_sha256")),"NOTES_WORKFLOW_BROKER_ATTEMPT");
+            yes(brokerFixed,"attempt_consumed");no(brokerFixed,"goal_independently_verified");
+            JSONObject workflow=object(originals.get("workflow_result")),grant=object(originals.get("workflow_grant"));
+            need("hepta.notes-create-workflow.v1".equals(string(workflow,"schema"))&&ProfileIdentity.hash(string(workflow,"workflow_id"))
+                    &&taskId.equals(string(workflow,"task_id"))&&number(workflow,"parent_step")==1
+                    &&run.equals(string(workflow,"parent_model_run_id"))&&observation.equals(string(workflow,"parent_observation_id"))
+                    &&string(attempt,"attempt_id").equals(string(workflow,"parent_fixed_intent_attempt_id"))
+                    &&ownerSha256.equals(string(workflow,"owner_sha256"))&&authorization.equals(string(workflow,"task_authorization_sha256"))
+                    &&ProfileIdentity.hash(string(workflow,"contract_sha256"))&&string(attempt,"payload_sha256").equals(string(workflow,"body_sha256"))
+                    &&PACKAGE.equals(string(workflow,"target_package"))&&number(workflow,"target_uid")==targetUid
+                    &&number(workflow,"display_id")==displayId&&generation.equals(string(workflow,"background_generation"))
+                    &&"tool_workflow".equals(string(workflow,"actor_kind"))&&"draft_opened".equals(string(workflow,"fixed_intent_outcome_unchanged"))
+                    &&workflow.get("stop_reason")==JSONObject.NULL,"NOTES_WORKFLOW_HISTORY_BINDING");
+            yes(workflow,"grant_consumed","grant_retired","workflow_verified","accepted_as_completion_proof");
+            no(workflow,"grants_tool_authority","model_issued","model_done_synthesized","native_model_done_synthesized","persistent_storage_bytes_verified");
+            need("hepta.notes-create-workflow.v1".equals(string(grant,"schema")),"NOTES_WORKFLOW_GRANT_SCHEMA");
+            yes(grant,"grant_consumed");no(grant,"grant_retired","grants_tool_authority");
+            for(String key:new String[]{"workflow_id","task_id","parent_step","parent_model_run_id","parent_observation_id","created_observation_id",
+                    "parent_create_after_observation_id","workflow_initial_observation_id","parent_fixed_intent_attempt_id","owner_sha256","contract_sha256",
+                    "task_authorization_sha256","body_sha256","target_package","target_uid","target_apk_sha256","display_id","background_generation"})
+                need(same(grant.get(key),workflow.get(key)),"NOTES_WORKFLOW_GRANT_BINDING");
+            Iterator<String> grantKeys=grant.keys();while(grantKeys.hasNext()){String key=grantKeys.next();
+                if(!"grant_retired".equals(key))need(same(grant.get(key),workflow.get(key)),"NOTES_WORKFLOW_GRANT_CHANGED");}
+            JSONObject initial=workflow.getJSONObject("initial"),current=workflow.getJSONObject("current"),stable=workflow.getJSONObject("stable_readback");
+            requireWorkflowObservation(initial);requireWorkflowObservation(current);requireWorkflowObservation(stable);
+            need(string(initial,"observation_id").equals(string(workflow,"created_observation_id"))
+                    &&string(initial,"observation_id").equals(string(workflow,"parent_create_after_observation_id"))
+                    &&string(initial,"observation_id").equals(string(workflow,"workflow_initial_observation_id"))
+                    &&same(without(current,"observation_id"),without(stable,"observation_id"))
+                    &&string(stable,"observation_id").equals(string(workflow,"final_observation_id"))
+                    &&string(stable,"observation_id").equals(string(result,"final_observation_id")),"NOTES_WORKFLOW_OBSERVATION_CHAIN");
+            JSONArray children=workflow.getJSONArray("children");need(children.length()==2,"NOTES_WORKFLOW_CHILD_COUNT");
+            java.util.Set<String> operations=new TreeSet<String>(),childIds=new TreeSet<String>();operations.add(string(work,"operation_id"));
+            JSONObject previous=initial,lastAction=null;
+            for(int i=1;i<=2;i++){
+                JSONObject childAction=object(originals.get("child_"+i+"_action")),proof=object(originals.get("child_"+i+"_proof"));
+                JSONObject recorded=children.getJSONObject(i-1),child=proof.getJSONObject("child"),retired=recorded.getJSONObject("child");
+                need(same(without(proof,"child"),without(recorded,"child"))&&same(without(child,"grant_retired"),without(retired,"grant_retired"))
+                        &&same(child,proof.getJSONObject("service_child_receipt"))&&same(child,childAction.getJSONObject("tool_child")),"NOTES_WORKFLOW_CHILD_RECEIPT");
+                yes(retired,"grant_retired");no(child,"grant_retired");
+                for(String key:new String[]{"workflow_id","task_id","parent_step","parent_model_run_id","parent_observation_id","created_observation_id",
+                        "parent_create_after_observation_id","workflow_initial_observation_id","parent_fixed_intent_attempt_id","owner_sha256","contract_sha256",
+                        "task_authorization_sha256","body_sha256","target_package","target_uid","target_apk_sha256","display_id","background_generation"})
+                    need(same(child.get(key),workflow.get(key)),"NOTES_WORKFLOW_CHILD_BINDING");
+                String tool=i==1?"back":"click",before=string(proof.getJSONObject("before"),"observation_id");
+                need("hepta.tool-child.v1".equals(string(child,"schema"))&&"tool_child".equals(string(child,"actor_kind"))
+                        &&ProfileIdentity.hash(string(child,"child_id"))&&childIds.add(string(child,"child_id"))&&number(child,"child_ordinal")==i
+                        &&tool.equals(string(child,"action"))&&before.equals(string(child,"observation_id")),"NOTES_WORKFLOW_CHILD_IDENTITY");
+                yes(child,"grant_consumed","service_entered");no(child,"grants_tool_authority","model_issued","automatic_retry_allowed");
+                yes(proof,"accepted","dispatched","live_lease_verified");no(proof,"stale");
+                requireWorkflowObservation(proof.getJSONObject("before"));requireWorkflowObservation(proof.getJSONObject("after"));
+                need(i==1?same(without(previous,"observation_id"),without(proof.getJSONObject("before"),"observation_id"))
+                        :same(previous,proof.getJSONObject("before")),"NOTES_WORKFLOW_CHILD_OBSERVATION_CHAIN");
+                previous=proof.getJSONObject("after");
+                need("hepta.tool-child.v1".equals(string(childAction,"schema"))&&"hepta.internal-tool-child.v1".equals(string(childAction,"action_schema"))
+                        &&"tool_child".equals(string(childAction,"actor_kind"))&&number(childAction,"child_ordinal")==i,"NOTES_WORKFLOW_CHILD_ACTION");
+                for(String key:new String[]{"parent_model_run_id","parent_fixed_intent_attempt_id","workflow_id","child_id"})
+                    need(same(child.get(key),childAction.get(key)),"NOTES_WORKFLOW_CHILD_ACTION");
+                yes(childAction,"accepted","dispatched");no(childAction,"model_issued","stale");
+                JSONObject issuedChild=childAction.getJSONObject("action");
+                need(tool.equals(string(issuedChild,"action"))&&PACKAGE.equals(string(issuedChild,"package"))
+                        &&before.equals(string(issuedChild,"observation_id"))&&(i==1?child.get("node_id")==JSONObject.NULL
+                        :string(child,"node_id").equals(string(issuedChild,"node_id"))),"NOTES_WORKFLOW_CHILD_ACTION");
+                JSONObject childWork=childAction.getJSONObject("action_execution");
+                need(number(childWork,"window_id")==number(proof.getJSONObject("before"),"window_id")&&operations.add(string(childWork,"operation_id")),
+                        "NOTES_WORKFLOW_CHILD_OPERATION");
+                drained=requireWorkflowDrainedAction(childWork,run,before,authorization,drained,terminal);
+                requireWorkflowAuthorization(childAction.getJSONObject("task_authorization"),result.getJSONObject("task_authorization"),run,authorization,tool,true);
+                bindBackground(childAction.getJSONObject("background_session"));lastAction=childWork;
+            }
+            need(same(previous,current)&&same(lastAction,result.getJSONObject("last_action_execution"))
+                    &&same(without(object(originals.get("child_2_action")).getJSONObject("task_authorization"),"callback_lease_current","callback_cancelled"),
+                            result.getJSONObject("task_authorization")),"NOTES_WORKFLOW_FINAL_ACTION");
+            JSONObject candidate=object(originals.get("completion_candidate")),identity=object(originals.get("completion_identity")),evidence=result.getJSONObject("completion_evidence");
+            need("hepta.controller-workflow-completion.v1".equals(string(candidate,"schema"))&&taskId.equals(string(candidate,"task_id"))
+                    &&"controller/tool_workflow".equals(string(candidate,"completion_actor"))&&string(stable,"observation_id").equals(string(candidate,"observation_id")),
+                    "NOTES_WORKFLOW_COMPLETION_CANDIDATE");
+            for(String key:new String[]{"workflow_id","parent_model_run_id","parent_fixed_intent_attempt_id"})
+                need(same(candidate.get(key),workflow.get(key)),"NOTES_WORKFLOW_COMPLETION_CANDIDATE");
+            yes(candidate,"terminal_pending_native_identity_and_cleanup");no(candidate,"model_done_synthesized");
+            need("ordinary_package_manager_and_full_apk_hash".equals(string(identity,"source"))&&PACKAGE.equals(string(identity,"package"))
+                    &&number(identity,"uid")==targetUid&&number(identity,"version_code")>0&&ProfileIdentity.hash(string(identity,"apk_set_sha256"))
+                    &&same(identity.getJSONObject("apk_hashes"),workflow.getJSONObject("target_apk_sha256")),"NOTES_WORKFLOW_TARGET_IDENTITY");
+            JSONObject hashes=identity.getJSONObject("apk_hashes");need(hashes.length()>0&&hashes.length()<=32,"NOTES_WORKFLOW_TARGET_IDENTITY");
+            Iterator<String> parts=hashes.keys();while(parts.hasNext())need(ProfileIdentity.hash(string(hashes,parts.next())),"NOTES_WORKFLOW_TARGET_IDENTITY");
+            need("hepta.task-completion.v1".equals(string(evidence,"schema"))&&taskId.equals(string(evidence,"task_id"))
+                    &&ownerSha256.equals(string(evidence,"owner_sha256"))&&string(workflow,"contract_sha256").equals(string(evidence,"contract_sha256"))
+                    &&number(evidence,"display_id")==displayId&&generation.equals(string(evidence,"background_generation"))
+                    &&same(without(workflow,"accepted_as_completion_proof","final_observation_id","native_model_done_synthesized"),evidence.getJSONObject("notes_create_workflow")),
+                    "NOTES_WORKFLOW_COMPLETION_HISTORY");
+            yes(evidence,"controller_completion_requested","controller_native_parent_session_bound","notes_create_workflow_verified","observation_chain_verified");
+            no(evidence,"terminal_binding_and_cleanup_verified","model_done_synthesized","grants_tool_authority");
+            no(result,"goal_independently_verified","model_done_synthesized");
+            requireNormalModelClose(projection,run,observation,step,drained,terminal);
+        }
+        private long requireWorkflowDrainedAction(JSONObject work,String run,String observation,String authorization,long previous,long terminal)throws Exception{
+            need("hepta.action-execution.v1".equals(string(work,"schema"))&&"serial_action_worker".equals(string(work,"execution_kind"))
+                    &&string(work,"operation_id").matches("[0-9a-f]{32}")&&taskId.equals(string(work,"task_id"))
+                    &&run.equals(string(work,"model_run_id"))&&observation.equals(string(work,"observation_id"))
+                    &&authorization.equals(string(work,"authorization_sha256"))&&number(work,"display_id")==displayId
+                    &&generation.equals(string(work,"background_generation"))&&number(work,"window_id")>=0,"NOTES_WORKFLOW_ACTION_IDENTITY");
+            yes(work,"effect_entered","effect_returned","api_accepted","worker_drained","callback_published","callback_authority_current");
+            no(work,"retired","phases_truncated","automatic_redispatch");
+            need(work.get("retirement_reason")==JSONObject.NULL,"NOTES_WORKFLOW_ACTION_RETIRED");
+            long queued=number(work,"queued_elapsed_ms"),drained=number(work,"worker_drained_elapsed_ms"),due=number(work,"deadline_elapsed_ms");
+            need(queued>=previous&&drained>=queued&&drained<=terminal&&due>queued&&drained<=due,"NOTES_WORKFLOW_ACTION_CLOCK");return drained;
+        }
+        private void requireWorkflowAuthorization(JSONObject action,JSONObject gate,String run,String authorization,String tool,boolean child)throws Exception{
+            yes(action,"callback_lease_current");no(action,"callback_cancelled");
+            need(same(without(gate,"last_check"),without(action,"last_check","callback_lease_current","callback_cancelled")),"NOTES_WORKFLOW_AUTHORIZATION_CHANGED");
+            JSONObject check=action.getJSONObject("last_check");
+            need("hepta.owner-action-check.v1".equals(string(check,"schema"))&&taskId.equals(string(check,"task_id"))
+                    &&authorization.equals(string(check,"authorization_sha256"))&&run.equals(string(check,"model_run_id"))
+                    &&tool.equals(string(check,"action"))&&PACKAGE.equals(string(check,"target_package")),"NOTES_WORKFLOW_AUTHORIZATION");yes(check,"allowed");
+            if(child){need("tool_child".equals(string(check,"actor_kind"))&&run.equals(string(check,"parent_model_run_id")),"NOTES_WORKFLOW_CHILD_AUTHORIZATION");no(check,"model_issued");}
+        }
+        private void requireWorkflowObservation(JSONObject observation)throws Exception{
+            need(string(observation,"observation_id").matches("[0-9a-f]{32}")&&PACKAGE.equals(string(observation,"package"))
+                    &&number(observation,"window_id")>=0&&number(observation,"display_id")==displayId
+                    &&generation.equals(string(observation,"background_generation"))&&ProfileIdentity.hash(string(observation,"tree_sha256"))
+                    &&number(observation,"rotation")>=0&&number(observation,"rotation")<=3,"NOTES_WORKFLOW_OBSERVATION_IDENTITY");
         }
         private void requireNormalModelClose(JSONObject projection,String run,String observation,JSONObject step,long drained,long terminal)throws Exception{
             JSONObject request=object(originals.get("model_request_receipt")),session=object(originals.get("model_session_receipt"));
@@ -467,7 +691,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
             out.put(name,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
         public String wire()throws Exception{
             ByteArrayOutputStream bytes=new ByteArrayOutputStream();DataOutputStream out=new DataOutputStream(bytes);
-            out.writeUTF(postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
+            out.writeUTF(workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
             put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);for(String name:originals.keySet())put(out,originals.get(name));out.flush();
             need(bytes.size()<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");ByteArrayOutputStream compressed=new ByteArrayOutputStream();
             try(GZIPOutputStream zip=new GZIPOutputStream(compressed)){zip.write(bytes.toByteArray());}
@@ -483,9 +707,9 @@ public final class PublicPersonalNotesAbsenceRecovery {
         ByteArrayOutputStream decoded=new ByteArrayOutputStream();try(GZIPInputStream in=new GZIPInputStream(new ByteArrayInputStream(zipped))){
             byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){need(decoded.size()+n<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");decoded.write(b,0,n);}}
         DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));String schema=in.readUTF();
-        need(REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
+        need(REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
         int uid=in.readInt();String id=in.readUTF();long now=in.readLong();int boot=in.readInt();JSONObject controller=object(take(in,8192));byte[] control=take(in,MAX_ORIGINAL);
-        Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();for(String name:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
+        Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();for(String name:WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
         Request r=new Request(inputs,control,controller,uid,id,now,boot);need(r.wire().equals(wire),"NOTES_WIRE_NONCANONICAL");return r;
     }
     public static JSONObject validate(JSONObject value,Request r,long now,int boot)throws Exception{

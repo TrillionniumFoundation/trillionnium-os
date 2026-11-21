@@ -197,6 +197,34 @@ final class PublicPersonalNotesCustody {
     synchronized void retireAdmission(){retiring=true;}
     synchronized void enterRelease(){need(releasePrepared&&!unknown&&!releaseAttempted,"NOTES_RELEASE_NOT_ADMITTED");releaseAttempted=true;}
     synchronized void releaseReturned(){need(releaseAttempted&&!unknown,"NOTES_RELEASE_RETURN_UNBOUND");releaseReturned=true;}
+    /** A private-constructor snapshot of actual released custody, never a wire
+     * capability or an absence proof. The reader may only discard disappearing
+     * members of this set; it cannot admit a new or replaced task. */
+    static final class ReleasedRead {
+        private final int display,uid;
+        private final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;
+        private ReleasedRead(int display,int uid,Map<Integer,BackgroundOwnedSingleTask.Task> tasks){
+            this.display=display;this.uid=uid;
+            this.tasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(tasks));
+        }
+        void requireScope(int display,int uid){need(this.display==display&&this.uid==uid,"NOTES_RELEASED_READ_SCOPE");}
+        void requireGlobal(ProfileTaskPolicy.Snapshot global){
+            need(global!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
+            for(ProfileTaskPolicy.Root root:global.roots)if(tasks.containsKey(root.id))
+                need(root.display==display,"NOTES_OBSERVED_TASK_ESCAPED");
+            for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(tasks.containsKey(leaf.id))
+                need(leaf.display==display,"NOTES_OBSERVED_TASK_ESCAPED");
+        }
+        BackgroundOwnedSingleTask.Task retained(int id){
+            BackgroundOwnedSingleTask.Task task=tasks.get(id);
+            need(task!=null,"NOTES_NEW_TASK_AFTER_RELEASE");return task;
+        }
+    }
+    synchronized ReleasedRead releasedRead(){
+        need(retiring&&releasePrepared&&releaseAttempted&&releaseReturned&&!unknown&&!known,
+                "NOTES_RELEASED_READ_UNAVAILABLE");
+        return new ReleasedRead(display,uid,observed);
+    }
     synchronized boolean needsActualTasks(ProfileTaskPolicy.Snapshot live){
         need(live!=null,"NOTES_LIVE_CENSUS_UNAVAILABLE");
         for(int id:observed.keySet())if(live.allIds.contains(id))return true;

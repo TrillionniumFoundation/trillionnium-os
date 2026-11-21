@@ -40,7 +40,7 @@ final class PublicPersonalNotesRecoveryClient {
         }
         JSONObject proof()throws Exception{return PublicPersonalNotesAbsenceRecovery.object(proofText.getBytes(StandardCharsets.UTF_8));}
         void requireOriginals(boolean journalPresent)throws Exception{
-            if(request.postModelDrained)requireTaskEntries(originals.get("result").path.getParentFile(),true);
+            if(request.postModelDrained)requireTaskEntries(originals.get("result").path.getParentFile(),true,request.workflowCloseFailed);
             for(Map.Entry<String,MobiMindPrivateFiles.Read> item:originals.entrySet()){
                 // The typed receipt already persisted both CAS inputs before unlink. The
                 // normal UI may subsequently persist its own recovered session state.
@@ -126,8 +126,10 @@ final class PublicPersonalNotesRecoveryClient {
             actual.put(item[0],MobiMindPrivateFiles.read(new File(task,item[1]),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
         JSONObject failed=PublicPersonalNotesAbsenceRecovery.object(actual.get("result").bytes);
         boolean postModel=PublicPersonalNotesAbsenceRecovery.number(failed,"steps")==1;
-        requireTaskEntries(task,postModel);
+        boolean workflowClose=postModel&&Boolean.TRUE.equals(failed.get("controller_completion_requested"));
+        requireTaskEntries(task,postModel,workflowClose);
         if(postModel)collectDrainedOriginals(root.path,task,failed,actual);
+        if(workflowClose)collectWorkflowOriginals(task,actual);
         Map<String,byte[]> originals=new LinkedHashMap<String,byte[]>();for(Map.Entry<String,MobiMindPrivateFiles.Read> entry:actual.entrySet())originals.put(entry.getKey(),entry.getValue().bytes);
         int uid=android.os.Process.myUid(),boot=Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1);
         JSONObject controller=RecoveryControllerIdentity.read(context,uid,SystemClock.elapsedRealtime()+PublicPersonalNotesAbsenceRecovery.LIMIT_MS);
@@ -141,7 +143,7 @@ final class PublicPersonalNotesRecoveryClient {
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / org.trillionnium.hepta.background.PublicPersonalNotesAbsenceMain --request "+quote(request.wire());
         // The complete command must also fit the unchanged root proc-census bound.
         if(command.getBytes(StandardCharsets.UTF_8).length>=60000)throw new IOException("备忘录独立缺席恢复命令超过完整进程核验上限");
-        check.check();requireTaskEntries(task,postModel);for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
+        check.check();requireTaskEntries(task,postModel,workflowClose);for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
         final Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         final Capture capture=new Capture(process.getInputStream());Thread reader=new Thread(capture,"hepta-personal-notes-recovery-read");reader.setDaemon(true);reader.start();
         boolean exited=false;
@@ -153,7 +155,7 @@ final class PublicPersonalNotesRecoveryClient {
             byte[] output=capture.bytes;JSONObject verified=PublicPersonalNotesAbsenceRecovery.validate(PublicPersonalNotesAbsenceRecovery.object(output),request,
                     SystemClock.elapsedRealtime(),Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1));
             if(!PublicPersonalNotesAbsenceRecovery.same(controller,RecoveryControllerIdentity.read(context,uid,request.deadline)))throw new IOException("备忘录独立缺席恢复期间当前安装代码发生变化");
-            check.check();requireTaskEntries(task,postModel);Receipt receipt=new Receipt(request,verified,output,command,SystemClock.elapsedRealtime(),actual);
+            check.check();requireTaskEntries(task,postModel,workflowClose);Receipt receipt=new Receipt(request,verified,output,command,SystemClock.elapsedRealtime(),actual);
             receipt.requireOriginals(true);request.requireFence(SystemClock.elapsedRealtime(),Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1));
             return receipt;
         }catch(Exception error){
@@ -171,6 +173,31 @@ final class PublicPersonalNotesRecoveryClient {
                 ||name.startsWith("native-app-")||name.startsWith("controller-completion-")){
             if(!postModel||!singleStep.contains(name))throw new IOException("备忘录独立缺席恢复发现未覆盖的模型或业务步骤");
         }
+    }
+    private static void requireTaskEntries(File task,boolean postModel,boolean workflowClose)throws Exception{
+        if(!workflowClose){requireTaskEntries(task,postModel);return;}
+        if(!postModel)throw new IOException("备忘录工作流恢复缺少单步模型记录");
+        String[] leaves=task.list();if(leaves==null)throw new IOException("备忘录工作流恢复的原任务目录不可读");
+        java.util.Set<String> covered=new java.util.HashSet<String>(Arrays.asList(
+                "step-01-before.json","step-01-budget-0.json","step-01-model-0.json","step-01-action.json","fixed-intent-01-attempt.json",
+                "step-01-after.json","step-01-notes-readiness-result.json","step-01-notes-workflow-grant-consumed.json",
+                "step-01-notes-workflow-child-1-planned.json","step-01-notes-workflow-child-2-planned.json",
+                "step-01-notes-workflow-observation-1.json","step-01-notes-workflow-observation-2.json",
+                "step-01-notes-workflow-observation-3.json","step-01-notes-workflow-observation-4.json","step-01-notes-workflow-result.json",
+                "step-01-tool-child-01-before.json","step-01-tool-child-01-action.json","step-01-tool-child-01-after.json","step-01-tool-child-01-proof.json",
+                "step-01-tool-child-02-before.json","step-01-tool-child-02-action.json","step-01-tool-child-02-after.json","step-01-tool-child-02-proof.json",
+                "controller-completion-candidate.json"));
+        for(String name:leaves)if(name.matches("step-[0-9]+-.*")||name.startsWith("ime-submit-")||name.startsWith("fixed-intent-")
+                ||name.startsWith("native-app-")||name.startsWith("controller-completion-")){
+            if(!covered.contains(name))throw new IOException("备忘录工作流恢复发现未覆盖的模型或业务步骤");
+        }
+    }
+    private static void collectWorkflowOriginals(File task,Map<String,MobiMindPrivateFiles.Read> actual)throws Exception{
+        for(String[] item:new String[][]{{"workflow_result","step-01-notes-workflow-result.json"},{"workflow_grant","step-01-notes-workflow-grant-consumed.json"},
+                {"child_1_action","step-01-tool-child-01-action.json"},{"child_2_action","step-01-tool-child-02-action.json"},
+                {"child_1_proof","step-01-tool-child-01-proof.json"},{"child_2_proof","step-01-tool-child-02-proof.json"},
+                {"completion_candidate","controller-completion-candidate.json"},{"completion_identity","completion-installed-identity.json"}})
+            actual.put(item[0],MobiMindPrivateFiles.read(new File(task,item[1]),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
     }
     private static String id(JSONObject object,String key)throws Exception{
         String value=PublicPersonalNotesAbsenceRecovery.string(object,key);
