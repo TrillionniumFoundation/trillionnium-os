@@ -1,0 +1,124 @@
+
+    /** Recorded 9c7f tail, with synthetic Android endpoints. Earlier five changing
+     * samples are not reconstructed: their trees were never retained in evidence.
+     * The entered native transition is a click/open_flight_form, not a tool name. */
+    static PostEffectReadScenario publication1090()throws Exception{
+        return new PostEffectReadScenario(false,9899,true);
+    }
+    static AtomicInteger quietPublicationWindow(final PostEffectReadScenario s){
+        final AtomicInteger reads=new AtomicInteger();
+        s.f.seedFrozenRead=(r,i)->{
+            int n=reads.incrementAndGet();SystemClock.now=s.started+(n==1?9899:10076);
+            if(n==1)s.f.noteObservationEvent(9);
+            return i.frozenWindow;
+        };return reads;
+    }
+    static void publicationNoFrame(PostEffectReadScenario s,String reason)throws Exception{
+        check(s.out.observations.isEmpty()&&s.f.current==s.prior,reason+": no historical frame published");
+        SystemClock.now=Math.max(SystemClock.now,s.request.deadline);s.f.main.drain();s.f.finish();s.f.finish();
+        check(s.request.finished&&s.request.readWorksStarted==s.request.readWorksFinished&&!observationIoBusy.get(),
+                reason+": request retired and serial IO drained");
+        check(s.discarded!=null&&!s.discarded.exists(),reason+": unpublished product removed");
+    }
+    static void publicationRecheckCases()throws Exception{
+        eventCase("post_effect_9c7f_single_window_fence_preserves_original_history_and_budgets",()->{
+            PostEffectReadScenario s=publication1090();AtomicInteger windows=quietPublicationWindow(s);s.queue();
+            long captured=s.f.lastScreenshotAt;int graphs=s.f.reads.get(),shots=s.f.shots.size();s.accept();
+            check(s.out.observations.size()==1&&s.out.failures.isEmpty()&&s.out.proofs.isEmpty(),"one original sealed pair publishes");
+            check(windows.get()==2&&count(s.request,"POST_EFFECT_WINDOW_RECHECK_STARTED")==1
+                    &&count(s.request,"POST_EFFECT_WINDOW_RECHECK_PASSED")==1,"one extra window-only fence");
+            check(s.f.reads.get()==graphs&&s.f.shots.size()==shots&&graphs==s.priorReads+3,"no new tree, screenshot or model request");
+            check(s.request.started==551568497&&s.request.deadline==551580496&&s.transition==551583404,
+                    "actual request and entered-effect transition deadlines retained");
+            check(s.f.current.capturedElapsedMillis==captured&&captured<SystemClock.now,"publication never refreshes capture timestamp");
+            Map<String,Object> e=s.f.current.captureEvidence;
+            check("pre_encoding_paired_history".equals(e.get("mode"))
+                    &&Boolean.TRUE.equals(e.get("historical_pair_after_known_target_event"))
+                    &&Boolean.FALSE.equals(e.get("published_pair_is_current_tree_claimed"))
+                    &&Boolean.TRUE.equals(e.get("fresh_action_validation_required"))
+                    &&Boolean.FALSE.equals(e.get("grants_action_authority"))
+                    &&Boolean.FALSE.equals(e.get("publication_refreshes_capture_age")),"history is not a new live tree or action permit");
+            check(((Number)e.get("post_effect_window_recheck_count")).intValue()==1
+                    &&((Number)e.get("first_publication_check_completed_elapsed_ms")).longValue()==551578396,
+                    "original failed fence remains separately attributed");
+            check(s.f.taskObservationAdmissions==2&&s.permit.admissions.get()==1
+                    &&s.request.readWorksStarted==s.request.readWorksFinished,"no replacement or effect replay; worker accounting balanced");
+            s.dispose();
+        });
+        eventCase("post_effect_9c7f_second_event_falls_back_once_with_original_4898ms_remaining",()->{
+            PostEffectReadScenario s=publication1090();PostEffectObservationRetryProof proof=s.proof();
+            check(s.request.postEffectPublicationRecheckAttempted&&count(s.request,"POST_EFFECT_WINDOW_RECHECK_STARTED")==1,
+                    "second event cannot trigger a second same-request fence");
+            s.prepareFresh("same");SystemClock.now=551578506;PostEffectReadResult next=new PostEffectReadResult();
+            s.submitFresh(proof,next,s.transition);ObservationRequest replacement=s.f.activeObservation;
+            check(replacement!=null&&replacement.started==551578506&&replacement.deadline==551583404
+                    &&replacement.deadline-replacement.started==4898,"recorded fresh-read remainder is not renewed");
+            s.finishFresh();check(next.observations.size()==1&&s.permit.admissions.get()==2,"one independent complete fresh read remains allowed");
+            int reads=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submitFresh(proof,duplicate,s.transition);
+            check(duplicate.failures.size()==1&&s.f.reads.get()==reads,"same replacement proof cannot replay");
+            s.dispose();
+        });
+        eventCase("post_effect_window_fence_target_event_after_worker_before_publication_refuses_old_pair",()->{
+            PostEffectReadScenario s=publication1090();AtomicInteger windows=quietPublicationWindow(s);s.queue();
+            Block post=new Block();s.f.main.afterWorkerPost=post;s.f.main.drain();post.entered();
+            check(count(s.request,"POST_EFFECT_WINDOW_RECHECK_PASSED")==1,"window check completed before main delivery");
+            s.f.noteObservationEvent(9);s.f.main.afterWorkerPost=null;post.open();s.f.finish();s.f.finish();
+            check(windows.get()==2&&s.out.observations.isEmpty()&&s.out.proofs.size()==1,"late second event permits only the original fresh-read path");
+            s.released();s.dispose();
+        });
+        for(final String fault:new String[]{"unknown","missing_root","stale_identity","window","geometry","profile"})
+            eventCase("post_effect_window_fence_does_not_relax_"+fault,()->{
+                PostEffectReadScenario s=publication1090();AtomicInteger windows=new AtomicInteger();
+                s.f.seedFrozenRead=(r,i)->{
+                    int n=windows.incrementAndGet();SystemClock.now=s.started+(n==1?9899:10076);
+                    if(n==1){s.f.noteObservationEvent(9);return i.frozenWindow;}
+                    if("unknown".equals(fault)){s.f.noteObservationEvent(-1);return i.frozenWindow;}
+                    if("missing_root".equals(fault))throw new NoActiveWindow();
+                    if("stale_identity".equals(fault))throw new StaleObservation("synthetic stale observation");
+                    FrozenObservationWindow w=i.frozenWindow;
+                    return new FrozenObservationWindow(w.packageName,w.windowId+("window".equals(fault)?1:0),
+                            w.displayId,w.rotation,w.left+("geometry".equals(fault)?1:0),w.top,w.right,w.bottom,w.width,w.height,
+                            w.metadata,w.windows,"profile".equals(fault)?new WindowOwnership("uid"):w.profileWindow);
+                };
+                s.queue();s.accept();publicationNoFrame(s,fault);
+                check(count(s.request,"POST_EFFECT_WINDOW_RECHECK_STARTED")==1&&windows.get()<=2,"one bounded attempt only");
+                check(s.out.proofs.isEmpty(),"uncertain identity or unknown display cannot grant a replacement proof");s.dispose();
+            });
+        eventCase("post_effect_window_fence_executor_rejection_balances_worker_without_publication",()->{
+            PostEffectReadScenario s=publication1090();quietPublicationWindow(s);s.queue();observationIo.reject=true;
+            try{s.f.main.drain();check(!observationIoBusy.get()&&s.request.readWorksStarted==s.request.readWorksFinished,
+                    "rejected submit balances the admitted worker");
+                check(s.out.observations.isEmpty()&&s.f.current==s.prior,"rejection cannot publish an old frame");
+            }finally{observationIo.reject=false;}
+            publicationNoFrame(s,"executor");s.dispose();
+        });
+        for(final boolean retire:new boolean[]{false,true})
+            eventCase("post_effect_window_fence_queued_"+(retire?"lease_retirement":"cancel")+"_cannot_late_publish",()->{
+                PostEffectReadScenario s=publication1090();AtomicInteger windows=quietPublicationWindow(s);s.queue();
+                Block hold=new Block();observationIo.execute(hold);hold.entered();s.f.main.drain();
+                check(s.request.postEffectPublicationRecheckAttempted&&!s.request.finished&&observationIoBusy.get(),
+                        "same-request recheck is queued behind serial IO");
+                if(retire){s.f.lease=null;s.f.retire();}else{s.f.cancelled.set(true);SystemClock.now+=100;s.f.main.drain();}
+                hold.open();s.f.finish();s.f.finish();
+                check(s.out.observations.isEmpty()&&s.out.proofs.isEmpty()&&windows.get()==1,
+                        "cancel/retirement rejects before another window read");
+                publicationNoFrame(s,retire?"lease":"cancel");s.dispose();
+            });
+        for(final boolean taskCap:new boolean[]{false,true})
+            eventCase("post_effect_window_fence_"+(taskCap?"task":"request")+"_deadline_is_not_extended",()->{
+                PostEffectReadScenario s=publication1090();if(taskCap)s.taskDeadline=s.started+10000;
+                AtomicInteger windows=new AtomicInteger();s.f.seedFrozenRead=(r,i)->{
+                    if(windows.incrementAndGet()==1){SystemClock.now=s.started+9899;s.f.noteObservationEvent(9);}
+                    else SystemClock.now=r.deadline;
+                    return i.frozenWindow;
+                };
+                s.queue();long original=s.request.deadline;s.accept();publicationNoFrame(s,"deadline");
+                check(s.request.deadline==original&&original==(taskCap?s.taskDeadline:551580496)
+                        &&s.transition==551583404&&s.out.proofs.isEmpty(),"exclusive original cutoff defeats late fence");s.dispose();
+            });
+        eventCase("post_effect_window_fence_unknown_before_admission_never_uses_allowance",()->{
+            PostEffectReadScenario s=publication1090();quietPublicationWindow(s);s.queue();s.f.noteObservationEvent(-1);s.accept();
+            check(!s.request.postEffectPublicationRecheckAttempted&&count(s.request,"POST_EFFECT_WINDOW_RECHECK_STARTED")==0,"unknown display has no recheck admission");
+            publicationNoFrame(s,"unknown before admission");s.dispose();
+        });
+    }

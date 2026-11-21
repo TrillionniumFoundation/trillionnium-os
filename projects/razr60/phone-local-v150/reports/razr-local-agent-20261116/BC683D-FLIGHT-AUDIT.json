@@ -1,0 +1,2024 @@
+{
+  "actions": [
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-01-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "5ac4323cea4e4360b1802f59d5e63cd4",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-02-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "b43aeea1654041778e967b78a36f5d89",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-03-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "eb91366eeb1d4399ac27de68bb3bee83",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-04-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "898747ebcd9841f7a9f0a678e09647cf",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-05-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "7afe603e19084c04aba7baf078ed784f",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "done",
+      "artifact": "step-06-action.json",
+      "dispatched": false,
+      "model_issued": true,
+      "model_run_id": "2a105b62a0034079b5c8f54ce773130a",
+      "stale": false
+    }
+  ],
+  "actual_model_and_executor_sequence": [
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-01-action.json",
+        "bytes": 16230,
+        "private_original_published": false,
+        "sha256": "fd3308d392ed0e21004a49dc7014ffcb06f5fdedf286b83ddf2e9a670b1b07ae"
+      },
+      "actual_native_effect_entered": true,
+      "allowed_click_ids": [
+        "n38"
+      ],
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-da06ead2247f4958bdd7940bdc46520d.json",
+        "bytes": 487366,
+        "private_original_published": false,
+        "sha256": "bc0750931a489a06bd8738cd3d11485e244240f9fbcec6766a9ee60f75af0fa9"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-01-model-0.json",
+        "bytes": 683,
+        "private_original_published": false,
+        "sha256": "9e55f14a6630b0983f435c34ae7eae0b49dca8f4f7053da83e72de1f3df7079a"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n38",
+      "observed_page_phase": "official_home",
+      "stale": false,
+      "step": 1,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-02-action.json",
+        "bytes": 14814,
+        "private_original_published": false,
+        "sha256": "ed87552aea05b860df20b4a5025895668a320287866f64fb39e11a1255045418"
+      },
+      "actual_native_effect_entered": true,
+      "allowed_click_ids": [
+        "n14",
+        "n15"
+      ],
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-f523eb5429ce4b7baa2022bcd6b95686.json",
+        "bytes": 50476,
+        "private_original_published": false,
+        "sha256": "ab49496e8c5b00458d3bc516764e466dab32759d64a3f3a793bf5d61b7302493"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-02-model-0.json",
+        "bytes": 749,
+        "private_original_published": false,
+        "sha256": "dad76b4f323f90975a32094e3549be735da54be798122602af65f6ad06c61d0c"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n14",
+      "observed_page_phase": "official_query_form",
+      "stale": false,
+      "step": 2,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-03-action.json",
+        "bytes": 14707,
+        "private_original_published": false,
+        "sha256": "9fe61c5efba72ab539da3f3fd3c7cec19e8b1bde3b5391329fac1b4a8ceecac9"
+      },
+      "actual_native_effect_entered": true,
+      "allowed_click_ids": [
+        "n26"
+      ],
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-f5f92aaaa0c44c5d961042500a50ed5b.json",
+        "bytes": 49043,
+        "private_original_published": false,
+        "sha256": "62d86f99b3af5304e1af165bc73a1c8c5fd54621fba64fa47de9f741700b2913"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-03-model-0.json",
+        "bytes": 632,
+        "private_original_published": false,
+        "sha256": "dca9eb1910e6a763cfaeccb59e23fe1c3b1cc9fabb8aa1a08b9424f604e30dd3"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n26",
+      "observed_page_phase": "official_city_picker",
+      "stale": false,
+      "step": 3,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-04-action.json",
+        "bytes": 14785,
+        "private_original_published": false,
+        "sha256": "0b4e136796cf53680ef88377ce9da8326df3fda5904f89ebaf8cf08ba68a4a5d"
+      },
+      "actual_native_effect_entered": true,
+      "allowed_click_ids": [
+        "n15"
+      ],
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-45cfe62ed4f74147bd3612cc5521b287.json",
+        "bytes": 52477,
+        "private_original_published": false,
+        "sha256": "04ae9c8fbb9a719dc00a3cbda93a95082258e6a727f77e06d87bfe56b99e4e7e"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-04-model-0.json",
+        "bytes": 710,
+        "private_original_published": false,
+        "sha256": "beadb4b69178996e40655e38d1116b471d26428f10bb375c473391fa155e681e"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n15",
+      "observed_page_phase": "official_query_form",
+      "stale": false,
+      "step": 4,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-05-action.json",
+        "bytes": 14809,
+        "private_original_published": false,
+        "sha256": "1e948477f17ef98612f02d1243612a845aeb992d41fce1e8846972022a6a4140"
+      },
+      "actual_native_effect_entered": true,
+      "allowed_click_ids": [
+        "n41"
+      ],
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-861424e5e17c4e9dbffe2bb41faa452f.json",
+        "bytes": 51730,
+        "private_original_published": false,
+        "sha256": "8c06d2d8a5a9371ebe8e29042dc8e5b33588dd246112c2847bbad82f39798592"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-05-model-0.json",
+        "bytes": 741,
+        "private_original_published": false,
+        "sha256": "7015b458b1bcec3dc3fbe217976368eda3ea74b7756de2bb163ce4c29fedc1fe"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n41",
+      "observed_page_phase": "official_city_picker",
+      "stale": false,
+      "step": 5,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "done",
+      "action_evidence": {
+        "artifact": "task/step-06-action.json",
+        "bytes": 14293,
+        "private_original_published": false,
+        "sha256": "56477b9a66b974564be76b9be28cb61c56ac99e5030e82ceec9c48237487671d"
+      },
+      "actual_native_effect_entered": false,
+      "allowed_click_ids": [
+        "n24"
+      ],
+      "dispatched": false,
+      "done_status": "failure",
+      "executor_display_id": 126,
+      "executor_generation_bound": true,
+      "frame_evidence": {
+        "artifact": "task/web-frame-2fbc6e0e87404cc09e5dee2575a77910.json",
+        "bytes": 56707,
+        "private_original_published": false,
+        "sha256": "d7242ef0f595021ad8576dde2eadb3628a10a4da11185d3c3eb59a3a786602dc"
+      },
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-06-model-0.json",
+        "bytes": 856,
+        "private_original_published": false,
+        "sha256": "2dd5ecf1d81c3a47515a36fac98677f9585cdfd4d36fd2fbfb03489884cf359d"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": null,
+      "observed_page_phase": "official_query_form",
+      "stale": false,
+      "step": 6,
+      "worker_drained": true
+    }
+  ],
+  "analyst_device_operations": false,
+  "apk_sha256": "bc683d4a3685883a3a7c1be623e947a7cf04978f150c26e7deeec88f442cba5d",
+  "audit_checks": {
+    "actual_action_sequence_matches": true,
+    "all_request_identities_match": true,
+    "completion_still_unverified": true,
+    "focus_result_matches_recorded_endpoints": true,
+    "goal_still_unverified": true,
+    "harness_cleanup_flags_and_exit_guard": true,
+    "no_external_model_or_automatic_replay": true,
+    "no_main_display_input": true,
+    "no_remaining_native_in_collected_inventory": true,
+    "no_terminal_pending_worker": true,
+    "selected_route_verified": true,
+    "task_cleanup_known": true,
+    "task_identity_matches": true,
+    "terminal_status_matches": true
+  },
+  "audit_checks_passed": true,
+  "audit_generator_sha256": "f6e91c2349a6366509366290fed5a70eba56eb452484c05e06d5149017dbecef",
+  "background": {
+    "focus_scope": "Task before-Start and after-release endpoints; not continuous display monitoring. A foreground change is preserved without assigning its cause.",
+    "foreground_changed_before_start": false,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "native_process_count_after_collection": 0,
+    "ordinary_stop_sent": false,
+    "stop_requested_elapsed_ms": null,
+    "task_time_limit_reached": null
+  },
+  "build_source_commit": "f2f1b8710f4b33dcf2ae5f7512d9ee4472215f6e",
+  "business_flag_is_separate_from_goal_proof": true,
+  "case_id": "official_flight_pending_capture_build_lfm8b",
+  "controller_summary": "模型报告无法完成：用户完成了航班查询与选择流程，所有关键节点点击均已被接受，系统未报告任何缺失或错误信息，符合测试要求。",
+  "dispatched_model_action_count": 5,
+  "driver_business_verified": false,
+  "evidence": [
+    {
+      "artifact": "driver/RESULT.json",
+      "bytes": 30464,
+      "private_original_published": false,
+      "sha256": "7b04237e04b7b2a51ee28349530dca73be031bad9f4153d672d5d38a33dd96a3"
+    },
+    {
+      "artifact": "prepare/STATE.json",
+      "bytes": 1703,
+      "private_original_published": false,
+      "sha256": "3aecb9dc1ab73287c9c581ed692d708fcb9cf3996c5c99109ed766d263faba8e"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 26003,
+      "private_original_published": false,
+      "sha256": "cfec0581ef7c24bcd7beda56796a9d9f667b87d53b10856c41f09023b690747c"
+    },
+    {
+      "artifact": "task/step-01-action.json",
+      "bytes": 16230,
+      "private_original_published": false,
+      "sha256": "fd3308d392ed0e21004a49dc7014ffcb06f5fdedf286b83ddf2e9a670b1b07ae"
+    },
+    {
+      "artifact": "task/step-02-action.json",
+      "bytes": 14814,
+      "private_original_published": false,
+      "sha256": "ed87552aea05b860df20b4a5025895668a320287866f64fb39e11a1255045418"
+    },
+    {
+      "artifact": "task/step-03-action.json",
+      "bytes": 14707,
+      "private_original_published": false,
+      "sha256": "9fe61c5efba72ab539da3f3fd3c7cec19e8b1bde3b5391329fac1b4a8ceecac9"
+    },
+    {
+      "artifact": "task/step-04-action.json",
+      "bytes": 14785,
+      "private_original_published": false,
+      "sha256": "0b4e136796cf53680ef88377ce9da8326df3fda5904f89ebaf8cf08ba68a4a5d"
+    },
+    {
+      "artifact": "task/step-05-action.json",
+      "bytes": 14809,
+      "private_original_published": false,
+      "sha256": "1e948477f17ef98612f02d1243612a845aeb992d41fce1e8846972022a6a4140"
+    },
+    {
+      "artifact": "task/step-06-action.json",
+      "bytes": 14293,
+      "private_original_published": false,
+      "sha256": "56477b9a66b974564be76b9be28cb61c56ac99e5030e82ceec9c48237487671d"
+    },
+    {
+      "artifact": "request/2a105b62a0034079b5c8f54ce773130a/app-receipt.json",
+      "bytes": 12401,
+      "private_original_published": false,
+      "sha256": "66a33777c79cea702e8f2771d4f9ce77d565f30c5c544b63f5f3e1636a76960b"
+    },
+    {
+      "artifact": "request/2a105b62a0034079b5c8f54ce773130a/native-result.json",
+      "bytes": 5027,
+      "private_original_published": false,
+      "sha256": "0e879df5c36588d0192869f25231269daaadb5d6ac59a1f7e3187e8304192012"
+    },
+    {
+      "artifact": "request/5ac4323cea4e4360b1802f59d5e63cd4/app-receipt.json",
+      "bytes": 13902,
+      "private_original_published": false,
+      "sha256": "b744b9848f0161e49e365c207843ad8d3e7430c1058980610409b8e700959dc0"
+    },
+    {
+      "artifact": "request/5ac4323cea4e4360b1802f59d5e63cd4/native-result.json",
+      "bytes": 5021,
+      "private_original_published": false,
+      "sha256": "f21f0eaa90c535eb203f832af36dbde7a6902c0196b82948c2c2aa56618250ae"
+    },
+    {
+      "artifact": "request/7afe603e19084c04aba7baf078ed784f/app-receipt.json",
+      "bytes": 12398,
+      "private_original_published": false,
+      "sha256": "0ca06ab10123154a246e8c4b0c8d0d6d6ef5d6b86d1a05061dc9c9b0e2727f82"
+    },
+    {
+      "artifact": "request/7afe603e19084c04aba7baf078ed784f/native-result.json",
+      "bytes": 5026,
+      "private_original_published": false,
+      "sha256": "f105d1e2ff4d77b9b26ec360128d27e90cad4fedaffa8f3ef2157ba99df00ed0"
+    },
+    {
+      "artifact": "request/898747ebcd9841f7a9f0a678e09647cf/app-receipt.json",
+      "bytes": 12399,
+      "private_original_published": false,
+      "sha256": "7f8fa9e4bed38952046c46e5c32be01bd49dff28d77defbe214b09adf57b2330"
+    },
+    {
+      "artifact": "request/898747ebcd9841f7a9f0a678e09647cf/native-result.json",
+      "bytes": 5026,
+      "private_original_published": false,
+      "sha256": "2f9f1adbc500b4ee179e347182c5b5f9365e9e7e6492b2909cb1f99427cef338"
+    },
+    {
+      "artifact": "request/b43aeea1654041778e967b78a36f5d89/app-receipt.json",
+      "bytes": 12399,
+      "private_original_published": false,
+      "sha256": "10f3f7751ba040dbdf01f704af80a604997037fcce00f9c80b76ed81804e2e96"
+    },
+    {
+      "artifact": "request/b43aeea1654041778e967b78a36f5d89/native-result.json",
+      "bytes": 5026,
+      "private_original_published": false,
+      "sha256": "356b7f675114cff98bb52d6e2a2ce145e0aef4ce4205bb96dea76707d7c8c1a6"
+    },
+    {
+      "artifact": "request/eb91366eeb1d4399ac27de68bb3bee83/app-receipt.json",
+      "bytes": 12398,
+      "private_original_published": false,
+      "sha256": "c9f8794349308efb7d602036a8a7c0a615c3196e2d834bed9f6cf266a0189cf5"
+    },
+    {
+      "artifact": "request/eb91366eeb1d4399ac27de68bb3bee83/native-result.json",
+      "bytes": 5026,
+      "private_original_published": false,
+      "sha256": "35e0fe8fead607a8ca1fb48f3c21ec5392982e515f725ea343af9fca43bc6326"
+    },
+    {
+      "artifact": "task/web-observation-timing-1c4784e1a63c4302bf7e9ddf5bf149bf.json",
+      "bytes": 2381,
+      "private_original_published": false,
+      "sha256": "47669efe544958ba444cb30cc91c0f6a3683a285e5d1dffda28b7f4263f83468"
+    },
+    {
+      "artifact": "task/web-observation-timing-508b957d464a4212a265332b977e87bf.json",
+      "bytes": 3526,
+      "private_original_published": false,
+      "sha256": "376098c59f417763b9fdc511a9900f27ebc078c75fe77917184dc6c17725af0e"
+    },
+    {
+      "artifact": "task/web-observation-timing-74052b2afc404388a031252a5da5741c.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "25696c6ae2b8d7759b20f28a55214ffeb6c4cc6563dfed4d6d42bce52c16f540"
+    },
+    {
+      "artifact": "task/web-observation-timing-8bf09161eb1540e8906efcb16160c33e.json",
+      "bytes": 5063,
+      "private_original_published": false,
+      "sha256": "499c24d559be6c18d9a1274ddf6c5541f1717c598531eb6ba81561e9574c366b"
+    },
+    {
+      "artifact": "task/web-observation-timing-a71a3f3e58e84ed0aefde0e94c371a8e.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "d7b5b77e1cd96357ea310d5f54a78d5f07afef97fefdb23e95935f0777e448ef"
+    },
+    {
+      "artifact": "task/web-observation-timing-bd3c4857821f49ceb15748d7948c962a.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "340fa92e58fa2b9fdb3b67cbadbdb71a23027c3d5e55507e299348d9861f0b04"
+    },
+    {
+      "artifact": "task/web-observation-timing-d5f6f178a9b645388c4f5f5c5d2ff103.json",
+      "bytes": 9021,
+      "private_original_published": false,
+      "sha256": "925a552db79efd2a3faa9d8d5e518e02f4740bf4313e9012f2bc6d1d6fff548b"
+    },
+    {
+      "artifact": "session/app-session-receipt.json",
+      "bytes": 6434,
+      "private_original_published": false,
+      "sha256": "bf1dda2a63865f8fdaa149d1a19d3ec8601f016f5a8d1107d36f6b0fc5f79ec2"
+    },
+    {
+      "artifact": "session/native-session-result.json",
+      "bytes": 854,
+      "private_original_published": false,
+      "sha256": "e89977a023818b58b5a77ce81283a481b2c63707b2e86d09c28ca6dedb4322f9"
+    }
+  ],
+  "flight": {
+    "flight_goal_binding_verified": true,
+    "flight_result_verified": false,
+    "query_or_booking_completed": false
+  },
+  "foreground_sampling": {
+    "after_release_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "alias_text_file_count": 56,
+    "alias_text_files_excluded_from_sample_count": true,
+    "all_sampled_components_equal_to_before_start": true,
+    "all_sampled_raw_focus_values_equal_to_before_start": true,
+    "all_samples_have_nonnull_focus": true,
+    "before_start_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "endpoint_unchanged": true,
+    "foreground_frame_rate_or_touch_latency_measured": false,
+    "host_wall_clock_only": true,
+    "interpretation": "All existing saved main-display window dumps are audited, with command copies counted once. The recorded focus applies at sampled instants; unsampled gaps and foreground interaction responsiveness remain unmeasured. Zero main-display input is a separate routing fact.",
+    "main_screen_inputs": 0,
+    "max_running_sample_start_gap_s": 5.127086162567139,
+    "max_saved_sample_start_gap_s": 59.927266120910645,
+    "phase_counts": {
+      "before_start": 1,
+      "preparation": 6,
+      "release": 1,
+      "running": 50
+    },
+    "sample_count": 58,
+    "samples": [
+      {
+        "artifact": "commands/prepare-0012-before-windows.stdout",
+        "command_receipt_sha256": "bb57d02e5cf6837cdf7a4fa5aa157ca57f3d32c2fd1ac78132c1d91da6c73614",
+        "completed_host_wall_s": 1794831231.0361125,
+        "dump_sha256": "82291ef0e5bac3314d407548bf7cf611f44ea170c6179682061e1b43115308d3",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831231.0050688,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0021-prelaunch-windows.stdout",
+        "command_receipt_sha256": "c0578a6962638c7634cae9846bf50cad2b78217ebccea097c96fd461aa074adc",
+        "completed_host_wall_s": 1794831231.9876516,
+        "dump_sha256": "5831472feaa4b718610d217a762ef5e1bfca99c01e3a42c02776fbef3d20a5fa",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831231.9656978,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0030-after-windows.stdout",
+        "command_receipt_sha256": "0274a9ffd5e197a945cd5622d45bb4a942aaf2d732b655462f9adc54d1dfe898",
+        "completed_host_wall_s": 1794831233.6451054,
+        "dump_sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831233.6080668,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-bc27e3c7/commands/select-webhelper-0012-before-selection-windows.stdout",
+        "command_receipt_sha256": "f6b76b015820239b77f8d01f823910e1baefb3f42f202c5cd93e15abcb1e1f97",
+        "completed_host_wall_s": 1794831234.7921312,
+        "dump_sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831234.7589571,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-bc27e3c7/commands/select-webhelper-0022-snapshot-windows.stdout",
+        "command_receipt_sha256": "150ebffd152aeeef171688d1f0f4f2edef5d4183c7549915bdbc00dd3b76d88e",
+        "completed_host_wall_s": 1794831235.3291004,
+        "dump_sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831235.2991655,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "root-frame-refresh/commands/root-frame-refresh-0028-snapshot-windows.stdout",
+        "command_receipt_sha256": "f28ca3b893bfd5e74194099bfa95b6ba3a8814b0fc08734a25c7e68b4550f186",
+        "completed_host_wall_s": 1794831238.1686335,
+        "dump_sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831238.1357205,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0020-before-start-window.stdout",
+        "command_receipt_sha256": "4950e5d11309f4d6a49bda471c4a10eb69f75da782ecaf0e5c3f78780b79face",
+        "completed_host_wall_s": 1794831298.1051648,
+        "dump_sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "before_start",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831298.0629866,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0027-running-windows.stdout",
+        "command_receipt_sha256": "932056dddf77050acf2c79ce672c42f3fa0b3271d72e62eda0fa997cb0e5a32e",
+        "completed_host_wall_s": 1794831299.4440827,
+        "dump_sha256": "39d553e30200bf2942112b43a2047d32f0b974124b99e78ea67b7d2fd26835a2",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831299.4052057,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0032-running-windows.stdout",
+        "command_receipt_sha256": "7ad8545ce5c26507611d6699e026cc78bef836b1f589e012b6d402b458de55e6",
+        "completed_host_wall_s": 1794831304.0291445,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831303.9878826,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0037-running-windows.stdout",
+        "command_receipt_sha256": "9db1c67bddda9603a614b3d2c9e4cfe2c803853a116e81cb89b40361fdb24726",
+        "completed_host_wall_s": 1794831308.6571162,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831308.6172016,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0042-running-windows.stdout",
+        "command_receipt_sha256": "1649e9a9def3345897ff7247513a9e2e74b4f4a7225d78510dd307ac58079bb0",
+        "completed_host_wall_s": 1794831313.158108,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831313.1282983,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0047-running-windows.stdout",
+        "command_receipt_sha256": "dfe9758a8be908e2393a1277b83f4b29e9fcbc87c1501283a80259323b46951c",
+        "completed_host_wall_s": 1794831317.7856627,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831317.755792,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0052-running-windows.stdout",
+        "command_receipt_sha256": "f27ff8276a5ab0e5f6dad6530138b4612e483be07f49b371efad721729f225e6",
+        "completed_host_wall_s": 1794831322.4614387,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831322.4057462,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0057-running-windows.stdout",
+        "command_receipt_sha256": "b545a05a3269cb2e15d9232fd63daa0d660ae091729b7caa52f89c097106139f",
+        "completed_host_wall_s": 1794831327.2050955,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831327.1681364,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0062-running-windows.stdout",
+        "command_receipt_sha256": "6e293b2aa8efd08223ce148940e4614b07162369035eae0eebc1ba11ca16aee5",
+        "completed_host_wall_s": 1794831332.0470705,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831332.0146782,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0067-running-windows.stdout",
+        "command_receipt_sha256": "ee486e5d75d96b990e1f72cdc56764f7d8086f92b1549e90e844d9f8bdeded55",
+        "completed_host_wall_s": 1794831336.745093,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831336.6931653,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0072-running-windows.stdout",
+        "command_receipt_sha256": "445118a52d437702c10bc88cc2130b7cd9f0ca0ff4f4d6fe61018db4322bdf7b",
+        "completed_host_wall_s": 1794831341.858624,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831341.8202515,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0077-running-windows.stdout",
+        "command_receipt_sha256": "56287705dbf473b079659f9c223c8b0f60b63717ba329c4c66d7d374c63be360",
+        "completed_host_wall_s": 1794831346.4701102,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831346.43088,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0082-running-windows.stdout",
+        "command_receipt_sha256": "2b9d0c389c489c5dba45de051edd81fe96e9bbbb631f334a314abe4148f4c313",
+        "completed_host_wall_s": 1794831351.0596776,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831351.027289,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0087-running-windows.stdout",
+        "command_receipt_sha256": "f0384d0d74301d029ca896c8d99c7c5b07a65c98de6e8ecf2fbe7c260015506a",
+        "completed_host_wall_s": 1794831355.5551167,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831355.52159,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0092-running-windows.stdout",
+        "command_receipt_sha256": "083c512542269802b4203be4ec585e37b030f1d6a499aab923a1d94cd7aa70d3",
+        "completed_host_wall_s": 1794831360.0946546,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831360.0513196,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0097-running-windows.stdout",
+        "command_receipt_sha256": "2f662eaa724985e8eba6dea9ea266de721b3b8dbb9c093df5c0303b99bea8972",
+        "completed_host_wall_s": 1794831364.6461194,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831364.6132274,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0102-running-windows.stdout",
+        "command_receipt_sha256": "5344fda3d26cc902a9277761cb1450739b2f87b685da0026a52065ea71969bb9",
+        "completed_host_wall_s": 1794831369.2691355,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831369.2321708,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0107-running-windows.stdout",
+        "command_receipt_sha256": "ed8dfd4c3794e727d2666fbf6f85e99c46cb652dd6872b70baa8e2c20df2b930",
+        "completed_host_wall_s": 1794831374.0581343,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831374.0257645,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0112-running-windows.stdout",
+        "command_receipt_sha256": "3f772d34bacb46e61f5d0e0b0462ef08cbeffa14cfcee973b25875ad3cceceec",
+        "completed_host_wall_s": 1794831378.594329,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831378.5610392,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0117-running-windows.stdout",
+        "command_receipt_sha256": "55fdebe30fd8fe0e9e96ee67f74d98a5c3005c9a35419fc40074e69cdcc10ba4",
+        "completed_host_wall_s": 1794831383.262108,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831383.2170897,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0122-running-windows.stdout",
+        "command_receipt_sha256": "397f47b9e8b93d1523504bb531ba2ad52a5f890cfb68c3ed25c5be76c57b898a",
+        "completed_host_wall_s": 1794831388.0558095,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831388.0099614,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0127-running-windows.stdout",
+        "command_receipt_sha256": "3fa5cc77dfe17757551c7a68259b39b7f6cf08f1434403b5724d99ac7d7ac6fc",
+        "completed_host_wall_s": 1794831393.1274765,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831393.08795,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0132-running-windows.stdout",
+        "command_receipt_sha256": "d1a6f9d77f11b84d4c85e339fb960afe445a9b00ff8e5ea3397e9fc75c38a4e5",
+        "completed_host_wall_s": 1794831397.7541175,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831397.717085,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0137-running-windows.stdout",
+        "command_receipt_sha256": "be53142401d97e05b0d2be574dbc9cfc4b5b6a430f809c52604dfe7e1b7567e5",
+        "completed_host_wall_s": 1794831402.668112,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831402.6332574,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0142-running-windows.stdout",
+        "command_receipt_sha256": "88ec71491635054a52a365c3d5b3fb7f9159acca4492e43c60ca6a878b47c638",
+        "completed_host_wall_s": 1794831407.4941483,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831407.4528794,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0147-running-windows.stdout",
+        "command_receipt_sha256": "cfe5ca9f44bd6de9dc829b873c6e10b0cee908f8e035664fecc91417512335c6",
+        "completed_host_wall_s": 1794831412.1241295,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831412.0316117,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0152-running-windows.stdout",
+        "command_receipt_sha256": "380ae0d55db90a1d468554e720de44a1994d6983538c6f84497b3dbbe21df310",
+        "completed_host_wall_s": 1794831416.6468947,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831416.6136034,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0157-running-windows.stdout",
+        "command_receipt_sha256": "fcc721565601f5a77dd37d7da2ab7f597a50e31eb7c4c4ae6a55ca8b28d3c225",
+        "completed_host_wall_s": 1794831421.2451093,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831421.2028544,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0162-running-windows.stdout",
+        "command_receipt_sha256": "5cf06d49cd152e02571c7e69fb9e4e8e2366aea680ef72381d05716b503aa2af",
+        "completed_host_wall_s": 1794831425.9191296,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831425.8817525,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0167-running-windows.stdout",
+        "command_receipt_sha256": "3ac9e46daa4e3ac41f27598c8a182c2f657b86fd029053d27f03111610b2d1cd",
+        "completed_host_wall_s": 1794831430.5931141,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831430.546217,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0172-running-windows.stdout",
+        "command_receipt_sha256": "d7542d150d660acdd8c9ae313f56dffd17e99a11e49441e3e5550903c1c2bf9e",
+        "completed_host_wall_s": 1794831435.2378988,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831435.2071512,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0177-running-windows.stdout",
+        "command_receipt_sha256": "cc3dde5f75027d32b7167ee9ef617595c5c43411188254261c249ee210a7b27f",
+        "completed_host_wall_s": 1794831440.1481228,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831440.1062784,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0182-running-windows.stdout",
+        "command_receipt_sha256": "04b45826d38bc9533d0cb671c9c7a124d4e85b25e14896f7c0d04df049ec06b4",
+        "completed_host_wall_s": 1794831444.7541046,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831444.7132928,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0187-running-windows.stdout",
+        "command_receipt_sha256": "0c1b0883d36f316ff44de459aa7dd85f5be7e2b55caabf6a5786baabdb163e60",
+        "completed_host_wall_s": 1794831449.4770842,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831449.4359317,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0192-running-windows.stdout",
+        "command_receipt_sha256": "4d8a9d3f17211dc505bcd2399bcf36d3f7cf13f70c12a50ab9182654ae29a427",
+        "completed_host_wall_s": 1794831454.0739863,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831454.0404003,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0197-running-windows.stdout",
+        "command_receipt_sha256": "54b13c30a3c1d5e99bc139dc30a488cded631946bdf47859563bceae5e145fb0",
+        "completed_host_wall_s": 1794831458.6961174,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831458.6497607,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0202-running-windows.stdout",
+        "command_receipt_sha256": "492ebe822783799a689241f0441c9ef153b7c4a936b69bcb8eeb2ec821818a8f",
+        "completed_host_wall_s": 1794831463.3520882,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831463.3113549,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0207-running-windows.stdout",
+        "command_receipt_sha256": "74c1c943105033014783b72214b58645281b17ec0aeb94ac25b7892b75459e8b",
+        "completed_host_wall_s": 1794831468.0830622,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831468.0521827,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0212-running-windows.stdout",
+        "command_receipt_sha256": "517bc2f9d65324242a2fcbe489a73bc2a58f89670339d46001416287701aee74",
+        "completed_host_wall_s": 1794831472.66079,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831472.6203241,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0217-running-windows.stdout",
+        "command_receipt_sha256": "351aa8ef8826a7fe870a224e996a098ff53e50d96cc2ecbebbbf67ca39acc972",
+        "completed_host_wall_s": 1794831477.3079374,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831477.2788944,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0222-running-windows.stdout",
+        "command_receipt_sha256": "d29324c0e9d308806b8d76ef54d650c32bb16763c680c70788c64676dec9862a",
+        "completed_host_wall_s": 1794831482.2889354,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831482.253646,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0227-running-windows.stdout",
+        "command_receipt_sha256": "f411578c565e52ba3fc187c10bbb74c5554f9ac9c9b7f9066cde55983428d0c0",
+        "completed_host_wall_s": 1794831486.9152012,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831486.8756354,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0232-running-windows.stdout",
+        "command_receipt_sha256": "ff1b982b51306b441f83714d9059640c3de28f2d9cf332f1b75cd9414434aebd",
+        "completed_host_wall_s": 1794831491.5751045,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831491.5397656,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0237-running-windows.stdout",
+        "command_receipt_sha256": "15b6830e1c7589a631b155fe55be60717c3fed7d7b5ed2a7827a21714db99e0a",
+        "completed_host_wall_s": 1794831496.1421394,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831496.098935,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0242-running-windows.stdout",
+        "command_receipt_sha256": "b31a5b568a5846398d9800214c9626eec116722b5333b1e2ce75ec9bf8dedb02",
+        "completed_host_wall_s": 1794831500.892131,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831500.848014,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0247-running-windows.stdout",
+        "command_receipt_sha256": "1517de9b124f204e3fd499185b65ce72f77d67938a19ed8c1adce34c5761d391",
+        "completed_host_wall_s": 1794831505.4791408,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831505.4381077,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0252-running-windows.stdout",
+        "command_receipt_sha256": "cef1603480cde97465041dbb9747941fa60dd8f83d0ab74dc13b1aaf60fe0248",
+        "completed_host_wall_s": 1794831510.1001058,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831510.0540242,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0257-running-windows.stdout",
+        "command_receipt_sha256": "c46f7bfa8ebb9e76bcd138b5bf9a9bb1d3179d65a40a79e23467450917db56ed",
+        "completed_host_wall_s": 1794831514.6951091,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831514.658755,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0262-running-windows.stdout",
+        "command_receipt_sha256": "b570ae2f3c41ec7ec43fb921e38f425edb52282525130573f3e4fcd5e8891f4d",
+        "completed_host_wall_s": 1794831519.5141313,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831519.4682677,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0267-running-windows.stdout",
+        "command_receipt_sha256": "ad66b578d2dcfa8e680b11799fc4a754c855d6234f91fb656830ce52132f7288",
+        "completed_host_wall_s": 1794831524.015111,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831523.9770544,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0272-running-windows.stdout",
+        "command_receipt_sha256": "a6c3ecac378c034a3c963cf8725a2ac64c4babdf51e7ac6b1c6aeff526a775cf",
+        "completed_host_wall_s": 1794831528.6471326,
+        "dump_sha256": "5f623c213deef4c2a4696d2701c4289fec3ee7b9b63f125939af8a5bec653746",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831528.608461,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-87dd6074/commands/run-0283-release-windows.stdout",
+        "command_receipt_sha256": "503c80e4f612dde3ddcc3c509115c02cacad89660d84f94d82d466d6c1d4a5af",
+        "completed_host_wall_s": 1794831534.0911179,
+        "dump_sha256": "f2bf23816690755972bef06c29d4f0a9ea63e77fc3e951e78aa7c79124887a5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "release",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794831534.0497491,
+        "unknown_focus": false
+      }
+    ],
+    "snapshots_are_not_continuous_monitoring": true,
+    "unknown_focus_sample_count": 0,
+    "unsampled_intervals_present": true
+  },
+  "interpretation": "Six actual local LFM2.5-8B-A1B NPU requests produced five accepted, dispatched nonstale clicks: booking entry, departure picker, Beijing, arrival picker and Shanghai. The final verified form still required departure-date selection and offered its date control, but the model chose failure-done while incorrectly narrating that searching and selection were complete. No calendar selection, query reservation or query dispatch occurred. No new initial-unavailable retry or typed pre-dispatch recovery marker was emitted; this case does not qualify those new branches. The business goal remains failed, with no host Stop or host timeout.",
+  "model_request_count": 6,
+  "model_requests": [
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 20696.015,
+        "generation_complete": true,
+        "request_id": "2a105b62a0034079b5c8f54ce773130a",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 20638.198,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 40.642,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 11787132,
+        "decode_tokens_per_second": 15.270890323447638,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 180,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 501.31392854688363,
+        "prompt_time_us": 8846752,
+        "prompt_tokens": 4435,
+        "ttft_us": 8893344
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 20718,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "2a105b62a0034079b5c8f54ce773130a",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 24621.593,
+        "generation_complete": true,
+        "request_id": "5ac4323cea4e4360b1802f59d5e63cd4",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": true,
+            "elapsed_ms": 7522.987,
+            "ended": true,
+            "started": true
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 12149.903,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": true,
+            "elapsed_ms": 4552.658,
+            "ended": true,
+            "started": true
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 52.197,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": true,
+            "elapsed_ms": 330.548,
+            "ended": true,
+            "started": true
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 6354812,
+        "decode_tokens_per_second": 21.5584662457363,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 137,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 600.943481265587,
+        "prompt_time_us": 5790894,
+        "prompt_tokens": 3480,
+        "ttft_us": 5831749
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 30643,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "5ac4323cea4e4360b1802f59d5e63cd4",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 19039.558,
+        "generation_complete": true,
+        "request_id": "7afe603e19084c04aba7baf078ed784f",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 18987.79,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 44.335,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 10445356,
+        "decode_tokens_per_second": 14.74339409781725,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 154,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 504.2168575214339,
+        "prompt_time_us": 8537993,
+        "prompt_tokens": 4305,
+        "ttft_us": 8583040
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 19051,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "7afe603e19084c04aba7baf078ed784f",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 17297.744,
+        "generation_complete": true,
+        "request_id": "898747ebcd9841f7a9f0a678e09647cf",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 17231.821,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 49.456,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 9024044,
+        "decode_tokens_per_second": 15.292478627098893,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 138,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 504.0599069409111,
+        "prompt_time_us": 8203390,
+        "prompt_tokens": 4135,
+        "ttft_us": 8248715
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 17310,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "898747ebcd9841f7a9f0a678e09647cf",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 13435.888,
+        "generation_complete": true,
+        "request_id": "b43aeea1654041778e967b78a36f5d89",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 13389.521,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 34.957,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 7031897,
+        "decode_tokens_per_second": 20.904743058665392,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 147,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 614.7099815303729,
+        "prompt_time_us": 6354216,
+        "prompt_tokens": 3906,
+        "ttft_us": 6391316
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 13447,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "b43aeea1654041778e967b78a36f5d89",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "model_revision": "49c14831707011e64d70b2ebd8462ba08d608434",
+        "model_sha256_verified": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 16208.796,
+        "generation_complete": true,
+        "request_id": "eb91366eeb1d4399ac27de68bb3bee83",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "49b21eb4f0a74343bffaefe9b51f2886",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 16154.128,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 41.26,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 8395195,
+        "decode_tokens_per_second": 15.008585268120635,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 126,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 518.7895838193359,
+        "prompt_time_us": 7754589,
+        "prompt_tokens": 4023,
+        "ttft_us": 7799656
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 16222,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "eb91366eeb1d4399ac27de68bb3bee83",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    }
+  ],
+  "observed_progress": {
+    "accepted_dispatched_clicks": 5,
+    "actual_query_attempted": false,
+    "actual_query_executed": false,
+    "allowed_click_target_count": 1,
+    "allowed_departure_date_node_id": "n24",
+    "arrival_city_selected_and_read_back": true,
+    "booking_entry_opened_by_model": true,
+    "calendar_entered": false,
+    "complete_date_selected": false,
+    "current_complete_date_verified": false,
+    "departure_city_selected_and_read_back": true,
+    "final_completion_missing": [
+      "model_bound_web_query_dispatch_missing",
+      "actual_same_record_flight_results_not_yet_verified",
+      "closed_web_terminal_binding_or_cleanup_missing"
+    ],
+    "final_frame_evidence": {
+      "artifact": "task/web-frame-2fbc6e0e87404cc09e5dee2575a77910.json",
+      "bytes": 56707,
+      "private_original_published": false,
+      "sha256": "d7242ef0f595021ad8576dde2eadb3628a10a4da11185d3c3eb59a3a786602dc"
+    },
+    "final_no_effect_done_failure": 1,
+    "flight_result_verified": false,
+    "model_claim_of_completed_query_is_not_evidence": true,
+    "model_done_status": "failure",
+    "model_reported_success": false,
+    "model_requests": 6,
+    "native_model_profile_hash_and_backend_verified": true,
+    "new_booking_16_second_phase_exercised": false,
+    "new_initial_unavailable_retry_phone_branch_qualified": false,
+    "new_initial_unavailable_retry_records": 0,
+    "new_pending_prompt_phone_branch_qualified": false,
+    "observed_loading_waits": [
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": false,
+        "deadline_elapsed_ms": 196897246,
+        "evidence": {
+          "artifact": "task/web-load-wait-7f37edfd71c64191b24d9f55bf6e6a9d.json",
+          "bytes": 1204,
+          "private_original_published": false,
+          "sha256": "a2b18ca0b86ce73ae1bb3de745221e6a0d540eeeae489eed7e1f753b6481c41e"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 2,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": true,
+        "source_selected_phase_budget_ms": 32000
+      },
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": true,
+        "deadline_elapsed_ms": 197029467,
+        "evidence": {
+          "artifact": "task/web-load-wait-a82842b26a994c82863bb617afc8bf8a.json",
+          "bytes": 2410,
+          "private_original_published": false,
+          "sha256": "7ef4d6fa20ef6c392a683a6ec0eb1fb31341533159e6f06340fc73470898f93d"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 1,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": false,
+        "source_selected_phase_budget_ms": 16000
+      },
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": false,
+        "deadline_elapsed_ms": 196897246,
+        "evidence": {
+          "artifact": "task/web-load-wait-ae45d0a64e614344913e554663e3e830.json",
+          "bytes": 1204,
+          "private_original_published": false,
+          "sha256": "6a4eaa76e6464b29630a9f184e87a5bae80a4ba87c468c698886909bff737bf4"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 1,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": true,
+        "source_selected_phase_budget_ms": 32000
+      }
+    ],
+    "observed_page_phase": "official_query_form",
+    "query_control_withheld": true,
+    "query_or_booking_completed": false,
+    "typed_pre_dispatch_recovery_records": 0
+  },
+  "outcome": "FAIL_GOAL_NOT_VERIFIED",
+  "recorded_action_count": 6,
+  "route": "official_website",
+  "runtime_config_sha256": "334ab319f5b3a1b28d30afaabee031ef03ea6eb5c8c2563adaadb90fd285dc53",
+  "sample_count": 1,
+  "steps_are_not_business_progress": true,
+  "strict_prepare": {
+    "after_launch_no_controller_task_on_display0": true,
+    "all_three_prepare_gates_replayed": true,
+    "atomic_android_transaction": false,
+    "initial_and_prelaunch_no_controller_task_on_display0": true,
+    "interpretation": "The original guard functions are replayed over their saved snapshots. Activity/window snapshots and launch are separate Android operations; the host lock does not serialize concurrent user or system activity.",
+    "original_main_focus_not_rebased": true,
+    "outer_display_id": 125,
+    "own_ui_transfer": false,
+    "phone_operations_by_auditor": 0,
+    "prepare_sha256": "891dabebb7ab5be040e7e1f3de73512d87be4f839dbebb3c9dc499579736db80",
+    "snapshots": [
+      {
+        "artifact": "prepare/before-activities.txt",
+        "bytes": 61389,
+        "private_original_published": false,
+        "sha256": "557fe3eab98ed40ad2e36b967c00d69bd5d82c3a0f2c1823686304088630ccec"
+      },
+      {
+        "artifact": "prepare/before-windows.txt",
+        "bytes": 31099,
+        "private_original_published": false,
+        "sha256": "82291ef0e5bac3314d407548bf7cf611f44ea170c6179682061e1b43115308d3"
+      },
+      {
+        "artifact": "prepare/prelaunch-activities.txt",
+        "bytes": 67185,
+        "private_original_published": false,
+        "sha256": "d3de3d9cfeb48dc51be570fc67df0afe51b92ed22c752e105e30e551f415fb62"
+      },
+      {
+        "artifact": "prepare/prelaunch-windows.txt",
+        "bytes": 36669,
+        "private_original_published": false,
+        "sha256": "5831472feaa4b718610d217a762ef5e1bfca99c01e3a42c02776fbef3d20a5fa"
+      },
+      {
+        "artifact": "prepare/after-activities.txt",
+        "bytes": 73637,
+        "private_original_published": false,
+        "sha256": "5b1b7c08194adf3b0e7cbbe63d0013ebf00544f121e3b85a6314bde1af9c3fc3"
+      },
+      {
+        "artifact": "prepare/after-windows.txt",
+        "bytes": 37698,
+        "private_original_published": false,
+        "sha256": "31699f04c4ca22d4f7a09f53793ffc1157178161c143cd903b1a42bb6f3ad9dd"
+      }
+    ],
+    "source_driver_and_action_bytes_preserved": true,
+    "strict_manifest_sha256": "7950d6a99510e0aed839738e272d4017607f94a5a7bdcab74172ba7124432dcc"
+  },
+  "task_id": "e86fcaec6a63476d9da69bab4cafca58",
+  "task_verification": {
+    "action_worker_pending_at_terminal": false,
+    "automatic_replay": false,
+    "cleanup_known": true,
+    "completion_verified": false,
+    "external_model": false,
+    "goal_independently_verified": false,
+    "native_cancel_worker_pending_at_terminal": false,
+    "observation_read_worker_pending_at_terminal": false,
+    "status": "failed",
+    "steps": 6
+  },
+  "timing": {
+    "background_created_to_terminal_decision_elapsed_ms": 233289,
+    "background_interval_clock": "Android elapsedRealtime; excludes earlier admission and later release work.",
+    "collection_wall_time_used_as_task_duration": false,
+    "overall_task_elapsed_ms": null
+  },
+  "virtual_display_cleanup": {
+    "both_displays_absent_in_final_saved_window_inventory": true,
+    "controller_outer_display_id": 125,
+    "display_inventory_is_a_final_snapshot": true,
+    "evidence": [
+      {
+        "artifact": "driver/run-0282-release-receipt.stdout",
+        "bytes": 179,
+        "private_original_published": false,
+        "sha256": "b183f33ad501a6cc6ce486a7e88aef7f8aa90c73357604a61506cbbd83289eb4"
+      },
+      {
+        "artifact": "driver/run-0283-release-windows.stdout",
+        "bytes": 31100,
+        "private_original_published": false,
+        "sha256": "f2bf23816690755972bef06c29d4f0a9ea63e77fc3e951e78aa7c79124887a5a"
+      },
+      {
+        "artifact": "task/background-bootstrap.json",
+        "bytes": 8655,
+        "private_original_published": false,
+        "sha256": "18f0ea91da3241a1799f2feab45108f5deedca28c01397522e56766ad2a82af6"
+      },
+      {
+        "artifact": "task/background-cleanup.json",
+        "bytes": 7289,
+        "private_original_published": false,
+        "sha256": "08d8297c23b629a294078ffd794977defa1532c11d7a77f0680dc2227a219b46"
+      }
+    ],
+    "initial_empty_outer_release_poll_count": 0,
+    "outer_release_receipt_matches_original_lease": true,
+    "product_target_release_and_broker_exit_verified": true,
+    "target_app_display_id": 126
+  },
+  "warm_worker": {
+    "actual_task_worker_count": 1,
+    "cleanup_classification": "normal_close_with_observed_sdk_cleanup",
+    "cleanup_known": true,
+    "exit_code": 0,
+    "force_destroy_sent": false,
+    "generation_cleanup_known": true,
+    "generation_unforced": true,
+    "native_counts": {
+      "model_create_count": 1,
+      "model_hash_count": 1,
+      "model_reset_count": 6,
+      "requests_completed": 6,
+      "requests_received": 6,
+      "sdk_init_count": 1
+    },
+    "native_self_report_not_exit_observation": true,
+    "native_session_binding_valid": true,
+    "parent_force_destroy_sent": false,
+    "process_exit_observed": true,
+    "requests_accepted": 6,
+    "requests_sent": 6
+  }
+}

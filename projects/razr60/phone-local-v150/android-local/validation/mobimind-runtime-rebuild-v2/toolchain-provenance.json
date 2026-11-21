@@ -1,0 +1,97 @@
+{
+  "source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "source_properties_sha256": "84bef2c605bb263571c299f1eef3307ff58f741710f8cce514cb525b28567f41",
+  "clang_path": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+  "clang_sha256": "ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6",
+  "clang_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "libcxx_sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+  "original_build_records": {
+    "opencl-probe-build-r2/configure-mnn.log": {
+      "sha256": "7b98be1994ca5ebdb1fd4f705dae69181b1cf0c886b74d353d21d945770458bb",
+      "relevant_lines": [
+        "-- The C compiler identification is Clang 19.0.0",
+        "-- The CXX compiler identification is Clang 19.0.0",
+        "-- The ASM compiler identification is Clang with GNU-like command-line",
+        "-- Found assembler: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "-- Check for working C compiler: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang - skipped",
+        "-- Check for working CXX compiler: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ - skipped"
+      ]
+    },
+    "opencl-probe-build-r2/mnn-build/CMakeCache.txt": {
+      "sha256": "80df7446f90458e863afccc97fb91235c690392c76fdde7b902c10dc9193585e",
+      "relevant_lines": [
+        "CMAKE_ADDR2LINE:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-addr2line",
+        "CMAKE_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_ASM_COMPILER:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "CMAKE_ASM_COMPILER_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_ASM_COMPILER_CLANG_SCAN_DEPS:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang-scan-deps",
+        "CMAKE_ASM_COMPILER_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_CXX_COMPILER_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang-scan-deps",
+        "CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_C_COMPILER_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_C_COMPILER_CLANG_SCAN_DEPS:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang-scan-deps",
+        "CMAKE_C_COMPILER_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_DLLTOOL:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-dlltool",
+        "CMAKE_LINKER:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld.lld",
+        "CMAKE_NM:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-nm",
+        "CMAKE_OBJCOPY:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-objcopy",
+        "CMAKE_OBJDUMP:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-objdump",
+        "CMAKE_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_READELF:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "CMAKE_STRIP:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "CMAKE_TOOLCHAIN_FILE:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake"
+      ]
+    },
+    "opencl-probe-build-r2/mnn-build/CMakeFiles/4.3.2/CMakeSystem.cmake": {
+      "sha256": "060d375c8554f4dd77bd4f19c741576d7a9dc41c4af46d2562f2ac11e12fa200",
+      "relevant_lines": [
+        "include(\"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake\")"
+      ]
+    },
+    "opencl-probe-build-r2/mnn-build/CMakeFiles/4.3.2/CMakeCXXCompiler.cmake": {
+      "sha256": "65010f98fa5c322f1b002d41ee6fbbaf79e238dfdc16e01b7eda3dd382241c2a",
+      "relevant_lines": [
+        "set(CMAKE_CXX_COMPILER \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++\")",
+        "set(CMAKE_CXX_COMPILER_ID \"Clang\")",
+        "set(CMAKE_CXX_COMPILER_VERSION \"19.0.0\")",
+        "set(CMAKE_CXX_COMPILER_VERSION_INTERNAL \"\")",
+        "set(CMAKE_AR \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar\")",
+        "set(CMAKE_CXX_COMPILER_AR \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar\")",
+        "set(CMAKE_RANLIB \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib\")",
+        "set(CMAKE_CXX_COMPILER_RANLIB \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib\")",
+        "set(CMAKE_LINKER \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld.lld\")",
+        "set(CMAKE_CXX_COMPILER_LINKER \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld.lld\")",
+        "set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/c++/v1;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/lib/clang/19/include;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/aarch64-linux-android;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include\")",
+        "set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/lib/clang/19/lib/linux/aarch64;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/26;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android;/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib\")",
+        "set(CMAKE_CXX_COMPILER_CLANG_RESOURCE_DIR \"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/lib/clang/19\")"
+      ]
+    },
+    "opencl-probe-build-r4/probe-build/CMakeCache.txt": {
+      "sha256": "e10c6540d1ae4fab3f74bfa853c763f7617d924aac9fa08161846a5ca443f2bd",
+      "relevant_lines": [
+        "CMAKE_ADDR2LINE:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-addr2line",
+        "CMAKE_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_CXX_COMPILER_AR:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar",
+        "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang-scan-deps",
+        "CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_DLLTOOL:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-dlltool",
+        "CMAKE_LINKER:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld.lld",
+        "CMAKE_NM:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-nm",
+        "CMAKE_OBJCOPY:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-objcopy",
+        "CMAKE_OBJDUMP:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-objdump",
+        "CMAKE_RANLIB:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ranlib",
+        "CMAKE_READELF:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "CMAKE_STRIP:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "CMAKE_TOOLCHAIN_FILE:FILEPATH=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake"
+      ]
+    },
+    "opencl-probe-build-r4/probe-build/CMakeFiles/4.3.2/CMakeSystem.cmake": {
+      "sha256": "060d375c8554f4dd77bd4f19c741576d7a9dc41c4af46d2562f2ac11e12fa200",
+      "relevant_lines": [
+        "include(\"/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake\")"
+      ]
+    }
+  },
+  "phone_contacted": false
+}

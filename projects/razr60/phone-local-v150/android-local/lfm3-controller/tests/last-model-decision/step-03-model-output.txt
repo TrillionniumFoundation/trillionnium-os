@@ -1,0 +1,8 @@
+{
+"reason": "上一步已点击'2'，当前屏幕显示公式区为空且结果区为'2'，子目标'输入23'未完成，本轮需点击'3'以完成'23'的输入。",
+"action": "click",
+"observation_id": "78e104bf4708496f88d2ef3bbadd8035",
+"package": "com.motorola.cn.calculator",
+"node_label": "3",
+"node_id": "n14"
+}

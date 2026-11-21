@@ -1,0 +1,2544 @@
+{
+  "actions": [
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-01-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "79099d8f87cc494db93f5de5b3586e3c",
+      "stale": false
+    },
+    {
+      "accepted": false,
+      "action": "done",
+      "artifact": "step-02-action.json",
+      "dispatched": false,
+      "model_issued": true,
+      "model_run_id": "57ebe02ddf064de3807f8ab12aa311c5",
+      "stale": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-03-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "99b139a862224038a27f868cde319a21",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-04-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "42219e9bdacc49b19551052e9628a8b5",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-05-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "2370bd87a0944081b2b3550cc6bfe49b",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-06-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "1ffb6d8098eb4599bfdb73cb595e36ac",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-07-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "d09efbce265a4ff59bef0156225560ab",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-08-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "db7a3c713ac04f8698dc3671bb1cf80a",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "done",
+      "artifact": "step-09-action.json",
+      "dispatched": false,
+      "model_issued": true,
+      "model_run_id": "fe230106a3a0488dbd01b6005b58b246",
+      "stale": false
+    }
+  ],
+  "actual_model_and_executor_sequence": [
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-01-action.json",
+        "bytes": 16128,
+        "private_original_published": false,
+        "sha256": "3d03258095e044044edd7ae0068cf6259362232a0b904ae810a1d04d1d7f3520"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-01-model-0.json",
+        "bytes": 581,
+        "private_original_published": false,
+        "sha256": "0d4b7800c9ee3cfd3cad8a96eb7c97dabc9bafc1308c536ce9e3263125db5aa4"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n38",
+      "stale": false,
+      "step": 1,
+      "worker_drained": true
+    },
+    {
+      "accepted": false,
+      "action": "done",
+      "action_evidence": {
+        "artifact": "task/step-02-action.json",
+        "bytes": 14313,
+        "private_original_published": false,
+        "sha256": "b97e9aaf9edd33bf813e07581e1adc6db73ad649135a91136cfb43ecb45cf70c"
+      },
+      "actual_native_effect_entered": false,
+      "dispatched": false,
+      "done_status": "failure",
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-02-model-0.json",
+        "bytes": 889,
+        "private_original_published": false,
+        "sha256": "b27ef23c99c564e844f5b130cc40121a073fc73d4fcd634739d42bfa80baa4f2"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": null,
+      "stale": true,
+      "step": 2,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-03-action.json",
+        "bytes": 14691,
+        "private_original_published": false,
+        "sha256": "fcf5f30c84ed8c910664c7036433686814145652491b965c5d2970c28f89479f"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-03-model-0.json",
+        "bytes": 625,
+        "private_original_published": false,
+        "sha256": "67981dbfaf1784b3cbf8e07f893ceea47603b22d2362f3c142f918a564f01118"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n14",
+      "stale": false,
+      "step": 3,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-04-action.json",
+        "bytes": 14658,
+        "private_original_published": false,
+        "sha256": "efff711e8d8e1aa8659b91262a38d93952abcf0e2c9477c9a80c1d4ac11d8163"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-04-model-0.json",
+        "bytes": 583,
+        "private_original_published": false,
+        "sha256": "bbf66fde7d65e3b57ac99cbdf6a66b41c3262bb7a559b1646682cd1ffe9f79d8"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n26",
+      "stale": false,
+      "step": 4,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-05-action.json",
+        "bytes": 14700,
+        "private_original_published": false,
+        "sha256": "1fea03f73d31961c18615ae9397dff6a53ebbad937ce6cb5cd4b3725d1358065"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-05-model-0.json",
+        "bytes": 625,
+        "private_original_published": false,
+        "sha256": "bcb09f904000642b1849fa86bca209b3c97e8f53bd798f1411e22b8439c3abc1"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n15",
+      "stale": false,
+      "step": 5,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-06-action.json",
+        "bytes": 14698,
+        "private_original_published": false,
+        "sha256": "412997344516539247113d836d9acde4e1f75f531ec7d9c765f22a1f312f4948"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-06-model-0.json",
+        "bytes": 623,
+        "private_original_published": false,
+        "sha256": "3e4404a601d5a0e3f656dadcc38c329f0654e37e9c231d8856f97c9addcdf0d8"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n41",
+      "stale": false,
+      "step": 6,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-07-action.json",
+        "bytes": 14706,
+        "private_original_published": false,
+        "sha256": "db1a25b40657bbd666ebbadd85b9f4f3070ce545fa78cbcd70108c296c702955"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-07-model-0.json",
+        "bytes": 643,
+        "private_original_published": false,
+        "sha256": "bf5e988348154d61b2916b8034c8323a1c7e9fcebb0491bfe10cf20027096893"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n24",
+      "stale": false,
+      "step": 7,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "action_evidence": {
+        "artifact": "task/step-08-action.json",
+        "bytes": 14735,
+        "private_original_published": false,
+        "sha256": "55c2399651bbb65a7f54625a8728a247bff74474059f9fe73b77bb97cf761710"
+      },
+      "actual_native_effect_entered": true,
+      "dispatched": true,
+      "done_status": null,
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-08-model-0.json",
+        "bytes": 697,
+        "private_original_published": false,
+        "sha256": "5e62dadfd667e6cb0d9a057e6c0eeebcbf46057d2f341481b0fab4679ff0ee1f"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": "n38",
+      "stale": false,
+      "step": 8,
+      "worker_drained": true
+    },
+    {
+      "accepted": true,
+      "action": "done",
+      "action_evidence": {
+        "artifact": "task/step-09-action.json",
+        "bytes": 14131,
+        "private_original_published": false,
+        "sha256": "93f07904ba120ad5ddadebd4cfaeabfedd0fb6f668688cb8585d534a6229964e"
+      },
+      "actual_native_effect_entered": false,
+      "dispatched": false,
+      "done_status": "failure",
+      "executor_display_id": 122,
+      "executor_generation_bound": true,
+      "grammar_and_model_backend_bound": true,
+      "model_evidence": {
+        "artifact": "task/step-09-model-0.json",
+        "bytes": 697,
+        "private_original_published": false,
+        "sha256": "f5cfeadb2a1d63b83baa2f2248836c463c9fe8c7a75a0e92c91ac50378e1a66e"
+      },
+      "model_raw_sha_bound_to_native": true,
+      "node_id": null,
+      "stale": false,
+      "step": 9,
+      "worker_drained": true
+    }
+  ],
+  "actual_query_ready_evidence": {
+    "calendar_scope": {
+      "composite_day_and_price_label_recognized": true,
+      "displayed_month": "2026年11月",
+      "literal_calendar_price_reported_as_flight_price": false,
+      "month_scoped_native_binding": true,
+      "selected_date": "2026-11-17"
+    },
+    "city_date_values_are_fixed_test_data_not_user_travel_plans": true,
+    "complete_form_and_model_selection_progress_bound_to_last_action": true,
+    "evidence": {
+      "artifact": "task/web-frame-534782b3d3f04aa0938e6f3f424b1525.json",
+      "bytes": 60045,
+      "private_original_published": false,
+      "sha256": "2b407a31db2b5c6f455231394b10f067e064dcb37fa2e64e3c5500a276336ecf"
+    },
+    "same_observation": true,
+    "same_target_display": true,
+    "same_task": true
+  },
+  "analyst_device_operations": false,
+  "apk_sha256": "ff0a1b713336575dcf6406d57cbc7b1df6f782a41a4daa8950e32c6c95537f77",
+  "audit_checks": {
+    "actual_action_sequence_matches": true,
+    "all_request_identities_match": true,
+    "completion_still_unverified": true,
+    "focus_result_matches_recorded_endpoints": true,
+    "goal_still_unverified": true,
+    "harness_cleanup_flags_and_exit_guard": true,
+    "no_external_model_or_automatic_replay": true,
+    "no_main_display_input": true,
+    "no_remaining_native_in_collected_inventory": true,
+    "no_terminal_pending_worker": true,
+    "selected_route_verified": true,
+    "task_cleanup_known": true,
+    "task_identity_matches": true,
+    "terminal_status_matches": true
+  },
+  "audit_checks_passed": true,
+  "audit_generator_sha256": "18f153d904880249fa9c6b53e62af3e8941cb2c9c51e11deeb83c25a02472b55",
+  "background": {
+    "focus_scope": "Task before-Start and after-release endpoints; not continuous display monitoring. A foreground change is preserved without assigning its cause.",
+    "foreground_changed_before_start": false,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "native_process_count_after_collection": 0,
+    "ordinary_stop_sent": false,
+    "stop_requested_elapsed_ms": null,
+    "task_time_limit_reached": null
+  },
+  "build_source_commit": "6e0129647f2f7b49a97c45ca57768f6aea3b3979",
+  "business_flag_is_separate_from_goal_proof": true,
+  "case_id": "official_flight_booking_budget_build",
+  "controller_summary": "模型报告无法完成：查询已完成但未验证结果，需确认出发/到达城市、航班信息及价格。",
+  "dispatched_model_action_count": 7,
+  "driver_business_verified": false,
+  "evidence": [
+    {
+      "artifact": "driver/RESULT.json",
+      "bytes": 35139,
+      "private_original_published": false,
+      "sha256": "5d244c6a930531edcd8eb324551444e13a867a91c13d4d472487939d029fa63f"
+    },
+    {
+      "artifact": "prepare/STATE.json",
+      "bytes": 1697,
+      "private_original_published": false,
+      "sha256": "73dd192b0e4dfabc33e629a9f9284bcf238df955cf406ad9151f3fc9ca979c94"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 25820,
+      "private_original_published": false,
+      "sha256": "26a1d2b338921280fa2fa53e8f91e4b4fe2de03dcb10cb48cf310db75bdc1e65"
+    },
+    {
+      "artifact": "task/step-01-action.json",
+      "bytes": 16128,
+      "private_original_published": false,
+      "sha256": "3d03258095e044044edd7ae0068cf6259362232a0b904ae810a1d04d1d7f3520"
+    },
+    {
+      "artifact": "task/step-02-action.json",
+      "bytes": 14313,
+      "private_original_published": false,
+      "sha256": "b97e9aaf9edd33bf813e07581e1adc6db73ad649135a91136cfb43ecb45cf70c"
+    },
+    {
+      "artifact": "task/step-03-action.json",
+      "bytes": 14691,
+      "private_original_published": false,
+      "sha256": "fcf5f30c84ed8c910664c7036433686814145652491b965c5d2970c28f89479f"
+    },
+    {
+      "artifact": "task/step-04-action.json",
+      "bytes": 14658,
+      "private_original_published": false,
+      "sha256": "efff711e8d8e1aa8659b91262a38d93952abcf0e2c9477c9a80c1d4ac11d8163"
+    },
+    {
+      "artifact": "task/step-05-action.json",
+      "bytes": 14700,
+      "private_original_published": false,
+      "sha256": "1fea03f73d31961c18615ae9397dff6a53ebbad937ce6cb5cd4b3725d1358065"
+    },
+    {
+      "artifact": "task/step-06-action.json",
+      "bytes": 14698,
+      "private_original_published": false,
+      "sha256": "412997344516539247113d836d9acde4e1f75f531ec7d9c765f22a1f312f4948"
+    },
+    {
+      "artifact": "task/step-07-action.json",
+      "bytes": 14706,
+      "private_original_published": false,
+      "sha256": "db1a25b40657bbd666ebbadd85b9f4f3070ce545fa78cbcd70108c296c702955"
+    },
+    {
+      "artifact": "task/step-08-action.json",
+      "bytes": 14735,
+      "private_original_published": false,
+      "sha256": "55c2399651bbb65a7f54625a8728a247bff74474059f9fe73b77bb97cf761710"
+    },
+    {
+      "artifact": "task/step-09-action.json",
+      "bytes": 14131,
+      "private_original_published": false,
+      "sha256": "93f07904ba120ad5ddadebd4cfaeabfedd0fb6f668688cb8585d534a6229964e"
+    },
+    {
+      "artifact": "request/1ffb6d8098eb4599bfdb73cb595e36ac/app-receipt.json",
+      "bytes": 12352,
+      "private_original_published": false,
+      "sha256": "df7856870af40f1450ac8903409a481a1b0aeb6df2de026f8e21155a86b9ece1"
+    },
+    {
+      "artifact": "request/1ffb6d8098eb4599bfdb73cb595e36ac/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "7db777acb44d3432003190078cfec21b77c712d7b58ab6eba3ca76e1841892c0"
+    },
+    {
+      "artifact": "request/2370bd87a0944081b2b3550cc6bfe49b/app-receipt.json",
+      "bytes": 12352,
+      "private_original_published": false,
+      "sha256": "34422f574f022927d8f4ed821ec4942086794b8f57be2f4e720d88f567052346"
+    },
+    {
+      "artifact": "request/2370bd87a0944081b2b3550cc6bfe49b/native-result.json",
+      "bytes": 5022,
+      "private_original_published": false,
+      "sha256": "807d9a199ff0d7e9d4e2dc6b0cfdb569d83f4edead32b2da3206c1276a32526f"
+    },
+    {
+      "artifact": "request/42219e9bdacc49b19551052e9628a8b5/app-receipt.json",
+      "bytes": 12352,
+      "private_original_published": false,
+      "sha256": "089917ac932b98ebd628bb3c1c7adf3f3cc42a811d51766f6105a5a0b00a3285"
+    },
+    {
+      "artifact": "request/42219e9bdacc49b19551052e9628a8b5/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "c8ce1bf6edf0d2ed5b02eb22cf784e59b46ae509c82a44a46ae3b8fd0cfebd9a"
+    },
+    {
+      "artifact": "request/57ebe02ddf064de3807f8ab12aa311c5/app-receipt.json",
+      "bytes": 12351,
+      "private_original_published": false,
+      "sha256": "a80c889a00f46b67875ed5e194e7c4685425fbb85fe56a2831bff0b77dddb08e"
+    },
+    {
+      "artifact": "request/57ebe02ddf064de3807f8ab12aa311c5/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "5db42aeb223bf51bc034bf7453f26ebff62122488408474251aaf565b21dec5e"
+    },
+    {
+      "artifact": "request/79099d8f87cc494db93f5de5b3586e3c/app-receipt.json",
+      "bytes": 13855,
+      "private_original_published": false,
+      "sha256": "2b639eb5ff7c1fa506026650581f57cfc0d9b107e3f580728be330eda6b3b28d"
+    },
+    {
+      "artifact": "request/79099d8f87cc494db93f5de5b3586e3c/native-result.json",
+      "bytes": 5016,
+      "private_original_published": false,
+      "sha256": "3e93aa9d9b72d4157e7becfd9968d31e90d0c2a3f3a7e096630cfc43963a3ce5"
+    },
+    {
+      "artifact": "request/99b139a862224038a27f868cde319a21/app-receipt.json",
+      "bytes": 12352,
+      "private_original_published": false,
+      "sha256": "edfff7a65858a653c3a54ef84560ceb9f1bd76690fd84d5f55ab84de41134bd1"
+    },
+    {
+      "artifact": "request/99b139a862224038a27f868cde319a21/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "17cecf80aa55c78bebd747523d3488b98afa7a562284a9128995297cabdbb9fd"
+    },
+    {
+      "artifact": "request/d09efbce265a4ff59bef0156225560ab/app-receipt.json",
+      "bytes": 12351,
+      "private_original_published": false,
+      "sha256": "0ebb1b5bb2d27a6c09fe2aa08a8f48563be7c0a1afac1961e3f99ffbd6cc9318"
+    },
+    {
+      "artifact": "request/d09efbce265a4ff59bef0156225560ab/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "ef2dc3670e52fe30a7c56dff1217b2e455c4290ff41444c6469f61874f399209"
+    },
+    {
+      "artifact": "request/db7a3c713ac04f8698dc3671bb1cf80a/app-receipt.json",
+      "bytes": 12353,
+      "private_original_published": false,
+      "sha256": "b0e2a43d7da5cfbf71d2e7b78f66909b4ea090d81b446c500577ffdb0c198782"
+    },
+    {
+      "artifact": "request/db7a3c713ac04f8698dc3671bb1cf80a/native-result.json",
+      "bytes": 5024,
+      "private_original_published": false,
+      "sha256": "9a1f9659dac5e531798bdbbfa4d6039f7adfc258cac28d5025986f50bbecc4b5"
+    },
+    {
+      "artifact": "request/fe230106a3a0488dbd01b6005b58b246/app-receipt.json",
+      "bytes": 12352,
+      "private_original_published": false,
+      "sha256": "677dc55d519475801307123e2a2223afdae7f6ddbd6c96f79d186c857ed7d0f3"
+    },
+    {
+      "artifact": "request/fe230106a3a0488dbd01b6005b58b246/native-result.json",
+      "bytes": 5023,
+      "private_original_published": false,
+      "sha256": "afa0fd5ec217ceeb4e46061b5055082aec0d6c41c1dcf3e48dc33d4a71176339"
+    },
+    {
+      "artifact": "task/web-observation-timing-08a2763ad237467cb8792e039a17458f.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "54f83712524caf34a326161efc3c4f3e24c3334c2a2a642d80df3013ddf06d8e"
+    },
+    {
+      "artifact": "task/web-observation-timing-0a290b7ef1d94effbefeeb44c04e5e7b.json",
+      "bytes": 2381,
+      "private_original_published": false,
+      "sha256": "2763f65888947ddba016548b52edc47b07d9523b16f68c6a0b8f556a44d1795e"
+    },
+    {
+      "artifact": "task/web-observation-timing-0bfdabf713414bbabbccbe38772afcfe.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "46c805716deea644b9bea6057d42b9ce889b41b40a5cde45b652670f91994bb5"
+    },
+    {
+      "artifact": "task/web-observation-timing-56ebcf44e34a4855a878ae8138843d3e.json",
+      "bytes": 9021,
+      "private_original_published": false,
+      "sha256": "8d822bc38723ffc3c5f71fe7fe52979d4d158e42f46808f7d0bdf647ec216317"
+    },
+    {
+      "artifact": "task/web-observation-timing-5a8b29b4556e41ba848bc994666cab8e.json",
+      "bytes": 3525,
+      "private_original_published": false,
+      "sha256": "a59703800edaaf25e91a12fd508ce84eea99dba9ebbef4ea1de28db1842be528"
+    },
+    {
+      "artifact": "task/web-observation-timing-716c63001bc844f391734c2d2a30fac4.json",
+      "bytes": 5063,
+      "private_original_published": false,
+      "sha256": "0483e5edc273ee3c5985083dc39d04ae298345b7834ad8d50ecf95ce95ac48d3"
+    },
+    {
+      "artifact": "task/web-observation-timing-960d85c954234399b346cd9b1011c3b6.json",
+      "bytes": 3526,
+      "private_original_published": false,
+      "sha256": "2697c85212cd75bc9fe8b48f2104564a0d23734f12b89c1631b051c0d0022ea1"
+    },
+    {
+      "artifact": "task/web-observation-timing-a5b36687d09b4b04947fb49c37b1e158.json",
+      "bytes": 3526,
+      "private_original_published": false,
+      "sha256": "552904af14edfeb77614edcda113b5fcb2e0e6839ae84ca55562294e5ffa35d3"
+    },
+    {
+      "artifact": "task/web-observation-timing-b69e5e7a5bf343eb89766b4e0e3085fe.json",
+      "bytes": 3134,
+      "private_original_published": false,
+      "sha256": "3c23b5d1de04a3cce55cacc762b20924dbcb46a40aa03360aaa46c665645491c"
+    },
+    {
+      "artifact": "task/web-observation-timing-cca006d6429b4a5cb124194a9a4207b5.json",
+      "bytes": 2381,
+      "private_original_published": false,
+      "sha256": "2b30cd4db709ce25795639ec81ea6f6097a241fe203c8621cea3b2abdce8501c"
+    },
+    {
+      "artifact": "session/app-session-receipt.json",
+      "bytes": 6434,
+      "private_original_published": false,
+      "sha256": "b5d6aa1f7b4bf48a5e14e996dc894a91eaab45338617ba54ec5a79fb2274f3ba"
+    }
+  ],
+  "flight": {
+    "flight_goal_binding_verified": true,
+    "flight_result_verified": false,
+    "query_or_booking_completed": false
+  },
+  "foreground_sampling": {
+    "after_release_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "alias_text_file_count": 63,
+    "alias_text_files_excluded_from_sample_count": true,
+    "all_sampled_components_equal_to_before_start": true,
+    "all_sampled_raw_focus_values_equal_to_before_start": true,
+    "all_samples_have_nonnull_focus": true,
+    "before_start_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "endpoint_unchanged": true,
+    "foreground_frame_rate_or_touch_latency_measured": false,
+    "host_wall_clock_only": true,
+    "interpretation": "All existing saved main-display window dumps are audited, with command copies counted once. The recorded focus applies at sampled instants; unsampled gaps and foreground interaction responsiveness remain unmeasured. Zero main-display input is a separate routing fact.",
+    "main_screen_inputs": 0,
+    "max_running_sample_start_gap_s": 5.077144384384155,
+    "max_saved_sample_start_gap_s": 44.4892258644104,
+    "phase_counts": {
+      "before_start": 1,
+      "preparation": 6,
+      "release": 1,
+      "running": 57
+    },
+    "sample_count": 65,
+    "samples": [
+      {
+        "artifact": "commands/prepare-0012-before-windows.stdout",
+        "command_receipt_sha256": "dc2bd7aec45750265400ab20efba3469a78012eb3930b0066ffb49935a30ddb5",
+        "completed_host_wall_s": 1794826589.145119,
+        "dump_sha256": "929686e0e5491321729902cbe3bab1e32df7c40691d6647c407f1269d773404a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826589.105293,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0021-prelaunch-windows.stdout",
+        "command_receipt_sha256": "d04c43725e503017f02d0ab18648e3ec85865e3cc6b15d8682551d935f8446ba",
+        "completed_host_wall_s": 1794826589.9991395,
+        "dump_sha256": "573bb5fc333389c582f1a3f6a8b94c19dc4f400b9199f989f3ef60be3725a36d",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826589.971148,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0030-after-windows.stdout",
+        "command_receipt_sha256": "26ef635a90ca9b1fea81d9aa20b81917666bcb89d2761a1f5ca8177ab580fdd8",
+        "completed_host_wall_s": 1794826591.6085844,
+        "dump_sha256": "7cc89c83fce24e49ec97e36a31f847375946a0ae27dcbc55f178af8d8dd4e02b",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826591.5831017,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-973cc7bd/commands/select-webhelper-0012-before-selection-windows.stdout",
+        "command_receipt_sha256": "336da2fd9970556374ea65006e602ac36eb4957a839c94713d779e40c5dd4b9b",
+        "completed_host_wall_s": 1794826592.5321946,
+        "dump_sha256": "7cc89c83fce24e49ec97e36a31f847375946a0ae27dcbc55f178af8d8dd4e02b",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826592.4993181,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-973cc7bd/commands/select-webhelper-0039-snapshot-windows.stdout",
+        "command_receipt_sha256": "3d46fcc43fd3c7d4b2701ada920216b693049ff92f6fbe6da6262812bfe9aef8",
+        "completed_host_wall_s": 1794826595.2941058,
+        "dump_sha256": "9ea1b9b0a2f5eabc1d43c2b13373f20a6d6523fe2d96630b0ef548d473cc3519",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826595.2628152,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "root-frame-refresh/commands/root-frame-refresh-0027-snapshot-windows.stdout",
+        "command_receipt_sha256": "404a864c9be74ac14a37fe804b91d33de5133cecd842f4406a7a0deaf054e68b",
+        "completed_host_wall_s": 1794826598.0201013,
+        "dump_sha256": "9ea1b9b0a2f5eabc1d43c2b13373f20a6d6523fe2d96630b0ef548d473cc3519",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826597.99034,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0021-before-start-window.stdout",
+        "command_receipt_sha256": "152856ab650bfd52d13a4745fdaf695c7765345977422162b715e2a18802d790",
+        "completed_host_wall_s": 1794826642.5073876,
+        "dump_sha256": "9ea1b9b0a2f5eabc1d43c2b13373f20a6d6523fe2d96630b0ef548d473cc3519",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "before_start",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826642.4795659,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0028-running-windows.stdout",
+        "command_receipt_sha256": "05f5cd8579a8e1ccd6882f2cf1c35ce58cb4f5df11d69abb0a07ac4a0e747dad",
+        "completed_host_wall_s": 1794826643.8420875,
+        "dump_sha256": "50fd96963f0d69a142d24b922f8b39a44ecad68d8c38ceb6cb5bef1d542f2605",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826643.8118258,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0033-running-windows.stdout",
+        "command_receipt_sha256": "5eea0c7871f30b110883ca337d935343a1ab9c423af6dd92fdbbf6dcb7131034",
+        "completed_host_wall_s": 1794826648.5711095,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826648.5284352,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0038-running-windows.stdout",
+        "command_receipt_sha256": "b2bbf360816501948d5d1ce62464c313efadcbcec49c9e10c3780ffb122bcaee",
+        "completed_host_wall_s": 1794826653.6335716,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826653.6055796,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0043-running-windows.stdout",
+        "command_receipt_sha256": "d05b7d05f46db5c626c0469f1842eb19b67bd2015b39326130e0e0bcba55860e",
+        "completed_host_wall_s": 1794826658.3370996,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826658.3041594,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0048-running-windows.stdout",
+        "command_receipt_sha256": "d70c9a2d77a4afed1106d2a7b9ef368c421156c859b45b31f2a91a7ee1d1b1d9",
+        "completed_host_wall_s": 1794826663.102791,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826663.0728981,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0053-running-windows.stdout",
+        "command_receipt_sha256": "b30c6a7b2d30ba1ded1aaa12ab0baeee716f69a1a1cdaac5997e41022349c5ec",
+        "completed_host_wall_s": 1794826667.9568143,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826667.922805,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0058-running-windows.stdout",
+        "command_receipt_sha256": "748ac65de10d8f22550d1936742cdf8c557bcf767ed0ae53cd8a4cfc8e381f8e",
+        "completed_host_wall_s": 1794826672.5720942,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826672.5399547,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0063-running-windows.stdout",
+        "command_receipt_sha256": "f98a2589d18c7344af3bc03fcc1a61e011b256561eebc04dc36dde79a4c87d24",
+        "completed_host_wall_s": 1794826677.1831076,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826677.145948,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0068-running-windows.stdout",
+        "command_receipt_sha256": "7f2294b37dc16eee4232c627815bd627164c6e64f97a1c52d42894c3bd5e3902",
+        "completed_host_wall_s": 1794826681.7661092,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826681.727287,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0073-running-windows.stdout",
+        "command_receipt_sha256": "a019675a150e95ed3406634625e20fa19351c9c03dc00ff622886819f73ed351",
+        "completed_host_wall_s": 1794826686.4871068,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826686.4479024,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0078-running-windows.stdout",
+        "command_receipt_sha256": "e4c5adc5319cb8905ff952b25d257a3899fb0486cc69e6770371b13f0cf0a160",
+        "completed_host_wall_s": 1794826691.2909458,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826691.2620175,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0083-running-windows.stdout",
+        "command_receipt_sha256": "ebae49d78c5678138ba63ea17221c606f3b56013a9417c11fffd5191f11a0af7",
+        "completed_host_wall_s": 1794826695.8961315,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826695.857337,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0088-running-windows.stdout",
+        "command_receipt_sha256": "b97aa20ac3a58078549c9555918646b3ac3378db0001cfa5697587866c557181",
+        "completed_host_wall_s": 1794826700.6088986,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826700.576644,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0093-running-windows.stdout",
+        "command_receipt_sha256": "edeab15ccf5c5b9efff93ac0126851f3cf172429bb8b8d5c2e304d6200bf1382",
+        "completed_host_wall_s": 1794826705.2038743,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826705.1734054,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0098-running-windows.stdout",
+        "command_receipt_sha256": "91de276394d67b7c6c7fc3775bc0132f56f92e97dee6c0266c4ac233473b9322",
+        "completed_host_wall_s": 1794826709.8931327,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826709.8507802,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0103-running-windows.stdout",
+        "command_receipt_sha256": "22ab94af76aea857eb1edaadcd6cb45db5c2b410a639f8a82931c564f1453ddb",
+        "completed_host_wall_s": 1794826714.7081215,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826714.6652741,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0108-running-windows.stdout",
+        "command_receipt_sha256": "ad3bffaa121a35da62bd294d4afe8a218db503abd19ad583b581121d16b928f4",
+        "completed_host_wall_s": 1794826719.3671575,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826719.3269775,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0113-running-windows.stdout",
+        "command_receipt_sha256": "d7b3c615621e13d4714666c752d0adcd3e8743af98fd9bd1e99af6a93707ee78",
+        "completed_host_wall_s": 1794826724.1281018,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826724.0903833,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0118-running-windows.stdout",
+        "command_receipt_sha256": "11ae0d289139d2694953c3544fac9ece129435f749115e96b5addb77c19f27b1",
+        "completed_host_wall_s": 1794826728.9080973,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826728.8664281,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0123-running-windows.stdout",
+        "command_receipt_sha256": "28b333cb220b51e7b2b3f2c04e88c281ea0354b44816b61c49fbeb3feaf217f4",
+        "completed_host_wall_s": 1794826733.4812975,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826733.449544,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0128-running-windows.stdout",
+        "command_receipt_sha256": "cd0fc30082898cff8e264f5f59d4a6ba17c21a50e55f4f4c8e215439b85b0ded",
+        "completed_host_wall_s": 1794826738.3848279,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826738.344603,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0133-running-windows.stdout",
+        "command_receipt_sha256": "d64da2b70bbfc1548b7f4676826f04d2841b8306257c5ea01978308e890fe183",
+        "completed_host_wall_s": 1794826743.0741074,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826743.0318842,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0138-running-windows.stdout",
+        "command_receipt_sha256": "e6c4ea8d3f2d8e15154d2b51ca61464fd3be203d5baed105fbb531ea46b557ed",
+        "completed_host_wall_s": 1794826747.8410528,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826747.7964003,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0143-running-windows.stdout",
+        "command_receipt_sha256": "b6d8fcbf088e7f951622b1a22934b5d14391006ee0e714760d0b430db844c0f0",
+        "completed_host_wall_s": 1794826752.592116,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826752.546892,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0148-running-windows.stdout",
+        "command_receipt_sha256": "8b7bf9a28659b88542b4cd6efb34111dfc6edf2f39bbda6407bf5a1c4fe723e4",
+        "completed_host_wall_s": 1794826757.2921386,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826757.2515073,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0153-running-windows.stdout",
+        "command_receipt_sha256": "e01bbe1de1dad33f0dbecb8d822da4c67e880c5ab0ba78f45f8624dc3f8c84fd",
+        "completed_host_wall_s": 1794826761.8831267,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826761.8445091,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0158-running-windows.stdout",
+        "command_receipt_sha256": "3674e378673497f7fb920fbc55ad48183c2df6de3249016b45c948bfab4222f9",
+        "completed_host_wall_s": 1794826766.7483501,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826766.7150168,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0163-running-windows.stdout",
+        "command_receipt_sha256": "1bb27b8975bf98b0cad97ef55df942e9bc3071cd980d08397d1385497169045d",
+        "completed_host_wall_s": 1794826771.296377,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826771.2579095,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0168-running-windows.stdout",
+        "command_receipt_sha256": "d84dd4c37b1af0d466041de7186c27cf46b46a15e8c464741650a9fcb598159a",
+        "completed_host_wall_s": 1794826776.301134,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826776.2620993,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0173-running-windows.stdout",
+        "command_receipt_sha256": "04a0ad583ce1bee41460507d92da2d54c33c15090c4a0511935bcd89377cb927",
+        "completed_host_wall_s": 1794826780.94311,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826780.9047494,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0178-running-windows.stdout",
+        "command_receipt_sha256": "bab70ca4e9c8f1a0179f9c6bc1495c8b0ea50e70e103e3f3429bc194fa26a71a",
+        "completed_host_wall_s": 1794826785.5881143,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826785.546392,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0183-running-windows.stdout",
+        "command_receipt_sha256": "19f688eb7e5305cedabfa413d9fda771de7b18e51e5c0277637ba2668ae81f10",
+        "completed_host_wall_s": 1794826790.5341172,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826790.4877582,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0188-running-windows.stdout",
+        "command_receipt_sha256": "a0f56bfa5b39a624fbce7efbee89d9e7e1dc331a5a2de50ddc83c8aa6cae5a8e",
+        "completed_host_wall_s": 1794826795.3400881,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826795.2888303,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0193-running-windows.stdout",
+        "command_receipt_sha256": "aa2335298da6991f04a41120b21720ee3e45af4f9724a591e57f86d43a341fc4",
+        "completed_host_wall_s": 1794826800.226586,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826800.190881,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0198-running-windows.stdout",
+        "command_receipt_sha256": "c73962ddccdee609bf43408fd17819dd9467c1baab44b5f8f8484de45d351a51",
+        "completed_host_wall_s": 1794826804.8671322,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826804.824189,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0203-running-windows.stdout",
+        "command_receipt_sha256": "d33cb253c9ddd3774d054ae60c9c6165500bce93d9ba0ea1e6c101341bff4008",
+        "completed_host_wall_s": 1794826809.4147472,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826809.3779738,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0208-running-windows.stdout",
+        "command_receipt_sha256": "ba27e3d01a72bfce425ef6137c9509dbe5d328778a6fa46f4e00b3d8015eaa34",
+        "completed_host_wall_s": 1794826813.9868789,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826813.9488306,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0213-running-windows.stdout",
+        "command_receipt_sha256": "e8240959d3a73074d0fde1b1522eb4342e1aefa7bdb6d04703615be4daa8b868",
+        "completed_host_wall_s": 1794826818.6651318,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826818.625844,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0218-running-windows.stdout",
+        "command_receipt_sha256": "2c1853847594817018674e76d3f5adb3316db16ecb9fd4e0798217342a97053c",
+        "completed_host_wall_s": 1794826823.5830975,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826823.541619,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0223-running-windows.stdout",
+        "command_receipt_sha256": "43560341d4cb0ecb389921e2b72dce3da2f9c3ba7865440811c2705a00a105da",
+        "completed_host_wall_s": 1794826828.421127,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826828.3777204,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0228-running-windows.stdout",
+        "command_receipt_sha256": "94260af77d3522f4edc40aba5384caa5c92ed8997ac3d1394fdec497e0f62230",
+        "completed_host_wall_s": 1794826833.0751219,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826833.0338027,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0233-running-windows.stdout",
+        "command_receipt_sha256": "49f29d5cd8d2459414dcc0c1613e012b5ab72f015be9a6e828eea339054d4c4d",
+        "completed_host_wall_s": 1794826837.6001372,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826837.5563629,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0238-running-windows.stdout",
+        "command_receipt_sha256": "19bea57f24e19c73b05ac16ad53f7a05315625b0826c7e83030992849f9da4e9",
+        "completed_host_wall_s": 1794826842.2492652,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826842.2137616,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0243-running-windows.stdout",
+        "command_receipt_sha256": "089453e17ddea64b186f459e238373a903b8effa962bd03d28a64b5a8af561ad",
+        "completed_host_wall_s": 1794826846.860107,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826846.8183467,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0248-running-windows.stdout",
+        "command_receipt_sha256": "8c452fdf884322ea73f603a21d1fa305d5c0d92e17c062a495a20ccac334de74",
+        "completed_host_wall_s": 1794826851.799098,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826851.7484248,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0253-running-windows.stdout",
+        "command_receipt_sha256": "89109bd281afb672504016e2d46622b26d993ab9638ea74d43a0553f85f61398",
+        "completed_host_wall_s": 1794826856.3341153,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826856.2882814,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0258-running-windows.stdout",
+        "command_receipt_sha256": "fdb98c6c2504cf2e87a376ae391a690a3e824841976203cb05048c80b809ec21",
+        "completed_host_wall_s": 1794826861.00628,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826860.9673047,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0263-running-windows.stdout",
+        "command_receipt_sha256": "c1b81c86ff7f5bf4e4ac511ab5b1eb4f973d28a44d4d4ca09910e62a16302c0c",
+        "completed_host_wall_s": 1794826865.9041262,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826865.8600087,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0268-running-windows.stdout",
+        "command_receipt_sha256": "2e44f7bde80499c5d4a5ff8155e8e361d5509d4b7db9ea0f667189f602354ffc",
+        "completed_host_wall_s": 1794826870.5121536,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826870.4702795,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0273-running-windows.stdout",
+        "command_receipt_sha256": "dbf4021e7a157783b5b34b343852011b38b04fb3a5bdd4974d2d7b8dbb27a874",
+        "completed_host_wall_s": 1794826875.1121347,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826875.0757418,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0278-running-windows.stdout",
+        "command_receipt_sha256": "9e14c7d295ee6cbc15a11f59ad1a8dd17286d8ed9e19aa0cf67e0f27c08f4db5",
+        "completed_host_wall_s": 1794826880.049112,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826880.0102682,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0283-running-windows.stdout",
+        "command_receipt_sha256": "c13f256acd59f884d7da0d375325b9356065ad77fea609af960466582bda8308",
+        "completed_host_wall_s": 1794826884.599422,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826884.566661,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0288-running-windows.stdout",
+        "command_receipt_sha256": "74c565240c77ad19f59ec7a98e887f6b71f43323d436f9ed54b50ed0641e95e6",
+        "completed_host_wall_s": 1794826889.2476037,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826889.210775,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0293-running-windows.stdout",
+        "command_receipt_sha256": "f34218429b70bdc831da287d2723dea6d5a8582edf5d6e908b0a4f6781270c4a",
+        "completed_host_wall_s": 1794826893.9101112,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826893.854257,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0298-running-windows.stdout",
+        "command_receipt_sha256": "da94ba40c72ad051d79e0d34ab4c8b879ce3eb8f2b6f0848c44717d824cd1c25",
+        "completed_host_wall_s": 1794826898.4882703,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826898.4068458,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0303-running-windows.stdout",
+        "command_receipt_sha256": "426d77fd29356592364823b277f68e07b644c7f7da8c1d56d7928c2589466380",
+        "completed_host_wall_s": 1794826903.0910945,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826903.041281,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0308-running-windows.stdout",
+        "command_receipt_sha256": "2f0ecc29495bd30086414b0d0f2c3e05baba1b96d12c3ff1993ee470f43fef31",
+        "completed_host_wall_s": 1794826908.1071281,
+        "dump_sha256": "0ff408aced45ab1d7706434ac2f8c81a1e366a3d6cf7e3dc979f3c709762ca5a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826908.0588477,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-497dbf43/commands/run-0318-release-windows.stdout",
+        "command_receipt_sha256": "a25a87458409c260df7594ba6d83fb5e64422d40c47bd3e4bc75aff1c1734907",
+        "completed_host_wall_s": 1794826911.131126,
+        "dump_sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "release",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794826911.0871916,
+        "unknown_focus": false
+      }
+    ],
+    "snapshots_are_not_continuous_monitoring": true,
+    "unknown_focus_sample_count": 0,
+    "unsampled_intervals_present": true
+  },
+  "interpretation": "Nine local-model requests produced seven accepted, dispatched nonstale clicks: booking entry, departure picker, Beijing, arrival picker, Shanghai, calendar entry and the requested calendar day. The complete date and both cities were verified by fresh form readback. The last frame was official_query_ready with n10 query available and an explicit one-query next goal, yet LFM3 chose failure-done and incorrectly narrated that a query had completed. No query reservation or dispatch occurred. One earlier failure-done was rejected stale and followed by a fresh model decision; no typed pre-dispatch recovery marker was emitted. The three saved loading waits exercised initial-document and city phases, not the new booking16 phase, so this progress is not a causal phone validation of the budget change. The final business goal remains failed. No host Stop or host task timeout was required.",
+  "model_request_count": 9,
+  "model_requests": [
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 12427.464,
+        "generation_complete": true,
+        "request_id": "1ffb6d8098eb4599bfdb73cb595e36ac",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 12367.546,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 49.383,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 6860115,
+        "decode_tokens_per_second": 17.200877827849826,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 118,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 794.2977742580648,
+        "prompt_time_us": 5502974,
+        "prompt_tokens": 4371,
+        "ttft_us": 5503833
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 12439,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "1ffb6d8098eb4599bfdb73cb595e36ac",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 12478.247,
+        "generation_complete": true,
+        "request_id": "2370bd87a0944081b2b3550cc6bfe49b",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 12418.726,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 49.326,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 7154230,
+        "decode_tokens_per_second": 17.332403347390287,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 124,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 802.0650275314191,
+        "prompt_time_us": 5260172,
+        "prompt_tokens": 4219,
+        "ttft_us": 5261076
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 12490,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "2370bd87a0944081b2b3550cc6bfe49b",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 11482.934,
+        "generation_complete": true,
+        "request_id": "42219e9bdacc49b19551052e9628a8b5",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 11422.791,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 44.765,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 6364312,
+        "decode_tokens_per_second": 17.441005406397423,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 111,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 810.4248814684361,
+        "prompt_time_us": 5054139,
+        "prompt_tokens": 4096,
+        "ttft_us": 5054992
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 11502,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "42219e9bdacc49b19551052e9628a8b5",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 11974.398,
+        "generation_complete": true,
+        "request_id": "57ebe02ddf064de3807f8ab12aa311c5",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 11924.761,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 38.777,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 7713390,
+        "decode_tokens_per_second": 23.46568759002203,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 181,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 901.1563175882092,
+        "prompt_time_us": 4207927,
+        "prompt_tokens": 3792,
+        "ttft_us": 4208614
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 11989,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "57ebe02ddf064de3807f8ab12aa311c5",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 11444.507,
+        "generation_complete": true,
+        "request_id": "79099d8f87cc494db93f5de5b3586e3c",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": true,
+            "elapsed_ms": 1577.84,
+            "ended": true,
+            "started": true
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 8576.857,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": true,
+            "elapsed_ms": 954.956,
+            "ended": true,
+            "started": true
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 39.875,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": true,
+            "elapsed_ms": 283.955,
+            "ended": true,
+            "started": true
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 4711947,
+        "decode_tokens_per_second": 23.981594020476038,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 113,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 901.6847676905787,
+        "prompt_time_us": 3861660,
+        "prompt_tokens": 3482,
+        "ttft_us": 3862475
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 12474,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "79099d8f87cc494db93f5de5b3586e3c",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 12450.876,
+        "generation_complete": true,
+        "request_id": "99b139a862224038a27f868cde319a21",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 12380.215,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 50.278,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 7457823,
+        "decode_tokens_per_second": 17.029098169801028,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 127,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 809.8611524265233,
+        "prompt_time_us": 4918127,
+        "prompt_tokens": 3983,
+        "ttft_us": 4919021
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 12462,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "99b139a862224038a27f868cde319a21",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 13433.259,
+        "generation_complete": true,
+        "request_id": "d09efbce265a4ff59bef0156225560ab",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 13368.45,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 50.984,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 7711885,
+        "decode_tokens_per_second": 16.857097843134333,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 130,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 794.5573089718631,
+        "prompt_time_us": 5652204,
+        "prompt_tokens": 4491,
+        "ttft_us": 5653128
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 13445,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "d09efbce265a4ff59bef0156225560ab",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 16290.499,
+        "generation_complete": true,
+        "request_id": "db7a3c713ac04f8698dc3671bb1cf80a",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 16232.582,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 47.838,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 10283729,
+        "decode_tokens_per_second": 16.142004519955748,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 166,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 794.8740465296556,
+        "prompt_time_us": 5944338,
+        "prompt_tokens": 4725,
+        "ttft_us": 5945260
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 16306,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "db7a3c713ac04f8698dc3671bb1cf80a",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 15044.123,
+        "generation_complete": true,
+        "request_id": "fe230106a3a0488dbd01b6005b58b246",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "b44088770c17439a9b85994dcc8fb752",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 14963.517,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 59.405,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 8933523,
+        "decode_tokens_per_second": 16.678750365337393,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 149,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 793.8025315380086,
+        "prompt_time_us": 6025428,
+        "prompt_tokens": 4783,
+        "ttft_us": 6026292
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 15063,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "fe230106a3a0488dbd01b6005b58b246",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    }
+  ],
+  "observed_progress": {
+    "accepted_dispatched_clicks": 7,
+    "allowed_query_click_node_id": "n10",
+    "arrival_city_selected_and_read_back": true,
+    "booking_budget_change_caused_progress_proven": false,
+    "booking_entry_opened_by_model": true,
+    "calendar_date_selected_and_read_back": true,
+    "calendar_price_annotation_is_flight_result": false,
+    "calendar_priced_label_branch_exercised": true,
+    "departure_city_selected_and_read_back": true,
+    "final_completion_missing": [
+      "model_bound_web_query_dispatch_missing",
+      "actual_same_record_flight_results_not_yet_verified",
+      "closed_web_terminal_binding_or_cleanup_missing"
+    ],
+    "final_no_effect_done_failure": 1,
+    "flight_result_verified": false,
+    "interpretation": "The model reached a verified query-ready form, then selected failure-done instead of its available query button. No query reservation or dispatch is proven. Three actual waits used initial-document and city phases; the revised booking-pending branch was not exercised.",
+    "last_verified_page_phase": "official_query_ready",
+    "model_claim_of_completed_query_is_not_evidence": true,
+    "model_done_status": "failure",
+    "model_reported_success": false,
+    "model_requests": 9,
+    "native_actions_on_product_target_display_only": true,
+    "new_booking_16_second_phase_exercised": false,
+    "next_goal_explicitly_requires_one_query_click": true,
+    "observed_loading_waits": [
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": false,
+        "deadline_elapsed_ms": 192239211,
+        "evidence": {
+          "artifact": "task/web-load-wait-4658e74ef82649fc82b4d543bc17a22d.json",
+          "bytes": 1204,
+          "private_original_published": false,
+          "sha256": "2304f810654076e7f2d51e583f1c4435a2bf01cdbd396d8e08b158b25ba68d37"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 2,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": true,
+        "source_selected_phase_budget_ms": 32000
+      },
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": false,
+        "deadline_elapsed_ms": 192239211,
+        "evidence": {
+          "artifact": "task/web-load-wait-c7f635984df84608aa402858a9685606.json",
+          "bytes": 1204,
+          "private_original_published": false,
+          "sha256": "5cd546a5e1a21cf931d3fe034fe0c1b997987750e22e93cc926040aee8c5ce7d"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 1,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": true,
+        "source_selected_phase_budget_ms": 32000
+      },
+      {
+        "action_replayed": false,
+        "actual_city_picker_transition": true,
+        "deadline_elapsed_ms": 192354485,
+        "evidence": {
+          "artifact": "task/web-load-wait-fda32a795dab466fb1d2b0d3b72d8177.json",
+          "bytes": 2410,
+          "private_original_published": false,
+          "sha256": "0d203e5fbc19cb4db6871f31843da18ad22985a11acbfdb457c2d8114216dd30"
+        },
+        "maximum_extra_reobservations": 2,
+        "read_only_retry": 1,
+        "recognized_booking_body_pending": false,
+        "recognized_initial_document_unstable": false,
+        "source_selected_phase_budget_ms": 16000
+      }
+    ],
+    "product_target_display_id": 122,
+    "query_attempted": false,
+    "query_button_available": true,
+    "query_native_dispatch_confirmed": false,
+    "query_or_booking_completed": false,
+    "result_ready_for_completion_gate": false,
+    "stale_executor_done_failure_rejected": 1,
+    "typed_pre_dispatch_recovery_records": 0
+  },
+  "outcome": "FAIL_GOAL_NOT_VERIFIED",
+  "progress_addendum": {
+    "device_operations": 0,
+    "generator_sha256": "42d7b43e0af4dc9ce52b9989e54f3b324240371d250992a7172a41a2f0742aee",
+    "original_phone_evidence_unchanged": true,
+    "previous_audit_sha256": "1edcf8d48ab87773a68d6133960edae3d3a610c8e826e6c598dfcdd33d832e36"
+  },
+  "recorded_action_count": 9,
+  "route": "official_website",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "sample_count": 1,
+  "steps_are_not_business_progress": true,
+  "strict_prepare": {
+    "after_launch_no_controller_task_on_display0": true,
+    "all_three_prepare_gates_replayed": true,
+    "atomic_android_transaction": false,
+    "initial_and_prelaunch_no_controller_task_on_display0": true,
+    "interpretation": "The original guard functions are replayed over their saved snapshots. Activity/window snapshots and launch are separate Android operations; the host lock does not serialize concurrent user or system activity.",
+    "original_main_focus_not_rebased": true,
+    "outer_display_id": 121,
+    "own_ui_transfer": false,
+    "phone_operations_by_auditor": 0,
+    "prepare_sha256": "f0db0b044a2830b6d5ff58ffb3daa3702223caee4dce13e4e3cd356d24999f9e",
+    "snapshots": [
+      {
+        "artifact": "prepare/before-activities.txt",
+        "bytes": 61393,
+        "private_original_published": false,
+        "sha256": "0a584f7b5963914bdf6bb4f95be8118a4080db00e666ee9c32f16eaeabe787b8"
+      },
+      {
+        "artifact": "prepare/before-windows.txt",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "929686e0e5491321729902cbe3bab1e32df7c40691d6647c407f1269d773404a"
+      },
+      {
+        "artifact": "prepare/prelaunch-activities.txt",
+        "bytes": 67190,
+        "private_original_published": false,
+        "sha256": "9c2a278f34868b1dda049814a197fb501ff80b733d9038cf9a26eb4747927714"
+      },
+      {
+        "artifact": "prepare/prelaunch-windows.txt",
+        "bytes": 36667,
+        "private_original_published": false,
+        "sha256": "573bb5fc333389c582f1a3f6a8b94c19dc4f400b9199f989f3ef60be3725a36d"
+      },
+      {
+        "artifact": "prepare/after-activities.txt",
+        "bytes": 73639,
+        "private_original_published": false,
+        "sha256": "c081262690937054fbbc083631d7a31d818b8351de149f387b17bedf5a6e23d4"
+      },
+      {
+        "artifact": "prepare/after-windows.txt",
+        "bytes": 37696,
+        "private_original_published": false,
+        "sha256": "7cc89c83fce24e49ec97e36a31f847375946a0ae27dcbc55f178af8d8dd4e02b"
+      }
+    ],
+    "source_driver_and_action_bytes_preserved": true,
+    "strict_manifest_sha256": "15a6ed9ddfd1367c034d9e4213a7a2d6536a842af7b8be153f329738aebfd7d3"
+  },
+  "task_id": "56f56c47d19847d4afa483497e036967",
+  "task_verification": {
+    "action_worker_pending_at_terminal": false,
+    "automatic_replay": false,
+    "cleanup_known": true,
+    "completion_verified": false,
+    "external_model": false,
+    "goal_independently_verified": false,
+    "native_cancel_worker_pending_at_terminal": false,
+    "observation_read_worker_pending_at_terminal": false,
+    "status": "failed",
+    "steps": 9
+  },
+  "timing": {
+    "background_created_to_terminal_decision_elapsed_ms": 266230,
+    "background_interval_clock": "Android elapsedRealtime; excludes earlier admission and later release work.",
+    "collection_wall_time_used_as_task_duration": false,
+    "overall_task_elapsed_ms": null
+  },
+  "virtual_display_cleanup": {
+    "both_displays_absent_in_final_saved_window_inventory": true,
+    "controller_outer_display_id": 121,
+    "display_inventory_is_a_final_snapshot": true,
+    "evidence": [
+      {
+        "artifact": "driver/run-0316-release-receipt.stdout",
+        "bytes": 0,
+        "private_original_published": false,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "driver/run-0317-release-receipt.stdout",
+        "bytes": 179,
+        "private_original_published": false,
+        "sha256": "ddd6e3e46bba6c44165e76b8b2989fac944c0394e7a0a96e8f20f9b83b45070a"
+      },
+      {
+        "artifact": "driver/run-0318-release-windows.stdout",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe"
+      },
+      {
+        "artifact": "task/background-bootstrap.json",
+        "bytes": 8655,
+        "private_original_published": false,
+        "sha256": "e71842ae8c1eb399514687e355724df60cf13ea59e29234b4cf488b57dcc99b9"
+      },
+      {
+        "artifact": "task/background-cleanup.json",
+        "bytes": 7289,
+        "private_original_published": false,
+        "sha256": "6c7397ceb0d34ef7abf40674259aa0da21f70af769985ee60fd040d80b8d8892"
+      }
+    ],
+    "initial_empty_outer_release_poll_count": 1,
+    "outer_release_receipt_matches_original_lease": true,
+    "product_target_release_and_broker_exit_verified": true,
+    "target_app_display_id": 122
+  },
+  "warm_worker": {
+    "cleanup_classification": "normal_close_with_observed_sdk_cleanup",
+    "cleanup_known": true,
+    "exit_code": 0,
+    "force_destroy_sent": false,
+    "generation_cleanup_known": true,
+    "generation_unforced": true,
+    "native_session_binding_valid": true,
+    "parent_force_destroy_sent": false,
+    "process_exit_observed": true,
+    "requests_accepted": 9,
+    "requests_sent": 9
+  }
+}

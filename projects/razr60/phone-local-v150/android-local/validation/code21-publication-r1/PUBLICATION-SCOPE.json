@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.public-source-derivation-scope.v1",
+  "derivation_receipt_sha256": "e796be08632c61c93b6d762c1f86093e7e77de3783c20df03e068ebcedf3c730",
+  "private_source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+  "public_source_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+  "private_identifier_cleartext_absent_scope": "The removed historical validator device-identity literals and actual phone evidence, device serials, credentials, task identifiers and nonces are excluded from the public derivative. This is not a claim that every numeric UID literal is absent.",
+  "synthetic_uid_host_fixtures_retained_unchanged": true,
+  "numeric_literal_absence_claim": false,
+  "original_tests_or_assertions_modified": false,
+  "compiled_java_c_h_inc_gbnf_byte_identical": true,
+  "source_closure_modified_by_this_receipt": false,
+  "retained_apk_built_from_public_derivative": false,
+  "public_ci_execution_claimed": false
+}

@@ -1,0 +1,180 @@
+    private static void loading(Harness h,int window)throws Exception {
+        NativeAppEvidence.Frame original=ActualXiaomiHomeLoadingFixture.frame();
+        h.observe(h.make(original.nodes,sha("synthetic-loading-graph:"+h.observations),window,
+                original.width,original.height,original.left,original.top,original.right,original.bottom));
+    }
+    private static ActionDecision waitAction(Harness h)throws Exception {
+        return ActionDecision.parse(new JSONObject().put("action","wait").put("package",PACKAGE)
+                .put("observation_id",h.frame.observationId).put("duration_ms",1000).toString(),ActionDecision.IME_ACTION_SCHEMA);
+    }
+    private static ActionDecision doneAction(Harness h,String status)throws Exception {
+        return ActionDecision.parse(new JSONObject().put("action","done").put("package",PACKAGE)
+                .put("observation_id",h.frame.observationId).put("status",status).put("summary","host loading evidence only").toString(),ActionDecision.IME_ACTION_SCHEMA);
+    }
+    private static NativeAppEvidence.Frame copyFrame(NativeAppEvidence.Frame f,List<NativeAppEvidence.Node> nodes,
+            String pkg,boolean complete,boolean truncated,int type,boolean metadata,int bottom){
+        return new NativeAppEvidence.Frame(f.taskId,f.ownerSha,f.targetSha,f.authorizationSha,f.selectionSha,
+                f.observationId,pkg,f.generation,f.treeSha,f.stateSha,f.screenshotSha,f.sourceRecordSha,f.completionFrameSha,
+                f.displayId,f.windowId,f.rotation,f.width,f.height,f.left,f.top,f.right,bottom,f.capturedElapsedMs,
+                truncated,complete,nodes,type,metadata);
+    }
+    private static NativeAppEvidence.Node changeNode(NativeAppEvidence.Node n,String pkg,String text,String view,Boolean selected){
+        return new NativeAppEvidence.Node(n.id,pkg,n.className,view,text,n.description,n.path,n.parentClass,n.signature,n.label,
+                n.left,n.top,n.right,n.bottom,n.enabled,n.password,n.clickable,n.editable,n.scrollable,selected,n.checkable,n.checked,n.scrollDirections);
+    }
+    private static NativeXiaomiProductPage.Page inspect(NativeAppEvidence.Frame frame){
+        return NativeXiaomiProductPage.inspect(NativeAppGoal.parse(OWNER,PACKAGE),frame);
+    }
+    private static void notLoading(NativeAppEvidence.Frame frame){
+        NativeXiaomiProductPage.Page p=inspect(frame);check(!"home_loading".equals(p.phase),"unknown/incomplete frame must not become known loading");
+        check(p.clickIds.isEmpty()&&p.editValues.isEmpty()&&p.quote==null,"no action or business grant");
+    }
+    private static void exhausted(Harness h)throws Exception {
+        NativeAppDomain d=h.session.domain();check("home_loading_budget_exhausted".equals(d.phase),"finite loading budget");
+        check(d.toolMask(null).equals(Collections.singleton("done")),"exhausted grammar permits only terminal decision");
+        d.requireCurrent(doneAction(h,"failure"));rejects(()->d.requireCurrent(waitAction(h)),"no further wait");
+        rejects(()->d.requireCurrent(doneAction(h,"success")),"loading cannot claim success");h.noQueryOrResult();
+    }
+    public static void main(String[] args)throws Exception {
+        fixtures=Paths.get(args[0]);
+        one("original_saved_eleven_node_home_shell_is_loading_without_targets",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();NativeXiaomiProductPage.Page p=inspect(f);
+            check(f.nodes.size()==11&&f.collectionComplete&&!f.nodesTruncated,"original complete saved eleven nodes");
+            check("home_loading".equals(p.phase),"actual observed home shell can wait");
+            check(p.clickIds.isEmpty()&&p.editValues.isEmpty()&&p.quote==null,"no new click/edit/price");
+            check(f.windowId==138&&f.displayId==20&&f.capturedElapsedMs==39140302L,"original frame identity/timing preserved");
+        });
+        one("existing_ready_home_retains_original_observed_search_target",()->{
+            Harness h=new Harness("ready");h.xml("home.xml");check("home_search".equals(h.session.domain().phase)&&h.node("open_search")!=null,"original home search remains usable");h.noQueryOrResult();
+        });
+        one("incomplete_or_truncated_home_shell_is_not_loading_authority",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();
+            notLoading(copyFrame(f,f.nodes,PACKAGE,false,false,1,true,f.bottom));notLoading(copyFrame(f,f.nodes,PACKAGE,true,true,1,true,f.bottom));
+        });
+        one("unknown_or_non_application_metadata_is_not_loading_authority",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();
+            notLoading(copyFrame(f,f.nodes,PACKAGE,true,false,1,false,f.bottom));notLoading(copyFrame(f,f.nodes,PACKAGE,true,false,3,true,f.bottom));
+        });
+        one("missing_navigation_member_does_not_guess_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);ns.remove(4);notLoading(copyFrame(f,ns,PACKAGE,true,false,1,true,f.bottom));
+        });
+        one("unknown_extra_content_does_not_guess_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            ns.set(0,changeNode(ns.get(0),PACKAGE,"","com.xiaomi.shop:id/unknown_modal",Boolean.FALSE));notLoading(copyFrame(f,ns,PACKAGE,true,false,1,true,f.bottom));
+        });
+        one("foreign_node_package_does_not_guess_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);NativeAppEvidence.Node n=ns.get(0);
+            ns.set(0,changeNode(n,"com.foreign.app",n.text,n.viewId,n.selected));notLoading(copyFrame(f,ns,PACKAGE,true,false,1,true,f.bottom));
+        });
+        one("unselected_home_label_does_not_guess_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);NativeAppEvidence.Node n=ns.get(1);
+            ns.set(1,changeNode(n,PACKAGE,n.text,n.viewId,Boolean.FALSE));notLoading(copyFrame(f,ns,PACKAGE,true,false,1,true,f.bottom));
+        });
+        one("duplicate_navigation_label_does_not_guess_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);NativeAppEvidence.Node n=ns.get(3);
+            ns.set(3,changeNode(n,PACKAGE,"首页",n.viewId,n.selected));notLoading(copyFrame(f,ns,PACKAGE,true,false,1,true,f.bottom));
+        });
+        one("partial_window_shell_does_not_guess_full_home_loading",()->{
+            NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();notLoading(copyFrame(f,f.nodes,PACKAGE,true,false,1,true,f.bottom-1));
+        });
+        one("actual_session_and_authorized_grammar_offer_only_model_wait",()->{
+            Harness h=new Harness("grammar");loading(h,138);NativeAppDomain d=h.session.domain();
+            check(d.toolMask(null).equals(Collections.singleton("wait")),"loading intersection contains only wait");
+            check(d.toolMask(Collections.singleton("done")).isEmpty(),"never expands original mask");
+            Map<String,String> labels=new java.util.TreeMap<String,String>();for(NativeAppEvidence.Node n:h.frame.nodes)labels.put(n.id,n.label);
+            ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,h.frame.observationId,PACKAGE,labels);
+            ObservedAppLabels apps=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,h.frame.observationId,PACKAGE,Collections.<String,String>emptyMap());
+            rejects(()->DecisionGrammar.createImeAuthorized(h.frame.observationId,PACKAGE,Collections.<String>emptySet(),d.clickIds,
+                    Collections.<String>emptySet(),Collections.<String,ObservedScrollActions>emptyMap(),Collections.<String,ObservedImeEnter>emptyMap(),
+                    targets,apps,h.owner.frame(),true,d.toolMask(null),false),"ordinary task masks must still retain terminal reporting");
+            DecisionGrammar g=d.boundedWaitGrammar(targets,apps,h.owner.frame(),null);
+            check(g.actions.equals(Collections.singletonList("wait"))&&!g.successAllowed,"actual grammar cannot produce done/click/type/purchase");
+            check(g.text.startsWith("root ::= ws (wait) ws\n")&&!g.text.contains("done ::="),"real grammar root and branch are wait-only");
+            rejects(()->d.boundedWaitGrammar(targets,apps,h.owner.frame(),Collections.singleton("done")),"removed wait cannot be restored");
+            h.noQueryOrResult();
+        });
+        one("loading_rejects_click_type_back_done_success_and_early_failure",()->{
+            Harness h=new Harness("denied");loading(h,138);NativeAppDomain d=h.session.domain();
+            rejects(()->d.requireCurrent(doneAction(h,"success")),"no success");rejects(()->d.requireCurrent(doneAction(h,"failure")),"must boundedly observe ready state first");
+            rejects(()->d.requireCurrent(h.back(h.frame.observationId,PACKAGE)),"no back");
+            for(String type:Arrays.asList("click","type")){
+                JSONObject a=new JSONObject().put("action",type).put("package",PACKAGE).put("observation_id",h.frame.observationId).put("node_id","n0").put("node_label",h.frame.byId.get("n0").label);
+                if("type".equals(type))a.put("text","AX3000T");ActionDecision parsed=ActionDecision.parse(a.toString(),ActionDecision.IME_ACTION_SCHEMA);
+                rejects(()->d.requireCurrent(parsed),"no input/click during loading");
+            }
+        });
+        one("model_wait_receipt_is_recorded_without_query_transition_or_result",()->{
+            Harness h=new Harness("wait");loading(h,138);h.issue(waitAction(h),true,false,false);loading(h,138);
+            check(((Number)h.progress().get("product_home_loading_wait_attempts")).intValue()==1,"real beforeAction/outcome callback consumed wait");
+            check(h.progress().get("pending")==null&&((List<?>)h.progress().get("transitions")).isEmpty(),"wait creates no navigation proof");h.noQueryOrResult();
+        });
+        one("stale_undispatched_wait_keeps_session_live_and_requires_fresh_frame",()->{
+            Harness h=new Harness("stale");loading(h,138);String old=h.frame.observationId;h.issue(waitAction(h),false,false,true);h.xml("home.xml");
+            check(!old.equals(h.frame.observationId)&&h.node("open_search")!=null,"fresh supported home restores original query path");
+            check(((Number)h.progress().get("product_home_loading_wait_attempts")).intValue()==1,"stale wait still consumes bounded proposal");h.noQueryOrResult();
+        });
+        one("two_waits_exhaust_budget_without_reset_by_window_generation",()->{
+            Harness h=new Harness("count");loading(h,138);h.issue(waitAction(h),true,false,false);loading(h,139);h.issue(waitAction(h),true,false,false);loading(h,140);exhausted(h);
+        });
+        one("fifteen_second_observation_budget_expires_at_boundary",()->{
+            Harness h=new Harness("time");loading(h,138);long first=h.frame.capturedElapsedMs;h.clock=first+15000-10;loading(h,139);exhausted(h);
+            check(((Number)h.progress().get("product_home_loading_wait_attempts")).intValue()==0,"observation elapsed budget is independent of wait count");
+        });
+        one("ready_page_reentry_never_resets_wait_attempt_budget",()->{
+            Harness h=new Harness("reentry-count");loading(h,138);h.issue(waitAction(h),true,false,false);h.xml("home.xml");loading(h,139);
+            h.issue(waitAction(h),true,false,false);h.xml("home.xml");loading(h,140);exhausted(h);
+        });
+        one("ready_page_reentry_never_resets_observation_clock_budget",()->{
+            Harness h=new Harness("reentry-clock");loading(h,138);long first=h.frame.capturedElapsedMs;h.xml("home.xml");h.clock=first+15000;loading(h,139);exhausted(h);
+        });
+        one("pending_open_search_is_not_proved_by_loading_shell",()->{
+            Harness h=new Harness("pending");h.xml("home.xml");h.issue(h.action("open_search"),true,true,false);loading(h,139);
+            NativeAppDomain d=h.session.domain();
+            check(h.progress().get("pending")!=null,"transition must remain pending");
+            check(!d.backAllowed&&d.clickIds.isEmpty()&&d.editValues.isEmpty(),"pending page has no new navigation or search");
+            check(NativeXiaomiProductPage.HOME_LOADING.equals(d.phase)&&d.toolMask(null).equals(Collections.singleton("wait")),"pending loading retains only the original bounded model wait");
+            check("首页仅有导航栏，内容尚未就绪；由模型调用 wait，再读取新的实际页面。".equals(provider(d).get("next_goal")),"pending loading retains its original exact loading hint, not modal Back guidance");h.noQueryOrResult();
+            check(((List<?>)h.progress().get("transitions")).isEmpty(),"loading shell cannot verify query navigation");
+        });
+        one("pending_modal_back_reaches_failure_only_after_two_real_model_waits",()->{
+            Harness h=new Harness("pending-modal");h.modal();h.issue(h.action(DISMISS),true,true,false);loading(h,138);
+            h.issue(waitAction(h),true,false,false);loading(h,139);h.issue(waitAction(h),true,false,false);loading(h,140);
+            exhausted(h);check(h.progress().get("pending")!=null,"unproved Back remains pending");
+            check(((List<?>)h.progress().get("transitions")).isEmpty(),"loading never proves modal dismissal or query");
+        });
+        one("ready_and_unknown_and_exhausted_domains_cannot_use_wait_only_entry",()->{
+            Harness h=new Harness("grammar-negative");h.xml("home.xml");
+            for(int state=0;state<3;state++){
+                if(state==1)h.observe(h.make(Collections.<NativeAppEvidence.Node>emptyList(),sha("unknown-content"),139,720,1280,0,0,720,1280));
+                if(state==2){loading(h,140);h.clock+=15000;loading(h,140);}
+                ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,h.frame.observationId,PACKAGE,Collections.<String,String>emptyMap());
+                ObservedAppLabels apps=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,h.frame.observationId,PACKAGE,Collections.<String,String>emptyMap());
+                rejects(()->h.session.domain().boundedWaitGrammar(targets,apps,h.owner.frame(),null),"only current unexhausted loading domain can use special grammar");
+            }
+        });
+        one("loading_retired_session_cannot_issue_wait",()->{
+            Harness h=new Harness("retired");loading(h,138);ActionDecision a=waitAction(h);h.session.retire();rejects(()->h.issue(a,true,false,false),"retired task remains stopped");
+        });
+        one("loading_installed_identity_change_rejects_wait",()->{
+            Harness h=new Harness("installed");loading(h,138);ActionDecision a=waitAction(h);h.installedCurrent=false;rejects(()->h.issue(a,true,false,false),"same pinned installed identity remains required");
+        });
+        one("loading_observation_task_owner_display_generation_are_unchanged_requirements",()->{
+            Harness h=new Harness("binding");loading(h,138);NativeAppEvidence.Frame f=h.frame;
+            rejects(()->h.session.observed(changed(f,id("foreign-task"),f.ownerSha,f.generation,f.displayId,true,false)),"foreign task");
+            rejects(()->h.session.observed(changed(f,f.taskId,sha("foreign-owner"),f.generation,f.displayId,true,false)),"foreign owner");
+            rejects(()->h.session.observed(changed(f,f.taskId,f.ownerSha,"12345678-1234-4234-8234-123456789abd",f.displayId,true,false)),"foreign generation");
+            rejects(()->h.session.observed(changed(f,f.taskId,f.ownerSha,f.generation,8,true,false)),"foreign display");
+        });
+        one("exhausted_failure_and_normal_cleanup_cannot_manufacture_completion",()->{
+            Harness h=new Harness("failure");loading(h,138);h.clock+=15000;loading(h,139);exhausted(h);h.issue(doneAction(h,"failure"),true,false,false);
+            check(!h.completionGate.verified(h.completion),"waiting is not a business result");check(!Boolean.TRUE.equals(h.terminal(true).get("completion_verified")),"cleanup cannot manufacture price evidence");
+        });
+        one("rejected_wait_invalidates_session_instead_of_fabricating_stale_recovery",()->{
+            Harness h=new Harness("bad-receipt");loading(h,138);h.issue(waitAction(h),false,false,false);rejects(()->h.xml("home.xml"),"only actual stale undispatched receipt can recover");
+        });
+        JSONObject out=new JSONObject().put("schema","hepta.native-xiaomi-home-loading-session-host.v1").put("all_pass",true)
+                .put("cases",names.size()).put("assertions",checks).put("case_names",new JSONArray(names))
+                .put("phone_operations",0).put("android_execution",false).put("model_executed",false).put("business_completion_verified",false)
+                .put("boundary","Original saved loading-frame fields; actual production parser/Session/Domain/grammar/completion gate. Later observations, task/lease/installed verifier, clock, model callback and receipts are explicit host fixtures.");
+        Files.write(Paths.get(args[1]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);System.out.println(out.toString());
+    }

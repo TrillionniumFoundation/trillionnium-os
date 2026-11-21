@@ -1,0 +1,160 @@
+    /** Synthetic Android IO and clocks; the complete actual observer executes unchanged. */
+    static ObserverPipelineHost screenshotSeedFixture(final Change change)throws Exception{
+        ObserverPipelineHost f=nativeFixture(null);f.taskAuthorization=new Object();f.autoScreenshot=false;
+        f.readHook=(g,n)->{
+            sealedReadGraph(g,n<3?"before-capture":"fresh-complete-after-capture");
+            if(n==3)SystemClock.now+=500; // Cost of the actual post-screenshot graph read, not a new budget.
+            if(change!=null)change.apply(f,g,n);sealGraph(g);
+        };
+        f.seedFrozenRead=(r,i)->i.frozenWindow;return f;
+    }
+    static void screenshotSeedReleasedPixels(ObserverPipelineHost f,ObservationRequest r)throws Exception{
+        check(f.delivered.isEmpty()&&f.current==null&&r.captured==null&&f.directory.list().length==0,
+                "discarded screenshot cannot publish, persist or remain an action frame");
+        for(Graph graph:f.graphs)check(graph.closed,"only copied metadata may survive the rejected screenshot");
+        for(Bitmap bitmap:Bitmap.made)check(bitmap.recycled,"rejected bitmap must close before seed admission");
+        for(ScreenshotResult shot:f.shots)check(shot.buffer.closes==1,"rejected hardware buffer must close once");
+    }
+    static ObservationRequest screenshotSeedAdmitted(ObserverPipelineHost f)throws Exception{
+        ObservationRequest r=seedQueued(f,30000);f.main.drain();
+        check(r.resampleSeed!=null&&r.nativeSample&&r.resampleSeed.belongsTo(r),"new complete screenshot graph is first-sample metadata");
+        check(f.reads.get()==3&&seedAdmissions(r)==1&&count(r,"SCREENSHOT_GRAPH_CHANGED")==1,
+                "only the actual third graph read may seed this request");
+        check(count(r,"SCREENSHOT_GRAPH_SEED_CANDIDATE")==1&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,
+                "metadata admission cannot grant a second READY or another screenshot");
+        screenshotSeedReleasedPixels(f,r);return r;
+    }
+    static void screenshotSeedFreshCapture(ObserverPipelineHost f,ObservationRequest r,int expectedReads)throws Exception{
+        TakeScreenshotCallback old=f.pendingScreenshot;seedNextRead(f);
+        check(f.pendingScreenshot!=old&&r.resampleSeed==null,"a new complete sample must admit a distinct screenshot callback");
+        check(f.delivered.isEmpty()&&f.directory.list().length==0,"fresh sample alone cannot publish pixels");
+        f.deliverScreenshot();f.finish();f.finish();
+        check(f.delivered.size()==1&&f.errors.isEmpty()&&f.reads.get()==expectedReads,
+                "new screenshot plus matching complete post-screenshot graph required");
+        check(f.shots.size()==2&&r.deadline==r.started+12000&&r.finished,"same request keeps its original total deadline");
+        check("pre_encoding_paired_history".equals(f.current.captureEvidence.get("mode")),"only the new native pair may be sealed");
+    }
+    static void screenshotGraphSeedCases()throws Exception{
+        eventCase("screenshot_seed_complete_mismatch_saves_one_read_without_old_pixels",()->{
+            ObserverPipelineHost f=screenshotSeedFixture(null);ObservationRequest r=screenshotSeedAdmitted(f);
+            NativeResampleSeed seed=r.resampleSeed;Graph actual=f.graphs.get(2);
+            check(seed.graphStartedAt==actual.readStartedElapsedMs&&seed.graphCompletedAt==actual.readCompletedElapsedMs,
+                    "seed timestamps are copied from the actual complete read");
+            screenshotSeedFreshCapture(f,r,5);check(f.currentGraph==f.graphs.get(3)&&f.currentGraph!=actual,
+                    "published graph must be the new second sample, never the discarded graph");f.dispose();
+        });
+        eventCase("screenshot_seed_requires_full_two_hundred_ms_gap",()->{
+            ObserverPipelineHost f=screenshotSeedFixture(null);ObservationRequest r=screenshotSeedAdmitted(f);
+            TakeScreenshotCallback old=f.pendingScreenshot;SystemClock.now+=199;f.main.drain();f.finish();
+            check(f.reads.get()==3&&f.pendingScreenshot==old&&r.resampleSeed!=null,"199ms cannot read or capture");
+            SystemClock.now++;f.main.drain();f.awaitSample();
+            check(f.reads.get()==4&&f.pendingScreenshot!=old,"200ms requires one genuinely new graph read");
+            f.deliverScreenshot();f.finish();check(f.delivered.size()==1&&f.reads.get()==5,"gap does not replace fresh screenshot pairing");f.dispose();
+        });
+        eventCase("screenshot_seed_recorded_cost_shape_still_requires_new_pair",()->{
+            ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{
+                long started=x.activeObservation.started;
+                SystemClock.now=started+(n==1?6050:n==2?6860:n==3?7604:n==4?8485:9274);
+            });
+            ObservationRequest r=screenshotSeedAdmitted(f);check(SystemClock.now==r.started+7604,"explicit synthetic mismatch cut point");
+            screenshotSeedFreshCapture(f,r,5);
+            check(r.deadline==r.started+12000&&f.current.capturedElapsedMillis==r.started+8485,
+                    "capture time is the new capture; timing fixture is not a replay of missing phone pixels");f.dispose();
+        });
+        eventCase("screenshot_seed_changed_next_whole_graph_starts_new_pair",()->{
+            ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{if(n>=4)g.digest="second-unrelated-complete-content";});
+            ObservationRequest r=screenshotSeedAdmitted(f);TakeScreenshotCallback old=f.pendingScreenshot;seedNextRead(f);
+            check(f.reads.get()==4&&f.pendingScreenshot==old&&r.resampleSeed==null&&f.delivered.isEmpty(),
+                    "same window with different complete content cannot borrow the seed");
+            seedNextRead(f);check(f.pendingScreenshot!=old&&f.reads.get()==5,"two fresh identical whole graphs required after change");
+            f.deliverScreenshot();f.finish();check(f.delivered.size()==1&&f.reads.get()==6,"new matching screenshot graph remains required");f.dispose();
+        });
+        eventCase("screenshot_seed_second_capture_mismatch_never_publishes_either_old_image",()->{
+            ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{if(n>=5)g.digest="changed-during-second-capture";});
+            ObservationRequest r=screenshotSeedAdmitted(f);seedNextRead(f);f.deliverScreenshot();f.finish();
+            check(f.delivered.isEmpty()&&f.directory.list().length==0&&f.reads.get()==5&&f.shots.size()==2,
+                    "second post-screenshot mismatch must discard its pixels too");
+            check(count(r,"SCREENSHOT_GRAPH_CHANGED")==2&&seedAdmissions(r)==2&&r.deadline==r.started+12000,
+                    "any next metadata seed remains in the same original request budget");screenshotSeedReleasedPixels(f,r);f.dispose();
+        });
+        for(final String fault:new String[]{"truncated","nodes","windows","width","incomplete","window","rotation","bounds","ime","generation","owner","display","profile"})
+            eventCase("screenshot_seed_rejects_incomplete_or_changed_"+fault,()->{
+                ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{if(n!=3)return;
+                    if("truncated".equals(fault))g.truncated=true;
+                    else if("nodes".equals(fault))g.nativeActionNodes=null;
+                    else if("windows".equals(fault))g.nativeActionWindows=null;
+                    else if("width".equals(fault))g.nativeActionWidth=0;
+                    else if("incomplete".equals(fault))g.collectionStats=counts(1,1,0,0,0);
+                    else if("profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
+                    else changeIdentity(g,fault);
+                });
+                ObservationRequest r=seedQueued(f,30000);f.main.drain();
+                check(r.resampleSeed==null&&seedAdmissions(r)==0,"incomplete or foreign graph must not seed: "+fault);
+                screenshotSeedReleasedPixels(f,r);f.dispose();
+            });
+        for(final String timing:new String[]{"during_graph","queued_product","after_seed"})
+            eventCase("screenshot_seed_unknown_event_"+timing+"_cannot_seed_or_publish",()->{
+                ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{if(n==3&&"during_graph".equals(timing))x.noteObservationEvent(-1);});
+                ObservationRequest r=seedQueued(f,30000);
+                if("queued_product".equals(timing))f.noteObservationEvent(-1);
+                f.main.drain();
+                if("after_seed".equals(timing)){check(r.resampleSeed!=null,"known seed setup");f.noteObservationEvent(-1);seedNextRead(f);}
+                check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"unknown event cannot borrow prior complete metadata");
+                screenshotSeedReleasedPixels(f,r);f.dispose();
+            });
+        eventCase("screenshot_seed_target_event_after_worker_discards_metadata",()->{
+            ObserverPipelineHost f=screenshotSeedFixture(null);ObservationRequest r=seedQueued(f,30000);f.noteObservationEvent(9);f.main.drain();
+            check(r.resampleSeed==null&&seedAdmissions(r)==0&&f.reads.get()==3,"event watermark must still match at main admission");
+            screenshotSeedReleasedPixels(f,r);f.dispose();
+        });
+        for(final String fault:new String[]{"authorization","background","cancel","retired"})
+            eventCase("screenshot_seed_main_admission_rechecks_"+fault,()->{
+                ObserverPipelineHost f=screenshotSeedFixture(null);ObservationRequest r=seedQueued(f,30000);
+                if("authorization".equals(fault))f.taskAuthorization=new Object();
+                else if("background".equals(fault))f.taskBackground=new BackgroundSession(9);
+                else if("cancel".equals(fault))f.cancelled.set(true);else f.retire();
+                f.main.drain();check(r.resampleSeed==null&&seedAdmissions(r)==0,"main ownership/cancellation changed");
+                screenshotSeedReleasedPixels(f,r);f.dispose();
+            });
+        eventCase("screenshot_seed_cancellation_after_admission_releases_metadata",()->{
+            ObserverPipelineHost f=screenshotSeedFixture(null);ObservationRequest r=screenshotSeedAdmitted(f);int reads=f.reads.get();
+            f.cancelled.set(true);seedNextRead(f);check(r.finished&&r.resampleSeed==null&&f.reads.get()==reads,"cancel cannot start another graph read");
+            screenshotSeedReleasedPixels(f,r);f.dispose();
+        });
+        for(final String cutoff:new String[]{"settle_worker","settle_main","total_main","task_main"})
+            eventCase("screenshot_seed_original_"+cutoff+"_deadline_remains_hard",()->{
+                ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{
+                    if(n==3&&"settle_worker".equals(cutoff))SystemClock.now=x.activeObservation.started+10000;
+                });
+                ObservationRequest r=seedQueued(f,"task_main".equals(cutoff)?2500:30000);long deadline=r.deadline;
+                if("settle_main".equals(cutoff))SystemClock.now=r.started+10000;
+                else if("total_main".equals(cutoff)||"task_main".equals(cutoff))SystemClock.now=r.deadline;
+                f.main.drain();f.finish();f.finish();
+                check(r.resampleSeed==null&&seedAdmissions(r)==0&&r.deadline==deadline,"no cutoff can renew the request or admit a seed");
+                screenshotSeedReleasedPixels(f,r);f.dispose();
+            });
+        eventCase("screenshot_seed_next_sample_after_settle_cannot_borrow_capture_margin",()->{
+            ObserverPipelineHost f=screenshotSeedFixture((x,g,n)->{if(n==3)SystemClock.now=x.activeObservation.started+9800;});
+            ObservationRequest r=screenshotSeedAdmitted(f);seedNextRead(f);f.finish();
+            check(r.finished&&r.resampleSeed==null&&count(r,"SAMPLE_EXPIRED")==1&&f.shots.size()==1,
+                    "new sample at ten seconds expires even with two-second screenshot margin left");
+            screenshotSeedReleasedPixels(f,r);f.dispose();
+        });
+        eventCase("screenshot_seed_post_effect_uses_one_permit_and_never_mints_read_retry",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();Bitmap.encodeHook=null;s.f.hashHook=null;
+            s.f.seedFrozenRead=(r,i)->i.frozenWindow;
+            s.f.readHook=(g,n)->{int k=n-s.priorReads;sealedReadGraph(g,k<3?"pre-screenshot-form":"changed-complete-form");g.windowId=8;
+                SystemClock.now=s.started+(k==1?6050:k==2?6860:k==3?7604:k==4?8485:9274);sealGraph(g);};
+            s.queue();s.accept();ObservationRequest r=s.request;
+            check(r.resampleSeed!=null&&s.permit.admissions.get()==1&&s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),
+                    "metadata resample stays within the first actually admitted post-effect read");
+            check(s.f.current==s.prior&&r.captured==null&&s.f.directory.list().length==1,"only prior published frame may remain before new capture");
+            TakeScreenshotCallback old=s.f.pendingScreenshot;seedNextRead(s.f);
+            check(s.f.pendingScreenshot!=old&&s.f.activeObservation==r,"same post-effect request needs a new callback");
+            s.f.deliverScreenshot();s.accept();
+            check(s.out.observations.size()==1&&s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&s.permit.admissions.get()==1,
+                    "no replacement read permit or action replay introduced");
+            check(s.f.reads.get()==s.priorReads+5&&r.deadline==s.started+12000&&s.permit.transitionDeadline()==s.transition,
+                    "complete new pair obeys original request and original accepted-action transition");s.dispose();
+        });
+    }

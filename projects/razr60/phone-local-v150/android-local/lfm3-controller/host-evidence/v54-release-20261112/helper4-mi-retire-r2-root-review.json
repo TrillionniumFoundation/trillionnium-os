@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.root-uncaptured-mi-retirement-raw-close-review.v1",
+  "result": {
+    "path": "/home/alex/hepta-local-007f-20261111/helper4-current53-mi-uncaptured-retire-r2/RESULT.json",
+    "bytes": 36034,
+    "sha256": "9bc5b680c09613f04f7662c225eacdf025340879bf3f6c0702bc8e6730f6cf3f",
+    "git_blob": "d7a03c463e4a485ed113d9ba12f2659c68cc03b6"
+  },
+  "owner_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/owner-15/commands/helper4-mi-uncaptured-retire-r2/RESULT.json",
+    "bytes": 341,
+    "sha256": "83f31eaae00db3ee366f686e3204f980952b86cce66f22600c60bb1a780d16ed"
+  },
+  "raw_close": {
+    "path": "/home/alex/hepta-local-007f-20261111/helper4-current53-mi-uncaptured-retire-r2/diagnostics/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+    "bytes": 1632,
+    "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+    "full_raw_read_and_independently_rehashed": true
+  },
+  "actual_back_count": 1,
+  "departed_focus": {
+    "display_id": 0,
+    "focus_line": "mCurrentFocus=Window{27cd0bf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+    "focus_package": "org.trillionnium.hepta.local",
+    "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+  },
+  "old_diagnostic_count": 32,
+  "final_diagnostic_count": 33,
+  "old_records_exact_name_bytes_sha_preserved": true,
+  "only_new_record": {
+    "file": "diagnostics/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+    "bytes": 1632,
+    "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+    "schema": "hepta.web-helper.diagnostic-close.v2",
+    "top_level_fields": [
+      "business_verified",
+      "cleanup",
+      "reason",
+      "schema",
+      "storage_isolation"
+    ]
+  },
+  "cleanup": {
+    "captures_retired": true,
+    "stop_loading_called": true,
+    "webview_destroyed": true,
+    "active_view_absent": true,
+    "storage_clear_completed": true
+  },
+  "actual_storage_profile": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+  "profile_first_observed_in_close": true,
+  "first_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+  "retirement_callback_elapsed_ms": 56,
+  "retirement_callback_inside_device_bracket": true,
+  "prior_capture_to_profile_binding_verified": false,
+  "formal_lease_cleanup_verified": false,
+  "business_verified": false,
+  "model_invoked": false,
+  "force_stop_used": false,
+  "phone_commands_by_this_read_review": 0,
+  "scope": "Observed ordinary Back retired one signed manual singleton page. This does not convert its earlier failed DOM reads into successful capture or a model task.",
+  "earlier_failed_attempts_preserved": [
+    "helper4-current53-mi-open-r1",
+    "helper4-current53-mi-capture-r1",
+    "helper4-current53-mi-uncaptured-retire-r1"
+  ]
+}
