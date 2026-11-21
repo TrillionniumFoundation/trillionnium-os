@@ -233,6 +233,20 @@ final class NativeAppSession {
                 }
                 if(result==null&&flight.missing!=null)missing.add(flight.missing);
             }else missing.add(flight.missing==null?"native_flight_page_unrecognized":flight.missing);
+        }else if(NativeXiaomiProductPage.OPTIONAL_LOCATION.equals(phase)){
+            view.putAll(product.modelView());view.put("product_modal_exit_attempted",productModalExitAttempted);
+            view.put("modal_exit_requires_fresh_home",true);view.put("location_enable_action_available",false);
+            boolean mayDecline=optionalLocationInstallation()&&!productModalExitAttempted&&!productQueryAttempted
+                    &&productQueryProof==null&&productOpenProof==null;
+            view.put("decline_action_available",mayDecline);
+            if(mayDecline){
+                for(String id:product.clickIds)grant(clicks,purposes,frame.byId.get(id),NativeXiaomiProductPage.DECLINE_LOCATION);
+                view.put("next_goal","当前完整页面是小米商城的可选定位提示。当前动作域仅允许你选择明确的「暂不开启」控件一次，再读取实际页面；不能选择「开启定位」、授予系统权限或猜坐标。只有新的实际 home_search 页面才能继续查询；本次拒绝提示本身不是查询或价格结果。");
+            }else{
+                view.put("click_node_ids",Collections.emptyList());view.put("purposes",Collections.emptyMap());
+                missing.add("one_pinned_profile_prequery_location_decline_unavailable");
+            }
+            missing.addAll(product.missing);
         }else if(NativeXiaomiProductPage.IMAGE_MODAL.equals(phase)){
             // This permits one navigation attempt, not an interpretation of the images.
             // The same installed App, task, Selection, lease and current frame remain mandatory.
@@ -430,6 +444,18 @@ final class NativeAppSession {
 
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
+    /** The new prompt branch is qualified only for the actual managed-profile
+     * build. Existing user0 paths and image-modal Back permissions are unchanged.
+     * Live selection/profile/window and installed-verifier checks remain required. */
+    private boolean optionalLocationInstallation(){
+        return installed.profileTarget!=null&&NativeAppGoal.XIAOMI_PACKAGE.equals(installed.packageName)
+                &&installed.versionCode==20261010L&&installed.apkHashes.size()==1
+                &&"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373".equals(installed.apkHashes.get("base"))
+                &&"com.xiaomi.shop/com.xiaomi.shop2.activity.MainActivity".equals(installed.profileTarget.component)
+                &&installed.profileTarget.signerSha256.equals(Collections.singleton(
+                        "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"));
+    }
+
     /** A private Session Attempt supplies authority; the pure comparator does not.
      * All non-atomic fields are frozen on the controller after its original
      * attempt journal completed. The worker never advances/reads Session state. */
@@ -611,6 +637,13 @@ final class NativeAppSession {
                     &&!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
                     "one prequery image-modal Back proposal required");
             productModalExitAttempted=true; // Consumed even if the actual dispatch is later stale.
+        }
+        else if(NativeXiaomiProductPage.DECLINE_LOCATION.equals(purpose)){
+            need(optionalLocationInstallation()&&product!=null&&NativeXiaomiProductPage.OPTIONAL_LOCATION.equals(product.phase)
+                    &&"click".equals(action.action)&&pending==null&&product.clickIds.size()==1&&product.clickIds.contains(action.nodeId)
+                    &&!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
+                    "one model click on the exact pinned optional-location decline control required");
+            productModalExitAttempted=true; // Shared budget; stale/rejected/unknown never authorizes a replay.
         }
         else if(NativeCtripFlightPage.LOGIN_EXIT.equals(purpose)){
             NativeAppEvidence.Node loginReturn=NativeCtripFlightPage.loginReturnControl(flight);
@@ -837,7 +870,7 @@ final class NativeAppSession {
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
-            if(NativeXiaomiProductPage.LOGIN.equals(product.phase)){
+            if(NativeXiaomiProductPage.LOGIN.equals(product.phase)&&!NativeXiaomiProductPage.DECLINE_LOCATION.equals(a.purpose)){
                 proof.put("login_interrupted_navigation",true);proof.put("business_transition_verified",false);
                 proof.put("query_or_result_proof_created",false);complete=true;
             }else if(NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)&&a.product!=null
@@ -846,6 +879,10 @@ final class NativeAppSession {
             }else if("dismiss_image_modal_once".equals(a.purpose)&&a.product!=null
                     &&NativeXiaomiProductPage.IMAGE_MODAL.equals(a.product.phase)&&"home_search".equals(product.phase)){
                 proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);complete=true;
+            }else if(NativeXiaomiProductPage.DECLINE_LOCATION.equals(a.purpose)&&a.product!=null
+                    &&NativeXiaomiProductPage.OPTIONAL_LOCATION.equals(a.product.phase)&&"home_search".equals(product.phase)){
+                proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);
+                proof.put("optional_location_decline_observed",true);proof.put("system_permission_result_claimed",false);complete=true;
             }else if(("submit_exact_suggestion".equals(a.purpose)||"submit_product_query".equals(a.purpose))&&product.quote!=null&&"search_card".equals(product.quote.kind)){
                 proof.put("search_result_quote",product.quote.evidence());productQueryProof=NativeAppEvidence.immutableMap(proof);complete=true;
             }else if("open_exact_product".equals(a.purpose)&&product.quote!=null&&"detail_display".equals(product.quote.kind)){

@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 final class NativeXiaomiProductPage {
     static final String SCHEMA="hepta.native-xiaomi-product-page.v1";
     static final String IMAGE_MODAL="image_modal";
+    static final String OPTIONAL_LOCATION="optional_location_prompt";
+    static final String DECLINE_LOCATION="decline_optional_location_once";
     static final String HOME_LOADING="home_loading",HOME_LOADING_EXHAUSTED="home_loading_budget_exhausted";
     static final String LOGIN="native_login",LOGIN_BLOCKED="native_login_requires_user";
     static final String LOGIN_EXIT="leave_native_login_once";
@@ -134,6 +136,7 @@ final class NativeXiaomiProductPage {
         for(NativeAppEvidence.Node node:frame.nodes)
             if(!frame.packageName.equals(node.packageName))return unavailable(frame,"foreign_node_package");
         Page login=nativeLogin(frame);if(login!=null)return login;
+        Page location=optionalLocation(frame);if(location!=null)return location;
         if(imageModal(frame))return page(frame,IMAGE_MODAL,"image_modal_content_unclassified",null,null);
         List<NativeAppEvidence.Node> models=exactText(frame,TITLE);
         boolean detailMarkers=uniqueText(frame,"加入购物车")!=null&&uniqueText(frame,"立即购买")!=null;
@@ -141,6 +144,48 @@ final class NativeXiaomiProductPage {
         if(uniqueText(frame,"综合")!=null&&uniqueText(frame,"销量")!=null&&uniqueText(frame,"价格")!=null)
             return results(goal,frame,models);
         return inputOrHome(goal,frame,preferSearchIcon);
+    }
+
+    /** Exact complete in-App location prompt from the retained ordinary task.
+     * Only the observed negative control is a candidate. This is not a system
+     * permission dialog or evidence that a permission was granted or denied.
+     * The Session must also verify the pinned managed-profile installation and
+     * consume its existing one pre-query modal-exit budget before any dispatch. */
+    private static Page optionalLocation(NativeAppEvidence.Frame frame){
+        if(frame.left<=0||frame.top<=0||frame.right>=frame.width||frame.bottom>=frame.height
+                ||frame.nodes.size()!=3)return null;
+        NativeAppEvidence.Node message=locationNode(frame,"0/0","text_dialog_desc",
+                "为了给您推荐更精准的商品和门店，我们需要您的位置信息",false);
+        NativeAppEvidence.Node decline=locationNode(frame,"0/1","nav_text","暂不开启",true);
+        NativeAppEvidence.Node enable=locationNode(frame,"0/2","pos_text","开启定位",true);
+        if(message==null||decline==null||enable==null
+                ||message.left!=decline.left||message.right!=enable.right
+                ||message.bottom>=decline.top||decline.top!=enable.top||decline.bottom!=enable.bottom
+                ||decline.right>=enable.left
+                ||(long)decline.right-decline.left!=(long)enable.right-enable.left)return null;
+        Map<String,Object> proof=map();proof.put("prompt_message",message.fact("text"));
+        proof.put("decline_control",decline.fact("text"));proof.put("enable_control_not_granted",enable.fact("text"));
+        proof.put("complete_observed_nodes",3);proof.put("system_permission_dialog",false);
+        proof.put("location_enable_action_available",false);proof.put("fresh_home_required",true);
+        Map<String,Object> facts=map();facts.put(decline.id,proof);
+        return new Page(frame,OPTIONAL_LOCATION,Collections.singletonList("optional_location_prompt_observed"),
+                Collections.singleton(decline.id),Collections.<String,String>emptyMap(),
+                Collections.singletonMap(decline.id,DECLINE_LOCATION),facts,null);
+    }
+    private static NativeAppEvidence.Node locationNode(NativeAppEvidence.Frame frame,String path,
+            String resource,String text,boolean clickable){
+        NativeAppEvidence.Node found=null;
+        for(NativeAppEvidence.Node node:frame.nodes)if(path.equals(node.path)){
+            if(found!=null)return null;found=node;
+        }
+        if(!usable(frame,found)||!TEXT.equals(found.className)
+                ||!("com.xiaomi.shop.plugin.homepage:id/"+resource).equals(found.viewId)
+                ||!text.equals(found.text)||!text.equals(found.label)||!found.description.isEmpty()
+                ||!"android.widget.FrameLayout".equals(found.parentClass)
+                ||found.clickable!=clickable||found.editable||found.scrollable||!found.scrollDirections.isEmpty()
+                ||!Boolean.FALSE.equals(found.selected)||!Boolean.FALSE.equals(found.checkable)
+                ||!Boolean.FALSE.equals(found.checked))return null;
+        return found;
     }
 
     /** Recognizes the complete observed login form for the pinned native App.

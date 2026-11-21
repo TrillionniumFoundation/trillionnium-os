@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
-  "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
+  "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
+  "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r7_complete_host_android_phone_validation_pending",
-  "complete_source_files": 2325,
+  "candidate_status": "c98f4b30_r1_complete_host_android_phone_validation_pending",
+  "complete_source_files": 2335,
   "files": [
     {
       "bytes": 100,
@@ -6162,9 +6162,9 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
-      "bytes": 103607,
+      "bytes": 111053,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "eb102d260c2c1ddbfbc83d811e3d5356f39d31a6c0c6b23abc3aa44ebe5e7ce1"
+      "sha256": "ddc76c3a6ba7fb74ae1ec2b3552a59e47957c28a8149bced34cf49fbe31c1c5a"
     },
     {
       "bytes": 25279,
@@ -6362,9 +6362,9 @@
       "sha256": "38089d685875781319cec9b159822470d7b507c0fa8df6ceb13a00be158ee46f"
     },
     {
-      "bytes": 47413,
+      "bytes": 53743,
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
-      "sha256": "ab236b4dfa834b85aed61e4cc0949ef42ae2824615816571a892c8b2102a5895"
+      "sha256": "60f901b4a6d863f2e712d49aaa166859c4a2437fbf46a2562e16413acb3a65c4"
     },
     {
       "bytes": 25855,
@@ -6557,9 +6557,9 @@
       "sha256": "62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc"
     },
     {
-      "bytes": 77972,
+      "bytes": 78847,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "2401c0bed43100ac5d6760a6722fa36a14a7bdf4f12bf95c40fe14ce0586ce86"
+      "sha256": "038f34583a9735a886e315cd590d8daee2b1b76e025760c732ad460213da668c"
     },
     {
       "bytes": 4417,
@@ -6637,9 +6637,9 @@
       "sha256": "c2d0227fb8994b4deb570833b2aa3cae5181304c4c7582c9ba9f960925a846e7"
     },
     {
-      "bytes": 93260,
+      "bytes": 96745,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "0d92e0765f7d46b365f4bcc713d48b99333c8dd66be0461ad49c56f76bb4822b"
+      "sha256": "54ca3ecdefe2473a4b2359c3553954457be804beca2beb03359071922b4c7cce"
     },
     {
       "bytes": 2562,
@@ -6652,9 +6652,9 @@
       "sha256": "fcce736df40dfc29fe8b2b31e6c37d58e9e820ca075727dd6fd4a05aea1ae3a7"
     },
     {
-      "bytes": 48640,
+      "bytes": 51970,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "c66ebf4c03bcf523c13331800348ee195897367c41182b5c2a75c7b8c0a8768b"
+      "sha256": "386663eedd80a87cc5c79b331bd010f11bac3da4a3c5299049d95791f0345861"
     },
     {
       "bytes": 21274,
@@ -8772,6 +8772,36 @@
       "sha256": "0d95c9cc4bcbd9cad51d544af7c0b4b64d8760aed7c169b618ce928180ce1751"
     },
     {
+      "bytes": 26642,
+      "path": "tests/native-xiaomi-location/NativeXiaomiLocationHostTest.java",
+      "sha256": "00bf344a99ddcc94badb2fcb7f000c0f6348985131b3a0e017a65a134db31397"
+    },
+    {
+      "bytes": 1897,
+      "path": "tests/native-xiaomi-location/fixtures/PROVENANCE.json",
+      "sha256": "eb40ac83e673f45e65905a24f6a4b3447458ece62075f6de2b0994b522631468"
+    },
+    {
+      "bytes": 35411,
+      "path": "tests/native-xiaomi-location/fixtures/public-location-observation.json",
+      "sha256": "eb0f3e7e82a8dc45fe879df0ddfced6d49aa1d204de564a2f588b5d267925331"
+    },
+    {
+      "bytes": 11231,
+      "path": "tests/native-xiaomi-location/fixtures/public-native-app-page.json",
+      "sha256": "d09d1c4f233343aa05e47624fad64bbdd6058d2ea2d29db2682a72158c11f542"
+    },
+    {
+      "bytes": 11569,
+      "path": "tests/native-xiaomi-location/fixtures/public-native-prompt-source.json",
+      "sha256": "8511dec3efab54f7849783a2b62f59cbd63b765bf7bc56cb07fabaea475fea17"
+    },
+    {
+      "bytes": 6699,
+      "path": "tests/native-xiaomi-location/run_host.py",
+      "sha256": "653ccb951d2b26edc37e2bb20eb2a6a6312771d0190c6a548d0f7957f40d6512"
+    },
+    {
       "bytes": 28134,
       "path": "tests/native-xiaomi-login/LoginSessionCases.fragment",
       "sha256": "909d0f8ba05872af2a9834b4ee04b01d3748a045cceb191c0253398292beb347"
@@ -9767,6 +9797,16 @@
       "sha256": "38737163a2c8da4286c305666718d13b625eacdab323f825178a41495a9db27b"
     },
     {
+      "bytes": 16281,
+      "path": "tests/public-policy-diagnostics/PublicPolicyDiagnosticsHostTest.java",
+      "sha256": "0684639b0d5797a304f406e9e6f53962cfad6a2df82eb4f243b19fbc0ca388c2"
+    },
+    {
+      "bytes": 4866,
+      "path": "tests/public-policy-diagnostics/run_host.py",
+      "sha256": "6f1aa29f9a0ac82876589c374a30d5c4d5536f5412fee6e388f00a5e15ca2679"
+    },
+    {
       "bytes": 2568,
       "path": "tests/public-profile-absence/FakePublicRecoveryProcess.java",
       "sha256": "fbfbc2a838eaf29bd8f0df0694985b01e44d62c8c090cae6b29b7e6ef589f7f4"
@@ -9792,6 +9832,11 @@
       "sha256": "629f5fe465a74c667cbd48c1e1eff5d110ede5fac807b9adae0bd0cda5c7d779"
     },
     {
+      "bytes": 15330,
+      "path": "tests/public-profile-absence/PublicProfileStartupAbsenceHostTest.java",
+      "sha256": "91029331e8fa03f83c43a9cabc0c935b7fa793b7d4af9fc2ebdd97e804855c44"
+    },
+    {
       "bytes": 7697,
       "path": "tests/public-profile-absence/README.md",
       "sha256": "5df06234201acf5fd7eb837a0bfad5d60fd27b0273c69dd05907116120c27d0c"
@@ -9805,6 +9850,11 @@
       "bytes": 7848,
       "path": "tests/public-profile-absence/run_postlaunch_host.py",
       "sha256": "eb51d8e00cef122b40aa1f2217b899ec9a43652384f702193b9f0244da4b8ce5"
+    },
+    {
+      "bytes": 4955,
+      "path": "tests/public-profile-absence/run_startup_host.py",
+      "sha256": "9318819b9bcf1c3bb004d2cb77c4b0f40bc95312ec9467f4a58181150fa546b8"
     },
     {
       "bytes": 22279,
@@ -11630,11 +11680,11 @@
   "main_java_sources": 196,
   "phone_qualified": false,
   "production_build_inputs_count": 371,
-  "production_input_map_sha256": "6c962e8f9d335c9b32cac373a26a91f6ba6babe560dda2fbe973fc180c3c7566",
+  "production_input_map_sha256": "4dc7e7dab87296a3546e03bc49ca8c63c950d10cd94686c6a5fd7200225b3eb6",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved. Rebind exactly three host runner reviewed-source SHA declarations to the reviewed r4 profile and nested-action production. The inherited FD producer pin is also bound to the unchanged current ProcessGone adapter DTO. Historical comparator SHA values, all original cases and assertions, all fixture/provenance pins, and the 21 terminal-method digest remain intact; production files and compiler input map are byte-identical to r4. Reuse only copied complete same-request screenshot-mismatch graph metadata through the existing native resample seed path. Rejected pixels and Graph resources are released; the subsequent complete sample, minimum gap, new screenshot, full post-read, identity checks, original deadlines, action permits and no-replay contract remain unchanged. Add an independent 33-case screenshot-seed gate that runs all original 238 event cases unchanged; all original 35 host gates and FD cases remain required.",
-  "source_parent_head": "daa75a11ff9e6992e135074c94733895cf0873bc",
-  "source_parent_manifest_sha256": "9b8a0be678c0121ee215be123637c8f92ec4ed24ad82f919818c0b72d08df626",
+  "scope": "Exact 8df successor. Preserve all existing runtime/model files, broker admission, virtual-display/task identity, deadlines and original host regressions. Add a strictly version-bound Xiaomi optional-location decline with public derived fixtures; never offer the enable-location action. Record the first unexpected public-policy check with fixed operation phase, class and closed categories without arbitrary exception text; keep all refusal decisions unchanged. Add recovery only for an expired zero-model startup whose last authenticated APP_READY prepare_state response is ACTIVE but the original owned process subsequently proves RELEASED, matching root/leaf/token/UID/cookie and preserved history; keep current double absence samples and durable archives mandatory. Scroll cleanup feedback within its own Activity window only. No phone or Android qualification is asserted by this manifest.",
+  "source_parent_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
+  "source_parent_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

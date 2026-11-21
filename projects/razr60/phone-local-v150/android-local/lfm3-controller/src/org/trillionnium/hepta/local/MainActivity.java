@@ -46,6 +46,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private TextView modelIdentity, modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView taskAuthorizationInfo;
     private boolean accessibilityUiStarted;
+    private boolean ownerCleanupFeedbackPending;
     private boolean cachedModelFilePresent;
     private final Runnable accessibilityConnectionChanged=new Runnable(){
         @Override public void run(){
@@ -155,7 +156,15 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundInitialLabel=text("本次任务的起始应用",12);page.addView(backgroundInitialLabel);page.addView(initialBackgroundApp);
         reloadBackgroundApps();updateBackgroundSelection(null);
         cleanupBackground=button("清理上一次后台空间");
-        cleanupBackground.setOnClickListener(v -> {try{tasks.reconcileBackgroundFromOwnerButton();}catch(Exception error){taskState.setText("清理未开始："+HeptaAccessibilityService.message(error));}refresh();});
+        cleanupBackground.setOnClickListener(v -> {
+            ownerCleanupFeedbackPending=true;
+            try{tasks.reconcileBackgroundFromOwnerButton();}
+            catch(Exception error){
+                ownerCleanupFeedbackPending=false;refresh();
+                taskState.setText("清理未开始："+HeptaAccessibilityService.message(error));revealTaskState();return;
+            }
+            refresh();revealTaskState();
+        });
         LinearLayout actions=new LinearLayout(this);page.addView(actions);
         startTask=button("开始任务");actions.addView(startTask);
         stopTask=button("停止");actions.addView(stopTask);
@@ -791,7 +800,20 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n推理完整完成："+result.inferenceCompleted+"\n退出与回执已确认："+result.cleanupKnown
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
-    @Override public void onSessionChanged(){refresh(false);}
+    @Override public void onSessionChanged(){
+        refresh(false);
+        if(ownerCleanupFeedbackPending&&!tasks.isRecovering()){
+            ownerCleanupFeedbackPending=false;revealTaskState();
+        }
+    }
+    /** Scroll only this Activity's own status into view after the owner's cleanup request. */
+    private void revealTaskState(){
+        taskState.post(() -> {
+            if(accessibilityUiStarted&&hasWindowFocus()&&!isFinishing()&&!isDestroyed())
+                taskState.requestRectangleOnScreen(new android.graphics.Rect(0,0,taskState.getWidth(),
+                        Math.max(1,taskState.getLineHeight()*3)),false);
+        });
+    }
     @Override public void onPermissionPreparationChanged(){refresh();}
     private void refresh(){refresh(true);}
     /** Display-only reattachment; never launches an Activity, grants a permission,

@@ -93,7 +93,9 @@ public final class PublicProfileAbsenceRecovery {
             need(same(selection,owner.getJSONObject("background_request")),"PUBLIC_RECOVERY_OWNER_SELECTION");
             JSONObject bootstrap=object(originals.get("bootstrap")),cleanup=object(originals.get("cleanup")),result=object(originals.get("result"));
             bindBackground(bootstrap);bindBackground(cleanup);
-            need((postlaunch?"RELEASED":"INITIAL").equals(string(bootstrap,"state"))&&Boolean.valueOf(postlaunch).equals(bootstrap.get("retired"))
+            boolean startupResponseOnly=postlaunch&&"ACTIVE".equals(string(bootstrap,"state"));
+            need(((postlaunch?"RELEASED":"INITIAL").equals(string(bootstrap,"state"))||startupResponseOnly)
+                    &&Boolean.valueOf(postlaunch).equals(bootstrap.get("retired"))
                     &&Boolean.TRUE.equals(bootstrap.get("spawn_attempted")),"PUBLIC_RECOVERY_BOOTSTRAP_STATE");
             need("CLEANUP_UNKNOWN".equals(string(cleanup,"state"))&&Boolean.TRUE.equals(cleanup.get("retired"))
                     &&Boolean.TRUE.equals(cleanup.get("spawn_attempted"))&&Boolean.FALSE.equals(cleanup.get("cleanup_known"))
@@ -111,7 +113,7 @@ public final class PublicProfileAbsenceRecovery {
             if(postlaunch){
                 need(exit==0,"PUBLIC_POSTLAUNCH_BROKER_EXIT");
                 requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
-                JSONObject owned=postlaunchOrigin(bootstrap,cleanup,output);
+                JSONObject owned=postlaunchOrigin(bootstrap,cleanup,output,startupResponseOnly);
                 ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");
                 ownedLeafTaskToken=string(owned,"leaf_task_token");
             }else{ownedRootTaskId=-1;ownedLeafTaskId=-1;ownedLeafTaskToken=null;}
@@ -201,7 +203,7 @@ public final class PublicProfileAbsenceRecovery {
             if(Boolean.TRUE.equals(early.get("eof_seen")))need(size==output.length,"PUBLIC_POSTLAUNCH_EARLY_EOF_DIFFERS");
             if(Boolean.TRUE.equals(early.get("persisted")))need(same(early,complete),"PUBLIC_POSTLAUNCH_PERSISTED_RECEIPT_CHANGED");
         }
-        private JSONObject postlaunchOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
+        private JSONObject postlaunchOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output,boolean startupResponseOnly)throws Exception{
             JSONObject terminal=object(output),response=cleanup.getJSONObject("last_broker_response");
             need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))
                     &&generation.equals(string(terminal,"generation"))&&number(terminal,"display_id")==displayId
@@ -216,8 +218,8 @@ public final class PublicProfileAbsenceRecovery {
                     &&number(response,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION
                     &&ProfileIdentity.uuid(string(response,"request_id"))&&generation.equals(string(response,"generation"))
                     &&number(response,"display_id")==displayId&&displayName.equals(string(response,"display_name"))
-                    &&publicScope.sha256.equals(string(response,"display_scope_sha256"))
-                    &&"RELEASED".equals(string(response,"state"))&&Boolean.FALSE.equals(response.get("ok"))
+                    &&publicScope.sha256.equals(string(response,"display_scope_sha256")),"PUBLIC_POSTLAUNCH_ORIGINAL_RESPONSE");
+            if(!startupResponseOnly)need("RELEASED".equals(string(response,"state"))&&Boolean.FALSE.equals(response.get("ok"))
                     &&Boolean.FALSE.equals(response.get("dispatched"))&&"prepare_done".equals(string(response,"operation"))
                     &&reason.equals(string(response,"terminal_reason"))&&"PUBLIC_SCOPE_RETIRED".equals(string(response,"error"))
                     &&Boolean.TRUE.equals(response.get("public_scope_admission_retired")),"PUBLIC_POSTLAUNCH_ORIGINAL_RESPONSE");
@@ -230,6 +232,7 @@ public final class PublicProfileAbsenceRecovery {
                     &&publicScope.sha256.equals(string(readback,"scope_sha256"))&&Boolean.TRUE.equals(readback.get("valid"))
                     &&Boolean.TRUE.equals(readback.get("root_rpc_registered"))
                     &&Boolean.FALSE.equals(readback.get("serialization_grants_authority")),"PUBLIC_POSTLAUNCH_APP_READBACK");
+            if(startupResponseOnly)requireStartupResponse(response,readback);
             JSONObject cleaned=terminal.getJSONObject("profile_cleanup");
             JSONObject history=cleaned.getJSONObject("public_foreign_recent_history");
             boolean concurrent="hepta.public-profile-history-custody.v2".equals(string(history,"schema"));
@@ -237,7 +240,7 @@ public final class PublicProfileAbsenceRecovery {
             ProfilePrelaunchRecovery.keys(cleaned,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                     "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks",
                     "public_foreign_recent_history","recents_absence_scope");
-            need(same(cleaned,response.getJSONObject("profile_cleanup"))
+            need((startupResponseOnly||same(cleaned,response.getJSONObject("profile_cleanup")))
                     &&"hepta.profile-task-cleanup.v1".equals(string(cleaned,"schema"))&&generation.equals(string(cleaned,"generation"))
                     &&number(cleaned,"display_id")==displayId&&target.sha256.equals(string(cleaned,"target_sha256"))
                     &&number(cleaned,"user_id")==target.profile.userId&&number(cleaned,"user_serial")==target.profile.serial
@@ -255,7 +258,7 @@ public final class PublicProfileAbsenceRecovery {
                     &&number(task,"full_uid")==target.fullUid&&Boolean.TRUE.equals(task.get("live_absent"))
                     &&Boolean.TRUE.equals(task.get("recents_absent")),"PUBLIC_POSTLAUNCH_ORIGINAL_OWNED_IDENTITY");
             JSONObject validation=terminal.getJSONObject("profile_last_leaf_validation");
-            need(same(validation,response.getJSONObject("profile_last_leaf_validation"))
+            need((startupResponseOnly||same(validation,response.getJSONObject("profile_last_leaf_validation")))
                     &&"hepta.profile-leaf-validation.v1".equals(string(validation,"schema"))
                     &&"retained_leaf".equals(string(validation,"phase"))&&validation.get("refusal_code")==JSONObject.NULL
                     &&number(validation,"retained_task_id")==leaf&&number(validation,"observed_task_id")==leaf
@@ -295,7 +298,68 @@ public final class PublicProfileAbsenceRecovery {
             need(retained.length()==2&&numberAt(retained,0)==root&&numberAt(retained,1)==leaf,"PUBLIC_POSTLAUNCH_ORIGINAL_OWNED_SET");
             TreeSet<Long> ids=new TreeSet<Long>();for(int i=0;i<baseline.length();i++){long n=numberAt(baseline,i);
                 need(n>0&&n<=Integer.MAX_VALUE&&n!=root&&n!=leaf&&ids.add(n),"PUBLIC_POSTLAUNCH_OWNED_ID_WAS_FOREIGN");}
+            if(startupResponseOnly)requireStartupTransition(response,terminal,root,leaf,token);
             return new JSONObject().put("root_task_id",root).put("leaf_task_id",leaf).put("leaf_task_token",token);
+        }
+        /** A lost socket reply after APP_READY may leave the app's last authenticated
+         * response ACTIVE. It is historical startup evidence only. The owned Process
+         * must still have a complete RELEASED terminal, followed by the unchanged
+         * fresh double-sample absence and durable commit path. */
+        private void requireStartupResponse(JSONObject response,JSONObject readback)throws Exception{
+            need("ACTIVE".equals(string(response,"state"))&&Boolean.TRUE.equals(response.get("ok"))
+                    &&Boolean.FALSE.equals(response.get("dispatched"))&&"prepare_state".equals(string(response,"operation"))
+                    &&!response.has("error")&&!response.has("terminal_reason")
+                    &&Boolean.FALSE.equals(response.get("public_scope_admission_retired"))
+                    &&Boolean.FALSE.equals(response.get("public_scope_closing"))
+                    &&Boolean.TRUE.equals(response.get("profile_current_identity_verified"))
+                    &&Boolean.FALSE.equals(response.get("profile_cleanup_known"))
+                    &&Boolean.FALSE.equals(response.get("profile_custody_retained"))
+                    &&Boolean.TRUE.equals(response.get("profile_permission_preparing"))
+                    &&"APP_READY".equals(string(response,"profile_permission_preparation_state"))
+                    &&expires==number(response,"expires_elapsed_ms")
+                    &&target.wire().equals(string(response,"profile_target_wire"))
+                    &&Boolean.FALSE.equals(response.get("capture_secure"))&&Boolean.TRUE.equals(response.get("always_unlocked"))
+                    &&"hide".equals(string(response,"ime_policy")),"PUBLIC_STARTUP_ORIGINAL_ACTIVE_RESPONSE");
+            PublicOwnGroupPolicy.Readback historical=PublicOwnGroupPolicy.Readback.fromWire(
+                    string(response,"public_own_group_readback_wire"),publicScope);
+            need(historical.requestId.equals(string(response,"request_id"))&&historical.display.displayId==displayId
+                    &&historical.display.flags==number(response,"flags")&&historical.display.name.equals(displayName)
+                    &&historical.sha256.equals(string(readback,"broker_readback_sha256"))
+                    &&historical.requestId.equals(string(readback,"broker_request_id"))
+                    &&number(readback,"flags")==historical.display.flags
+                    &&"ordinary_app_public_display_readback".equals(string(readback,"source"))
+                    &&number(readback,"observed_started_elapsed_ms")>=historical.observedEndedElapsedMs
+                    &&number(readback,"observed_ended_elapsed_ms")>=number(readback,"observed_started_elapsed_ms")
+                    &&number(readback,"observed_ended_elapsed_ms")<expires,"PUBLIC_STARTUP_AUTHENTICATED_READBACK");
+        }
+        private void requireStartupTransition(JSONObject response,JSONObject terminal,long root,long leaf,String token)throws Exception{
+            JSONObject early=response.getJSONObject("profile_cleanup"),cleaned=terminal.getJSONObject("profile_cleanup");
+            String[] changed={"cleanup_known","live_tasks_absent","recents_tasks_absent","owned_tasks","public_foreign_recent_history"};
+            need(same(without(early,changed),without(cleaned,changed))
+                    &&Boolean.FALSE.equals(early.get("cleanup_known"))&&Boolean.FALSE.equals(early.get("live_tasks_absent"))
+                    &&Boolean.FALSE.equals(early.get("recents_tasks_absent")),"PUBLIC_STARTUP_CLEANUP_TRANSITION");
+            JSONArray tasks=early.getJSONArray("owned_tasks");need(tasks.length()==1,"PUBLIC_STARTUP_OWNED_COUNT");
+            JSONObject beforeTask=tasks.getJSONObject(0),afterTask=cleaned.getJSONArray("owned_tasks").getJSONObject(0);
+            need(same(without(beforeTask,"live_absent","recents_absent"),without(afterTask,"live_absent","recents_absent"))
+                    &&number(beforeTask,"task_id")==leaf&&number(beforeTask,"parent_task_id")==root
+                    &&token.equals(string(beforeTask,"task_token_id"))
+                    &&Boolean.FALSE.equals(beforeTask.get("live_absent"))&&Boolean.FALSE.equals(beforeTask.get("recents_absent")),
+                    "PUBLIC_STARTUP_OWNED_IDENTITY_CHANGED");
+            JSONObject beforeLeaf=response.getJSONObject("profile_last_leaf_validation"),afterLeaf=terminal.getJSONObject("profile_last_leaf_validation");
+            need(same(without(beforeLeaf,"observed_elapsed_ms"),without(afterLeaf,"observed_elapsed_ms"))
+                    &&number(beforeLeaf,"observed_elapsed_ms")>=created
+                    &&number(afterLeaf,"observed_elapsed_ms")>=number(beforeLeaf,"observed_elapsed_ms")
+                    &&number(afterLeaf,"observed_elapsed_ms")<=started,"PUBLIC_STARTUP_LEAF_IDENTITY_CHANGED");
+            JSONObject beforeHistory=early.getJSONObject("public_foreign_recent_history"),afterHistory=cleaned.getJSONObject("public_foreign_recent_history");
+            String[] historyChanges={"current_elapsed_ms","current_raw_sha256","owned_target_absent"};
+            need(same(without(beforeHistory,historyChanges),without(afterHistory,historyChanges))
+                    &&Boolean.FALSE.equals(beforeHistory.get("owned_target_absent"))
+                    &&number(beforeHistory,"baseline_elapsed_ms")>=created
+                    &&number(beforeHistory,"current_elapsed_ms")>=number(beforeHistory,"baseline_elapsed_ms")
+                    &&number(afterHistory,"current_elapsed_ms")>=number(beforeHistory,"current_elapsed_ms")
+                    &&number(afterHistory,"current_elapsed_ms")<=started
+                    &&ProfileIdentity.hash(string(beforeHistory,"current_raw_sha256"))
+                    &&ProfileIdentity.hash(string(afterHistory,"current_raw_sha256")),"PUBLIC_STARTUP_HISTORY_IDENTITY_CHANGED");
         }
         public void requireFence(long now,int boot)throws IOException{
             need(boot==requestBoot&&boot==oldBoot&&now>=started&&now<deadline&&now>expires+EXPIRY_GRACE_MS,

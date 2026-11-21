@@ -55,6 +55,7 @@ public final class BackgroundDisplayBroker {
     private final ProfileRecoveryBootCount publicBootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);
     private volatile String bootReadRetirementFailure;
     private final PublicPersonalNotesReader.FailureAudit publicNotesReadFailures=new PublicPersonalNotesReader.FailureAudit();
+    private final PublicPolicyFailureAudit publicPolicyFailures=new PublicPolicyFailureAudit();
     private final Object dispatchGate = new Object();
     private final long started = SystemClock.elapsedRealtime();
     private final long expires;
@@ -755,24 +756,43 @@ public final class BackgroundDisplayBroker {
     private void requireUnlocked() throws BrokerProtocol.Refusal {
         if(config.publicOwnGroupScope!=null){
             if(publicAdmissionRetired.get())throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_RETIRED");
+            PublicPolicyFailureAudit.Phase phase=PublicPolicyFailureAudit.Phase.FRAMEWORK_SELECTION;
             try{
                 PublicOwnGroupFramework framework=publicOwnGroupFramework;
                 if(framework==null)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_FRAMEWORK_UNAVAILABLE");
                 if(publicOwnGroupDisplayReady){
+                    phase=PublicPolicyFailureAudit.Phase.FRAMEWORK_READ;
                     framework.read(config.generation,displayId,displayName);
-                    if("ACTIVE".equals(state))publicScreenLease.requireActive();
+                    if("ACTIVE".equals(state)){
+                        phase=PublicPolicyFailureAudit.Phase.SCREEN_LEASE;
+                        publicScreenLease.requireActive();
+                    }
                 }
-                else framework.preflight();
+                else{
+                    phase=PublicPolicyFailureAudit.Phase.FRAMEWORK_PREFLIGHT;
+                    framework.preflight();
+                }
                 // New personal mode keeps the original package-location rule on
                 // fresh policy reads too; user activity in other apps stays free.
-                if(config.profileTarget==null&&displayId>1)verifyLaunchedLocations(snapshot());
+                if(config.profileTarget==null&&displayId>1){
+                    phase=PublicPolicyFailureAudit.Phase.PERSONAL_TASK_LOCATION;
+                    verifyLaunchedLocations(snapshot());
+                }
                 PublicOwnGroupTaskFence taskFence=publicTaskFence;
-                if(taskFence!=null&&displayId>1)taskFence.observe(BackgroundTaskOrganizer.publicTaskLocations(activityTasks),displayId,SystemClock.elapsedRealtime());
-                if(publicNotesCustody!=null&&publicNotesReader!=null)
+                if(taskFence!=null&&displayId>1){
+                    phase=PublicPolicyFailureAudit.Phase.TASK_LOCATION_CENSUS;
+                    taskFence.observe(BackgroundTaskOrganizer.publicTaskLocations(activityTasks),displayId,SystemClock.elapsedRealtime());
+                }
+                if(publicNotesCustody!=null&&publicNotesReader!=null){
+                    phase=PublicPolicyFailureAudit.Phase.NOTES_FRAME_AND_CUSTODY;
                     publicNotesCustody.observe(publicNotesReader.frame(),SystemClock.elapsedRealtime());
+                }
                 lastUnlockedCheck=SystemClock.elapsedRealtime();return;
             }catch(BrokerProtocol.Refusal refusal){throw refusal;}
             catch(Exception unavailable){
+                // Best-effort diagnostics cannot mask the original fail-closed refusal.
+                try{publicPolicyFailures.record(phase,unavailable,SystemClock.elapsedRealtime());}
+                catch(Throwable diagnosticUnavailable){/* Original policy outcome is unchanged. */}
                 if(publicNotesCustody!=null)publicNotesReadFailures.runtime(unavailable,SystemClock.elapsedRealtime());
                 throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_POLICY_UNAVAILABLE");
             }
@@ -1397,7 +1417,8 @@ public final class BackgroundDisplayBroker {
                 .put("public_own_group_readback_wire",publicReply==null?JSONObject.NULL:publicReply.wire())
                 .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_scope_closing",closing.get()).put("public_surface_detach",publicDetachEvidence())
                 .put("public_task_location",publicTaskFence==null?JSONObject.NULL:new JSONObject(publicTaskFence.evidence()))
-                .put("public_profile_recent_history",publicProfileHistory==null?JSONObject.NULL:new JSONObject(publicProfileHistory.evidence()));
+                .put("public_profile_recent_history",publicProfileHistory==null?JSONObject.NULL:new JSONObject(publicProfileHistory.evidence()))
+                .put("public_policy_diagnostics",new JSONObject(publicPolicyFailures.evidence()));
         }
         if (r != null) {value.put("operation", r.operation);
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
@@ -1439,7 +1460,13 @@ public final class BackgroundDisplayBroker {
             if(r!=null&&permission!=null&&r.requestId.equals(permissionWindowRequest))
                 value.put("permission_window_wire",permission.wire());
         }
-        if (error != null) value.put("error", error);
+        if (error != null) {
+            value.put("error", error);
+            if("PUBLIC_SCOPE_POLICY_UNAVAILABLE".equals(error)||"PUBLIC_SCOPE_POLICY_UNAVAILABLE".equals(terminalReason)){
+                String explanation=publicPolicyFailures.summary();
+                if(!explanation.isEmpty())value.put("message",explanation);
+            }
+        }
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
         return value.toString().getBytes(StandardCharsets.UTF_8);
     }
@@ -1460,7 +1487,8 @@ public final class BackgroundDisplayBroker {
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence())
-                    .put("public_screen_lease",new JSONObject(publicScreenLease.evidence()));
+                    .put("public_screen_lease",new JSONObject(publicScreenLease.evidence()))
+                    .put("public_policy_diagnostics",new JSONObject(publicPolicyFailures.evidence()));
             if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
                     .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
             System.out.println(terminal); }
@@ -1469,6 +1497,98 @@ public final class BackgroundDisplayBroker {
     private static int fields(Class<?> type, String... names) throws Exception {
         int result = 0; for (String name : names) result |= type.getField(name).getInt(null); return result;
     }
+    /** First unexpected policy failure only. This evidence never changes admission or cleanup. */
+    static final class PublicPolicyFailureAudit {
+        enum Phase {
+            FRAMEWORK_SELECTION, FRAMEWORK_PREFLIGHT, FRAMEWORK_READ,
+            SCREEN_LEASE, PERSONAL_TASK_LOCATION, TASK_LOCATION_CENSUS, NOTES_FRAME_AND_CUSTODY
+        }
+        private java.util.Map<String,Object> first;
+        synchronized void record(Phase phase,Exception error,long now) {
+            if(first!=null)return;
+            Throwable cause=error;int wrappers=0;
+            while(cause instanceof InvocationTargetException&&wrappers<8){
+                Throwable next=((InvocationTargetException)cause).getTargetException();
+                if(next==null||next==cause)break;
+                cause=next;wrappers++;
+            }
+            java.util.Map<String,Object> row=new java.util.LinkedHashMap<String,Object>();
+            row.put("phase",phase==null?"UNKNOWN":phase.name());
+            row.put("observed_elapsed_ms",now);
+            row.put("exception_class",className(error));
+            row.put("cause_class",className(cause));
+            row.put("reflection_wrapper_count",wrappers);
+            row.put("category",category(cause));
+            first=java.util.Collections.unmodifiableMap(row);
+        }
+        synchronized java.util.Map<String,Object> evidence(){
+            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();
+            out.put("schema","hepta.public-policy-diagnostics.v1");
+            out.put("first_failure",first);
+            out.put("diagnostics_grant_authority",false);
+            out.put("provides_cleanup_proof",false);
+            return java.util.Collections.unmodifiableMap(out);
+        }
+        synchronized String summary(){
+            if(first==null)return "";
+            String phase=(String)first.get("phase"),category=(String)first.get("category");
+            String stage;
+            switch(phase){
+                case "FRAMEWORK_PREFLIGHT":stage="后台显示启动检查";break;
+                case "FRAMEWORK_READ":stage="后台显示策略读回";break;
+                case "SCREEN_LEASE":stage="后台屏幕租约";break;
+                case "PERSONAL_TASK_LOCATION":stage="应用任务位置检查";break;
+                case "TASK_LOCATION_CENSUS":stage="后台任务隔离检查";break;
+                case "NOTES_FRAME_AND_CUSTODY":stage="笔记任务读回";break;
+                default:stage="后台策略检查";
+            }
+            String reason;
+            switch(category){
+                case "PUBLIC_SCREEN_NOT_ON":reason="后台屏幕未保持亮屏";break;
+                case "PUBLIC_SCREEN_LEASE_NOT_HELD":reason="后台屏幕租约未持有";break;
+                case "PUBLIC_SCREEN_LEASE_RETIRED":reason="后台屏幕租约已终止";break;
+                case "PUBLIC_SCREEN_LIFETIME_IDENTITY_CHANGED":reason="后台屏幕身份发生变化";break;
+                case "FRAMEWORK_PERMISSION_DENIED":reason="系统权限检查拒绝";break;
+                case "FRAMEWORK_API_UNAVAILABLE":reason="所需系统接口不可用";break;
+                case "FRAMEWORK_REFLECTION_ACCESS_DENIED":reason="系统接口访问被拒绝";break;
+                case "FRAMEWORK_TIMEOUT":reason="系统读取超时";break;
+                case "WRAPPED_POLICY_REFUSAL":reason="系统读回未满足隔离规则";break;
+                case "IO_FAILURE":reason="系统读取失败";break;
+                case "FRAMEWORK_STATE_UNAVAILABLE":reason="系统状态不可用";break;
+                case "FRAMEWORK_ARGUMENT_REJECTED":reason="系统接口拒绝参数";break;
+                default:reason="系统检查发生异常";
+            }
+            return stage+"未通过："+reason+"（"+phase+" / "+category+"）。";
+        }
+        private static String className(Throwable error){
+            if(error==null)return "UNKNOWN";
+            String name=error.getClass().getName();
+            return name.length()<=192&&name.matches("[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)*")
+                    ?name:"OTHER_EXCEPTION_CLASS";
+        }
+        private static String category(Throwable error){
+            if(error instanceof BrokerProtocol.Refusal)return "WRAPPED_POLICY_REFUSAL";
+            if(error instanceof SecurityException)return "FRAMEWORK_PERMISSION_DENIED";
+            if(error instanceof NoSuchFieldException||error instanceof NoSuchMethodException||error instanceof ClassNotFoundException)
+                return "FRAMEWORK_API_UNAVAILABLE";
+            if(error instanceof IllegalAccessException)return "FRAMEWORK_REFLECTION_ACCESS_DENIED";
+            if(error instanceof java.util.concurrent.TimeoutException)return "FRAMEWORK_TIMEOUT";
+            if(error instanceof IOException){
+                // Compare only fixed public policy tokens; never retain arbitrary exception text.
+                String reason=error.getMessage();
+                if("PUBLIC_SCREEN_NOT_ON".equals(reason))return "PUBLIC_SCREEN_NOT_ON";
+                if("PUBLIC_SCREEN_LEASE_NOT_HELD".equals(reason))return "PUBLIC_SCREEN_LEASE_NOT_HELD";
+                if("PUBLIC_SCREEN_LEASE_RETIRED".equals(reason))return "PUBLIC_SCREEN_LEASE_RETIRED";
+                if("PUBLIC_SCREEN_LIFETIME_IDENTITY_CHANGED".equals(reason))return "PUBLIC_SCREEN_LIFETIME_IDENTITY_CHANGED";
+                return "IO_FAILURE";
+            }
+            if(error instanceof IllegalStateException)return "FRAMEWORK_STATE_UNAVAILABLE";
+            if(error instanceof IllegalArgumentException)return "FRAMEWORK_ARGUMENT_REJECTED";
+            if(error instanceof RuntimeException)return "FRAMEWORK_RUNTIME_FAILURE";
+            return "FRAMEWORK_CHECKED_FAILURE";
+        }
+    }
+
     private static String code(Throwable error) {
         while (error instanceof InvocationTargetException && ((InvocationTargetException) error).getCause() != null)
             error = ((InvocationTargetException) error).getCause();

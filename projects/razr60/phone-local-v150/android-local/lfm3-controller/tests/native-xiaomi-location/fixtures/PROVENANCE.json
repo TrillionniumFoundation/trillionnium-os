@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.xiaomi-location-public-derived-fixtures.v1",
+  "public_derived_fixtures": true,
+  "exact_original_capture": false,
+  "description": "Public derived regressions preserve the complete three-node optional-location popup and software identity; they are not private evidence or a live capability.",
+  "synthetic_fields": [
+    "task and observation identifiers",
+    "background generation and window proof tokens",
+    "device-local UID, profile serial, display/window/task IDs",
+    "clock values",
+    "non-UI record and authorization hashes"
+  ],
+  "omitted_fields": [
+    "private host/device paths",
+    "live scope/readback/ownership capability wires"
+  ],
+  "preserved_fields": [
+    "complete popup node list and collection completeness",
+    "literal labels and resource/class names",
+    "node tree positions and selection flags",
+    "screen/window/node geometry",
+    "popup UI tree hashes",
+    "package, component, version, APK and signer software hashes"
+  ],
+  "private_source_records_included": false,
+  "private_source_paths_included": false,
+  "phone_runtime_qualified_by_host_tests": false,
+  "future_model_or_click_claimed": false,
+  "files": [
+    {
+      "path": "public-location-observation.json",
+      "bytes": 35411,
+      "sha256": "eb0f3e7e82a8dc45fe879df0ddfced6d49aa1d204de564a2f588b5d267925331",
+      "derived_fixture": true,
+      "exact_original_capture": false
+    },
+    {
+      "path": "public-native-app-page.json",
+      "bytes": 11231,
+      "sha256": "d09d1c4f233343aa05e47624fad64bbdd6058d2ea2d29db2682a72158c11f542",
+      "derived_fixture": true,
+      "exact_original_capture": false
+    },
+    {
+      "path": "public-native-prompt-source.json",
+      "bytes": 11569,
+      "sha256": "8511dec3efab54f7849783a2b62f59cbd63b765bf7bc56cb07fabaea475fea17",
+      "derived_fixture": true,
+      "exact_original_capture": false
+    }
+  ]
+}
