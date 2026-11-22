@@ -13,7 +13,7 @@ sys.dont_write_bytecode=True
 PKG=Path('src/org/trillionnium/hepta/local')
 HERE=Path(__file__).resolve().parent
 TEST=Path('tests/native-ctrip-form-observation')
-# acceptScreenshot pin is the reviewed typed-content publication fence successor; other baseline bodies are unchanged.
+# Historical protected pins remain exact; reviewed AX and sampling successors use strict proof-copy inverses.
 BASELINE_BODY_SHA256={'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){': '3c333501044116981cd0522e5f97a693228553c76a8bdd6471f1fce3dd94fae5', '    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{': 'a3a85b9845dd2c954adafa9769e9b6f183ce476916b5dd80b05cbc629ed7261b', '    private NativeResampleSeed nativeSavedGraphSeed(ObservationRequest request,CaptureIdentity identity,Graph graph,': '3f36b20a4e45aff418c90822bf347a76a91c795638a054696eaec6854f11e993', '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': '9a0816eff581f9d03e15dcce23c7f5e04896dc47293273bb856ff5470b834218', '    private void sampleObservation(final ObservationRequest request){': '1ce51a7e36ba0af59b43605c09b7066d20476c56cc587f9bdf8f745e298178ec', '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){': 'd86064ad2a7361af1e3be8e1b601b542d3faa73795b849c742b86397a76d710f', '    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){': '9c0d88bffdd13ad27dc78046b3fbf30c1e9665d5e84b09493a726cda38f5198c', '    private boolean nativeObservationRecheckAllowed(ObservationRequest request,Graph graph){': '047494d32858affc85c7c45d21b6740b942f20465dcffe0d19476b65d11806ec', '    private static void requireSameProfileOwner(': 'd7e53c1e6adb723a2f33ee7cb58f426dd7cdf7b35267eafa81f3cb5ce1baf8be'}
 BASELINE_FILES={
  'NativeActionSnapshotCheck.java':'d4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500',
@@ -70,18 +70,54 @@ def module(path,name):
 def once(text,old,new):
     if text.count(old)!=1:raise RuntimeError('nonunique fixture boundary: '+old[:100])
     return text.replace(old,new,1)
+# Exact reviewed post-effect sampling changes are reversed only in method proof copies.
+# acceptSample then follows the existing AX inverse; compiled parts remain current.
+REVIEWED_SAMPLING_BODY_INVERSE={
+ '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': {
+  'sha256': '8982b1a2fe3d36a8fb6881ec7db393e37082b5b503f4cebfe2eff4e68271a0c7',
+  'predecessor_sha256': '9efece9a8d9c103aa6c794911a6eb01cdbdb949567406cbfb435d1341da3285a',
+  'inverse': [
+   ('                if(!postEffectObservationOwner(request))request.rejectPostEffectIdentity();',
+    '                if(!postEffectObservationOwner(request))request.postEffectIdentityRejected=true;'),
+   ('                PostEffectSamplingRetry sampling=result==ObservationStabilityGate.Result.EXPIRED\n                        ?postEffectSamplingCandidate(request,graph,nativeRecheck,now):null;\n                if(sampling!=null){\n                    graph.close();graph=null;failPostEffectObservationAfterReadDrain(request,reason,sampling);\n                }else if(result==ObservationStabilityGate.Result.EXPIRED&&nativeReadRetryCandidate(request,graph)){',
+    '                if(result==ObservationStabilityGate.Result.EXPIRED&&nativeReadRetryCandidate(request,graph)){'),
+   ('            rememberPostEffectSamplingFrame(request,graph,nativeRecheck,now);\n',
+    ''),
+  ]},
+ '    private void sampleObservation(final ObservationRequest request){': {
+  'sha256': '6f0a1bb847e442b84973e4ecfb20d1fc67d08136cc212fa69ec3507cd28267e6',
+  'predecessor_sha256': '1ce51a7e36ba0af59b43605c09b7066d20476c56cc587f9bdf8f745e298178ec',
+  'inverse': [
+   ('                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}',
+    '                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT);}'),
+  ]},
+}
 def generate(source,output,h):
     service=(source/PKG/'HeptaAccessibilityService.java').read_text()
     evidence=(source/PKG/'NativeAppEvidence.java').read_text()
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    if h.sha(template.encode())!='662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333':
+    if h.sha(template.encode())!='1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2':
         raise RuntimeError('reviewed current observer fixture changed')
+    # Restore only the exact failure-type proof copy; template stays current for compilation.
+    typed_child_port = '''    // Explicit Android read-failure port. Existing one-argument callers remain untyped.
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;
+        StaleObservation(String message){this(message,false);}
+        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}
+    }
+'''
+    prior_stale_port = '''    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
+'''
+    prior_template_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
+    prior_typed_template = once(template,typed_child_port,prior_stale_port)
+    if h.sha(prior_typed_template.encode())!=prior_template_sha:
+        raise RuntimeError('typed child-failure port must reverse to the complete prior observer fixture')
     # Restore only a proof copy; generated code keeps the actual pending method
     # and the explicit absent-business queue carrier. No recovery can run here.
     business_port="    // Observer-only fixture has no business recovery flight or receipt.\n    // Actual held/drained recovery queues are covered by the dedicated lifecycle gate.\n    static final class PublicProfileBusinessRecoveryClient {\n        private PublicProfileBusinessRecoveryClient(){throw new AssertionError(\"no business recovery authority in observer fixture\");}\n        static boolean workPending(){return false;}\n    }\n"
-    legacy_business_template=once(template,business_port,'')
+    legacy_business_template=once(prior_typed_template,business_port,'')
     if h.sha(legacy_business_template.encode())!='1bd38ed61ce94adbb1b85c8ccd099c1b45c268c62c66b3aebca4d574f9ffdc57':
         raise RuntimeError('business queue port must reverse to the complete prior observer fixture')
     legacy_search_template=once(legacy_business_template,SEARCH_UNBOUND_PORTS,'')
@@ -124,16 +160,25 @@ def generate(source,output,h):
     for i,value in enumerate(evidence_parts):parts['evidence_'+str(i)]=value
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
-        raw=h.body(service,anchor);actual=h.sha(raw.encode())
-        if actual!=expected:
+        raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        sampling=REVIEWED_SAMPLING_BODY_INVERSE.get(anchor);sampling_inverse=False
+        if sampling is not None and actual==sampling['sha256']:
+            for revised,prior in sampling['inverse']:proof=once(proof,revised,prior)
+            if h.sha(proof.encode())!=sampling['predecessor_sha256']:
+                raise RuntimeError('reviewed sampling body must reverse to exact predecessor: '+anchor)
+            sampling_inverse=True
+        predecessor=h.sha(proof.encode());ax_inverse=predecessor!=expected
+        if ax_inverse:
             reviewed=REVIEWED_AX_BODY_INVERSE.get(anchor)
-            if reviewed is None or actual!=reviewed['sha256']:
+            if reviewed is None or predecessor!=reviewed['sha256']:
                 raise RuntimeError('protected reviewed production body changed: '+anchor)
-            legacy=once(raw,reviewed['current'],reviewed['legacy'])
+            legacy=once(proof,reviewed['current'],reviewed['legacy'])
             if h.sha(legacy.encode())!=expected:
                 raise RuntimeError('reviewed AX body must reverse to exact legacy body: '+anchor)
         protected[anchor]={'bytes':len(raw.encode()),'sha256':actual,'legacy_sha256':expected,
-                           'reviewed_ax_inverse_verified':actual!=expected}
+                           'reviewed_ax_inverse_verified':ax_inverse,
+                           'reviewed_sampling_inverse_verified':sampling_inverse,
+                           'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
@@ -231,6 +276,9 @@ def generate(source,output,h):
         if template.count(compiled_raw)!=1:raise RuntimeError('actual production body or explicit calendar type boundary was altered or duplicated: '+name)
     h.write(output/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.ctrip-form-observer-extraction.v1',
+            'typed_child_port_inverse':{'current_complete_sha256':'1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2',
+                'prior_complete_sha256':prior_template_sha,'exact_current_block_sha256':h.sha(typed_child_port.encode()),
+                'proof_copy_only':True,'actual_compilation_uses_current_template':True},
             'production_bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
             'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
             'parts':{name:{'bytes':len(raw.encode()),'sha256':h.sha(raw.encode())} for name,raw in parts.items()},

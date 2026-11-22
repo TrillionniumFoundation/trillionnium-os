@@ -95,7 +95,12 @@ public final class ObserverPipelineHost {
         static Thread myLooper(){return Thread.currentThread();}static Thread getMainLooper(){return mainThread;}
     }
     static final class NoActiveWindow extends IllegalStateException {private static final long serialVersionUID=1L;}
-    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
+    // Explicit Android read-failure port. Existing one-argument callers remain untyped.
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;
+        StaleObservation(String message){this(message,false);}
+        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}
+    }
     static final class Graph {
         ObservationDiagnostics.GraphStamp diagnosticStamp;
         ObservationDiagnostics.CensusStamp diagnosticCensus;

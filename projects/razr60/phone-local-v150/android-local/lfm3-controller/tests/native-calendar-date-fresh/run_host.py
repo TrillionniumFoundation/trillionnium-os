@@ -59,6 +59,23 @@ def main():
   def block(owner,t,a,b):
    v=section(t,a,b);extracted.append({'source':str(S/PKG/owner),'start':a,'end':b,'bytes':len(v.encode()),'sha256':sha(v.encode()),'verbatim':True});return v
   ha=[]
+  # The actual null-submission path is shared by the calendar read admission.
+  # Keep its cleanup/activation methods verbatim; this fixture cannot mint a
+  # post-effect retry proof or a NativeReadIdentity.
+  for field in ['    private final Object postEffectSamplingLock=new Object();',
+                '    private PostEffectSamplingRetry pendingPostEffectSampling;']:
+   if H.count(field)!=1:raise RuntimeError('one exact sampling tracker field required')
+   ha.append(field)
+   extracted.append({'source':str(S/PKG/'HeptaAccessibilityService.java'),'field':field,
+    'bytes':len(field.encode()),'sha256':sha(field.encode()),'verbatim':True})
+  for anchor in [
+   '    private static final class PostEffectSamplingRetry {',
+   '    private void discardPostEffectSampling(PostEffectSamplingRetry expected){',
+   '    private boolean postEffectSamplingCurrent(PostEffectSamplingRetry pending,long now){',
+   '    private PostEffectSamplingRetry postEffectSamplingHandoff(PostEffectObservationRetryProof proof){',
+   '    private void discardPostEffectSamplingSubmission(PostEffectObservationRetryProof proof){',
+   '    private void activateObservationRequest(ObservationRequest request){']:
+   ha.append(member('HeptaAccessibilityService.java',H,anchor))
   for field in ['    private final Object nativeSearchEventLock=new Object();',
                 '    private CalendarFreshObservation nativeCalendarTracked;']:
    if H.count(field)!=1:raise RuntimeError('one exact calendar tracker field required')
@@ -114,6 +131,16 @@ def main():
   here=S/'tests/native-calendar-date-fresh'
   for n in ['HeptaFreshHost.template','ControllerFreshHost.template']:originals.append(here/n)
   ht=(here/'HeptaFreshHost.template').read_text().replace('@@OLD_TYPES@@','\n'.join(oldtypes)).replace('@@ACTUAL_HA@@','\n'.join(ha))
+  # Exact old shape replacement; no successful proof/identity port is added.
+  prior_proof='    static final class PostEffectObservationRetryProof {}'
+  refusing_proof='    // Only type closure for the unavailable post-effect route. A valid proof\n    // is never created by this calendar host fixture.\n    static final class PostEffectObservationRetryProof {\n        final Object issuer=null,samplingHandoff=null;\n        final NativeReadIdentity identity=null;\n        final String taskId=null,requestId=null;\n        final long deadline=-1,transitionDeadline=-1;\n        final AtomicBoolean consumed=new AtomicBoolean(false);\n        private PostEffectObservationRetryProof(){\n            throw new AssertionError("post-effect retry proof unavailable in calendar fixture");\n        }\n    }'
+  prior_stale='    static final class StaleObservation extends RuntimeException {private static final long serialVersionUID=1L;}'
+  if ht.count(prior_proof)!=1 or ht.count(prior_stale)!=1:raise RuntimeError('exact prior calendar proof/failure ports required')
+  ht=ht.replace(prior_proof,refusing_proof,1).replace(prior_stale,member('HeptaAccessibilityService.java',H,'    private static final class StaleObservation extends IllegalStateException {'),1)
+  extracted.append({'fixture_type_port':'PostEffectObservationRetryProof','private_throwing_constructor':True,
+   'cannot_issue_post_effect_proof':True,'native_read_identity_port_still_refuses':True,
+   'prior_bytes':len(prior_proof.encode()),'prior_sha256':sha(prior_proof.encode()),
+   'bytes':len(refusing_proof.encode()),'sha256':sha(refusing_proof.encode())})
   generated('org/trillionnium/hepta/local/HeptaAccessibilityService.java',ht)
   lt=[member('LocalTaskController.java',L,'    private static NotesCompletionEvidence.Frame completionFrame(PhoneObservation o){'),
       block('LocalTaskController.java',L,'    void requireNativeCalendarFreshOwner(NativeAppSession.CalendarFreshRead read){','    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{'),

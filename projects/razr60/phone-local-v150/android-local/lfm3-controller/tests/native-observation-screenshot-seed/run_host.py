@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Execute the actual observer with independent screenshot-mismatch seed cases.
 
-All original event cases and assertions run first, from byte-pinned original
-fixture bodies. Exact fail-only form/AX ports and reviewed diagnostic test changes
-are separately pinned; reversing them must restore the complete original fixture bytes. Android traversal, pixels, Session issuance and device success remain
+All original event cases and assertions run first, with the reviewed before-accept
+scheduling repair and its one added precondition assertion. Current fixture hashes
+and exact proof-copy inverses preserve the original bodies and every old assertion.
+Exact fail-only form/AX ports and diagnostic changes remain separately pinned.
+Android traversal, pixels, Session issuance and device success remain
 outside this host boundary. An optional final manifest/map pair binds a frozen
 reviewed source; every run records the complete source inventory before/after.
 """
@@ -71,9 +73,24 @@ def verify_original_fixtures(source, before):
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
 '''
     raw = (source / template).read_bytes()
-    current_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
+    current_sha = '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2'
     need(before[template]['sha256'] == sha(raw) == current_sha,
          'reviewed fail-only fixture template differs')
+    # Proof copy only: the actual generator still reads the current typed-failure port.
+    typed_child_port = b'''    // Explicit Android read-failure port. Existing one-argument callers remain untyped.
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;
+        StaleObservation(String message){this(message,false);}
+        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}
+    }
+'''
+    prior_stale_port = b'''    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
+'''
+    prior_template_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
+    need(raw.count(typed_child_port) == 1, 'exact reviewed typed child-failure port required')
+    raw = raw.replace(typed_child_port, prior_stale_port, 1)
+    need(sha(raw) == prior_template_sha,
+         'typed child-failure port must reverse to the complete prior observer fixture')
     # Proof copy only: actual observer compilation retains every current port.
     business_port = "    // Observer-only fixture has no business recovery flight or receipt.\n    // Actual held/drained recovery queues are covered by the dedicated lifecycle gate.\n    static final class PublicProfileBusinessRecoveryClient {\n        private PublicProfileBusinessRecoveryClient(){throw new AssertionError(\"no business recovery authority in observer fixture\");}\n        static boolean workPending(){return false;}\n    }\n".encode()
     need(raw.count(business_port) == 1, 'exact absent business-recovery queue carrier required')
@@ -139,9 +156,50 @@ def verify_original_fixtures(source, before):
     need(event_raw.count(event_guard_current) == 1, 'unique exact event-generator history guard delta required')
     event_original = event_raw.replace(event_guard_current, event_guard_legacy, 1)
     need(sha(event_original) == PINNED_FIXTURES[event_runner], 'complete original event generator bytes differ')
-    need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner)),
+    # Root's reviewed before-accept scheduling repair is reversed only in this proof copy.
+    seed_fixture = 'tests/native-observation-events/SavedGraphSeedCases.fragment'
+    seed_current = (source / seed_fixture).read_bytes()
+    seed_current_sha = '2f427a6221011b52d3781201f6b98652600d3d7a09e8c7fb1fc9bc1efe6fb446'
+    need(len(seed_current) == 85702 and before[seed_fixture]['sha256'] == sha(seed_current) == seed_current_sha,
+         'exact reviewed current saved-seed schedule required')
+    seed_inverse_operations = [
+        (b'''            ObserverPipelineHost f=seedFixture((x,g,n)->{if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);});
+''', b'''            final Block beforeAccept="unknown_before_accept".equals(reason)?new Block():null;
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);
+                if(n==5&&beforeAccept!=null)beforeAccept.run();
+            });
+'''),
+        (b'''            SystemClock.now+=200;f.main.drain();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            if("unknown_before_accept".equals(reason))f.noteObservationEvent(-1);
+''', b'''            // Hold the actual next read until the test main has stopped draining.
+            // Otherwise a fast worker can post and deliver acceptSample during
+            // this same drain, before the intended before-accept event is sent.
+            SystemClock.now+=200;f.main.drain();
+            if(beforeAccept!=null){beforeAccept.entered();beforeAccept.open();}
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            if("unknown_before_accept".equals(reason)){
+                check(r.resampleSeed!=null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"before-accept event must precede sample acceptance");
+                f.noteObservationEvent(-1);
+            }
+'''),
+    ]
+    seed_prior = seed_current
+    for prior_block, current_block in reversed(seed_inverse_operations):
+        need(seed_prior.count(current_block) == 1, 'unique exact saved-seed scheduling block required')
+        seed_prior = seed_prior.replace(current_block, prior_block, 1)
+    need(len(seed_prior) == 85000 and sha(seed_prior) == PINNED_FIXTURES[seed_fixture],
+         'saved-seed scheduling inverse must restore the complete original fixture')
+    need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner, seed_fixture)),
          'original reviewed fixture bytes differ')
     return {'template': template, 'current_sha256': current_sha,
+            'typed_child_port_inverse': {'prior_complete_sha256': prior_template_sha,
+                'exact_current_block_sha256': sha(typed_child_port), 'proof_copy_only': True,
+                'actual_compilation_uses_current_template': True},
+            'saved_seed_schedule_inverse': {'current_complete_sha256': seed_current_sha,
+                'prior_complete_sha256': sha(seed_prior), 'exact_inverse_operations': 2,
+                'reviewed_additional_assertions': 1, 'proof_copy_only': True,
+                'actual_compilation_uses_current_fragment': True},
             'original_sha256': original_sha, 'exact_removed_bytes': len(port) + len(ax_ports) + len(search_ports) + len(business_port),
             'diagnostic_runner_current_sha256': sha(diagnostic_current),
             'diagnostic_calendar_inverse': diagnostic_calendar_inverse,
@@ -257,7 +315,7 @@ def main():
               'new_action_authority': False, 'action_replayed': False, 'read_permit_expanded': False,
               'deadline_expanded_by_this_candidate': False,
               'compiler_contract': 'JDK17 --release 8 -Xlint:all -Werror',
-              'boundary': 'Actual complete observer plus unchanged original fixture bodies and exact pinned fail-only form/AX ports; synthetic Android graph/window/clock/pixel IO and synthetic Session carrier. Device traversal, Session permit issuance, currentness and business completion are not proved.'}
+              'boundary': 'Actual complete observer, preserved original assertions, reviewed before-accept scheduling with one added assertion, and exact pinned fail-only form/AX ports; synthetic Android graph/window/clock/pixel IO and synthetic Session carrier. Device traversal, Session permit issuance, currentness and business completion are not proved.'}
     before = None
     tool_before = None
     try:
@@ -306,7 +364,10 @@ def main():
         extraction['independent_screenshot_seed_cases'] = {'fragment': helper.meta(source / TEST / 'ScreenshotGraphSeedCases.fragment'),
                                                           'original_generated_fixture_sha256': sha(original.encode()),
                                                           'append_only_reverse_byte_equality': True,
-                                                          'original_cases_and_assertions_unchanged': True}
+                                                          'pre_append_generated_fixture_preserved_exactly': True,
+                                                          'original_cases_and_assertions_preserved': True,
+                                                          'saved_seed_scheduling_repaired': True,
+                                                          'reviewed_before_accept_assertions_added': 1}
         helper.save(output / 'EXTRACTION.json', extraction)
         classes = output / 'classes'
         classes.mkdir()
@@ -322,14 +383,15 @@ def main():
         cases = json.loads((output / 'CASES.json').read_text())
         new = json.loads((output / 'SEED-CASES.json').read_text())
         need(cases['all_pass'] is True and len(cases['case_names']) == len(set(cases['case_names'])) == cases['cases'], 'complete unique passing event cases required')
-        need(new['all_pass'] is True and new['original_cases'] == 238 and new['original_assertions'] == 3670,
-             'all original 238 cases and 3670 assertions must execute unchanged')
+        need(new['all_pass'] is True and new['original_cases'] == 238 and new['original_assertions'] == 3671,
+             'all original 238 cases and 3670 assertions plus the reviewed before-accept assertion must execute')
         need(new['new_cases'] == len(new['new_case_names']) == 33 and all(name.startswith('screenshot_seed_') for name in new['new_case_names'])
              and cases['cases'] == new['original_cases'] + new['new_cases']
              and cases['assertions'] == new['original_assertions'] + new['new_assertions'], 'independent seed case accounting differs')
         result.update(all_pass=True, cases=cases['cases'], assertions=cases['assertions'], original_cases=new['original_cases'],
                       original_assertions=new['original_assertions'], new_cases=new['new_cases'], new_assertions=new['new_assertions'],
-                      original_cases_and_assertions_preserved=True, cases_file=helper.meta(output / 'CASES.json'),
+                      original_cases_and_assertions_preserved=True, historical_original_assertions=3670,
+                      reviewed_before_accept_assertions_added=1, cases_file=helper.meta(output / 'CASES.json'),
                       seed_cases_file=helper.meta(output / 'SEED-CASES.json'), extraction_file=helper.meta(output / 'EXTRACTION.json'),
                       generated_files={path.name: helper.meta(path) for path in generated.glob('*.java')})
     except Exception as error:

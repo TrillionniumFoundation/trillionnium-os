@@ -64,6 +64,21 @@ def prepare(source, output):
                           + section(s, '    private static void requireSubmitWindow(', '    private static String fileSha256(')),
         'strings': section(s, '    private static String string(', '\n}'),
     }
+    # The exact lease cleanup now also retires a pending post-effect read.
+    # Keep both actual cleanup methods and their lock/state declarations. This
+    # legacy carrier never starts an observer or constructs/registers a pending
+    # retry; its private type is only the fields consumed by the real cleanup.
+    post_effect_cleanup = section(s,
+        '    private final Object postEffectSamplingLock=new Object();',
+        '    private void notePostEffectSamplingEvent(')
+    post_effect_cleanup_ports = '''    private static final class PostEffectSamplingRetry {
+        final String taskId=null;
+        boolean invalidated,closed;
+        private PostEffectSamplingRetry(){
+            throw new UnsupportedOperationException("No post-effect observer or retry authority in legacy qualification fixture");
+        }
+    }
+'''
     # This legacy fixture executes the actual native mode admission and every
     # original dispatch method. Its observation IO has no asynchronous worker.
     # Exclude only the adjacent AX request/census/worker/publication block;
@@ -268,7 +283,7 @@ final class VlmInferenceAdapter {
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
     marker='{{service_interfaces_outcome}}\n'
     if fixture.count(marker)!=1:raise RuntimeError('one legacy Service interface boundary')
-    fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports,1)
+    fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports+post_effect_cleanup_ports+post_effect_cleanup,1)
     for name, code in pieces.items():
         fixture = fixture.replace('{{' + name + '}}', code)
     if '{{' in fixture:
@@ -555,5 +570,14 @@ final class PublicProfileBusinessRecoveryClient {
         'calendar_action_only_excluded':{'bytes':len(calendar_action_only.encode()),'sha256':hashlib.sha256(calendar_action_only.encode()).hexdigest()},
         'calendar_actual_methods_covered_by':['tests/native-calendar-date-fresh/run_host.py','tests/native-calendar-date-actions/run_host.py','tests/native-calendar-probe-diagnostic/run_host.py'],
         'separate_calendar_gate_execution_claimed_here':False,'calendar_model_or_input_qualified':False}
+    record['post_effect_cleanup_legacy_boundary']={
+        'actual_cleanup_and_lock_declarations':{
+            'bytes':len(post_effect_cleanup.encode()),
+            'sha256':hashlib.sha256(post_effect_cleanup.encode()).hexdigest()},
+        'type_only_port_sha256':hashlib.sha256(post_effect_cleanup_ports.encode()).hexdigest(),
+        'actual_lease_block_unchanged':True,
+        'actual_discard_methods_verbatim':True,
+        'pending_retry_constructible':False,'observer_worker_or_registration_present':False,
+        'new_retry_or_effect_authority':False,'old_cases_or_assertions_changed':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record

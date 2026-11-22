@@ -226,11 +226,23 @@
             f.main.drain();seedNotAdmitted(f,r,reason);check(count(r,"SAMPLE_READY")==1,"watermark admitted capture");f.dispose();
         });
         for(final String reason:new String[]{"unknown_in_gap","unknown_during_read","unknown_before_accept"})eventCase("saved_seed_unknown_cross_sample_"+reason,()->{
-            ObserverPipelineHost f=seedFixture((x,g,n)->{if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);});
+            final Block beforeAccept="unknown_before_accept".equals(reason)?new Block():null;
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);
+                if(n==5&&beforeAccept!=null)beforeAccept.run();
+            });
             ObservationRequest r=seedAdmitted(f);
             if("unknown_in_gap".equals(reason))f.noteObservationEvent(-1);
-            SystemClock.now+=200;f.main.drain();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
-            if("unknown_before_accept".equals(reason))f.noteObservationEvent(-1);
+            // Hold the actual next read until the test main has stopped draining.
+            // Otherwise a fast worker can post and deliver acceptSample during
+            // this same drain, before the intended before-accept event is sent.
+            SystemClock.now+=200;f.main.drain();
+            if(beforeAccept!=null){beforeAccept.entered();beforeAccept.open();}
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            if("unknown_before_accept".equals(reason)){
+                check(r.resampleSeed!=null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"before-accept event must precede sample acceptance");
+                f.noteObservationEvent(-1);
+            }
             f.main.drain();check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"unknown borrowed seed");
             check(f.delivered.isEmpty()&&f.directory.list().length==0,"unknown published");f.dispose();
         });

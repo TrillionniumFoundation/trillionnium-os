@@ -3,28 +3,41 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "444ec57_successor_r28_final_test_carrier_snapshot",
-  "complete_source_files": 2453,
+  "candidate_status": "b0531ec_successor_r29_final_form_proof_snapshot",
+  "complete_source_files": 2455,
   "current_successor_delta": {
-    "baseline": "integrated-r27",
-    "original_cases_and_assertions_preserved": true,
+    "baseline": "integrated-r28-r3",
+    "consumer_actual_assertions": 1770,
+    "consumer_actual_cases": 132,
+    "consumer_actual_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/source",
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/InputChannelIsolation.java",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/MainActivity.java"
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
     ],
-    "scope": "Refresh restored profile display labels before rebuilding the adapter without changing remembered selection or authority. Extend only the typed pre-claim event fence after target/ancestor refresh through the existing drained, one-successor no-effect path, retaining the original deadlines and new observation/model requirements. Accept validated blanked DisplayInfo -1 as non-target metadata and, only with that record, retain physical display 0/1 windows without their geometry rows. Preserve every window/token alias check and all target-display geometry, UID, lease and event guards. Preserve the first calendar probe failure when retiring the public scope. No phone outcome is inferred from host evidence.",
+    "sampling_actual_assertions": 4516,
+    "sampling_actual_cases": 277,
+    "sampling_actual_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/source",
+    "sampling_new_cases": 39,
+    "sampling_original_cases": 238,
+    "scope": "Preserve the accepted typed current-C same-Attempt resampling change. Add only a private post-effect read successor for actual typed child-unavailable sampling exhaustion: two complete same-identity graphs, resource retirement, actual serial read drain, main callback ordering and a same-identity pending event handoff. Reuse existing NAS/LTC one-use permit and durable intent. Do not replay an action, model call, old graph or PNG; do not extend the original 8s/174s search or 10s settle+2s capture/15s transition/task deadlines.",
+    "test_added_paths": [
+      "tests/native-post-effect-sampling/run_host.py",
+      "tests/native-post-effect-sampling/SamplingCases.fragment"
+    ],
     "test_changed_paths": [
-      "tests/calendar-window-isolation/BrokerProbeHost.template",
-      "tests/calendar-window-isolation/CalendarWindowHostTest.java",
-      "tests/calendar-window-isolation/run_host.py",
-      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/notes-after-release-reader/run_host.py",
-      "tests/profile-permission-ready-confirmation/run_host.py",
-      "tools/run_public_own_group_adapter_host.py"
-    ]
+      "tests/native-calendar-date-actions/run_host.py",
+      "tests/native-calendar-date-fresh/run_host.py",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-observation-events/SavedGraphSeedCases.fragment",
+      "tests/native-observation-screenshot-seed/run_host.py",
+      "tests/native-post-effect-sampling/SamplingCases.fragment",
+      "tests/native-post-effect-sampling/run_host.py",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/observation-pipeline/ObserverPipelineHost.template",
+      "tests/qualification-scope/prepare_fixture.py"
+    ],
+    "xiaomi_actual_assertions": 2122,
+    "xiaomi_actual_cases": 170,
+    "xiaomi_actual_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/xiaomi-current-c-sampling-r1/source"
   },
   "files": [
     {
@@ -6548,9 +6561,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 581950,
+      "bytes": 597154,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "4dbc07ef4ac88fa276491161377794de93c645430f9dde3ed3639f079cdd8687"
+      "sha256": "3d5ed8bf01a564890ec002f2b5982142a7e20ab2e47abd68bce0960c46b858a1"
     },
     {
       "bytes": 711,
@@ -8678,9 +8691,9 @@
       "sha256": "b31fc44038c3248992852dcff27be984eb95fa7d6deae951046c5b3d7f9ef5e2"
     },
     {
-      "bytes": 19391,
+      "bytes": 22330,
       "path": "tests/native-calendar-date-actions/run_host.py",
-      "sha256": "e8f6595e0f7b3071c22bbcaad771afe09c11ad8e383cda0d4a087f1a22585a2e"
+      "sha256": "7c1a23be6a54650bfae9f3e0723be147cff951cf640ddd5696a886153d71b7db"
     },
     {
       "bytes": 3371,
@@ -8698,9 +8711,9 @@
       "sha256": "f6ab1b948cfd654f6902eed978b0acba1232187b3efe8ccaa7a31f7470254937"
     },
     {
-      "bytes": 15593,
+      "bytes": 18475,
       "path": "tests/native-calendar-date-fresh/run_host.py",
-      "sha256": "05657cf779a7659a6c7a545172bbdabdd70340dd13f70ad5c3cf8a26a7f1ece6"
+      "sha256": "8bb0c788d718a4563a080ca03979d383da9dcc8794f74c46f41ec28f4451b472"
     },
     {
       "bytes": 27848,
@@ -8858,9 +8871,9 @@
       "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
     },
     {
-      "bytes": 56712,
+      "bytes": 60817,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "c9b8ee267d42d36a97be4e24bad5e2e82dd7c5942140ad8e0864a082f3742f32"
+      "sha256": "9a8a738fc2adb19a6895f840d4f3ddae5995b6dee97e237ba241dc56cca3aa27"
     },
     {
       "bytes": 3524,
@@ -8968,9 +8981,9 @@
       "sha256": "a194335ea6ebee1bb5830190ef46645d84a2cd672b6ef0977aceb642b8a6d32b"
     },
     {
-      "bytes": 85000,
+      "bytes": 85702,
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "sha256": "39f8b1060264a291e5e1575e18039cafccc63a49eba29d1af3f0c3094a01af18"
+      "sha256": "2f427a6221011b52d3781201f6b98652600d3d7a09e8c7fb1fc9bc1efe6fb446"
     },
     {
       "bytes": 18582,
@@ -9013,9 +9026,9 @@
       "sha256": "71814de4f7537fffa9834579817c7f2c435bfc82aeb8ada43b22d59f3213683f"
     },
     {
-      "bytes": 40167,
+      "bytes": 44925,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "2db2c4ad70ede6c9ec93633bf3508401363b423b0dbf42c76e3e20ef247800d7"
+      "sha256": "8d16ad99bbbd45506bba7eb9e43ebf140a317dd600a2cdcd1a9d0da58176226a"
     },
     {
       "bytes": 7722,
@@ -9036,6 +9049,16 @@
       "bytes": 14746,
       "path": "tests/native-observation-snapshot/run_host.py",
       "sha256": "6382f3251b671d1f0bd81c6168cad215c93e2fd6259c56cb100a9b89e4ce3ed5"
+    },
+    {
+      "bytes": 23264,
+      "path": "tests/native-post-effect-sampling/SamplingCases.fragment",
+      "sha256": "54dddd004fafca5f999a8ac920096fe229c4c42e64799e5fb0082f94b49f5647"
+    },
+    {
+      "bytes": 10367,
+      "path": "tests/native-post-effect-sampling/run_host.py",
+      "sha256": "2f18d7ced4df884ee16010c945e02a0fa69ebf9f280b2043249321fc6a80a268"
     },
     {
       "bytes": 9080,
@@ -9133,9 +9156,9 @@
       "sha256": "5419391dd19ca713733d5ebc1c125c6b3a0b02e039e8f8b8f624efa97f2a07d3"
     },
     {
-      "bytes": 41288,
+      "bytes": 48393,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "71b04d119d2ec40c88be101e8048715502f14181bbbd24d7bd9322dffa740c49"
+      "sha256": "bf0510d6e5beb7bcf716cde5277cac582455926f326fe4bc4cb3397bc24d0a8f"
     },
     {
       "bytes": 31363,
@@ -9783,9 +9806,9 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 36592,
+      "bytes": 36877,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333"
+      "sha256": "1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2"
     },
     {
       "bytes": 8470,
@@ -10788,9 +10811,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 47714,
+      "bytes": 49201,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "bef91f319009d82192fedecae4c5df81bebd5db84fb632423a2f4cd2bf66284b"
+      "sha256": "85fb6beaad4e09e2eb897a789407bdcb7473a26f086766cda4840fc919ec8e59"
     },
     {
       "bytes": 2997,
@@ -12288,32 +12311,435 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
+  "final_form_pin_successor": {
+    "actual_execution": {
+      "actual_origin_is_preserved": true,
+      "name": "native-ctrip-form",
+      "result": {
+        "bytes": 5068,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-form-protected-bodies-r1/actual-r1/RESULT.json",
+        "sha256": "1db8e2e5d72e09afc0e82491fd013332e5c175106fd0b254f4ff49e8de8c16da"
+      },
+      "success_field": "all_pass"
+    },
+    "baseline": "integrated-r29-r2",
+    "baseline_manifest": {
+      "bytes": 485661,
+      "mode": 420,
+      "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29-r2/source/SOURCE-MANIFEST.json",
+      "sha256": "e7cd996080ab26c5167fb78707ceeeb20dbaf80dcede05091134e1f6061aafc0"
+    },
+    "baseline_mode": 420,
+    "candidate_mode": 420,
+    "changed_path": "tests/native-ctrip-form-observation/run_observer_host.py",
+    "no_tests_during_freeze": true,
+    "origin_mode_not_copied": true,
+    "original_failure": {
+      "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29-r2/source",
+      "name": "r29-r2-ctrip-form-protected-body-pins",
+      "result": {
+        "bytes": 4795,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-template-pin-final-execution-r1/form/RESULT.json",
+        "sha256": "c4347a78120a8dc85b9eb16001d800f59775c9ed308b65b5fbb52619fbe19b92"
+      }
+    },
+    "original_protected_pins_and_compiled_current_methods_preserved": true,
+    "production_map_unchanged": true,
+    "reviewed_origin": {
+      "bytes": 60817,
+      "mode": 432,
+      "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-form-protected-bodies-r1/review-r1/files/tests/native-ctrip-form-observation/run_observer_host.py",
+      "sha256": "9a8a738fc2adb19a6895f840d4f3ddae5995b6dee97e237ba241dc56cca3aa27"
+    }
+  },
   "fixture_compatibility": {
-    "current_changes": "Eight reviewed test files accompany four production updates. The final adapter-only fixture change binds the real state Request.parse context before executing the unchanged retirement hunk; original case bodies and assertions remain unchanged. All earlier failed executions remain immutable.",
+    "actual_producer_and_consumer_are_separate_host_domains": true,
+    "added_before_accept_assertions": 1,
+    "current_changes": "Six final test-only files repair observed compilation/proof-copy boundaries and one old test race. Qualification and calendar carriers compile the actual cleanup/admission methods with nonconstructible unavailable proof types. Seed/form generators reverse only exact reviewed IO/type and seed-fragment changes for historical pins while compiling current production. The old unknown-before-accept seed case now holds the existing fifth-read Block before event injection and adds one assertion proving acceptance has not happened. Original assertions and all production bytes remain unchanged. Final form-only compatibility adds exact current acceptSample/sampleObservation pins and full inverse proof to the previously reviewed bodies; the production methods and original assertions are unchanged.",
+    "existing_assertions_preserved": true,
     "historical_failed_attempts_preserved": true,
     "new_tests_do_not_claim_phone_success": true,
-    "original_case_assertions_preserved": true
+    "observer_generated_inverse_equal": true
   },
+  "historical_parent_scope": "Exact source successor to published d7fc49f. Integrate reviewed typed calendar protocol, immutable goal and date provenance, model proof and fresh observation, private permit, original ActionWork/ActionSlot one-claim action worker, dedicated background date RPC and broker handler, current FORM SelectionEvidence and once-only QUERY guard continuation. Also integrate the explicit zero-touch probe-only controller branch and the narrowly authenticated Xiaomi horizontal clipped carousel-edge enclosure proof. Compile-only WindowInfos headers remain separate classpath inputs and are forbidden from app classes and APK DEX definitions. All original task, profile, display, ownership, observation, permission, deadline, final effect and cleanup guards remain in force. Host Android/model/socket ports and retained historical scopes are not Android execution or business success. Current signed build, phone qualification, input isolation and business outcomes require separate actual evidence. R26 changes only eighteen test fixture and runner files; all reviewed production behavior and original failure evidence remain unchanged. R27 adds only six test runner compatibility fixes to the frozen r26 snapshot; all reviewed production behavior and original failure evidence remain unchanged. R28 is a successor to published 444ec57 with the four production and seven test paths enumerated in current_successor_delta. Prior failures remain immutable; this source freeze does not assert Android or business qualification. The final r28 snapshot adds only the standalone public-own-group adapter test carrier context and its manifest entry. Production input bytes and modes remain exactly those executed by current r28-r2 canonical123, SDK211 and host gates; those original execution paths are retained, with the one repaired adapter gate recorded separately.",
   "host_fixture_successor": {
-    "baseline": "integrated-r28-r2",
-    "baseline_manifest_sha256": "a5ad01ff11e14eb07f5ba5dadfe952bb41129f519a4ca2a172e8a4cb1dc43ac8",
+    "actual_sdk_java_sources": 211,
+    "actual_sdk_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+    "actual_sdk_program_classes": 982,
+    "baseline": "integrated-r29",
+    "baseline_manifest_sha256": "36e3a854873a50df33ceaff7b557055a2db9193cc3244b2c75a5a1d7026fac6b",
     "changed_paths": [
-      "tools/run_public_own_group_adapter_host.py"
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/native-calendar-date-fresh/run_host.py",
+      "tests/native-calendar-date-actions/run_host.py",
+      "tests/native-observation-screenshot-seed/run_host.py",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-observation-events/SavedGraphSeedCases.fragment"
     ],
-    "full_canonical_and_sdk_actual_origin": "integrated-r28-r2",
-    "no_tests_or_compilers_reexecuted_during_freeze": true,
-    "original_cases_and_assertions_preserved": true,
-    "production_input_map_unchanged": true
+    "completed_shadow_repairs": [
+      {
+        "actual_origin_is_preserved": true,
+        "name": "qualification-and-routing",
+        "result": {
+          "bytes": 9685,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-qualification-cleanup-r1/required-execution-r1/RESULT.json",
+          "sha256": "80f35f2cef96dd091ab433d90c9b7a64c697526aa326ad507cf4b037c79e884e"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "calendar-fresh-and-actions",
+        "result": {
+          "bytes": 7956,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-calendar-closure-r1/actual-r1/RESULT.json",
+          "sha256": "e10fefb7cdd88ec772643aaeec8ece976b887fbdf4547759af538163b85c72ee"
+        },
+        "success_field": "all_pass"
+      }
+    ],
+    "no_tests_or_compilers_executed_during_freeze": true,
+    "original_failed_executions": [
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "canonical60",
+        "result": {
+          "bytes": 3805,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/root-final-canonical-r14/RESULT.json",
+          "sha256": "d2e324d370f9f4443d28a2c63818a3c813b7030f5e9c6b607ce1aac71808157b"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "full34",
+        "result": {
+          "bytes": 89136,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-full-host-actual-r1/RESULT.json",
+          "sha256": "ed6e365e74e0b6b04002c7b9dae34040614b59916be2ed4bde4401cc5a217b95"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "business18",
+        "result": {
+          "bytes": 49926,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-business-host-actual-r1/RESULT.json",
+          "sha256": "4250f02b4009d6023a898322e15d51dc7727f913a58fe74e4fe11a9e65bb86b0"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "calendar12",
+        "result": {
+          "bytes": 34332,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-calendar-host-actual-r1/RESULT.json",
+          "sha256": "08ddb0fe62057d4e5aa3314275ce0f9bbe3daeaf160749023a404e3411b6c796"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "sampling",
+        "result": {
+          "bytes": 4865,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-post-effect-host-actual-r1/RESULT.json",
+          "sha256": "446d1c9d0e52fce862b7e8432479ed8693d788f5677c54496493b93b9abc3ccf"
+        }
+      }
+    ],
+    "preserved_current_executions": [
+      {
+        "actual_origin_is_preserved": true,
+        "name": "canonical123",
+        "result": {
+          "bytes": 4193,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/root-final-canonical-r15/RESULT.json",
+          "sha256": "0dea5868a21ebf8c18c638031889cd168503f6eeb28df5b0f50d93017a9f0d8a"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-observation-screenshot-seed",
+        "result": {
+          "bytes": 5101,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-template-pin-final-execution-r1/seed/RESULT.json",
+          "sha256": "0e41029df2227499a555425a6a3462d1a3f50c8d0b97de9278cf3eb9b4696a22"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-post-effect-sampling",
+        "result": {
+          "bytes": 4892,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-post-effect-host-actual-r2/RESULT.json",
+          "sha256": "e4ede48103b844a0eb8404a875576585d0428e41872438777811a1b2519b531e"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "startup-available-leaves",
+        "result": {
+          "bytes": 2546,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/startup-composite-business-r11/CURRENT-EXECUTION.json",
+          "sha256": "e4d3b75a7c68f06050991f8dd7b6af1e9b3ca2057572c024df5ca2cebc8a1ec5"
+        },
+        "success_field": "all_available_leaves_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-ctrip-form",
+        "result": {
+          "bytes": 5068,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-form-protected-bodies-r1/actual-r1/RESULT.json",
+          "sha256": "1db8e2e5d72e09afc0e82491fd013332e5c175106fd0b254f4ff49e8de8c16da"
+        },
+        "success_field": "all_pass"
+      }
+    ],
+    "production_input_map_unchanged": true,
+    "required_final_executions_pending": []
+  },
+  "host_validation_at_preparation": {
+    "all_required_actual_leaf_results_available": true,
+    "android_sdk_actual_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+    "android_sdk_compile_complete": true,
+    "android_sdk_reexecuted_on_final_source": false,
+    "assertions": 4516,
+    "cases": 277,
+    "completed_test_carrier_repairs": [
+      {
+        "actual_origin_is_preserved": true,
+        "name": "qualification-and-routing",
+        "result": {
+          "bytes": 9685,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-qualification-cleanup-r1/required-execution-r1/RESULT.json",
+          "sha256": "80f35f2cef96dd091ab433d90c9b7a64c697526aa326ad507cf4b037c79e884e"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "calendar-fresh-and-actions",
+        "result": {
+          "bytes": 7956,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-calendar-closure-r1/actual-r1/RESULT.json",
+          "sha256": "e10fefb7cdd88ec772643aaeec8ece976b887fbdf4547759af538163b85c72ee"
+        },
+        "success_field": "all_pass"
+      }
+    ],
+    "consumer": {
+      "Service_callback_producer_is_explicit_synthetic_port": true,
+      "assertions": 1770,
+      "case_count": 132,
+      "cases": {
+        "bytes": 9247,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/consumer-r1/CASES.json",
+        "sha256": "cbcd18b608a2558d16fc53a49a9ba41476d7aa76443fcab864fa10a5e41e3df8"
+      },
+      "execution": {
+        "bytes": 2356,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/consumer-execution-r1/EXECUTION.json",
+        "sha256": "0361d8b3d605e47930c2012c7639fc37ef9e622a51f16e950515f5444063441c"
+      },
+      "extraction": {
+        "bytes": 6161,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/consumer-r1/CONSUMER-EXTRACTION.json",
+        "sha256": "164aa0609ff2755adebd232c42a55fd966903c574ea2a9f32658d08ee5426b80"
+      },
+      "real_NAS_and_LTC_once_durable_fsync": true,
+      "result": {
+        "bytes": 1551515,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/consumer-r1/RESULT.json",
+        "sha256": "d220642264f29ba6633c188b26ad6ad88216e56b56b4dab663dfc7067e5b0c1e"
+      },
+      "unchanged_original_cases": true
+    },
+    "final_matrix_composition_pending": true,
+    "focused_actual_origin": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/source",
+    "focused_execution": {
+      "bytes": 2331,
+      "mode": 384,
+      "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/execution-r3/EXECUTION.json",
+      "sha256": "89a61f8c6b52685acf5bac206d392b89fbf70e28f726571c4fe23d4ccdcc561f"
+    },
+    "focused_reexecuted_on_integrated_source": false,
+    "focused_result": {
+      "bytes": 1116538,
+      "mode": 384,
+      "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/ctrip-post-effect-sampling-r1/focused-r3/RESULT.json",
+      "sha256": "f769df270cb71e5f4f87ff25d554ecf08a199b82b3c2d3dff1112460f7890d26"
+    },
+    "full_required_matrix_complete": false,
+    "no_test_or_compiler_execution_during_integration": true,
+    "original_current_r29_failures": [
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "canonical60",
+        "result": {
+          "bytes": 3805,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/root-final-canonical-r14/RESULT.json",
+          "sha256": "d2e324d370f9f4443d28a2c63818a3c813b7030f5e9c6b607ce1aac71808157b"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "full34",
+        "result": {
+          "bytes": 89136,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-full-host-actual-r1/RESULT.json",
+          "sha256": "ed6e365e74e0b6b04002c7b9dae34040614b59916be2ed4bde4401cc5a217b95"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "business18",
+        "result": {
+          "bytes": 49926,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-business-host-actual-r1/RESULT.json",
+          "sha256": "4250f02b4009d6023a898322e15d51dc7727f913a58fe74e4fe11a9e65bb86b0"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "calendar12",
+        "result": {
+          "bytes": 34332,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-calendar-host-actual-r1/RESULT.json",
+          "sha256": "08ddb0fe62057d4e5aa3314275ce0f9bbe3daeaf160749023a404e3411b6c796"
+        }
+      },
+      {
+        "executed_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29/source",
+        "name": "sampling",
+        "result": {
+          "bytes": 4865,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-post-effect-host-actual-r1/RESULT.json",
+          "sha256": "446d1c9d0e52fce862b7e8432479ed8693d788f5677c54496493b93b9abc3ccf"
+        }
+      }
+    ],
+    "preserved_current_executions": [
+      {
+        "actual_origin_is_preserved": true,
+        "name": "canonical123",
+        "result": {
+          "bytes": 4193,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/root-final-canonical-r15/RESULT.json",
+          "sha256": "0dea5868a21ebf8c18c638031889cd168503f6eeb28df5b0f50d93017a9f0d8a"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-observation-screenshot-seed",
+        "result": {
+          "bytes": 5101,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-template-pin-final-execution-r1/seed/RESULT.json",
+          "sha256": "0e41029df2227499a555425a6a3462d1a3f50c8d0b97de9278cf3eb9b4696a22"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-post-effect-sampling",
+        "result": {
+          "bytes": 4892,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/r29-post-effect-host-actual-r2/RESULT.json",
+          "sha256": "e4ede48103b844a0eb8404a875576585d0428e41872438777811a1b2519b531e"
+        },
+        "success_field": "all_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "startup-available-leaves",
+        "result": {
+          "bytes": 2546,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/startup-composite-business-r11/CURRENT-EXECUTION.json",
+          "sha256": "e4d3b75a7c68f06050991f8dd7b6af1e9b3ca2057572c024df5ca2cebc8a1ec5"
+        },
+        "success_field": "all_available_leaves_pass"
+      },
+      {
+        "actual_origin_is_preserved": true,
+        "name": "native-ctrip-form",
+        "result": {
+          "bytes": 5068,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/test-compat-r29-form-protected-bodies-r1/actual-r1/RESULT.json",
+          "sha256": "1db8e2e5d72e09afc0e82491fd013332e5c175106fd0b254f4ff49e8de8c16da"
+        },
+        "success_field": "all_pass"
+      }
+    ],
+    "required_final_executions_pending": [],
+    "xiaomi": {
+      "actual": true,
+      "assertions": 2122,
+      "cases": 170,
+      "cases_ref": {
+        "bytes": 18186,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/xiaomi-current-c-sampling-r1/focused-r1/CASES.json",
+        "sha256": "c04cb72a62076d0f68a5594f4bbd112fb3a0d8ff1158fb313bdff75b14dfda86"
+      },
+      "elapsed_seconds": 7.227025798987597,
+      "execution": {
+        "bytes": 7577,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/xiaomi-current-c-sampling-r1/execution-r1/EXECUTION.json",
+        "sha256": "9df713c5106b09feb459a1e2c7e54ceea08b4c0eae0378ecf91306ccc20eb843"
+      },
+      "executions": 1,
+      "exit_code": 0,
+      "result": {
+        "bytes": 145069,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/xiaomi-current-c-sampling-r1/focused-r1/RESULT.json",
+        "sha256": "3cbe5d21ec16e1555e03e7bbc0f86649ad714ee09ff37cb474f8ece7973df6ae"
+      }
+    }
   },
   "main_java_sources": 211,
   "phone_qualified": false,
   "production_build_inputs_count": 388,
-  "production_input_map_sha256": "045a1b97a2277e7152f08abf286b98d90988fd2b70ec3161d8f4d98427bdc03d",
+  "production_input_map_sha256": "0796414a80b9ae6fe138cf8c928cbc7899161c32da22f6cfdf0e76bc9070d443",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact source successor to published d7fc49f. Integrate reviewed typed calendar protocol, immutable goal and date provenance, model proof and fresh observation, private permit, original ActionWork/ActionSlot one-claim action worker, dedicated background date RPC and broker handler, current FORM SelectionEvidence and once-only QUERY guard continuation. Also integrate the explicit zero-touch probe-only controller branch and the narrowly authenticated Xiaomi horizontal clipped carousel-edge enclosure proof. Compile-only WindowInfos headers remain separate classpath inputs and are forbidden from app classes and APK DEX definitions. All original task, profile, display, ownership, observation, permission, deadline, final effect and cleanup guards remain in force. Host Android/model/socket ports and retained historical scopes are not Android execution or business success. Current signed build, phone qualification, input isolation and business outcomes require separate actual evidence. R26 changes only eighteen test fixture and runner files; all reviewed production behavior and original failure evidence remain unchanged. R27 adds only six test runner compatibility fixes to the frozen r26 snapshot; all reviewed production behavior and original failure evidence remain unchanged. R28 is a successor to published 444ec57 with the four production and seven test paths enumerated in current_successor_delta. Prior failures remain immutable; this source freeze does not assert Android or business qualification. The final r28 snapshot adds only the standalone public-own-group adapter test carrier context and its manifest entry. Production input bytes and modes remain exactly those executed by current r28-r2 canonical123, SDK211 and host gates; those original execution paths are retained, with the one repaired adapter gate recorded separately.",
-  "source_parent_head": "444ec5707b70d6ce00f3a6d259c41830370cd4ef",
-  "source_parent_manifest_sha256": "d013db03141fabe5b57e5f4d9bcfdc3cdebde545406661957a89b701940ff622",
-  "source_snapshot_predecessor_manifest_sha256": "a5ad01ff11e14eb07f5ba5dadfe952bb41129f519a4ca2a172e8a4cb1dc43ac8",
+  "scope": "Final test-only successor to r29-r2. Only the Ctrip form observer runner and this manifest change; the runner now reverses the two exact reviewed sampling additions before checking all original protected-method pins, while compiling the current production methods. All 2453 other files and all 388 production inputs are byte/mode identical to r29-r2. Canonical123, seed271/4071, sampling277/4517 and startup available leaves executed on r29-r2; form completed on its single-runner repair shadow. Earlier full34/business18/calendar12 and repaired qualification/routing/calendar runs retain their actual source paths. SDK16 remains the actual r29 execution, 211 Java/982 classes. Original failures and unavailable historical startup leaves remain explicit. Freezing performs no tests, compilation, phone operation or publication.",
+  "source_parent_head": "b0531ecbd2169a0197e081093ee9640ee7d394cd",
+  "source_parent_manifest_sha256": "548f154e22f2e570401332b88a5e903816d1b8d50a5cfa33ec008e42497039b0",
+  "source_snapshot_predecessor_manifest_sha256": "e7cd996080ab26c5167fb78707ceeeb20dbaf80dcede05091134e1f6061aafc0",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
