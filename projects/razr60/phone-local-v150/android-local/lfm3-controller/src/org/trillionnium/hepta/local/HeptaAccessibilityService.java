@@ -5116,10 +5116,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144)return null;
             requireObservationWork(request);return proof;
         }catch(IllegalArgumentException unclassified){return null;}
+        catch(RuntimeException unexpected){throw unexpected;}
+        catch(Exception unavailable){return null;}
     }
     /** Actual ownership and complete raw rows are copied; expected facts never
      * fill a missing census. The old observation id is lineage, not a new frame. */
-    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target){
+    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target)throws Exception{
         PhoneObservation.CollectionStats stats=graph.collectionStats;
         BackgroundTaskTarget task=request.background.selection.taskTarget;
         final String actualSelectionSha;
