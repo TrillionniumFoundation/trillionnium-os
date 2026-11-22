@@ -117,16 +117,24 @@ def main():
         raw = full.read_text()
         method = extract_method(raw, '    private void probeCalendarWindow(BrokerProtocol.Request r)throws Exception {')
         template = (here / 'BrokerProbeHost.template').read_text()
-        if template.count('// EXACT_PROBE_METHOD') != 1:
+        if template.count('// EXACT_PROBE_METHOD') != 1 or template.count('// EXACT_PUBLIC_RETIREMENT_BLOCK') != 1:
             raise RuntimeError('nonunique extraction insertion')
+        retirement = extract_method(raw, '                if(config.publicOwnGroupScope!=null&&(closing.get()||publicAdmissionRetired.get())')
         projection = generated / 'app/org/trillionnium/hepta/background/BrokerProbeHost.java'
-        projection.write_text(template.replace('// EXACT_PROBE_METHOD', method))
+        projection.write_text(template.replace('// EXACT_PROBE_METHOD', method)
+                              .replace('// EXACT_PUBLIC_RETIREMENT_BLOCK', retirement))
         extraction = dict(actual_source=ref(full), method='probeCalendarWindow',
                           method_bytes=len(method.encode()), method_sha256=hashlib.sha256(method.encode()).hexdigest(),
                           method_copied_verbatim=True, template=ref(here / 'BrokerProbeHost.template'), projection=ref(projection),
                           existing_guard_and_owner_display_ports_are_explicit=True,
                           whole_broker_compiled=False, no_method_logic_rewritten=True)
         result['extraction'] = put(out / 'EXTRACTION.json', extraction)
+        result['retirement_extraction'] = put(out / 'RETIREMENT-EXTRACTION.json', dict(
+            actual_source=ref(full), actual_function='listen', block_copied_verbatim=True,
+            block_bytes=len(retirement.encode()), block_sha256=hashlib.sha256(retirement.encode()).hexdigest(),
+            projection=ref(projection), template=ref(here / 'BrokerProbeHost.template'),
+            complete_listen_function_executed=False, complete_socket_loop_executed=False,
+            response_bytes_and_retirement_state_are_explicit_host_inputs=True))
         production_names = ['InputChannelIsolation', 'WindowInfosCapture', 'AccessibilityWindowTokens', 'BrokerProtocol',
                             'ProfileIdentity', 'ProfileTarget', 'PublicOwnGroupPolicy', 'PublicPermissionControllerUi',
                             'FixedIntentTools', 'WindowOwnership']

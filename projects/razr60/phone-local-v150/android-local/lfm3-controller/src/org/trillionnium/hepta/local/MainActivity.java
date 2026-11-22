@@ -640,6 +640,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             rememberedBackgroundSelection=BackgroundUiPreferences.load(this);
             backgroundPackages.clear();
             if(rememberedBackgroundSelection!=null)backgroundPackages.addAll(rememberedBackgroundSelection.packages.keySet());
+            reloadBackgroundApps();
             updateBackgroundSelection(rememberedBackgroundSelection==null?null:rememberedBackgroundSelection.initial);
             recheckBackgroundChoice();
         }catch(Exception error){

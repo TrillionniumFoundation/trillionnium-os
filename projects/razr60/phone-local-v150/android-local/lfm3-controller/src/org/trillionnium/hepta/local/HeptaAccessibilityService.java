@@ -2703,9 +2703,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("chain_started_elapsed_ms",work.session.startedElapsed);e.put("chain_deadline_elapsed_ms",work.session.chainDeadlineElapsed);
             e.put("old_attempt_started_elapsed_ms",work.attempt.startedElapsed);e.put("old_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
             e.put("original_read_ordinal",work.planningReadOrdinal);e.put("successor_read_ordinal",work.planningReadOrdinal+1);
-            e.put("replan_ordinal",1);e.put("rejection_reason","post_D_event_before_target_refresh");
+            e.put("replan_ordinal",1);e.put("rejection_reason",work.noEffectRejectionReason());
             e.put("first_final_event_check_elapsed_ms",work.firstFinalEventsElapsed);
-            e.put("rejection_watermark",work.firstRejectedWatermark.evidence());e.put("D_completed_watermark",work.pairCompleted.evidence());
+            e.put("after_target_refresh_event_check_elapsed_ms",work.afterTargetRefreshEventsElapsed<0?null:Long.valueOf(work.afterTargetRefreshEventsElapsed));
+            e.put("rejection_watermark",work.noEffectRejectionWatermark().evidence());e.put("D_completed_watermark",work.pairCompleted.evidence());
             e.put("action_queue_drain_marker_elapsed_ms",work.replanDrainMarkerElapsed);e.put("issued_elapsed_ms",now);
             e.put("publication_watermark",work.events.mark().evidence());e.put("worker_drained",true);e.put("guard_claimed",false);
             e.put("platform_call_invoked",false);e.put("effect_entered",false);e.put("callback_authority_current",true);
@@ -2736,7 +2737,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             synchronized(issuer.nativeSearchEventLock){
                 if(issuer.nativeSearchTrackedAction!=work)throw new IllegalStateException("search event tracker was superseded");
                 requireNativeSearchPairEvents(work.pairCompleted,work.events.mark());
-                if(!work.events.mark().monotonicSince(work.firstRejectedWatermark))
+                if(!work.events.mark().monotonicSince(work.noEffectRejectionWatermark()))
                     throw new IllegalStateException("search rejection watermark moved backwards");
             }
         }
@@ -2757,7 +2758,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||issuer.taskObservationAdmissions!=work.planningReadOrdinal||work.cancel.isCancelled())
                 throw new IllegalStateException("new search planning admission differs from the closed old work");
             requireNativeSearchPairEvents(work.pairCompleted,work.events.mark());
-            if(!work.events.mark().monotonicSince(work.firstRejectedWatermark)||!consumed.compareAndSet(false,true))
+            if(!work.events.mark().monotonicSince(work.noEffectRejectionWatermark())||!consumed.compareAndSet(false,true))
                 throw new IllegalStateException("no-effect successor read already consumed or event clock changed");
             request.events.window=work.state.windowId;
             admittedRequest=request;
@@ -4326,6 +4327,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         volatile boolean replanDrainUncertain,replanDrainMarkerCompleted;
         volatile long replanDrainMarkerElapsed=-1;
         boolean firstPostDEventRejected;NativeSearchPlanning.EventMark firstRejectedWatermark;
+        // Only the exact root/ancestor refresh fence may offer the second preclaim cause.
+        boolean typedAfterTargetRefreshPostDEventRejected;
+        NativeSearchPlanning.EventMark afterTargetRefreshRejectedWatermark;
+        long afterTargetRefreshEventsElapsed=-1;
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
         // Complete immutable values are retained immediately; diagnostic copies are made before drain.
         NativeActionSnapshotCheck.Snapshot currentSnapshot,latestSnapshot;
@@ -4366,6 +4371,44 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     throw new StaleObservation("new search intent received an event after its complete current D census");
                 }
             }
+        }
+        /** Called only after C's full actual target/ancestor chain and root metadata
+         * match D, before this helper returns and before any attempt/effect claim. */
+        void requireAfterTargetRefreshEvents(){
+            check();
+            // Session locking remains outside the event-routing lock.
+            attempt.requireUnclaimedRevalidated(SystemClock.elapsedRealtime());
+            synchronized(nativeSearchEventLock){
+                afterTargetRefreshEventsElapsed=SystemClock.elapsedRealtime();
+                NativeSearchPlanning.EventMark observed=events.mark();
+                if(!sameSearchEvents(pairCompleted,observed)){
+                    afterTargetRefreshRejectedWatermark=observed;
+                    if(firstPostDEventRejected||firstFinalEventsElapsed<0
+                            ||afterTargetRefreshEventsElapsed<firstFinalEventsElapsed
+                            ||afterTargetRefreshEventsElapsed>=state.deadlineElapsed
+                            ||afterTargetRefreshEventsElapsed>=session.chainDeadlineElapsed
+                            ||cancel.isCancelled()||currentGraph==null||currentSnapshot==null||latestSnapshot==null||roleProof==null
+                            ||!currentNodeIdentityChecked||ancestorChainChecked||windowsChecked
+                            ||platformCallInvoked||state.effectEntered()||state.retired()||state.isDrained()
+                            ||activeSearchAction!=this||nativeSearchTrackedAction!=this)
+                        throw new StaleObservation("new search root-refresh event is outside the live unclaimed pre-effect boundary");
+                    // Unknown, window/boundary and untyped events never set this typed cause.
+                    requireNativeSearchPairEvents(pairCompleted,observed);
+                    typedAfterTargetRefreshPostDEventRejected=true;
+                    throw new StaleObservation("new search intent received an event after its complete current D census");
+                }
+            }
+        }
+        boolean hasNoEffectReplanFence(){
+            return firstPostDEventRejected!=typedAfterTargetRefreshPostDEventRejected;
+        }
+        NativeSearchPlanning.EventMark noEffectRejectionWatermark(){
+            if(!hasNoEffectReplanFence())throw new IllegalStateException("exactly one actual preclaim event fence required");
+            return firstPostDEventRejected?firstRejectedWatermark:afterTargetRefreshRejectedWatermark;
+        }
+        String noEffectRejectionReason(){
+            if(!hasNoEffectReplanFence())throw new IllegalStateException("exactly one actual preclaim event fence required");
+            return firstPostDEventRejected?"post_D_event_before_target_refresh":"post_D_event_after_target_refresh_before_claim";
         }
         void requireFinalEvents(){
             check();if(!sameSearchEvents(pairCompleted,events.mark()))
@@ -4451,7 +4494,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(activeSearchAction==work)activeSearchAction=null;actionSlot.release(work.state);
         }
         final ActionOutcome computed=result;
-        if(work.firstPostDEventRejected){
+        if(work.hasNoEffectReplanFence()){
             try{
                 actionIo.execute(new Runnable(){public void run(){
                     // This serial marker runs after the complete old worker stack returned.
@@ -4467,7 +4510,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void requireNativeSearchNoEffectFacts(SearchActionWork work,ActionOutcome outcome){
         Map<String,Object> execution=work.state.evidence();
-        if(!work.firstPostDEventRejected||work.firstRejectedWatermark==null||work.roleProof==null||work.currentGraph!=null
+        if(!work.hasNoEffectReplanFence()||work.noEffectRejectionWatermark()==null||work.roleProof==null||work.currentGraph!=null
                 ||!work.currentNodeIdentityChecked||work.ancestorChainChecked||work.windowsChecked
                 ||work.platformCallInvoked||work.state.effectEntered()||!work.state.isDrained()||work.state.retired()
                 ||!work.replanDrainMarkerCompleted||work.replanDrainUncertain||work.sealedDiagnostic==null
@@ -4489,14 +4532,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     "搜索动作回执已退休；保留真实效果，不重新派发");
             ActionOutcome bound=bindNativeSearchOutcome(work,delivered,current);
             NativeSearchNoEffectReplanProof proof=null;
-            if(allowed&&work.firstPostDEventRejected){
+            if(allowed&&work.hasNoEffectReplanFence()){
                 try{
                     long now=SystemClock.elapsedRealtime();work.session.requireNoEffectCandidate(work.attempt,now);
                     requireNativeSearchNoEffectFacts(work,bound);
                     synchronized(nativeSearchEventLock){
                         if(nativeSearchTrackedAction!=work)throw new IllegalStateException("search event tracker no longer current");
                         requireNativeSearchPairEvents(work.pairCompleted,work.events.mark());
-                        if(!work.events.mark().monotonicSince(work.firstRejectedWatermark))
+                        if(!work.events.mark().monotonicSince(work.noEffectRejectionWatermark()))
                             throw new IllegalStateException("search refusal watermark regressed");
                         proof=new NativeSearchNoEffectReplanProof(HeptaAccessibilityService.this,work,bound,now);
                     }
@@ -4540,6 +4583,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("first_final_event_check_elapsed_ms",work.firstFinalEventsElapsed<0?null:Long.valueOf(work.firstFinalEventsElapsed));
             proof.put("first_final_event_rejection_watermark",work.firstRejectedWatermark==null?null:work.firstRejectedWatermark.evidence());
             proof.put("typed_post_D_first_fence_rejected",work.firstPostDEventRejected);
+            proof.put("after_target_refresh_event_check_elapsed_ms",work.afterTargetRefreshEventsElapsed<0?null:Long.valueOf(work.afterTargetRefreshEventsElapsed));
+            proof.put("after_target_refresh_event_rejection_watermark",work.afterTargetRefreshRejectedWatermark==null?null:work.afterTargetRefreshRejectedWatermark.evidence());
+            proof.put("typed_post_D_after_target_refresh_fence_rejected",work.typedAfterTargetRefreshPostDEventRejected);
             proof.put("original_chain_deadline_elapsed_ms",work.session.chainDeadlineElapsed);
             proof.put("original_reference_begins_at_current_C",true);proof.put("same_C_D_android_node",work.currentNodeIdentityChecked);
             proof.put("original_C_node_and_actual_ancestor_chain",work.ancestorChainChecked);proof.put("reported_windows_before_after_equal",work.windowsChecked);
@@ -4686,7 +4732,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if("0".equals(path)){
                     if(parent!=null||!latest.windowMetadata.bindFreshness("").equals(readWindowMetadata(cursor,bounds,latest.windowId,latest.displayId).bindFreshness("")))
                         throw new StaleObservation("new search current root/window metadata changed");
-                    work.requireFinalEvents();return;
+                    work.requireAfterTargetRefreshEvents();return;
                 }
                 int slash=path.lastIndexOf('/'),index=Integer.parseInt(path.substring(slash+1));
                 if(parent==null||!refreshNativeSearchNode(work,parent)||index>=parent.getChildCount()||!expected.parent.equals(string(parent.getClassName())))

@@ -19,6 +19,9 @@ import java.util.Map;
 final class InputChannelIsolation {
     static final int MAX_WINDOWS=512, MAX_DISPLAYS=128, MAX_REGION_RECTS=8192;
     static final long MAX_CALLBACK_AGE_MS=2000;
+    // SurfaceFlinger reports a blanked layer stack as signed -1 in the global census.
+    // Preserve this metadata row; it is never a usable input display or a fallback to display 0.
+    static final int BLANK_LAYER_STACK=-1;
     private InputChannelIsolation() {}
 
     static final class Refusal extends Exception {
@@ -52,10 +55,12 @@ final class InputChannelIsolation {
 
     static final class DisplayFacts {
         final int id,width,height;
+        final boolean blankedLayerStack;
         private final float[] transform;
         DisplayFacts(int id,int width,int height,float[] transform)throws Refusal{
-            need(id>=0&&width>=0&&height>=0&&width<=16384&&height<=16384,"INPUT_DISPLAY_FACTS_INVALID");
+            need((id>=0||id==BLANK_LAYER_STACK)&&width>=0&&height>=0&&width<=16384&&height<=16384,"INPUT_DISPLAY_FACTS_INVALID");
             this.id=id;this.width=width;this.height=height;this.transform=matrix(transform);
+            blankedLayerStack=id==BLANK_LAYER_STACK;
         }
         float[] transform(){return transform.clone();}
     }
@@ -92,6 +97,7 @@ final class InputChannelIsolation {
         final long ordinal,receivedElapsedMs,completedElapsedMs;
         final List<WindowFacts> windows;
         final List<DisplayFacts> displays;
+        final List<Integer> unresolvedPhysicalDisplayIds;
         final Flags flags;
         final String sha256;
         final int regionRects;
@@ -103,9 +109,18 @@ final class InputChannelIsolation {
                     "INPUT_CENSUS_INCOMPLETE");
             Map<Integer,DisplayFacts> unique=new LinkedHashMap<Integer,DisplayFacts>();
             for(DisplayFacts d:displays)need(d!=null&&unique.put(d.id,d)==null,"INPUT_DISPLAY_DUPLICATE");
+            List<Integer> unresolved=new ArrayList<Integer>();
+            boolean blanked=unique.containsKey(BLANK_LAYER_STACK);
             int count=0;
             for(WindowFacts w:windows){
-                need(w!=null&&unique.containsKey(w.displayId),"INPUT_WINDOW_DISPLAY_UNKNOWN");
+                need(w!=null,"INPUT_WINDOW_DISPLAY_UNKNOWN");
+                if(!unique.containsKey(w.displayId)){
+                    // The observed blanked global layer stack does not supply geometry for
+                    // physical windows on 0/1. Keep those complete rows for alias checks;
+                    // never synthesize a DisplayFacts row or permit any missing VD target.
+                    need(blanked&&(w.displayId==0||w.displayId==1),"INPUT_WINDOW_DISPLAY_UNKNOWN");
+                    if(!unresolved.contains(w.displayId))unresolved.add(w.displayId);
+                }
                 need((w.inputConfig&~flags.knownMask)==0,"INPUT_WINDOW_CONFIG_UNKNOWN");
                 count+=w.region.length;need(count<=MAX_REGION_RECTS,"INPUT_CENSUS_REGION_LIMIT");
                 need(w.inputToken!=null||flags.has(w.inputConfig,"NO_INPUT_CHANNEL"),"INPUT_CHANNEL_UNKNOWN");
@@ -113,6 +128,7 @@ final class InputChannelIsolation {
             this.ordinal=ordinal;receivedElapsedMs=received;completedElapsedMs=completed;
             this.windows=Collections.unmodifiableList(new ArrayList<WindowFacts>(windows));
             this.displays=Collections.unmodifiableList(new ArrayList<DisplayFacts>(displays));
+            unresolvedPhysicalDisplayIds=Collections.unmodifiableList(unresolved);
             this.flags=flags;regionRects=count;sha256=hashFacts();
         }
         private String hashFacts()throws Refusal{
@@ -172,6 +188,33 @@ final class InputChannelIsolation {
             v.put("callback_received_elapsed_ms",census.receivedElapsedMs);v.put("facts_copy_completed_elapsed_ms",census.completedElapsedMs);
             v.put("checked_elapsed_ms",checkedElapsedMs);v.put("window_count",census.windows.size());
             v.put("display_count",census.displays.size());v.put("region_rectangle_count",census.regionRects);
+            List<Map<String,Object>> blanked=new ArrayList<Map<String,Object>>();
+            for(DisplayFacts d:census.displays)if(d.blankedLayerStack){
+                Map<String,Object> row=new LinkedHashMap<String,Object>();
+                row.put("display_id",d.id);row.put("width",d.width);row.put("height",d.height);
+                List<Integer> bits=new ArrayList<Integer>();for(float x:d.transform)bits.add(Float.floatToRawIntBits(x));
+                row.put("transform_float32_bits",Collections.unmodifiableList(bits));
+                row.put("can_be_input_target",false);blanked.add(Collections.unmodifiableMap(row));
+            }
+            v.put("blanked_layer_stack_display_count",blanked.size());
+            v.put("blanked_layer_stack_displays",Collections.unmodifiableList(blanked));
+            List<Map<String,Object>> unresolved=new ArrayList<Map<String,Object>>();
+            int unresolvedWindows=0;
+            for(Integer id:census.unresolvedPhysicalDisplayIds){
+                int windows=0,channels=0;
+                for(WindowFacts w:census.windows)if(w.displayId==id.intValue()){
+                    windows++;if(w.inputToken!=null)channels++;
+                }
+                Map<String,Object> row=new LinkedHashMap<String,Object>();
+                row.put("display_id",id);row.put("display_facts_present",false);
+                row.put("geometry_known",false);row.put("can_be_input_target",false);
+                row.put("window_count",windows);row.put("input_token_present_count",channels);
+                row.put("input_token_null_count",windows-channels);
+                unresolved.add(Collections.unmodifiableMap(row));unresolvedWindows+=windows;
+            }
+            v.put("unresolved_physical_display_count",unresolved.size());
+            v.put("unresolved_physical_display_windows",Collections.unmodifiableList(unresolved));
+            v.put("unresolved_physical_window_count",unresolvedWindows);
             v.put("omitted_window_count",0);v.put("owned_display_window_count",ownedWindows);
             v.put("owned_display_channel_count",ownedChannels);v.put("other_display_window_count",foreignDisplayWindows);
             v.put("target_profile_user_id",expected.userId);v.put("accessibility_namespace_user_id",expected.namespaceUserId);

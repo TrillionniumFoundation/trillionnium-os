@@ -53,6 +53,15 @@ final class BrokerSurfaceAdapterFixture {
 '''+precreate+'''
  }
  byte[] retireSerializedReceipt(byte[] response)throws Exception {
+  // The original adapter cases exercise non-calendar retirement only. Parse the
+  // actual immutable Request type; this fixture does not authenticate or send it.
+  final BrokerProtocol.Request request=BrokerProtocol.Request.parse(new JSONObject()
+   .put("version",BrokerProtocol.PUBLIC_OWN_GROUP_VERSION)
+   .put("request_id","00000000-0000-4000-8000-000000000001")
+   .put("generation","00000000-0000-4000-8000-000000000002")
+   .put("deadline_elapsed_ms",1).put("op","state")
+   .put("display_scope_sha256","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+   .toString().getBytes(StandardCharsets.UTF_8));
 '''+retired+'''return response;}
  private JSONObject publicDetachEvidence(){return new JSONObject(publicSurfaceRetirement.evidence());}
 }
@@ -121,6 +130,7 @@ public final class BrokerSurfaceAdapterHostTest {
     report={'schema':'hepta.public-own-group.broker-adapter-host.v1','status':'NOT_DEPLOYED','phone_contacted':False,
             'actual_android_api_executed':False,'actual_broker_hunks_executed':True,'fake_ports':['VirtualDisplay.setSurface','framework frozen evidence','SystemClock','org.json'],
             'broker_source_sha256':hashlib.sha256(raw.encode()).hexdigest(),
+            'retired_receipt_context':'Actual Request.parse of fixed public-scope state request; surrounding socket/authentication are not exercised and calendar branches are not covered by these legacy cases.',
             'hunk_sha256':{name:hashlib.sha256(value.encode()).hexdigest() for name,value in [('shutdown',methods),('create_return',delivery),('duplicate_create_guard',precreate),('retired_receipt',retired)]},
             'source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},'stages':[]}
     for name,argv in commands:

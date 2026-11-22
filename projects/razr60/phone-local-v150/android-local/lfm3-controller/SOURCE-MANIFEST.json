@@ -3,8 +3,29 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "d7fc49f_successor_r27_test_compatibility_frozen_final_host_matrix_pending",
+  "candidate_status": "444ec57_successor_r28_final_test_carrier_snapshot",
   "complete_source_files": 2453,
+  "current_successor_delta": {
+    "baseline": "integrated-r27",
+    "original_cases_and_assertions_preserved": true,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/InputChannelIsolation.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/MainActivity.java"
+    ],
+    "scope": "Refresh restored profile display labels before rebuilding the adapter without changing remembered selection or authority. Extend only the typed pre-claim event fence after target/ancestor refresh through the existing drained, one-successor no-effect path, retaining the original deadlines and new observation/model requirements. Accept validated blanked DisplayInfo -1 as non-target metadata and, only with that record, retain physical display 0/1 windows without their geometry rows. Preserve every window/token alias check and all target-display geometry, UID, lease and event guards. Preserve the first calendar probe failure when retiring the public scope. No phone outcome is inferred from host evidence.",
+    "test_changed_paths": [
+      "tests/calendar-window-isolation/BrokerProbeHost.template",
+      "tests/calendar-window-isolation/CalendarWindowHostTest.java",
+      "tests/calendar-window-isolation/run_host.py",
+      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
+      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/notes-after-release-reader/run_host.py",
+      "tests/profile-permission-ready-confirmation/run_host.py",
+      "tools/run_public_own_group_adapter_host.py"
+    ]
+  },
   "files": [
     {
       "bytes": 100,
@@ -2652,16 +2673,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "bytes": 1696,
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "bytes": 0,
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "bytes": 3187,
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -2700,6 +2711,16 @@
       "bytes": 1882,
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "bytes": 1696,
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "bytes": 0,
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "bytes": 0,
@@ -5762,11 +5783,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "bytes": 3066,
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "bytes": 1257,
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -5875,6 +5891,11 @@
       "bytes": 3372,
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "bytes": 3066,
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "bytes": 607,
@@ -6177,9 +6198,9 @@
       "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
     },
     {
-      "bytes": 136605,
+      "bytes": 137047,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708"
+      "sha256": "f21aa2b52ecb77b253db4b6a0edb421e4554ff1f83779c7e7bd5f8a0eb9ea888"
     },
     {
       "bytes": 25279,
@@ -6217,9 +6238,9 @@
       "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
     },
     {
-      "bytes": 19726,
+      "bytes": 22801,
       "path": "src/org/trillionnium/hepta/background/InputChannelIsolation.java",
-      "sha256": "44d5aeb66b6a3b9e2da6f19f0785757716bb17de87a3f3b8dbe2ebcb9947d659"
+      "sha256": "e6f36666a427b9c5ba7231534368e3d1ca02b42db9e72cefc93aaccc0031ba96"
     },
     {
       "bytes": 19577,
@@ -6527,9 +6548,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 578232,
+      "bytes": 581950,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "30aac5d3f705060c0edbfb43a105f051b206e5de7cd33cd55bb4b490e9aeb120"
+      "sha256": "4dbc07ef4ac88fa276491161377794de93c645430f9dde3ed3639f079cdd8687"
     },
     {
       "bytes": 711,
@@ -6592,9 +6613,9 @@
       "sha256": "091e0a17fd8f9399bbe50743d74a7755ac227138a2f5d817b95ed98bc1dae057"
     },
     {
-      "bytes": 78847,
+      "bytes": 78883,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "038f34583a9735a886e315cd590d8daee2b1b76e025760c732ad460213da668c"
+      "sha256": "377653e7d8cf9b9e08ce099bde751a62c3f2d272c32beb035ae65429d5cd95c8"
     },
     {
       "bytes": 4417,
@@ -7722,9 +7743,9 @@
       "sha256": "1cc2877587b548b186e37b221dbb3478ab7430f56616aeb4cd209d160296de0e"
     },
     {
-      "bytes": 3115,
+      "bytes": 3557,
       "path": "tests/calendar-window-isolation/BrokerProbeHost.template",
-      "sha256": "feda0cf82d55f887c5e6bf6100afe0cf1ed3717d2bc572aebde55f2b1ecf4f29"
+      "sha256": "17c9950037fee4492d02d48236c96dd2abdc9a12d2d4bfd3e7d5f847849dd65b"
     },
     {
       "bytes": 14639,
@@ -7732,9 +7753,9 @@
       "sha256": "4bc21c13d2278e3f0b889862e9bb4c7b0520f4f218db8be7b5530035f27746ec"
     },
     {
-      "bytes": 26048,
+      "bytes": 47253,
       "path": "tests/calendar-window-isolation/CalendarWindowHostTest.java",
-      "sha256": "1d9b6f882c22eba82cade244e4d845fb1e257d4bcc02689ed37680e17c183cdf"
+      "sha256": "65a50385b50c4714c17e929643640780332e274ba109a3c3f750c6fac82db991"
     },
     {
       "bytes": 8606,
@@ -7752,19 +7773,9 @@
       "sha256": "acbace9319ca3d673671bbd25bc0ba87c51f3385271923b867c8d8fa82a5c4ed"
     },
     {
-      "bytes": 11221,
+      "bytes": 12060,
       "path": "tests/calendar-window-isolation/run_host.py",
-      "sha256": "20a6e8735223fe518f24dfd487e3fb5b205e2bec3a57cf44c335825be51fead5"
-    },
-    {
-      "bytes": 29532,
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "bytes": 148856,
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
+      "sha256": "9727c15d205c9b1d7f87af534b7ac232049f49698fa59202c2dcfbe35c1dfb66"
     },
     {
       "bytes": 51609,
@@ -7810,6 +7821,16 @@
       "bytes": 22278,
       "path": "tests/completion/test_notes_completion.py",
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "bytes": 29532,
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "bytes": 148856,
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "bytes": 18220,
@@ -8007,36 +8028,6 @@
       "sha256": "6a73c6a91dca0841e4331b84a5e10ac9cf06b2d4bec2a138461c4e010ea3ec0a"
     },
     {
-      "bytes": 1562,
-      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
-      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
-    },
-    {
-      "bytes": 698,
-      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
-      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
-    },
-    {
-      "bytes": 1927,
-      "path": "tests/local-model-settings-visual/README.md",
-      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
-    },
-    {
-      "bytes": 9165,
-      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
-      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
-    },
-    {
-      "bytes": 42001,
-      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
-    },
-    {
-      "bytes": 14117,
-      "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "1ab3f3aebbfd23fb759db040d80375e5795ddf663dfb4c37870c10fc25bbd27f"
-    },
-    {
       "bytes": 3794,
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
       "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
@@ -8135,6 +8126,36 @@
       "bytes": 12158,
       "path": "tests/local-model-settings/run_host.py",
       "sha256": "9b9d4c44b18bef99c69543140a1dc7dbde0fb7edec3016b9b2ac4cdacc8eaf6f"
+    },
+    {
+      "bytes": 1562,
+      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
+      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
+    },
+    {
+      "bytes": 698,
+      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
+      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+    },
+    {
+      "bytes": 1927,
+      "path": "tests/local-model-settings-visual/README.md",
+      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+    },
+    {
+      "bytes": 9165,
+      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
+      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
+    },
+    {
+      "bytes": 42001,
+      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
+    },
+    {
+      "bytes": 14117,
+      "path": "tests/local-model-settings-visual/run_host.py",
+      "sha256": "1ab3f3aebbfd23fb759db040d80375e5795ddf663dfb4c37870c10fc25bbd27f"
     },
     {
       "bytes": 3621,
@@ -8260,6 +8281,41 @@
       "bytes": 32405,
       "path": "tests/native-action-integration/run_host.py",
       "sha256": "ad02b98df8d0e5c04d1445c3765eaa2b2b17134df0d990e0de1e21c478325f5b"
+    },
+    {
+      "bytes": 6744,
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    },
+    {
+      "bytes": 663,
+      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
+      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
+    },
+    {
+      "bytes": 697,
+      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
+      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
+    },
+    {
+      "bytes": 790,
+      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
+      "sha256": "33bbad7fcad32bdcd11e2c4357d56c6b8585297d0dc1a4b2803f9aadb11cf914"
+    },
+    {
+      "bytes": 1000,
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "sha256": "07fe58b8fdcc40a5e3d3972fc84b17e537de802af4bd6709737878fea971d68d"
+    },
+    {
+      "bytes": 3642,
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
+      "sha256": "ccfec236e60af3299de4154f1ef41440329aa2202e4e6fc6b6a54a4d86e0e743"
+    },
+    {
+      "bytes": 566,
+      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
+      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "bytes": 717,
@@ -8575,41 +8631,6 @@
       "bytes": 23006,
       "path": "tests/native-app-routing/run_host.py",
       "sha256": "05772a67d33afb3c8eba1179b27a33d90b30b2993f774aabd29d5302e7d376bc"
-    },
-    {
-      "bytes": 6744,
-      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
-    },
-    {
-      "bytes": 663,
-      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
-      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
-    },
-    {
-      "bytes": 697,
-      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
-      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
-    },
-    {
-      "bytes": 790,
-      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
-      "sha256": "33bbad7fcad32bdcd11e2c4357d56c6b8585297d0dc1a4b2803f9aadb11cf914"
-    },
-    {
-      "bytes": 1000,
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "sha256": "07fe58b8fdcc40a5e3d3972fc84b17e537de802af4bd6709737878fea971d68d"
-    },
-    {
-      "bytes": 3642,
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "sha256": "ccfec236e60af3299de4154f1ef41440329aa2202e4e6fc6b6a54a4d86e0e743"
-    },
-    {
-      "bytes": 566,
-      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
-      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "bytes": 19879,
@@ -9107,9 +9128,9 @@
       "sha256": "968caeb26eff822522c2c5f3087df7455d72ef5692c604c347ffc7733fdd96f9"
     },
     {
-      "bytes": 26865,
+      "bytes": 41402,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "0d09fca8fcacd231c66c5cfe6043ef21a0f6149c14206d8fe6ea4975a77607d9"
+      "sha256": "5419391dd19ca713733d5ebc1c125c6b3a0b02e039e8f8b8f624efa97f2a07d3"
     },
     {
       "bytes": 41288,
@@ -9122,9 +9143,9 @@
       "sha256": "377e273bc229f9120f25e11d87925790a72f6f38df806501b5adb475507080d0"
     },
     {
-      "bytes": 26847,
+      "bytes": 27141,
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "sha256": "593ee8b7d43b0fa5ab5b2ba43459fc408d4bac8716873825f4e1ef8cffbdea83"
+      "sha256": "219b8702c6642c848bce03d6e5ac92c389cdded8ef4ae57e8fb257cfdd36dbbe"
     },
     {
       "bytes": 18551,
@@ -9437,9 +9458,9 @@
       "sha256": "41e7dfc1ab1e4af4eef3cdb4361041c4dbc9b23361433699202005e8403f4f5e"
     },
     {
-      "bytes": 15516,
+      "bytes": 18451,
       "path": "tests/notes-after-release-reader/run_host.py",
-      "sha256": "5f76c4b4c20f9ab59f69d35921dcc526c3a9d8ad0edb556f480a4eadcb386753"
+      "sha256": "7f99b8038f436e33fa318b299b13f0d6d93687106b0ba6df2167136d48170f67"
     },
     {
       "bytes": 42214,
@@ -10107,9 +10128,9 @@
       "sha256": "34a338f0816faf4531ec38b166802ac65a9e281ea90246d7cfc14a1d42e2c0bf"
     },
     {
-      "bytes": 18025,
+      "bytes": 20960,
       "path": "tests/profile-permission-ready-confirmation/run_host.py",
-      "sha256": "d4247d3e19b0ce4ee9aa5342bd3d42254e62e1acde6402e1d3c276d1497c0400"
+      "sha256": "e86bc03233beb8a3d05bb2236185ee3ac8dd5730677c0d8ac89f19bfe95f200c"
     },
     {
       "bytes": 29281,
@@ -10212,6 +10233,36 @@
       "sha256": "d8696b940d62d69be2afaaa7c18b87e59c1f55e6cd06d5fd76dd5b208d443f9b"
     },
     {
+      "bytes": 2271,
+      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
+      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
+    },
+    {
+      "bytes": 12421,
+      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
+      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
+    },
+    {
+      "bytes": 7006,
+      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
+      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
+    },
+    {
+      "bytes": 326,
+      "path": "tests/profile-recovery/RecoveryProofFixture.java",
+      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
+    },
+    {
+      "bytes": 3372,
+      "path": "tests/profile-recovery/run_host.py",
+      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
+    },
+    {
+      "bytes": 5291,
+      "path": "tests/profile-recovery/run_session_host.py",
+      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
+    },
+    {
       "bytes": 9798,
       "path": "tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java",
       "sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c"
@@ -10250,36 +10301,6 @@
       "bytes": 11077,
       "path": "tests/profile-recovery-platform/run_fd_host.py",
       "sha256": "53c59e8588c358fed5847e82ced456255c8c273433bfb848d1847780d389a31a"
-    },
-    {
-      "bytes": 2271,
-      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
-      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
-    },
-    {
-      "bytes": 12421,
-      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
-      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
-    },
-    {
-      "bytes": 7006,
-      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
-      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
-    },
-    {
-      "bytes": 326,
-      "path": "tests/profile-recovery/RecoveryProofFixture.java",
-      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
-    },
-    {
-      "bytes": 3372,
-      "path": "tests/profile-recovery/run_host.py",
-      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
-    },
-    {
-      "bytes": 5291,
-      "path": "tests/profile-recovery/run_session_host.py",
-      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
     },
     {
       "bytes": 18748,
@@ -12062,9 +12083,9 @@
       "sha256": "5d1d5d89a65275e3db63a5744cc8e836ef2ae07437608c30f2b68a52626a3631"
     },
     {
-      "bytes": 13031,
+      "bytes": 13873,
       "path": "tools/run_public_own_group_adapter_host.py",
-      "sha256": "f663ce71c8727ada8621a22eeb4b64826dd544a65f785d5f3bd99d9e8a7479ff"
+      "sha256": "0fdd0c03142e06e5acbb022a17ad9e8ca9681cc8ba45300080d808ea9ef9614c"
     },
     {
       "bytes": 3718,
@@ -12268,44 +12289,31 @@
     }
   ],
   "fixture_compatibility": {
-    "current_changes": "Six test-only standalone runner compatibility updates for the reviewed calendar implementation. Original cases/assertions and all production bytes are preserved. New generated calendar types expose only unreachable private-constructor/all-throw or null/empty/false boundaries. The VLM standalone main changes do not change its imported prepare, section, or sha functions; the screen lease source guard retains the original cleanup order and adds the exact calendar listener retirement/drain requirement.",
+    "current_changes": "Eight reviewed test files accompany four production updates. The final adapter-only fixture change binds the real state Request.parse context before executing the unchanged retirement hunk; original case bodies and assertions remain unchanged. All earlier failed executions remain immutable.",
     "historical_failed_attempts_preserved": true,
     "new_tests_do_not_claim_phone_success": true,
     "original_case_assertions_preserved": true
   },
+  "host_fixture_successor": {
+    "baseline": "integrated-r28-r2",
+    "baseline_manifest_sha256": "a5ad01ff11e14eb07f5ba5dadfe952bb41129f519a4ca2a172e8a4cb1dc43ac8",
+    "changed_paths": [
+      "tools/run_public_own_group_adapter_host.py"
+    ],
+    "full_canonical_and_sdk_actual_origin": "integrated-r28-r2",
+    "no_tests_or_compilers_reexecuted_during_freeze": true,
+    "original_cases_and_assertions_preserved": true,
+    "production_input_map_unchanged": true
+  },
   "main_java_sources": 211,
   "phone_qualified": false,
   "production_build_inputs_count": 388,
-  "production_input_map_sha256": "a77e3d68cb146eb049d51c6dbe2a0c1354f51d6ebc22f23e11f86aee57a4ff42",
+  "production_input_map_sha256": "045a1b97a2277e7152f08abf286b98d90988fd2b70ec3161d8f4d98427bdc03d",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact source successor to published d7fc49f. Integrate reviewed typed calendar protocol, immutable goal and date provenance, model proof and fresh observation, private permit, original ActionWork/ActionSlot one-claim action worker, dedicated background date RPC and broker handler, current FORM SelectionEvidence and once-only QUERY guard continuation. Also integrate the explicit zero-touch probe-only controller branch and the narrowly authenticated Xiaomi horizontal clipped carousel-edge enclosure proof. Compile-only WindowInfos headers remain separate classpath inputs and are forbidden from app classes and APK DEX definitions. All original task, profile, display, ownership, observation, permission, deadline, final effect and cleanup guards remain in force. Host Android/model/socket ports and retained historical scopes are not Android execution or business success. Current signed build, phone qualification, input isolation and business outcomes require separate actual evidence. R26 changes only eighteen test fixture and runner files; all reviewed production behavior and original failure evidence remain unchanged. R27 adds only six test runner compatibility fixes to the frozen r26 snapshot; all reviewed production behavior and original failure evidence remain unchanged.",
-  "source_parent_head": "d7fc49fae67302a5c9b49fd0741cea1f7cba96e6",
-  "source_parent_manifest_sha256": "154ed099c6b7ba1d12985220d3f07451bbb5c3efca04e58a0ba1496aef19a3d7",
-  "source_snapshot_predecessor_manifest_sha256": "c862f0e1f81eb2c602ba7ed727aa69000155e76aac58ce147e96e503575d114d",
-  "test_compatibility_changed_paths": [
-    "tests/local-model-settings-visual/run_host.py",
-    "tests/local-model-settings/run_host.py",
-    "tests/notes-owner-intent/run_host_tests.py",
-    "tests/owner-grammar/run_host_tests.py",
-    "tests/public-screen-lease/run_host.py",
-    "tests/vlm-adapter/run_host.py"
-  ],
-  "test_compatibility_parent_manifest_sha256": "c862f0e1f81eb2c602ba7ed727aa69000155e76aac58ce147e96e503575d114d",
-  "test_compatibility_successor_delta": {
-    "baseline": "integrated-r26",
-    "changed_paths": [
-      "tests/local-model-settings-visual/run_host.py",
-      "tests/local-model-settings/run_host.py",
-      "tests/notes-owner-intent/run_host_tests.py",
-      "tests/owner-grammar/run_host_tests.py",
-      "tests/public-screen-lease/run_host.py",
-      "tests/vlm-adapter/run_host.py"
-    ],
-    "original_cases_and_assertions_unchanged": true,
-    "production_changed": false,
-    "scope": "Repair only the six actual r26 canonical/diagnostic fixture failures. All 388 production input bytes and modes, including compile-only headers, are identical to the actual r25 SDK compile. Original r25/r26 failures and tail diagnostics remain unchanged; the tail diagnostic is not canonical qualification. Complete final canonical coverage is pending this freeze.",
-    "separate_production_changed_paths": []
-  },
+  "scope": "Exact source successor to published d7fc49f. Integrate reviewed typed calendar protocol, immutable goal and date provenance, model proof and fresh observation, private permit, original ActionWork/ActionSlot one-claim action worker, dedicated background date RPC and broker handler, current FORM SelectionEvidence and once-only QUERY guard continuation. Also integrate the explicit zero-touch probe-only controller branch and the narrowly authenticated Xiaomi horizontal clipped carousel-edge enclosure proof. Compile-only WindowInfos headers remain separate classpath inputs and are forbidden from app classes and APK DEX definitions. All original task, profile, display, ownership, observation, permission, deadline, final effect and cleanup guards remain in force. Host Android/model/socket ports and retained historical scopes are not Android execution or business success. Current signed build, phone qualification, input isolation and business outcomes require separate actual evidence. R26 changes only eighteen test fixture and runner files; all reviewed production behavior and original failure evidence remain unchanged. R27 adds only six test runner compatibility fixes to the frozen r26 snapshot; all reviewed production behavior and original failure evidence remain unchanged. R28 is a successor to published 444ec57 with the four production and seven test paths enumerated in current_successor_delta. Prior failures remain immutable; this source freeze does not assert Android or business qualification. The final r28 snapshot adds only the standalone public-own-group adapter test carrier context and its manifest entry. Production input bytes and modes remain exactly those executed by current r28-r2 canonical123, SDK211 and host gates; those original execution paths are retained, with the one repaired adapter gate recorded separately.",
+  "source_parent_head": "444ec5707b70d6ce00f3a6d259c41830370cd4ef",
+  "source_parent_manifest_sha256": "d013db03141fabe5b57e5f4d9bcfdc3cdebde545406661957a89b701940ff622",
+  "source_snapshot_predecessor_manifest_sha256": "a5ad01ff11e14eb07f5ba5dadfe952bb41129f519a4ca2a172e8a4cb1dc43ac8",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

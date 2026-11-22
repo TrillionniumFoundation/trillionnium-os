@@ -325,9 +325,13 @@ public final class BackgroundDisplayBroker {
                     // This is our own already serialized receipt, possibly for a real dispatched
                     // effect. Retiring admission must never rewrite that historical truth to false.
                     JSONObject retired=new JSONObject(new String(response,StandardCharsets.UTF_8));
-                    retired.put("ok",false).put("error","PUBLIC_SCOPE_RETIRED").put("state",state)
+                    String firstError=retired.optString("error","");
+                    boolean keepCalendarFailure=("calendar_probe".equals(request.operation)||"calendar_date".equals(request.operation))
+                            &&Boolean.FALSE.equals(retired.opt("ok"))&&!firstError.isEmpty();
+                    retired.put("ok",false).put("error",keepCalendarFailure?firstError:"PUBLIC_SCOPE_RETIRED").put("state",state)
                         .put("public_scope_admission_retired",true).put("public_scope_closing",true)
                         .put("public_own_group_readback_wire",JSONObject.NULL).put("public_surface_detach",publicDetachEvidence());
+                    if(keepCalendarFailure)retired.put("public_scope_retirement_error","PUBLIC_SCOPE_RETIRED");
                     response=retired.toString().getBytes(StandardCharsets.UTF_8);
                 }
                 BrokerProtocol.writeFrame(accepted.getOutputStream(), response);

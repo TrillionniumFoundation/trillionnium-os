@@ -253,7 +253,12 @@ public final class HeptaAccessibilityService {
         SearchActionWork startAction(NativeSearchSession.Attempt attempt){
             performNativeOpenSearch(lease,attempt,cancel(),result->{callbackCount++;outcome=result;});main.one();return activeSearchAction;
         }
-        void action(NativeSearchSession.Attempt attempt){startAction(attempt);if(!actionIo.jobs.isEmpty())actionIo.one();if(!main.jobs.isEmpty())main.one();}
+        void action(NativeSearchSession.Attempt attempt){
+            SearchActionWork work=startAction(attempt);if(!actionIo.jobs.isEmpty())actionIo.one();
+            // An actual preclaim refusal now publishes only after its real serial drain marker.
+            if(work!=null&&work.hasNoEffectReplanFence()&&work.state.isDrained()&&!actionSlot.pending()&&actionIo.hasJobs())actionIo.one();
+            if(!main.jobs.isEmpty())main.one();
+        }
         JSONObject diagnostic()throws Exception{
             File[] files=directory.listFiles((dir,name)->name.endsWith("-failed-native-search-planning.json"));
             check(files!=null&&files.length==1,"exactly one private failure diagnostic");

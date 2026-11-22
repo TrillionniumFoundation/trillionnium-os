@@ -40,6 +40,31 @@ def sha(path):
 def reviewed_calendar_broker_inverse(text):
     raw = text.encode("utf-8")
     actual = digest(raw)
+    # Proof-only reverse of the exact reviewed first-error preservation block.
+    # Actual broker compilation and method extraction below still use current source.
+    if actual == "f21aa2b52ecb77b253db4b6a0edb421e4554ff1f83779c7e7bd5f8a0eb9ea888":
+        if len(raw) != 137047:
+            raise RuntimeError("Reviewed first-error broker byte length changed")
+        addition = b'                    String firstError=retired.optString("error","");\n                    boolean keepCalendarFailure=("calendar_probe".equals(request.operation)||"calendar_date".equals(request.operation))\n                            &&Boolean.FALSE.equals(retired.opt("ok"))&&!firstError.isEmpty();\n                    retired.put("ok",false).put("error",keepCalendarFailure?firstError:"PUBLIC_SCOPE_RETIRED").put("state",state)\n                        .put("public_scope_admission_retired",true).put("public_scope_closing",true)\n                        .put("public_own_group_readback_wire",JSONObject.NULL).put("public_surface_detach",publicDetachEvidence());\n                    if(keepCalendarFailure)retired.put("public_scope_retirement_error","PUBLIC_SCOPE_RETIRED");\n'
+        original = b'                    retired.put("ok",false).put("error","PUBLIC_SCOPE_RETIRED").put("state",state)\n                        .put("public_scope_admission_retired",true).put("public_scope_closing",true)\n                        .put("public_own_group_readback_wire",JSONObject.NULL).put("public_surface_detach",publicDetachEvidence());\n'
+        if raw.count(addition) != 1 or digest(addition) != "399d66e1eb1a16869e62d579c95c37c03459e4f45fba51bae33aa40d59388279":
+            raise RuntimeError("Reviewed first-error broker block changed")
+        restored = raw.replace(addition, original, 1)
+        if len(restored) != 136605 or digest(restored) != "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708":
+            raise RuntimeError("First-error inverse did not restore exact reviewed broker")
+        projected, prior = reviewed_calendar_broker_inverse(restored.decode("utf-8"))
+        if prior.get("applied") is not True:
+            raise RuntimeError("Original calendar inverse is still required")
+        proof = dict(prior)
+        proof.update(actual_sha256=actual, actual_bytes=len(raw),
+                     exact_changed_blocks=prior["exact_changed_blocks"] + 1,
+                     first_error_inverse={
+                         "current_sha256": actual, "current_bytes": len(raw),
+                         "block_sha256": "399d66e1eb1a16869e62d579c95c37c03459e4f45fba51bae33aa40d59388279", "block_bytes": len(addition),
+                         "restored_sha256": "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708", "restored_bytes": len(restored),
+                         "proof_only_not_compiled_or_executed": True,
+                     }, calendar_inverse=prior)
+        return projected, proof
     current = "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708"
     previous = "d3e4e57392fe641dbe68bd04453213522b2d88c41d6ba9dc2cda08e69ae8632b"
     if actual != current:

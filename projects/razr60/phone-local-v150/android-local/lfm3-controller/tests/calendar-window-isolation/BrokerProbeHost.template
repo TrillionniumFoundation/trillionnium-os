@@ -1,6 +1,8 @@
 package org.trillionnium.hepta.background;
 import android.os.IBinder;
 import android.os.SystemClock;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONObject;
 /** Exact new broker method; live Android owner/display/RPC guards are explicit IO ports. */
 final class BrokerProbeHost {
@@ -19,6 +21,8 @@ final class BrokerProbeHost {
  boolean cancelled;
  Runnable beforeGuard;
  int guards;
+ final AtomicBoolean closing=new AtomicBoolean(),publicAdmissionRetired=new AtomicBoolean();
+ String state="CLOSING";
  BrokerProbeHost(BrokerProtocol.Config c,ProfilePackages p){config=c;expires=c.expiresElapsedMs;profileReadback=new Readback(c.profileTarget);profilePackages=p;profileOwnedTask=new Owned();}
  void run(BrokerProtocol.Request r)throws Exception{probeCalendarWindow(r);}
  void guard(BrokerProtocol.Request r,boolean active)throws Exception{guards++;if(beforeGuard!=null)beforeGuard.run();r.authenticate(config,config.ownerUid);r.checkDeadline(SystemClock.elapsedRealtime(),expires);if(cancelled)throw new BrokerProtocol.Refusal("BROKER_CANCELLED");}
@@ -36,6 +40,11 @@ final class BrokerProbeHost {
   static DisplayGeometry read(DisplayGeometry d,int id){if(d==null||id!=7)throw new AssertionError("display IO");DisplayGeometry v=new DisplayGeometry();v.width=d.width;v.height=d.height;v.rotation=d.rotation;v.name=d.name;return v;}
   boolean sameSize(DisplayGeometry d){return width==d.width&&height==d.height;}
   java.util.Map<String,Object> evidence(){java.util.Map<String,Object> v=new java.util.LinkedHashMap<String,Object>();v.put("width",width);v.put("height",height);v.put("rotation",rotation);v.put("name",name);return v;}
+ }
+ JSONObject publicDetachEvidence(){return new JSONObject().put("fixture_detach_port",true);}
+ byte[] retirement(BrokerProtocol.Request request,byte[] response)throws Exception{
+// EXACT_PUBLIC_RETIREMENT_BLOCK
+  return response;
  }
 // EXACT_PROBE_METHOD
 }
