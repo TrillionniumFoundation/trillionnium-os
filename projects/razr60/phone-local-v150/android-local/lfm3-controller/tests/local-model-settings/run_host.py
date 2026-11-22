@@ -10,6 +10,63 @@ def need(value,message):
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def encoded(value): return (json.dumps(value,ensure_ascii=False,indent=2,allow_nan=False)+"\n").encode()
 
+def calendar_legacy_type_inputs(source, output, files, take, put):
+    """Compile actual grammar with private refusing Calendar types in this old settings gate."""
+    constant_source=source/"src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java"
+    actual=take(constant_source)
+    constants=b'    static final String SCHEMA="hepta.native-calendar-select-date.v1",ACTION="calendar.select_date";'
+    need(actual.splitlines().count(constants)==1,"actual calendar schema/action constants required")
+    owned={"NativeAppSession.java","NativeCalendarDateEnvelope.java","NativeCalendarDateIntent.java"}
+    need(not owned.intersection({p.name for p in files}),"Calendar type-only copies must not shadow original compiler inputs")
+    directory=output/"calendar-legacy-types";directory.mkdir()
+    values=[
+        ("NativeAppSession.java",b"""package org.trillionnium.hepta.local;
+final class NativeAppSession {
+    private NativeAppSession(){throw unavailable();}
+    private static UnsupportedOperationException unavailable(){return new UnsupportedOperationException("No Calendar Session in original settings gate");}
+    static final class CalendarOffer {
+        final NativeCalendarDateEnvelope source=null;
+        final CalendarGrammar protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame owner)throws Exception{throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarGrammar {
+        final String grammar=null,grammarSha256=null;
+        private CalendarGrammar(){throw unavailable();}
+    }
+}
+"""),
+        ("NativeCalendarDateEnvelope.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateEnvelope {
+    final Facts facts=null;
+    static final class Facts {
+        final String observationId=null,packageName=null;
+        private Facts(){throw new UnsupportedOperationException("No Calendar frame in original settings gate");}
+    }
+    private NativeCalendarDateEnvelope(){throw new UnsupportedOperationException("No Calendar envelope in original settings gate");}
+}
+"""),
+        ("NativeCalendarDateIntent.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateIntent {
+"""+constants+b"""
+    private NativeCalendarDateIntent(){throw new UnsupportedOperationException("No Calendar intent in original settings gate");}
+}
+""")]
+    generated=[]
+    for name,raw in values:
+        path=directory/name;put(path,raw);take(path);generated.append(path)
+    return list(files)+generated,{
+        "schema":"hepta.settings-calendar-legacy-type-boundary.v1",
+        "constant_source":{"path":str(constant_source),"bytes":len(actual),"sha256":sha(actual)},
+        "generated":[{"path":str(p),"bytes":len(take(p)),"sha256":sha(take(p))} for p in generated],
+        "original_production_inputs_and_cases_unchanged":True,
+        "actual_DecisionGrammar_bodies_unmodified":True,
+        "all_new_constructors_private_and_throwing":True,
+        "all_new_authority_methods_throw":True,
+        "calendar_authority_created":False,"calendar_behavior_executed":False}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ("source","output","java-home","json-jar"):
@@ -80,6 +137,8 @@ def main():
         legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search)
         compile_inputs=legacy_search.add(source,actual+fixture+tests)
         for path in compile_inputs:take(path)
+        compile_inputs,calendar_boundary=calendar_legacy_type_inputs(source,out,compile_inputs,take,put)
+        result["calendar_type_boundary"]=calendar_boundary
         jar=take(a.json_jar)
         need(len(jar)==78332 and sha(jar)=="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
              "existing pinned org.json 20240303 required; no download is attempted")

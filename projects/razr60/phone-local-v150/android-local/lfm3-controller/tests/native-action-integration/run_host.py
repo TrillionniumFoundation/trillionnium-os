@@ -137,6 +137,7 @@ def sources(source,out):
     # pretending to offer the new planning/dispatch protocol. This generated
     # signature-only port is unconstructible and can never accept an effect.
     service_port=out/'platform-fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java'
+    calendar_paths,calendar_boundary=calendar_legacy_closure(source,service_port)
     service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
     need(bgfiles.count(service_port)==1 and service_text.endswith('}')
          and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text and 'class NativeSearchNoEffectReplanProof' not in service_text and 'class NativeSearchSamplingExhaustionProof' not in service_text,
@@ -166,6 +167,7 @@ def sources(source,out):
          'original Service port changed outside the refusing type boundary')
     service_port.write_bytes(service_after)
     bgrecord=dict(bgrecord)
+    bgrecord['native_calendar_legacy_type_boundary']=calendar_boundary
     bgrecord['native_search_legacy_type_boundary']={
         'generated_service':str(service_port),'original_service_sha256':sha(service_before),
         'compiled_service_sha256':sha(service_after),'type_block_sha256':sha(outcome_port.encode('utf-8')),
@@ -190,6 +192,9 @@ def sources(source,out):
     if not any(str(p).endswith('/android/util/Log.java') for p in paths):
         log=out/'generated/android/util/Log.java'
         write(log,'package android.util; public final class Log { public static int i(String tag,String text){return 0;} }\n');paths.append(log)
+    actual_calendar_files={p.name for p in calendar_paths if source in p.parents}
+    paths=[p for p in paths if not (p.parent==service_port.parent and (p.name in actual_calendar_files or p.name=="NativeAppSession.java"))]
+    paths += calendar_paths
     paths=list(dict.fromkeys(p.resolve() for p in paths))
     for path in paths:need(path.is_file(),'missing actual compile source: '+str(path))
     return paths,bgrecord
@@ -200,6 +205,96 @@ def stage(name,argv,out,env):
         run=subprocess.run(list(map(str,argv)),cwd=out,env=env,stdout=stdout,stderr=stderr,timeout=150,check=False)
     return {'name':name,'argv':list(map(str,argv)),'exit_code':run.returncode,'elapsed_ns':time.monotonic_ns()-begin,
       'stdout':meta(out/(name+'.stdout')),'stderr':meta(out/(name+'.stderr'))}
+
+
+def calendar_legacy_closure(source, service_port):
+    """Actual pure calendar dependencies; opaque lifecycle/model types always refuse."""
+    actual_names = (
+        "NativeCalendarDateEnvelope", "NativeCalendarDateIntent", "NativeCalendarDateProtocol",
+        "LocalInference", "LocalRuntimeConfig", "ModelProfile", "MobiMindContract", "MobiMindPins",
+        "MobiMindPrivateFiles", "UiVenusInputContract", "UiVenusPins")
+    source_paths = [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in actual_names]
+    before = service_port.read_text()
+    if not before.endswith("}") or any("class " + name in before for name in (
+            "CalendarFreshObservation", "CalendarActionResult", "CalendarSelectionObservation")):
+        raise RuntimeError("one original Service port without calendar authority required")
+    input_port = '    /** Type-only old host boundary: no private action attempt can be constructed. */\n    static final class CalendarInputAttempt {\n        final String operationId=null;\n        final long queuedElapsed=-1;\n        private CalendarInputAttempt(){throw new UnsupportedOperationException("No calendar input authority in legacy fixture");}\n        void requirePermitProducer(NativeAppSession.CalendarPermit actual,boolean entered){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        java.util.Map<String,Object> executionBeforeInput(){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        java.util.Map<String,Object> beginBrokerCall(BackgroundSession actual,Cancellation original)throws Exception{\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        void requireBeforeSend(BackgroundSession actual,Cancellation original){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n    }\n'
+    inherited_input = "class CalendarInputAttempt" in before
+    if inherited_input and before.count(input_port) != 1:
+        raise RuntimeError("unknown shared CalendarInputAttempt port")
+    calendar_types = """
+    public static final class CalendarFreshObservation {
+        private CalendarFreshObservation(){throw new AssertionError("calendar publication is outside this legacy fixture");}
+        void requireBound(NativeAppSession.CalendarFreshRead read)throws Exception{throw new AssertionError("no calendar publication authority");}
+        NativeCalendarDateEnvelope readEnvelope(NativeAppSession.CalendarFreshRead read)throws Exception{throw new AssertionError("no calendar publication authority");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("no calendar publication evidence");}
+        PhoneObservation observationFor(LocalTaskController controller,NativeAppSession.CalendarFreshRead read)throws Exception{throw new AssertionError("no calendar publication authority");}
+        PhoneObservation observationForAction(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){throw new AssertionError("no calendar action authority");}
+        void requireActionCurrentPure(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){throw new AssertionError("no calendar action authority");}
+        void requireActionIssuer(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){throw new AssertionError("no calendar action authority");}
+        void retireInputTracking(){throw new AssertionError("no calendar tracker in legacy fixture");}
+        void requireRecordedOriginal(NativeAppSession.CalendarFreshRead read)throws Exception{throw new AssertionError("no calendar original publication");}
+    }
+    public static final class CalendarActionResult {
+        final long confirmedElapsed=-1L;
+        private CalendarActionResult(){throw new AssertionError("calendar result is outside this legacy fixture");}
+        void requireSuccessfulOriginal(NativeAppSession.CalendarPermit permit,CalendarInputAttempt input){throw new AssertionError("no calendar result authority");}
+        java.util.Map<String,Object> evidence()throws Exception{throw new AssertionError("no calendar result evidence");}
+    }
+    public static final class CalendarSelectionObservation {
+        final CalendarActionResult result=null;
+        final NativeAppEvidence.Frame frame=null;
+        private CalendarSelectionObservation(){throw new AssertionError("calendar selection is outside this legacy fixture");}
+        void requireBound(NativeAppSession.CalendarPermit permit)throws Exception{throw new AssertionError("no calendar selection authority");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("no calendar selection evidence");}
+    }
+    void registerNativeCalendarInputTracking(NativeAppSession.CalendarFreshRead read,CalendarFreshObservation proof){throw new AssertionError("no calendar tracker in legacy fixture");}
+    void retireNativeCalendarInputTracking(NativeAppSession.CalendarFreshRead read){throw new AssertionError("no calendar tracker in legacy fixture");}
+"""
+    extension = calendar_types + ("" if inherited_input else input_port)
+    after = before[:-1] + extension + "}"
+    if after.replace(extension, "", 1) != before:
+        raise RuntimeError("calendar port changed the original Service body")
+    service_port.write_text(after)
+    model_port = """package org.trillionnium.hepta.local;
+final class VlmInferenceAdapter implements LocalInference {
+    private VlmInferenceAdapter(){throw new AssertionError("visual model is outside this legacy fixture");}
+    public LocalRuntimeConfig configuration(){throw new AssertionError("no visual model configuration");}
+    public Handle generate(String prompt,String system,java.io.File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){throw new AssertionError("no visual model execution");}
+    interface AcceptedRequestCallback extends LocalInference.Callback {void onAcceptedRequest(AcceptedRequest proof);}
+    public final class AcceptedRequest {
+        private AcceptedRequest(){throw new AssertionError("no accepted visual request in legacy fixture");}
+        public String requestId(){throw new AssertionError("no accepted visual request");}
+        public String rawText(){throw new AssertionError("no accepted visual request");}
+        public void requireBound(LocalInference engine,CurrentFrame frame,DecisionGrammar grammar)throws Exception{throw new AssertionError("no accepted visual request authority");}
+        public java.util.Map<String,Object> evidence(){throw new AssertionError("no accepted visual request evidence");}
+    }
+}
+"""
+    controller_port = """package org.trillionnium.hepta.local;
+final class LocalTaskController {
+    private LocalTaskController(){throw new AssertionError("calendar controller is outside this legacy fixture");}
+}
+"""
+    generated = []
+    for name, text in (("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port)):
+        path = service_port.parent / name
+        with path.open("x", encoding="utf-8") as f:
+            f.write(text)
+        generated.append(path)
+    def pin(path):
+        raw = path.read_bytes()
+        return dict(path=str(path), bytes=len(raw), sha256=sha(raw))
+    record = dict(schema="hepta.calendar-legacy-type-boundary.v1",
+        original_service_sha256=sha(before.encode()), calendar_extension_service_sha256=sha(after.encode()),
+        service_extension_sha256=sha(extension.encode()), original_service_bytes_reversible=True,
+        inherited_shared_input_port=inherited_input, shared_input_port_sha256=sha(input_port.encode()),
+        actual_pure_sources=[pin(p) for p in source_paths], refusing_ports=[pin(p) for p in generated],
+        all_new_proof_constructors_private_and_throwing=True, all_new_authority_methods_throw=True,
+        accepted_request_minted=False, calendar_permit_minted=False, input_attempt_minted=False,
+        actual_calendar_behavior_tested=False, phone_actions=0, model_executed=False)
+    return source_paths + generated, record
+
 
 def main():
     parser=argparse.ArgumentParser()

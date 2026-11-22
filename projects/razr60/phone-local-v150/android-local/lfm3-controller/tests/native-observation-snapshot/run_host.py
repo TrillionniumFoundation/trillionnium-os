@@ -33,9 +33,10 @@ def generate(source,out,h):
       'collection_stats':h.body(phone,'    public static final class CollectionStats {'),
       'immutable_map':h.body(evidence,'    static Map<String,Object> immutableMap(Map<String,Object> source){'),
       'immutable_value':h.body(evidence,'    private static Object immutableValue(Object value,int depth){')}
+    compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts)
     template=(BUNDLE/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
     for key in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
-        template=once(template,'{{'+key+'}}',parts[key])
+        template=once(template,'{{'+key+'}}',compiled_parts[key])
     main=h.body(template,'    public static void main(String[] args)throws Exception{')
     extra=parts['complete_native']+'\n'+parts['immutable_map']+'\n'+parts['immutable_value']+'\n'
     extra+='    static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}\n'
@@ -92,7 +93,9 @@ def generate(source,out,h):
         parts['identity_android_adapter_pinned_not_executed']=adapter
     h.write(out/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.native-observation-snapshot-extraction.v1','feature_present':feature,
-        'production_observer_bodies_verbatim':True,'source_root':str(source),'test_bundle_root':str(BUNDLE),
+        'production_observer_bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
+        'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
+        'source_root':str(source),'test_bundle_root':str(BUNDLE),
         'r17_counterfactual_unused_carrier_bridge':not feature,
         'methods':{k:{'bytes':len(v.encode()),'sha256':h.sha(v.encode())} for k,v in parts.items()},
         'boundary':'Actual observer, pair seal, window value comparator, native completeness and recursive evidence freeze. Android graph/root/window IO, permission endpoint, pixels and clock are explicit fakes; Android adapter is pinned and checked for content-free reads but not run on Android.',

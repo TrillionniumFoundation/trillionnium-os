@@ -35,6 +35,43 @@ def sha(path):
     return digest(path.read_bytes())
 
 
+# Proof-only inverse of the exact reviewed calendar additions. Actual source
+# and actual method extraction below always remain the current broker bytes.
+def reviewed_calendar_broker_inverse(text):
+    raw = text.encode("utf-8")
+    actual = digest(raw)
+    current = "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708"
+    previous = "d3e4e57392fe641dbe68bd04453213522b2d88c41d6ba9dc2cda08e69ae8632b"
+    if actual != current:
+        return text, {"applied": False, "actual_sha256": actual}
+    if len(raw) != 136605:
+        raise RuntimeError("Reviewed calendar broker byte length changed")
+    # Exact current-byte offsets, whole block SHA256, and original replacement.
+    changes = (
+    (963, 996, '6ab58abc9ea23897f61187e8a9d150de0bc48865b9de7059aa0d797322f5010a', b''),
+    (2593, 3016, '645bffcfbd6e26324c915a8d2604ce58fa10d599de360ff5ef8986a71eec9bad', b''),
+    (31469, 31904, 'c4b97d391d7464919cde1cfc14bba94ae30486f98c597eb9bddf5d518101c5df', b''),
+    (51743, 75631, '319070e008988c92bb2cce70e9302b4d6cad05a21755acd3620fd38fc3547f10', b''),
+    (102689, 102867, 'adf0494b63360b2c8454ccd50d61f7250979f204504d7a04ec8dbdc0a1013b22', b'        return bootReadRetirementFailure==null?"RELEASED":"CLEANUP_UNKNOWN";\n'),
+    (103284, 103391, '44e26acb5017bc8c51bf1b8a7b4e54475b4ed78cbce5ecf226136674adf01de3', b''),
+    (122636, 123007, '56172ed729d4859ac311b1e2320dc9c3f92aa3f75349d5d24a282b682f1698cb', b''),
+    (135712, 135825, 'b4b93e7fe9acf03959d291058367a9ee58d53e1d6989ef26916bbc2b8ab0d07f', b''),
+    )
+    for start, end, expected, original in reversed(changes):
+        if not (0 <= start < end <= len(raw)) or digest(raw[start:end]) != expected:
+            raise RuntimeError("Reviewed calendar broker delta changed")
+        raw = raw[:start] + original + raw[end:]
+    if len(raw) != 111134 or digest(raw) != previous:
+        raise RuntimeError("Reviewed calendar broker did not restore exact prior source")
+    return raw.decode("utf-8"), {
+        "applied": True, "actual_sha256": current, "actual_bytes": 136605,
+        "prior_sha256": previous, "prior_bytes": 111134,
+        "exact_changed_blocks": len(changes),
+        "proof_only_not_compiled_or_executed": True,
+        "original_full_source_pin_still_required": True,
+    }
+
+
 def remove_addition(text, begin, end):
     if text.count(begin) != 1 or text.count(end) != 1:
         raise RuntimeError("Exact additive source boundaries changed")
@@ -120,8 +157,10 @@ def main():
         old_call = "remaining=publicNotesReader.frame();live=remaining.global;"
         new_call = "remaining=publicNotesReader.frameAfterRelease(custody.releasedRead());live=remaining.global;"
         broker_text = broker.read_text()
+        prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(broker_text)
+        result["reviewed_calendar_broker_inverse"] = calendar_inverse
         if (broker_text.count(new_call) != 1
-                or digest(broker_text.replace(new_call, old_call, 1).encode()) != BROKER_CTRIP_SHA):
+                or digest(prior_broker.replace(new_call, old_call, 1).encode()) != BROKER_CTRIP_SHA):
             raise RuntimeError("Broker differs beyond the reviewed after-release read")
         cleanup = broker_text[broker_text.index("    private void beginPublicNotesCleanup(){"):
                               broker_text.index("    private boolean publicOwnedDisplayAbsent()")]

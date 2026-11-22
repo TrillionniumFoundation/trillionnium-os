@@ -146,6 +146,10 @@ def main():
         legacy_search=importlib.util.module_from_spec(port_spec);port_spec.loader.exec_module(legacy_search)
         compile_inputs=legacy_search.add(source,production+fixture+generated_paths+tests)
         for path in compile_inputs:take(path)
+        settings_spec=importlib.util.spec_from_file_location("settings_calendar_type_boundary",old/"run_host.py")
+        settings_ports=importlib.util.module_from_spec(settings_spec);settings_spec.loader.exec_module(settings_ports)
+        compile_inputs,calendar_boundary=settings_ports.calendar_legacy_type_inputs(source,out,compile_inputs,take,put)
+        result["calendar_type_boundary"]=calendar_boundary
         classes=out/"classes";classes.mkdir();empty=out/"empty-sourcepath";empty.mkdir()
         run("compile",[javac,"--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-proc:none",
             "-sourcepath",empty,"-cp",a.json_jar,"-d",classes,*compile_inputs])

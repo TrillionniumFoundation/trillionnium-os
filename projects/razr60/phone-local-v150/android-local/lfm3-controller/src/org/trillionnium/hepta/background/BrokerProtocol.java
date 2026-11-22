@@ -142,6 +142,42 @@ public final class BrokerProtocol {
         }
     }
 
+    /**
+     * Calendar wire data only. This value has no Android authority. The broker
+     * route remains explicitly disabled until the private App attempt path and
+     * on-device qualification are separately reviewed and integrated.
+     */
+    public static final class CalendarDate {
+        public final String ownerTaskId,goalSha256,date,observationId,screenSha256,permitSha256,attemptRecordSha256;
+        public final int width,height,rotation,left,top,right,bottom;
+        private CalendarDate(Map<String,Object> m)throws Refusal{
+            ownerTaskId=string(m,"owner_task_id");goalSha256=string(m,"goal_sha256");
+            date=string(m,"date");observationId=string(m,"observation_id");screenSha256=string(m,"screen_sha256");
+            permitSha256=string(m,"permit_sha256");attemptRecordSha256=string(m,"attempt_record_sha256");
+            if(!ownerTaskId.matches("[0-9a-f]{32}")||!observationId.matches("[0-9a-f]{32}")
+                    ||!ProfileIdentity.hash(goalSha256)||!ProfileIdentity.hash(screenSha256)
+                    ||!ProfileIdentity.hash(permitSha256)||!ProfileIdentity.hash(attemptRecordSha256))
+                throw new Refusal("CALENDAR_DATE_BINDING_INVALID");
+            if(!date.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))throw new Refusal("CALENDAR_ISO_DATE_INVALID");
+            try{
+                java.util.GregorianCalendar c=new java.util.GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"),java.util.Locale.ROOT);
+                c.setLenient(false);c.clear();int year=Integer.parseInt(date.substring(0,4));
+                if(year<1970||year>9999)throw new IllegalArgumentException("year");
+                c.set(year,Integer.parseInt(date.substring(5,7))-1,Integer.parseInt(date.substring(8,10)));
+                c.getTimeInMillis();
+            }catch(RuntimeException invalid){throw new Refusal("CALENDAR_ISO_DATE_INVALID");}
+            width=calendarInt(m,"display_width",1,4096);height=calendarInt(m,"display_height",1,4096);
+            rotation=calendarInt(m,"display_rotation",0,3);
+            left=calendarInt(m,"left",0,width);top=calendarInt(m,"top",0,height);
+            right=calendarInt(m,"right",0,width);bottom=calendarInt(m,"bottom",0,height);
+            if((long)width*height>16000000L||left>=right||top>=bottom)
+                throw new Refusal("CALENDAR_DATE_RECT_INVALID");
+        }
+        private static int calendarInt(Map<String,Object> m,String k,int low,int high)throws Refusal{
+            long v=number(m,k);if(v<low||v>high)throw new Refusal("CALENDAR_DATE_INTEGER_INVALID");return (int)v;
+        }
+    }
+
     public static final class Request {
         public final byte[] bytes;
         public final String requestId;
@@ -154,8 +190,9 @@ public final class BrokerProtocol {
         public final int version,windowId,observedTaskId;
         public final String profileTargetSha256,displayScopeSha256;
         public final PublicPermissionControllerUi.Locator controllerUi;
-        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,String displayScopeSha256,int windowId,int observedTaskId,PublicPermissionControllerUi.Locator controllerUi) {
-            this.controllerUi=controllerUi;
+        public final CalendarDate calendarDate;
+        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,String displayScopeSha256,int windowId,int observedTaskId,PublicPermissionControllerUi.Locator controllerUi,CalendarDate calendarDate) {
+            this.controllerUi=controllerUi;this.calendarDate=calendarDate;
             this.payload=payload;this.attemptId=attemptId;this.targetUid=targetUid;
             this.version=version;this.profileTargetSha256=profileTargetSha256;this.displayScopeSha256=displayScopeSha256;this.windowId=windowId;this.observedTaskId=observedTaskId;
             this.bytes = bytes.clone(); requestId = id; generation = gen; operation = op;
@@ -169,6 +206,8 @@ public final class BrokerProtocol {
                     .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(input)).toString();
             } catch (CharacterCodingException error) { throw new Refusal("INVALID_UTF8"); }
             Map<String,Object> map = new FlatJson(text).parse();
+            // Only the exact dedicated date vocabulary exceeds the legacy ten-field bound.
+            if(map.size()>10&&!"calendar_date".equals(map.get("op")))throw new Refusal("REQUEST_FIELDS");
             Set<String> expected = new LinkedHashSet<String>(Arrays.asList("version", "request_id",
                 "generation", "deadline_elapsed_ms", "op"));
             String op = string(map, "op");
@@ -176,7 +215,10 @@ public final class BrokerProtocol {
             if(rawVersion!=VERSION&&rawVersion!=PROFILE_VERSION&&rawVersion!=PUBLIC_OWN_GROUP_VERSION&&rawVersion!=PUBLIC_OWN_GROUP_PROFILE_VERSION)
                 throw new Refusal("PROTOCOL_VERSION");
             int version=(int)rawVersion;boolean profile=isProfileVersion(version),publicScope=isPublicOwnGroupVersion(version),
-                    window="window".equals(op)||"permission_window".equals(op);
+                    window="window".equals(op)||"permission_window".equals(op)||"calendar_probe".equals(op)||"calendar_date".equals(op);
+            boolean calendarProbe="calendar_probe".equals(op),calendarDate="calendar_date".equals(op);
+            if(calendarDate&&version!=PUBLIC_OWN_GROUP_PROFILE_VERSION)throw new Refusal("CALENDAR_DATE_SCOPE_REQUIRED");
+            if(calendarProbe&&version!=PUBLIC_OWN_GROUP_PROFILE_VERSION)throw new Refusal("CALENDAR_PROBE_SCOPE_REQUIRED");
             boolean policyRead="display_policy".equals(op);
             if(policyRead&&!publicScope)throw new Refusal("OPERATION_NOT_ALLOWED");
             if(publicScope)expected.add("display_scope_sha256");
@@ -188,6 +230,8 @@ public final class BrokerProtocol {
             if(profile&&fixed)throw new Refusal("PROFILE_FIXED_INTENT_NOT_ALLOWED");
             if ("launch".equals(op) || "prepare".equals(op) || "back".equals(op)||fixed) expected.add("package");
             if(fixed)expected.addAll(Arrays.asList("payload","attempt_id","target_uid"));
+            if(calendarDate)expected.addAll(Arrays.asList("owner_task_id","goal_sha256","date","observation_id","screen_sha256",
+                    "permit_sha256","attempt_record_sha256","display_width","display_height","display_rotation","left","top","right","bottom"));
             boolean controllerUi=map.containsKey("controller_ui_locator");
             if(controllerUi){
                 if(!publicScope||!profile||!"prepare".equals(op))throw new Refusal("CONTROLLER_UI_OPERATION_NOT_ALLOWED");
@@ -205,10 +249,13 @@ public final class BrokerProtocol {
             }
             String id = string(map, "request_id"), gen = string(map, "generation");
             if (!uuid(id) || !uuid(gen)) throw new Refusal("INVALID_REQUEST_IDENTITY");
-            if (!fixed&&!preparation&&!policyRead&&!Arrays.asList("create", "state", "launch", "back", "close", "window").contains(op))
+            if (!fixed&&!preparation&&!policyRead&&!calendarProbe&&!calendarDate&&!Arrays.asList("create", "state", "launch", "back", "close", "window").contains(op))
                 throw new Refusal("OPERATION_NOT_ALLOWED");
             String pkg = ("launch".equals(op) || "prepare".equals(op) || "back".equals(op)||fixed||window) ? string(map, "package") : null;
             if (pkg != null && !packageName(pkg)) throw new Refusal("INVALID_PACKAGE");
+            if(calendarProbe&&!ProfileTarget.CTRIP.equals(pkg))throw new Refusal("CALENDAR_PROBE_PACKAGE_REQUIRED");
+            if(calendarDate&&!ProfileTarget.CTRIP.equals(pkg))throw new Refusal("CALENDAR_DATE_PACKAGE_REQUIRED");
+            CalendarDate calendar=calendarDate?new CalendarDate(map):null;
             long deadline = number(map, "deadline_elapsed_ms");
             if (deadline <= 0) throw new Refusal("INVALID_DEADLINE");
             String payload=null,attempt=null;int targetUid=-1;
@@ -223,7 +270,7 @@ public final class BrokerProtocol {
             PublicPermissionControllerUi.Locator controller=null;
             if(controllerUi){try{controller=PublicPermissionControllerUi.Locator.fromWire(string(map,"controller_ui_locator"));}
                 catch(IllegalArgumentException invalid){throw new Refusal("CONTROLLER_UI_LOCATOR_INVALID");}}
-            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,scopeSha,windowId,taskId,controller);
+            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,scopeSha,windowId,taskId,controller,calendar);
         }
         public void authenticate(Config config, int peerUid) throws Refusal {
             if (peerUid != config.ownerUid) throw new Refusal("CALLER_UID_MISMATCH");
@@ -316,7 +363,7 @@ public final class BrokerProtocol {
                 else { int start = p; while (p < text.length() && Character.isDigit(text.charAt(p))) p++;
                     value = Long.valueOf(decimal(text.substring(start, p))); }
                 if (result.containsKey(key)) throw new Refusal("DUPLICATE_FIELD");
-                result.put(key, value); if (result.size() > 10) throw new Refusal("REQUEST_FIELDS");
+                result.put(key, value); if (result.size() > 24) throw new Refusal("REQUEST_FIELDS");
                 ws(); if (p < text.length() && text.charAt(p) == '}') { p++; break; }
                 take(',');
             }

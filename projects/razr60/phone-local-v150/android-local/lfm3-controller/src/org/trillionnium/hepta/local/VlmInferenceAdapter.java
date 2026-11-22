@@ -59,6 +59,89 @@ public final class VlmInferenceAdapter implements LocalInference {
     @Override public boolean modelOutputDispatchAllowed(){return !configuration.visualObservationOnly;}
     @Override public long requestCompletionGraceMillis(){return VlmPins.COMPLETION_GRACE_MILLIS;}
 
+    /** Opt-in only. The ordinary raw-text Callback route is unchanged. */
+    public interface AcceptedRequestCallback extends LocalInference.Callback {
+        void onAcceptedRequest(AcceptedRequest proof);
+    }
+    /** Private producer capability for one actually accepted GUI-Owl request.
+     * This is model provenance, not an Android input/date/business permit. */
+    public final class AcceptedRequest {
+        private final Round round;
+        private final String rawSha,appSha,deliverySha;
+        private final long admittedMonotonicNs;
+        private AcceptedRequest(Round actual,long admitted){
+            round=actual;admittedMonotonicNs=admitted;
+            rawSha=actual.sidecarStamps.get("raw.txt").sha256;
+            appSha=actual.appReceipt.sha256;deliverySha=actual.deliveryReceipt.sha256;
+        }
+        public String requestId(){return round.requestId;}
+        public String rawText(){return round.rawText;}
+        public void requireBound(LocalInference actualEngine,CurrentFrame originalFrame,
+                DecisionGrammar originalGrammar)throws Exception{
+            need(actualEngine==VlmInferenceAdapter.this&&round.frame==originalFrame
+                    &&round.grammar==originalGrammar&&round.acceptedCalendarRequest==this,
+                    "original visual adapter/frame/grammar/private request proof required");
+            requireAcceptedCalendarRound(round,false);
+            need(rawSha.equals(round.sidecarStamps.get("raw.txt").sha256)
+                    &&appSha.equals(round.appReceipt.sha256)&&deliverySha.equals(round.deliveryReceipt.sha256),
+                    "original accepted visual receipt identity changed");
+        }
+        public Map<String,Object> evidence(){
+            Map<String,Object> e=base(round,"hepta.vlm.accepted-request.v1");
+            e.put("profile",configuration.profile.id);e.put("visual_observation_only",configuration.visualObservationOnly);
+            e.put("screen_sha256",round.frame.imageSha256);e.put("grammar_sha256",round.grammar.sha256);
+            e.put("raw_sha256",rawSha);e.put("app_receipt_sha256",appSha);e.put("delivery_receipt_sha256",deliverySha);
+            e.put("display_id",round.frame.displayId);e.put("window_id",round.frame.windowId);e.put("rotation",round.frame.rotation);
+            e.put("captured_elapsed_ms",round.frame.capturedElapsedMillis);
+            e.put("accepted_monotonic_ns",admittedMonotonicNs);e.put("request_deadline_monotonic_ns",round.deadline);
+            e.put("actual_private_adapter_request",true);e.put("native_exit_code",round.exitCode);
+            e.put("native_contract_valid",true);e.put("generation_cleanup_known",true);
+            e.put("grants_android_dispatch",false);e.put("date_or_business_verified",false);
+            return Collections.unmodifiableMap(e);
+        }
+    }
+    private void requireAcceptedCalendarRound(Round round,boolean initial)throws Exception{
+        need(round!=null&&configuration.profile==ModelProfile.GUI_OWL_4B&&!configuration.visualObservationOnly
+                &&"npu".equals(configuration.compute)&&configuration.contextTokens==8192&&configuration.threads==4
+                &&NativeCalendarDateIntent.SCHEMA.equals(round.grammar.schema)
+                &&round.grammar.actions.equals(Collections.singletonList(NativeCalendarDateIntent.ACTION))
+                &&round.grammar.doneStatuses.isEmpty()&&!round.grammar.successAllowed,
+                "only the original GUI-Owl calendar tools request can issue this proof");
+        Task value=round.owner;
+        synchronized(value){
+            need(task==value&&!value.failed&&!value.ending&&!value.publicationFailed&&value.current==null
+                    &&!value.rounds.isEmpty()&&value.rounds.get(value.rounds.size()-1)==round
+                    &&value.lease.current()&&!value.lease.isCancellationRequested()
+                    &&round.finished&&round.accepted&&round.retired&&round.cleanupKnown&&round.contractValid
+                    &&round.process!=null&&round.exitObserved&&Integer.valueOf(0).equals(round.exitCode)
+                    &&round.validation.isEmpty()&&!round.timedOut&&!round.logLimit&&round.failure==null
+                    &&round.generationCleanup!=null&&round.generationCleanup.known&&round.generationCleanup.unforced()
+                    &&round.rejectionReceipt==null&&round.appReceipt!=null&&round.deliveryReceipt!=null,
+                    "actual retired successful request and current original task required");
+        }
+        OwnedWorkerCancellation.Snapshot stopped=round.cancellation.snapshot();
+        need(!stopped.requested&&stopped.forceAttempts==0&&stopped.termAttempts==0,"cancelled visual request cannot issue calendar provenance");
+        round.parent.verify();validateFrame(value,round.frame,round.grammar);
+        round.appReceipt.verify();round.deliveryReceipt.verify();
+        Stamp raw=round.sidecarStamps.get("raw.txt");need(raw!=null,"actual private native raw output required");raw.verify();
+        need(raw.sha256.equals(MobiMindContract.sha(round.rawText.getBytes(StandardCharsets.UTF_8))),"actual callback raw differs from native bytes");
+        round.frame.requireCurrent();
+        // Only model publication uses MONOTONIC ns. Later action freshness is a
+        // separate original elapsedRealtime deadline owned by the Session.
+        if(initial)need(System.nanoTime()<round.deadline,"original model deadline expired before proof publication");
+        synchronized(value){need(task==value&&!value.failed&&!value.ending&&!value.publicationFailed
+                &&value.current==null&&value.rounds.get(value.rounds.size()-1)==round
+                &&value.lease.current()&&!value.lease.isCancellationRequested()&&round.accepted&&round.retired,
+                "visual request changed during final private readback/current-frame checks");}
+    }
+    private AcceptedRequest produceAcceptedCalendarRequest(Round round)throws Exception{
+        need(round.acceptedCalendarRequest==null&&round.callback instanceof AcceptedRequestCallback,
+                "one actual accepted-request callback required");
+        requireAcceptedCalendarRound(round,true);
+        long admitted=System.nanoTime();need(admitted<round.deadline,"original model deadline expired at proof seal");
+        AcceptedRequest proof=new AcceptedRequest(round,admitted);round.acceptedCalendarRequest=proof;return proof;
+    }
+
     private static String id(){return UUID.randomUUID().toString().replace("-","");}
     private final class Task {
         final LocalModelEngine.TaskExternalLease lease;
@@ -148,6 +231,7 @@ public final class VlmInferenceAdapter implements LocalInference {
         long finishSubmitted,finishDeadline;
         String rawText="",failure;
         Stamp appReceipt,deliveryReceipt,rejectionReceipt,originalOwner,requestPending;
+        AcceptedRequest acceptedCalendarRequest;
         Round(Task owner,String generation,String requestId,String token,CurrentFrame frame,
               DecisionGrammar grammar,byte[] prompt,byte[] system,int maximum,long timeout,Callback callback) {
             this.owner=owner;this.generation=generation;this.requestId=requestId;this.token=token;
@@ -548,7 +632,21 @@ public final class VlmInferenceAdapter implements LocalInference {
                 if(!round.accepted)value.failed=true;
             }
             try{
-                if(round.accepted)round.callback.onSuccess(round.rawText,round.requestId);
+                if(round.accepted&&round.callback instanceof AcceptedRequestCallback){
+                    AcceptedRequest proof=null;
+                    try{proof=produceAcceptedCalendarRequest(round);}
+                    catch(Exception refused){
+                        round.accepted=false;value.failed=true;round.failure="calendar_model_receipt_not_current";
+                        try{
+                            Map<String,Object> refusal=base(round,"hepta.vlm.request-delivery-rejection.v1");
+                            refusal.put("delivery_receipt_sha256",round.deliveryReceipt.sha256);
+                            refusal.put("success_delivered",false);refusal.put("reason",round.failure);
+                            round.rejectionReceipt=write(new File(round.directory,"app-delivery-rejection.json"),json(refusal),65536);
+                        }catch(Exception unrecorded){value.publicationFailed=true;round.cleanupKnown=false;}
+                    }
+                    if(proof!=null)((AcceptedRequestCallback)round.callback).onAcceptedRequest(proof);
+                    else round.callback.onFailure(round.failure,round.cleanupKnown);
+                }else if(round.accepted)round.callback.onSuccess(round.rawText,round.requestId);
                 else round.callback.onFailure(round.failure==null?"visual request was not accepted: "+round.validation:round.failure,round.cleanupKnown);
             }catch(RuntimeException callbackFailure){
                 round.accepted=false;value.failed=true;

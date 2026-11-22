@@ -13,6 +13,66 @@ def section(text, start, end):
     return text[first:text.index(end, first)]
 
 
+
+def calendar_legacy_types(source, output, files):
+    """Private, rejecting compiler shapes for this original non-calendar gate."""
+    old=source/"tests/native-app/legacy-boundary/NativeAppSession.java"
+    raw=old.read_bytes()
+    if files.count(old)!=1 or hashlib.sha256(raw).hexdigest()!="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd":
+        raise RuntimeError("Exact original refusing Session compiler input required")
+    inserted=b"""
+    static final class CalendarOffer {
+        final NativeCalendarDateEnvelope source=null;
+        final CalendarGrammar protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame owner)throws Exception{throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarGrammar {
+        final String grammar=null,grammarSha256=null;
+        private CalendarGrammar(){throw unavailable();}
+    }
+"""
+    end=raw.rfind(b"\n}")
+    if end<0 or raw[end:].strip()!=b"}" or b"class CalendarOffer" in raw:
+        raise RuntimeError("Exact original Session class boundary required")
+    compiled=raw[:end]+inserted+raw[end:]
+    if compiled.replace(inserted,b"",1)!=raw:raise RuntimeError("Session compiler copy is not reversible")
+    constant_source=source/"src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java"
+    constant_raw=constant_source.read_bytes()
+    constants=b'    static final String SCHEMA="hepta.native-calendar-select-date.v1",ACTION="calendar.select_date";'
+    if constant_raw.splitlines().count(constants)!=1:raise RuntimeError("Actual calendar schema/action constants changed")
+    ports=output/"calendar-legacy-types";ports.mkdir()
+    values=[
+      ("NativeAppSession.java",compiled),
+      ("NativeCalendarDateEnvelope.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateEnvelope {
+    final NativeAppEvidence.Frame facts=null;
+    private NativeCalendarDateEnvelope(){throw new UnsupportedOperationException("No calendar envelope in original prompt gate");}
+}
+"""),
+      ("NativeCalendarDateIntent.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateIntent {
+"""+constants+b"""
+    private NativeCalendarDateIntent(){throw new UnsupportedOperationException("No calendar intent in original prompt gate");}
+}
+""")]
+    generated=[]
+    for name,value in values:
+        p=ports/name
+        with p.open("xb") as stream:stream.write(value)
+        generated.append(p)
+    if any(Path(p).name in ("NativeCalendarDateEnvelope.java","NativeCalendarDateIntent.java") for p in files):
+        raise RuntimeError("Calendar compiler shape would duplicate an existing source")
+    files=[generated[0] if p==old else p for p in files]+generated[1:]
+    def meta(p):
+        value=p.read_bytes()
+        return {"path":str(p),"bytes":len(value),"sha256":hashlib.sha256(value).hexdigest()}
+    return files,{"original_session":meta(old),"constant_source":meta(constant_source),
+      "generated":[meta(p) for p in generated],"original_session_inverse_equal":True,
+      "private_constructors_and_all_calendar_methods_throw":True,
+      "calendar_authority_created":False,"calendar_behavior_executed":False}
+
 def prepare(source, output):
     source, output = Path(source), Path(output)
     output.mkdir(parents=True, exist_ok=True)
@@ -20,7 +80,10 @@ def prepare(source, output):
     controller = (package / "LocalTaskController.java").read_text(encoding="utf-8")
     engine = (package / "LocalModelEngine.java").read_text(encoding="utf-8")
     service = (package / "HeptaAccessibilityService.java").read_text(encoding="utf-8")
-    await_block = section(controller, "    private ModelAnswer awaitModel(", "        long remaining=taskDeadline-SystemClock.elapsedRealtime();")
+    await_start="    private ModelAnswer awaitModel("
+    if controller.count(await_start)!=1:raise RuntimeError("one actual model admission method required")
+    # Earlier calendar code has its own remaining budget; retain this exact method.
+    await_block = section(controller[controller.index(await_start):], await_start, "        long remaining=taskDeadline-SystemClock.elapsedRealtime();")
     await_guard = await_block[await_block.index("{") + 1:]
     # This original fixture accepts only prompt/config, never a typed Offer or
     # grammar. Project only the explicit search branches and keep the ordinary,
@@ -140,8 +203,10 @@ public final class PromptAdmissionFixture {
     files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile,
               source/"tests/web-flight/legacy-boundary/WebShoppingQuote.java"]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    files,calendar_copy=calendar_legacy_types(source,output,files)
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
+        "calendar_fixture_compiler_copy": calendar_copy,
         "scope": "Exact production full prompt builder, original ordinary/visual pre-native guard projection and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",
         "controller_sha256": digest(controller.encode()),
         "engine_sha256": digest(engine.encode()),

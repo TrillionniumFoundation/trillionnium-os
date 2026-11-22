@@ -4,6 +4,7 @@ Only generated Android installed-app and observation IO fixtures are adapted.
 Production Session/Observation/Domain/providers, UI/session/controller entry bodies
 and the original routing cases/assertions are compiled and executed unchanged.
 """
+import ast
 import hashlib
 from pathlib import Path
 
@@ -27,13 +28,98 @@ def metadata(path, raw):
     return {"path": str(path), "bytes": len(raw), "sha256": sha(raw)}
 
 
+def calendar_actual_session_ports(source, output, service):
+    # Reuse only the exact already-reviewed literal ports, never execute that
+    # helper or replace this gate's real controller with its type-only carrier.
+    provider = source / "tests/native-app-provider/run_host.py"
+    raw = provider.read_text()
+    node = next(n for n in ast.parse(raw).body
+                if isinstance(n, ast.FunctionDef) and n.name == "calendar_legacy_closure")
+    require(sha(ast.get_source_segment(raw, node).encode()) ==
+            "0be32d214d355656fdbde067b892ec4dc8c7c13d95659b53cd66461066b661fb",
+            "exact reviewed calendar compiler port helper required")
+    values = {}
+    for item in node.body:
+        if isinstance(item, ast.Assign) and len(item.targets) == 1 and isinstance(item.targets[0], ast.Name):
+            name = item.targets[0].id
+            if name in ("actual_names", "calendar_types", "input_port", "model_port"):
+                values[name] = ast.literal_eval(item.value)
+    require(set(values) == {"actual_names", "calendar_types", "input_port", "model_port"},
+            "complete reviewed literal port set required")
+    qualification = source / "tests/qualification-scope/prepare_fixture.py"
+    q = next(n for n in ast.parse(qualification.read_text()).body
+             if isinstance(n, ast.FunctionDef) and n.name == "prepare")
+    qports = next(ast.literal_eval(n.value) for n in q.body
+                  if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "calendar_io_ports" for t in n.targets))
+    require(sha(qports.encode()) == "d7362e7b663929fd7a835214534652c8bb0ad4747de2582bb14d3d3e23f3ed9d",
+            "exact prior qualification calendar ports required")
+    pairs = [
+        ("    static final class CalendarFreshObservation {", "    interface CalendarActionCallback {"),
+        ("    static final class CalendarActionResult {", "    static final class CalendarSelectionObservation {"),
+        ("    static final class CalendarSelectionObservation {", "    void requireNativeCalendarSourceOwnership("),
+    ]
+    removed = []
+    before = service
+    for start, end in pairs:
+        expected = part(qports, start, end)
+        require(service.count(expected) == 1, "exact smaller refusing calendar shape required")
+        service = service.replace(expected, "", 1)
+        removed.append({"start": start, "bytes": len(expected.encode()), "sha256": sha(expected.encode())})
+    types = values["calendar_types"]
+    marker = "    public static final class CalendarActionResult {\n"
+    # Keep the original controller ABI field; null is not a successful outcome.
+    require(types.count(marker) == 1 and qports.count("        final ActionOutcome outcome=null;") == 1,
+            "one original null calendar outcome field required")
+    types = types.replace(marker, marker + "        final ActionOutcome outcome=null;\n", 1)
+    require("class CalendarInputAttempt" not in service, "no duplicate calendar input attempt port")
+    extension = types + values["input_port"]
+    end = service.rfind("}")
+    require(end >= 0 and not service[end + 1:].strip(), "one final Service boundary required")
+    service = service[:end] + extension + service[end:]
+    adapter = output / "VlmInferenceAdapter.java"
+    adapter_before = adapter.read_bytes()
+    require(b"private VlmInferenceAdapter()" in adapter_before and b"AcceptedRequestCallback" in adapter_before
+            and b"class AcceptedRequest {" not in adapter_before, "original unconstructable Adapter boundary required")
+    adapter.write_text(values["model_port"])
+    actual = [source / "src/org/trillionnium/hepta/local" / (n + ".java") for n in values["actual_names"]]
+    return service, actual, {
+        "schema": "hepta.native-routing-calendar-compiler-boundary.v1",
+        "reviewed_port_helper": metadata(provider, provider.read_bytes()),
+        "reviewed_helper_body_sha256": sha(ast.get_source_segment(raw, node).encode()),
+        "replaced_smaller_refusing_classes": removed,
+        "service_before_sha256": sha(before.encode()), "service_after_sha256": sha(service.encode()),
+        "service_extension_sha256": sha(extension.encode()),
+        "adapter_before": metadata(adapter, adapter_before), "adapter_after": metadata(adapter, adapter.read_bytes()),
+        "actual_pure_sources": [metadata(p, p.read_bytes()) for p in actual],
+        "real_controller_preserved": True, "all_new_authority_endpoints_always_refuse": True,
+        "calendar_model_or_effect_executed": False,
+    }
+
+
 def prepare(source, output, entries):
     source, output = Path(source), Path(output)
     package = source / "src/org/trillionnium/hepta/local"
     legacy = source / "tests/native-app/legacy-boundary/NativeAppSession.java"
     config_path = package / "QualificationScopeConfig.java"
     paths = [Path(p).resolve() for p in entries]
-    require(paths.count(legacy.resolve()) == 1 and paths.count(config_path.resolve()) == 1,
+    legacy_input = legacy.resolve()
+    local_legacy = (output / "NativeAppSession.java").resolve()
+    local_session_proof = None
+    if paths.count(local_legacy) == 1 and legacy_input not in paths:
+        raw_legacy = legacy.read_bytes()
+        local = local_legacy.read_text()
+        addition = part(local,
+                "    /** Calendar ABI only. Constructors and every authority endpoint always refuse. */",
+                "    private static UnsupportedOperationException unavailable(){")
+        require(sha(raw_legacy) == "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+                and sha(addition.encode()) == "6143b28d3086ca7a1250a44e05a0b320dbf709eabc8d542ebf1fd47c0c4e2a1c"
+                and local.replace(addition, "", 1).encode() == raw_legacy,
+                "exact local calendar extension of original legacy Session required")
+        legacy_input = local_legacy
+        local_session_proof = {"original": metadata(legacy, raw_legacy),
+                               "compiled_boundary": metadata(local_legacy, local_legacy.read_bytes()),
+                               "added_ports_sha256": sha(addition.encode()), "exact_inverse": True}
+    require(paths.count(legacy_input) == 1 and paths.count(config_path.resolve()) == 1,
             "exact old native IO and installed IO compiler inputs required")
     config = config_path.read_bytes()
     old_class = part(config.decode(),
@@ -97,11 +183,15 @@ def prepare(source, output, entries):
     require(service.replace(old_prepare, "", 1).replace(old_observation, "", 1).replace(old_initial, "", 1)
             == service_after.decode().replace(new_prepare, "", 1).replace(new_observation, "", 1).replace(new_initial, "", 1),
             "production-extracted Service methods changed outside explicit observation IO")
+    calendar_sources, calendar_record = [], None
+    if local_session_proof is not None:
+        service_text, calendar_sources, calendar_record = calendar_actual_session_ports(source, output, service_after.decode())
+        service_after = service_text.encode()
     service_path.write_bytes(service_after)
-    paths = [p for p in paths if p not in (legacy.resolve(), config_path.resolve())]
+    paths = [p for p in paths if p not in (legacy_input, config_path.resolve())]
     actual = [package / (name + ".java") for name in
               ('ObservationCaptureEvidence', "NativeAppSession", "NativeActionSnapshotCheck", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
-    paths += [generated_config, *actual]
+    paths += [generated_config, *actual, *calendar_sources]
     paths = list(dict.fromkeys(p.resolve() for p in paths))
     require(sum(p.name == "NativeAppSession.java" for p in paths) == 1
             and (package / "NativeAppSession.java").resolve() in paths, "only actual native Session may compile")
@@ -122,6 +212,8 @@ def prepare(source, output, entries):
         ],
         "production_extracted_service_methods_unchanged": True,
         "actual_native_classes": [metadata(p, p.read_bytes()) for p in actual],
+        "local_legacy_session_exact_inverse": local_session_proof,
+        "calendar_compiler_boundary": calendar_record,
         "android_runtime": False, "phone_operations": 0, "model_inference": False,
         "provider_or_business_verified": False,
         "observation_boundary": "One complete synthetic unknown page, same real Selection/authorization/UUID and actual NodeRef signature helper; no query result, screen acquisition or Android installation proof.",

@@ -55,6 +55,17 @@ final class NativeAppDomain {
     private void requireNode(String id,boolean click,boolean edit){NativeAppEvidence.Node n=frame.byId.get(id);
         NativeAppEvidence.need(frame.collectionComplete&&!frame.nodesTruncated&&frame.usable(n)&&n.enabled&&!n.password
                 &&(!click||n.clickable&&(!n.label.isEmpty()||resourceClickIds.contains(id)))&&(!edit||n.editable),"native permission must name its actual current node");}
+    /** Source qualification only; the calendar rectangle never becomes a node click. */
+    void requireCalendarDateSource(NativeCalendarDateEnvelope source){
+        NativeAppEvidence.need(source!=null&&source.facts==frame&&NativeCtripFlightPage.CALENDAR.equals(phase)
+                &&NativeAppGoal.CTRIP_PACKAGE.equals(frame.packageName)&&frame.capture==null
+                &&ObservationCaptureEvidence.PIXELS.equals(frame.captureKind)&&frame.collectionComplete
+                &&!frame.nodesTruncated&&frame.metadataObserved&&frame.windowType==1
+                &&clickIds.isEmpty()&&resourceClickIds.isEmpty()&&editValues.isEmpty()&&!resultReady
+                &&!incompleteLoginReturn&&backAllowed&&purposes.size()==1
+                &&"return_from_calendar".equals(purposes.get("back")),
+                "the original complete pixel calendar domain is required");
+    }
     boolean permitsResourceClick(String id){return resourceClickIds.contains(id);}
     Set<String> clicks(Set<String> original){Set<String> out=new TreeSet<String>(original);out.retainAll(clickIds);return out;}
     Set<String> edits(Set<String> original){Set<String> out=new TreeSet<String>(original);out.retainAll(editValues.keySet());return out;}

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Execute actual bounded diagnostic producers/consumer with explicit host IO.
 
-The complete actual Service observation block, diagnostic factory/snapshot,
-already-observed-row projection and action receipt helpers, and complete actual
-Controller awaitObservationRaw are extracted without editing their bodies.
+The actual original observer methods, diagnostic factory/snapshot, observed-row
+projection and action receipt helpers are preserved. The new Calendar producer
+has an explicit private refusing type carrier; all three Controller awaits are
+compiled with the sole enclosing-owner type name adapted to this host fixture.
 Android graph, clock, callback, authorization and disk endpoints are host fakes.
 No host result claims Android execution, cleanup, business success or authority.
 """
@@ -59,6 +60,117 @@ def body(raw,start):
             if depth==0:return raw[first:i+1]
         i+=1
     raise RuntimeError('unterminated body')
+def calendar_observer_legacy_parts(service, parts):
+    """Preserve actual observer methods; calendar-only proof types always refuse."""
+    start = "    /** One typed read, using the existing observation request/PNG publication."
+    end = "    public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,"
+    if start not in service:
+        if "CalendarFreshObserver" in parts["observation"]:
+            raise RuntimeError("Unknown calendar producer cannot enter the legacy observer fixture")
+        return dict(parts), {"schema": "hepta.observer-calendar-legacy-type-boundary.v1",
+                             "calendar_producer_excluded": False, "calendar_producer_executed": False}
+    actual = section(service, start, end)
+    actual_sha = sha(actual.encode())
+    if actual_sha != "d143d3bca16e6f85571c234535aee39a45b91851c77b7cf70dee06adb988fb04":
+        raise RuntimeError("Exact reviewed calendar-only producer block required")
+    port = """    private abstract class CalendarFreshObserver implements ObservationCallback {
+        private CalendarFreshObserver(){throw new UnsupportedOperationException("Calendar producer unavailable in observer-only fixture");}
+        void bind(ObservationRequest request){throw new UnsupportedOperationException("No calendar producer authority");}
+        void requireAdmission(ObservationRequest request){throw new UnsupportedOperationException("No calendar producer authority");}
+    }
+
+"""
+    if parts["observation"].count(actual) != 1:
+        raise RuntimeError("Unique calendar producer within the observation section required")
+    compiled = dict(parts)
+    compiled["observation"] = parts["observation"].replace(actual, port, 1)
+    if compiled["observation"].replace(port, actual, 1) != parts["observation"]:
+        raise RuntimeError("Original production observation section must remain reversible")
+    return compiled, {
+        "schema": "hepta.observer-calendar-legacy-type-boundary.v1",
+        "calendar_producer_excluded": True,
+        "full_production_observation_sha256": sha(parts["observation"].encode()),
+        "calendar_only_excluded_bytes": len(actual.encode()),
+        "calendar_only_excluded_sha256": actual_sha, "refusing_port_sha256": sha(port.encode()),
+        "compiled_observation_sha256": sha(compiled["observation"].encode()),
+        "actual_observer_scheduling_and_both_calendar_type_hooks_unchanged": True,
+        "private_constructor_and_lifecycle_methods_throw": True,
+        "calendar_callback_created": False, "calendar_producer_executed": False,
+        "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
+
+
+def calendar_controller_legacy_template(template):
+    """Add only opaque, unconstructible calendar types to this existing IO carrier."""
+    original = template
+    replacements = []
+    def insert(before, after):
+        nonlocal template
+        if template.count(before) != 1:
+            raise RuntimeError("Unique controller calendar type boundary required: " + before[:70])
+        template = template.replace(before, after, 1)
+        replacements.append((before, after))
+    insert("    static final class BackgroundSession {",
+           "    static final class BackgroundSession {long expiresElapsed=-1;")
+    session_types = """
+        final TaskAuthorization.Gate authorization=null;final String taskId=null;
+        static final class CalendarFreshRead {
+            final NativeAppSession session=null;final BackgroundSession background=null;
+            final long deadlineElapsed=-1;
+            private CalendarFreshRead(){throw new AssertionError("No calendar read in legacy controller fixture");}
+            void requireOriginal(NativeAppSession owner,BackgroundSession actual){throw new AssertionError("No calendar read authority");}
+            void close(){throw new AssertionError("No calendar read authority");}
+        }
+"""
+    insert("    static final class NativeAppSession {",
+           "    static final class NativeAppSession {" + session_types)
+    service_types = """
+        interface CalendarFreshCallback {
+            void onDiagnostic(Callable<String> snapshot);void onPrivateCensusDiagnostic(Callable<String> snapshot);
+            void onError(String detail);void onFresh(CalendarFreshObservation proof);
+        }
+        static final class CalendarFreshObservation {
+            private CalendarFreshObservation(){throw new AssertionError("No calendar publication in legacy controller fixture");}
+            PhoneObservation observationFor(Object owner,NativeAppSession.CalendarFreshRead read)throws Exception{
+                throw new AssertionError("No calendar publication authority");
+            }
+        }
+        void observeNativeCalendarFresh(Object owner,NativeAppSession.CalendarFreshRead read,File directory,
+                Cancellation cancel,long deadline,CalendarFreshCallback callback){
+            throw new AssertionError("No calendar observer in legacy controller fixture");
+        }
+"""
+    insert("    static final class HeptaAccessibilityService {",
+           "    static final class HeptaAccessibilityService {" + service_types)
+    controller_types = """    private static final class CalendarFreshWait {
+        final NativeAppSession.CalendarFreshRead read=null;
+        final AtomicReference<HeptaAccessibilityService.CalendarFreshObservation> publication=null;
+        private CalendarFreshWait(){throw new AssertionError("No calendar wait in legacy controller fixture");}
+    }
+    private void requireNativeCalendarFreshOwner(NativeAppSession.CalendarFreshRead read){
+        throw new AssertionError("No calendar owner authority in legacy controller fixture");
+    }
+"""
+    insert("{{await_observation}}", controller_types + "{{await_observation}}")
+    insert("{{await_observation_request}}", "{{await_observation_request}}\n{{await_observation_calendar}}")
+    inverse = template
+    for before, after in reversed(replacements):
+        if inverse.count(after) != 1:
+            raise RuntimeError("Controller calendar type inverse is not unique")
+        inverse = inverse.replace(after, before, 1)
+    if inverse != original:
+        raise RuntimeError("Controller calendar types changed original fixture logic")
+    return template, {
+        "schema": "hepta.controller-calendar-legacy-type-boundary.v1",
+        "original_template_sha256": sha(original.encode()),
+        "extended_template_sha256": sha(template.encode()),
+        "original_template_bytes_reversible": True,
+        "new_proof_constructors_private_and_throwing": True,
+        "calendar_authority_endpoints_throw": True,
+        "calendar_wait_created": False, "calendar_behavior_executed": False,
+        "type_extensions": [{"bytes":len(after.encode())-len(before.encode()),"sha256":sha(after.encode())}
+                            for before,after in replacements]}
+
+
 def generate(source,output):
     service=(source/PKG/'HeptaAccessibilityService.java').read_text()
     controller=(source/PKG/'LocalTaskController.java').read_text()
@@ -71,8 +183,9 @@ def generate(source,output):
       'cancellation_pending':section(service,'    boolean nativeCancellationWorkPending()','    boolean requestNativeCancellation('),
       'background_lock':section(service,'    private boolean locked(BackgroundSession background)','    private int rotation('),
       'observation':section(service,'    /** Each observation owns','    synchronized void bindQualificationScope(')}
+    compiled_parts,calendar_boundary=calendar_observer_legacy_parts(service,parts)
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    for name,value in parts.items():
+    for name,value in compiled_parts.items():
         marker='{{'+name+'}}'
         if template.count(marker)!=1:raise RuntimeError('pipeline marker '+name)
         template=template.replace(marker,value,1)
@@ -90,16 +203,35 @@ def generate(source,output):
         'persist_private_census':body(controller,'    private JSONObject persistFailedCensusDiagnostic(String task,String status,boolean verified,File directory){'),
         'private_census_write':body(controller,'    private static void recordPrivateCensus(File directory,String name,byte[] bytes)throws Exception{'),
         'await_observation':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{'),
-        'await_observation_request':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n'),
+        'await_observation_request':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n            HeptaAccessibilityService.NativeObservationRetryProof retryProof)throws Exception{'),
         'read_retry_failure':body(controller,'    private static final class NativeObservationTransientFailure extends IllegalStateException {'),
         'initial_read_failure':body(controller,'    private static final class InitialNativeObservationFailure extends IllegalStateException {'),
         'post_effect_read_failure':body(controller,'    private static final class PostEffectNativeObservationFailure extends IllegalStateException {')}
+    calendar_signature = "    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n            HeptaAccessibilityService.NativeObservationRetryProof retryProof,final CalendarFreshWait calendar)throws Exception{"
+    if calendar_signature in controller:
+        methods["await_observation_calendar"] = body(controller, calendar_signature)
+    calendar_controller_boundary = None
     for fixture,names in [('DiagnosticGraphHost',['native_stamp','native_census','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','initial_read_failure','post_effect_read_failure','take_diagnostics','private_census_holder','persist_private_census']),('PrivateCensusFileHost',['private_census_write'])]:
         text=(source/TEST/(fixture+'.template')).read_text()
+        compiled_methods = dict(methods)
+        if fixture == "DiagnosticControllerHost" and "await_observation_calendar" in methods:
+            text,calendar_controller_boundary = calendar_controller_legacy_template(text)
+            names = list(names) + ["await_observation_calendar"]
+            calendar_body = methods["await_observation_calendar"]
+            if calendar_body.count("LocalTaskController.this") != 1:
+                raise RuntimeError("Exact enclosing Controller reference required")
+            compiled_methods["await_observation_calendar"] = calendar_body.replace(
+                "LocalTaskController.this", "DiagnosticControllerHost.this", 1)
+            calendar_controller_boundary["fixture_enclosing_owner_type_mapping"] = {
+                "from": "LocalTaskController.this", "to": "DiagnosticControllerHost.this",
+                "occurrences": 1, "only_calendar_callback_owner_expression": True}
+            calendar_controller_boundary["actual_calendar_await_sha256"] = sha(calendar_body.encode())
+            calendar_controller_boundary["compiled_calendar_await_sha256"] = sha(
+                compiled_methods["await_observation_calendar"].encode())
         for name in names:
             marker='{{'+name+'}}'
             if text.count(marker)!=1:raise RuntimeError('method marker '+name)
-            text=text.replace(marker,methods[name],1)
+            text=text.replace(marker,compiled_methods[name],1)
         if '{{' in text:raise RuntimeError('unfilled '+fixture)
         write(output/(fixture+'.java'),text)
     # Preserve the exact native guard and original default refusal call site.
@@ -124,13 +256,16 @@ def generate(source,output):
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     callback='callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));'
     if service.count(callback)!=1:raise RuntimeError('actual action callback must consume diagnostic evidence')
-    await_body=methods['await_observation_request'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
+    await_body=methods.get('await_observation_calendar',methods['await_observation_request']);finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
     if any(token in finally_body for token in ('record(', 'System.err', 'System.out', '.wait(', '.sleep(')):raise RuntimeError('diagnostic finally must not perform IO or wait')
     finalization=section(controller,'        finally{\n            if(activeNativeSearch!=null)activeNativeSearch.retire();\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')
     positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask(taskId);','terminalDecisionSealed=true;','persistFailedCensusDiagnostic(taskId,finalStatus,completionVerified,evidence)','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
     if positions!=sorted(positions) or finalization.count('takeObservationDiagnostics(taskId)')!=1:raise RuntimeError('original cleanup then existing terminal record order required')
     if controller.count('pendingObservationDiagnostics.add(')!=1 or controller.count('pendingObservationDiagnostics.size()<96')!=1:raise RuntimeError('bounded single memory admission required')
-    extraction={'schema':'hepta.observation-diagnostics-extraction.v1','bodies_verbatim':True,
+    extraction={'schema':'hepta.observation-diagnostics-extraction.v1',
+        'bodies_verbatim':not calendar_boundary['calendar_producer_excluded'] and calendar_controller_boundary is None,
+        'original_observer_methods_and_hooks_verbatim':True,
+        'calendar_legacy_boundary':calendar_boundary,'calendar_controller_legacy_boundary':calendar_controller_boundary,
         'sources':{'service':meta(source/PKG/'HeptaAccessibilityService.java'),'controller':meta(source/PKG/'LocalTaskController.java')},
         'methods':{name:{'bytes':len(value.encode()),'sha256':sha(value.encode())} for name,value in {**parts,**methods}.items()},
         'stale_refusal_callsite':{'bytes':len(actual_branch.encode()),'sha256':sha(actual_branch.encode())},
@@ -196,8 +331,10 @@ def main():
         report['ax_publication_cases']=ax_cases;report['ax_publication_cases_file']=meta(output/'AX-PUBLICATION-CASES.json')
         report['cases']=cases;report['cases_file']=meta(output/'CASES.json');report['extraction_file']=meta(output/'EXTRACTION.json')
         report['generated_files']={p.name:meta(p) for p in sorted(generated.glob('*.java'))}
-        report['actual_Service_observation_and_callback_compiled_verbatim']=True
-        report['actual_Controller_await_compiled_verbatim']=True
+        report['actual_Service_observation_and_callback_compiled_verbatim']=not extraction['calendar_legacy_boundary']['calendar_producer_excluded']
+        report['actual_original_Service_observer_methods_and_type_hooks_compiled_verbatim']=True
+        report['actual_Controller_await_compiled_verbatim']=extraction['calendar_controller_legacy_boundary'] is None
+        report['actual_Controller_await_only_enclosing_owner_type_mapped']=extraction['calendar_controller_legacy_boundary'] is not None
         report['actual_native_graph_projection_and_stale_receipt_compiled_verbatim']=True
         report['original_deadline_and_guard_calls_retained']=False
         report['original_guard_calls_retained']=True

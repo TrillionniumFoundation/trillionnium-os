@@ -81,6 +81,10 @@ def main():
   template=template.replace('{{'+key+'}}',value)
  if '{{' in template:raise RuntimeError('remaining fixture slots')
  service=out/'generated/ports/org/trillionnium/hepta/local/HeptaAccessibilityService.java';service.write_text(template)
+ # The actual search producer overwrites the shared Service carrier. Restore only
+ # the same unconstructible calendar types; every extracted search method is untouched.
+ calendar_paths,calendar_boundary=closure.calendar_legacy_closure(source,service)
+ paths+=calendar_paths
  config=out/'generated/ports/org/trillionnium/hepta/local/QualificationScopeConfig.java'
  c=config.read_text();q=(pkg/'QualificationScopeConfig.java').read_text()
  bound=body(q,'    static final class Bound {')
@@ -167,6 +171,7 @@ def main():
  'source_inputs':provenance['production_inputs']+[meta(pkg/'LocalTaskController.java')]+[meta(p) for p in test.iterdir() if p.is_file()],
  'boundary':'Real full Session/Gate/Offer/Attempt/Role/Planning plus verbatim HA new producer, typed effect, ownership guards, raw census, original callback and actual scope Bound. Explicit synthetic Android nodes/windows/socket/clock/queues. No permissive Offer or action guard surrogate.'}
  extraction={'parts':{k:{'bytes':len(v.encode()),'sha256':sha(v.encode())} for k,v in parts.items() if k!='cases'},'actual_methods':{k:sha(v.encode()) for k,v in methodparts.items()},'actual_scope_bound_sha256':sha(bound.encode()),'read_graph_failure_source_sha256':sha(read_graph.encode()),'shared_closure':provenance}
+ extraction['calendar_legacy_boundary']=calendar_boundary
  extraction['actual_controller_methods']={key:sha(value.encode()) for key,value in controller_parts.items()}
  extraction['actual_successor_controller_methods']={key:sha(value.encode()) for key,value in successor_parts.items()}
  extraction['actual_successor_controller_search_branch_sha256']=sha(successor_branch.encode())

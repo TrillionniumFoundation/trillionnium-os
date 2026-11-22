@@ -399,6 +399,8 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            if(CALENDAR_WINDOW_PROBE_OWNER.equals(instruction))
+                requireCalendarWindowProbeSelection(taskId,instruction,authorization,backgroundSelection,deadline);
             if(TaskCompletionGate.NOTES.equals(completion.contract.kind)){
                 checkActive(deadline);
                 try{
@@ -451,6 +453,11 @@ public final class LocalTaskController implements AutoCloseable {
                 }
                 finally{record(evidence,"background-bootstrap.json",background.evidence());}
                 checkActive(deadline);
+            }
+            if(CALENDAR_WINDOW_PROBE_OWNER.equals(instruction)){
+                observation=runCalendarWindowProbeOnly(taskId,instruction,evidence,authorization,background,backgroundSelection,scope,deadline);
+                finalStatus="partial";summary="只读窗口通道诊断已完成；未启动模型或执行输入，未验证业务完成。";
+                return; // The unchanged finally owns actual lease/model-slot cleanup and clean terminal persistence.
             }
             if(backgroundSelection!=null&&backgroundSelection.taskTarget.webHelper()){
                 activeWebTask=new WebFlightSession(service,taskId,instruction,authorization,background,filesRoot,evidence,completion,
@@ -538,6 +545,18 @@ public final class LocalTaskController implements AutoCloseable {
                 // Observation evidence can advance a stage; it never replays an action.
                 completion.observed(completionFrame(before));
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toEvidenceJson());
+                if(nativeCalendarRoundRequested(before,config)){
+                    CalendarRound selected=runNativeCalendarRound(taskId,instruction,evidence,steps,authorization,background,deadline,before);
+                    observation=selected.after;
+                    history.put(new JSONObject().put("step",steps).put("action",NativeCalendarDateIntent.ACTION)
+                            .put("model_issued",true).put("model_run_id",selected.modelRunId).put("accepted",true)
+                            .put("dispatched",true).put("date_selection_verified",true)
+                            .put("selection_evidence_sha256",selected.selection.recordSha256)
+                            .put("year_observed_in_form",false).put("query_or_business_verified",false)
+                            .put("automatic_replay",false));
+                    completion.observed(completionFrame(observation));
+                    lastTransition=observedTransition(steps,before,observation);staleRounds=0;continue;
+                }
                 PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase,calculatorInput);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
@@ -986,6 +1005,90 @@ public final class LocalTaskController implements AutoCloseable {
                     if(selected!=null&&listener==selected&&!running&&taskId.equals(currentTaskId))selected.onFinished(result);
                 }
             }});
+        }
+    }
+
+    /** Finite owner-requested diagnostic. Never selected from model or screen text. */
+    static final String CALENDAR_WINDOW_PROBE_OWNER="在已选择的隔离资料后台打开携程，只读诊断窗口通道。只允许打开应用、等待。不要启动模型，不要执行查询业务。";
+    private void requireCalendarWindowProbeSelection(String id,String owner,TaskAuthorization.Gate authorization,
+            BackgroundSession.Selection selection,long taskDeadline)throws Exception{
+        checkActive(taskDeadline);
+        if(!CALENDAR_WINDOW_PROBE_OWNER.equals(owner)||!id.equals(currentTaskId)||selection==null
+                ||!selection.independentProfileDisplay||selection.independentPersonalDisplay||selection.controllerUi!=null
+                ||selection.profileTarget==null||selection.profileTarget.profile.userId<=0
+                ||!org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(selection.initialPackage)
+                ||!selection.allowedPackages.equals(java.util.Collections.singletonList(org.trillionnium.hepta.background.ProfileTarget.CTRIP))
+                ||!selection.profileTarget.packageName.equals(selection.initialPackage)||selection.taskTarget==null
+                ||selection.taskTarget.webHelper()||selection.taskTarget.nativeGoal!=null
+                ||activeNativeTask!=null||activeNativeSearch!=null||activeWebTask!=null)
+            throw new IllegalStateException("日历只读诊断需要原始固定指令和唯一已选携程隔离资料");
+        service.requireTaskAuthorization(id,authorization);authorization.ready();
+        authorization.authorization.requireOwner(owner);selection.requireTaskTarget(owner,authorization.authorization);
+        if(!authorization.authorization.allowedTools.equals(new java.util.TreeSet<String>(java.util.Arrays.asList("open","wait"))))
+            throw new IllegalStateException("日历只读诊断仅保留明确打开应用和等待权限");
+        synchronized(handleLock){if(activeInference!=null)throw new IllegalStateException("日历只读诊断不能复用活动模型请求");}
+    }
+
+    private PhoneObservation runCalendarWindowProbeOnly(final String id,String owner,File directory,
+            TaskAuthorization.Gate authorization,BackgroundSession background,BackgroundSession.Selection selection,
+            QualificationScopeConfig.Bound scope,final long taskDeadline)throws Exception{
+        final long began=SystemClock.elapsedRealtime();Exception first=null;
+        JSONObject diagnostic=new JSONObject().put("schema","hepta.calendar-window-rom-diagnostic.v1")
+                .put("task_id",id).put("owner_sha256",authorization.authorization.instructionSha256)
+                .put("task_authorization_sha256",authorization.authorization.sha256)
+                .put("source","ordinary_owner_literal_initial_observation_and_authenticated_calendar_probe")
+                .put("started_elapsed_ms",began).put("original_task_deadline_elapsed_ms",taskDeadline)
+                .put("status","started").put("readonly_qualification_verified",false)
+                .put("model_requested",false).put("native_model_requests",0).put("business_steps",0)
+                .put("target_app_touch_input_attempts",0).put("grants_dispatch",false)
+                .put("completion_verified",false).put("business_verified",false).put("automatic_resume",false);
+        try{
+            checkActive(taskDeadline);requireCalendarWindowProbeSelection(id,owner,authorization,selection,taskDeadline);
+            if(scope==null||scope.restricted()||background==null||background.selection!=selection
+                    ||!background.usesExperimentalPublicOwnGroup()||!id.equals(background.taskId)
+                    ||!authorization.authorization.instructionSha256.equals(background.ownerSha256)
+                    ||background.profileTarget()!=selection.profileTarget||background.displayId()<=1)
+                throw new IllegalStateException("日历只读诊断缺少同一实际 owned profile 后台租约");
+            scope.verifyUnchanged();background.requireActive();background.verifyProfileInstallation();checkActive(taskDeadline);
+            diagnostic.put("profile_target",new JSONObject(background.profileTarget().evidence()))
+                    .put("background_generation",background.generation).put("display_id",background.displayId())
+                    .put("installed_identity_source","existing_background_verifyProfileInstallation");
+            final PhoneObservation observed=awaitObservationRaw(id,directory,authorization,taskDeadline);
+            checkActive(taskDeadline);requireCalendarWindowProbeSelection(id,owner,authorization,selection,taskDeadline);
+            if(observed==null||observed.nodesTruncated||observed.collectionStats==null||observed.collectionStats.truncated()
+                    ||observed.collectionStats.pending!=0||observed.collectionStats.childSlotsOmitted!=0
+                    ||observed.collectionStats.nodeBudgetOmissions!=0||observed.collectionStats.textBudgetOmissions!=0
+                    ||observed.collectionStats.retained!=observed.nodes.size()||observed.profileTarget==null||observed.profileWindow==null
+                    ||!background.profileTarget().same(observed.profileTarget)
+                    ||!background.generation.equals(observed.backgroundGeneration)
+                    ||!background.profileTarget().packageName.equals(observed.packageName)
+                    ||observed.windowMetadata==null||observed.windowMetadata.displayId==null
+                    ||observed.windowMetadata.displayId.intValue()!=background.displayId()
+                    ||service.observationReadWorkPending()||service.actionWorkPending()||service.nativeCancellationWorkPending())
+                throw new IllegalStateException("日历只读诊断必须取得同一资料窗口的完整首轮无障碍观察且读取已退出");
+            service.requireScopeObservation(id,observed);service.requireBackgroundObservation(id,observed);
+            service.requireAuthorizationObservation(id,authorization,observed);scope.verifyUnchanged();
+            diagnostic.put("observation_id",observed.id).put("observation",observed.toEvidenceJson());
+            final HeptaAccessibilityService.Cancellation cancel=new HeptaAccessibilityService.Cancellation(){
+                public boolean isCancelled(){return cancelled.get()||!id.equals(currentTaskId)||SystemClock.elapsedRealtime()>=taskDeadline;}
+            };
+            BackgroundSession.CalendarWindowProbeReceipt receipt=background.readCalendarWindowProbe(
+                    observed.windowId,observed.profileWindow.taskId,cancel,taskDeadline);
+            checkActive(taskDeadline);requireCalendarWindowProbeSelection(id,owner,authorization,selection,taskDeadline);
+            background.requireActive();scope.verifyUnchanged();background.verifyProfileInstallation();checkActive(taskDeadline);
+            if(!receipt.belongsTo(background)||receipt.grantsDispatch()||receipt.windowId!=observed.windowId
+                    ||receipt.observedTaskId!=observed.profileWindow.taskId||cancel.isCancelled())
+                throw new IllegalStateException("日历只读资格回执来源或原任务已变化");
+            diagnostic.put("probe_request",receipt.requestEvidence()).put("probe_response",receipt.evidence())
+                    .put("probe_received_elapsed_ms",receipt.receivedElapsedMs)
+                    .put("readonly_qualification_verified",true).put("status","readonly_qualification_verified");
+            return observed;
+        }catch(Exception error){first=error;diagnostic.put("status","failed")
+                .put("first_failure",HeptaAccessibilityService.message(error));throw error;}
+        finally{
+            try{diagnostic.put("finished_elapsed_ms",SystemClock.elapsedRealtime());
+                record(directory,"calendar-window-rom-diagnostic.json",diagnostic);}
+            catch(Exception writeFailure){if(first!=null)first.addSuppressed(writeFailure);else throw writeFailure;}
         }
     }
     private static NotesCompletionEvidence.Frame completionFrame(PhoneObservation o){
@@ -1550,6 +1653,179 @@ public final class LocalTaskController implements AutoCloseable {
         if(result==null)throw new IllegalStateException("搜索导航回执为空");return result;
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
+    private static final String NATIVE_CALENDAR_SYSTEM=
+            "你是手机本地 GUI-Owl 日期格定位器。只使用本次真实截图和完整原始指令，"
+            +"返回语法规定的唯一 calendar.select_date JSON。目标 ISO 日期、package、观察和截图哈希必须逐字匹配。"
+            +"只给目标月份区域内一个正面积日期格矩形；矩形是待验证定位，不代表已选中日期。"
+            +"不得登录、注册、预订、付款、点击任意位置或更改目标日期；不得输出其他工具或成功声明。";
+    private boolean nativeCalendarRoundRequested(PhoneObservation before,LocalRuntimeConfig runtime){
+        NativeAppSession task=activeNativeTask;
+        return task!=null&&activeNativeBackground!=null&&activeWebTask==null&&runtime.profile==ModelProfile.GUI_OWL_4B
+                &&!runtime.visualObservationOnly&&inference.acceptsObservedImage()&&inference.modelOutputDispatchAllowed()
+                &&NativeCtripFlightPage.supported(task.goal)&&NativeCtripFlightPage.CALENDAR.equals(task.domain().phase)
+                &&before!=null&&before.id.equals(task.domain().frame.observationId);
+    }
+    void requireNativeCalendarModelSource(NativeAppSession task,BackgroundSession background,long deadline){
+        if(task==null||background==null||!running||blocked||closed||cancelled.get()||activeWebTask!=null
+                ||activeNativeTask!=task||activeNativeBackground!=background||!task.taskId.equals(currentTaskId)
+                ||SystemClock.elapsedRealtime()>=deadline)
+            throw new IllegalStateException("calendar model owner/task/lease is no longer current");
+    }
+    void requireNativeCalendarActionOwner(NativeAppSession.CalendarPermit permit){
+        if(permit==null)throw new IllegalStateException("actual calendar permit required");
+        requireNativeCalendarModelSource(permit.session(),permit.background(),permit.deadlineElapsed);
+        synchronized(handleLock){if(activeInference!=null)
+            throw new IllegalStateException("calendar action/selection cannot overlap a model handle");}
+    }
+    NotesCompletionEvidence.Frame calendarSelectionCompletionFrame(NativeAppSession.CalendarPermit permit,
+            HeptaAccessibilityService.CalendarActionResult result,PhoneObservation observed){
+        requireNativeCalendarActionOwner(permit);
+        permit.requireSelectionPublication(result,SystemClock.elapsedRealtime());return completionFrame(observed);
+    }
+    private static final class CalendarRound {
+        final PhoneObservation after;final String modelRunId;
+        final NativeAppSession.CalendarSelectionEvidence selection;
+        CalendarRound(PhoneObservation after,String run,NativeAppSession.CalendarSelectionEvidence proof){
+            this.after=after;modelRunId=run;selection=proof;
+        }
+    }
+    /** A dedicated schema in the user's already selected GUI-Owl tools task.
+     * There is one actual model request, no formatting repair or hidden model switch. */
+    private CalendarRound runNativeCalendarRound(String taskId,String instruction,File directory,int step,
+            TaskAuthorization.Gate authorization,BackgroundSession background,long taskDeadline,PhoneObservation before)throws Exception{
+        final NativeAppSession nativeTask=activeNativeTask;final LocalRuntimeConfig runtime=inference.configuration();
+        requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
+        if(!nativeCalendarRoundRequested(before,runtime)||authorization!=nativeTask.authorization
+                ||background!=activeNativeBackground||!taskId.equals(nativeTask.taskId))
+            throw new IllegalStateException("calendar branch requires the same explicit GUI-Owl tools native task");
+        final AtomicReference<DecisionGrammar> actualGrammar=new AtomicReference<DecisionGrammar>();
+        final LocalInference.CurrentFrame image=new LocalInference.CurrentFrame(before.screenshot,taskId,
+                authorization.authorization.instructionSha256,before.id,before.backgroundGeneration,before.packageName,
+                before.screenshotSha256,before.width,before.height,before.windowMetadata.displayId.intValue(),before.windowId,before.rotation,
+                before.capturedElapsedMillis,instruction.getBytes(StandardCharsets.UTF_8),new LocalInference.Currentness(){
+                    public void requireCurrent()throws Exception{
+                        requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
+                        DecisionGrammar currentGrammar=actualGrammar.get();
+                        if(currentGrammar==null)service.requireNativeCalendarSourceOwnership(LocalTaskController.this,nativeTask,background,before,taskDeadline);
+                        else service.requireVisualFrameOwnership(LocalTaskController.this,taskId,authorization,background,before,currentGrammar);
+                        requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
+                    }});
+        NativeCalendarDateEnvelope envelope=NativeCalendarDateEnvelope.capture(nativeTask.goal,nativeTask.domain().frame,image,
+                nativeTask.installed.profileTarget,runtime,new NativeCalendarDateProtocol.Clock(){
+                    public long elapsedRealtime(){return SystemClock.elapsedRealtime();}});
+        NativeAppSession.CalendarOffer offer=nativeTask.offerCalendarDate(envelope,inference,
+                new NativeCalendarDateProtocol.Clock(){public long elapsedRealtime(){return SystemClock.elapsedRealtime();}},taskDeadline);
+        NativeAppSession.CalendarPermit permit=null;boolean completed=false;
+        try{
+            DecisionGrammar grammar=offer.grammar();actualGrammar.set(grammar);
+            JSONObject payload=new JSONObject().put("schema",NativeCalendarDateIntent.SCHEMA).put("task_id",taskId)
+                    .put("original_instruction",instruction).put("goal",new JSONObject(nativeTask.goal.evidence()))
+                    .put("calendar",new JSONObject(envelope.evidence())).put("prior_form_date",offer.priorObservedFormDate.toString())
+                    .put("target_date_already_selected",false).put("model_grounding_is_date_proof",false)
+                    .put("one_date_cell_only",true).put("automatic_replay",false);
+            String prompt=payload.toString();
+            record(directory,String.format(java.util.Locale.ROOT,"step-%02d-calendar-prompt.json",step),
+                    new JSONObject().put("schema","hepta.native-calendar-prompt.v1").put("prompt",payload)
+                            .put("grammar_sha256",offer.protocol.grammarSha256).put("model_profile",runtime.profile.id)
+                            .put("task_deadline_elapsed_ms",taskDeadline).put("explicit_existing_tools_configuration",true)
+                            .put("implicit_model_switch",false));
+            emit("正在用当前手机 GUI-Owl 模型定位指定日期格…");
+            NativeAppSession.CalendarModelRequest request=awaitNativeCalendarModel(offer,prompt,taskDeadline);
+            record(directory,String.format(java.util.Locale.ROOT,"step-%02d-model-0.json",step),
+                    new JSONObject().put("run_id",request.modelRunId()).put("raw_text",request.rawText())
+                            .put("observation_id",before.id).put("original_instruction_sha256",authorization.authorization.instructionSha256)
+                            .put("schema",NativeCalendarDateIntent.SCHEMA));
+            permit=awaitNativeCalendarPermit(request,directory);
+            emit("正在重新验证本次日期截图并执行一次受限日期选择…");
+            HeptaAccessibilityService.CalendarActionResult result=awaitNativeCalendarAction(permit);
+            record(directory,String.format(java.util.Locale.ROOT,"step-%02d-action.json",step),
+                    new JSONObject(result.evidence()).put("action",new JSONObject(request.intentEvidence()))
+                            .put("model_issued",true).put("model_run_id",request.modelRunId())
+                            .put("task_authorization_sha256",authorization.authorization.sha256)
+                            .put("task_authorization",result.outcome.taskAuthorization==null?JSONObject.NULL:result.outcome.taskAuthorization)
+                            .put("background_session",result.outcome.backgroundSession==null?JSONObject.NULL:result.outcome.backgroundSession)
+                            .put("dispatched",result.outcome.dispatched).put("done_success_eligible",false));
+            if(!result.outcome.accepted)throw new IllegalStateException(result.outcome.detail);
+            permit.claimSelectionRead(result);
+            emit("正在读取新机票表单核对目标日期…");
+            PhoneObservation after=awaitObservationRaw(taskId,directory,authorization,permit.deadlineElapsed,null);
+            HeptaAccessibilityService.CalendarSelectionObservation actual=
+                    service.calendarSelectionObservation(this,permit,result,after,directory);
+            NativeAppSession.CalendarSelectionEvidence selection=permit.acceptSelection(actual);
+            record(directory,String.format(java.util.Locale.ROOT,"step-%02d-after.json",step),after.toEvidenceJson());
+            completed=true;return new CalendarRound(after,request.modelRunId(),selection);
+        }finally{if(!completed){if(permit!=null)permit.close();else offer.close();}}
+    }
+    private NativeAppSession.CalendarModelRequest awaitNativeCalendarModel(final NativeAppSession.CalendarOffer offer,
+            String prompt,long taskDeadline)throws Exception{
+        final DecisionGrammar grammar=offer.grammar();final BackgroundSession background=activeNativeBackground;
+        requireNativeCalendarModelSource(offer.session,background,taskDeadline);
+        if(offer.inference!=inference||offer.runtime!=inference.configuration()||offer.taskDeadlineElapsed!=taskDeadline)
+            throw new IllegalStateException("calendar model must retain the actual task/adapter/configuration");
+        if(!ConservativeTokenBudget.estimate(NATIVE_CALENDAR_SYSTEM,prompt,offer.runtime).mayAttemptNative())
+            throw new IllegalStateException("完整日期指令超出当前本地模型上下文");
+        long remaining=taskDeadline-SystemClock.elapsedRealtime();
+        if(remaining<1000)throw new IllegalStateException("原任务没有足够的视觉请求时间");
+        long timeout=Math.min(120000L,remaining);
+        final CountDownLatch ready=new CountDownLatch(1);final AtomicBoolean delivered=new AtomicBoolean();
+        final AtomicBoolean cleanupKnown=new AtomicBoolean(true);final AtomicReference<String> error=new AtomicReference<String>();
+        final HeptaAccessibilityService.Cancellation modelScopeCancel=new HeptaAccessibilityService.Cancellation(){
+            public boolean isCancelled(){return cancelled.get()||SystemClock.elapsedRealtime()>=taskDeadline;}};
+        if(background.usesExperimentalPublicOwnGroup())
+            service.requireExperimentalModelScope(this,offer.session.taskId,offer.session.authorization,background,modelScopeCancel,taskDeadline);
+        VlmInferenceAdapter.AcceptedRequestCallback accepted=offer.modelCallback(new NativeAppSession.CalendarModelSignal(){
+            public void onModelReady(){if(delivered.compareAndSet(false,true))ready.countDown();}
+            public void onModelFailure(String detail,boolean cleanup){if(delivered.compareAndSet(false,true)){
+                error.set(detail);cleanupKnown.set(cleanup);ready.countDown();}}});
+        LocalInference.Handle handle=inference.generateObserved(prompt,NATIVE_CALENDAR_SYSTEM,offer.source.image,grammar,
+                LocalRuntimeConfig.GENERATION_TOKENS,timeout,accepted);
+        synchronized(handleLock){activeInference=handle;}
+        if(cancelled.get())handle.cancel();
+        long grace=inference.requestCompletionGraceMillis();
+        if(grace<17000L||grace>24000L){handle.cancel();throw new CleanupUnknown("本地视觉推理退出期限无效");}
+        long stopDeadline=SystemClock.elapsedRealtime()+timeout+grace;boolean cancellationSent=cancelled.get();
+        while(!ready.await(120,TimeUnit.MILLISECONDS)){
+            if((cancelled.get()||SystemClock.elapsedRealtime()>taskDeadline)&&!cancellationSent){handle.cancel();cancellationSent=true;}
+            if(SystemClock.elapsedRealtime()>stopDeadline){handle.cancel();throw new CleanupUnknown("日期视觉推理退出未确认；不接受新的动作");}
+        }
+        synchronized(handleLock){if(activeInference==handle)activeInference=null;}
+        if(!cleanupKnown.get())throw new CleanupUnknown("日期视觉请求退出状态未知："+error.get());
+        checkActive(taskDeadline);
+        if(error.get()!=null)throw new IllegalStateException("日期视觉请求失败："+error.get());
+        if(background.usesExperimentalPublicOwnGroup())
+            service.requireExperimentalModelScope(this,offer.session.taskId,offer.session.authorization,background,modelScopeCancel,taskDeadline);
+        return offer.registerModelReply();
+    }
+    private HeptaAccessibilityService.CalendarActionResult awaitNativeCalendarAction(final NativeAppSession.CalendarPermit permit)throws Exception{
+        requireNativeCalendarActionOwner(permit);
+        final CountDownLatch ready=new CountDownLatch(1);
+        final AtomicReference<HeptaAccessibilityService.CalendarActionResult> value=new AtomicReference<HeptaAccessibilityService.CalendarActionResult>();
+        final String task=permit.session().taskId;
+        service.performNativeCalendarDate(this,permit,new HeptaAccessibilityService.Cancellation(){
+            public boolean isCancelled(){return cancelled.get();}},new HeptaAccessibilityService.CalendarActionCallback(){
+                public void onResult(HeptaAccessibilityService.CalendarActionResult result){if(value.compareAndSet(null,result))ready.countDown();}});
+        try{
+            while(true){
+                if(cancelled.get())service.retireActionWork(task,"cancelled");
+                long remaining=permit.deadlineElapsed-SystemClock.elapsedRealtime();
+                if(remaining<=0){
+                    cancelled.set(true);service.retireActionWork(task,"deadline");
+                    throw new CleanupUnknown("日期动作回执超时；可能已有输入，工作退出前保持阻塞且不重放");
+                }
+                if(ready.await(Math.min(100,remaining),TimeUnit.MILLISECONDS))break;
+            }
+        }catch(InterruptedException interrupted){
+            cancelled.set(true);service.retireActionWork(task,"controller_abandoned");Thread.currentThread().interrupt();
+            throw new CleanupUnknown("日期动作等待中断；不重放");
+        }
+        if(SystemClock.elapsedRealtime()>=permit.deadlineElapsed||service.actionWorkPending()){
+            cancelled.set(true);service.retireActionWork(task,"controller_abandoned");
+            throw new CleanupUnknown("日期动作回执迟到或工作未退出；不推进表单确认");
+        }
+        HeptaAccessibilityService.CalendarActionResult result=value.get();
+        if(result==null)throw new IllegalStateException("实际日期动作回执缺失");return result;
+    }
+
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
                                   PhoneObservation before,String originalInstruction,
                                   TaskAuthorization.Gate authorization,BackgroundSession background,boolean nativeApp)throws Exception{
@@ -1834,6 +2110,46 @@ public final class LocalTaskController implements AutoCloseable {
             return awaitObservation(id,directory,authorization,deadline,failure.proof);
         }
     }
+    /** The actual live controller object is checked independently of the
+     * observation waiter's local abandoned flag and of serialized task evidence. */
+    void requireNativeCalendarFreshOwner(NativeAppSession.CalendarFreshRead read){
+        if(read==null||!running||blocked||closed||cancelled.get()||activeWebTask!=null
+                ||activeNativeTask!=read.session||activeNativeBackground!=read.background
+                ||!read.session.taskId.equals(currentTaskId))
+            throw new IllegalStateException("calendar controller/native task/background is no longer current");
+        synchronized(handleLock){if(activeInference!=null)
+            throw new IllegalStateException("calendar fresh read cannot overlap another model handle");}
+        if(SystemClock.elapsedRealtime()>=read.deadlineElapsed)
+            throw new IllegalStateException("original calendar action deadline expired");
+    }
+    NotesCompletionEvidence.Frame calendarFreshCompletionFrame(NativeAppSession.CalendarFreshRead read,PhoneObservation observed){
+        requireNativeCalendarFreshOwner(read);return completionFrame(observed);
+    }
+    private static final class CalendarFreshWait {
+        final NativeAppSession.CalendarFreshRead read;
+        final AtomicReference<HeptaAccessibilityService.CalendarFreshObservation> publication=
+                new AtomicReference<HeptaAccessibilityService.CalendarFreshObservation>();
+        CalendarFreshWait(NativeAppSession.CalendarFreshRead read){this.read=read;}
+    }
+    /** Called only by the ordinary controller worker with its actual registered
+     * model request. No Session.observed, next model, input or new worker occurs. */
+    private NativeAppSession.CalendarPermit awaitNativeCalendarPermit(NativeAppSession.CalendarModelRequest model,
+            File directory)throws Exception{
+        if(model==null||activeNativeTask==null||activeNativeBackground==null||activeWebTask!=null)
+            throw new IllegalStateException("actual registered native calendar model request required");
+        NativeAppSession.CalendarFreshRead read=model.beginFreshObservation(activeNativeBackground);boolean accepted=false;
+        try{
+            requireNativeCalendarFreshOwner(read);CalendarFreshWait pending=new CalendarFreshWait(read);
+            PhoneObservation actual=awaitObservationRaw(read.session.taskId,directory,read.session.authorization,
+                    read.deadlineElapsed,null,pending);
+            HeptaAccessibilityService.CalendarFreshObservation proof=pending.publication.get();
+            if(proof==null||actual!=proof.observationFor(this,read))
+                throw new IllegalStateException("actual private calendar publication missing");
+            NativeAppSession.CalendarPermit permit=read.acceptFreshObservation(proof);
+            accepted=true;return permit;
+        }finally{if(!accepted)read.close();}
+    }
+
     private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{
         return awaitObservation(id,directory,authorization,deadline,null);
     }
@@ -1861,6 +2177,18 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,
             HeptaAccessibilityService.NativeObservationRetryProof retryProof)throws Exception{
+        return awaitObservationRaw(id,directory,authorization,deadline,retryProof,null);
+    }
+    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,
+            HeptaAccessibilityService.NativeObservationRetryProof retryProof,final CalendarFreshWait calendar)throws Exception{
+        if(calendar!=null){
+            requireNativeCalendarFreshOwner(calendar.read);
+            if(retryProof!=null||initialNativeObservation!=null||postEffectNativeObservation!=null
+                    ||activeNativeTask!=calendar.read.session||authorization!=calendar.read.session.authorization
+                    ||!id.equals(calendar.read.session.taskId)||deadline!=calendar.read.deadlineElapsed)
+                throw new IllegalStateException("calendar fresh read cannot borrow an initial/post-effect/retry route");
+            calendar.read.requireOriginal(activeNativeTask,activeNativeBackground);
+        }
         checkActive(deadline);service.verifyBackgroundRemote(id);checkActive(deadline);
         final PostEffectNativeObservation post=postEffectNativeObservation;
         if(post!=null)requirePostEffectNativeObservation(post,id,authorization,deadline);
@@ -1868,6 +2196,7 @@ public final class LocalTaskController implements AutoCloseable {
         final NativeAppSession nativeTask=activeNativeTask;
         final long nativeDeadline=nativeTask==null?deadline:nativeTask.boundedObservationDeadline(deadline,observationStarted);
         final long observationDeadline=ObservationStabilityGate.requestDeadline(observationStarted,
+                calendar!=null?Math.min(nativeDeadline,calendar.read.background.expiresElapsed):
                 post==null?nativeDeadline:Math.min(nativeDeadline,post.permit.transitionDeadline()));
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<PhoneObservation> value=new AtomicReference<PhoneObservation>();
@@ -1905,7 +2234,22 @@ public final class LocalTaskController implements AutoCloseable {
                             }
                         }
                     };
-            if(post!=null){
+            if(calendar!=null){
+                service.observeNativeCalendarFresh(this,calendar.read,directory,requestCancellation,observationDeadline,
+                        new HeptaAccessibilityService.CalendarFreshCallback(){
+                            public void onDiagnostic(java.util.concurrent.Callable<String> snapshot){callback.onDiagnostic(snapshot);}
+                            public void onPrivateCensusDiagnostic(java.util.concurrent.Callable<String> snapshot){callback.onPrivateCensusDiagnostic(snapshot);}
+                            public void onError(String detail){callback.onError(detail);}
+                            public void onFresh(HeptaAccessibilityService.CalendarFreshObservation proof){
+                                if(abandoned.get()){calendar.read.close();return;}
+                                try{
+                                    if(!calendar.publication.compareAndSet(null,proof))
+                                        throw new IllegalStateException("duplicate private calendar publication");
+                                    callback.onObservation(proof.observationFor(LocalTaskController.this,calendar.read));
+                                }catch(Exception refused){calendar.read.close();callback.onError("calendar publication handoff refused");}
+                            }
+                        });
+            }else if(post!=null){
                 if(initial!=null||retryProof!=null)throw new IllegalStateException("操作后观察不能借用其他重读凭据");
                 requirePostEffectNativeObservation(post,id,authorization,deadline);
                 service.observePostEffectNative(this,post.nativeTask,post.permit,id,authorization,post.background,directory,

@@ -149,10 +149,126 @@ def prepare(source, output):
     void performNativeOpenSearch(String task,NativeSearchSession.Attempt attempt,Cancellation cancel,NativeSearchSession.ActionCallback callback){throw new AssertionError("No typed effect IO in old fixture");}
     private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning planning,String error){throw new AssertionError("No typed publication in old fixture");}
 '''+search_legacy_gate+search_retire
+    # These newly added methods only belong to the separate real calendar gates.
+    # Remove their complete bodies from the old Service carrier and supply only
+    # impossible typed endpoints. Every pre-existing dispatch method stays exact.
+    calendar_source_only=java_method(s,
+        '    void requireNativeCalendarSourceOwnership(LocalTaskController controller,NativeAppSession nativeTask,\n'
+        '            BackgroundSession background,PhoneObservation observed,long taskDeadline){')
+    calendar_action_only=section(s,
+        '    interface CalendarActionCallback {void onResult(CalendarActionResult result);}',
+        '    public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,\n'
+        '                        final ObservedTargetLabels targets,final TaskAuthorization.Gate expectedAuthorization,final String modelRunId,\n'
+        '                        final Cancellation cancel,final ActionCallback callback){')
+    for excluded in (calendar_source_only,calendar_action_only):
+        if sum(value.count(excluded) for value in pieces.values())!=1:
+            raise RuntimeError('one exact new calendar-only block in old Service carrier')
+        for name,value in list(pieces.items()):
+            if excluded in value:pieces[name]=value.replace(excluded,'',1)
+    calendar_io_ports='''    // This legacy fixture has no calendar pixel, model, action or selection producer.
+    interface CalendarFreshCallback {
+        void onFresh(CalendarFreshObservation proof);
+        void onError(String detail);
+        default void onDiagnostic(java.util.concurrent.Callable<String> snapshot) {}
+        default void onPrivateCensusDiagnostic(java.util.concurrent.Callable<String> snapshot) {}
+    }
+    static final class CalendarFreshObservation {
+        private CalendarFreshObservation(){throw calendarUnavailable();}
+        PhoneObservation observationFor(LocalTaskController controller,NativeAppSession.CalendarFreshRead read){throw calendarUnavailable();}
+    }
+    interface CalendarActionCallback {void onResult(CalendarActionResult result);}
+    static final class CalendarActionResult {
+        final ActionOutcome outcome=null;
+        private CalendarActionResult(){throw calendarUnavailable();}
+        java.util.Map<String,Object> evidence(){throw calendarUnavailable();}
+    }
+    static final class CalendarSelectionObservation {
+        private CalendarSelectionObservation(){throw calendarUnavailable();}
+    }
+    void requireNativeCalendarSourceOwnership(LocalTaskController controller,NativeAppSession task,
+            BackgroundSession background,PhoneObservation observed,long deadline){throw calendarUnavailable();}
+    void observeNativeCalendarFresh(LocalTaskController controller,NativeAppSession.CalendarFreshRead read,
+            File directory,Cancellation cancel,long deadline,CalendarFreshCallback callback){throw calendarUnavailable();}
+    void performNativeCalendarDate(LocalTaskController controller,NativeAppSession.CalendarPermit permit,
+            Cancellation cancel,CalendarActionCallback callback){throw calendarUnavailable();}
+    CalendarSelectionObservation calendarSelectionObservation(LocalTaskController controller,NativeAppSession.CalendarPermit permit,
+            CalendarActionResult result,PhoneObservation observed,File directory){throw calendarUnavailable();}
+    private static UnsupportedOperationException calendarUnavailable(){
+        return new UnsupportedOperationException("No calendar producer or authority in legacy qualification fixture");
+    }
+'''
+    calendar_nas_ports='''    /** Calendar ABI only. Constructors and every authority endpoint always refuse. */
+    interface CalendarModelSignal {
+        void onModelReady();
+        void onModelFailure(String detail,boolean cleanup);
+    }
+    static final class CalendarOffer implements AutoCloseable {
+        final NativeAppSession session=null;
+        final NativeCalendarDateEnvelope source=null;
+        final NativeCalendarDateProtocol protocol=null;
+        final LocalInference inference=null;
+        final LocalRuntimeConfig runtime=null;
+        final long taskDeadlineElapsed=-1;
+        final java.time.LocalDate priorObservedFormDate=null;
+        private CalendarOffer(){throw unavailable();}
+        DecisionGrammar grammar(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame frame){throw unavailable();}
+        VlmInferenceAdapter.AcceptedRequestCallback modelCallback(CalendarModelSignal signal){throw unavailable();}
+        CalendarModelRequest registerModelReply(){throw unavailable();}
+        public void close(){throw unavailable();}
+    }
+    static final class CalendarModelRequest {
+        private CalendarModelRequest(){throw unavailable();}
+        String modelRunId(){throw unavailable();}
+        String rawText(){throw unavailable();}
+        Map<String,Object> intentEvidence(){throw unavailable();}
+        CalendarFreshRead beginFreshObservation(BackgroundSession background){throw unavailable();}
+    }
+    static final class CalendarFreshRead implements AutoCloseable {
+        final NativeAppSession session=null;
+        final BackgroundSession background=null;
+        final long deadlineElapsed=-1;
+        private CalendarFreshRead(){throw unavailable();}
+        void requireOriginal(NativeAppSession session,BackgroundSession background){throw unavailable();}
+        CalendarPermit acceptFreshObservation(HeptaAccessibilityService.CalendarFreshObservation proof){throw unavailable();}
+        public void close(){throw unavailable();}
+    }
+    static final class CalendarPermit implements AutoCloseable {
+        final long deadlineElapsed=-1;
+        private CalendarPermit(){throw unavailable();}
+        NativeAppSession session(){throw unavailable();}
+        BackgroundSession background(){throw unavailable();}
+        void requireSelectionPublication(HeptaAccessibilityService.CalendarActionResult result,long now){throw unavailable();}
+        void claimSelectionRead(HeptaAccessibilityService.CalendarActionResult result){throw unavailable();}
+        CalendarSelectionEvidence acceptSelection(HeptaAccessibilityService.CalendarSelectionObservation proof){throw unavailable();}
+        public void close(){throw unavailable();}
+    }
+    static final class CalendarSelectionEvidence {
+        final String recordSha256=null;
+        private CalendarSelectionEvidence(){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    CalendarOffer offerCalendarDate(NativeCalendarDateEnvelope envelope,LocalInference inference,
+            NativeCalendarDateProtocol.Clock clock,long deadline){throw unavailable();}
+'''
+    calendar_nas_source=source/'tests/native-app/legacy-boundary/NativeAppSession.java'
+    calendar_nas_raw=calendar_nas_source.read_text()
+    calendar_nas_anchor='    private static UnsupportedOperationException unavailable(){'
+    if calendar_nas_raw.count(calendar_nas_anchor)!=1:
+        raise RuntimeError('one original refusing native Session boundary')
+    (output/'NativeAppSession.java').write_text(
+        calendar_nas_raw.replace(calendar_nas_anchor,calendar_nas_ports+calendar_nas_anchor,1))
+    (output/'VlmInferenceAdapter.java').write_text('''package org.trillionnium.hepta.local;
+/** Callback type only; no Adapter, accepted request or model can be constructed. */
+final class VlmInferenceAdapter {
+    private VlmInferenceAdapter(){throw new UnsupportedOperationException("No calendar Adapter in legacy qualification fixture");}
+    interface AcceptedRequestCallback extends LocalInference.Callback {}
+}
+''')
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
     marker='{{service_interfaces_outcome}}\n'
     if fixture.count(marker)!=1:raise RuntimeError('one legacy Service interface boundary')
-    fixture=fixture.replace(marker,marker+search_io_ports,1)
+    fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports,1)
     for name, code in pieces.items():
         fixture = fixture.replace('{{' + name + '}}', code)
     if '{{' in fixture:
@@ -278,9 +394,10 @@ def prepare(source, output):
           'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation','VisualPromptProjection','MobiMindContract','MobiMindPins',
           'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','SessionTerminalEvidence','ObservationDiagnostics','NativeActionSnapshotCheck']
+    pure += ['NativeCalendarDateEnvelope','NativeCalendarDateIntent','NativeCalendarDateProtocol','UiVenusInputContract','UiVenusPins']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
-    files += [source/'tests/native-app/legacy-boundary/NativeAppSession.java',pkg/'NativeSearchDecision.java']
+    files += [pkg/'NativeSearchDecision.java']
     web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'
     web_fixture_raw=web_fixture_source.read_bytes()
     web_fixture_compile=output/'WebTaskDomain.java'
@@ -324,6 +441,27 @@ final class PublicProfileBusinessRecoveryClient {
     private static UnsupportedOperationException unavailable(){return new UnsupportedOperationException("No business recovery authority in legacy qualification fixture");}
 }
 ''')
+    calendar_bg_ports='''    /** No private read-only broker receipt can be constructed by this old fixture. */
+    final long expiresElapsed=-1;
+    static final class CalendarWindowProbeReceipt {
+        final int windowId=-1,observedTaskId=-1;
+        final long receivedElapsedMs=-1;
+        private CalendarWindowProbeReceipt(){throw calendarUnavailable();}
+        boolean belongsTo(BackgroundSession actual){throw calendarUnavailable();}
+        boolean grantsDispatch(){throw calendarUnavailable();}
+        org.json.JSONObject requestEvidence(){throw calendarUnavailable();}
+        org.json.JSONObject evidence(){throw calendarUnavailable();}
+    }
+    CalendarWindowProbeReceipt readCalendarWindowProbe(int window,int task,
+            HeptaAccessibilityService.Cancellation cancel,long deadline){throw calendarUnavailable();}
+    private static UnsupportedOperationException calendarUnavailable(){
+        return new UnsupportedOperationException("No calendar broker receipt in legacy qualification fixture");
+    }
+'''
+    calendar_bg_anchor='    static final class Selection '
+    if background_fixture.count(calendar_bg_anchor)!=1:
+        raise RuntimeError('one immutable Selection insertion point for unavailable probe types')
+    background_fixture=background_fixture.replace(calendar_bg_anchor,calendar_bg_ports+calendar_bg_anchor,1)
     (output/'BackgroundSession.java').write_text(background_fixture)
     # Native entry validation is extracted verbatim; all Web IO remains throwing.
     web_entry=(pkg/'WebFlightSession.java').read_text()
@@ -404,5 +542,18 @@ final class PublicProfileBusinessRecoveryClient {
         'native_action_bridge_excluded':{'bytes':len(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()),
             'sha256':hashlib.sha256(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()).hexdigest()},
         'phone_operations':False,'native_inference':False}
+    record['calendar_legacy_boundary']={
+        'complete_controller_source_unchanged':True,'shared_native_session_fixture_unchanged':True,
+        'local_native_session_fixture_source':str(calendar_nas_source.relative_to(source)),
+        'local_native_session_fixture_source_sha256':hashlib.sha256(calendar_nas_raw.encode()).hexdigest(),
+        'added_session_ports_sha256':hashlib.sha256(calendar_nas_ports.encode()).hexdigest(),
+        'added_service_ports_sha256':hashlib.sha256(calendar_io_ports.encode()).hexdigest(),
+        'added_background_ports_sha256':hashlib.sha256(calendar_bg_ports.encode()).hexdigest(),
+        'all_new_constructors_and_authority_endpoints_refuse':True,
+        'preexisting_dispatch_methods_modified':False,
+        'calendar_source_only_excluded':{'bytes':len(calendar_source_only.encode()),'sha256':hashlib.sha256(calendar_source_only.encode()).hexdigest()},
+        'calendar_action_only_excluded':{'bytes':len(calendar_action_only.encode()),'sha256':hashlib.sha256(calendar_action_only.encode()).hexdigest()},
+        'calendar_actual_methods_covered_by':['tests/native-calendar-date-fresh/run_host.py','tests/native-calendar-date-actions/run_host.py','tests/native-calendar-probe-diagnostic/run_host.py'],
+        'separate_calendar_gate_execution_claimed_here':False,'calendar_model_or_input_qualified':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record

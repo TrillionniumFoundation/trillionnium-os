@@ -3,8 +3,8 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "c9212d5_successor_r24_single_search_toolbar_source_frozen_host_sdk_and_apk_pending",
-  "complete_source_files": 2410,
+  "candidate_status": "d7fc49f_successor_r27_test_compatibility_frozen_final_host_matrix_pending",
+  "complete_source_files": 2453,
   "files": [
     {
       "bytes": 100,
@@ -212,9 +212,19 @@
       "sha256": "44cedaa1a53f7f4facaa169c0475d5ea05d43d78dfa56e36bccbb4c6bd7bf32f"
     },
     {
-      "bytes": 11418,
+      "bytes": 15502,
       "path": "build_mac.py",
-      "sha256": "fc3c8391932b8fbb063a011f701aa72397b207c4847b85be357b2653e736760e"
+      "sha256": "a341f7cfba98b325615b4bc27a8336f293eb940ba1bccd2b681524a324a87890"
+    },
+    {
+      "bytes": 415,
+      "path": "compile-only/window-infos/android/view/InputWindowHandle.java",
+      "sha256": "aa8440efd0c969a554c11f52e848799e14dd32a963d1ad814003c2ddcc2dc88a"
+    },
+    {
+      "bytes": 1002,
+      "path": "compile-only/window-infos/android/window/WindowInfosListener.java",
+      "sha256": "07f1584a5c91f24ec1be0e62d1d74b506fdb198e47baa2d9e37e90969667be85"
     },
     {
       "bytes": 7437,
@@ -6162,9 +6172,14 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
-      "bytes": 111134,
+      "bytes": 6277,
+      "path": "src/org/trillionnium/hepta/background/AccessibilityWindowTokens.java",
+      "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
+    },
+    {
+      "bytes": 136605,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "d3e4e57392fe641dbe68bd04453213522b2d88c41d6ba9dc2cda08e69ae8632b"
+      "sha256": "345469e3212a99d8fbb973316ade9198f9b8abeb0f40a10ddb3de8c84b36d708"
     },
     {
       "bytes": 25279,
@@ -6182,9 +6197,9 @@
       "sha256": "70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec"
     },
     {
-      "bytes": 23289,
+      "bytes": 27222,
       "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
-      "sha256": "0333f71cc7c25bc779a9827af20d91fd40a22b6c5aad534d9a18340301d41884"
+      "sha256": "ad94fbe6c35ee4aa0a31c1189250c8d6c068b233b0ea8f4a993e25796ac47dd0"
     },
     {
       "bytes": 3503,
@@ -6200,6 +6215,11 @@
       "bytes": 4137,
       "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
       "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "bytes": 19726,
+      "path": "src/org/trillionnium/hepta/background/InputChannelIsolation.java",
+      "sha256": "44d5aeb66b6a3b9e2da6f19f0785757716bb17de87a3f3b8dbe2ebcb9947d659"
     },
     {
       "bytes": 19577,
@@ -6392,6 +6412,11 @@
       "sha256": "e8281aee0b8ce26328958780cb1561c0d4a345f61061d665f21680a152d36fb6"
     },
     {
+      "bytes": 16482,
+      "path": "src/org/trillionnium/hepta/background/WindowInfosCapture.java",
+      "sha256": "e182dbf7fc0748c80e4ef2fb77cf054d06d4c96ff51a2363d090e9a669026ae2"
+    },
+    {
       "bytes": 5829,
       "path": "src/org/trillionnium/hepta/background/WindowOwnership.java",
       "sha256": "60ccf09113a3463179dfa64cc463eeca363006a30f5518747751420cfc1fb80c"
@@ -6427,9 +6452,9 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 117257,
+      "bytes": 147091,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "2cdf97b08b158af7c9ffa9089cf6e8842c8bd9b2a0481cb69f7eb8c6cd4e3a96"
+      "sha256": "ef611bfa5c7811bdce3800f580d14df15273cfa8b85ff7016d3657f5e813ef59"
     },
     {
       "bytes": 8844,
@@ -6482,9 +6507,9 @@
       "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8"
     },
     {
-      "bytes": 41678,
+      "bytes": 43548,
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "sha256": "b5cd9ff781cac3fc4cf0163cd37b380ed72e45f6d36cdcd86b57f5e3bd97015f"
+      "sha256": "1a821a5766f98574660dc918aea24c60499bcbb5349367fcf64ab53115c176d4"
     },
     {
       "bytes": 904,
@@ -6502,9 +6527,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 534162,
+      "bytes": 578232,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "250c882135b263314177039c533b5c663973fc577ff50cdac613862d30fea61a"
+      "sha256": "30aac5d3f705060c0edbfb43a105f051b206e5de7cd33cd55bb4b490e9aeb120"
     },
     {
       "bytes": 711,
@@ -6557,9 +6582,9 @@
       "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
-      "bytes": 241281,
+      "bytes": 271660,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "58c9b9042919512cc6a7abbdddc59aea26a5797745f9b5c2211d40d78299c0fe"
+      "sha256": "de0570b8a09ef3fb71c22a5bd025219256091a0c125e7502be0d650f0e515436"
     },
     {
       "bytes": 59396,
@@ -6627,9 +6652,9 @@
       "sha256": "df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412"
     },
     {
-      "bytes": 12101,
+      "bytes": 12982,
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "sha256": "9fad34da346616ce7d398188d48af89a0f7994526506d0db7f2b3201e542aed2"
+      "sha256": "7de7da47f3c0c9e7b922864f2a19b0d59f87a4af350593307e8bf3243116c907"
     },
     {
       "bytes": 21731,
@@ -6647,14 +6672,29 @@
       "sha256": "57af291e1da6778072969b5fd7e8fc7ce723a1b484be05130e6eea681d5d8a26"
     },
     {
-      "bytes": 108402,
+      "bytes": 157302,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "29ba916e1d3d3947cafab310ab749ab52af7af08f93cf5f350feba826f70c457"
+      "sha256": "58c037d798659ed871bddad9c3daa48e2e75b3bb8ea115a4d82e554dae90ef38"
     },
     {
       "bytes": 2562,
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
       "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
+    },
+    {
+      "bytes": 12026,
+      "path": "src/org/trillionnium/hepta/local/NativeCalendarDateEnvelope.java",
+      "sha256": "63e5063098878551248b630e2daba46ab7efd556f806963e85450238b186d734"
+    },
+    {
+      "bytes": 4318,
+      "path": "src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java",
+      "sha256": "81007892a189eeb5a4e514b2809fb150ba71fe04597ba49cf23d04a06f66d390"
+    },
+    {
+      "bytes": 9386,
+      "path": "src/org/trillionnium/hepta/local/NativeCalendarDateProtocol.java",
+      "sha256": "301e8524af1013a76c785b2280dac56e56f1ab411e0a7c3ab8597228fd3f3def"
     },
     {
       "bytes": 55419,
@@ -6677,9 +6717,9 @@
       "sha256": "1200406fa1000ab8a9b334aff1cc83ff57471c6d706763d529c3394aba397ba9"
     },
     {
-      "bytes": 16888,
+      "bytes": 19326,
       "path": "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "sha256": "4b8efb072441af342ce48f4ebd5ff0935dbe551dea3a3a91e034de21d2f40917"
+      "sha256": "ed70e4c41d6f060160dc96f49076569f87a4acbd9243228913277e3eecc6470e"
     },
     {
       "bytes": 23374,
@@ -7007,9 +7047,9 @@
       "sha256": "60a8f5c94205d3b1d60d95981f3f45ad5785e274c28994d72125c49426d4e115"
     },
     {
-      "bytes": 57321,
+      "bytes": 64954,
       "path": "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
-      "sha256": "8e0d52337f7abdcd649f5c0bd1625473a734d1c4a8c75b16454a818eaf5b20fe"
+      "sha256": "060e84232e311353fb814cb6fe367c3208f8f672548a08fa63bb4d648d6fdb3f"
     },
     {
       "bytes": 1091,
@@ -7552,9 +7592,9 @@
       "sha256": "46ec9e4458781bf1bda1f2f39f9e818de861b877388ed4a325ca1ad4dd3014a0"
     },
     {
-      "bytes": 6637,
+      "bytes": 6943,
       "path": "tests/background-permission/prepare_session_fixture.py",
-      "sha256": "a564193dd367dd10efdd4066892a0f65197219f6544c11133fe82fcd1fe11d6a"
+      "sha256": "22d547082af91881e86fc0b2c3ca7d9aa920bb6a54f250de6adda1effd27ab7c"
     },
     {
       "bytes": 3593,
@@ -7592,9 +7632,9 @@
       "sha256": "96c863832ec6a3b0bceff84fd71fcfcbb041c849c40e4da7e70691a24643ff3f"
     },
     {
-      "bytes": 17721,
+      "bytes": 22355,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "4d5175e834f6f325f62e450997974b9b7c329898ecba3ce93c47b01e5e1cc5fb"
+      "sha256": "edfd37f1302a0da1b6077b96e13b9f96a204aef72e9bcb7847bdbeb3376e685a"
     },
     {
       "bytes": 3034,
@@ -7655,6 +7695,66 @@
       "bytes": 89639,
       "path": "tests/calculator-input/fixtures/v47-background-type-failure.json",
       "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
+    },
+    {
+      "bytes": 13415,
+      "path": "tests/calendar-date-effect/BrokerDateHost.template",
+      "sha256": "5f458791e04a05fe852b257cdd0e00be68d94967da650ea54b9c2466bc68f8ec"
+    },
+    {
+      "bytes": 8510,
+      "path": "tests/calendar-date-effect/CalendarDateEntryHostTest.java",
+      "sha256": "493f3d5d28081fdffacc93ad173b51d78c389b63e078c9641728a08e834ba7be"
+    },
+    {
+      "bytes": 18073,
+      "path": "tests/calendar-date-effect/CalendarDateHostTest.java",
+      "sha256": "e598af2c3e7e217515688333d8d2b2073788a9717c331a2e08367d42932ec7f6"
+    },
+    {
+      "bytes": 5877,
+      "path": "tests/calendar-date-effect/date_ports.py",
+      "sha256": "84db9e45cee0b91c2538de0db7e2057367629bfd2fc93e8e3a7e2cc9305ccae2"
+    },
+    {
+      "bytes": 15159,
+      "path": "tests/calendar-date-effect/run_host.py",
+      "sha256": "1cc2877587b548b186e37b221dbb3478ab7430f56616aeb4cd209d160296de0e"
+    },
+    {
+      "bytes": 3115,
+      "path": "tests/calendar-window-isolation/BrokerProbeHost.template",
+      "sha256": "feda0cf82d55f887c5e6bf6100afe0cf1ed3717d2bc572aebde55f2b1ecf4f29"
+    },
+    {
+      "bytes": 14639,
+      "path": "tests/calendar-window-isolation/CalendarProbeClientHostTest.java",
+      "sha256": "4bc21c13d2278e3f0b889862e9bb4c7b0520f4f218db8be7b5530035f27746ec"
+    },
+    {
+      "bytes": 26048,
+      "path": "tests/calendar-window-isolation/CalendarWindowHostTest.java",
+      "sha256": "1d9b6f882c22eba82cade244e4d845fb1e257d4bcc02689ed37680e17c183cdf"
+    },
+    {
+      "bytes": 8606,
+      "path": "tests/calendar-window-isolation/check_build_headers.py",
+      "sha256": "f2d25c483bfa81b6818bb71551622d9214cf5a588979e4d7f65b11157e67f9bb"
+    },
+    {
+      "bytes": 6640,
+      "path": "tests/calendar-window-isolation/host_ports.py",
+      "sha256": "4ae0460808ffe8f1de54e9baafff104f306371c99940bdef9fe12ed32f925dcf"
+    },
+    {
+      "bytes": 7809,
+      "path": "tests/calendar-window-isolation/run_client.py",
+      "sha256": "acbace9319ca3d673671bbd25bc0ba87c51f3385271923b867c8d8fa82a5c4ed"
+    },
+    {
+      "bytes": 11221,
+      "path": "tests/calendar-window-isolation/run_host.py",
+      "sha256": "20a6e8735223fe518f24dfd487e3fb5b205e2bec3a57cf44c335825be51fead5"
     },
     {
       "bytes": 29532,
@@ -7747,9 +7847,9 @@
       "sha256": "d5eacc90233b8f4960f2733ff2597cc125b7812bb55d5e46774a06e9b0b93a62"
     },
     {
-      "bytes": 13144,
+      "bytes": 16758,
       "path": "tests/exact-admission/prepare_fixture.py",
-      "sha256": "2ab16d5cd82733740e1451ad9e9f14264fcd26919e3b44c5ca2719e459854cf5"
+      "sha256": "5a6938e3278e404b252618cc94243aaf01bfec82ee6e529f3ada37eb8d99ddde"
     },
     {
       "bytes": 19762,
@@ -7932,9 +8032,9 @@
       "sha256": "c27bcf9d84a7a40765e21d76cf70ef97c617e0d719ef251fbc06d82aa45a613d"
     },
     {
-      "bytes": 13705,
+      "bytes": 14117,
       "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "35733ebd26145932af60939fa84740bca017c55f91681a8c12d6f7fa9b36c49a"
+      "sha256": "1ab3f3aebbfd23fb759db040d80375e5795ddf663dfb4c37870c10fc25bbd27f"
     },
     {
       "bytes": 3794,
@@ -8032,9 +8132,9 @@
       "sha256": "60781e01170c9cb746797585f7624e5d23fde17ecc81c6cf22d9d8c9747e4501"
     },
     {
-      "bytes": 8855,
+      "bytes": 12158,
       "path": "tests/local-model-settings/run_host.py",
-      "sha256": "c29e7c08612a5c0322e862f7c6c50783970461f89fe065a369df9f7d7bc3a2d4"
+      "sha256": "9b9d4c44b18bef99c69543140a1dc7dbde0fb7edec3016b9b2ac4cdacc8eaf6f"
     },
     {
       "bytes": 3621,
@@ -8157,9 +8257,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 23691,
+      "bytes": 32405,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "19d49ff6504f5db04ec0e01bf7c6a77c5b3ac57e8a76d02b5b23ef4edd19af5f"
+      "sha256": "ad02b98df8d0e5c04d1445c3765eaa2b2b17134df0d990e0de1e21c478325f5b"
     },
     {
       "bytes": 717,
@@ -8422,9 +8522,9 @@
       "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
     },
     {
-      "bytes": 52302,
+      "bytes": 61034,
       "path": "tests/native-app-provider/run_host.py",
-      "sha256": "72cfa0936e14eca98c2e15db4caa9bf255d0d98f201c91348e380755e68e09e0"
+      "sha256": "14c341055b75c6b25924327d97da04d343fa6d7a408000ab1a5786d7543169a0"
     },
     {
       "bytes": 6890,
@@ -8467,14 +8567,14 @@
       "sha256": "ed6793a5ebd86ce1840fc44651e6a0fdc392cf476f7747d3f3c40435edeab703"
     },
     {
-      "bytes": 9936,
+      "bytes": 16068,
       "path": "tests/native-app-routing/prepare_native_entry.py",
-      "sha256": "65297bde6af00146796dce6e60c97365dabf29f472fa4be6cfa93b8d187f0198"
+      "sha256": "6310713722c056d220d39cab4960daed0b19fbd6cf79e561fc0b6062f06cda73"
     },
     {
-      "bytes": 19234,
+      "bytes": 23006,
       "path": "tests/native-app-routing/run_host.py",
-      "sha256": "db4f2b7129dc540345302c9a90d506c95d8604b54563ab0f2f8ac4dfe6d69c44"
+      "sha256": "05772a67d33afb3c8eba1179b27a33d90b30b2993f774aabd29d5302e7d376bc"
     },
     {
       "bytes": 6744,
@@ -8535,6 +8635,106 @@
       "bytes": 12639,
       "path": "tests/native-ax-observation/run_host.py",
       "sha256": "89f29b6a92668cb9b4bfadfcb0f74441c95387bf13d879684b585fb3ed445d99"
+    },
+    {
+      "bytes": 15114,
+      "path": "tests/native-calendar-date-actions/CalendarDateReplyHost.java",
+      "sha256": "e8af240cd79f383459f2d7eb5fa882c129bf125e79e31907573ec4c2ad21b4d4"
+    },
+    {
+      "bytes": 4216,
+      "path": "tests/native-calendar-date-actions/ControllerActionHost.template",
+      "sha256": "eef7494cb0713fbf767b60fe476904df403043482fd19e972372d8966de0e5b7"
+    },
+    {
+      "bytes": 17378,
+      "path": "tests/native-calendar-date-actions/HeptaActionHost.template",
+      "sha256": "e30582f678144ba98acc2c8233a494677d6de5e96ca0ac0219259d7f6095619b"
+    },
+    {
+      "bytes": 54627,
+      "path": "tests/native-calendar-date-actions/NativeCalendarDateActionHostTest.java",
+      "sha256": "b31fc44038c3248992852dcff27be984eb95fa7d6deae951046c5b3d7f9ef5e2"
+    },
+    {
+      "bytes": 19391,
+      "path": "tests/native-calendar-date-actions/run_host.py",
+      "sha256": "e8f6595e0f7b3071c22bbcaad771afe09c11ad8e383cda0d4a087f1a22585a2e"
+    },
+    {
+      "bytes": 3371,
+      "path": "tests/native-calendar-date-fresh/ControllerFreshHost.template",
+      "sha256": "f6fc14748e359113fc53f9fcf18c9df0728e9c156d8bf5d2043739fad0efeb14"
+    },
+    {
+      "bytes": 12566,
+      "path": "tests/native-calendar-date-fresh/HeptaFreshHost.template",
+      "sha256": "50293ac9df34430379c5e35380981dbb874d683afbe1558b4e6f12f44588f285"
+    },
+    {
+      "bytes": 31688,
+      "path": "tests/native-calendar-date-fresh/NativeCalendarDateFreshHostTest.java",
+      "sha256": "f6ab1b948cfd654f6902eed978b0acba1232187b3efe8ccaa7a31f7470254937"
+    },
+    {
+      "bytes": 15593,
+      "path": "tests/native-calendar-date-fresh/run_host.py",
+      "sha256": "05657cf779a7659a6c7a545172bbdabdd70340dd13f70ad5c3cf8a26a7f1ece6"
+    },
+    {
+      "bytes": 27848,
+      "path": "tests/native-calendar-date-model/NativeCalendarDateModelHostTest.java",
+      "sha256": "dfcd1cd04b77b3d9603123db9bbbd178302b4b4684864e10d28b0130b82cd618"
+    },
+    {
+      "bytes": 9538,
+      "path": "tests/native-calendar-date-model/run_host.py",
+      "sha256": "02ae9aa16e3300ce094979e7d459c56b6e27108541e92f3427fa9c4cba3c700f"
+    },
+    {
+      "bytes": 25397,
+      "path": "tests/native-calendar-date-protocol/NativeCalendarDateProtocolHostTest.java",
+      "sha256": "af1155c2926b4ce1484ed0d42fcc6c5f55fbde853b465b8e7dfdb335f8363c55"
+    },
+    {
+      "bytes": 6310,
+      "path": "tests/native-calendar-date-protocol/run_host.py",
+      "sha256": "3979db086c6c8f70547d63bd70260ad8602c4b61d72bdf3f9e18e54b4aa1b5d1"
+    },
+    {
+      "bytes": 19303,
+      "path": "tests/native-calendar-date-registry/NativeCalendarDateRegistryHostTest.java",
+      "sha256": "a5dec37b55a76bca18158251c67aac7fd983377d533c938f63a79dc964f6f2c5"
+    },
+    {
+      "bytes": 4418,
+      "path": "tests/native-calendar-date-registry/run_host.py",
+      "sha256": "90664db87ca7a8648a36896140874fc170a52d5955c89a62b430f381c0425085"
+    },
+    {
+      "bytes": 20131,
+      "path": "tests/native-calendar-date-session/NativeCalendarDateSessionHostTest.java",
+      "sha256": "cdf7872de0e3992f4b92711f1f9b926d778a0c6cafce097e5200a7cd76623f62"
+    },
+    {
+      "bytes": 5331,
+      "path": "tests/native-calendar-date-session/run_host.py",
+      "sha256": "3e1d9d58a50847bbfa189bcbb218898b2a7a00d92e9377b8cb412cc68f039984"
+    },
+    {
+      "bytes": 2513,
+      "path": "tests/native-calendar-probe-diagnostic/ProbeDiagnosticHost.template",
+      "sha256": "32d6d79455d738a6bcc699935a1534567341e9ea7e855db42f2c3d8beaa92b4f"
+    },
+    {
+      "bytes": 29357,
+      "path": "tests/native-calendar-probe-diagnostic/ProbeDiagnosticHostTest.java",
+      "sha256": "75ec1626ac55ff6b43096a7954ea9a5307c74659c7a5b80750c210147da0148e"
+    },
+    {
+      "bytes": 16659,
+      "path": "tests/native-calendar-probe-diagnostic/run_host.py",
+      "sha256": "b9427ebffca927067b38ee2148388664fe35c7d5549513243d0cad16f74d30a8"
     },
     {
       "bytes": 8666,
@@ -8637,9 +8837,9 @@
       "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
     },
     {
-      "bytes": 56354,
+      "bytes": 56712,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "d8037f979e942f2ab8751945d831067c96a0a2f509f3b45f6fc8467c3d180600"
+      "sha256": "c9b8ee267d42d36a97be4e24bad5e2e82dd7c5942140ad8e0864a082f3742f32"
     },
     {
       "bytes": 3524,
@@ -8752,14 +8952,14 @@
       "sha256": "39f8b1060264a291e5e1575e18039cafccc63a49eba29d1af3f0c3094a01af18"
     },
     {
-      "bytes": 18303,
+      "bytes": 18582,
       "path": "tests/native-observation-events/run_host.py",
-      "sha256": "acc08946e27093f36defb5d4e304131d66062e230399cdec5bb98620b25ef446"
+      "sha256": "3b4bb719baac8da0ac668f344e250dcfabded603136cd090aa1f98f9fba9628f"
     },
     {
-      "bytes": 87504,
+      "bytes": 90012,
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "sha256": "93f72aebca3782a2363cdde88e37311efa779ba7e139a04e856511876915485b"
+      "sha256": "54d22b3cf97b6391252f69c13269ce39e12b890335bbe3904c1572cefc8f9c84"
     },
     {
       "bytes": 1646,
@@ -8767,9 +8967,9 @@
       "sha256": "16d69f1877112e980eeedbc9ebec4bb005bc856aa02d0dbf51dddac088979c23"
     },
     {
-      "bytes": 12375,
+      "bytes": 13730,
       "path": "tests/native-observation-read-retry/run_host.py",
-      "sha256": "cedcf552876adb527eb589f03e3e88e474efccfd02e79ac90d91448299c22695"
+      "sha256": "4065cba8b5d48bc1e7db716d612afea1c7bd02a463d32d01f7d9046d223c4585"
     },
     {
       "bytes": 2377,
@@ -8792,9 +8992,9 @@
       "sha256": "71814de4f7537fffa9834579817c7f2c435bfc82aeb8ada43b22d59f3213683f"
     },
     {
-      "bytes": 32080,
+      "bytes": 40167,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "623c8c5756c6bccf9763699dfb2de984ab69a3e0e40ecd0592e6ec6bb8591284"
+      "sha256": "2db2c4ad70ede6c9ec93633bf3508401363b423b0dbf42c76e3e20ef247800d7"
     },
     {
       "bytes": 7722,
@@ -8812,9 +9012,9 @@
       "sha256": "8409606030bd29e26664e2bde1f5c407e1b91bc4f0a711f109b30944ec7e1eb0"
     },
     {
-      "bytes": 14490,
+      "bytes": 14746,
       "path": "tests/native-observation-snapshot/run_host.py",
-      "sha256": "929536fb171fc3c1b035da198eb62abf64919da758f439b07bbece10280c45dc"
+      "sha256": "6382f3251b671d1f0bd81c6168cad215c93e2fd6259c56cb100a9b89e4ce3ed5"
     },
     {
       "bytes": 9080,
@@ -8847,6 +9047,21 @@
       "sha256": "7190eaf8835d2f46105bef65cd550f1e16c9d02f4acde3c56c906ad3c0b04fc2"
     },
     {
+      "bytes": 12038,
+      "path": "tests/native-search-carousel-edge/NativeSearchCarouselEdgeHostTest.java",
+      "sha256": "e9f8ed01e8168c070897412182f36487c627722dc99bdad499bffbf9d653ba57"
+    },
+    {
+      "bytes": 237595,
+      "path": "tests/native-search-carousel-edge/derived-censuses.json",
+      "sha256": "4b04b63db139330fdec649d434aa0010d55aabb359c10f501c8fbdeb2c3126d0"
+    },
+    {
+      "bytes": 5971,
+      "path": "tests/native-search-carousel-edge/run_host.py",
+      "sha256": "8c9fb5ab86d6d5a7ec78ef89e25d519d5f83a1eba502ee586de4d2783cc29a67"
+    },
+    {
       "bytes": 9167,
       "path": "tests/native-search-grammar/NativeSearchGrammarHostTest.java",
       "sha256": "0427df28341ed62d2c235b691ca86e00f1dfc6c461847608ad52d845bd7701be"
@@ -8867,9 +9082,9 @@
       "sha256": "e24deade6532d12a3d220c204a7457be7c537a12de042b3cff71a52e953b81c8"
     },
     {
-      "bytes": 9072,
+      "bytes": 18704,
       "path": "tests/native-search-planning/host_closure.py",
-      "sha256": "e4a280bf7befb143a60257f4168aac432f4f64cffa0e3242f8469be1411b7178"
+      "sha256": "af14c0a82bf14b99d8ff18d2a91b64f0fa8e7a4355caa74d367a73d4bbbf794e"
     },
     {
       "bytes": 5105,
@@ -8912,9 +9127,9 @@
       "sha256": "593ee8b7d43b0fa5ab5b2ba43459fc408d4bac8716873825f4e1ef8cffbdea83"
     },
     {
-      "bytes": 18218,
+      "bytes": 18551,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "7ca6d35032b9493a5741bb9dd0564e3480e932d75b7e639acf261400e56471d0"
+      "sha256": "df205c76492be670e001246b899a3dfcc22d9a0d0a6f1c078776c3dec119de23"
     },
     {
       "bytes": 29903,
@@ -9067,9 +9282,9 @@
       "sha256": "8511dec3efab54f7849783a2b62f59cbd63b765bf7bc56cb07fabaea475fea17"
     },
     {
-      "bytes": 17318,
+      "bytes": 19038,
       "path": "tests/native-xiaomi-location/run_host.py",
-      "sha256": "f0cee05b75de123d370a8f5edba64efce26dc8fd2cdb0c35df7ab912f0101e7a"
+      "sha256": "d0c09d49d080edaa19b7eba03ff945fd9509a6be151e59d15313cab7b7d4905f"
     },
     {
       "bytes": 28134,
@@ -9222,9 +9437,9 @@
       "sha256": "41e7dfc1ab1e4af4eef3cdb4361041c4dbc9b23361433699202005e8403f4f5e"
     },
     {
-      "bytes": 13080,
+      "bytes": 15516,
       "path": "tests/notes-after-release-reader/run_host.py",
-      "sha256": "df7137e82b8fd0fd46fb8cf2d006ba3f4af5c042a9f5dabab1d3b081e663a3b3"
+      "sha256": "5f76c4b4c20f9ab59f69d35921dcc526c3a9d8ad0edb556f480a4eadcb386753"
     },
     {
       "bytes": 42214,
@@ -9317,9 +9532,9 @@
       "sha256": "5edd2f10e0bb8692d4de9d1c07f5e101ac5be496ebe638ad63b8e87c68eabafa"
     },
     {
-      "bytes": 4603,
+      "bytes": 8376,
       "path": "tests/notes-owner-intent/run_host_tests.py",
-      "sha256": "874b3e4c4766caf562c6fe7587be7d4acc2edcee49ce10e40c39e21dd8894254"
+      "sha256": "e24824e723ef6a9c15cf95287beec289a3a4707a6eef728658ed71922663873f"
     },
     {
       "bytes": 23802,
@@ -9517,9 +9732,9 @@
       "sha256": "743e0b8ab9eb900f1349b9b883b5083e45f0d97374242bae2ee196b0d86bfc52"
     },
     {
-      "bytes": 19672,
+      "bytes": 29181,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "3f764b22fa2173f5985423eaa39119ee38edc6e69c1ee9481c74d8572d743815"
+      "sha256": "3939e2037c34d2b36ea84cea988a385963315ab4de02fdea7ce516512334c808"
     },
     {
       "bytes": 13092,
@@ -9552,9 +9767,9 @@
       "sha256": "662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333"
     },
     {
-      "bytes": 5883,
+      "bytes": 8470,
       "path": "tests/observation-pipeline/run_host_tests.py",
-      "sha256": "a834ddb521c7be64b3ad6e33b8738e25741dc4737bd7547906b0a5c5fd6b25a2"
+      "sha256": "e56d2b249e9370e8dcf3ae0cd41585c5a461a3f5cf3f6f540649091f84203d11"
     },
     {
       "bytes": 22502,
@@ -9602,9 +9817,9 @@
       "sha256": "08db8b6b220ae442e32e749e9d6e2eefa2489a68fa84ebf62ea5d828ddcf5c7a"
     },
     {
-      "bytes": 5872,
+      "bytes": 9003,
       "path": "tests/offline-model-import/run_host.py",
-      "sha256": "dd604f18bda1e7b99a8abf0181199ba53e3ac6dad303f665d40cfe4035877b74"
+      "sha256": "4a3707cb46e139c4de01f0fdcc52e18f17335869d0ad1d4347ecb2f29087b0e7"
     },
     {
       "bytes": 11667,
@@ -9712,9 +9927,9 @@
       "sha256": "7d85fcbf85888bdaa54831aa72fea33f8a2948c91b4c29cd77391fbdb575af8c"
     },
     {
-      "bytes": 3937,
+      "bytes": 7047,
       "path": "tests/owner-grammar/run_host_tests.py",
-      "sha256": "bf533625251075098a9db8f2a4d9b0d3a1bb25cbe2ae52432525cb25fead5999"
+      "sha256": "45f86ff1350486be9da2368beb01e943b4c90d76bd2268b08cddd03469e88874"
     },
     {
       "bytes": 3979,
@@ -9892,9 +10107,9 @@
       "sha256": "34a338f0816faf4531ec38b166802ac65a9e281ea90246d7cfc14a1d42e2c0bf"
     },
     {
-      "bytes": 15589,
+      "bytes": 18025,
       "path": "tests/profile-permission-ready-confirmation/run_host.py",
-      "sha256": "f1150c5072c0a8a4aaa9305203b2a1b995fbf7825f57b55349f089d161d56c4b"
+      "sha256": "d4247d3e19b0ce4ee9aa5342bd3d42254e62e1acde6402e1d3c276d1497c0400"
     },
     {
       "bytes": 29281,
@@ -10287,9 +10502,9 @@
       "sha256": "0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47"
     },
     {
-      "bytes": 19112,
+      "bytes": 19813,
       "path": "tests/public-profile-terminal-bridge/run_host.py",
-      "sha256": "d14fb255097986278865ffe7eded57808f52ceac17922bc64be4662ac4234839"
+      "sha256": "d6936886b1758a7c564dfa09535e0fadf8b7363d361fe352ba73ced18dd95353"
     },
     {
       "bytes": 17308,
@@ -10307,9 +10522,9 @@
       "sha256": "f35f23c719f89b7fb7a54d00632dcbdbabee996dd7e8c0fa18df4d4bcc4e36c7"
     },
     {
-      "bytes": 8999,
+      "bytes": 10523,
       "path": "tests/public-screen-lease/run_host.py",
-      "sha256": "a1037b277c172b79c927f1b7fa9f0d1af9f470983ececc919dc22554544a33ba"
+      "sha256": "80d4320ee0a132559f5e90fb1b24908b6334086a5f5209f5ff7e78d663883caf"
     },
     {
       "bytes": 42292,
@@ -10552,9 +10767,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 37264,
+      "bytes": 47714,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "315e241bed6af2a9fa17e71b0503cf24f4db97b27f9b1c3feed9adec28ea11ef"
+      "sha256": "bef91f319009d82192fedecae4c5df81bebd5db84fb632423a2f4cd2bf66284b"
     },
     {
       "bytes": 2997,
@@ -11087,9 +11302,9 @@
       "sha256": "49d196ff876e0d3406e411fd6bc2e31719ecce763f13873564a1bc369b60c30a"
     },
     {
-      "bytes": 17168,
+      "bytes": 20273,
       "path": "tests/vlm-adapter/run_host.py",
-      "sha256": "20e9a627087c67b6fd74a780690a80f2c0a81b84a455840b4ccde38e9db71852"
+      "sha256": "71b3ab7a706ec9c03118b47eaee93b103504a517259a9f9726e9e062becf993f"
     },
     {
       "bytes": 22690,
@@ -11767,9 +11982,9 @@
       "sha256": "397dfce959fd321225b5c2449dac7a59d14463679d7277d697370d59d4d5fc4b"
     },
     {
-      "bytes": 12208,
+      "bytes": 20928,
       "path": "tests/xiaomi-profile/run_native_host.py",
-      "sha256": "3006d846eebfbd4e289193142d225ce0bc745604574ca777bb8c2d92c3224bb7"
+      "sha256": "97951edca752443b1d8a2ab93e98501e00b61305385247ff48a264ff2aec4c08"
     },
     {
       "bytes": 10326,
@@ -11782,9 +11997,9 @@
       "sha256": "2cd4a16f5f33be72a03b803143c42f4929f898a2bfb9917e417eb79eab9e77a5"
     },
     {
-      "bytes": 8337,
+      "bytes": 8501,
       "path": "tools/build_identity.py",
-      "sha256": "d4a9c4ba060fc0997be5a0f1bbd80883194fb4c43a4443c464da0cf893da7015"
+      "sha256": "97c3d5dcfc38cf316c518fb617df31c4b81d8dd091754f351b1fcbe0783e83bb"
     },
     {
       "bytes": 1380,
@@ -11842,9 +12057,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 58248,
+      "bytes": 62760,
       "path": "tools/run_host_checks.py",
-      "sha256": "ce47dd6eba6c380ac38accc11fad5b6f5963ea7b6ae71d1a1dfdfcf9b6b72d39"
+      "sha256": "5d1d5d89a65275e3db63a5744cc8e836ef2ae07437608c30f2b68a52626a3631"
     },
     {
       "bytes": 13031,
@@ -11857,14 +12072,14 @@
       "sha256": "f7701f5fe2dc4cf6e06b942acc7478a9215c089f429e54b10050c9e48f9e2bcf"
     },
     {
-      "bytes": 15172,
+      "bytes": 15181,
       "path": "tools/run_public_own_group_scope_host.py",
-      "sha256": "d31dc68f9308fb73e36a7913811e6a8297da0531be4511e21a805c74a40efb89"
+      "sha256": "72a467089a75b744c366a9c017cf05688dd70072c0f0435a96d3efdbdbaddb4f"
     },
     {
-      "bytes": 22670,
+      "bytes": 23073,
       "path": "tools/run_public_personal_notes_host.py",
-      "sha256": "bcc1df3417f758f10e11d13db61bd2427ca5b7ed673ccf8c82dd300bc608589c"
+      "sha256": "cf95d2a6771b19d6556901e9e39163246b3e67876caf0de0ba14eaf5c8f647f5"
     },
     {
       "bytes": 1243,
@@ -11882,9 +12097,9 @@
       "sha256": "44ce4102fd07bf4c38029cece5ca618a19c5d760a8e7c6620c66d4da3d52dd9c"
     },
     {
-      "bytes": 4573,
+      "bytes": 4749,
       "path": "tools/test_build_identity.py",
-      "sha256": "6c64d7ce4259fe8dc14939a6ed4a51e06fcb35f36ee14e9a75cb12160c91fb82"
+      "sha256": "8b24a91e6dc64fbf34a2b2d9b6c3662a796854fe37800965a595f316c8c2b9ef"
     },
     {
       "bytes": 4813,
@@ -11957,9 +12172,9 @@
       "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
     },
     {
-      "bytes": 13016,
+      "bytes": 13192,
       "path": "tools/test_qualification_scope_build.py",
-      "sha256": "aec3428c654ec163e20505779e3abefd65c48cfe7d28ef92c78e3b085b429989"
+      "sha256": "f00139d12d992de273391a50b261880fdb2a2026cb213f8f3b36069537e1b630"
     },
     {
       "bytes": 1820,
@@ -12053,37 +12268,43 @@
     }
   ],
   "fixture_compatibility": {
-    "current_changes": "Add one isolated provider regression gate for the exact archived nested single-search-button toolbar. Preserve all 384 original provider cases and 1792 assertions unchanged. The 26 new case groups cover complete original native AX and profile data, a disabled non-authoritative sibling, exact real paths and literal label, geometry, selection, ownership bindings and conditional exact query readback. Historical facts are not current Android authority; mutated frames are explicit host-only ports. No original test source is changed.",
+    "current_changes": "Six test-only standalone runner compatibility updates for the reviewed calendar implementation. Original cases/assertions and all production bytes are preserved. New generated calendar types expose only unreachable private-constructor/all-throw or null/empty/false boundaries. The VLM standalone main changes do not change its imported prepare, section, or sha functions; the screen lease source guard retains the original cleanup order and adds the exact calendar listener retirement/drain requirement.",
     "historical_failed_attempts_preserved": true,
     "new_tests_do_not_claim_phone_success": true,
     "original_case_assertions_preserved": true
   },
-  "main_java_sources": 205,
+  "main_java_sources": 211,
   "phone_qualified": false,
-  "production_build_inputs_count": 380,
-  "production_input_map_sha256": "f0bcd48e5cc39cbfc00701909c09f0a2385716929069525ede6018f54ea61d15",
+  "production_build_inputs_count": 388,
+  "production_input_map_sha256": "a77e3d68cb146eb049d51c6dbe2a0c1354f51d6ebc22f23e11f86aee57a4ff42",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact source successor to published c9212d5. Preserve existing profile, recovery, planning and action contracts. Add one distinct NativeXiaomiProductPage template for a complete observed nested toolbar with a single real Search label and button, one enabled query EditText, and the observed disabled root EditText explicitly excluded. Exact parent/path/class/view-ID/selection/capability/membership and geometry predicates remain mandatory. The dynamic hint never selects the query. Only the immutable owner substring may be proposed as input; only a subsequent actual current field value equal to that substring may propose the exact normal Search button. No navigation replay, suggestion fallback, coordinates, inferred button or completion authority is introduced. The old double-search normal/toggle and direct-root templates are byte-preserved. NativeAppSession, HeptaAccessibilityService, LocalTaskController, all deadlines, complete census, profile/window verification and final action checks are unchanged. Current signed build and phone outcomes require separate actual evidence.",
-  "source_parent_head": "c9212d5c1f343af59034013c2c857049f4127ed7",
-  "source_parent_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
-  "source_snapshot_predecessor_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
+  "scope": "Exact source successor to published d7fc49f. Integrate reviewed typed calendar protocol, immutable goal and date provenance, model proof and fresh observation, private permit, original ActionWork/ActionSlot one-claim action worker, dedicated background date RPC and broker handler, current FORM SelectionEvidence and once-only QUERY guard continuation. Also integrate the explicit zero-touch probe-only controller branch and the narrowly authenticated Xiaomi horizontal clipped carousel-edge enclosure proof. Compile-only WindowInfos headers remain separate classpath inputs and are forbidden from app classes and APK DEX definitions. All original task, profile, display, ownership, observation, permission, deadline, final effect and cleanup guards remain in force. Host Android/model/socket ports and retained historical scopes are not Android execution or business success. Current signed build, phone qualification, input isolation and business outcomes require separate actual evidence. R26 changes only eighteen test fixture and runner files; all reviewed production behavior and original failure evidence remain unchanged. R27 adds only six test runner compatibility fixes to the frozen r26 snapshot; all reviewed production behavior and original failure evidence remain unchanged.",
+  "source_parent_head": "d7fc49fae67302a5c9b49fd0741cea1f7cba96e6",
+  "source_parent_manifest_sha256": "154ed099c6b7ba1d12985220d3f07451bbb5c3efca04e58a0ba1496aef19a3d7",
+  "source_snapshot_predecessor_manifest_sha256": "c862f0e1f81eb2c602ba7ed727aa69000155e76aac58ce147e96e503575d114d",
   "test_compatibility_changed_paths": [
-    "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
-    "tests/native-xiaomi-single-toolbar/run_host.py"
+    "tests/local-model-settings-visual/run_host.py",
+    "tests/local-model-settings/run_host.py",
+    "tests/notes-owner-intent/run_host_tests.py",
+    "tests/owner-grammar/run_host_tests.py",
+    "tests/public-screen-lease/run_host.py",
+    "tests/vlm-adapter/run_host.py"
   ],
-  "test_compatibility_parent_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
+  "test_compatibility_parent_manifest_sha256": "c862f0e1f81eb2c602ba7ed727aa69000155e76aac58ce147e96e503575d114d",
   "test_compatibility_successor_delta": {
-    "baseline": "integrated-r23",
+    "baseline": "integrated-r26",
     "changed_paths": [
-      "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
-      "tests/native-xiaomi-single-toolbar/run_host.py"
+      "tests/local-model-settings-visual/run_host.py",
+      "tests/local-model-settings/run_host.py",
+      "tests/notes-owner-intent/run_host_tests.py",
+      "tests/owner-grammar/run_host_tests.py",
+      "tests/public-screen-lease/run_host.py",
+      "tests/vlm-adapter/run_host.py"
     ],
     "original_cases_and_assertions_unchanged": true,
-    "production_changed": true,
-    "scope": "One provider and two new test files only. Original provider execution is retained from the narrow candidate on identical production and original dependency bytes, and the new final test class was executed separately. All prior fixture and business failures remain original artifacts.",
-    "separate_production_changed_paths": [
-      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
-    ]
+    "production_changed": false,
+    "scope": "Repair only the six actual r26 canonical/diagnostic fixture failures. All 388 production input bytes and modes, including compile-only headers, are identical to the actual r25 SDK compile. Original r25/r26 failures and tail diagnostics remain unchanged; the tail diagnostic is not canonical qualification. Complete final canonical coverage is pending this freeze.",
+    "separate_production_changed_paths": []
   },
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"

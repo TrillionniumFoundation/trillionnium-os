@@ -38,6 +38,62 @@ def main():
         search_pure=importlib.util.module_from_spec(search_spec);search_spec.loader.exec_module(search_pure)
         compile_sources=search_pure.add(source,actual)
         for path in compile_sources[len(actual):]: take(path)
+
+        # Actual DecisionGrammar now names a calendar Offer. This old offline
+        # import gate gets only unreachable private/all-throw type shapes.
+        constant_source=source/"src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java"
+        constant_raw=take(constant_source)
+        constants=b'    static final String SCHEMA="hepta.native-calendar-select-date.v1",ACTION="calendar.select_date";'
+        need(constant_raw.splitlines().count(constants)==1,"actual calendar schema/action constants changed")
+        names_in_compile={p.name for p in compile_sources}
+        need(not names_in_compile.intersection({"NativeAppSession.java","NativeCalendarDateEnvelope.java","NativeCalendarDateIntent.java"}),
+             "calendar boundary must not shadow any original compiler source")
+        ports=out/"calendar-legacy-types";ports.mkdir()
+        port_values=[
+          ("NativeAppSession.java",b"""package org.trillionnium.hepta.local;
+final class NativeAppSession {
+    private NativeAppSession(){throw unavailable();}
+    private static UnsupportedOperationException unavailable(){return new UnsupportedOperationException("No calendar Session in offline import gate");}
+    static final class CalendarOffer {
+        final NativeCalendarDateEnvelope source=null;
+        final CalendarGrammar protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame owner)throws Exception{throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarGrammar {
+        final String grammar=null,grammarSha256=null;
+        private CalendarGrammar(){throw unavailable();}
+    }
+}
+"""),
+          ("NativeCalendarDateEnvelope.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateEnvelope {
+    final Facts facts=null;
+    static final class Facts {
+        final String observationId=null,packageName=null;
+        private Facts(){throw new UnsupportedOperationException("No calendar frame in offline import gate");}
+    }
+    private NativeCalendarDateEnvelope(){throw new UnsupportedOperationException("No calendar envelope in offline import gate");}
+}
+"""),
+          ("NativeCalendarDateIntent.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateIntent {
+"""+constants+b"""
+    private NativeCalendarDateIntent(){throw new UnsupportedOperationException("No calendar intent in offline import gate");}
+}
+""")]
+        generated_calendar=[]
+        for name,value in port_values:
+            p=ports/name
+            with p.open("xb") as stream:stream.write(value)
+            generated_calendar.append(p)
+        compile_sources += generated_calendar
+        result["calendar_type_boundary"]={"constant_source":str(constant_source),
+            "constant_source_sha256":sha(constant_raw),
+            "generated":[{"path":str(p),"bytes":p.stat().st_size,"sha256":sha(p.read_bytes())} for p in generated_calendar],
+            "private_constructors_and_all_calendar_methods_throw":True,
+            "calendar_authority_created":False,"calendar_behavior_executed":False}
         fixtures=out/"fixtures";shutil.copytree(source/"tests/local-model-settings/fixtures",fixtures)
         for path in sorted((source/"tests/local-model-settings/fixtures").rglob("*.java")): take(path)
         for path in sorted((test/"fixtures").rglob("*.java")):

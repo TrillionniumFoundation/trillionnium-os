@@ -574,6 +574,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(cancel==null||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
             throw new IllegalStateException("本地模型原任务已停止或到期");
     }
+    void requireNativeCalendarSourceOwnership(LocalTaskController controller,NativeAppSession nativeTask,
+            BackgroundSession background,PhoneObservation observed,long taskDeadline){
+        controller.requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
+        synchronized(this){
+            calendarFreshRequire(live==this&&ownedController==controller&&taskWeb==null&&current==observed
+                    &&currentGraph!=null&&currentBitmap!=null&&!currentBitmap.isRecycled()
+                    &&ownsAuthorization(nativeTask.taskId,nativeTask.authorization)&&ownsBackground(nativeTask.taskId,background)
+                    &&nativeTask.domain().frame.observationId.equals(observed.id)&&!actionWorkPending()
+                    &&!observationReadWorkPending()&&!nativeCancellationWorkPending(),
+                    "original calendar source must be the actual idle owned pixel publication");
+        }
+        requireTaskAuthorization(nativeTask.taskId,nativeTask.authorization);
+        requireScopeObservation(nativeTask.taskId,observed);requireAuthorizationObservation(nativeTask.taskId,nativeTask.authorization,observed);
+        requireBackgroundObservation(nativeTask.taskId,observed);
+        controller.requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
+    }
+
     void requireVisualFrameOwnership(LocalTaskController expectedController,String id,
             TaskAuthorization.Gate auth,BackgroundSession expected,PhoneObservation observed,DecisionGrammar grammar){
         synchronized(this){
@@ -1163,6 +1180,251 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(RuntimeException unavailable){content=false;}
         request.recordEvent(displayId<0,content?1:2);
     }
+    /** One typed read, using the existing observation request/PNG publication.
+     * This callback never grants input and never changes the native Session domain. */
+    interface CalendarFreshCallback {
+        void onFresh(CalendarFreshObservation proof);void onError(String detail);
+        default void onDiagnostic(java.util.concurrent.Callable<String> snapshot) {}
+        default void onPrivateCensusDiagnostic(java.util.concurrent.Callable<String> snapshot) {}
+    }
+    void observeNativeCalendarFresh(final LocalTaskController controller,
+            final NativeAppSession.CalendarFreshRead read,final File evidenceDirectory,
+            final Cancellation cancel,final long originalObservationDeadline,final CalendarFreshCallback callback)throws Exception{
+        calendarFreshRequire(controller!=null&&read!=null&&cancel!=null&&callback!=null,"actual calendar read/controller required");
+        read.claimObservationProducer(this);
+        try{
+            read.requireOriginal(read.session,read.background);requireCalendarFreshOwner(controller,read,null);
+            long now=SystemClock.elapsedRealtime();
+            calendarFreshRequire(!cancel.isCancelled()&&originalObservationDeadline>now
+                    &&originalObservationDeadline<=read.deadlineElapsed&&originalObservationDeadline<=read.taskDeadlineElapsed
+                    &&originalObservationDeadline<=read.background.expiresElapsed,"unchanged original calendar observation deadline required");
+            File directory=MobiMindPrivateFiles.directory(evidenceDirectory,false);
+            File expected=new File(new File(getFilesDir(),"control-tasks"),read.session.taskId).getCanonicalFile();
+            calendarFreshRequire(directory.equals(expected),"actual original calendar task directory required");
+            Cancellation ownedCancel=new Cancellation(){public boolean isCancelled(){
+                return cancel.isCancelled()||read.producerRetired(HeptaAccessibilityService.this);}};
+            CalendarFreshObserver observer=new CalendarFreshObserver(controller,read,directory,ownedCancel,originalObservationDeadline,callback);
+            observeRequest(read.session.taskId,directory,ownedCancel,originalObservationDeadline,observer,null);
+        }catch(Exception refused){read.close();throw refused;}
+    }
+    private static void calendarFreshRequire(boolean ok,String detail){
+        if(!ok)throw new IllegalStateException(detail);
+    }
+    private void requireCalendarFreshOwner(LocalTaskController controller,NativeAppSession.CalendarFreshRead read,
+            PhoneObservation observed){
+        read.requireProducerIdentity(this);
+        long now=SystemClock.elapsedRealtime();
+        read.requirePublicationOwner(read.session,read.background,now);
+        controller.requireNativeCalendarFreshOwner(read);
+        synchronized(this){
+            calendarFreshRequire(live==this&&ownedController==controller&&ownsAuthorization(read.session.taskId,read.session.authorization)
+                    &&ownsBackground(read.session.taskId,read.background)&&taskBackground==read.background&&taskWeb==null,
+                    "calendar service/controller/task/background identity changed");
+            if(observed!=null)calendarFreshRequire(current==observed&&currentGraph!=null&&currentBitmap!=null
+                    &&!currentBitmap.isRecycled()&&currentGraph.windowId==observed.windowId
+                    &&currentGraph.displayId==read.session.displayId&&currentGraph.packageName.equals(observed.packageName),
+                    "actual fresh calendar publication is no longer the current retained snapshot");
+        }
+        requireTaskAuthorization(read.session.taskId,read.session.authorization);
+        if(observed!=null){
+            requireScopeObservation(read.session.taskId,observed);
+            requireAuthorizationObservation(read.session.taskId,read.session.authorization,observed);
+            requireBackgroundObservation(read.session.taskId,observed);
+        }else read.background.requireActive();
+        controller.requireNativeCalendarFreshOwner(read);
+        read.requirePublicationOwner(read.session,read.background,SystemClock.elapsedRealtime());
+        synchronized(this){calendarFreshRequire(live==this&&ownedController==controller&&taskBackground==read.background
+                &&ownsAuthorization(read.session.taskId,read.session.authorization)
+                &&(observed==null||current==observed),"calendar owner changed during final currentness checks");}
+    }
+    private final class CalendarFreshObserver implements ObservationCallback {
+        final LocalTaskController controller;final NativeAppSession.CalendarFreshRead read;
+        final File directory;final Cancellation cancel;final long deadline;final CalendarFreshCallback callback;
+        private ObservationRequest request;private boolean delivered;
+        CalendarFreshObserver(LocalTaskController controller,NativeAppSession.CalendarFreshRead read,File directory,
+                Cancellation cancel,long deadline,CalendarFreshCallback callback){
+            this.controller=controller;this.read=read;this.directory=directory;this.cancel=cancel;
+            this.deadline=deadline;this.callback=callback;
+        }
+        void bind(ObservationRequest actual){
+            calendarFreshRequire(request==null&&actual!=null&&actual.callback==this&&actual.cancel==cancel
+                    &&actual.background==read.background&&actual.directory.equals(directory)&&actual.deadline==deadline
+                    &&actual.taskId.equals(read.session.taskId)&&actual.started>=read.startedElapsed,
+                    "one actual original observation request required");request=actual;
+        }
+        void requireAdmission(ObservationRequest actual){
+            calendarFreshRequire(request==actual&&!delivered&&!cancel.isCancelled(),"calendar read submission was retired");
+            requireCalendarFreshOwner(controller,read,null);
+            calendarFreshRequire(activeObservation==null&&!capturePending&&!observationReadWorkPending()
+                    &&!actionWorkPending()&&!nativeCancellationWorkPending()&&nativeSearchSession==null
+                    &&activeNativeSearchObservation==null&&nativeSearchRetryPending==null&&nativeAxMode==null,
+                    "calendar read requires the existing observation/action/cancel lanes idle and pixel mode");
+        }
+        @Override public void onDiagnostic(java.util.concurrent.Callable<String> snapshot){callback.onDiagnostic(snapshot);}
+        @Override public void onPrivateCensusDiagnostic(java.util.concurrent.Callable<String> snapshot){callback.onPrivateCensusDiagnostic(snapshot);}
+        @Override public void onError(String detail){if(!delivered){delivered=true;callback.onError(detail);}}
+        @Override public void onObservation(PhoneObservation observed){
+            if(delivered){read.close();return;}delivered=true;
+            try{
+                calendarFreshRequire(request!=null&&request.finished&&activeObservation!=request&&!cancel.isCancelled()
+                        &&observed!=null&&observed.capture==null&&ObservationCaptureEvidence.PIXELS.equals(observed.captureKind)
+                        &&observed.screenshot!=null&&observed.screenshotSha256!=null
+                        &&observed.capturedElapsedMillis>=request.started&&observed.capturedElapsedMillis>=read.modelReceivedElapsed,
+                        "only the actual completed new pixel publication can issue calendar provenance");
+                requireCalendarFreshOwner(controller,read,observed);
+                long deliveredAt=SystemClock.elapsedRealtime();
+                calendarFreshRequire(deliveredAt>=observed.capturedElapsedMillis&&deliveredAt<deadline,
+                        "calendar publication expired at private proof seal");
+                CalendarFreshObservation proof=new CalendarFreshObservation(HeptaAccessibilityService.this,this,observed,deliveredAt);
+                callback.onFresh(proof);
+            }catch(Exception refused){read.close();callback.onError("calendar fresh publication refused: "+message(refused));}
+        }
+    }
+    void registerNativeCalendarInputTracking(NativeAppSession.CalendarFreshRead read,CalendarFreshObservation proof){
+        calendarFreshRequire(read!=null&&proof!=null&&proof.service==this&&proof.producer.read==read,
+                "same private calendar publication/read required for event tracking");
+        read.requireInputTrackingRegistration(this);
+        synchronized(nativeSearchEventLock){
+            calendarFreshRequire(nativeCalendarTracked==null,"another calendar publication still owns event tracking");
+            nativeCalendarTracked=proof;
+        }
+    }
+    void retireNativeCalendarInputTracking(NativeAppSession.CalendarFreshRead read){
+        synchronized(nativeSearchEventLock){
+            CalendarFreshObservation actual=nativeCalendarTracked;
+            if(actual!=null&&actual.producer.read==read)nativeCalendarTracked=null;
+        }
+    }
+    /** Private ctor is reached only from CalendarFreshObserver after actual
+     * request completion/current Phone publication. No map or test constructor. */
+    static final class CalendarFreshObservation {
+        private final HeptaAccessibilityService service;
+        private final CalendarFreshObserver producer;
+        private final PhoneObservation observed;
+        private final long deliveredElapsed;
+        private boolean envelopeReadAttempted;
+        private final SearchEvents inputEvents;
+        private final NativeSearchPlanning.EventMark originalInputEvents;
+        private File recordPath;private String recordSha;private long recordBytes;
+        private CalendarFreshObservation(HeptaAccessibilityService service,CalendarFreshObserver producer,
+                PhoneObservation observed,long delivered){
+            this.service=service;this.producer=producer;this.observed=observed;deliveredElapsed=delivered;
+            inputEvents=new SearchEvents(observed.windowMetadata.displayId.intValue(),observed.packageName);
+            inputEvents.window=observed.windowId;originalInputEvents=inputEvents.mark();
+            producer.read.registerInputTracking(service,this);
+        }
+        void requireActionIssuer(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){
+            calendarFreshRequire(actual==service&&controller==producer.controller&&read==producer.read,
+                    "same actual calendar publication service/controller/read required");
+            read.requireProducerIdentity(actual);
+        }
+        PhoneObservation observationForAction(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){
+            requireActionIssuer(actual,controller,read);return observed;
+        }
+        void requireActionCurrentPure(HeptaAccessibilityService actual,LocalTaskController controller,NativeAppSession.CalendarFreshRead read){
+            requireActionIssuer(actual,controller,read);controller.requireNativeCalendarFreshOwner(read);
+            read.requirePublicationOwner(read.session,read.background,SystemClock.elapsedRealtime());
+            synchronized(service){
+                calendarFreshRequire(live==service&&service.ownedController==controller&&service.current==observed
+                        &&service.currentGraph!=null&&service.currentBitmap!=null&&!service.currentBitmap.isRecycled()
+                        &&service.ownsAuthorization(read.session.taskId,read.session.authorization)
+                        &&service.ownsBackground(read.session.taskId,read.background)&&service.taskWeb==null,
+                        "calendar current service/task/frame changed before input");
+            }
+            synchronized(service.nativeSearchEventLock){
+                calendarFreshRequire(service.nativeCalendarTracked==this&&sameSearchEvents(originalInputEvents,inputEvents.mark()),
+                        "calendar event arrived after the fresh publication; no input allowed");
+            }
+        }
+        void retireInputTracking(){synchronized(service.nativeSearchEventLock){
+            if(service.nativeCalendarTracked==this)service.nativeCalendarTracked=null;
+        }}
+        void requireRecordedOriginal(NativeAppSession.CalendarFreshRead read)throws Exception{
+            calendarFreshRequire(read==producer.read&&producer.request!=null&&producer.request.finished
+                    &&producer.request.callback==producer&&recordPath!=null&&NativeAppEvidence.sha(recordSha),
+                    "same historical completed calendar publication required");
+            synchronized(producer.request){
+                calendarFreshRequire(producer.request.readWorksStarted==producer.request.readWorksFinished,
+                        "calendar original read counters are incomplete");
+            }
+            MobiMindPrivateFiles.Read value=MobiMindPrivateFiles.read(recordPath,2*1024*1024,true);
+            calendarFreshRequire(value.bytes.length==recordBytes&&recordSha.equals(MobiMindContract.sha(value.bytes)),
+                    "original calendar publication record changed");value.unchangedPath();
+            MobiMindPrivateFiles.Read png=MobiMindPrivateFiles.read(observed.screenshot,8*1024*1024,true);
+            calendarFreshRequire(observed.screenshotSha256.equals(MobiMindContract.sha(png.bytes)),
+                    "original fresh calendar PNG changed");png.unchangedPath();
+        }
+        void requireBound(NativeAppSession.CalendarFreshRead read)throws Exception{
+            calendarFreshRequire(read==producer.read&&producer.request!=null&&producer.request.finished
+                    &&producer.request.callback==producer&&producer.request.background==read.background
+                    &&deliveredElapsed>=observed.capturedElapsedMillis&&deliveredElapsed<producer.deadline,
+                    "same completed private calendar observation producer required");
+            synchronized(producer.request){
+                calendarFreshRequire(producer.request.readWorksStarted==producer.request.readWorksFinished,
+                        "calendar observation read work counters are not complete");
+            }
+            // The raw waiter's local abandoned flag becomes true even on success.
+            // It was enforced through publication, and is deliberately not a
+            // substitute for the real controller/task cancellation checks here.
+            long now=SystemClock.elapsedRealtime();
+            calendarFreshRequire(now>=deliveredElapsed&&now<read.deadlineElapsed&&now<read.taskDeadlineElapsed,
+                    "calendar publication clock moved backwards or original budget expired");
+            service.requireCalendarFreshOwner(producer.controller,read,observed);
+            requireActionCurrentPure(service,producer.controller,read);
+            if(recordPath!=null){
+                MobiMindPrivateFiles.Read current=MobiMindPrivateFiles.read(recordPath,2*1024*1024,true);
+                calendarFreshRequire(current.bytes.length==recordBytes&&recordSha.equals(MobiMindContract.sha(current.bytes)),
+                        "original calendar observation record changed");current.unchangedPath();
+                service.requireCalendarFreshOwner(producer.controller,read,observed);
+            }
+        }
+        PhoneObservation observationFor(LocalTaskController controller,NativeAppSession.CalendarFreshRead read)throws Exception{
+            calendarFreshRequire(controller==producer.controller,"original controller required");requireBound(read);return observed;
+        }
+        synchronized NativeCalendarDateEnvelope readEnvelope(final NativeAppSession.CalendarFreshRead read)throws Exception{
+            if(envelopeReadAttempted){read.close();throw new IllegalStateException("calendar envelope read was already attempted");}
+            envelopeReadAttempted=true;
+            try{
+                requireBound(read);read.requireOriginal(read.session,read.background);
+                File directory=MobiMindPrivateFiles.directory(producer.directory,false);
+                calendarFreshRequire(observed.screenshot.getParentFile().equals(directory)
+                        &&observed.screenshot.getAbsoluteFile().equals(observed.screenshot.getCanonicalFile()),
+                        "actual published private PNG path required");
+                byte[] bytes=observed.toEvidenceJson().toString(2).getBytes(StandardCharsets.UTF_8);
+                calendarFreshRequire(bytes.length>0&&bytes.length<=2*1024*1024,"complete bounded calendar observation record required");
+                File path=new File(directory,"native-calendar-fresh-frame-"+observed.id+".json");
+                MobiMindPrivateFiles.writeNew(path,bytes);
+                MobiMindPrivateFiles.Read actual=MobiMindPrivateFiles.read(path,2*1024*1024,true);
+                calendarFreshRequire(java.util.Arrays.equals(bytes,actual.bytes),"actual calendar observation record readback differs");
+                actual.unchangedPath();recordPath=path;recordSha=MobiMindContract.sha(actual.bytes);recordBytes=actual.bytes.length;
+                NotesCompletionEvidence.Frame completion=producer.controller.calendarFreshCompletionFrame(read,observed);
+                NativeAppEvidence.Frame facts=NativeAppObservation.copy(read.session.taskId,read.session.authorization,
+                        read.background,observed,completion,recordSha);
+                LocalInference.CurrentFrame image=new LocalInference.CurrentFrame(observed.screenshot,read.session.taskId,
+                        read.goal.ownerSha256,observed.id,observed.backgroundGeneration,observed.packageName,observed.screenshotSha256,
+                        observed.width,observed.height,observed.windowMetadata.displayId.intValue(),observed.windowId,
+                        observed.rotation,observed.capturedElapsedMillis,read.originalImage.taskOwnerEvidence(),
+                        new LocalInference.Currentness(){public void requireCurrent()throws Exception{CalendarFreshObservation.this.requireBound(read);}});
+                NativeCalendarDateEnvelope envelope=NativeCalendarDateEnvelope.capture(read.goal,facts,image,
+                        read.background.profileTarget(),read.runtime,new NativeCalendarDateProtocol.Clock(){
+                            public long elapsedRealtime(){return SystemClock.elapsedRealtime();}});
+                actual.unchangedPath();requireBound(read);return envelope;
+            }catch(Exception refused){read.close();throw refused;}
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> e=NativeAppEvidence.map();e.put("schema","hepta.native-calendar-fresh-publication.v1");
+            e.put("task_id",producer.read.session.taskId);e.put("observation_request_id",producer.request.requestId);
+            e.put("observation_id",observed.id);e.put("captured_elapsed_ms",observed.capturedElapsedMillis);
+            e.put("request_started_elapsed_ms",producer.request.started);e.put("request_deadline_elapsed_ms",producer.deadline);
+            e.put("callback_delivered_elapsed_ms",deliveredElapsed);e.put("background_generation",observed.backgroundGeneration);
+            e.put("display_id",producer.read.session.displayId);e.put("window_id",observed.windowId);e.put("rotation",observed.rotation);
+            e.put("png_sha256",observed.screenshotSha256);e.put("observation_record_path",recordPath==null?null:recordPath.getPath());
+            e.put("observation_record_bytes",recordPath==null?null:Long.valueOf(recordBytes));e.put("observation_record_sha256",recordSha);
+            e.put("actual_private_observation_producer",true);e.put("post_publication_pixels_independently_reobserved",false);
+            e.put("grants_dispatch",false);e.put("input_attempted",false);return NativeAppEvidence.immutableMap(e);
+        }
+    }
+
     public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,
                         final long deadline,final ObservationCallback callback) {
         observeRequest(taskId,evidenceDirectory,cancel,deadline,callback,null);
@@ -1209,6 +1471,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final Object postAuthorization,final BackgroundSession postBackground,final long postTaskDeadline,
                         final PostEffectObservationRetryProof postProof){
         final ObservationRequest request=new ObservationRequest(taskId,evidenceDirectory,callback,cancel,deadline,backgroundFor(taskId));
+        if(callback instanceof CalendarFreshObserver)((CalendarFreshObserver)callback).bind(request);
         request.retrySubmission=retryProof;
         request.initialController=initialController;request.initialNativeTask=initialNativeTask;
         request.initialTaskDeadline=taskDeadline;request.initialRetrySubmission=initialProof;
@@ -1229,6 +1492,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(capturePending){callback.onError("已有截图尚未结束");return;}
             if(observationIoBusy.get()){callback.onError(request.diagnostic("先前屏幕读取尚未退出，不堆积新观察"));return;}
             try{
+                if(callback instanceof CalendarFreshObserver)((CalendarFreshObserver)callback).requireAdmission(request);
                 if(postController!=null)admitPostEffectObservation(request,postAuthorization,postBackground);
                 else if(initialController!=null)admitInitialObservation(request,initialAuthorization,initialBackground);
                 else{
@@ -2053,6 +2317,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     // is admitted. Event callback routing/handoff is atomic and never suppresses events.
     private final Object nativeSearchEventLock=new Object();
     private SearchActionWork nativeSearchTrackedAction;
+    private CalendarFreshObservation nativeCalendarTracked;
     // Read-only initial sampling history. This reference never grants a planning/effect capability.
     private NativeSearchRequest nativeSearchSamplingTracked;
 
@@ -2104,6 +2369,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NativeSearchRequest sampling=nativeSearchSamplingTracked;
             if(sampling!=null&&sampling!=retry&&(sampling!=request||request.finished))
                 sampling.events.event(display,window,pkg,content,typed);
+            CalendarFreshObservation calendar=nativeCalendarTracked;
+            if(calendar!=null)calendar.inputEvents.event(display,window,pkg,content,typed);
             SearchActionWork action=nativeSearchTrackedAction;
             if(action!=null)action.events.event(display,window,pkg,content,typed);
         }
@@ -3630,6 +3897,279 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             QualificationScope.require(launch.getComponent()!=null&&target.equals(launch.getComponent().getPackageName())
                     &&resolved!=null&&resolved.activityInfo!=null&&target.equals(resolved.activityInfo.packageName),"launch entry resolves outside scoped target");
         }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
+    }
+
+    interface CalendarActionCallback {void onResult(CalendarActionResult result);}
+    /** Produced only by this service after an actual shared-slot ActionWork.
+     * The result preserves input uncertainty; it is never selected-date evidence. */
+    static final class CalendarActionResult {
+        private final NativeAppSession.CalendarPermit permit;
+        private final CalendarInputAttempt attempt;
+        private final BackgroundSession.CalendarDateInputReceipt receipt;
+        final ActionOutcome outcome;
+        final long confirmedElapsed,publishedElapsed;
+        private final Map<String,Object> execution;
+        private CalendarActionResult(NativeAppSession.CalendarPermit permit,CalendarInputAttempt attempt,
+                BackgroundSession.CalendarDateInputReceipt receipt,ActionOutcome outcome,long published,Map<String,Object> execution){
+            this.permit=permit;this.attempt=attempt;this.receipt=receipt;this.outcome=outcome;
+            confirmedElapsed=receipt==null?-1:receipt.receivedElapsedMs;publishedElapsed=published;
+            this.execution=execution==null?null:NativeAppEvidence.immutableMap(execution);
+        }
+        void requireSuccessfulOriginal(NativeAppSession.CalendarPermit expected,CalendarInputAttempt original){
+            calendarFreshRequire(permit==expected&&attempt!=null&&attempt==original&&receipt!=null
+                    &&receipt.belongsTo(permit.background(),attempt)&&outcome.accepted&&outcome.dispatched&&!outcome.stale
+                    &&execution!=null&&Boolean.TRUE.equals(execution.get("effect_entered"))
+                    &&Boolean.TRUE.equals(execution.get("effect_returned"))&&Boolean.TRUE.equals(execution.get("api_accepted"))
+                    &&Boolean.TRUE.equals(execution.get("worker_drained"))&&Boolean.TRUE.equals(execution.get("callback_published"))
+                    &&Boolean.TRUE.equals(execution.get("callback_authority_current"))&&!Boolean.TRUE.equals(execution.get("retired"))
+                    &&attempt.operationId.equals(execution.get("operation_id"))
+                    &&confirmedElapsed>=attempt.queuedElapsed&&publishedElapsed>=confirmedElapsed
+                    &&publishedElapsed<permit.deadlineElapsed,
+                    "same confirmed one-use calendar pair, actual drained worker and current callback required");
+        }
+        Map<String,Object> evidence()throws Exception{
+            Map<String,Object> e=new java.util.LinkedHashMap<String,Object>();e.put("schema","hepta.native-calendar-action-result.v1");
+            e.put("action",NativeCalendarDateIntent.ACTION);e.put("model_run_id",permit.modelRunId());
+            e.put("accepted",outcome.accepted);e.put("input_may_have_been_attempted",outcome.dispatched);
+            e.put("platform_pair_confirmed",receipt!=null);e.put("stale",outcome.stale);e.put("detail",outcome.detail);
+            e.put("action_execution",execution);e.put("confirmed_elapsed_ms",confirmedElapsed<0?null:Long.valueOf(confirmedElapsed));
+            e.put("callback_elapsed_ms",publishedElapsed);e.put("original_action_deadline_elapsed_ms",permit.deadlineElapsed);
+            e.put("platform_receipt_json",receipt==null?null:receipt.evidence().toString());
+            e.put("platform_request_json",receipt==null?null:receipt.requestEvidence().toString());
+            e.put("automatic_replay",false);e.put("date_selection_verified",false);e.put("business_verified",false);
+            return NativeAppEvidence.immutableMap(e);
+        }
+    }
+    /** No public/package constructor exists. A closed broker probe, Map, model
+     * reply or pure Consumption cannot manufacture this live action capability. */
+    static final class CalendarInputAttempt {
+        private final HeptaAccessibilityService issuer;
+        private final LocalTaskController controller;
+        private final NativeAppSession.CalendarPermit permit;
+        private final Cancellation cancel;
+        private ActionWork liveWork;
+        private Map<String,Object> values;
+        private boolean brokerCallConsumed,sendConsumed,workerRetired;
+        final String operationId;final long queuedElapsed;
+        private CalendarInputAttempt(HeptaAccessibilityService issuer,LocalTaskController controller,
+                NativeAppSession.CalendarPermit permit,ActionWork work){
+            this.issuer=issuer;this.controller=controller;this.permit=permit;liveWork=work;cancel=work.cancel;
+            operationId=work.state.operationId;queuedElapsed=work.state.queuedElapsed;
+        }
+        void requirePermitProducer(NativeAppSession.CalendarPermit actual,boolean entered){
+            ActionWork work;
+            synchronized(this){calendarFreshRequire(!workerRetired&&liveWork!=null&&permit==actual,
+                    "same live private calendar input producer required");work=liveWork;}
+            work.check();controller.requireNativeCalendarActionOwner(permit);
+            calendarFreshRequire(issuer.activeAction==work&&issuer.lastActionExecution==work.state&&actionSlot.pending()
+                    &&work.cancel==cancel&&work.background==permit.background()&&work.authorization==permit.session().authorization
+                    &&work.expected==permit.observationForAction(issuer,controller)&&work.state.deadlineElapsed==permit.deadlineElapsed
+                    &&work.state.effectEntered()==entered,"calendar input does not own the original shared action slot");
+            permit.requireActionCurrent(issuer,controller);
+        }
+        Map<String,Object> executionBeforeInput(){requirePermitProducer(permit,false);return liveWork.state.evidence();}
+        private void prepare()throws Exception{
+            requirePermitProducer(permit,false);liveWork.phase("attempt_journal");values=permit.consumeInput(this);
+            permit.requireInputOriginal(this);requirePermitProducer(permit,false);
+        }
+        /** Consumed before any socket attempt. The returned values have no input
+         * authority without this same private object at the final send fence. */
+        Map<String,Object> beginBrokerCall(BackgroundSession actual,Cancellation original)throws Exception{
+            synchronized(this){
+                if(brokerCallConsumed){if(liveWork!=null)liveWork.state.retire("controller_abandoned");
+                    throw new IllegalStateException("calendar broker call already consumed");}
+                brokerCallConsumed=true;
+                calendarFreshRequire(actual==permit.background()&&original==cancel&&values!=null,
+                        "calendar broker must use the same background and cancellation");
+            }
+            requirePermitProducer(permit,true);
+            permit.requireInputPure(issuer,this,SystemClock.elapsedRealtime());return values;
+        }
+        /** Pure final fence only: BG has connected its sole socket already.
+         * Never recursively issue profile/policy RPC or read a new graph here. */
+        void requireBeforeSend(BackgroundSession actual,Cancellation original){
+            synchronized(this){
+                calendarFreshRequire(!sendConsumed&&brokerCallConsumed&&actual==permit.background()&&original==cancel,
+                        "same unspent original calendar socket send required");sendConsumed=true;
+            }
+            requirePermitProducer(permit,true);permit.requireInputPure(issuer,this,SystemClock.elapsedRealtime());
+        }
+        private synchronized void workerDrained(){
+            workerRetired=true;liveWork=null; // A receipt cannot retain closed Graph/Node references.
+        }
+    }
+    void performNativeCalendarDate(final LocalTaskController controller,final NativeAppSession.CalendarPermit permit,
+            final Cancellation originalCancel,final CalendarActionCallback callback){
+        final long queued=SystemClock.elapsedRealtime();
+        if(permit==null||controller==null||originalCancel==null||callback==null)
+            throw new IllegalArgumentException("actual calendar permit/controller/cancellation/callback required");
+        permit.claimActionProducer(this,controller);
+        final Cancellation ownedCancel=new Cancellation(){public boolean isCancelled(){return originalCancel.isCancelled()||permit.actionRetired();}};
+        final QualificationScopeConfig.Bound scope=scopeFor(permit.session().taskId);
+        final TaskAuthorization.Gate auth=permit.session().authorization;final BackgroundSession background=permit.background();
+        final String task=permit.session().taskId;
+        final CalendarActionCallback failureCallback=new CalendarActionCallback(){public void onResult(CalendarActionResult result){callback.onResult(result);}};
+        boolean posted=main.post(new Runnable(){public void run(){
+            Graph snapshot=null;
+            try{
+                controller.requireNativeCalendarActionOwner(permit);
+                calendarFreshRequire(nativeSearchAllowsLegacyObservation(task)&&ownsScope(task,scope)&&!scope.restricted()
+                        &&ownsAuthorization(task,auth)&&ownsBackground(task,background)&&taskWeb==null
+                        &&!ownedCancel.isCancelled()&&SystemClock.elapsedRealtime()<permit.deadlineElapsed
+                        &&!actionWorkPending()&&!nativeCancellationWorkPending()&&activeObservation==null
+                        &&activeNativeSearchObservation==null&&!observationReadWorkPending()&&!capturePending,
+                        "calendar action requires the same idle owned action lane");
+                PhoneObservation expected=permit.observationForAction(HeptaAccessibilityService.this,controller);
+                permit.requireActionCurrent(HeptaAccessibilityService.this,controller);
+                calendarFreshRequire(expected==current&&currentGraph!=null&&expected.capture==null
+                        &&ObservationCaptureEvidence.PIXELS.equals(expected.captureKind),"actual fresh calendar pixels are not current");
+                snapshot=currentGraph.copyForAction(null,null);
+                final ActionWork work=new ActionWork(task,expected,permit.modelRunId(),scope,auth,background,ownedCancel,
+                        snapshot,null,queued,permit.deadlineElapsed,null);
+                if(!actionSlot.acquire(work.state))throw new IllegalStateException("calendar action slot is occupied");
+                activeAction=work;lastActionExecution=work.state;snapshot=null;
+                final CalendarInputAttempt input=new CalendarInputAttempt(HeptaAccessibilityService.this,controller,permit,work);
+                try{actionIo.execute(new Runnable(){public void run(){runNativeCalendarDate(controller,permit,input,work,callback);}});}
+                catch(java.util.concurrent.RejectedExecutionException refused){
+                    work.state.retire("queue_rejected");work.graph.close();work.state.drained();
+                    if(activeAction==work)activeAction=null;actionSlot.release(work.state);input.workerDrained();
+                    work.state.publish(ownedCancel.isCancelled(),work.currentLease()&&lastActionExecution==work.state);
+                    permit.retireInputTracking();
+                    callback.onResult(new CalendarActionResult(permit,input,null,new ActionOutcome(false,false,false,
+                            "日期动作队列没有接受请求；一次名额不恢复").withActionExecution(actionDiagnosticEvidence(work)),
+                            SystemClock.elapsedRealtime(),work.state.evidence()));
+                }catch(RuntimeException uncertainSubmission){
+                    // Same original queue rule: unknown submission is not physical drain.
+                    work.state.retire("controller_abandoned");
+                }
+            }catch(Exception refused){
+                if(snapshot!=null)snapshot.close();permit.close();
+                failureCallback.onResult(new CalendarActionResult(permit,null,null,new ActionOutcome(false,false,
+                        refused instanceof StaleObservation,message(refused)),SystemClock.elapsedRealtime(),null));
+            }
+        }});
+        if(!posted){permit.close();callback.onResult(new CalendarActionResult(permit,null,null,
+                new ActionOutcome(false,false,false,"日期动作主线程未接受请求"),SystemClock.elapsedRealtime(),null));}
+    }
+    private void requireCalendarInputGraph(ActionWork work,NativeAppSession.CalendarPermit permit)throws Exception{
+        work.phase("graph_read");permit.requireForAction(permit.session(),work.background);
+        Graph actual=readGraph(work.budget(),work.background);
+        try{
+            work.check();calendarFreshRequire(actual!=null&&!actual.truncated&&!work.graph.truncated
+                    &&work.graph.sameWindowAndTree(actual)&&frameKey(work.graph).equals(frameKey(actual))
+                    &&actual.windowId==work.expected.windowId&&actual.displayId==permit.session().displayId
+                    &&actual.rotation==work.expected.rotation,
+                    "calendar complete graph/window changed before its one input");
+            requireSameProfileOwner(work.expected.profileWindow,actual.profileWindow);
+            requireScopeObservation(work.state.taskId,work.expected);
+            requireAuthorizationObservation(work.state.taskId,work.authorization,work.expected);
+            requireBackgroundObservation(work.state.taskId,work.expected);
+            permit.requireActionCurrent(this,ownedController);
+        }finally{if(actual!=null)actual.close();}
+        work.check();
+    }
+    private void runNativeCalendarDate(final LocalTaskController controller,final NativeAppSession.CalendarPermit permit,
+            final CalendarInputAttempt input,final ActionWork work,final CalendarActionCallback callback){
+        ActionOutcome result;BackgroundSession.CalendarDateInputReceipt receipt=null;
+        try{
+            work.phase("worker_started");work.check();input.prepare();
+            requireCalendarInputGraph(work,permit);permit.requireInputOriginal(input);
+            // This original fence performs the actual live-profile and policy checks before effect entry.
+            enterActionEffect(work);input.requirePermitProducer(permit,true);
+            receipt=work.background.performCalendarDate(input,work.cancel);
+            calendarFreshRequire(receipt!=null&&receipt.belongsTo(work.background,input),"actual same-attempt platform receipt missing");
+            actionEffectReturned(work,Boolean.TRUE);work.check();
+            result=new ActionOutcome(true,true,false,"日期选择输入已由平台确认；必须重新观察表单，尚未证明目标日期");
+        }catch(Exception refused){
+            result=new ActionOutcome(false,work.state.effectEntered(),refused instanceof StaleObservation,
+                    "日期选择未完整确认；不重放："+message(refused));
+            if(work.state.effectEntered())try{actionEffectReturned(work,null);}catch(IllegalStateException alreadyReturned){}
+        }finally{
+            work.graph.close();work.logMarker(work.state.drained());
+            if(activeAction==work)activeAction=null;actionSlot.release(work.state);input.workerDrained();
+            permit.retireInputTracking();
+        }
+        final ActionOutcome computed=result;final BackgroundSession.CalendarDateInputReceipt actualReceipt=receipt;
+        main.post(new Runnable(){public void run(){
+            boolean currentLease=work.currentLease()&&lastActionExecution==work.state,stopped=work.cancel.isCancelled();
+            boolean allowed=work.state.publish(stopped,currentLease);
+            ActionOutcome delivered=allowed?computed:new ActionOutcome(false,computed.dispatched,false,
+                    "日期输入回执到达时任务已退休；保留真实输入事实，不重放");
+            delivered=delivered.withScope(callbackScopeEvidence(work.state.taskId,work.scope,currentLease,stopped))
+                    .withAuthorization(callbackAuthorizationEvidence(work.authorization,currentLease,stopped))
+                    .withBackground(work.background.evidence()).withActionExecution(actionDiagnosticEvidence(work));
+            callback.onResult(new CalendarActionResult(permit,input,actualReceipt,delivered,SystemClock.elapsedRealtime(),work.state.evidence()));
+        }});
+    }
+    /** Actual current post-effect Phone plus private persisted source record. */
+    static final class CalendarSelectionObservation {
+        private final HeptaAccessibilityService issuer;private final LocalTaskController controller;
+        private final NativeAppSession.CalendarPermit permit;private final PhoneObservation observed;
+        final CalendarActionResult result;final NativeAppEvidence.Frame frame;
+        private final File record;private final String recordSha;
+        private CalendarSelectionObservation(HeptaAccessibilityService issuer,LocalTaskController controller,
+                NativeAppSession.CalendarPermit permit,CalendarActionResult result,PhoneObservation observed,
+                NativeAppEvidence.Frame frame,File record,String sha){
+            this.issuer=issuer;this.controller=controller;this.permit=permit;this.result=result;this.observed=observed;
+            this.frame=frame;this.record=record;recordSha=sha;
+        }
+        void requireBound(NativeAppSession.CalendarPermit actual)throws Exception{
+            calendarFreshRequire(actual==permit,"same original calendar permit required");
+            issuer.requireCalendarSelectionCurrent(controller,permit,result,observed);
+            MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(record,2*1024*1024,true);
+            calendarFreshRequire(recordSha.equals(MobiMindContract.sha(read.bytes)),"calendar FORM record changed");
+            read.unchangedPath();issuer.requireCalendarSelectionCurrent(controller,permit,result,observed);
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> e=new java.util.LinkedHashMap<String,Object>();e.put("schema","hepta.native-calendar-form-publication.v1");
+            e.put("frame",frame.evidence());e.put("source_record_sha256",recordSha);e.put("record",record.getName());
+            e.put("private_actual_service_producer",true);e.put("date_selection_verified",false);
+            return NativeAppEvidence.immutableMap(e);
+        }
+    }
+    private void requireCalendarSelectionCurrent(LocalTaskController controller,NativeAppSession.CalendarPermit permit,
+            CalendarActionResult result,PhoneObservation observed){
+        controller.requireNativeCalendarActionOwner(permit);
+        permit.requireSelectionPublication(result,SystemClock.elapsedRealtime());
+        synchronized(this){
+            calendarFreshRequire(live==this&&ownedController==controller&&ownsAuthorization(permit.session().taskId,permit.session().authorization)
+                    &&ownsBackground(permit.session().taskId,permit.background())&&taskWeb==null&&current==observed
+                    &&observed!=null&&currentGraph!=null&&currentBitmap!=null&&!currentBitmap.isRecycled()
+                    &&!actionWorkPending()&&!nativeCancellationWorkPending()&&activeObservation==null
+                    &&activeNativeSearchObservation==null&&!observationReadWorkPending()&&!capturePending,
+                    "actual complete post-effect FORM is not current or an owned lane is pending");
+        }
+        long now=SystemClock.elapsedRealtime();
+        calendarFreshRequire(observed.capture==null&&ObservationCaptureEvidence.PIXELS.equals(observed.captureKind)
+                &&observed.capturedElapsedMillis>result.confirmedElapsed
+                &&now>=observed.capturedElapsedMillis&&now-observed.capturedElapsedMillis<=NativeCalendarDateEnvelope.FRESH_CAPTURE_MS,
+                "post-effect FORM must be a new fresh pixel observation");
+        requireTaskAuthorization(permit.session().taskId,permit.session().authorization);
+        requireScopeObservation(permit.session().taskId,observed);
+        requireAuthorizationObservation(permit.session().taskId,permit.session().authorization,observed);
+        requireBackgroundObservation(permit.session().taskId,observed);
+        permit.requireSelectionPublication(result,SystemClock.elapsedRealtime());
+    }
+    CalendarSelectionObservation calendarSelectionObservation(LocalTaskController controller,NativeAppSession.CalendarPermit permit,
+            CalendarActionResult result,PhoneObservation observed,File directory)throws Exception{
+        permit.requireSelectionOriginal(result);requireCalendarSelectionCurrent(controller,permit,result,observed);
+        File expected=new File(new File(getFilesDir(),"control-tasks"),permit.session().taskId).getCanonicalFile();
+        calendarFreshRequire(expected.equals(directory.getCanonicalFile())&&directory.isDirectory(),"same private calendar task directory required");
+        File record=new File(directory,"native-calendar-selection-frame.json");
+        byte[] bytes=observed.toEvidenceJson().toString(2).getBytes(StandardCharsets.UTF_8);
+        calendarFreshRequire(bytes.length<=2*1024*1024&&record.createNewFile(),"new bounded private calendar FORM record required");
+        if(!record.setReadable(false,false)||!record.setWritable(false,false)||!record.setReadable(true,true)||!record.setWritable(true,true))
+            throw new IllegalStateException("calendar FORM record could not be private");
+        try(FileOutputStream out=new FileOutputStream(record)){out.write(bytes);out.getFD().sync();}
+        MobiMindPrivateFiles.Read actual=MobiMindPrivateFiles.read(record,2*1024*1024,true);
+        calendarFreshRequire(java.util.Arrays.equals(bytes,actual.bytes),"calendar FORM source readback differs");actual.unchangedPath();
+        String sha=MobiMindContract.sha(actual.bytes);
+        NotesCompletionEvidence.Frame completion=controller.calendarSelectionCompletionFrame(permit,result,observed);
+        NativeAppEvidence.Frame frame=NativeAppObservation.copy(permit.session().taskId,permit.session().authorization,
+                permit.background(),observed,completion,sha);
+        permit.requireSelectionOriginal(result);requireCalendarSelectionCurrent(controller,permit,result,observed);
+        CalendarSelectionObservation proof=new CalendarSelectionObservation(this,controller,permit,result,observed,frame,record,sha);
+        proof.requireBound(permit);return proof;
     }
 
     public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,

@@ -40,12 +40,13 @@ def generate(source,out,h):
       'observation':h.section(service,'    /** Each observation owns','    synchronized void bindQualificationScope('),
       'complete_native':h.body(service,'    private static boolean completeNativeObservationGraph(Graph graph){'),
       'collection_stats':h.body(phone,'    public static final class CollectionStats {')}
+    compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts)
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    for name,value in parts.items():
+    for name,value in compiled_parts.items():
         if name not in ('complete_native','collection_stats'):template=replace(template,'{{'+name+'}}',value)
     original_main=h.body(template,'    public static void main(String[] args)throws Exception{')
     template=replace(template,original_main,parts['complete_native']+'\n'+(source/TEST/'EventPipelineCases.fragment').read_text())
-    # Explicit IO carriers only. Production bodies above are never rewritten.
+    # Explicit IO carriers; original observer methods and both calendar type hooks remain unchanged.
     template=replace(template,'import java.util.*;','import java.util.*;\nimport org.json.JSONArray;\nimport org.json.JSONException;')
     template=replace(template,'        final Object state=new Object(),windowMetadata=new Object(),rows=new Object(),collectionStats=new Object();',
         '        ObservationState state;ObservedWindowMetadata windowMetadata;PhoneObservation.CollectionStats collectionStats;\n'
@@ -89,7 +90,9 @@ def generate(source,out,h):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     h.write(out/'ObserverPipelineHost.java',template)
-    return {'schema':'hepta.native-observation-events-extraction.v1','bodies_verbatim':True,
+    return {'schema':'hepta.native-observation-events-extraction.v1',
+        'bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
+        'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
         'methods':{n:{'bytes':len(s.encode()),'sha256':h.sha(s.encode())} for n,s in parts.items()},
         'original_pipeline_main_unchanged_in_source':True,'action_copies_do_not_carry_native_observation_completeness':True,
         'default_whole_graph_action_refusal_retained':True,'production_collector_hook':call,

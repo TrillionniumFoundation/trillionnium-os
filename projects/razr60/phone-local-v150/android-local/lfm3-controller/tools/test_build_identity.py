@@ -11,6 +11,8 @@ class BuildIdentityTests(unittest.TestCase):
                      "tools/verify_runtime.py", "tools/fetch_pinned_runtime.py", "tools/model_profiles.py", "tools/verify_mobimind_runtime.py", "tools/verify_ui_venus_runtime.py",
                      "tools/verify_vlm_runtime.py", "tools/build_vlm_worker.py",
                      "provenance/mobimind-worker-r4-build.json", "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json",
+                     "compile-only/window-infos/android/view/InputWindowHandle.java",
+                     "compile-only/window-infos/android/window/WindowInfosListener.java",
                      "src/example/Controller.java", "native/publish-appuid.inc", "native/worker.c", "res/values/strings.xml"):
             path = root/name
             path.parent.mkdir(parents=True, exist_ok=True)

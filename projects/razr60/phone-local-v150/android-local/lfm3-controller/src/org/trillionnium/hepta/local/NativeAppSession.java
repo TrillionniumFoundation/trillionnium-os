@@ -63,6 +63,646 @@ final class NativeAppSession {
     private int searchNavigationOrdinal;
     private String searchNoEffectReceiptSha;
     private long searchNavigationEffectElapsed=-1;
+    // The actual LTC runTask creates one Session; re-observation reuses it.
+    // This field is never reset by close, failed journaling or a new Offer wrapper.
+    private CalendarOffer calendarDateOffer;
+    private CalendarSelectionEvidence calendarSelection;
+
+    /** Controller wake-up only. Implementations must hand control back to the
+     * ordinary task worker; this interface has no observation or input method. */
+    interface CalendarModelSignal {
+        void onModelReady();
+        void onModelFailure(String detail,boolean modelCleanupKnown);
+    }
+    private static final class CalendarModelArrival {
+        final VlmInferenceAdapter.AcceptedRequest accepted;
+        final long receivedElapsed,actionDeadlineElapsed;
+        private CalendarModelArrival(VlmInferenceAdapter.AcceptedRequest accepted,long received,long deadline){
+            this.accepted=accepted;receivedElapsed=received;actionDeadlineElapsed=deadline;
+        }
+    }
+    /** Registered model provenance only. A later fresh producer and the actual
+     * action-slot/input bridge remain necessary; no CalendarPermit exists here. */
+    static final class CalendarModelRequest {
+        private final CalendarOffer offer;
+        private final CalendarModelArrival arrival;
+        private final NativeCalendarDateIntent intent;
+        private final Map<String,Object> registrationAttempt;
+        private boolean freshReadAttempted;
+        private CalendarFreshRead freshRead;
+        final long registeredElapsed;
+        private CalendarModelRequest(CalendarOffer offer,CalendarModelArrival arrival,
+                NativeCalendarDateIntent intent,Map<String,Object> attempted,long registered){
+            this.offer=offer;this.arrival=arrival;this.intent=intent;
+            registrationAttempt=NativeAppEvidence.immutableMap(attempted);registeredElapsed=registered;
+        }
+        String modelRunId(){return arrival.accepted.requestId();}
+        String rawText(){return arrival.accepted.rawText();}
+        Map<String,Object> intentEvidence(){return intent.evidence();}
+        void requireForFreshObservation()throws Exception{
+            synchronized(offer){
+                need(offer.modelRequest==this,"the actually registered original model request is required");
+                offer.session.requireCalendarModelOwner(offer);
+                arrival.accepted.requireBound(offer.inference,offer.source.image,offer.grammar);
+                offer.requireArrivalDeadline(arrival,registeredElapsed);
+            }
+        }
+        /** Reserves the single fresh-read attempt before I/O. No new budget,
+         * model call, observation fallback or failed-read retry is admitted. */
+        CalendarFreshRead beginFreshObservation(BackgroundSession background)throws Exception{
+            synchronized(offer){
+                if(freshReadAttempted){
+                    if(freshRead!=null)freshRead.close();else offer.close();
+                    throw new IllegalStateException("calendar fresh-read attempt already spent");
+                }
+                freshReadAttempted=true;
+                try{
+                    requireForFreshObservation();
+                    need(background!=null&&background.selection==offer.session.selection
+                            &&offer.session.taskId.equals(background.taskId)&&offer.session.generation.equals(background.generation)
+                            &&offer.session.displayId==background.displayId(),"same owned background required");
+                    long begun=offer.requireArrivalDeadline(arrival,registeredElapsed);
+                    Map<String,Object> record=NativeAppEvidence.map();
+                    record.put("schema","hepta.native-calendar-fresh-read-attempt.v1");
+                    record.put("task_id",offer.session.taskId);record.put("model_request",evidence());
+                    record.put("started_elapsed_ms",begun);record.put("original_action_deadline_elapsed_ms",arrival.actionDeadlineElapsed);
+                    record.put("original_task_deadline_elapsed_ms",offer.taskDeadlineElapsed);
+                    record.put("fresh_read_slot_consumed",true);record.put("input_attempted",false);
+                    offer.session.journal.write("native-calendar-fresh-read-attempt.json",NativeAppEvidence.immutableMap(record));
+                    requireForFreshObservation();offer.requireArrivalDeadline(arrival,begun);
+                    CalendarFreshRead read=new CalendarFreshRead(this,background,begun);freshRead=read;
+                    read.requireOriginal(offer.session,background);return read;
+                }catch(Exception refused){offer.close();throw refused;}
+            }
+        }
+        Map<String,Object> evidence(){Map<String,Object> e=NativeAppEvidence.map();
+            e.put("schema","hepta.native-calendar-model-request.v1");
+            e.put("registration_attempt",registrationAttempt);e.put("registered_elapsed_ms",registeredElapsed);
+            e.put("model_run_id",arrival.accepted.requestId());e.put("intent",intent.evidence());
+            e.put("model_received_elapsed_ms",arrival.receivedElapsed);
+            e.put("original_action_deadline_elapsed_ms",arrival.actionDeadlineElapsed);
+            e.put("original_task_deadline_elapsed_ms",offer.taskDeadlineElapsed);
+            e.put("model_receipt_registered",true);e.put("fresh_capture_consumed",false);
+            e.put("calendar_permit_issued",false);e.put("android_dispatch_authority",false);
+            e.put("date_selection_verified",false);return NativeAppEvidence.immutableMap(e);}
+    }
+    /** Sole newly captured observation request, issued on the controller worker.
+     * The ordinary model/Offer budget was already spent. This class has no input
+     * method; the real HA producer must bind its private published-frame proof. */
+    static final class CalendarFreshRead implements AutoCloseable {
+        private final CalendarModelRequest model;
+        final NativeAppSession session;
+        final BackgroundSession background;
+        final NativeAppGoal goal;
+        final LocalRuntimeConfig runtime;
+        final LocalInference.CurrentFrame originalImage;
+        final long startedElapsed,modelReceivedElapsed,deadlineElapsed,taskDeadlineElapsed;
+        private boolean acceptanceAttempted,closed,producerSubmissionConsumed;
+        private HeptaAccessibilityService producerService;
+        private CalendarPermit permit;
+        private CalendarFreshRead(CalendarModelRequest model,BackgroundSession background,long started){
+            this.model=model;this.background=background;session=model.offer.session;goal=session.goal;
+            runtime=model.offer.runtime;originalImage=model.offer.source.image;startedElapsed=started;
+            modelReceivedElapsed=model.arrival.receivedElapsed;deadlineElapsed=model.arrival.actionDeadlineElapsed;
+            taskDeadlineElapsed=model.offer.taskDeadlineElapsed;
+        }
+        /** A private read object may submit only one actual HA observation.
+         * This method only spends a slot; it cannot construct publication proof. */
+        void claimObservationProducer(HeptaAccessibilityService actual){
+            synchronized(model.offer){
+                if(producerSubmissionConsumed){close();throw new IllegalStateException("calendar producer submission already spent");}
+                producerSubmissionConsumed=true;
+                try{
+                    need(!closed&&!model.offer.closed()&&model.freshRead==this&&actual!=null,
+                            "live original calendar read and actual producer required");
+                    producerService=actual;
+                }catch(RuntimeException refused){close();throw refused;}
+            }
+        }
+        boolean producerRetired(HeptaAccessibilityService actual){
+            synchronized(model.offer){return closed||model.offer.closed()||!producerSubmissionConsumed
+                    ||producerService!=actual||model.freshRead!=this;}
+        }
+        void requireProducerIdentity(HeptaAccessibilityService actual){
+            need(!producerRetired(actual),"actual one-use calendar observation producer changed or retired");
+        }
+        void registerInputTracking(HeptaAccessibilityService actual,HeptaAccessibilityService.CalendarFreshObservation proof){
+            synchronized(model.offer){
+                requireProducerIdentity(actual);actual.registerNativeCalendarInputTracking(this,proof);
+            }
+        }
+        void requireInputTrackingRegistration(HeptaAccessibilityService actual){
+            need(Thread.holdsLock(model.offer),"calendar tracker registration requires the original read lock");
+            requireProducerIdentity(actual);
+        }
+        /** Pure publication/currentness fence. Full original-file and installed
+         * checks remain in requireOriginal on the controller worker. */
+        void requirePublicationOwner(NativeAppSession actual,BackgroundSession actualBackground,long now){
+            synchronized(model.offer){
+                CalendarOffer offer=model.offer;session.live();
+                need(!closed&&!offer.closed()&&model.freshRead==this&&offer.modelRequest==model
+                        &&session.calendarDateOffer==offer&&actual==session&&actualBackground==background
+                        &&session.current==offer.originalDomain&&session.current.frame==offer.source.facts
+                        &&session.inFlight==null&&session.pending==null&&session.recoverableStaleAttempt==null
+                        &&session.reservationReobserveId==null&&now>=startedElapsed
+                        &&now<deadlineElapsed&&now<taskDeadlineElapsed,
+                        "original calendar publication owner or deadline is no longer current");
+                session.requireCalendarOwner(session.authorization.frame());
+                requireCalendarRuntime(offer.inference,offer.runtime);
+            }
+        }
+        void requireOriginal(NativeAppSession actual,BackgroundSession actualBackground)throws Exception{
+            synchronized(model.offer){
+                need(!closed&&model.freshRead==this&&actual==session&&actualBackground==background,
+                        "the same private fresh-read request and owned background are required");
+                model.requireForFreshObservation();
+                need(background!=null&&background.selection==session.selection
+                        &&session.taskId.equals(background.taskId)&&session.generation.equals(background.generation)
+                        &&session.displayId==background.displayId()&&background.profileTarget()!=null
+                        &&session.installed.profileTarget.same(background.profileTarget()),
+                        "calendar fresh read cannot migrate to another selection, lease or profile");
+                background.requireActive();model.offer.requireArrivalDeadline(model.arrival,startedElapsed);
+            }
+        }
+        /** Worker only. The named HA type has a private production constructor;
+         * it is deliberately not supplied by a map, callback boolean or test port.
+         * This proposal cannot be applied until that real producer is reviewed. */
+        CalendarPermit acceptFreshObservation(HeptaAccessibilityService.CalendarFreshObservation actual)throws Exception{
+            synchronized(model.offer){
+                if(acceptanceAttempted){close();throw new IllegalStateException("calendar fresh publication already consumed");}
+                acceptanceAttempted=true;
+                try{
+                    requireOriginal(session,background);need(actual!=null,"actual fresh publication proof required");
+                    actual.requireBound(this);
+                    NativeCalendarDateEnvelope fresh=actual.readEnvelope(this);
+                    session.requireFrame(fresh.facts);
+                    NativeCalendarDateProtocol.Consumption consumed=model.offer.protocol.consumeFresh(fresh,model.offer.clock);
+                    Map<String,Object> record=NativeAppEvidence.map();
+                    record.put("schema","hepta.native-calendar-permit-attempt.v1");
+                    record.put("task_id",session.taskId);record.put("original_model_request",model.evidence());
+                    record.put("fresh_read",evidence());record.put("actual_publication",actual.evidence());
+                    record.put("protocol_consumption",consumed.evidence());
+                    record.put("permit_attempt_consumed",true);record.put("action_slot_acquired",false);
+                    record.put("input_attempted",false);record.put("date_selection_verified",false);
+                    session.journal.write("native-calendar-permit-attempt.json",NativeAppEvidence.immutableMap(record));
+                    // Keep the original private model proof, old pixel provenance
+                    // and a separate current fresh producer check after all I/O.
+                    requireOriginal(session,background);actual.requireBound(this);
+                    fresh.requireUnchangedOriginal();
+                    long sealed=model.offer.requireArrivalDeadline(model.arrival,consumed.consumedElapsed);
+                    requireFreshAt(fresh,sealed);
+                    CalendarPermit result=new CalendarPermit(this,actual,consumed,record,sealed);
+                    permit=result;return result;
+                }catch(Exception refused){close();throw refused;}
+            }
+        }
+        private static void requireFreshAt(NativeCalendarDateEnvelope fresh,long now){
+            need(now>=fresh.facts.capturedElapsedMs
+                    &&now-fresh.facts.capturedElapsedMs<=NativeCalendarDateEnvelope.FRESH_CAPTURE_MS,
+                    "fresh calendar capture expired before permit publication");
+            fresh.facts.profileWindow.requireMatches(fresh.profile,fresh.facts.generation,fresh.facts.displayId,
+                    fresh.facts.windowId,fresh.facts.profileWindow.taskId,now);
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> e=NativeAppEvidence.map();e.put("schema","hepta.native-calendar-fresh-read.v1");
+            e.put("task_id",session.taskId);e.put("model_run_id",model.arrival.accepted.requestId());
+            e.put("fresh_read_started_elapsed_ms",startedElapsed);e.put("model_received_elapsed_ms",modelReceivedElapsed);
+            e.put("original_action_deadline_elapsed_ms",deadlineElapsed);e.put("original_task_deadline_elapsed_ms",taskDeadlineElapsed);
+            e.put("same_private_background_object",true);e.put("fresh_read_attempts",1);
+            e.put("grants_android_dispatch",false);return NativeAppEvidence.immutableMap(e);
+        }
+        @Override public void close(){synchronized(model.offer){
+            closed=true;model.offer.close();
+            if(producerService!=null)producerService.retireNativeCalendarInputTracking(this);
+        }}
+    }
+    /** Private model/fresh-publication capability. Its single action producer,
+     * durable input claim and post-effect read are separate, non-renewable slots. */
+    static final class CalendarPermit implements AutoCloseable {
+        private final CalendarFreshRead read;
+        private final HeptaAccessibilityService.CalendarFreshObservation publication;
+        private final NativeCalendarDateProtocol.Consumption consumption;
+        private final Map<String,Object> attempt;
+        private HeptaAccessibilityService actionProducer;
+        private HeptaAccessibilityService.CalendarInputAttempt inputAttempt;
+        private boolean actionProducerConsumed,inputConsumed,selectionReadConsumed,selectionConsumed;
+        private Map<String,Object> inputRecord;
+        private String inputRecordSha,permitRecordSha;
+        final long sealedElapsed,deadlineElapsed;
+        private CalendarPermit(CalendarFreshRead read,HeptaAccessibilityService.CalendarFreshObservation publication,
+                NativeCalendarDateProtocol.Consumption consumption,Map<String,Object> attempt,long sealed){
+            this.read=read;this.publication=publication;this.consumption=consumption;
+            this.attempt=NativeAppEvidence.immutableMap(attempt);sealedElapsed=sealed;deadlineElapsed=read.deadlineElapsed;
+        }
+        NativeAppSession session(){return read.session;}
+        BackgroundSession background(){return read.background;}
+        long taskDeadlineElapsed(){return read.taskDeadlineElapsed;}
+        String modelRunId(){return read.model.arrival.accepted.requestId();}
+        NativeCalendarDateIntent intent(){return read.model.intent;}
+        NativeCalendarDateEnvelope fresh(){return consumption.fresh;}
+        PhoneObservation observationFor(LocalTaskController controller)throws Exception{
+            return publication.observationFor(controller,read);
+        }
+        boolean actionRetired(){synchronized(read.model.offer){return read.closed||read.model.offer.closed();}}
+        PhoneObservation observationForAction(HeptaAccessibilityService actual,LocalTaskController controller){
+            return publication.observationForAction(actual,controller,read);
+        }
+        void requireActionCurrent(HeptaAccessibilityService actual,LocalTaskController controller){
+            publication.requireActionCurrentPure(actual,controller,read);
+        }
+        void retireInputTracking(){publication.retireInputTracking();}
+
+        void claimActionProducer(HeptaAccessibilityService actual,LocalTaskController controller){
+            synchronized(read.model.offer){
+                if(actionProducerConsumed){close();throw new IllegalStateException("calendar action producer already consumed");}
+                actionProducerConsumed=true;actionProducer=actual;
+                try{
+                    read.requireProducerIdentity(actual);
+                    publication.requireActionIssuer(actual,controller,read);
+                    requirePureOwner(actual,read.model.offer.clock.elapsedRealtime());
+                }catch(RuntimeException refused){close();throw refused;}
+            }
+        }
+        private void requirePureOwner(HeptaAccessibilityService actual,long now){
+            need(actionProducerConsumed&&actionProducer==actual&&read.permit==this,
+                    "same one-use actual calendar action producer required");
+            read.requireProducerIdentity(actual);read.requirePublicationOwner(read.session,read.background,now);
+            need(now>=sealedElapsed&&now<deadlineElapsed&&now<read.taskDeadlineElapsed,
+                    "original calendar action/task deadline expired");
+        }
+        void requireInputPure(HeptaAccessibilityService actual,HeptaAccessibilityService.CalendarInputAttempt own,long now){
+            synchronized(read.model.offer){
+                requirePureOwner(actual,now);
+                need(inputConsumed&&inputAttempt==own&&inputRecord!=null&&NativeAppEvidence.sha(inputRecordSha)
+                        &&NativeAppEvidence.sha(permitRecordSha)&&!selectionReadConsumed,
+                        "same durable one-use input claim is required");
+                CalendarFreshRead.requireFreshAt(consumption.fresh,now);
+            }
+        }
+        void requireForAction(NativeAppSession session,BackgroundSession background)throws Exception{
+            synchronized(read.model.offer){
+                need(read.permit==this,"the original private calendar permit is required");
+                read.requireOriginal(session,background);publication.requireBound(read);
+                consumption.fresh.requireUnchangedOriginal();
+                long now=read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed);
+                CalendarFreshRead.requireFreshAt(consumption.fresh,now);
+            }
+        }
+        /** Runs on the original action worker. The HA object below can only be
+         * privately constructed for its actual shared-slot ActionWork. */
+        Map<String,Object> consumeInput(HeptaAccessibilityService.CalendarInputAttempt actual)throws Exception{
+            synchronized(read.model.offer){
+                if(inputConsumed){close();throw new IllegalStateException("calendar input claim already consumed");}
+                inputConsumed=true;inputAttempt=actual;
+                try{
+                    need(actual!=null,"private actual calendar input attempt required");actual.requirePermitProducer(this,false);
+                    requireForAction(read.session,read.background);
+                    permitRecordSha=readRecord("native-calendar-permit-attempt.json",attempt);
+                    Map<String,Object> record=NativeAppEvidence.map();
+                    record.put("schema","hepta.native-calendar-input-attempt.v1");record.put("task_id",read.session.taskId);
+                    record.put("model_run_id",modelRunId());record.put("goal_sha256",read.goal.contractSha256);
+                    record.put("date",read.goal.departureDate.toString());record.put("permit_sha256",permitRecordSha);
+                    record.put("fresh_observation",consumption.fresh.facts.evidence());record.put("intent",intent().evidence());
+                    record.put("actual_action_execution",actual.executionBeforeInput());
+                    record.put("claim_requested_elapsed_ms",read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed));
+                    record.put("original_action_deadline_elapsed_ms",deadlineElapsed);record.put("original_task_deadline_elapsed_ms",read.taskDeadlineElapsed);
+                    record.put("permit_consumed",true);record.put("input_attempted",false);record.put("replay_allowed",false);
+                    record.put("model_grounding_is_date_proof",false);record.put("date_selection_verified",false);
+                    inputRecord=NativeAppEvidence.immutableMap(record);
+                    read.session.journal.write("native-calendar-input-attempt.json",inputRecord);
+                    inputRecordSha=readRecord("native-calendar-input-attempt.json",inputRecord);
+                    actual.requirePermitProducer(this,false);requireForAction(read.session,read.background);
+                    long now=read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed);
+                    requireInputPure(actionProducer,actual,now);
+                    return inputValues();
+                }catch(Exception refused){close();throw refused;}
+            }
+        }
+        private String readRecord(String leaf,Map<String,Object> expected)throws Exception{
+            java.io.File path=new java.io.File(consumption.fresh.image.image.getCanonicalFile().getParentFile(),leaf);
+            MobiMindPrivateFiles.Read value=MobiMindPrivateFiles.read(path,2*1024*1024,true);
+            byte[] exact=new org.json.JSONObject(expected).toString(2).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            need(java.util.Arrays.equals(exact,value.bytes),"calendar private journal bytes changed or were not durably written");
+            value.unchangedPath();return MobiMindContract.sha(value.bytes);
+        }
+        void requireInputOriginal(HeptaAccessibilityService.CalendarInputAttempt actual)throws Exception{
+            synchronized(read.model.offer){
+                need(actual==inputAttempt,"same original input attempt required");actual.requirePermitProducer(this,false);
+                requireForAction(read.session,read.background);
+                need(permitRecordSha.equals(readRecord("native-calendar-permit-attempt.json",attempt))
+                        &&inputRecordSha.equals(readRecord("native-calendar-input-attempt.json",inputRecord)),
+                        "calendar permit/input original changed");
+                requireInputPure(actionProducer,actual,read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed));
+            }
+        }
+        private Map<String,Object> inputValues(){
+            NativeAppEvidence.Frame f=consumption.fresh.facts;NativeCalendarDateIntent.Rect r=intent().cell;
+            Map<String,Object> e=NativeAppEvidence.map();e.put("package",f.packageName);e.put("window_id",f.windowId);
+            e.put("task_id",f.profileWindow.taskId);e.put("deadline_elapsed_ms",deadlineElapsed);
+            e.put("owner_task_id",read.session.taskId);e.put("goal_sha256",read.goal.contractSha256);
+            e.put("date",read.goal.departureDate.toString());e.put("observation_id",f.observationId);
+            e.put("screen_sha256",consumption.fresh.pngSha256);e.put("permit_sha256",permitRecordSha);
+            e.put("attempt_record_sha256",inputRecordSha);e.put("display_width",f.width);e.put("display_height",f.height);
+            e.put("display_rotation",f.rotation);e.put("left",r.left);e.put("top",r.top);e.put("right",r.right);e.put("bottom",r.bottom);
+            need(e.size()==18,"closed calendar input field set differs");return NativeAppEvidence.immutableMap(e);
+        }
+        void claimSelectionRead(HeptaAccessibilityService.CalendarActionResult actual)throws Exception{
+            synchronized(read.model.offer){
+                if(selectionReadConsumed){close();throw new IllegalStateException("calendar selection read already consumed");}
+                selectionReadConsumed=true;
+                try{requireSelectionOriginal(actual);}
+                catch(Exception refused){close();throw refused;}
+            }
+        }
+        void requireSelectionOwner(HeptaAccessibilityService.CalendarActionResult actual,long now){
+            synchronized(read.model.offer){
+                requirePureOwner(actionProducer,now);
+                need(selectionReadConsumed&&!selectionConsumed&&inputConsumed&&inputAttempt!=null&&actual!=null,
+                        "one original post-effect calendar selection read required");
+                actual.requireSuccessfulOriginal(this,inputAttempt);
+            }
+        }
+        /** Post-effect provenance is historical. It re-reads the exact old files,
+         * but never asks an old fresh Phone to still be the current publication.
+         * Currentness belongs exclusively to the independently new FORM producer. */
+        void requireSelectionOriginal(HeptaAccessibilityService.CalendarActionResult actual)throws Exception{
+            synchronized(read.model.offer){
+                requireSelectionOwner(actual,read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed));
+                read.model.offer.session.requireCalendarModelOwner(read.model.offer);
+                read.model.arrival.accepted.requireBound(read.model.offer.inference,read.model.offer.source.image,read.model.offer.grammar);
+                need(permitRecordSha.equals(readRecord("native-calendar-permit-attempt.json",attempt))
+                        &&inputRecordSha.equals(readRecord("native-calendar-input-attempt.json",inputRecord)),
+                        "calendar original journals changed after input");
+                MobiMindPrivateFiles.Read png=MobiMindPrivateFiles.read(consumption.fresh.image.image,8*1024*1024,true);
+                need(consumption.fresh.pngSha256.equals(MobiMindContract.sha(png.bytes)),"original fresh PNG changed after input");
+                png.unchangedPath();publication.requireRecordedOriginal(read);
+                requireSelectionOwner(actual,read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed));
+            }
+        }
+        CalendarSelectionEvidence acceptSelection(HeptaAccessibilityService.CalendarSelectionObservation actual)throws Exception{
+            synchronized(read.model.offer){
+                need(!selectionConsumed,"calendar selection evidence already consumed");selectionConsumed=true;
+                try{
+                    need(actual!=null&&selectionReadConsumed,"actual private new FORM publication required");
+                    // Reserve before any I/O, while still permitting this single original verifier.
+                    actual.requireBound(this);requireSelectionOriginalForAcceptance(actual.result);
+                    NativeAppEvidence.Frame after=actual.frame;
+                    Map<String,Object> assessment=read.model.offer.protocol.assessForm(consumption,after,read.model.offer.clock.elapsedRealtime());
+                    need(Boolean.TRUE.equals(assessment.get("target_month_day_and_route_passengers_match")),
+                            "actual new FORM does not confirm the requested month/day, route and passengers");
+                    need(after.capturedElapsedMs>actual.result.confirmedElapsed,
+                            "FORM must be captured after the one confirmed calendar input pair");
+                    Map<String,Object> e=NativeAppEvidence.map();e.put("schema","hepta.native-calendar-selection-evidence.v1");
+                    e.put("task_id",read.session.taskId);e.put("requested_date",read.goal.departureDate.toString());
+                    e.put("original_calendar_inspection",read.model.offer.originalCalendarInspection);
+                    e.put("year_observed_in_calendar",read.model.offer.source.observedMonth.getYear());
+                    e.put("year_independently_observed_in_form",false);e.put("fresh_form_assessment",assessment);
+                    e.put("actual_calendar_action",actual.result.evidence());e.put("actual_form_publication",actual.evidence());
+                    e.put("single_effect_causal_chain",true);e.put("model_grounding_is_date_proof",false);
+                    e.put("date_selection_verified",true);e.put("query_executed",false);e.put("business_verified",false);
+                    e.put("selection_verified_elapsed_ms",read.model.offer.requireArrivalDeadline(read.model.arrival,after.capturedElapsedMs));
+                    Map<String,Object> sealed=NativeAppEvidence.immutableMap(e);
+                    read.session.journal.write("native-calendar-selection-evidence.json",sealed);
+                    String sha=readRecord("native-calendar-selection-evidence.json",sealed);
+                    actual.requireBound(this);requireSelectionOriginalForAcceptance(actual.result);
+                    long now=read.model.offer.requireArrivalDeadline(read.model.arrival,after.capturedElapsedMs);
+                    need(now>=after.capturedElapsedMs&&now-after.capturedElapsedMs<=NativeCalendarDateEnvelope.FRESH_CAPTURE_MS,
+                            "new FORM expired during selection persistence");
+                    CalendarSelectionEvidence proof=new CalendarSelectionEvidence(read.session,this,after,sealed,sha);
+                    read.session.calendarYearProof=sealed;read.session.confirmedFormDate=read.goal.departureDate;
+                    read.session.calendarProposedDate=null;read.session.calendarInspection=null;
+                    read.session.observed(after);
+                    read.session.transitions.add(sealed);read.session.calendarSelection=proof;close();return proof;
+                }catch(Exception refused){read.session.invalidate("calendar_selection_not_verified");close();throw refused;}
+            }
+        }
+        private void requireSelectionOriginalForAcceptance(HeptaAccessibilityService.CalendarActionResult actual)throws Exception{
+            // The single reserved verification is allowed; no second reader/consumer can enter.
+            need(selectionConsumed,"selection verification was not reserved");
+            actual.requireSuccessfulOriginal(this,inputAttempt);
+            read.model.offer.session.requireCalendarModelOwner(read.model.offer);
+            read.model.arrival.accepted.requireBound(read.model.offer.inference,read.model.offer.source.image,read.model.offer.grammar);
+            need(permitRecordSha.equals(readRecord("native-calendar-permit-attempt.json",attempt))
+                    &&inputRecordSha.equals(readRecord("native-calendar-input-attempt.json",inputRecord)),
+                    "calendar originals changed during selection verification");
+            publication.requireRecordedOriginal(read);
+            read.model.offer.requireArrivalDeadline(read.model.arrival,sealedElapsed);
+        }
+        void requireSelectionPublication(HeptaAccessibilityService.CalendarActionResult actual,long now){
+            synchronized(read.model.offer){
+                requirePureOwner(actionProducer,now);need(selectionReadConsumed&&inputAttempt!=null,
+                        "original selection read required");actual.requireSuccessfulOriginal(this,inputAttempt);
+            }
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> e=NativeAppEvidence.map();e.put("schema","hepta.native-calendar-permit.v1");
+            e.put("attempt",attempt);e.put("sealed_elapsed_ms",sealedElapsed);
+            e.put("original_action_deadline_elapsed_ms",deadlineElapsed);e.put("original_task_deadline_elapsed_ms",read.taskDeadlineElapsed);
+            e.put("private_model_and_fresh_capture_bound",true);e.put("calendar_dispatch_claim_issued",inputConsumed&&inputRecordSha!=null);
+            e.put("grants_android_dispatch",false);e.put("input_attempted",false);e.put("date_selection_verified",false);
+            return NativeAppEvidence.immutableMap(e);
+        }
+        @Override public void close(){publication.retireInputTracking();read.close();}
+    }
+    /** Calendar date only. It is neither a query result nor a business success claim. */
+    static final class CalendarSelectionEvidence {
+        final NativeAppSession session;final NativeAppEvidence.Frame frame;final String recordSha256;
+        private final CalendarPermit permit;private final Map<String,Object> value;
+        private CalendarSelectionEvidence(NativeAppSession session,CalendarPermit permit,NativeAppEvidence.Frame frame,
+                Map<String,Object> value,String sha){
+            this.session=session;this.permit=permit;this.frame=frame;this.value=value;recordSha256=sha;
+        }
+        Map<String,Object> evidence(){return value;}
+    }
+
+    /** Original model-input Offer; later model registration still grants no input. */
+    static final class CalendarOffer implements AutoCloseable {
+        final NativeAppSession session;
+        final NativeCalendarDateEnvelope source;
+        final NativeCalendarDateProtocol protocol;
+        final LocalInference inference;
+        final LocalRuntimeConfig runtime;
+        final long offeredElapsed,taskDeadlineElapsed;
+        final LocalDate priorObservedFormDate;
+        final Map<String,Object> originalCalendarInspection;
+        private final NativeAppDomain originalDomain;
+        private final NativeCalendarDateProtocol.Clock clock;
+        private DecisionGrammar grammar;
+        private boolean grammarIssued,closed;
+        private boolean callbackIssued,callbackDelivered,modelRegistrationConsumed;
+        private CalendarModelArrival modelArrival;
+        private CalendarModelRequest modelRequest;
+        private CalendarOffer(NativeAppSession session,NativeCalendarDateEnvelope source,
+                LocalInference inference,NativeAppDomain domain,NativeCalendarDateProtocol.Clock clock,long now,long deadline){
+            this.session=session;this.source=source;this.inference=inference;runtime=inference.configuration();
+            originalDomain=domain;this.clock=clock;offeredElapsed=now;taskDeadlineElapsed=deadline;
+            priorObservedFormDate=session.calendarProposedDate;
+            originalCalendarInspection=NativeAppEvidence.immutableMap(session.calendarInspection);
+            protocol=new NativeCalendarDateProtocol(source);
+        }
+        synchronized DecisionGrammar grammar()throws Exception{
+            TaskAuthorization.Frame frame=session.authorization.frame();
+            if(grammar==null)grammar=DecisionGrammar.createNativeCalendarAuthorized(this,frame);
+            else requireForGrammar(frame);
+            return grammar;
+        }
+        void requireForGrammar(TaskAuthorization.Frame frame)throws Exception{
+            session.requireCalendarOffer(this,frame);
+        }
+        synchronized void claimGrammar(TaskAuthorization.Frame frame)throws Exception{
+            requireForGrammar(frame);need(!grammarIssued,"calendar Offer grammar was already minted");grammarIssued=true;
+        }
+        /** The Adapter supplies its opaque proof. Only its receipt and the real
+         * callback-arrival clock are captured here, then a signal is delivered.
+         * No parsing, file write, observation, claim or effect runs in callback. */
+        synchronized VlmInferenceAdapter.AcceptedRequestCallback modelCallback(final CalendarModelSignal signal)throws Exception{
+            requireForGrammar(session.authorization.frame());
+            need(inference instanceof VlmInferenceAdapter&&grammarIssued&&grammar!=null
+                    &&!callbackIssued&&signal!=null,"one actual Adapter callback for the original grammar required");
+            callbackIssued=true;
+            return new VlmInferenceAdapter.AcceptedRequestCallback(){
+                public void onSuccess(String raw,String run){onFailure("opaque accepted visual request required",false);}
+                public void onFailure(String detail,boolean cleanup){
+                    synchronized(CalendarOffer.this){callbackDelivered=true;close();}
+                    signal.onModelFailure(detail,cleanup);
+                }
+                public void onAcceptedRequest(VlmInferenceAdapter.AcceptedRequest proof){
+                    try{
+                        synchronized(CalendarOffer.this){
+                            need(!closed&&!callbackDelivered&&proof!=null,"one original calendar callback receipt required");
+                            callbackDelivered=true;long arrived=clock.elapsedRealtime();
+                            need(arrived>=offeredElapsed&&arrived<taskDeadlineElapsed,"original task clock expired at calendar callback");
+                            long end=Math.min(taskDeadlineElapsed,Math.addExact(arrived,NativeCalendarDateProtocol.ACTION_MS));
+                            need(end>arrived,"no original calendar action budget remains");
+                            modelArrival=new CalendarModelArrival(proof,arrived,end);
+                        }
+                        signal.onModelReady();
+                    }catch(Exception refused){
+                        close();signal.onModelFailure("calendar model receipt delivery refused",false);
+                    }
+                }
+            };
+        }
+        /** Called by the ordinary controller worker after callback delivery.
+         * The captured arrival+8s deadline is never restarted at registration. */
+        synchronized CalendarModelRequest registerModelReply()throws Exception{
+            need(!closed&&callbackIssued&&callbackDelivered&&modelArrival!=null&&!modelRegistrationConsumed,
+                    "one delivered private model receipt required");
+            modelRegistrationConsumed=true;
+            try{
+                CalendarModelArrival actual=modelArrival;
+                session.requireCalendarModelOwner(this);requireArrivalDeadline(actual,actual.receivedElapsed);
+                actual.accepted.requireBound(inference,source.image,grammar);
+                need(session.usedRuns.add(actual.accepted.requestId())&&++session.ordinal<=MAX_ACTIONS,
+                        "same model run already consumed or native task action budget exhausted");
+                NativeCalendarDateIntent intent=protocol.propose(actual.accepted.rawText(),actual.accepted.requestId(),
+                        actual.receivedElapsed,actual.actionDeadlineElapsed,taskDeadlineElapsed);
+                long requested=requireArrivalDeadline(actual,actual.receivedElapsed);
+                Map<String,Object> record=NativeAppEvidence.map();
+                record.put("schema","hepta.native-calendar-model-registration-attempt.v1");
+                record.put("task_id",session.taskId);record.put("ordinal",session.ordinal);
+                record.put("original_offer",evidence());record.put("accepted_request",actual.accepted.evidence());
+                record.put("intent",intent.evidence());record.put("model_received_elapsed_ms",actual.receivedElapsed);
+                record.put("original_action_deadline_elapsed_ms",actual.actionDeadlineElapsed);
+                record.put("original_task_deadline_elapsed_ms",taskDeadlineElapsed);
+                record.put("registration_requested_elapsed_ms",requested);
+                record.put("model_slot_consumed",true);record.put("fresh_capture_consumed",false);
+                record.put("calendar_permit_issued",false);record.put("android_dispatch_authority",false);
+                // Existing Journal writes a create-only private task artifact.
+                // Any failure leaves the offer/model slot consumed and closed.
+                session.journal.write("native-calendar-model-registration.json",NativeAppEvidence.immutableMap(record));
+                session.requireCalendarModelOwner(this);
+                actual.accepted.requireBound(inference,source.image,grammar);
+                long completed=requireArrivalDeadline(actual,requested);
+                CalendarModelRequest accepted=new CalendarModelRequest(this,actual,intent,record,completed);
+                modelRequest=accepted;return accepted;
+            }catch(Exception refused){close();throw refused;}
+        }
+        private long requireArrivalDeadline(CalendarModelArrival actual,long lower){
+            long now=clock.elapsedRealtime();need(actual!=null&&now>=actual.receivedElapsed&&now>=lower
+                    &&now<actual.actionDeadlineElapsed&&now<taskDeadlineElapsed,
+                    "original callback/action/task deadline expired or clock moved backwards");return now;
+        }
+        @Override public synchronized void close(){closed=true;protocol.close();}
+        synchronized boolean closed(){return closed;}
+        Map<String,Object> evidence(){Map<String,Object> e=NativeAppEvidence.map();
+            e.put("schema","hepta.native-calendar-session-offer.v1");e.put("task_id",session.taskId);
+            e.put("source",source.evidence());e.put("offered_elapsed_ms",offeredElapsed);
+            e.put("requested_departure_date",session.goal.departureDate.toString());
+            e.put("prior_observed_form_date",priorObservedFormDate.toString());
+            e.put("prior_form_date_source","original_FORM_month_day_plus_observed_calendar_year");
+            e.put("calendar_inspection",originalCalendarInspection);e.put("requested_date_selected",false);
+            e.put("original_task_deadline_elapsed_ms",taskDeadlineElapsed);e.put("grammar_sha256",protocol.grammarSha256);
+            e.put("task_global_single_offer",true);e.put("model_receipt_registered",false);
+            e.put("calendar_permit_issued",false);e.put("android_dispatch_authority",false);
+            return NativeAppEvidence.immutableMap(e);}
+    }
+    CalendarOffer offerCalendarDate(NativeCalendarDateEnvelope source,LocalInference inference,
+            NativeCalendarDateProtocol.Clock clock,long taskDeadlineElapsed)throws Exception{
+        live();verifyInstalled();need(source!=null&&source.goal==goal&&clock!=null&&current!=null
+                &&source.facts==current.frame&&calendarDateOffer==null&&inFlight==null&&pending==null
+                &&recoverableStaleAttempt==null&&reservationReobserveId==null&&calendarInspection!=null
+                &&calendarProposedDate!=null&&source.facts.evidence().equals(calendarInspection.get("after"))
+                &&source.observedMonth.equals(goal.departureDate.withDayOfMonth(1))
+                &&lastQueryProof==null&&queryAttempts.isEmpty()&&dateAttempts.isEmpty()
+                &&installed.profileTarget!=null&&source.profile.same(installed.profileTarget),
+                "one original prequery native calendar Offer required");
+        requireFrame(source.facts);current.requireCalendarDateSource(source);requireCalendarRuntime(inference,null);
+        TaskAuthorization.Frame frame=authorization.frame();requireCalendarOwner(frame);
+        long now=clock.elapsedRealtime();need(now>=source.facts.capturedElapsedMs
+                &&now-source.facts.capturedElapsedMs<=NativeCalendarDateEnvelope.FRESH_CAPTURE_MS
+                &&taskDeadlineElapsed>now,"live original calendar and task deadline required");
+        CalendarOffer offer=new CalendarOffer(this,source,inference,current,clock,now,taskDeadlineElapsed);
+        calendarDateOffer=offer; // Never cleared: an exception cannot create another Offer.
+        try{
+            offer.requireForGrammar(frame);
+            journal.write("native-calendar-date-offer.json",offer.evidence());return offer;
+        }catch(Exception refused){offer.close();throw refused;}
+    }
+    private void requireCalendarOffer(CalendarOffer offer,TaskAuthorization.Frame frame)throws Exception{
+        live();need(offer!=null&&offer.session==this&&calendarDateOffer==offer&&!offer.closed()
+                &&current==offer.originalDomain&&current.frame==offer.source.facts&&inFlight==null&&pending==null,
+                "the exact live original Calendar Offer is required");
+        requireFrame(offer.source.facts);current.requireCalendarDateSource(offer.source);requireCalendarOwner(frame);
+        requireCalendarRuntime(offer.inference,offer.runtime);verifyInstalled();offer.source.requireUnchangedOriginal();
+        long now=offer.clock.elapsedRealtime();need(now>=offer.offeredElapsed&&now<offer.taskDeadlineElapsed
+                &&now>=offer.source.facts.capturedElapsedMs
+                &&now-offer.source.facts.capturedElapsedMs<=NativeCalendarDateEnvelope.FRESH_CAPTURE_MS,
+                "calendar grammar requires the still-fresh source and original task clock");
+    }
+    /** Post-model identity/lifetime validation deliberately does not reuse the
+     * original two-second image-admission rule. It does not claim current pixels.
+     * The later fresh-observation producer must independently supply new pixels. */
+    private void requireCalendarModelOwner(CalendarOffer offer)throws Exception{
+        live();need(offer!=null&&calendarDateOffer==offer&&offer.session==this&&!offer.closed()
+                &&offer.grammarIssued&&offer.grammar!=null&&current==offer.originalDomain
+                &&current.frame==offer.source.facts&&inFlight==null&&pending==null
+                &&recoverableStaleAttempt==null&&reservationReobserveId==null
+                &&calendarInspection!=null&&calendarInspection.equals(offer.originalCalendarInspection)
+                &&calendarProposedDate!=null&&calendarProposedDate.equals(offer.priorObservedFormDate)
+                &&offer.source.goal==goal&&installed.profileTarget!=null&&offer.source.profile.same(installed.profileTarget),
+                "original calendar Session/Selection/Goal/domain/inspection must remain live");
+        requireFrame(offer.source.facts);current.requireCalendarDateSource(offer.source);
+        requireCalendarOwner(authorization.frame());requireCalendarRuntime(offer.inference,offer.runtime);
+        verifyInstalled();offer.source.requireUnchangedOriginal();
+        long now=offer.clock.elapsedRealtime();need(now>=offer.offeredElapsed&&now<offer.taskDeadlineElapsed,
+                "original calendar task lifetime expired");
+    }
+    private void requireCalendarOwner(TaskAuthorization.Frame frame){
+        authorization.authorization.requireExecutionSelection(selection);
+        need(frame!=null&&frame.belongsTo(authorization)&&frame.authorization==authorization.authorization
+                &&taskId.equals(frame.taskId)&&NativeCtripFlightPage.supported(goal)
+                &&goal.toolCeiling.contains("click")&&frame.allows("click"),
+                "calendar intent cannot replace the actual Gate or bypass a click deny");
+    }
+    private static void requireCalendarRuntime(LocalInference inference,LocalRuntimeConfig original){
+        need(inference!=null&&inference.acceptsObservedImage()&&inference.modelOutputDispatchAllowed(),
+                "explicit visual tools adapter required");LocalRuntimeConfig value=inference.configuration();
+        need(value!=null&&(original==null||value==original)&&value.profile==ModelProfile.GUI_OWL_4B
+                &&!value.visualObservationOnly&&"npu".equals(value.compute)&&value.contextTokens==8192&&value.threads==4,
+                "only the same GUI-Owl tools configuration may receive a calendar Offer");
+    }
+
 
 
     NativeAppSession(String task,TaskAuthorization.Gate auth,BackgroundTaskTarget.SelectionBinding selected,
@@ -545,7 +1185,7 @@ final class NativeAppSession {
         if(now>=end){invalidate("actual_native_transition_observation_deadline");live();}
         return Math.min(taskDeadline,end);
     }
-    void requireModelPlanning(){live();need(searchNavigationAttempt==null||searchNavigationObserved,"native search navigation requires a fresh actual input observation before another model decision");need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
+    void requireModelPlanning(){live();need(calendarDateOffer==null||calendarSelection!=null,"calendar one-use model/input/selection chain has not completed");need(searchNavigationAttempt==null||searchNavigationObserved,"native search navigation requires a fresh actual input observation before another model decision");need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
 
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
@@ -728,6 +1368,9 @@ final class NativeAppSession {
     }
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{
         live();verifyInstalled();need(reservationReobserveId==null,"drained stale outcome requires fresh observation before another model action");
+        if(calendarDateOffer!=null&&calendarSelection==null)need(action!=null&&"done".equals(action.action)
+                &&("failure".equals(action.status)||"partial".equals(action.status)),
+                "an unconnected calendar Offer admits only incomplete termination through the legacy route");
         need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
         current.requireCurrent(action);authorization.frame().requireDecision(action);need(++ordinal<=MAX_ACTIONS,"native action budget exhausted");
         if(NativeXiaomiProductPage.HOME_LOADING.equals(current.phase))
@@ -1058,6 +1701,7 @@ final class NativeAppSession {
         e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);
         if(installed.profileTarget!=null)e.put("profile_target",installed.profileTarget.evidence());return e;}
     private void invalidate(String reason){if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
+        if(calendarDateOffer!=null)calendarDateOffer.close();
         invalid=true;invalidReason=reason;acceptedClaim=null;}
 
     static final class SuccessClaim {
@@ -1083,6 +1727,7 @@ final class NativeAppSession {
     }
     void retire()throws Exception{if(retired)return;retired=true;
         if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
+        if(calendarDateOffer!=null)calendarDateOffer.close();
         Map<String,Object> e=base();e.put("action_domain_retired",true);e.put("pending_action",inFlight!=null||pending!=null);
         e.put("invalid",invalid);e.put("invalid_reason",invalidReason);e.put("accepted_completion_candidate",acceptedClaim!=null);
         e.put("progress",progress());journal.write("native-app-retired.json",e);

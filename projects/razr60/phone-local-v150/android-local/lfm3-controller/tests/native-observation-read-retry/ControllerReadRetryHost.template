@@ -26,6 +26,7 @@ final class ControllerReadRetryHost {
     }
     static final class BackgroundSession {
         String generation,ownerSha256;int display=7;Selection selection=new Selection();
+        final long expiresElapsed=-1; // Type-only calendar branch; no calendar lease exists.
         int displayId(){return display;}
         static final class Selection implements BackgroundTaskTarget.SelectionBinding {
             String initialPackage;final BackgroundTaskTarget target;
@@ -33,6 +34,25 @@ final class ControllerReadRetryHost {
             Selection(BackgroundTaskTarget target){this.target=target;initialPackage=target.packageName;}
             public BackgroundTaskTarget executionTarget(){return target;}
         }
+    }
+
+    // The actual new await overload is compiled, but this original retry suite
+    // cannot construct a calendar read, wait, publication or authority.
+    private static final class CalendarReadBoundary {
+        final NativeAppSession session=null;
+        final BackgroundSession background=null;
+        final long deadlineElapsed=-1;
+        private CalendarReadBoundary(){throw new UnsupportedOperationException("No calendar read in legacy retry gate");}
+        void requireOriginal(NativeAppSession owner,BackgroundSession bg){throw new UnsupportedOperationException("No calendar read authority");}
+        void close(){throw new UnsupportedOperationException("No calendar read cleanup port");}
+    }
+    private static final class CalendarFreshWait {
+        final CalendarReadBoundary read=null;
+        final AtomicReference<HeptaAccessibilityService.CalendarFreshObservation> publication=null;
+        private CalendarFreshWait(){throw new UnsupportedOperationException("No calendar wait in legacy retry gate");}
+    }
+    private void requireNativeCalendarFreshOwner(CalendarReadBoundary read){
+        throw new UnsupportedOperationException("No calendar owner in legacy retry gate");
     }
     static final class WebFlightSession {
         interface Observer {PhoneObservation observe()throws Exception;}
@@ -56,10 +76,28 @@ final class ControllerReadRetryHost {
 {{record}}
     }
     static final class HeptaAccessibilityService {
+
+        interface CalendarFreshCallback {
+            void onDiagnostic(Callable<String> snapshot);
+            void onPrivateCensusDiagnostic(Callable<String> snapshot);
+            void onError(String error);
+            void onFresh(CalendarFreshObservation proof);
+        }
+        private static final class CalendarFreshObservation {
+            private CalendarFreshObservation(){throw new UnsupportedOperationException("No calendar publication in legacy retry gate");}
+            PhoneObservation observationFor(ControllerReadRetryHost owner,CalendarReadBoundary read){
+                throw new UnsupportedOperationException("No calendar publication authority");
+            }
+        }
+        void observeNativeCalendarFresh(ControllerReadRetryHost owner,CalendarReadBoundary read,
+                File directory,Cancellation cancellation,long deadline,CalendarFreshCallback callback){
+            throw new UnsupportedOperationException("No calendar observer in legacy retry gate");
+        }
         interface Cancellation {boolean isCancelled();}
         interface ObservationCallback {
             void onObservation(PhoneObservation value);void onError(String error);
             default void onDiagnostic(Callable<String> snapshot){}
+            default void onPrivateCensusDiagnostic(Callable<String> snapshot){throw new UnsupportedOperationException("No calendar diagnostic callback in legacy retry gate");}
             default void onReadRetryAvailable(String error,NativeObservationRetryProof proof){onError(error);}
             default void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){onError(error);}
             default void onPostEffectReadRetryAvailable(String error,PostEffectObservationRetryProof proof){onError(error);}
@@ -394,6 +432,7 @@ final class ControllerReadRetryHost {
 {{await_observation_request}}
 {{await_raw}}
 {{await_raw_request}}
+{{await_raw_calendar}}
     PhoneObservation call(long deadline)throws Exception{return awaitAfterStaleNativeAction(currentTaskId,directory,authorization,deadline,fixture.action,fixture.run,before);}
     static void yes(boolean condition,String reason){IntegrationChecks.yes(condition,reason);}
     static void one(String name,IntegrationChecks.Work body)throws Exception{IntegrationChecks.one(name,body);}

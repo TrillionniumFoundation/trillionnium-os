@@ -19,6 +19,10 @@ def prepare(source, output):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     files, _ = module.prepare(source, output)
+    contract_port = output / "org/trillionnium/hepta/local/MobiMindContract.java"
+    if contract_port in files:
+        if files.count(contract_port) != 1: raise RuntimeError("nonunique legacy contract type port")
+        files.remove(contract_port)  # The full actual MobiMindContract is appended below.
     package = source / "src/org/trillionnium/hepta/local"
     context = output / "android/content/Context.java"
     text = context.read_text().replace("private final java.io.File files;", "public int installedUid=10123;private final java.io.File files;")

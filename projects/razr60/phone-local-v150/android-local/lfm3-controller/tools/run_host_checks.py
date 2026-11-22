@@ -115,6 +115,74 @@ def main():
         report["web_fixture_compiler_copy"]={"source_path":str(web_fixture_source.relative_to(ROOT)),
             "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
             "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True}
+        # Local type-only compiler copies for this legacy pure gate. Actual
+        # calendar producers and capabilities are exercised by separate gates.
+        native_fixture_source=ROOT/"tests/native-app/legacy-boundary/NativeAppSession.java"
+        native_fixture_raw=native_fixture_source.read_bytes()
+        if (compile_sources.count(native_fixture_source)!=1
+                or hashlib.sha256(native_fixture_raw).hexdigest()!="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+                or b"class CalendarOffer" in native_fixture_raw):
+            raise RuntimeError("Exact original refusing NativeAppSession boundary required")
+        calendar_offer_port=b"""
+    /** Type-only calendar grammar shape; no Offer or grammar can be created. */
+    static final class CalendarOffer {
+        final NativeCalendarDateEnvelope source=null;
+        final CalendarGrammar protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame owner)throws Exception{throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarGrammar {
+        final String grammar=null,grammarSha256=null;
+        private CalendarGrammar(){throw unavailable();}
+    }
+"""
+        final_class_end=native_fixture_raw.rfind(b"\n}")
+        if final_class_end<0 or native_fixture_raw[final_class_end:].strip()!=b"}":
+            raise RuntimeError("Exact final NativeAppSession class boundary required")
+        native_fixture_compile_raw=(native_fixture_raw[:final_class_end]
+            +calendar_offer_port+native_fixture_raw[final_class_end:])
+        if native_fixture_compile_raw.replace(calendar_offer_port,b"",1)!=native_fixture_raw:
+            raise RuntimeError("Calendar shape must preserve the original session byte-for-byte")
+        intent_source=source_dir/"NativeCalendarDateIntent.java"
+        intent_original=intent_source.read_bytes()
+        intent_constants=b'    static final String SCHEMA="hepta.native-calendar-select-date.v1",ACTION="calendar.select_date";'
+        if intent_original.splitlines().count(intent_constants)!=1:
+            raise RuntimeError("Actual calendar schema/action constants differ")
+        calendar_ports=out/"calendar-legacy-types";calendar_ports.mkdir()
+        generated_calendar=[
+            (calendar_ports/"NativeAppSession.java",native_fixture_compile_raw),
+            (calendar_ports/"NativeCalendarDateEnvelope.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateEnvelope {
+    final NativeAppEvidence.Frame facts=null;
+    private NativeCalendarDateEnvelope(){throw new UnsupportedOperationException("No calendar envelope in legacy pure gate");}
+}
+"""),
+            (calendar_ports/"NativeCalendarDateIntent.java",b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateIntent {
+"""+intent_constants+b"""
+    private NativeCalendarDateIntent(){throw new UnsupportedOperationException("No calendar intent in legacy pure gate");}
+}
+""")]
+        for generated_path,generated_raw in generated_calendar:
+            with generated_path.open("xb") as stream:stream.write(generated_raw)
+        if any(source_dir/name in compile_sources for name in
+                ("NativeCalendarDateIntent.java","NativeCalendarDateEnvelope.java")):
+            raise RuntimeError("Actual and type-only calendar sources cannot coexist in this gate")
+        compile_sources=[generated_calendar[0][0] if p==native_fixture_source else p for p in compile_sources]
+        compile_sources += [p for p,_ in generated_calendar[1:]]
+        def calendar_ref(path,raw):
+            return {"path":str(path),"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}
+        report["calendar_fixture_compiler_copy"]={
+            "original_session":calendar_ref(native_fixture_source,native_fixture_raw),
+            "constant_source":calendar_ref(intent_source,intent_original),
+            "constant_declaration_sha256":hashlib.sha256(intent_constants).hexdigest(),
+            "inserted_session_shape_sha256":hashlib.sha256(calendar_offer_port).hexdigest(),
+            "original_session_bytes_reversible":True,
+            "generated":[calendar_ref(p,raw) for p,raw in generated_calendar],
+            "constructors_private_and_throwing":True,"calendar_methods_always_throw":True,
+            "model_request_created":False,"calendar_offer_created":False,
+            "calendar_permit_created":False,"calendar_behavior_executed":False}
         run("java-compile",compiler+["--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*compile_sources,*tests])
         if web_fixture_compile.read_bytes()!=web_fixture_raw:
             raise RuntimeError("Web type-boundary compiler copy changed during javac")

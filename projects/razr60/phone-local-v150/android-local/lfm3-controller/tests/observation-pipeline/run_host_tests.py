@@ -22,9 +22,42 @@ parts={'observation_callback':section('    public interface ObservationCallback'
        'background_lock':section('    private boolean locked(BackgroundSession background)', '    private int rotation('),
        'cancellation_pending':section('    boolean nativeCancellationWorkPending()', '    boolean requestNativeCancellation('),
        'observation':section('    /** Each observation owns', '    synchronized void bindQualificationScope(')}
+# The observer-only fixture retains the actual scheduling methods, including
+# both new instanceof hooks. The private calendar producer is covered by its
+# dedicated gates; its local type-only stand-in cannot be constructed or run.
+calendar_start = "    /** One typed read, using the existing observation request/PNG publication."
+calendar_end = "    public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,"
+calendar_actual = section(calendar_start, calendar_end)
+calendar_actual_sha = hashlib.sha256(calendar_actual.encode()).hexdigest()
+if calendar_actual_sha != "d143d3bca16e6f85571c234535aee39a45b91851c77b7cf70dee06adb988fb04":
+    raise RuntimeError("Exact reviewed calendar-only producer block required")
+calendar_port = """    private abstract class CalendarFreshObserver implements ObservationCallback {
+        private CalendarFreshObserver(){throw new UnsupportedOperationException("Calendar producer unavailable in observer-only fixture");}
+        void bind(ObservationRequest request){throw new UnsupportedOperationException("No calendar producer authority");}
+        void requireAdmission(ObservationRequest request){throw new UnsupportedOperationException("No calendar producer authority");}
+    }
+
+"""
+compiled_parts = dict(parts)
+if parts["observation"].count(calendar_actual) != 1:
+    raise RuntimeError("Unique calendar producer within the observation section required")
+compiled_parts["observation"] = parts["observation"].replace(calendar_actual, calendar_port, 1)
+if compiled_parts["observation"].replace(calendar_port, calendar_actual, 1) != parts["observation"]:
+    raise RuntimeError("Original production observation section must remain reversible")
+calendar_boundary = {
+    "schema": "hepta.observer-calendar-legacy-type-boundary.v1",
+    "full_production_observation_sha256": hashlib.sha256(parts["observation"].encode()).hexdigest(),
+    "calendar_only_excluded_bytes": len(calendar_actual.encode()),
+    "calendar_only_excluded_sha256": calendar_actual_sha,
+    "refusing_port_sha256": hashlib.sha256(calendar_port.encode()).hexdigest(),
+    "compiled_observation_sha256": hashlib.sha256(compiled_parts["observation"].encode()).hexdigest(),
+    "actual_observer_scheduling_and_both_calendar_type_hooks_unchanged": True,
+    "private_constructor_and_lifecycle_methods_throw": True,
+    "calendar_callback_created": False, "calendar_producer_executed": False,
+    "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
 template_path=Path(__file__).with_name('ObserverPipelineHost.template')
 template=template_path.read_text()
-for key,value in parts.items():template=template.replace('{{'+key+'}}',value)
+for key,value in compiled_parts.items():template=template.replace('{{'+key+'}}',value)
 if '{{' in template:raise RuntimeError('unfilled fixture')
 fixture=out/'ObserverPipelineHost.java';fixture.write_text(template)
 record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -38,6 +71,7 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'action_state_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ActionExecutionState.java').read_bytes()).hexdigest(),
         'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
         'extracted':{key:hashlib.sha256(value.encode()).hexdigest() for key,value in parts.items()},'phone_operations':False,'android_runtime':False,'native_inference':False,'production_methods_executed':['acquireTask','recoveryControllerIdle','observe','sampleObservation','acceptSample','watchObservation','captureObservation','watchCapture','processScreenshot','acceptScreenshot','failObservation','retryObservation','copyScreenshot'],'boundary':'Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.'}
+record['calendar_legacy_boundary']=calendar_boundary
 compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
 flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
 classes=out/'classes';classes.mkdir()

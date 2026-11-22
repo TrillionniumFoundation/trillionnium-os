@@ -21,6 +21,8 @@ class ScopeBuildIdentityTests(unittest.TestCase):
                      'tools/verify_mobimind_runtime.py','tools/verify_ui_venus_runtime.py',
                      'tools/verify_vlm_runtime.py','tools/build_vlm_worker.py',
                      'provenance/mobimind-worker-r4-build.json','provenance/mobimind-worker-r4/SOURCE-MANIFEST.json',
+                     'compile-only/window-infos/android/view/InputWindowHandle.java',
+                     'compile-only/window-infos/android/window/WindowInfosListener.java',
                      'src/example/QualificationScope.java','src/example/Service.java','native/worker.c','res/values/strings.xml'):
             p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('synthetic '+name)
         (root/'AndroidManifest.xml').write_text('<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="32"><application android:debuggable="false"/></manifest>')

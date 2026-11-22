@@ -61,6 +61,60 @@ def main():
         # Use the fixed real org.json jar in this pure gate. Android IO fakes remain explicit.
         bgfiles=[p for p in bgfiles if not (p.parent.name=="json" and p.parent.parent.name=="org")]
         pure=[source/p for p in query.PURE_PATHS if p!="tests/web-flight/WebFlightQueryHostTest.java"]+bgfiles
+        # Keep this pure gate's complete original refusing Session boundary.
+        # New calendar signatures are local compiler shapes, never capabilities.
+        legacy_session=source/"tests/native-app/legacy-boundary/NativeAppSession.java"
+        legacy_raw=legacy_session.read_bytes()
+        require(legacy_session in pure and sha(legacy_raw)=="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+                and b"class CalendarOffer" not in legacy_raw,"exact original legacy Session boundary required")
+        calendar_shape=b"""
+    static final class CalendarOffer {
+        final NativeCalendarDateEnvelope source=null;
+        final CalendarGrammar protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame owner)throws Exception{throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarGrammar {
+        final String grammar=null,grammarSha256=null;
+        private CalendarGrammar(){throw unavailable();}
+    }
+    static final class CalendarPermit {
+        private CalendarPermit(){throw unavailable();}
+    }
+"""
+        class_end=legacy_raw.rfind(b"\n}")
+        require(class_end>=0 and legacy_raw[class_end:].strip()==b"}","exact final Session class boundary required")
+        compiled_session_raw=legacy_raw[:class_end]+calendar_shape+legacy_raw[class_end:]
+        require(compiled_session_raw.replace(calendar_shape,b"",1)==legacy_raw,"original Session bytes must remain reversible")
+        calendar_session=out/"calendar-pure-types/NativeAppSession.java"
+        calendar_envelope=out/"calendar-pure-types/NativeCalendarDateEnvelope.java"
+        envelope_raw=b"""package org.trillionnium.hepta.local;
+final class NativeCalendarDateEnvelope {
+    final NativeAppEvidence.Frame facts=null;
+    private NativeCalendarDateEnvelope(){throw new UnsupportedOperationException("No calendar envelope in legacy route gate");}
+}
+"""
+        write(calendar_session,compiled_session_raw);write(calendar_envelope,envelope_raw)
+        generated_local=out/"pure-fixture/org/trillionnium/hepta/local"
+        require(generated_local/"NativeAppSession.java" in bgfiles,
+                "fixed generated calendar Session boundary required")
+        require(pkg/"NativeCalendarDateEnvelope.java" not in pure,"actual and type-only calendar envelopes cannot coexist")
+        actual_new_names={p.name for p in pure if source in p.parents
+                          and p.name in ("NativeCalendarDateIntent.java","MobiMindContract.java")}
+        excluded=[p for p in pure if p.parent==generated_local
+                  and (p.name=="NativeAppSession.java" or p.name in actual_new_names)]
+        pure=[calendar_session if p==legacy_session else p for p in pure if p not in excluded]
+        pure.append(calendar_envelope)
+        calendar_boundary={
+            "schema":"hepta.native-routing-calendar-type-boundary.v1",
+            "original_session":{"path":str(legacy_session),"bytes":len(legacy_raw),"sha256":sha(legacy_raw)},
+            "compiled_session":{"path":str(calendar_session),"bytes":len(compiled_session_raw),"sha256":sha(compiled_session_raw)},
+            "generated_envelope":{"path":str(calendar_envelope),"bytes":len(envelope_raw),"sha256":sha(envelope_raw)},
+            "session_extension_sha256":sha(calendar_shape),"original_session_bytes_reversible":True,
+            "excluded_generated_same_name_files":[str(p) for p in excluded],
+            "constructors_private_and_throwing":True,"calendar_operations_always_throw":True,
+            "calendar_offer_created":False,"calendar_permit_created":False,"calendar_runtime_executed":False}
         # Old pure cases cannot construct new planning or Offer authority.
         pure += [pkg/"NativeSearchDecision.java",source/"tests/native-app/legacy-boundary/NativeSearchPlanning.java",
                  source/"tests/native-app/legacy-boundary/NativeSearchSession.java"]
@@ -91,6 +145,7 @@ def main():
                     "web_constructor_prefix":{"source_sha256":sha(web_raw),"bytes":len(prefix.encode()),"sha256":sha(prefix.encode())},
                     "web_methods":[{"signature":s,"sha256":sha(v.encode()),"bytes":len(v.encode())} for s,v in zip(signatures,parts)],
                     "actual_full_background_fixture":bgrecord,
+                    "native_calendar_pure_type_boundary":calendar_boundary,
                     "pure_compile_inputs":[str(p) for p in pure]}
         run("pure-compile",[jdk/"bin/javac","--release","8","-encoding","UTF-8","-proc:none","-Xlint:all,-options","-Werror",
                             "-classpath",jar,"-d",pure_classes,*pure])

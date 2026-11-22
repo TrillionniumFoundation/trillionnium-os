@@ -21,7 +21,7 @@ def main():
         assert raw.count(start)==1 and raw.count(end)==1
         begin=raw.index(start);return raw[begin:raw.index(end,begin)]
     pieces={'locked':section('    private boolean locked(BackgroundSession background) {','    private int rotation(int displayId) {'),
-            'model_admission':section('    void requireExperimentalModelScope(', '    void requireVisualFrameOwnership('),
+            'model_admission':section('    void requireExperimentalModelScope(', '    void requireNativeCalendarSourceOwnership('),
             'final_effect':section('    private void enterActionEffect(ActionWork work){','    private static void actionEffectReturned(')}
     service_fixture=fixture/'org/trillionnium/hepta/local/ServicePolicyFixture.java'
     service_fixture.write_text('''package org.trillionnium.hepta.local;

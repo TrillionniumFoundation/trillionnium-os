@@ -46,6 +46,12 @@ final class NotesCleanupAdapterFixture {
  volatile String state="CLOSING",terminalReason="",bootReadRetirementFailure;long cleanupAt;int displayId=7;String displayName="owned-session";
  final DisplayManager displays=new DisplayManager();ImageReader surfaceReader;HandlerThread displayThread;
  PublicOwnGroupScreenLease publicScreenLease;
+ // This old Notes-only fixture never creates a calendar listener.
+ final WindowInfosCapture calendarWindowCapture=null;
+ static final class WindowInfosCapture {
+  private WindowInfosCapture(){throw new UnsupportedOperationException("No calendar listener in legacy Notes fixture");}
+  boolean locallyDrained(){throw new UnsupportedOperationException("No calendar listener in legacy Notes fixture");}
+ }
  static final class SystemClock {static long elapsedRealtime(){return java.lang.System.nanoTime()/1000000L;}}
  static final class Display {final int id;final String name;Display(int i,String n){id=i;name=n;}String getName(){return name;}}
  static final class DisplayManager {volatile boolean present=true;Display getDisplay(int id){return id==7&&present?new Display(7,"owned-session"):null;}Display[] getDisplays(){return present?new Display[]{new Display(7,"owned-session")}:new Display[0];}}

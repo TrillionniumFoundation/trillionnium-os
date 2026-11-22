@@ -69,6 +69,22 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
+        # The current calendar carrier is reversed only on this proof copy.
+        # The actual provider command below still compiles its untouched current bytes.
+        if sha(legacy_provider_bytes) == "14c341055b75c6b25924327d97da04d343fa6d7a408000ab1a5786d7543169a0":
+            calendar_start = b"\ndef calendar_legacy_closure(source, service_port):\n"
+            assert legacy_provider_bytes.count(calendar_start) == 1
+            calendar_at = legacy_provider_bytes.index(calendar_start)
+            calendar_helper = legacy_provider_bytes[calendar_at:calendar_at + 8310]
+            assert sha(calendar_helper) == "171abb5c88060ec41e423d288e2f3eb427cf610c6804bdc89ff2336e876ed243"
+            assert legacy_provider_bytes.count(calendar_helper) == 1
+            legacy_provider_bytes = legacy_provider_bytes.replace(calendar_helper, b"", 1)
+            calendar_hooks = [b'        calendar_paths,calendar_boundary=calendar_legacy_closure(source,service_port)\n        report["native_calendar_legacy_type_boundary"]=calendar_boundary\n', b'        actual_calendar_files={p.name for p in calendar_paths if source in p.parents}\n        paths=[p for p in paths if not (p.parent==service_port.parent and (p.name in actual_calendar_files or p.name=="NativeAppSession.java"))]\n        paths += calendar_paths\n']
+            for current in calendar_hooks:
+                assert legacy_provider_bytes.count(current) == 1
+                legacy_provider_bytes = legacy_provider_bytes.replace(current, b"", 1)
+            assert sha(legacy_provider_bytes) == "72cfa0936e14eca98c2e15db4caa9bf255d0d98f201c91348e380755e68e09e0"
+            report["retained_provider_calendar_type_additions_exactly_reversible"] = True
         # Exact current sampling type-only inverse on a proof copy; compile the
         # untouched current provider below. Every older pin remains required.
         if sha(legacy_provider_bytes) == "72cfa0936e14eca98c2e15db4caa9bf255d0d98f201c91348e380755e68e09e0":

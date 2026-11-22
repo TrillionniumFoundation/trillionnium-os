@@ -235,12 +235,59 @@ def main():
     if sha(args.template.read_bytes()) != "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4":
         raise ValueError("original pinned GUI-Owl template differs")
     sources = prepare(source, output)
+    # This standalone legacy gate never requests a calendar proof. Keep prepare()
+    # byte-identical for the separate actual-calendar consumers which import it.
+    grammar_port = output / "fixture/org/trillionnium/hepta/local/DecisionGrammar.java"
+    grammar_before = grammar_port.read_text()
+    if sha(grammar_before.encode()) != "0bd4df6eb843f301ac2f6c2236b96c746d2e274601040d37a3efb22380c21d15":
+        raise ValueError("original legacy VLM grammar port differs")
+    marker = "public final class DecisionGrammar {\n"
+    fields = (" public final String schema=null;\n"
+              " public final java.util.List<String> actions=java.util.Collections.emptyList();\n"
+              " public final java.util.List<String> doneStatuses=java.util.Collections.emptyList();\n"
+              " public final boolean successAllowed=false;\n")
+    if grammar_before.count(marker) != 1:
+        raise ValueError("nonunique legacy VLM grammar type")
+    grammar_after = grammar_before.replace(marker, marker + fields)
+    if grammar_after.replace(marker + fields, marker) != grammar_before:
+        raise ValueError("legacy VLM grammar inverse differs")
+    grammar_port.write_text(grammar_after)
+    intent_source = source / "src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java"
+    constants = [line for line in intent_source.read_text().splitlines()
+                 if line.startswith("    static final String SCHEMA=")]
+    expected = '    static final String SCHEMA="hepta.native-calendar-select-date.v1",ACTION="calendar.select_date";'
+    if constants != [expected]:
+        raise ValueError("actual calendar intent constants differ")
+    intent_port = output / "fixture/org/trillionnium/hepta/local/NativeCalendarDateIntent.java"
+    intent_port.write_text("package org.trillionnium.hepta.local;\n"
+                          "final class NativeCalendarDateIntent {\n" + constants[0] + "\n"
+                          " private NativeCalendarDateIntent(){throw new UnsupportedOperationException(\"calendar intent unavailable in legacy VLM gate\");}\n"
+                          "}\n")
+    sources.append(intent_port)
+    extraction_path = output / "EXTRACTION.json"
+    extraction = json.loads(extraction_path.read_text())
+    extraction["standalone_calendar_type_boundary"] = {
+        "prepared_grammar_sha256": sha(grammar_before.encode()),
+        "grammar_inverse_byte_equal": True,
+        "calendar_grammar_schema_is_null": True,
+        "calendar_action_and_done_lists_are_empty": True,
+        "calendar_success_allowed": False,
+        "actual_intent_source_sha256": sha(intent_source.read_bytes()),
+        "actual_constants_copied_verbatim": True,
+        "calendar_intent_constructor_always_throws": True,
+        "calendar_receipt_or_dispatch_authority_produced": False,
+        "shared_prepare_function_changed": False,
+    }
+    for path in (grammar_port, intent_port):
+        extraction["generated_files"][str(path.relative_to(output))] = sha(path.read_bytes())
+    extraction_path.write_text(json.dumps(extraction, indent=2) + "\n")
     before = {str(p): sha(p.read_bytes()) for p in sources}
     input_paths = [Path(__file__).resolve(), args.json_jar.resolve(), args.template.resolve(),
                    source / "src/org/trillionnium/hepta/local/LocalModelEngine.java",
                    source / "src/org/trillionnium/hepta/local/LocalTaskController.java"]
     input_paths += sorted((source / "tests/vlm-adapter").glob("*.java.inc"))
     input_paths += sorted((source / "tests/qualification-scope/fixtures/android/system").glob("*.java"))
+    input_paths.append(intent_source)
     before.update({str(path): sha(path.read_bytes()) for path in input_paths})
     classes = output / "classes"
     classes.mkdir()

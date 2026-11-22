@@ -190,19 +190,50 @@ final class NativeSearchRole {
             if(Boolean.TRUE.equals(node.v.get("visible"))){
                 if(!positive(node.bounds)||!contains(enclosure.bounds,node.bounds))return false;
             }else{
-                // A hidden zero/inverted rectangle has no visible footprint only
-                // if its whole complete subtree has no visible descendant. Keep
-                // original coordinates; never clip/repair/normalize these facts.
+                // Keep raw hidden coordinates. A nonpositive subtree normally
+                // has no visible descendant; the narrow carousel edge proof
+                // below instead accounts for every descendant in the fixed viewport.
                 if(positive(node.bounds)){
                     if(!contains(enclosure.bounds,node.bounds))return false;
                 }else{
+                    boolean visibleDescendant=false;
                     for(NativeActionSnapshotCheck.Node descendant:snapshot.nodes.values())
                         if(!descendant.path.equals(node.path)&&inside(descendant.path,node.path)
-                                &&Boolean.TRUE.equals(descendant.v.get("visible")))return false;
+                                &&Boolean.TRUE.equals(descendant.v.get("visible")))visibleDescendant=true;
+                    if(visibleDescendant&&!boundedEmptyCarouselEdge(snapshot,enclosure,node))return false;
                 }
             }
         }
         return true;
+    }
+    /** Only the authenticated Xiaomi search home's fixed carousel viewport may
+     * bound visible descendants of a horizontally empty hidden edge node. This
+     * proves disjoint observed footprints, never a parent/child clipping rule or
+     * an input target. Raw bounds, visibility and full census values stay exact. */
+    private static boolean boundedEmptyCarouselEdge(NativeActionSnapshotCheck.Snapshot snapshot,
+            NativeActionSnapshotCheck.Node enclosure,NativeActionSnapshotCheck.Node hidden){
+        if(!NativeAppGoal.XIAOMI_PACKAGE.equals(snapshot.env.get("package"))
+                ||!"androidx.recyclerview.widget.RecyclerView".equals(enclosure.cls)
+                ||!"com.xiaomi.shop:id/recycle_view".equals(enclosure.view)
+                ||!Boolean.TRUE.equals(enclosure.v.get("visible"))||!positive(enclosure.bounds)
+                ||!Boolean.TRUE.equals(enclosure.v.get("enabled"))||!Boolean.TRUE.equals(enclosure.v.get("scrollable"))
+                ||!Boolean.FALSE.equals(enclosure.v.get("clickable"))||!Boolean.FALSE.equals(enclosure.v.get("action_click"))
+                ||!Boolean.FALSE.equals(enclosure.v.get("editable"))||!Boolean.FALSE.equals(enclosure.v.get("password"))
+                ||!Boolean.FALSE.equals(hidden.v.get("visible")))return false;
+        List<Integer> viewport=enclosure.bounds,raw=hidden.bounds;
+        if(raw.get(1)>=raw.get(3)||raw.get(1)<viewport.get(1)||raw.get(3)>viewport.get(3))return false;
+        boolean right=raw.get(0)>=viewport.get(2)&&raw.get(2).equals(viewport.get(2));
+        boolean left=raw.get(0).equals(viewport.get(0))&&raw.get(2)<=viewport.get(0);
+        if(!left&&!right)return false;
+        boolean visibleDescendant=false;
+        for(NativeActionSnapshotCheck.Node descendant:snapshot.nodes.values())
+            if(!descendant.path.equals(hidden.path)&&inside(descendant.path,hidden.path)){
+                if(Boolean.TRUE.equals(descendant.v.get("visible"))){
+                    visibleDescendant=true;
+                    if(!positive(descendant.bounds)||!contains(viewport,descendant.bounds))return false;
+                }else if(positive(descendant.bounds)&&!contains(viewport,descendant.bounds))return false;
+            }
+        return visibleDescendant;
     }
     static Map<String,Object> stableEnvelope(NativeActionSnapshotCheck.Snapshot value){
         Map<String,Object> out=new TreeMap<String,Object>(value.env);out.remove("captured_elapsed_ms");out.remove("visited");return out;
@@ -216,3 +247,4 @@ final class NativeSearchRole {
     private static Map<String,Object> immutable(Map<String,Object> value){return NativeAppEvidence.immutableMap(value);}
     private static void need(boolean value,String why){if(!value)throw new IllegalArgumentException("native search role: "+why);}
 }
+

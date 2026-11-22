@@ -161,6 +161,11 @@ def main():
         fixture = out / 'android-io-fixture'
         # Full actual new Session classes need this type, but no new dispatch is run.
         service_port=fixture/'org/trillionnium/hepta/local/HeptaAccessibilityService.java'
+        calendar_closure_path=source/'tests/native-search-planning/host_closure.py'
+        calendar_closure=load(calendar_closure_path,'terminal_calendar_refusing_types')
+        calendar_paths,calendar_boundary=calendar_closure.calendar_legacy_closure(source,service_port)
+        report['native_calendar_legacy_type_boundary']=calendar_boundary
+        report['native_calendar_legacy_helper']=ref(calendar_closure_path)
         service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
         need(files.count(service_port)==1 and service_text.endswith('}')
                 and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text
@@ -223,6 +228,10 @@ def main():
             'tests/public-profile-terminal-bridge/PublicProfileTerminalBridgeHostTest.java')]
         bridge, extraction = extract_bridge(source, out)
         files.append(bridge)
+        actual_calendar_names={p.name for p in calendar_paths if source in p.parents}
+        files=[p for p in files if not (p.parent==service_port.parent
+               and (p.name in actual_calendar_names or p.name=='NativeAppSession.java'))]
+        files += calendar_paths
         files = list(dict.fromkeys(path.resolve() for path in files))
         need(all(path.is_file() for path in files), 'complete actual compile closure required')
         report.update(android_io_projection=projection, controller_bridge=extraction, compile_inputs=[ref(path) for path in files])

@@ -164,8 +164,9 @@ def generate(source,output,h):
             if h.sha(legacy.encode())!=expected:
                 raise RuntimeError('typed AX rejection evidence must reverse to exact legacy file')
         protected_files[name]=actual
+    compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts)
     for name in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
-        template=once(template,'{{'+name+'}}',parts[name])
+        template=once(template,'{{'+name+'}}',compiled_parts[name])
     main=h.body(template,'    public static void main(String[] args)throws Exception{')
     template=once(template,main,BRIDGE)
     template=once(template,'import java.util.*;','import java.util.*;\nimport java.security.NoSuchAlgorithmException;\nimport org.json.JSONArray;\nimport org.json.JSONException;\nimport org.trillionnium.hepta.background.ProfileIdentity;\nimport org.trillionnium.hepta.background.ProfileTarget;\nimport org.trillionnium.hepta.background.WindowOwnership;')
@@ -226,9 +227,12 @@ def generate(source,output,h):
     if '{{' in template:raise RuntimeError('unfilled host fixture')
     for name,raw in parts.items():
         if name=='provider_constants':continue
-        if template.count(raw)!=1:raise RuntimeError('actual production body was altered or duplicated: '+name)
+        compiled_raw=compiled_parts.get(name,raw)
+        if template.count(compiled_raw)!=1:raise RuntimeError('actual production body or explicit calendar type boundary was altered or duplicated: '+name)
     h.write(output/'ObserverPipelineHost.java',template)
-    return {'schema':'hepta.ctrip-form-observer-extraction.v1','production_bodies_verbatim':True,
+    return {'schema':'hepta.ctrip-form-observer-extraction.v1',
+            'production_bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
+            'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
             'parts':{name:{'bytes':len(raw.encode()),'sha256':h.sha(raw.encode())} for name,raw in parts.items()},
             'protected_production_bodies':protected,'protected_files':protected_files,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,

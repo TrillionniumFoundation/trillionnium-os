@@ -63,7 +63,8 @@ def main():
           'await_observation':'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{',
           'await_observation_request':'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline,\n',
           'await_raw':'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{',
-          'await_raw_request':'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n',
+          'await_raw_request':'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n            HeptaAccessibilityService.NativeObservationRetryProof retryProof)throws Exception{',
+          'await_raw_calendar':'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n            HeptaAccessibilityService.NativeObservationRetryProof retryProof,final CalendarFreshWait calendar)throws Exception{',
           'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
         methods['pending_loop_prefix']=extractor.section(controller,'            taskSteps: while(steps<MAX_STEPS){','                // Includes fresh observations after stale/undispatched proposals.')
@@ -75,11 +76,23 @@ def main():
         methods['post_service_proof']=extractor.body(service,'    static final class PostEffectObservationRetryProof {')
         template=(source/TEST/'ControllerReadRetryHost.template').read_text(encoding='utf-8')
         for key,body in methods.items():
-            marker='{{'+key+'}}';need(template.count(marker)==1,'unique marker '+key);template=template.replace(marker,body,1)
+            marker='{{'+key+'}}';need(template.count(marker)==1,'unique marker '+key)
+            compiled_body=body
+            if key=='await_raw_calendar':
+                need(body.count('LocalTaskController.this')==1,'one explicit enclosing Controller reference')
+                compiled_body=body.replace('LocalTaskController.this','ControllerReadRetryHost.this',1)
+                need(compiled_body.replace('ControllerReadRetryHost.this','LocalTaskController.this',1)==body,
+                     'exact enclosing-name-only inverse')
+            template=template.replace(marker,compiled_body,1)
         need('{{' not in template,'all actual methods inserted')
         generated=out/'generated/ControllerReadRetryHost.java';common.write(generated,template)
         paths=list(dict.fromkeys([*paths,generated,source/PKG/'ObservationStabilityGate.java',source/PKG/'ActionExecutionState.java']))
-        extraction={'schema':'hepta.native-observation-controller-retry-extraction.v1','bodies_verbatim':True,
+        extraction={'schema':'hepta.native-observation-controller-retry-extraction.v1','bodies_verbatim':False,
+          'all_bodies_verbatim_except_explicit_enclosing_class_name':True,
+          'enclosing_class_mapping':{'method':'await_raw_calendar','from':'LocalTaskController.this',
+            'to':'ControllerReadRetryHost.this','occurrences':1,'inverse_bytes_equal':True},
+          'calendar_route':{'private_unconstructible_type_only_ports':True,'methods_always_throw':True,
+            'all_original_calls_pass_null':True,'calendar_authority_created':False,'calendar_behavior_executed':False},
           'source_files':{name:common.meta(source/PKG/name) for name in ('LocalTaskController.java','HeptaAccessibilityService.java','NativeAppSession.java')},
           'methods':{name:{'bytes':len(body.encode()),'sha256':common.sha(body.encode())} for name,body in methods.items()},
           'task_entry_source_sha256':common.sha(run_task.encode()),'one_task_budget_reset':True,'one_original_task_deadline':True,

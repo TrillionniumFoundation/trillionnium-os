@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build Android artifacts with cached JDK/SDK/NDK on macOS or Linux; no downloads."""
 from pathlib import Path
-import hashlib, json, os, re, subprocess, sys, shutil, stat
+import hashlib, json, os, re, subprocess, sys, shutil, stat, struct, zipfile
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
@@ -69,10 +69,70 @@ def run(args):
     print('RUN', ' '.join(map(str,args)), flush=True)
     subprocess.run(list(map(str,args)), check=True, timeout=180)
 
+# Exact hidden API descriptor headers only. They are an isolated compiler input,
+# never an application source, D8 program input, APK member, or runtime fallback.
+HEADER_ROOT=ROOT/'compile-only/window-infos'
+HEADER_RELATIVE=('android/view/InputWindowHandle.java','android/window/WindowInfosListener.java')
+headers=[HEADER_ROOT/name for name in HEADER_RELATIVE]
+if sorted(p.relative_to(HEADER_ROOT).as_posix() for p in HEADER_ROOT.rglob('*') if p.is_file())!=list(HEADER_RELATIVE):
+    raise RuntimeError('The exact two compile-only headers are required')
+header_classes=OUT/'compile-only-window-infos-classes'
+if header_classes.exists():shutil.rmtree(header_classes)
+header_classes.mkdir()
+run([JDK/'bin/javac','-encoding','UTF-8','--release','8','-proc:none','-classpath',ANDROID_JAR,'-d',header_classes,*headers])
+header_names=('android/view/InputWindowHandle.class','android/window/WindowInfosListener$DisplayInfo.class','android/window/WindowInfosListener.class')
+actual_headers=sorted(p.relative_to(header_classes).as_posix() for p in header_classes.rglob('*') if p.is_file())
+if actual_headers!=list(header_names):raise RuntimeError('Unexpected compile-only header class')
+header_jar=OUT/'compile-only-window-infos.jar'
+with zipfile.ZipFile(header_jar,'w',compression=zipfile.ZIP_STORED) as z:
+    for name in header_names:
+        entry=zipfile.ZipInfo(name,(1980,1,1,0,0,0));entry.external_attr=0o100600<<16
+        z.writestr(entry,(header_classes/name).read_bytes())
 sources = sorted((ROOT / 'src').rglob('*.java'))
-run([JDK/'bin/javac','-encoding','UTF-8','--release','8','-classpath',ANDROID_JAR,'-d',OUT/'classes',*sources])
+if any(HEADER_ROOT in path.parents for path in sources):raise RuntimeError('Header source entered application compilation')
+run([JDK/'bin/javac','-encoding','UTF-8','--release','8','-classpath',os.pathsep.join(map(str,(ANDROID_JAR,header_jar))),'-d',OUT/'classes',*sources])
 classes = sorted((OUT/'classes').rglob('*.class'))
-run([JDK/'bin/java','-cp',BT/'lib/d8.jar','com.android.tools.r8.D8','--lib',ANDROID_JAR,'--min-api','30','--output',OUT/'dex',*classes])
+if any(path.relative_to(OUT/'classes').parts[0]=='android' for path in classes):
+    raise RuntimeError('Framework header class entered application program inputs')
+run([JDK/'bin/java','-cp',BT/'lib/d8.jar','com.android.tools.r8.D8','--lib',ANDROID_JAR,
+    '--classpath',header_jar,'--min-api','30','--output',OUT/'dex',*classes])
+# Check class definitions, not type references: the app legitimately references
+# the boot classes, but must never define them in an application DEX.
+forbidden_headers={('L'+name[:-6]+';').encode('ascii') for name in header_names}
+def declared_dex_classes(path):
+    b=path.read_bytes()
+    if b[:4]!=b'dex\n' or len(b)<112:raise RuntimeError('Actual D8 output is not a standard DEX')
+    def u32(at):
+        if at<0 or at+4>len(b):raise RuntimeError('Truncated DEX integer')
+        return struct.unpack_from('<I',b,at)[0]
+    strings,string_at,types,type_at=u32(56),u32(60),u32(64),u32(68)
+    count,table=u32(96),u32(100)
+    if table+count*32>len(b) or string_at+strings*4>len(b) or type_at+types*4>len(b):raise RuntimeError('Truncated DEX tables')
+    found=set()
+    for i in range(count):
+        kind=u32(table+i*32)
+        if kind>=types:raise RuntimeError('Invalid DEX class index')
+        string=u32(type_at+kind*4)
+        if string>=strings:raise RuntimeError('Invalid DEX type index')
+        at=u32(string_at+string*4)
+        for _ in range(5):
+            if at>=len(b):raise RuntimeError('Truncated DEX string length')
+            v=b[at];at+=1
+            if v<128:break
+        else:raise RuntimeError('Invalid DEX string length')
+        end=b.find(b'\0',at)
+        if end<0:raise RuntimeError('Unterminated DEX descriptor')
+        found.add(b[at:end])
+    return found
+dex_files=sorted((OUT/'dex').glob('*.dex'))
+if not dex_files or any(declared_dex_classes(path)&forbidden_headers for path in dex_files):
+    raise RuntimeError('Compile-only framework class was defined in application DEX')
+compile_only_receipt={'schema':'hepta.compile-only-framework-headers.v1',
+    'sources':[{ 'path':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()} for path in headers],
+    'jar_sha256':hashlib.sha256(header_jar.read_bytes()).hexdigest(),'header_classes':list(header_names),
+    'd8_role':'classpath_only','program_input_count':len(classes),'application_framework_classes':[],
+    'actual_dex_definitions_checked':True,'framework_header_definitions_in_dex':[],
+    'boot_runtime_linkage_or_rom_qualification_claimed':False}
 resources=[]
 if (ROOT/'res').is_dir():
     run([BT/'aapt2','compile','--dir',ROOT/'res','-o',OUT/'resources.zip'])
@@ -141,7 +201,7 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','model_sha256':'43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452',
     'compute_default':'npu','context_default':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
-    'worker_adapter':adapter_receipt,
+    'worker_adapter':adapter_receipt,'compile_only_framework_headers':compile_only_receipt,
     'sdk_exception_boundary':{'production_c_object_verified':True,'cpp_runtime_path':str(SDK_CPP_PATH),
         'cpp_runtime_bytes':SDK_CPP_PIN['bytes'],'cpp_runtime_sha256':SDK_CPP_PIN['sha256'],
         'cpp_runtime_provenance':'existing_pinned_geniex_0_10_0_libggml_base_exports',

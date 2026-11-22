@@ -82,9 +82,33 @@ public final class DecisionGrammar {
         return new DecisionGrammar(offer,authorization,"root ::= ws native-open-search ws\n"+rules.toString());
     }
 
+    /** Independent calendar proposal schema. No old target, terminal or coordinate
+     * capability is inserted into the generic ActionDecision grammar. */
+    private DecisionGrammar(NativeAppSession.CalendarOffer offer,TaskAuthorization.Frame authorization){
+        schema=NativeCalendarDateIntent.SCHEMA;this.authorization=authorization;appLabels=null;
+        observationId=offer.source.facts.observationId;currentPackage=offer.source.facts.packageName;
+        targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observationId,currentPackage,
+                Collections.<String,String>emptyMap());actions=Collections.singletonList(NativeCalendarDateIntent.ACTION);
+        scrollDirections=Collections.emptyMap();submitNodes=Collections.emptySet();fixedIntentTargets=Collections.emptyMap();
+        doneStatuses=Collections.emptySet();successAllowed=false;text=offer.protocol.grammar;
+        byte[] bytes=text.getBytes(StandardCharsets.UTF_8);
+        if(bytes.length>65536||!offer.protocol.grammarSha256.equals(MobiMindContract.sha(bytes)))
+            throw new IllegalArgumentException("exact bounded calendar protocol grammar required");
+        sha256=offer.protocol.grammarSha256;
+    }
+    static DecisionGrammar createNativeCalendarAuthorized(NativeAppSession.CalendarOffer offer,
+            TaskAuthorization.Frame authorization)throws Exception{
+        if(offer==null||authorization==null)throw new IllegalArgumentException("actual Calendar Offer and Gate required");
+        offer.claimGrammar(authorization);
+        try{return new DecisionGrammar(offer,authorization);}
+        catch(RuntimeException refused){offer.close();throw refused;}
+    }
+
     /** A format-only subset of this already observed and OWNER-bound grammar.
      * The schema and every immutable authority/domain object remain identical. */
     DecisionGrammar compactReasonAndWhitespace(){
+        if(NativeCalendarDateIntent.SCHEMA.equals(schema))
+            throw new IllegalStateException("the exact Calendar Offer grammar cannot be replaced by a second grammar object");
         String reasonRule="reason-string ::= "+literal("\"")+" json-char{1,96} "+literal("\"")+"\n";
         String compactReasonRule="reason-string ::= "+literal("\"")+" json-char{1,24} "+literal("\"")+"\n";
         String whitespaceRule="ws ::= [ \\t\\n\\r]{0,8}\n";

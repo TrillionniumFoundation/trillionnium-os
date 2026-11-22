@@ -61,8 +61,75 @@ public final class RecoveryControllerIdentity {public static org.json.JSONObject
 final class HostRecoveryProcessBoundary {static Process start(String command)throws java.io.IOException{throw new java.io.IOException("host fixture cannot launch a recovery root process");}}''',
  'org/trillionnium/hepta/local/ProfileCatalogueClient.java':'''package org.trillionnium.hepta.local;import org.trillionnium.hepta.background.ProfileTarget;final class ProfileCatalogueClient {static ProfileTarget actual;static void requireCurrent(android.content.Context c,ProfileTarget expected){if(actual==null||!expected.same(actual))throw new IllegalStateException("synthetic privileged catalogue identity unavailable");}}''',
  'org/trillionnium/hepta/local/LocalProbeApplication.java':'package org.trillionnium.hepta.local;final class LocalProbeApplication {static boolean permissionBusy;static void requirePermissionPreparationIdle(android.content.Context c){if(permissionBusy)throw new IllegalStateException("permission preparation active");}}',
- 'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}static String sha(byte[] bytes){return QualificationScope.hash(bytes);}static String message(Throwable t){return t.getMessage()==null?t.getClass().getSimpleName():t.getMessage();}}'''
+ 'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}
+    /** Type-only old host boundary: no private action attempt can be constructed. */
+    static final class CalendarInputAttempt {
+        final String operationId=null;
+        final long queuedElapsed=-1;
+        private CalendarInputAttempt(){throw new UnsupportedOperationException("No calendar input authority in legacy fixture");}
+        void requirePermitProducer(NativeAppSession.CalendarPermit actual,boolean entered){
+            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");
+        }
+        java.util.Map<String,Object> executionBeforeInput(){
+            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");
+        }
+        java.util.Map<String,Object> beginBrokerCall(BackgroundSession actual,Cancellation original)throws Exception{
+            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");
+        }
+        void requireBeforeSend(BackgroundSession actual,Cancellation original){
+            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");
+        }
+    }
+static String sha(byte[] bytes){return QualificationScope.hash(bytes);}static String message(Throwable t){return t.getMessage()==null?t.getClass().getSimpleName():t.getMessage();}}'''
  }
+ # Calendar production entry types are unavailable to these original generic
+ # client cases. Only the actual schema constants are copied; no Offer, input
+ # attempt, model receipt, protocol state or date evidence can be constructed.
+ calendar_source=pkg/'NativeCalendarDateIntent.java'
+ calendar_constants=[line for line in calendar_source.read_text().splitlines(keepends=True)
+                     if line.startswith('    static final String SCHEMA=')]
+ if len(calendar_constants)!=1:raise RuntimeError('one actual calendar schema constant declaration')
+ code['org/trillionnium/hepta/local/NativeCalendarDateIntent.java']='package org.trillionnium.hepta.local;\nfinal class NativeCalendarDateIntent {\n'+calendar_constants[0]+'''    private NativeCalendarDateIntent(){throw new UnsupportedOperationException("No calendar intent in generic legacy client fixture");}
+}
+'''
+ code['org/trillionnium/hepta/local/MobiMindContract.java']='''package org.trillionnium.hepta.local;
+/** The only new grammar reference; this old fixture cannot issue a calendar Offer. */
+final class MobiMindContract {
+    private MobiMindContract(){throw new UnsupportedOperationException("No calendar model authority in generic legacy client fixture");}
+    static String sha(byte[] bytes){throw new UnsupportedOperationException("No calendar model authority in generic legacy client fixture");}
+}
+'''
+ code['org/trillionnium/hepta/local/NativeAppSession.java']='''package org.trillionnium.hepta.local;
+/** Shape-only legacy client types. Every constructor and capability endpoint refuses. */
+final class NativeAppSession {
+    private NativeAppSession(){throw unavailable();}
+    static final class CalendarFacts {
+        final String observationId=null,packageName=null;
+        private CalendarFacts(){throw unavailable();}
+    }
+    static final class CalendarSource {
+        final CalendarFacts facts=null;
+        private CalendarSource(){throw unavailable();}
+    }
+    static final class CalendarProtocol {
+        final String grammar=null,grammarSha256=null;
+        private CalendarProtocol(){throw unavailable();}
+    }
+    static final class CalendarOffer {
+        final CalendarSource source=null;
+        final CalendarProtocol protocol=null;
+        private CalendarOffer(){throw unavailable();}
+        void claimGrammar(TaskAuthorization.Frame frame){throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    static final class CalendarPermit {
+        private CalendarPermit(){throw unavailable();}
+    }
+    private static UnsupportedOperationException unavailable(){
+        return new UnsupportedOperationException("No calendar session or input authority in generic legacy client fixture");
+    }
+}
+'''
  raw=(pkg/'QualificationScopeConfig.java').read_text();a=raw.index('    static final class FilesRoot {');b=raw.index('    static final class Bound {',a);part=raw[a:b]
  code['org/trillionnium/hepta/local/QualificationScopeConfig.java']='package org.trillionnium.hepta.local;\nimport android.content.Context;import android.system.*;import java.io.File;\nfinal class QualificationScopeConfig {\n'+part+'}\n'
  for name,text in code.items():
@@ -122,5 +189,13 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  records['personal_notes_client_projection']={'source_sha256':hashlib.sha256(notes_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(notes_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}
  records['business_client_projection']={'source_sha256':hashlib.sha256(business_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(business_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','installed_identity_boundary':'explicit always-unavailable PackageManager/APK test double','recovery_success_or_phone_qualification_claimed':False}
  records['actual_full_classes'] += ['PublicProfileBusinessAbsenceRecovery','RecoveryJournalStore','RecoveryJournalTransaction','RecoveryQuiescence','SessionRecovery']
+ records['calendar_type_only_boundary']={
+  'schema_constants_source_sha256':hashlib.sha256(calendar_source.read_bytes()).hexdigest(),
+  'schema_constants_sha256':hashlib.sha256(calendar_constants[0].encode()).hexdigest(),
+  'unconstructible_generated_types':['NativeAppSession','NativeAppSession.CalendarOffer','NativeAppSession.CalendarPermit',
+      'NativeCalendarDateIntent','MobiMindContract','HeptaAccessibilityService.CalendarInputAttempt'],
+  'input_attempt_endpoints_all_refuse':True,'calendar_model_or_input_executed':False,
+  'generated_same_name_files_to_exclude_when_compiling_actual_classes':['NativeAppSession.java','NativeCalendarDateIntent.java','MobiMindContract.java'],
+  'actual_background_session_unchanged':True,'old_client_cases_unchanged':True}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

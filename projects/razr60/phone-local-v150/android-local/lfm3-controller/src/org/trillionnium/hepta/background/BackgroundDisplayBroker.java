@@ -27,6 +27,7 @@ import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -57,6 +58,13 @@ public final class BackgroundDisplayBroker {
     private final PublicPersonalNotesReader.FailureAudit publicNotesReadFailures=new PublicPersonalNotesReader.FailureAudit();
     private final PublicPolicyFailureAudit publicPolicyFailures=new PublicPolicyFailureAudit();
     private final Object dispatchGate = new Object();
+    private volatile WindowInfosCapture calendarWindowCapture;
+    private volatile JSONObject calendarProbeEvidence;
+    private volatile String calendarProbeRequest;
+    // Dedicated date handler; this lease retains its one-use dispatch claim.
+    private final AtomicBoolean calendarDateConsumed=new AtomicBoolean();
+    private volatile JSONObject calendarDateEvidence;
+    private volatile String calendarDateRequest;
     private final long started = SystemClock.elapsedRealtime();
     private final long expires;
     private final String displayName;
@@ -459,6 +467,12 @@ public final class BackgroundDisplayBroker {
                 profileWindow=profileOwnedTask.window(r.windowId,r.observedTaskId,Math.min(r.deadline,expires));
                 profileWindowRequest=r.requestId;
                 refreshProfileTaskEvidence();
+            } else if(config.profileTarget!=null&&"calendar_probe".equals(r.operation)) {
+                probeCalendarWindow(r);
+            } else if(config.profileTarget!=null&&"calendar_date".equals(r.operation)) {
+                // Dedicated authenticated profile operation. The App sends this
+                // only through its private one-use ActionWork/Slot-bound attempt.
+                dispatched=dispatchCalendarDate(r);
             } else if(config.profileTarget!=null&&"back".equals(r.operation)) {
                 dispatched=backProfile(r);
             } else if ("launch".equals(r.operation)||FixedIntentTools.isTool(r.operation)) {
@@ -726,6 +740,301 @@ public final class BackgroundDisplayBroker {
         refreshProfileTaskEvidence();
         return true;
     }
+    /** Read-only ROM qualification. It cannot consume a calendar model intent or inject input. */
+    private void probeCalendarWindow(BrokerProtocol.Request r)throws Exception {
+        final long entered=SystemClock.elapsedRealtime();
+        final long deadline=Math.min(Math.min(r.deadline,expires),entered>Long.MAX_VALUE-4000?Long.MAX_VALUE:entered+4000);
+        final java.util.Map<String,Object> proof=new java.util.LinkedHashMap<String,Object>();
+        proof.put("schema","hepta.calendar-window-probe.v1");proof.put("request_id",r.requestId);
+        proof.put("generation",config.generation);proof.put("target_sha256",r.profileTargetSha256);
+        proof.put("display_scope_sha256",r.displayScopeSha256);proof.put("entered_elapsed_ms",entered);
+        proof.put("original_request_deadline_elapsed_ms",r.deadline);proof.put("probe_deadline_elapsed_ms",deadline);
+        proof.put("grants_dispatch",false);proof.put("input_attempts",0);proof.put("dispatched",false);
+        proof.put("calendar_date_effect_integrated",false);proof.put("qualified",false);
+        proof.put("phase","admission");
+        calendarProbeRequest=r.requestId;calendarProbeEvidence=new JSONObject(proof);
+        WindowInfosCapture capture=null;Throwable firstFailure=null;
+        try{
+            if(config.publicOwnGroupScope==null||config.profileTarget==null
+                    ||!ProfileTarget.CTRIP.equals(config.profileTarget.packageName)
+                    ||!ProfileTarget.CTRIP.equals(r.packageName)||r.windowId<0||r.observedTaskId<=0)
+                throw new BrokerProtocol.Refusal("CALENDAR_PROBE_SCOPE_REQUIRED");
+            guard(r,true);
+            if(profileOwnedTask==null)throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_ACTIVE");
+            WindowOwnership first=profileOwnedTask.window(r.windowId,r.observedTaskId,deadline);
+            first.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+            DisplayGeometry geometry=DisplayGeometry.read(displays.getDisplay(displayId),displayId);
+            if(!displayName.equals(geometry.name))throw new BrokerProtocol.Refusal("INPUT_OWNED_DISPLAY_CHANGED");
+            AccessibilityWindowTokens.Read before=AccessibilityWindowTokens.read(profilePackages,profileReadback.target,r.windowId,deadline);
+            proof.put("namespace_before",new JSONObject(before.evidence()));proof.put("owned_window_before",new JSONObject(first.evidence()));
+            proof.put("display_before",new JSONObject(geometry.evidence()));
+            synchronized(dispatchGate){
+                guard(r,true);
+                if(calendarWindowCapture!=null)throw new BrokerProtocol.Refusal("INPUT_LISTENER_SLOT_OCCUPIED");
+                capture=new WindowInfosCapture(deadline);calendarWindowCapture=capture;
+            }
+            proof.put("phase","register_and_callback");capture.register();
+            InputChannelIsolation.Census census=capture.awaitCallback();
+            proof.put("phase","current_window_binding");capture.requireCurrent(census);
+            guard(r,true);
+            WindowOwnership fresh=profileOwnedTask.window(r.windowId,r.observedTaskId,deadline);
+            fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+            if(first.taskId!=fresh.taskId||first.parentTaskId!=fresh.parentTaskId||first.fullUid!=fresh.fullUid
+                    ||!first.taskTokenId.equals(fresh.taskTokenId))throw new BrokerProtocol.Refusal("INPUT_OWNED_TASK_CHANGED");
+            AccessibilityWindowTokens.Read after=AccessibilityWindowTokens.read(profilePackages,profileReadback.target,r.windowId,deadline);
+            before.requireSame(after);
+            DisplayGeometry finalGeometry=DisplayGeometry.read(displays.getDisplay(displayId),displayId);
+            if(!geometry.sameSize(finalGeometry)||geometry.rotation!=finalGeometry.rotation
+                    ||!geometry.name.equals(finalGeometry.name))throw new BrokerProtocol.Refusal("INPUT_OWNED_DISPLAY_CHANGED");
+            InputChannelIsolation.Match match;
+            synchronized(dispatchGate){
+                guard(r,true);
+                if(calendarWindowCapture!=capture)throw new BrokerProtocol.Refusal("INPUT_LISTENER_OWNER_CHANGED");
+                capture.requireCurrent(census);
+                fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+                match=InputChannelIsolation.inspect(census,new InputChannelIsolation.Expected(displayId,
+                        profileReadback.target.fullUid,profileReadback.target.profile.userId,after.namespaceUserId,
+                        r.windowId,r.observedTaskId,r.packageName,finalGeometry.width,finalGeometry.height,
+                        finalGeometry.rotation,after.token),SystemClock.elapsedRealtime(),deadline);
+                if(!(match.target.inputToken instanceof IBinder)||!((IBinder)match.target.inputToken).isBinderAlive())
+                    throw new BrokerProtocol.Refusal("INPUT_CHANNEL_TOKEN_NOT_LIVE");
+                capture.requireCurrent(census);
+            }
+            proof.put("namespace_after",new JSONObject(after.evidence()));proof.put("owned_window_after",new JSONObject(fresh.evidence()));
+            proof.put("display_after",new JSONObject(finalGeometry.evidence()));proof.put("isolation",new JSONObject(match.evidence()));
+            proof.put("phase","unregister_and_local_drain");
+        }catch(Throwable error){
+            firstFailure=error;proof.put("first_failure",code(error));
+            if(error instanceof Exception)throw (Exception)error;if(error instanceof Error)throw (Error)error;
+            throw new IllegalStateException(error);
+        }finally{
+            if(capture!=null){
+                try{capture.unregisterAndDrain(Math.min(expires,r.deadline));}
+                catch(InputChannelIsolation.Refusal closingFailure){
+                    proof.put("listener_close_failure",closingFailure.code);
+                    if(firstFailure==null){firstFailure=closingFailure;proof.put("first_failure",closingFailure.code);}
+                }
+                proof.put("listener_lifecycle",new JSONObject(capture.evidence()));
+                synchronized(dispatchGate){if(calendarWindowCapture==capture&&capture.locallyDrained())calendarWindowCapture=null;}
+            }
+            proof.put("read_finished_elapsed_ms",SystemClock.elapsedRealtime());calendarProbeEvidence=new JSONObject(proof);
+        }
+        if(firstFailure!=null){
+            if(firstFailure instanceof Exception)throw (Exception)firstFailure;
+            throw new IllegalStateException(firstFailure);
+        }
+        if(SystemClock.elapsedRealtime()>=deadline)throw new BrokerProtocol.Refusal("INPUT_PROBE_DEADLINE");
+        if(capture==null||!capture.locallyDrained())throw new BrokerProtocol.Refusal("INPUT_LISTENER_DRAIN_UNKNOWN");
+        proof.put("qualified",true);proof.put("phase","readonly_window_channel_isolation_verified");
+        proof.put("qualified_elapsed_ms",SystemClock.elapsedRealtime());calendarProbeEvidence=new JSONObject(proof);
+    }
+
+    /**
+     * Dedicated calendar_date implementation reached only from that perform branch.
+     * Current owner/window/channel qualification still runs before the one DOWN.
+     * The authenticated wire is intent data, not a substitute for the App's
+     * private one-use CalendarInputAttempt from the original ActionWork/Slot.
+     */
+    private boolean dispatchCalendarDate(BrokerProtocol.Request r)throws Exception{
+        final long entered=SystemClock.elapsedRealtime();
+        final long deadline=Math.min(Math.min(r.deadline,expires),entered>Long.MAX_VALUE-4000?Long.MAX_VALUE:entered+4000);
+        final BrokerProtocol.CalendarDate date=r.calendarDate;
+        final java.util.Map<String,Object> proof=new java.util.LinkedHashMap<String,Object>();
+        proof.put("schema","hepta.calendar-date-input-attempt.v1");proof.put("request_id",r.requestId);
+        proof.put("generation",config.generation);proof.put("display_id",displayId);
+        proof.put("entered_elapsed_ms",entered);proof.put("original_request_deadline_elapsed_ms",r.deadline);
+        proof.put("effect_deadline_elapsed_ms",deadline);proof.put("effect_route_integrated",true);
+        proof.put("attempt_consumed",false);proof.put("down_attempted",false);proof.put("down_returned_true",false);
+        proof.put("up_attempted",false);proof.put("up_returned_true",false);proof.put("cancel_attempted",false);
+        proof.put("second_down_attempted",false);proof.put("date_independently_verified",false);
+        proof.put("business_completion_verified",false);proof.put("phase","admission");
+        calendarDateRequest=r.requestId;calendarDateEvidence=new JSONObject(proof);
+        WindowInfosCapture capture=null;Throwable firstFailure=null;boolean pairAccepted=false;
+        MotionEvent down=null,up=null;
+        try{
+            if(config.publicOwnGroupScope==null||config.profileTarget==null||date==null
+                    ||!ProfileTarget.CTRIP.equals(config.profileTarget.packageName)
+                    ||!ProfileTarget.CTRIP.equals(r.packageName)
+                    ||!date.ownerTaskId.equals(config.publicOwnGroupScope.taskId)
+                    ||r.windowId<0||r.observedTaskId<=0)
+                throw new BrokerProtocol.Refusal("CALENDAR_DATE_SCOPE_REQUIRED");
+            proof.put("owner_task_id",date.ownerTaskId);proof.put("goal_sha256",date.goalSha256);proof.put("date",date.date);
+            proof.put("observation_id",date.observationId);proof.put("screen_sha256",date.screenSha256);
+            proof.put("permit_sha256",date.permitSha256);proof.put("attempt_record_sha256",date.attemptRecordSha256);
+            proof.put("rectangle",java.util.Arrays.asList(date.left,date.top,date.right,date.bottom));
+            proof.put("profile_target_sha256",r.profileTargetSha256);proof.put("display_scope_sha256",r.displayScopeSha256);
+            guard(r,true);
+            if(profileOwnedTask==null)throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_ACTIVE");
+            WindowOwnership first=profileOwnedTask.window(r.windowId,r.observedTaskId,deadline);
+            first.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+            DisplayGeometry geometry=DisplayGeometry.read(displays.getDisplay(displayId),displayId);
+            if(!displayName.equals(geometry.name)||geometry.width!=date.width||geometry.height!=date.height
+                    ||geometry.rotation!=date.rotation)throw new BrokerProtocol.Refusal("CALENDAR_DISPLAY_GEOMETRY_CHANGED");
+            AccessibilityWindowTokens.Read before=AccessibilityWindowTokens.read(profilePackages,profileReadback.target,r.windowId,deadline);
+            proof.put("namespace_before",new JSONObject(before.evidence()));
+            proof.put("owned_window_before",new JSONObject(first.evidence()));
+            proof.put("display_before",new JSONObject(geometry.evidence()));
+
+            // Resolve the real bootclasspath field. No guessed integer fallback.
+            int noFocusChange=calendarPlatformInt(MotionEvent.class,"FLAG_NO_FOCUS_CHANGE");
+            if(noFocusChange<=0||(noFocusChange&(noFocusChange-1))!=0)
+                throw new BrokerProtocol.Refusal("CALENDAR_NO_FOCUS_CHANGE_UNAVAILABLE");
+            int waitForResult=calendarPlatformInt(Class.forName("android.hardware.input.InputManager"),
+                    "INJECT_INPUT_EVENT_MODE_WAIT_FOR_RESULT");
+            if(waitForResult!=1)throw new BrokerProtocol.Refusal("CALENDAR_WAIT_FOR_RESULT_UNSUPPORTED");
+            Method setMotionDisplay=MotionEvent.class.getMethod("setDisplayId",int.class);
+            Method getMotionDisplay=MotionEvent.class.getMethod("getDisplayId");
+            proof.put("no_focus_change_platform_value",noFocusChange);
+            proof.put("injection_mode_platform_value",waitForResult);
+            proof.put("requested_device_id",KeyCharacterMap.VIRTUAL_KEYBOARD);
+            proof.put("dispatcher_device_id_isolation_claimed",false);
+            synchronized(dispatchGate){
+                guard(r,true);
+                if(calendarWindowCapture!=null)throw new BrokerProtocol.Refusal("INPUT_LISTENER_SLOT_OCCUPIED");
+                capture=new WindowInfosCapture(deadline);calendarWindowCapture=capture;
+            }
+            proof.put("phase","fresh_register_and_callback");calendarDateEvidence=new JSONObject(proof);
+            capture.register();InputChannelIsolation.Census census=capture.awaitCallback();
+            capture.requireCurrent(census);guard(r,true);
+            WindowOwnership fresh=profileOwnedTask.window(r.windowId,r.observedTaskId,deadline);
+            fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+            if(first.taskId!=fresh.taskId||first.parentTaskId!=fresh.parentTaskId||first.fullUid!=fresh.fullUid
+                    ||!first.taskTokenId.equals(fresh.taskTokenId))throw new BrokerProtocol.Refusal("INPUT_OWNED_TASK_CHANGED");
+            AccessibilityWindowTokens.Read after=AccessibilityWindowTokens.read(profilePackages,profileReadback.target,r.windowId,deadline);
+            before.requireSame(after);
+            DisplayGeometry finalGeometry=DisplayGeometry.read(displays.getDisplay(displayId),displayId);
+            if(!geometry.sameSize(finalGeometry)||geometry.rotation!=finalGeometry.rotation
+                    ||!geometry.name.equals(finalGeometry.name))throw new BrokerProtocol.Refusal("INPUT_OWNED_DISPLAY_CHANGED");
+            proof.put("namespace_after",new JSONObject(after.evidence()));
+            proof.put("owned_window_after",new JSONObject(fresh.evidence()));
+            proof.put("display_after",new JSONObject(finalGeometry.evidence()));
+            synchronized(dispatchGate){
+                // This gate excludes this broker's own cleanup/effect races.
+                // It is not an atomic SurfaceFlinger/InputDispatcher epoch CAS.
+                guard(r,true);
+                if(calendarWindowCapture!=capture)throw new BrokerProtocol.Refusal("INPUT_LISTENER_OWNER_CHANGED");
+                capture.requireCurrent(census);
+                fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+                InputChannelIsolation.Match match=InputChannelIsolation.inspect(census,new InputChannelIsolation.Expected(displayId,
+                        profileReadback.target.fullUid,profileReadback.target.profile.userId,after.namespaceUserId,
+                        r.windowId,r.observedTaskId,r.packageName,finalGeometry.width,finalGeometry.height,
+                        finalGeometry.rotation,after.token),SystemClock.elapsedRealtime(),deadline);
+                if(!(match.target.inputToken instanceof IBinder)||!((IBinder)match.target.inputToken).isBinderAlive())
+                    throw new BrokerProtocol.Refusal("INPUT_CHANNEL_TOKEN_NOT_LIVE");
+                double[] point=InputChannelIsolation.calendarPoint(match,date,SystemClock.elapsedRealtime(),deadline);
+                int actualFullUid=profileReadback.target.fullUid;
+                proof.put("target_full_uid",actualFullUid);proof.put("isolation",new JSONObject(match.evidence()));
+                proof.put("logical_point",java.util.Arrays.asList(point[0],point[1]));
+                long downTime=SystemClock.uptimeMillis();
+                down=calendarMotion(downTime,downTime,MotionEvent.ACTION_DOWN,point,noFocusChange,
+                        setMotionDisplay,getMotionDisplay);
+                // All blocking owner/window checks preceded this final fence.
+                capture.requireCurrent(census);
+                fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+                if(closing.get()||publicAdmissionRetired.get()||SystemClock.elapsedRealtime()>=deadline)
+                    throw new BrokerProtocol.Refusal("CALENDAR_DATE_RETIRED_BEFORE_DOWN");
+                if(!calendarDateConsumed.compareAndSet(false,true))
+                    throw new BrokerProtocol.Refusal("CALENDAR_DATE_ALREADY_CONSUMED");
+                proof.put("attempt_consumed",true);proof.put("consumed_elapsed_ms",SystemClock.elapsedRealtime());
+                proof.put("phase","down_attempted");proof.put("down_attempted",true);
+                proof.put("down_time_uptime_ms",downTime);proof.put("down_attempted_elapsed_ms",SystemClock.elapsedRealtime());
+                calendarDateEvidence=new JSONObject(proof);
+                profileRequestDispatched=true;effectInFlight=true;
+                try{
+                    // Same actual targeted overload as profile BACK. No uid-less
+                    // overload, default-display fallback, or host input path.
+                    Object result=injectInput.invoke(inputManager,down,waitForResult,actualFullUid);
+                    if(!Boolean.TRUE.equals(result)){
+                        proof.put("phase","down_not_confirmed_owned_cleanup_only");calendarDateEvidence=new JSONObject(proof);
+                        throw new BrokerProtocol.Refusal("CALENDAR_DOWN_NOT_CONFIRMED");
+                    }
+                    proof.put("down_returned_true",true);proof.put("down_returned_elapsed_ms",SystemClock.elapsedRealtime());
+                    proof.put("phase","down_accepted");calendarDateEvidence=new JSONObject(proof);
+                    // Only an explicitly true DOWN return permits this same
+                    // pointer's single bounded UP. Any error/false/unknown
+                    // before this point has NO UP, CANCEL, or second DOWN.
+                    guard(r,true);capture.requireCurrent(census);
+                    fresh.requireMatches(config.profileTarget,config.generation,displayId,r.windowId,r.observedTaskId,SystemClock.elapsedRealtime());
+                    if(calendarWindowCapture!=capture||closing.get()||publicAdmissionRetired.get()
+                            ||SystemClock.elapsedRealtime()>=deadline)
+                        throw new BrokerProtocol.Refusal("CALENDAR_DATE_RETIRED_BEFORE_UP");
+                    long upTime=SystemClock.uptimeMillis();
+                    if(upTime<downTime)throw new BrokerProtocol.Refusal("CALENDAR_UPTIME_REGRESSED");
+                    up=calendarMotion(downTime,upTime,MotionEvent.ACTION_UP,point,noFocusChange,
+                            setMotionDisplay,getMotionDisplay);
+                    capture.requireCurrent(census);
+                    if(SystemClock.elapsedRealtime()>=deadline||closing.get()||publicAdmissionRetired.get())
+                        throw new BrokerProtocol.Refusal("CALENDAR_DATE_RETIRED_BEFORE_UP");
+                    proof.put("phase","up_attempted");proof.put("up_attempted",true);
+                    proof.put("up_time_uptime_ms",upTime);proof.put("up_attempted_elapsed_ms",SystemClock.elapsedRealtime());
+                    calendarDateEvidence=new JSONObject(proof);
+                    Object upResult=injectInput.invoke(inputManager,up,waitForResult,actualFullUid);
+                    if(!Boolean.TRUE.equals(upResult))throw new BrokerProtocol.Refusal("CALENDAR_UP_NOT_CONFIRMED");
+                    proof.put("up_returned_true",true);proof.put("up_returned_elapsed_ms",SystemClock.elapsedRealtime());
+                    pairAccepted=true;proof.put("phase","input_pair_accepted_date_unverified");
+                    calendarDateEvidence=new JSONObject(proof);
+                }finally{effectInFlight=false;}
+            }
+        }catch(Throwable error){
+            firstFailure=error;proof.put("first_failure",code(error));
+            if(Boolean.TRUE.equals(proof.get("down_attempted"))&&!Boolean.TRUE.equals(proof.get("down_returned_true")))
+                proof.put("phase","down_outcome_unknown_owned_cleanup_only");
+            if(error instanceof Exception)throw (Exception)error;if(error instanceof Error)throw (Error)error;
+            throw new IllegalStateException(error);
+        }finally{
+            if(down!=null)down.recycle();if(up!=null)up.recycle();
+            if(capture!=null){
+                try{capture.unregisterAndDrain(deadline);}
+                catch(InputChannelIsolation.Refusal closeFailure){
+                    proof.put("listener_close_failure",closeFailure.code);
+                    if(firstFailure==null){firstFailure=closeFailure;proof.put("first_failure",closeFailure.code);}
+                }
+                proof.put("listener_lifecycle",new JSONObject(capture.evidence()));
+                synchronized(dispatchGate){if(calendarWindowCapture==capture&&capture.locallyDrained())calendarWindowCapture=null;}
+            }
+            proof.put("finished_elapsed_ms",SystemClock.elapsedRealtime());proof.put("input_pair_accepted",pairAccepted);
+            calendarDateEvidence=new JSONObject(proof);
+        }
+        if(firstFailure!=null){if(firstFailure instanceof Exception)throw (Exception)firstFailure;throw new IllegalStateException(firstFailure);}
+        if(!pairAccepted||capture==null||!capture.locallyDrained())
+            throw new BrokerProtocol.Refusal("CALENDAR_DATE_INPUT_OR_DRAIN_UNKNOWN");
+        if(SystemClock.elapsedRealtime()>=deadline)throw new BrokerProtocol.Refusal("CALENDAR_DATE_DEADLINE");
+        return true; // Transport acknowledgement only; fresh FORM date proof remains mandatory.
+    }
+
+    private static int calendarPlatformInt(Class<?> type,String name)throws Exception{
+        java.lang.reflect.Field f=type.getField(name);int modifiers=f.getModifiers();
+        if(f.getType()!=Integer.TYPE||!java.lang.reflect.Modifier.isStatic(modifiers)
+                ||!java.lang.reflect.Modifier.isFinal(modifiers))
+            throw new BrokerProtocol.Refusal("CALENDAR_PLATFORM_CONSTANT_UNAVAILABLE");
+        return f.getInt(null);
+    }
+
+    private MotionEvent calendarMotion(long downTime,long when,int action,double[] point,int flags,
+            Method setDisplay,Method getDisplay)throws Exception{
+        if(displayId<=1||point==null||point.length!=2||!Double.isFinite(point[0])||!Double.isFinite(point[1])
+                ||(action!=MotionEvent.ACTION_DOWN&&action!=MotionEvent.ACTION_UP))
+            throw new BrokerProtocol.Refusal("CALENDAR_MOTION_ARGUMENT_INVALID");
+        MotionEvent.PointerProperties properties=new MotionEvent.PointerProperties();
+        properties.id=0;properties.toolType=MotionEvent.TOOL_TYPE_FINGER;
+        MotionEvent.PointerCoords coords=new MotionEvent.PointerCoords();
+        coords.x=(float)point[0];coords.y=(float)point[1];coords.pressure=action==MotionEvent.ACTION_UP?0f:1f;coords.size=1f;
+        MotionEvent event=MotionEvent.obtain(downTime,when,action,1,new MotionEvent.PointerProperties[]{properties},
+                new MotionEvent.PointerCoords[]{coords},0,0,1f,1f,KeyCharacterMap.VIRTUAL_KEYBOARD,0,
+                InputDevice.SOURCE_TOUCHSCREEN,flags);
+        boolean valid=false;
+        try{
+            setDisplay.invoke(event,displayId);
+            Object actualDisplay=getDisplay.invoke(event);
+            if(!(actualDisplay instanceof Integer)||((Integer)actualDisplay).intValue()!=displayId
+                    ||event.getPointerCount()!=1||event.getPointerId(0)!=0||event.getActionMasked()!=action
+                    ||event.getSource()!=InputDevice.SOURCE_TOUCHSCREEN||event.getFlags()!=flags
+                    ||event.getDeviceId()!=KeyCharacterMap.VIRTUAL_KEYBOARD)
+                throw new BrokerProtocol.Refusal("CALENDAR_MOTION_BINDING_CHANGED");
+            valid=true;return event;
+        }finally{if(!valid)event.recycle();}
+    }
+
     private boolean backProfile(BrokerProtocol.Request r)throws Exception {
         guard(r,true);
         if(profileOwnedTask==null||!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_BACK_TARGET_UNAVAILABLE");
@@ -1124,7 +1433,8 @@ public final class BackgroundDisplayBroker {
     }
 
     private String releasedState() {
-        return bootReadRetirementFailure==null?"RELEASED":"CLEANUP_UNKNOWN";
+        WindowInfosCapture capture=calendarWindowCapture;
+        return bootReadRetirementFailure==null&&(capture==null||capture.locallyDrained())?"RELEASED":"CLEANUP_UNKNOWN";
     }
 
     private void haltAfterBootRead(int exit) {
@@ -1139,6 +1449,7 @@ public final class BackgroundDisplayBroker {
 
     private void beginCleanup(String reason) {
         closing.set(true);
+        WindowInfosCapture inputCapture=calendarWindowCapture;if(inputCapture!=null)inputCapture.retire();
         retirePublicScreenLease();
         retireBootRead();
         if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();
@@ -1420,6 +1731,10 @@ public final class BackgroundDisplayBroker {
                 .put("public_profile_recent_history",publicProfileHistory==null?JSONObject.NULL:new JSONObject(publicProfileHistory.evidence()))
                 .put("public_policy_diagnostics",new JSONObject(publicPolicyFailures.evidence()));
         }
+        if(r!=null&&r.requestId.equals(calendarProbeRequest)&&calendarProbeEvidence!=null)
+            value.put("calendar_window_probe",new JSONObject(calendarProbeEvidence.toString()));
+        if(r!=null&&r.requestId.equals(calendarDateRequest)&&calendarDateEvidence!=null)
+            value.put("calendar_date_input",new JSONObject(calendarDateEvidence.toString()));
         if (r != null) {value.put("operation", r.operation);
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
@@ -1593,6 +1908,7 @@ public final class BackgroundDisplayBroker {
         while (error instanceof InvocationTargetException && ((InvocationTargetException) error).getCause() != null)
             error = ((InvocationTargetException) error).getCause();
         if (error instanceof BrokerProtocol.Refusal) return ((BrokerProtocol.Refusal) error).code;
+        if (error instanceof InputChannelIsolation.Refusal) return ((InputChannelIsolation.Refusal) error).code;
         if (error instanceof BackgroundOwnedSingleTask.Refusal) return ((BackgroundOwnedSingleTask.Refusal) error).code;
         if (error instanceof ProfileTaskPolicy.Refusal) return ((ProfileTaskPolicy.Refusal) error).code;
         if (error instanceof SecurityException) return "FRAMEWORK_PERMISSION_DENIED";

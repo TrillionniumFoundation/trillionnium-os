@@ -204,6 +204,7 @@ final class BackgroundSession {
     private volatile int displayId=-1;
     private volatile boolean retired,spawnAttempted,bootstrapDispatched,cleanupConfirmed;
     private volatile JSONObject lastResponse;
+    private volatile CalendarDateRpcTrace calendarDateRpcTrace;
     private volatile JSONObject appDisplayReadback;
     private volatile JSONObject profileCleanupEvidence;
     private volatile JSONObject personalNotesCleanupEvidence;
@@ -313,6 +314,250 @@ final class BackgroundSession {
             throw new IOException("普通应用窗口尚未重新通过验证");
         permissionPreparing=false;synchronized(permissionProofs){permissionProofs.clear();}
     }
+    /** Historical read-only RPC provenance, already unregistered/drained; never a live capture or input permission. */
+    static final class CalendarWindowProbeReceipt {
+        private final BackgroundSession source;
+        private final String requestSnapshot,responseSnapshot;
+        final String requestId;
+        final int windowId,observedTaskId;
+        final long receivedElapsedMs,originalDeadlineElapsedMs;
+        private CalendarWindowProbeReceipt(BackgroundSession source,JSONObject request,JSONObject response,
+                int window,int task,long received,long deadline)throws Exception{
+            this.source=source;requestSnapshot=request.toString();responseSnapshot=response.toString();requestId=request.getString("request_id");
+            windowId=window;observedTaskId=task;receivedElapsedMs=received;originalDeadlineElapsedMs=deadline;
+        }
+        boolean belongsTo(BackgroundSession actual){return actual!=null&&source==actual;}
+        boolean grantsDispatch(){return false;}
+        JSONObject requestEvidence()throws Exception{return new JSONObject(requestSnapshot);}
+        JSONObject evidence()throws Exception{return new JSONObject(responseSnapshot);}
+    }
+    /** Worker-only ROM read, through the existing authenticated root socket. No node/input authority. */
+    CalendarWindowProbeReceipt readCalendarWindowProbe(int windowId,int observedTaskId,
+            HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        ProfileTarget target=profileTarget();
+        if(publicOwnGroupScope==null||target==null||!ProfileTarget.CTRIP.equals(target.packageName)
+                ||windowId<0||observedTaskId<=0||cancel==null||cancel.isCancelled()
+                ||android.os.Looper.myLooper()==android.os.Looper.getMainLooper())
+            throw new IOException("CALENDAR_PROBE_CLIENT_ADMISSION");
+        final long began=SystemClock.elapsedRealtime();
+        final long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,4000));
+        synchronized(publicScopeIo){
+            requireAdmissionActive();
+            JSONObject request=request("calendar_probe",target.packageName,deadline)
+                    .put("window_id",windowId).put("task_id",observedTaskId);
+            JSONObject response=exchangeForSession(request,4000,cancel);accept(response,true);
+            requireAdmissionActive();long now=SystemClock.elapsedRealtime();
+            if(cancel.isCancelled()||now>=deadline)throw new IOException("CALENDAR_PROBE_CLIENT_DEADLINE");
+            JSONObject p=response.getJSONObject("calendar_window_probe"),isolation=p.getJSONObject("isolation"),life=p.getJSONObject("listener_lifecycle");
+            long entered=strictLong(p,"entered_elapsed_ms"),finished=strictLong(p,"read_finished_elapsed_ms"),qualified=strictLong(p,"qualified_elapsed_ms");
+            if(!"hepta.calendar-window-probe.v1".equals(p.getString("schema"))
+                    ||!request.getString("request_id").equals(p.getString("request_id"))||!generation.equals(p.getString("generation"))
+                    ||!target.sha256.equals(p.getString("target_sha256"))||!publicOwnGroupScope.sha256.equals(p.getString("display_scope_sha256"))
+                    ||strictLong(p,"original_request_deadline_elapsed_ms")!=deadline||strictLong(p,"probe_deadline_elapsed_ms")!=deadline
+                    ||entered<began||finished<entered||qualified<finished||qualified>now
+                    ||!Boolean.TRUE.equals(p.get("qualified"))||!Boolean.FALSE.equals(p.get("grants_dispatch"))
+                    ||!Boolean.FALSE.equals(p.get("dispatched"))||!Boolean.FALSE.equals(p.get("calendar_date_effect_integrated"))||strictInt(p,"input_attempts")!=0
+                    ||!"readonly_window_channel_isolation_verified".equals(p.getString("phase")))
+                throw new IOException("CALENDAR_PROBE_CLIENT_RECEIPT");
+            if(!"hepta.input-channel-isolation-readonly.v1".equals(isolation.getString("schema"))
+                    ||strictInt(isolation,"display_id")!=displayId||strictInt(isolation,"full_uid")!=target.fullUid
+                    ||strictInt(isolation,"target_profile_user_id")!=target.profile.userId
+                    ||strictInt(isolation,"accessibility_namespace_user_id")!=target.profile.parentUserId
+                    ||!target.packageName.equals(isolation.getString("package"))||strictInt(isolation,"accessibility_window_id")!=windowId
+                    ||strictInt(isolation,"observed_task_id")!=observedTaskId||strictInt(isolation,"actual_window_token_match_count")!=1
+                    ||strictInt(isolation,"cross_display_input_or_window_token_aliases")!=0
+                    ||!Boolean.FALSE.equals(isolation.get("grants_dispatch"))||strictInt(isolation,"input_attempts")!=0)
+                throw new IOException("CALENDAR_PROBE_CLIENT_WINDOW_BINDING");
+            if(!"hepta.window-infos-listener-lifecycle.v1".equals(life.getString("schema"))
+                    ||!Boolean.TRUE.equals(life.get("registration_returned"))||!Boolean.TRUE.equals(life.get("retired"))
+                    ||!Boolean.TRUE.equals(life.get("unregister_returned"))||!Boolean.TRUE.equals(life.get("local_callbacks_drained"))
+                    ||!Boolean.FALSE.equals(life.get("retains_current_census"))||!Boolean.FALSE.equals(life.get("register_cache_grants_currentness"))
+                    ||strictInt(life,"callbacks_in_flight")!=0||strictLong(life,"callback_arrivals")<=0
+                    ||strictLong(life,"callback_arrivals")!=strictLong(life,"callback_finishes")
+                    ||!Boolean.FALSE.equals(life.get("grants_dispatch"))||strictInt(life,"input_attempts")!=0)
+                throw new IOException("CALENDAR_PROBE_CLIENT_DRAIN_UNKNOWN");
+            return new CalendarWindowProbeReceipt(this,request,response,windowId,observedTaskId,now,deadline);
+        }
+    }
+
+    /** Actual authenticated pair acknowledgement, not a verified date or another action permission. */
+    static final class CalendarDateInputReceipt {
+        private final BackgroundSession source;
+        private final HeptaAccessibilityService.CalendarInputAttempt sourceAttempt;
+        private final String requestSnapshot,responseSnapshot;
+        final String requestId;
+        final long receivedElapsedMs,originalDeadlineElapsedMs,brokerDeadlineElapsedMs;
+        private CalendarDateInputReceipt(BackgroundSession source,HeptaAccessibilityService.CalendarInputAttempt attempt,
+                JSONObject request,JSONObject response,long received,long original,long brokerDeadline)throws Exception{
+            this.source=source;sourceAttempt=attempt;requestSnapshot=request.toString();responseSnapshot=response.toString();
+            requestId=request.getString("request_id");receivedElapsedMs=received;originalDeadlineElapsedMs=original;
+            brokerDeadlineElapsedMs=brokerDeadline;
+        }
+        boolean belongsTo(BackgroundSession actual,HeptaAccessibilityService.CalendarInputAttempt attempt){
+            return actual!=null&&attempt!=null&&source==actual&&sourceAttempt==attempt;
+        }
+        boolean grantsAdditionalDispatch(){return false;}
+        boolean independentlyVerifiesDate(){return false;}
+        JSONObject requestEvidence()throws Exception{return new JSONObject(requestSnapshot);}
+        JSONObject evidence()throws Exception{return new JSONObject(responseSnapshot);}
+    }
+    /** Attempt-scoped transport facts only. Never consulted as admission or effect authority. */
+    private static final class CalendarDateRpcTrace {
+        private final JSONObject value;
+        private CalendarDateRpcTrace(JSONObject request,long original,long began)throws Exception{
+            value=new JSONObject().put("schema","hepta.calendar-date-client-transport.v1")
+                    .put("request",new JSONObject(request.toString())).put("original_action_deadline_elapsed_ms",original)
+                    .put("began_elapsed_ms",began).put("socket_connected",false).put("root_peer_verified",false)
+                    .put("request_write_attempted",false).put("request_write_completed",false)
+                    .put("wire_payload_received",false).put("wire_response_validated",false).put("receipt_accepted",false)
+                    .put("automatic_retry",false).put("serialized_trace_grants_authority",false);
+        }
+        synchronized void mark(String key)throws Exception{value.put(key,true).put(key+"_elapsed_ms",SystemClock.elapsedRealtime());}
+        synchronized void payload(byte[] actual)throws Exception{value.put("wire_payload_received",true)
+                .put("wire_payload_bytes",actual.length).put("wire_payload_sha256",HeptaAccessibilityService.sha(actual))
+                .put("wire_payload_received_elapsed_ms",SystemClock.elapsedRealtime());}
+        synchronized void response(JSONObject actual)throws Exception{value.put("wire_response_validated",true)
+                .put("wire_response_validated_elapsed_ms",SystemClock.elapsedRealtime()).put("actual_response",new JSONObject(actual.toString()));}
+        synchronized void failure(Exception error)throws Exception{value.put("failure",HeptaAccessibilityService.message(error))
+                .put("finished_elapsed_ms",SystemClock.elapsedRealtime());}
+        synchronized JSONObject evidence()throws Exception{return new JSONObject(value.toString());}
+    }
+
+    /** Only the actual HA ActionWork/Slot may supply this private one-use attempt. */
+    CalendarDateInputReceipt performCalendarDate(HeptaAccessibilityService.CalendarInputAttempt attempt,
+            HeptaAccessibilityService.Cancellation cancel)throws Exception{
+        if(attempt==null||cancel==null||cancel.isCancelled()
+                ||android.os.Looper.myLooper()==android.os.Looper.getMainLooper())
+            throw new IOException("CALENDAR_DATE_CLIENT_ADMISSION");
+        final long began=SystemClock.elapsedRealtime();
+        // This consumes the one RPC opportunity. No error below restores it.
+        Map<String,Object> fields=attempt.beginBrokerCall(this,cancel);
+        Set<String> expected=new TreeSet<String>(java.util.Arrays.asList("package","window_id","task_id","deadline_elapsed_ms",
+                "owner_task_id","goal_sha256","date","observation_id","screen_sha256","permit_sha256","attempt_record_sha256",
+                "display_width","display_height","display_rotation","left","top","right","bottom"));
+        if(fields==null||!fields.keySet().equals(expected))throw new IOException("CALENDAR_DATE_ATTEMPT_FIELDS");
+        final ProfileTarget target=profileTarget();
+        if(publicOwnGroupScope==null||target==null||!ProfileTarget.CTRIP.equals(target.packageName)
+                ||!target.packageName.equals(fields.get("package"))||!taskId.equals(fields.get("owner_task_id"))
+                ||!publicOwnGroupScope.taskId.equals(taskId))
+            throw new IOException("CALENDAR_DATE_ATTEMPT_SCOPE");
+        final JSONObject data=new JSONObject(fields);
+        final long originalDeadline=strictLong(data,"deadline_elapsed_ms");
+        final long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,4000));
+        final int window=strictInt(data,"window_id"),task=strictInt(data,"task_id");
+        if(task<=0)throw new IOException("CALENDAR_DATE_ATTEMPT_TASK");
+        JSONObject request=request("calendar_date",target.packageName,deadline).put("window_id",window).put("task_id",task);
+        for(String key:expected)if(!java.util.Arrays.asList("package","window_id","task_id","deadline_elapsed_ms").contains(key))
+            request.put(key,data.get(key));
+        // Exact wire value validation does not construct the HA attempt or grant permission.
+        BrokerProtocol.Request.parse(request.toString().getBytes(StandardCharsets.UTF_8));
+        CalendarDateRpcTrace trace=new CalendarDateRpcTrace(request,originalDeadline,began);
+        calendarDateRpcTrace=trace;
+        synchronized(publicScopeIo){
+            try{
+                requireAdmissionActive();
+                JSONObject response=exchangeCalendarForSession(request,4000,cancel,attempt,trace);
+                accept(response,true);requireAdmissionActive();long now=SystemClock.elapsedRealtime();
+                if(cancel.isCancelled()||now>=deadline)throw new IOException("CALENDAR_DATE_CLIENT_DEADLINE");
+                requireCalendarDateReply(request,response,data,target,window,task,began,deadline,now);
+                trace.mark("receipt_accepted");
+                return new CalendarDateInputReceipt(this,attempt,request,response,now,originalDeadline,deadline);
+            }catch(Exception failure){
+                retirePublicScope();
+                try{trace.failure(failure);}catch(Exception unavailable){/* Preserve the first transport/authority outcome. */}
+                throw failure;
+            }
+        }
+    }
+
+    private void requireCalendarDateReply(JSONObject request,JSONObject response,JSONObject data,ProfileTarget target,
+            int window,int task,long began,long deadline,long now)throws Exception{
+        JSONObject p=response.getJSONObject("calendar_date_input"),isolation=p.getJSONObject("isolation"),life=p.getJSONObject("listener_lifecycle");
+        if(!Boolean.TRUE.equals(response.get("dispatched"))
+                ||!"hepta.calendar-date-input-attempt.v1".equals(p.getString("schema"))
+                ||!request.getString("request_id").equals(p.getString("request_id"))||!generation.equals(p.getString("generation"))
+                ||strictInt(p,"display_id")!=displayId||strictInt(p,"target_full_uid")!=target.fullUid
+                ||!target.sha256.equals(p.getString("profile_target_sha256"))
+                ||!publicOwnGroupScope.sha256.equals(p.getString("display_scope_sha256"))
+                ||strictLong(p,"original_request_deadline_elapsed_ms")!=deadline||strictLong(p,"effect_deadline_elapsed_ms")!=deadline
+                ||!Boolean.TRUE.equals(p.get("effect_route_integrated"))||!Boolean.TRUE.equals(p.get("attempt_consumed"))
+                ||!Boolean.TRUE.equals(p.get("down_attempted"))||!Boolean.TRUE.equals(p.get("down_returned_true"))
+                ||!Boolean.TRUE.equals(p.get("up_attempted"))||!Boolean.TRUE.equals(p.get("up_returned_true"))
+                ||!Boolean.TRUE.equals(p.get("input_pair_accepted"))||!Boolean.FALSE.equals(p.get("cancel_attempted"))
+                ||!Boolean.FALSE.equals(p.get("second_down_attempted"))||!Boolean.FALSE.equals(p.get("date_independently_verified"))
+                ||!Boolean.FALSE.equals(p.get("business_completion_verified"))
+                ||!Boolean.FALSE.equals(p.get("dispatcher_device_id_isolation_claimed"))
+                ||!"input_pair_accepted_date_unverified".equals(p.getString("phase"))
+                ||p.has("first_failure")||p.has("listener_close_failure"))
+            throw new IOException("CALENDAR_DATE_CLIENT_RECEIPT");
+        for(String key:new String[]{"owner_task_id","goal_sha256","date","observation_id","screen_sha256","permit_sha256","attempt_record_sha256"})
+            if(!data.get(key).equals(p.get(key)))throw new IOException("CALENDAR_DATE_CLIENT_INTENT_BINDING");
+        JSONArray rectangle=p.getJSONArray("rectangle");
+        if(rectangle.length()!=4)throw new IOException("CALENDAR_DATE_CLIENT_RECT");
+        String[] edges={"left","top","right","bottom"};
+        for(int i=0;i<4;i++){Object n=rectangle.get(i);
+            if((!(n instanceof Integer)&&!(n instanceof Long))||((Number)n).longValue()!=strictInt(data,edges[i]))
+                throw new IOException("CALENDAR_DATE_CLIENT_RECT");}
+        long entered=strictLong(p,"entered_elapsed_ms"),consumed=strictLong(p,"consumed_elapsed_ms"),
+                down=strictLong(p,"down_attempted_elapsed_ms"),downReturned=strictLong(p,"down_returned_elapsed_ms"),
+                up=strictLong(p,"up_attempted_elapsed_ms"),upReturned=strictLong(p,"up_returned_elapsed_ms"),
+                finished=strictLong(p,"finished_elapsed_ms");
+        if(entered<began||consumed<entered||down<consumed||downReturned<down||up<downReturned
+                ||upReturned<up||finished<upReturned||finished>now||now>=deadline
+                ||strictLong(p,"down_time_uptime_ms")<0||strictLong(p,"up_time_uptime_ms")<strictLong(p,"down_time_uptime_ms")
+                ||strictLong(p,"requested_device_id")!=-1||strictInt(p,"injection_mode_platform_value")!=1)
+            throw new IOException("CALENDAR_DATE_CLIENT_CLOCK_OR_MODE");
+        int flag=strictInt(p,"no_focus_change_platform_value");
+        if(flag<=0||(flag&(flag-1))!=0)throw new IOException("CALENDAR_DATE_CLIENT_NO_FOCUS_FLAG");
+        for(String key:new String[]{"display_before","display_after"}){
+            JSONObject geometry=p.getJSONObject(key);
+            if(!displayName.equals(geometry.getString("display_name"))||strictInt(geometry,"display_id")!=displayId
+                    ||!"android.view.Display.getRealMetrics".equals(geometry.getString("metrics_source"))||strictInt(geometry,"width")!=strictInt(data,"display_width")
+                    ||strictInt(geometry,"height")!=strictInt(data,"display_height")||strictInt(geometry,"rotation")!=strictInt(data,"display_rotation"))
+                throw new IOException("CALENDAR_DATE_CLIENT_GEOMETRY");
+        }
+        WindowOwnership before=calendarDateWindowEvidence(p.getJSONObject("owned_window_before"),target,window,task,began,deadline);
+        WindowOwnership after=calendarDateWindowEvidence(p.getJSONObject("owned_window_after"),target,window,task,began,deadline);
+        after.requireMatches(target,generation,displayId,window,task,down);
+        after.requireMatches(target,generation,displayId,window,task,up);
+        if(before.taskId!=after.taskId||before.parentTaskId!=after.parentTaskId||!before.taskTokenId.equals(after.taskTokenId))
+            throw new IOException("CALENDAR_DATE_CLIENT_OWNED_TASK_CHANGED");
+        if(!"hepta.input-channel-isolation-readonly.v1".equals(isolation.getString("schema"))
+                ||strictInt(isolation,"display_id")!=displayId||strictInt(isolation,"full_uid")!=target.fullUid
+                ||strictInt(isolation,"target_profile_user_id")!=target.profile.userId
+                ||strictInt(isolation,"accessibility_namespace_user_id")!=target.profile.parentUserId
+                ||!target.packageName.equals(isolation.getString("package"))||strictInt(isolation,"accessibility_window_id")!=window
+                ||strictInt(isolation,"observed_task_id")!=task||strictInt(isolation,"actual_window_token_match_count")!=1
+                ||strictInt(isolation,"cross_display_input_or_window_token_aliases")!=0
+                ||!Boolean.FALSE.equals(isolation.get("grants_dispatch"))||strictInt(isolation,"input_attempts")!=0)
+            throw new IOException("CALENDAR_DATE_CLIENT_ISOLATION");
+        if(!"hepta.window-infos-listener-lifecycle.v1".equals(life.getString("schema"))
+                ||!Boolean.TRUE.equals(life.get("registration_returned"))||!Boolean.TRUE.equals(life.get("retired"))
+                ||!Boolean.TRUE.equals(life.get("unregister_returned"))||!Boolean.TRUE.equals(life.get("local_callbacks_drained"))
+                ||!Boolean.FALSE.equals(life.get("retains_current_census"))||!Boolean.FALSE.equals(life.get("register_cache_grants_currentness"))
+                ||strictInt(life,"callbacks_in_flight")!=0||strictLong(life,"callback_arrivals")<=0
+                ||strictLong(life,"callback_arrivals")!=strictLong(life,"callback_finishes")
+                ||!Boolean.FALSE.equals(life.get("grants_dispatch"))||strictInt(life,"input_attempts")!=0)
+            throw new IOException("CALENDAR_DATE_CLIENT_DRAIN_UNKNOWN");
+    }
+
+    /** Reconstruct only a historical value for receipt checking; do not register it as a live profile proof. */
+    private WindowOwnership calendarDateWindowEvidence(JSONObject value,ProfileTarget target,int window,int task,
+            long began,long deadline)throws Exception{
+        if(!WindowOwnership.SCHEMA.equals(value.getString("schema"))||!WindowOwnership.SOURCE.equals(value.getString("source"))
+                ||!target.sha256.equals(value.getString("target_identity_sha256"))
+                ||!Boolean.FALSE.equals(value.get("serialized_token_is_authority"))||!Boolean.FALSE.equals(value.get("grants_action_authority")))
+            throw new IOException("CALENDAR_DATE_CLIENT_WINDOW");
+        WindowOwnership proof=new WindowOwnership(target,value.getString("generation"),strictInt(value,"display_id"),
+                strictInt(value,"window_id"),strictInt(value,"task_id"),strictInt(value,"parent_task_id"),
+                value.getString("task_token_id"),value.getString("proof_id"),strictInt(value,"user_id"),
+                strictLong(value,"user_serial"),strictInt(value,"full_uid"),strictLong(value,"observed_elapsed_ms"),strictLong(value,"expires_elapsed_ms"));
+        if(!proof.sha256.equals(value.getString("proof_sha256"))||proof.observedElapsedMs<began||proof.expiresElapsedMs>deadline)
+            throw new IOException("CALENDAR_DATE_CLIENT_WINDOW_BINDING");
+        proof.requireMatches(target,generation,displayId,window,task,proof.observedElapsedMs);
+        return proof;
+    }
+
     WindowOwnership verifyProfileWindow(int windowId,int observedTaskId,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
         ProfileTarget target=profileTarget();if(target==null)throw new IllegalStateException("profile target required");
         requireActive();if(cancel==null||cancel.isCancelled())throw new IOException("profile observation cancelled");
@@ -459,6 +704,8 @@ final class BackgroundSession {
                 .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));
             if(personalNotesCleanupEvidence!=null)value.put("personal_notes_cleanup",new JSONObject(personalNotesCleanupEvidence.toString()));
+            CalendarDateRpcTrace calendarTrace=calendarDateRpcTrace;
+            if(calendarTrace!=null)value.put("calendar_date_client_transport",calendarTrace.evidence());
             // Keep the exact existing Selection observation/wire schema. New
             // route audit belongs to this real session, never to screen data.
             if(selection.taskTarget!=null)value.put("execution_target",new JSONObject(selection.taskTarget.evidence()));
@@ -827,6 +1074,103 @@ final class BackgroundSession {
             throw unavailable;
         }catch(Exception failure){if(!closing)retirePublicScope();throw failure;}
     }
+    private JSONObject exchangeCalendarForSession(JSONObject request,int timeout,HeptaAccessibilityService.Cancellation cancel,
+            HeptaAccessibilityService.CalendarInputAttempt attempt,CalendarDateRpcTrace trace)throws Exception{
+        if(publicOwnGroupScope==null||attempt==null||cancel==null||trace==null||!"calendar_date".equals(request.getString("op")))
+            throw new IOException("CALENDAR_DATE_RPC_SCOPE");
+        final boolean closing="close".equals(request.getString("op"));
+        final HeptaAccessibilityService.Cancellation original=cancel;
+        HeptaAccessibilityService.Cancellation bound=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){
+            return (!closing&&retired)||(original!=null&&original.isCancelled());
+        }};
+        try{
+            RootRpcReply reply=exchangeCalendarWithPeer(socketName,generation,request,timeout,bound,this,attempt,original,trace);
+            JSONObject response=reply.response;trace.response(response);
+            if("ACTIVE".equals(response.getString("state"))&&Boolean.TRUE.equals(response.get("ok"))){
+                if(closing||retired||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
+                        ||!Boolean.FALSE.equals(response.get("public_scope_admission_retired"))
+                        ||!Boolean.FALSE.equals(response.get("public_scope_closing"))
+                        ||!displayName.equals(response.getString("display_name")))throw new IOException("PUBLIC_SCOPE_RESPONSE_LEASE_INVALID");
+                PublicOwnGroupPolicy.Readback proof=PublicOwnGroupPolicy.Readback.fromWire(response.getString("public_own_group_readback_wire"),publicOwnGroupScope);
+                int id=strictInt(response,"display_id");
+                if(proof.display.displayId!=id||proof.display.flags!=strictInt(response,"flags")||(displayId>0&&displayId!=id))
+                    throw new IOException("PUBLIC_SCOPE_RESPONSE_DISPLAY_CHANGED");
+                PublicOwnGroupPolicy.AppDisplay actual=readPublicDisplay(id);
+                publicScopeLease.registerRootRpc(publicScopeOwner,proof,reply.peerUid,request.getString("request_id"),reply.began,
+                        SystemClock.elapsedRealtime(),actual);
+                publicScopeReadback=proof;
+            }
+            if(!closing&&!Boolean.TRUE.equals(response.get("ok")))retirePublicScope();
+            return response;
+        }catch(ConnectionUnavailable unavailable){
+            // No socket connected and no request byte was sent. Only the original
+            // bounded create/connect loop may retry this unambiguous condition.
+            if(!"create".equals(request.getString("op"))||!"INITIAL".equals(state)||retired)retirePublicScope();
+            throw unavailable;
+        }catch(Exception failure){if(!closing)retirePublicScope();throw failure;}
+    }
+
+    private static RootRpcReply exchangeCalendarWithPeer(String name,String generation,JSONObject request,int timeout,
+            HeptaAccessibilityService.Cancellation cancellation,BackgroundSession source,
+            HeptaAccessibilityService.CalendarInputAttempt attempt,HeptaAccessibilityService.Cancellation original,
+            CalendarDateRpcTrace trace)throws Exception{
+        long began=SystemClock.elapsedRealtime();
+        boolean publicScope=BrokerProtocol.isPublicOwnGroupVersion(request.getInt("version"));
+        if(!publicScope||source==null||attempt==null||original==null||trace==null||!"calendar_date".equals(request.getString("op")))
+            throw new IOException("CALENDAR_DATE_RPC_SCOPE");
+        byte[] bytes=request.toString().getBytes(StandardCharsets.UTF_8);
+        if(bytes.length<1||bytes.length>REQUEST_LIMIT)throw new IOException("后台请求长度越界");
+        // This is after the real publicScopeIo wait and before any new connect.
+        if(cancellation.isCancelled()||SystemClock.elapsedRealtime()>=request.getLong("deadline_elapsed_ms"))
+            throw new IOException("CALENDAR_DATE_RETIRED_BEFORE_CONNECT");
+        try(LocalSocket socket=new LocalSocket()){
+            try{socket.connect(new LocalSocketAddress(name,LocalSocketAddress.Namespace.ABSTRACT));}
+            catch(IOException unavailable){throw new ConnectionUnavailable(unavailable);}
+            trace.mark("socket_connected");
+            // Android creates the socket FD during connect; setSoTimeout before it throws.
+            socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
+            Credentials peer=socket.getPeerCredentials();
+            if(peer==null||(publicScope?peer.getUid()!=0:(peer.getUid()!=0&&peer.getUid()!=2000)))
+                throw new IOException(publicScope?"实验后台服务必须是真实root socket peer":"后台服务身份不是 shell/root");
+            trace.mark("root_peer_verified");
+            DataOutputStream output=new DataOutputStream(socket.getOutputStream());
+            socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
+            // connect/peer inspection can block. Recheck the original action authority before the first write.
+            // Once any request byte is attempted, ambiguity is retained; there is no second send.
+            if(cancellation!=null&&(cancellation.isCancelled()||SystemClock.elapsedRealtime()>=request.getLong("deadline_elapsed_ms")))
+                throw new IllegalStateException("后台动作已停止、租约已退休或原始截止时间已到；未发送请求");
+            // No nested BG/profile RPC is permitted from this actual final attempt check.
+            attempt.requireBeforeSend(source,original);
+            if(cancellation.isCancelled()||SystemClock.elapsedRealtime()>=request.getLong("deadline_elapsed_ms"))
+                throw new IOException("CALENDAR_DATE_RETIRED_BEFORE_WRITE");
+            trace.mark("request_write_attempted");
+            output.writeInt(bytes.length);output.write(bytes);output.flush();trace.mark("request_write_completed");
+            DataInputStream input=new DataInputStream(socket.getInputStream());byte[] header=new byte[4];
+            readResponseBytes(socket,input,header,request,timeout,cancellation);int length=ByteBuffer.wrap(header).getInt();
+            if(length<1||length>RESPONSE_LIMIT)throw new IOException("后台响应长度越界");
+            byte[] payload=new byte[length];readResponseBytes(socket,input,payload,request,timeout,cancellation);
+            trace.payload(payload); // Complete bytes were received even if UTF-8/JSON/identity checks below fail.
+            String decoded=StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(payload)).toString();
+            JSONTokener parser=new JSONTokener(decoded);Object value=parser.nextValue();
+            if(!(value instanceof JSONObject)||parser.nextClean()!=0)throw new IOException("后台响应不是单个 JSON 对象");
+            JSONObject result=(JSONObject)value;
+            if(result.getInt("version")!=request.getInt("version")||!request.getString("request_id").equals(result.getString("request_id"))
+                    ||!generation.equals(result.getString("generation")))throw new IOException("后台响应请求/会话标识不匹配");
+            if(BrokerProtocol.isProfileVersion(request.getInt("version"))
+                    &&(!request.getString("op").equals(result.getString("operation"))
+                       ||!request.getString("target_sha256").equals(ProfileTarget.fromWire(result.getString("profile_target_wire")).sha256)))
+                throw new IOException("profile response scope or operation differs");
+            if(publicScope&&(!request.getString("op").equals(result.getString("operation"))
+                    ||!request.getString("display_scope_sha256").equals(result.getString("display_scope_sha256"))))
+                throw new IOException("PUBLIC_SCOPE_RESPONSE_IDENTITY_CHANGED");
+            String state=result.getString("state");
+            if(!java.util.Arrays.asList("INITIAL","ACTIVE","CLOSING","RELEASED","CLEANUP_UNKNOWN").contains(state))throw new IOException("后台响应状态未知");
+            result.getBoolean("ok");result.getInt("display_id");
+            return new RootRpcReply(result,peer.getUid(),began);
+        }
+    }
+
     private static final class ConnectionUnavailable extends IOException {
         private static final long serialVersionUID=1L;
         ConnectionUnavailable(IOException cause){super("后台 socket 尚不可连接",cause);}

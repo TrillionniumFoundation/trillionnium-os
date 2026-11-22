@@ -27,8 +27,23 @@ def main():
         'scoped_flags':'if(flags!=0x0000000a||selected!=displayId||selected<=1||remaining<=0||remaining>BrokerProtocol.MAX_TTL_MS',
         'physical_group_census':'need(type==1&&group!=owned.groupId,"PUBLIC_SCREEN_PHYSICAL_GROUP_REFUSED");',
     }
+    # Preserve the original power/boot retirement check on an exact proof-only
+    # projection, after requiring the real Calendar retirement and drain gates.
+    # No projected source is compiled and Calendar runtime is not exercised here.
+    calendar_retire='        WindowInfosCapture inputCapture=calendarWindowCapture;if(inputCapture!=null)inputCapture.retire();\n'
+    calendar_cleanup=exact['cleanup_latch'].replace(
+        '        retirePublicScreenLease();',calendar_retire+'        retirePublicScreenLease();',1)
+    calendar_release=('    private String releasedState() {\n'
+        '        WindowInfosCapture capture=calendarWindowCapture;\n'
+        '        return bootReadRetirementFailure==null&&(capture==null||capture.locallyDrained())?"RELEASED":"CLEANUP_UNKNOWN";\n'
+        '    }')
+    if (broker.count(calendar_retire)!=1 or broker.count(calendar_cleanup)!=1
+            or broker.count(calendar_release)!=1):
+        raise RuntimeError('exact Calendar cleanup retirement/drain integration missing')
+    legacy_cleanup=broker.replace(calendar_retire,'',1)
     for key,value in exact.items():
-        actual=framework if key=='physical_group_census' else broker
+        actual=(framework if key=='physical_group_census' else
+                legacy_cleanup if key=='cleanup_latch' else broker)
         if value not in actual:raise RuntimeError('actual broker/framework power integration missing: '+key)
     if broker.count('token.acquire(remaining);')!=1 or broker.count('newDisplayWakeLock.invoke(')!=1:
         raise RuntimeError('screen lease must have one actual acquire site')
@@ -101,6 +116,10 @@ final class PublicScreenInitializationFixture {
     report={'schema':'hepta.public-screen-lease-host-run.v1','phone_operations':0,'android_power_api_executed':False,
             'inputs_before':before,'integration_checks':list(exact),'actual_census_hunk_sha256':hashlib.sha256(census.encode()).hexdigest(),
             'actual_initial_deadline_hunk_sha256':hashlib.sha256(deadline.encode()).hexdigest(),'stages':[]}
+    report['calendar_cleanup_source_contract']={'retire_before_power_and_boot':True,
+        'release_requires_listener_drain':True,'projection_compiled':False,'calendar_runtime_executed':False,
+        'actual_cleanup_hunk_sha256':hashlib.sha256(calendar_cleanup.encode()).hexdigest(),
+        'actual_release_hunk_sha256':hashlib.sha256(calendar_release.encode()).hexdigest()}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)
         stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');stdout.write_bytes(result.stdout);stderr.write_bytes(result.stderr)
