@@ -1,0 +1,73 @@
+package org.trillionnium.hepta.local;
+import android.os.SystemClock;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.*;
+/** Verbatim LTC planning/action waiters, failed-receipt writer and successor loop.
+ * The model, token-estimate and final ordinary AX IO endpoints are synthetic.
+ * They cannot mint a proof/Offer/Attempt or dispatch a platform action. */
+final class NativeSearchNoEffectControllerHost {
+    final HeptaAccessibilityService service;
+    final Object handleLock=new Object();final AtomicBoolean cancelled=new AtomicBoolean();
+    Object activeInference,activeWebTask;String currentTaskId;
+    NativeSearchSession activeNativeSearch;NativeAppSession activeNativeTask;BackgroundSession activeNativeBackground;
+    HeptaAccessibilityService.Fixture fixture;
+    final List<String> emitted=new ArrayList<String>(),modelRuns=new ArrayList<String>(),modelObservations=new ArrayList<String>();
+    int modelCalls,oldAxCalls,completedSteps;long syntheticModelDelay=20;boolean repeatFirstRun;
+    java.util.function.IntConsumer beforeModel;
+    JSONArray completedHistory;
+    final InferencePort inference=new InferencePort();
+    static final class InferencePort {Object configuration(){return this;}boolean modelOutputDispatchAllowed(){return true;}}
+    static final class ConservativeTokenBudget {
+        String method="explicit_synthetic_token_estimate_port";int contextTokens=8192,totalContextUpper=1024;
+        static ConservativeTokenBudget estimate(String system,String prompt,Object config){return new ConservativeTokenBudget();}
+    }
+    static final class PhoneObservation {
+        final NativeAppEvidence.Frame frame;PhoneObservation(NativeAppEvidence.Frame frame){this.frame=frame;}
+        JSONObject toEvidenceJson(){return new JSONObject().put("host_only_old_AX_IO_port",true).put("observation_id",frame.observationId);}
+    }
+    {{actual_constants}}
+    NativeSearchNoEffectControllerHost(HeptaAccessibilityService service){this.service=service;}
+    void bind(HeptaAccessibilityService.Fixture value){fixture=value;activeNativeSearch=value.base.search;activeNativeTask=value.base.nativeTask;
+        activeNativeBackground=value.base.env.session;currentTaskId=activeNativeSearch.taskId;}
+    void emit(String value){emitted.add(value);}
+    PhoneObservation runAll(File directory)throws Exception{
+        String taskId=currentTaskId,instruction=NativeProfileIdentityHostTest.OWNER;
+        File evidence=directory;TaskAuthorization.Gate authorization=activeNativeSearch.authorization;
+        BackgroundSession background=activeNativeBackground;long deadline=activeNativeSearch.taskDeadlineElapsed;
+        int steps=0;JSONArray history=new JSONArray();PhoneObservation observation=null;
+        {{actual_search_branch}}
+        completedSteps=steps;completedHistory=history;return observation;
+    }
+    private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
+            PhoneObservation before,String originalInstruction,TaskAuthorization.Gate authorization,BackgroundSession background,boolean nativeApp)throws Exception{
+        {{actual_model_precheck}}
+        if(before!=null||!nativeApp||!searchProtocol)throw new AssertionError("only synthetic new native-search model endpoint");
+        modelCalls++;if(beforeModel!=null)beforeModel.accept(modelCalls);
+        JSONObject planning=new JSONObject(prompt).getJSONObject("planning");
+        String run=repeatFirstRun&&!modelRuns.isEmpty()?modelRuns.get(0):UUID.randomUUID().toString().replace("-","");
+        String text=new JSONObject().put("reason","explicit synthetic new model intent").put("action",NativeSearchDecision.ACTION)
+                .put("observation_id",planning.getString("observation_id")).put("package",planning.getString("package"))
+                .put("role_id",planning.getString("role_id")).toString();
+        modelRuns.add(run);modelObservations.add(grammar.observationId);SystemClock.now+=syntheticModelDelay;
+        return new ModelAnswer(text,run);
+    }
+    private PhoneObservation awaitObservation(String id,File directory,TaskAuthorization.Gate auth,long deadline)throws Exception{
+        if(!service.legacyObservationAllowedForHost(id))throw new AssertionError("actual legacy observation admission remains closed");
+        oldAxCalls++;SystemClock.now+=40;NativeAppEvidence.Frame frame=fixture.base.inputFrame(SystemClock.now,true);
+        activeNativeTask.observed(frame);return new PhoneObservation(frame);
+    }
+    static String actualFailedReceipt(File directory,HeptaAccessibilityService.ActionOutcome outcome,
+            HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof)throws Exception{
+        JSONObject receipt=new JSONObject().put("schema","host.synthetic-caller.failed-search-receipt.v1")
+                .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale)
+                .put("action_execution",outcome.actionExecution).put("no_effect_proof",new JSONObject(proof.evidence()));
+        record(directory,"host-old-failed-action.json",receipt);
+        return HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8));
+    }
+    {{actual_controller_methods}}
+}

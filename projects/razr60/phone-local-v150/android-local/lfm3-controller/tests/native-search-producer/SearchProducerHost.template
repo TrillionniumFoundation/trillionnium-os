@@ -38,7 +38,11 @@ public final class HeptaAccessibilityService {
     boolean capturePending,cancellationPending;int taskObservationAdmissions;
     PhoneObservation current;Graph currentGraph;
     Fixture fixture;
-    static final class ProfilePermissionUiSession {static boolean pending;static boolean workPending(){return pending;}}
+    static final class ProfilePermissionUiSession {static boolean pending;static boolean workPending(){return pending;}void retire(String task,String reason){/* unrelated permission IO stays pending until its own owner drains */}}
+    final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession();
+    private static final class ActionWork {final ActionExecutionState state;private ActionWork(ActionExecutionState state){this.state=state;}}
+    private ActionWork activeAction;
+    boolean legacyObservationAllowedForHost(String task){return nativeSearchAllowsLegacyObservation(task);}
     static final class FakeExecutor implements Executor {
         final Deque<Runnable> jobs=new ArrayDeque<Runnable>();int submissions;boolean reject,uncertain;
         public synchronized void execute(Runnable job){submissions++;if(reject)throw new java.util.concurrent.RejectedExecutionException("synthetic rejection");jobs.add(job);if(uncertain)throw new IllegalStateException("synthetic uncertain submit");}
@@ -257,7 +261,7 @@ public final class HeptaAccessibilityService {
             return new JSONObject(new String(Files.readAllBytes(files[0].toPath()),StandardCharsets.UTF_8));
         }
         public void close()throws IOException{
-            android.app.KeyguardManager.beforeCheck=null;android.system.Os.afterRead=null;android.system.Os.beforeWrite=null;android.system.Os.afterFsync=null;
+            android.os.SystemClock.beforeRead=null;android.app.KeyguardManager.beforeCheck=null;android.system.Os.afterRead=null;android.system.Os.beforeWrite=null;android.system.Os.afterFsync=null;
             if(!observationIo.jobs.isEmpty())observationIo.one();
             if(!actionIo.jobs.isEmpty())actionIo.one();
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("owned work has not drained");
@@ -270,5 +274,6 @@ public final class HeptaAccessibilityService {
     static void rejected(Case action)throws Exception{boolean no=false;try{action.run();}catch(IllegalStateException|IllegalArgumentException|IOException expected){no=true;}check(no,"required rejection");}
     static void one(String name,Case body){Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("name",name);try{body.run();row.put("passed",true);}catch(Throwable error){row.put("passed",false);row.put("failure",error.toString());StringWriter s=new StringWriter();error.printStackTrace(new PrintWriter(s));row.put("stack",s.toString());}cases.add(row);}
     {{loading_cases}}
+    {{successor_cases}}
     {{cases}}
 }

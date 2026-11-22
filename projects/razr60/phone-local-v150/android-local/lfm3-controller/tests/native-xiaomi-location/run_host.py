@@ -69,6 +69,19 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
+        # Reverse only the exact reviewed no-effect proof type on a proof copy.
+        # The actual current provider is compiled below without this projection.
+        if sha(legacy_provider_bytes) == "7fb8fea5ca9a2f58e749810cd5f5a38e9b9026ea65d2cdf8a852419f387e7ea0":
+            successor_type_inverse = [
+                (b' and "class NativeSearchNoEffectReplanProof" not in service_text', b''),
+                (b'\n    public static final class NativeSearchNoEffectReplanProof {\n        private NativeSearchNoEffectReplanProof(){throw new AssertionError("native search no-effect successor is outside this legacy fixture");}\n        public void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean live){throw new AssertionError("no successor authority in this legacy fixture");}\n        public void requireOutcome(ActionOutcome outcome){throw new AssertionError("no successor authority in this legacy fixture");}\n        public void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("no successor authority in this legacy fixture");}\n        public java.util.Map<String,Object> evidence(){throw new AssertionError("no successor evidence in this legacy fixture");}\n    }', b''),
+                (b', "no_effect_successor_proof_constructor_and_methods_always_throw":True, "no_effect_successor_proof_minted":False', b''),
+            ]
+            for current, previous in successor_type_inverse:
+                assert legacy_provider_bytes.count(current) == 1
+                legacy_provider_bytes = legacy_provider_bytes.replace(current, previous, 1)
+            assert sha(legacy_provider_bytes) == "726b8bf8a77d28ab694f662b0e3fb1e32ecff67568c87e06fd85cce9782350c6"
+            report["retained_provider_no_effect_type_additions_exactly_reversible"] = True
         # Strip only the fixed new refusing retry type on this proof copy.
         # Compilation below continues to use the actual current provider bytes.
         if sha(legacy_provider_bytes) == "726b8bf8a77d28ab694f662b0e3fb1e32ecff67568c87e06fd85cce9782350c6":

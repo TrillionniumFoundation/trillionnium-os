@@ -67,7 +67,7 @@ def main():
           'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
         methods['pending_loop_prefix']=extractor.section(controller,'            taskSteps: while(steps<MAX_STEPS){','                // Includes fresh observations after stale/undispatched proposals.')
-        methods['pending_model_guard']=extractor.section(controller,'        if(nativeApp){\n            NativeAppSession nativeTask=activeNativeTask;','        final LocalRuntimeConfig runtime=inference.configuration();')
+        methods['pending_model_guard']=extractor.section(controller,'        final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);','        final LocalRuntimeConfig runtime=inference.configuration();')
         need(run_task.count('awaitPendingNativeTransition(')==1 and run_task.index('awaitPendingNativeTransition(')<run_task.index('awaitModel('),
              'actual main loop must finish pending observation before model planning')
         methods['service_proof']=extractor.body(service,'    static final class NativeObservationRetryProof {')

@@ -103,7 +103,7 @@ def main():
         service_before=service_port.read_bytes()
         service_text=service_before.decode("utf-8")
         require(bgfiles.count(service_port)==1 and service_text.endswith("}")
-                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text,
+                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text and "class NativeSearchNoEffectReplanProof" not in service_text,
                 "one original Service type port required")
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
@@ -113,6 +113,13 @@ def main():
     }
     public static final class NativeSearchReadRetryProof {
         private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy provider fixture");}
+    }
+    public static final class NativeSearchNoEffectReplanProof {
+        private NativeSearchNoEffectReplanProof(){throw new AssertionError("native search no-effect successor is outside this legacy fixture");}
+        public void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean live){throw new AssertionError("no successor authority in this legacy fixture");}
+        public void requireOutcome(ActionOutcome outcome){throw new AssertionError("no successor authority in this legacy fixture");}
+        public void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("no successor authority in this legacy fixture");}
+        public java.util.Map<String,Object> evidence(){throw new AssertionError("no successor evidence in this legacy fixture");}
     }"""
         service_after=(service_text[:-1]+chr(10)+outcome_port+chr(10)+"}").encode("utf-8")
         require(service_after.decode("utf-8").replace(chr(10)+outcome_port+chr(10),"",1)==service_text,
@@ -124,7 +131,7 @@ def main():
             "original_service_bytes_reversible":True,"constructor_always_throws":True,
             "accepted_and_dispatched_always_false":True,"authority_and_execution_always_null":True,
             "new_search_path_executed":False,"loading_read_retry_proof_constructor_always_throws":True,
-            "loading_read_retry_proof_minted":False,"phone_operations":0}
+            "loading_read_retry_proof_minted":False, "no_effect_successor_proof_constructor_and_methods_always_throw":True, "no_effect_successor_proof_minted":False,"phone_operations":0}
         paths=[source/p for p in query.PURE_PATHS if p!="tests/web-flight/WebFlightQueryHostTest.java" and p!="tests/native-app/legacy-boundary/NativeAppSession.java"]+bgfiles
         paths += [source/("src/org/trillionnium/hepta/local/"+name+".java") for name in EXTRA_SOURCES]
         paths += [source/"tests/native-app-fixtures/NativeXmlFixture.java",own/"NativeAppProviderHostTest.java",own/"NativeAppObservationHostTest.java",own/"NativeResourceHomeHostTest.java"]

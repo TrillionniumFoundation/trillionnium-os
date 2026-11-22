@@ -108,6 +108,8 @@ def prepare(source, output):
     private volatile NativeSearchRequest nativeSearchRetryPending;
     private final java.util.concurrent.atomic.AtomicBoolean observationIoBusy=new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile SearchActionWork activeSearchAction;
+    private final Object nativeSearchEventLock=new Object();
+    private volatile SearchActionWork nativeSearchTrackedAction;
     private boolean nativeSearchPlanningAdmitted;
     private static final class NativeSearchRequest {
         final String taskId=null;
@@ -118,13 +120,23 @@ def prepare(source, output):
         void requireOriginal(HeptaAccessibilityService service,Object controller,NativeSearchSession session,String task,File directory,long deadline){throw new AssertionError("No initial planning retry authority in old fixture");}
         java.util.Map<String,Object> evidence(){throw new AssertionError("No initial planning retry evidence in old fixture");}
     }
+    static final class NativeSearchNoEffectReplanProof {
+        private NativeSearchNoEffectReplanProof(){throw new AssertionError("No no-effect successor proof in old fixture");}
+        void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean closed){throw new AssertionError("No no-effect successor authority in old fixture");}
+        void requireOutcome(ActionOutcome outcome){throw new AssertionError("No no-effect successor outcome in old fixture");}
+        void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("No no-effect successor publication in old fixture");}
+        void requireReadTarget(HeptaAccessibilityService service,Object controller,NativeSearchSession session,String task,File directory,long deadline){throw new AssertionError("No no-effect successor read in old fixture");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("No no-effect successor evidence in old fixture");}
+    }
     private static final class SearchActionWork {
         final ActionExecutionState state=null;
+        final NativeSearchSession session=null;
         private SearchActionWork(){throw new AssertionError("No typed action work in old fixture");}
     }
     synchronized void bindNativeSearchSession(NativeSearchSession session){throw new AssertionError("No typed Session binding in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){throw new AssertionError("No typed planning IO in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchReadRetryProof retry){throw new AssertionError("No typed planning recovery IO in old fixture");}
+    void observeNativeSearchPlanningAfterNoEffect(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchNoEffectReplanProof successor){throw new AssertionError("No typed successor planning IO in old fixture");}
     void performNativeOpenSearch(String task,NativeSearchSession.Attempt attempt,Cancellation cancel,NativeSearchSession.ActionCallback callback){throw new AssertionError("No typed effect IO in old fixture");}
     private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning planning,String error){throw new AssertionError("No typed publication in old fixture");}
 '''+search_legacy_gate+search_retire
@@ -321,6 +333,9 @@ final class PublicProfileBusinessRecoveryClient {
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'native_search_legacy_boundary':{
+            'no_effect_successor_proof_constructible':False,
+            'no_effect_successor_authority_methods_always_refuse':True,
+            'no_effect_successor_tracker_permanently_absent':True,
             'observer_only_sha256':hashlib.sha256(search_observer_only.encode()).hexdigest(),
             'dispatcher_only_sha256':hashlib.sha256(search_dispatch_only.encode()).hexdigest(),
             'actual_eligibility_sha256':hashlib.sha256(search_eligible.encode()).hexdigest(),

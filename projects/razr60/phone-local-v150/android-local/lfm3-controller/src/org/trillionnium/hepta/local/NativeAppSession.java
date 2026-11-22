@@ -59,7 +59,9 @@ final class NativeAppSession {
     private NativeSearchSession searchPlanning;
     private NativeSearchSession.Attempt searchNavigationAttempt;
     private Map<String,Object> searchNavigationEffect;
-    private boolean searchNavigationObserved;
+    private boolean searchNavigationObserved,searchNavigationReleased;
+    private int searchNavigationOrdinal;
+    private String searchNoEffectReceiptSha;
     private long searchNavigationEffectElapsed=-1;
 
 
@@ -93,14 +95,44 @@ final class NativeAppSession {
                 &&session.selection==selection&&session.goal==goal,"actual native search Session differs");
     }
     void reserveSearchNavigation(NativeSearchSession session,NativeSearchSession.Attempt attempt)throws Exception{
-        requireSearchPlanningCurrent(session);need(current==null&&inFlight==null&&pending==null&&searchNavigationAttempt==null
+        requireSearchPlanningCurrent(session);need(current==null&&inFlight==null&&pending==null
                 &&searchNavigationEffect==null&&attempt!=null&&attempt.session==session
+                &&(searchNavigationAttempt==null||searchNavigationReleased&&session.freshOfferFor(searchNavigationAttempt,attempt.offer))
                 &&usedRuns.add(attempt.modelRunId)&&++ordinal<=MAX_ACTIONS,"one new model search navigation attempt required");
-        searchNavigationAttempt=attempt;
+        searchNavigationAttempt=attempt;searchNavigationReleased=false;searchNavigationOrdinal++;
         Map<String,Object> e=base();e.put("schema","hepta.native-search-reservation.v1");e.put("attempt",attempt.evidence());
         e.put("model_issued",true);e.put("automatic_replay",false);e.put("navigation_only",true);e.put("query_or_price_verified",false);
-        journal.write("native-search-navigation-attempt.json",e);
+        journal.write(searchNavigationOrdinal==1?"native-search-navigation-attempt.json":
+                String.format(java.util.Locale.ROOT,"native-search-navigation-attempt-%02d.json",searchNavigationOrdinal),e);
     }
+
+    void requireSearchModelPlanning(NativeSearchSession session,NativeSearchSession.Offer offer){
+        requireSearchPlanningCurrent(session);need(current==null&&inFlight==null&&pending==null&&searchNavigationEffect==null
+                &&offer!=null&&offer.session==session&&(searchNavigationAttempt==null
+                ||searchNavigationReleased&&session.freshOfferFor(searchNavigationAttempt,offer)),
+                "current first or explicitly released fresh search Offer required before the model");
+    }
+    void recordSearchNavigationNoEffect(NativeSearchSession session,NativeSearchSession.Attempt attempt,String receiptSha,
+            HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now)throws Exception{
+        requireSearchPlanningCurrent(session);need(searchNavigationAttempt==attempt&&attempt!=null&&attempt.session==session
+                &&searchNavigationOrdinal==1&&!searchNavigationReleased&&searchNoEffectReceiptSha==null
+                &&searchNavigationEffect==null&&current==null&&inFlight==null&&pending==null
+                &&NativeAppEvidence.sha(receiptSha)&&proof!=null,"one original no-effect search reservation required");
+        proof.requireOriginal(session,attempt,now,false);attempt.requireUnclaimedRevalidated(now);
+        Map<String,Object> e=base();e.put("schema","hepta.native-search-no-effect-retirement.v1");
+        e.put("attempt",attempt.evidence());e.put("failed_action_receipt_sha256",receiptSha);e.put("no_effect_proof",proof.evidence());
+        e.put("recorded_elapsed_ms",now);e.put("old_model_run_remains_consumed",true);e.put("action_ordinal_preserved",ordinal);
+        e.put("fresh_planning_and_new_model_required",true);e.put("automatic_redispatch",false);e.put("business_verified",false);
+        journal.write("native-search-no-effect-retirement-01.json",e);
+        searchNoEffectReceiptSha=receiptSha;searchNavigationReleased=true;
+    }
+    void requireSearchNoEffectRecorded(NativeSearchSession session,NativeSearchSession.Attempt attempt,String receiptSha){
+        requireSearchPlanningCurrent(session);need(attempt!=null&&searchNavigationAttempt==attempt&&searchNavigationReleased
+                &&searchNavigationOrdinal==1&&receiptSha!=null&&receiptSha.equals(searchNoEffectReceiptSha)
+                &&searchNavigationEffect==null&&current==null&&inFlight==null&&pending==null,
+                "durable old search outcome and unchanged reservation required");
+    }
+
     void recordSearchNavigationEffect(NativeSearchSession session,NativeSearchSession.Attempt attempt,String receiptSha,
             Map<String,Object> execution,long at)throws Exception{
         requireSearchPlanningCurrent(session);need(searchNavigationAttempt==attempt&&attempt!=null&&attempt.session==session

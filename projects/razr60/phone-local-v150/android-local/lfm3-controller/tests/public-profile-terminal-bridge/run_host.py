@@ -163,7 +163,8 @@ def main():
         service_port=fixture/'org/trillionnium/hepta/local/HeptaAccessibilityService.java'
         service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
         need(files.count(service_port)==1 and service_text.endswith('}')
-                and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text,
+                and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text
+                and 'class NativeSearchNoEffectReplanProof' not in service_text,
                 'one original Service type port without new dispatch/retry types required')
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
@@ -174,7 +175,14 @@ def main():
         retry_port="""    public static final class NativeSearchReadRetryProof {
         private NativeSearchReadRetryProof(){throw new AssertionError("native search retry proof is outside the legacy terminal fixture");}
     }"""
-        type_ports=outcome_port+chr(10)+retry_port
+        no_effect_port="""    public static final class NativeSearchNoEffectReplanProof {
+        private NativeSearchNoEffectReplanProof(){throw new AssertionError("native search successor proof is outside the legacy terminal fixture");}
+        void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean closed){throw new AssertionError("No successor authority in legacy terminal fixture");}
+        void requireOutcome(ActionOutcome outcome){throw new AssertionError("No successor outcome in legacy terminal fixture");}
+        void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("No successor publication in legacy terminal fixture");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("No successor evidence in legacy terminal fixture");}
+    }"""
+        type_ports=outcome_port+chr(10)+retry_port+chr(10)+no_effect_port
         service_after=(service_text[:-1]+chr(10)+type_ports+chr(10)+'}').encode('utf-8')
         need(service_after.decode('utf-8').replace(chr(10)+type_ports+chr(10),'',1)==service_text,
                 'original Service port changed outside the refusing type boundary')
@@ -184,7 +192,9 @@ def main():
                 'original_service_bytes_reversible':True,'constructor_always_throws':True,
                 'accepted_and_dispatched_always_false':True,'authority_and_execution_always_null':True,
                 'new_search_path_executed':False,'retry_proof_type_block_sha256':sha(retry_port.encode()),
-                'retry_proof_constructor_always_throws':True,'retry_authority_executed':False}
+                'retry_proof_constructor_always_throws':True,'retry_authority_executed':False,
+                'no_effect_proof_type_block_sha256':sha(no_effect_port.encode()),
+                'no_effect_proof_constructor_and_authority_always_throw':True,'no_effect_successor_executed':False}
         (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')
         io = fixture / 'android/system/Os.java'
         body, seam = io.read_text(), 'r.st_uid=((Number)a.get("uid")).intValue();'

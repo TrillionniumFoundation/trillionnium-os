@@ -13,7 +13,11 @@ final class NativeSearchSession {
         void onPlanning(NativeSearchPlanning value);void onError(String detail);
         default void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){onError(detail);}
     }
-    interface ActionCallback {void onResult(HeptaAccessibilityService.ActionOutcome value);}
+    interface ActionCallback {
+        void onResult(HeptaAccessibilityService.ActionOutcome value);
+        default void onNoEffectReplanAvailable(HeptaAccessibilityService.ActionOutcome value,
+                HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof){onResult(value);}
+    }
     final Object controller;
     final NativeAppSession nativeTask;
     final BackgroundSession background;
@@ -21,11 +25,18 @@ final class NativeSearchSession {
     final BackgroundTaskTarget.SelectionBinding selection;
     final NativeAppGoal goal;
     final String taskId;
-    final long startedElapsed,taskDeadlineElapsed;
+    // Two models (55 s each), two 8 s actions, and four existing 12 s read caps:
+    // initial, existing loading successor, one post-D successor, final input handoff.
+    static final long CHAIN_LIMIT_MS=174000L;
+    final long startedElapsed,taskDeadlineElapsed,chainDeadlineElapsed;
     private final Map<String,Object> binding;
     private boolean retired,navigationEffectRecorded,navigationObserved;
     private Offer offered;
     private Attempt attempted;
+    private Attempt closedSuccessorAttempt;
+    private HeptaAccessibilityService.NativeSearchNoEffectReplanProof successorProof;
+    private String successorReceiptSha;
+    private boolean successorOffered;
 
     NativeSearchSession(Object controller,NativeAppSession task,BackgroundSession background,long started,long taskDeadline)throws Exception{
         need(controller!=null&&task!=null&&background!=null&&started>=0&&taskDeadline>started,"actual controller/native task/background/deadline required");
@@ -35,6 +46,7 @@ final class NativeSearchSession {
                 &&background.profileTarget().same(task.installed.profileTarget),"same installed profile target required");
         this.controller=controller;nativeTask=task;this.background=background;authorization=task.authorization;
         selection=task.selection;goal=task.goal;taskId=task.taskId;startedElapsed=started;taskDeadlineElapsed=taskDeadline;
+        chainDeadlineElapsed=Math.min(taskDeadline,started>Long.MAX_VALUE-CHAIN_LIMIT_MS?Long.MAX_VALUE:started+CHAIN_LIMIT_MS);
         authorization.requireNativeSearchIntent(selection,goal);
         Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("task_id",taskId);e.put("owner_sha256",goal.ownerSha256);
         e.put("target_sha256",task.target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);
@@ -48,7 +60,7 @@ final class NativeSearchSession {
             &&NativeAppGoal.XIAOMI_PACKAGE.equals(task.goal.packageName)&&NativeAppGoal.PRODUCT_MODEL.equalsIgnoreCase(task.goal.productModel)
             &&task.installed.profileTarget!=null;}
     synchronized void requireLive(long now){
-        need(!retired&&now>=startedElapsed&&now<taskDeadlineElapsed,"search Session retired/expired/clock mismatch");
+        need(!retired&&now>=startedElapsed&&now<taskDeadlineElapsed&&now<chainDeadlineElapsed,"search Session retired/expired/clock mismatch");
         authorization.requireNativeSearchIntent(selection,goal);
         need(nativeTask.authorization==authorization&&nativeTask.selection==selection&&background.selection==selection
                 &&nativeTask.goal==goal&&selection.executionTarget()==nativeTask.target
@@ -57,7 +69,7 @@ final class NativeSearchSession {
         nativeTask.requireSearchPlanningCurrent(this);
     }
     synchronized void requireBeforeFirstPlanning(long now){
-        requireLive(now);need(offered==null&&attempted==null&&!navigationEffectRecorded&&!navigationObserved,
+        requireLive(now);need(offered==null&&attempted==null&&successorProof==null&&closedSuccessorAttempt==null&&!successorOffered&&!navigationEffectRecorded&&!navigationObserved,
                 "loading read recovery cannot cross a planning Offer, model intent or navigation effect");
     }
     Map<String,Object> binding(){return binding;}
@@ -65,10 +77,60 @@ final class NativeSearchSession {
     synchronized Offer offer(NativeSearchPlanning planning,long now){
         requireLive(now);need(offered==null&&attempted==null&&planning!=null,"one actual planning Offer only");
         need(NativeSearchPlanning.equal(binding,planning.binding)&&planning.timing.requestStarted>=startedElapsed
-                &&planning.timing.requestDeadline<=taskDeadlineElapsed&&planning.publication!=null&&planning.publishedElapsed<=now&&planning.persistedElapsed<=now
+                &&planning.timing.requestDeadline<=chainDeadlineElapsed&&planning.publication!=null&&planning.publishedElapsed<=now&&planning.persistedElapsed<=now
                 &&now-planning.capturedElapsed<=2000,"planning receipt not current for the same Session");
         offered=new Offer(this,planning);return offered;
     }
+
+    /** The same task remains bound; only one proved-unentered attempt may retire
+     * into a separate full planning/model sequence. Old Offers/runs stay spent. */
+    void acceptNoEffectForReplan(Attempt attempt,HeptaAccessibilityService.ActionOutcome outcome,
+            String receiptSha,HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now)throws Exception{
+        synchronized(this){requireLive(now);need(successorProof==null&&closedSuccessorAttempt==null&&!successorOffered
+                &&attempt!=null&&attempt==attempted&&attempt.offer==offered&&!navigationEffectRecorded&&!navigationObserved,
+                "one current first no-effect search outcome required");}
+        need(outcome!=null&&!outcome.accepted&&!outcome.dispatched&&outcome.stale&&NativeAppEvidence.sha(receiptSha),
+                "durable failed undispatched search outcome required");
+        proof.requireOriginal(this,attempt,now,false);proof.requireOutcome(outcome);
+        nativeTask.recordSearchNavigationNoEffect(this,attempt,receiptSha,proof,now);
+        proof.requireOriginal(this,attempt,now,false);proof.requireOutcome(outcome);
+        synchronized(this){requireLive(now);need(attempt==attempted&&successorProof==null,"search outcome superseded during durable receipt");
+        attempt.closeForSuccessor();closedSuccessorAttempt=attempt;successorProof=proof;successorReceiptSha=receiptSha;}
+    }
+    synchronized void requireFreshPlanningAfterNoEffect(HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now){
+        requireLive(now);need(proof!=null&&proof==successorProof&&closedSuccessorAttempt!=null
+                &&attempted==closedSuccessorAttempt&&offered==closedSuccessorAttempt.offer&&!successorOffered
+                &&!navigationEffectRecorded&&!navigationObserved,"same single no-effect planning successor required");
+        closedSuccessorAttempt.requireClosedForSuccessor();
+        nativeTask.requireSearchNoEffectRecorded(this,closedSuccessorAttempt,successorReceiptSha);
+    }
+    synchronized Offer offerAfterNoEffect(NativeSearchPlanning planning,
+            HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now){
+        requireFreshPlanningAfterNoEffect(proof,now);proof.requirePublishedPlanning(this,planning);
+        need(planning!=null&&!planning.id.equals(closedSuccessorAttempt.offer.planning.id)
+                &&NativeSearchPlanning.equal(binding,planning.binding)&&planning.timing.requestStarted>=startedElapsed
+                &&planning.timing.requestDeadline<=chainDeadlineElapsed&&planning.publication!=null
+                &&planning.publishedElapsed<=now&&planning.persistedElapsed<=now&&now-planning.capturedElapsed<=2000,
+                "new full planning receipt required after the old drained search attempt");
+        offered=new Offer(this,planning);attempted=null;successorOffered=true;return offered;
+    }
+    synchronized boolean freshOfferFor(Attempt old,Offer value){
+        return !retired&&successorOffered&&old!=null&&old==closedSuccessorAttempt
+                &&successorProof!=null&&value!=null&&value==offered&&value!=old.offer&&value.session==this;
+    }
+    synchronized void requireNoEffectCandidate(Attempt value,long now){
+        requireLive(now);need(successorProof==null&&closedSuccessorAttempt==null&&!successorOffered
+                &&value!=null&&value==attempted&&value.offer==offered&&!navigationEffectRecorded&&!navigationObserved,
+                "no second search replanning authority");
+        value.requireUnclaimedRevalidated(now);
+    }
+    synchronized void requireModelPlanning(DecisionGrammar grammar,long now){
+        requireLive(now);need(offered!=null&&attempted==null&&grammar!=null
+                &&NativeSearchDecision.SCHEMA.equals(grammar.schema)&&offered.planning.id.equals(grammar.observationId)
+                &&goal.packageName.equals(grammar.currentPackage),"actual current search Offer grammar required");
+        offered.requireForGrammar(grammar.authorization);nativeTask.requireSearchModelPlanning(this,offered);
+    }
+
     synchronized void requireOffer(Offer offer){need(!retired&&offer!=null&&offer==offered&&offer.session==this,"actual current Offer required");}
     synchronized void retire(){retired=true;if(attempted!=null)attempted.close();}
     synchronized boolean navigationEffectRecorded(){return navigationEffectRecorded;}
@@ -122,7 +184,7 @@ final class NativeSearchSession {
                         &&planning.id.equals(decision.observationId)&&planning.packageName.equals(decision.packageName)
                         &&planning.role.roleId.equals(decision.roleId),"new real model intent must select this exact Offer");
                 need(started>=planning.persistedElapsed&&started-planning.capturedElapsed<=90000&&deadline>started
-                        &&deadline-started<=8000&&deadline<=session.taskDeadlineElapsed,"original observation age/8s action/task deadline");
+                        &&deadline-started<=8000&&deadline<=session.chainDeadlineElapsed,"original observation age/8s action/task deadline");
                 session.authorization.checkNativeSearchIntent(session.selection,session.goal,modelRunId,planning.id,planning.role.roleId);
                 value=new Attempt(this,decision,modelRunId,started,deadline);session.attempted=value;
             }
@@ -134,7 +196,7 @@ final class NativeSearchSession {
     static final class Attempt {
         final NativeSearchSession session;final Offer offer;final NativeSearchDecision decision;
         final String modelRunId;final long startedElapsed,deadlineElapsed;
-        private int state;private boolean claimed;private NativeSearchRole revalidation;private long revalidatedElapsed;
+        private int state;private boolean claimed,closedForSuccessor;private NativeSearchRole revalidation;private long revalidatedElapsed;
         private Attempt(Offer offer,NativeSearchDecision decision,String run,long started,long deadline){
             this.offer=offer;session=offer.session;this.decision=decision;modelRunId=run;startedElapsed=started;deadlineElapsed=deadline;
         }
@@ -159,6 +221,18 @@ final class NativeSearchSession {
         }
         /** Must be adjacent to the shared ActionExecutionState.enterEffect;
          * both one-use checks must succeed before the one Android call. */
+        void requireUnclaimedRevalidated(long now){
+            requireLive(now);synchronized(this){need(state==0&&!claimed&&revalidation!=null&&!closedForSuccessor,
+                    "actual unclaimed revalidated search Attempt required");}
+        }
+        private void closeForSuccessor(){
+            synchronized(this){need(state==0&&!claimed&&revalidation!=null&&!closedForSuccessor,
+                    "only an unclaimed search Attempt may close for a successor");closedForSuccessor=true;state=2;}
+        }
+        void requireClosedForSuccessor(){
+            synchronized(this){need(state==2&&!claimed&&closedForSuccessor&&revalidation!=null,
+                    "old search Attempt was not irrevocably closed for one successor");}
+        }
         void claim(long now){requireLive(now);synchronized(this){need(state==0&&!claimed&&revalidation!=null&&now>=revalidatedElapsed,"one fresh revalidated search claim required");state=1;claimed=true;}}
         synchronized void close(){state=2;}
         synchronized Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-attempt.v1");

@@ -85,10 +85,19 @@ def prepare(source, output, extra_tests=()):
     service = service_path.read_text()
     if not service.endswith("}") or "class ActionOutcome" in service:
         raise RuntimeError("nonunique original service IO port")
+    no_effect_port = """
+    static final class NativeSearchNoEffectReplanProof {
+        private NativeSearchNoEffectReplanProof(){throw new AssertionError("Android no-effect successor proof is unavailable in this pure consumer gate");}
+        void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean closed){throw new AssertionError("No Android no-effect proof in pure Session gate");}
+        void requireOutcome(ActionOutcome outcome){throw new AssertionError("No Android no-effect proof in pure Session gate");}
+        void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("No Android no-effect proof in pure Session gate");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("No Android no-effect proof in pure Session gate");}
+    }
+"""
     service_path.write_text(service[:-1].replace("package org.trillionnium.hepta.local;",
                             "package org.trillionnium.hepta.local;import org.json.JSONObject;")
                             + "\n" + outcome + "\n"
-                            + "static final class NativeSearchReadRetryProof { private NativeSearchReadRetryProof(){throw new AssertionError(\"Android initial-read proof is unavailable in this pure consumer gate\");} }\n}\n")
+                            + "static final class NativeSearchReadRetryProof { private NativeSearchReadRetryProof(){throw new AssertionError(\"Android initial-read proof is unavailable in this pure consumer gate\");} }\n" + no_effect_port + "}\n")
     excluded = {"tests/web-flight/WebFlightQueryHostTest.java", "tests/native-app/legacy-boundary/NativeAppSession.java"}
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in (
@@ -108,6 +117,8 @@ def prepare(source, output, extra_tests=()):
         "compile_inputs": [record(p) for p in paths], "background_fixture": extraction,
         "exact_completion_installed_identity_sha256": sha(actual_completion.encode()),
         "exact_actual_action_outcome_sha256": sha(outcome.encode()),
+        "android_no_effect_successor_proof_available": False,
+        "android_no_effect_successor_proof_port": "Unconstructible, all four authority methods refuse; no typed producer success is claimed here.",
         "client_port_methods": [{"signature": s, "sha256": sha(v.encode())} for s, v in zip(signatures, fixture_methods)],
         "boundary": "Full actual Session, Offer, Attempt, Role, Planning, authorization, selection and provider classes. Existing Android socket/display/clock ports are synthetic; ordinary PM/root recovery ports refuse. Actual ActionOutcome is copied byte-for-byte. This is not an Android producer, phone effect or business-success proof.",
         "phone_actions": 0, "device_qualified": False, "business_verified": False}

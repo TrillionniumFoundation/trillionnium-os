@@ -23,20 +23,26 @@ def prepare(source, output):
     await_block = section(controller, "    private ModelAnswer awaitModel(", "        long remaining=taskDeadline-SystemClock.elapsedRealtime();")
     await_guard = await_block[await_block.index("{") + 1:]
     # This original fixture accepts only prompt/config, never a typed Offer or
-    # grammar. Keep the actual ordinary/visual branch; the new independent search
-    # admission is exercised by its actual Session/producer gates.
+    # grammar. Project only the explicit search branches and keep the ordinary,
+    # visual, and form-history guard bytes, including runtime configuration.
     full_await_guard=await_guard
     search_start='        final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);'
     system_selection='        final String system=searchProtocol?NATIVE_SEARCH_SYSTEM:systemPrompt(runtime,nativeApp);'
-    search_only=section(await_guard,search_start,system_selection)
-    if await_guard.count(search_only)!=1 or await_guard.count(system_selection)!=1:
-        raise RuntimeError("one complete native-search-only admission branch required")
-    await_guard=await_guard.replace(search_only,"",1)
+    native_search_selection="            if(searchProtocol){\n                NativeSearchSession search=activeNativeSearch;\n                if(search==null||search.nativeTask!=nativeTask||search.background!=background||taskDeadline!=search.chainDeadlineElapsed)\n                    throw new IllegalStateException(\"搜索模型必须使用同一实际 Session 和首次固定的链期限\");\n                search.requireModelPlanning(grammar,SystemClock.elapsedRealtime());\n            }else nativeTask.requireModelPlanning();\n"
+    legacy_native_selection='            nativeTask.requireModelPlanning();\n'
+    search_only=section(await_guard,'\n        if(searchProtocol){\n','\n'+system_selection)[1:]+'\n'
     legacy_system_selection='        final String system=systemPrompt(runtime,nativeApp);'
-    await_guard=await_guard.replace(system_selection,legacy_system_selection,1)
-    if (await_guard.replace(legacy_system_selection,search_only+system_selection,1)
-            !=full_await_guard):
-        raise RuntimeError("ordinary admission projection changed bytes outside the new branch")
+    projections=((search_start+'\n',''),(native_search_selection,legacy_native_selection),
+                 (search_only,''),(system_selection,legacy_system_selection))
+    for actual,legacy in projections:
+        if await_guard.count(actual)!=1:
+            raise RuntimeError("one complete actual search-only admission region required")
+        await_guard=await_guard.replace(actual,legacy,1)
+    restored=await_guard.replace(legacy_system_selection,search_only+system_selection,1)
+    restored=restored.replace(legacy_native_selection,native_search_selection,1)
+    restored=restored.replace('        if(nativeApp){',search_start+'\n        if(nativeApp){',1)
+    if restored!=full_await_guard:
+        raise RuntimeError("ordinary admission projection changed bytes outside the search branches")
     limited = section(service, "    static String limited(", "    static String message(")
     parts = {
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
@@ -147,6 +153,9 @@ public final class PromptAdmissionFixture {
             "full_current_await_guard_sha256": digest(full_await_guard.encode()),
             "excluded_search_branch_bytes": len(search_only.encode()),
             "excluded_search_branch_sha256": digest(search_only.encode()),
+            "excluded_search_protocol_declaration_sha256": digest((search_start+"\n").encode()),
+            "excluded_native_search_selection_sha256": digest(native_search_selection.encode()),
+            "ordinary_runtime_configuration_retained_verbatim": True,
             "actual_system_selection_sha256": digest(system_selection.encode()),
             "ordinary_system_prompt_expression": "systemPrompt(runtime,nativeApp)",
             "projection_reverse_bytes_equal": True,

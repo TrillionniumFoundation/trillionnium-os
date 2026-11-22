@@ -427,6 +427,10 @@ final class ControllerReadRetryHost {
     }
     void plan(PendingSample... samples){pendingSamples=Arrays.asList(samples);}
     void runOneModelStep(long deadline,PhoneObservation initial,boolean nativeApp)throws Exception{
+        // This original pending-loop fixture has no search grammar, Offer or Session.
+        // Keep the entire actual model guard; its new search branch remains unavailable.
+        final DecisionGrammar grammar=null;final NativeSearchSession activeNativeSearch=null;
+        final org.trillionnium.hepta.local.BackgroundSession background=null;final long taskDeadline=deadline;
         String taskId=currentTaskId;File evidence=directory;PhoneObservation observation=initial;int steps=0;final int MAX_STEPS=1;
 {{pending_loop_prefix}}
 {{pending_model_guard}}

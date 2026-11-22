@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual HA new producer/effect methods with real Session/Gate, explicit Android IO."""
-import argparse,hashlib,importlib.util,json,os,subprocess,sys,time
+import argparse,hashlib,importlib.util,json,os,re,subprocess,sys,time
 from pathlib import Path
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
@@ -54,7 +54,7 @@ def main():
  '    void requireTaskAuthorization(', '    private synchronized QualificationScopeConfig.Bound scopeFor(',
  '    private synchronized boolean ownsScope(', '    private static JSONObject callbackScopeEvidence(',
  '    private JSONObject callbackAuthorizationEvidence(', '    boolean actionWorkPending(){',
- '    boolean observationReadWorkPending(){', '    private static void checkReadBudget(',
+ '    boolean observationReadWorkPending(){', '    void retireActionWork(', '    private static void checkReadBudget(',
  '    private static boolean hasAction(', '    private Map<String,Object> readNativeActionWindows(',
  '    private static void collectNativeActionNode(',
  '    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference){',
@@ -73,6 +73,7 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()
+ parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()
  template=(test/'SearchProducerHost.template').read_text()
  for key,value in parts.items():
   if template.count('{{'+key+'}}')!=1:raise RuntimeError('unique template slot '+key)
@@ -89,6 +90,12 @@ def main():
     private static String home(Context c){throw new AssertionError("restricted launcher IO outside this gate");}
 }\n''';config.write_text(c)
  ports=out/'generated/ports'
+ clock=ports/'android/os/SystemClock.java';clock_text=clock.read_text()
+ old_clock='public static long now=1000000;public static long elapsedRealtime(){return now;}'
+ new_clock='public static long now=1000000;public static volatile Runnable beforeRead;public static long elapsedRealtime(){if(beforeRead!=null)beforeRead.run();return now;}'
+ if clock_text.count(old_clock)!=1:raise RuntimeError('one exact original synthetic clock endpoint required')
+ clock.write_text(clock_text.replace(old_clock,new_clock))
+
  write(ports/'android/os/Looper.java','package android.os;public final class Looper{public static boolean main=true;private static final Looper MAIN=new Looper(),WORKER=new Looper();public static Looper myLooper(){return main?MAIN:WORKER;}public static Looper getMainLooper(){return MAIN;}}\n')
  keyguard=ports/'android/app/KeyguardManager.java';s=keyguard.read_text();s=s.replace('public boolean locked;', 'public boolean locked;public static Runnable beforeCheck;').replace('return locked;', 'if(beforeCheck!=null)beforeCheck.run();return locked;');keyguard.write_text(s)
  osp=ports/'android/system/Os.java';s=osp.read_text();s=s.replace(' public static String failFsyncPath;', ' public static String failFsyncPath;public static Runnable afterRead,beforeWrite;public static java.util.function.Consumer<String> afterFsync;')
@@ -112,6 +119,37 @@ def main():
  controller_source=ports/'org/trillionnium/hepta/local/NativeSearchLoadingControllerHost.java'
  write(controller_source,controller_template.replace('{{actual_controller_methods}}','\n'.join(controller_parts.values())))
  additional.append(controller_source)
+ successor_signatures=controller_signatures+[
+  '    private static final class NativeSearchActionReply {',
+  '    private static final class NativeSearchNoEffectReplanRequired extends IllegalStateException {',
+  '    private NativeSearchPlanning awaitNativeSearchPlanningAfterNoEffect(',
+  '    private PhoneObservation runNativeSearchPrelude(',
+  '    private NativeSearchActionReply awaitNativeOpenSearch(',
+  '    private static final class ModelAnswer {',
+  '    private static final class CleanupUnknown extends Exception {']
+ successor_parts={key:body(controller_raw,key) for key in successor_signatures}
+ branch_start='            if(activeNativeSearch!=null){\n                final NativeSearchSession search=activeNativeSearch;'
+ branch_end='else observation=awaitInitialNativeObservation(taskId,evidence,authorization,deadline);'
+ if controller_raw.count(branch_start)!=1 or controller_raw.count(branch_end)!=1:raise RuntimeError('unique actual complete search branch required')
+ start_at=controller_raw.index(branch_start);end_at=controller_raw.index(branch_end,start_at)
+ successor_branch=controller_raw[start_at:end_at]
+ model_method=body(controller_raw,'    private ModelAnswer awaitModel(')
+ model_start='        final boolean searchProtocol=';model_end='        final LocalRuntimeConfig runtime=inference.configuration();'
+ if model_method.count(model_start)!=1 or model_method.count(model_end)!=1:raise RuntimeError('actual model precheck anchors')
+ model_precheck=model_method[model_method.index(model_start):model_method.index(model_end)]
+ constants=[]
+ for name in ('NATIVE_SEARCH_SYSTEM','MODEL_TIMEOUT_MS','MAX_STEPS'):
+  found=re.findall(r'    private static final [^\n]*'+name+r'.*?;\n',controller_raw,re.S)
+  if len(found)!=1:raise RuntimeError('exact controller constant '+name)
+  constants.append(found[0])
+ successor_template=(test/'NoEffectControllerHost.template').read_text()
+ for key,value in {'actual_constants':'\n'.join(constants),'actual_search_branch':successor_branch,
+    'actual_model_precheck':model_precheck,'actual_controller_methods':'\n'.join(successor_parts.values())}.items():
+  if successor_template.count('{{'+key+'}}')!=1:raise RuntimeError('exact successor controller slot '+key)
+  successor_template=successor_template.replace('{{'+key+'}}',value)
+ successor_source=ports/'org/trillionnium/hepta/local/NativeSearchNoEffectControllerHost.java'
+ write(successor_source,successor_template);additional.append(successor_source)
+
  paths+=additional+[pkg/'PersistentActionPolicy.java',pkg/'ObservationStabilityGate.java']
  paths=list(dict.fromkeys(paths));inputs=[meta(p) for p in paths]
  tools=[meta(p) for p in (jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar)]
@@ -122,6 +160,10 @@ def main():
  'boundary':'Real full Session/Gate/Offer/Attempt/Role/Planning plus verbatim HA new producer, typed effect, ownership guards, raw census, original callback and actual scope Bound. Explicit synthetic Android nodes/windows/socket/clock/queues. No permissive Offer or action guard surrogate.'}
  extraction={'parts':{k:{'bytes':len(v.encode()),'sha256':sha(v.encode())} for k,v in parts.items() if k!='cases'},'actual_methods':{k:sha(v.encode()) for k,v in methodparts.items()},'actual_scope_bound_sha256':sha(bound.encode()),'read_graph_failure_source_sha256':sha(read_graph.encode()),'shared_closure':provenance}
  extraction['actual_controller_methods']={key:sha(value.encode()) for key,value in controller_parts.items()}
+ extraction['actual_successor_controller_methods']={key:sha(value.encode()) for key,value in successor_parts.items()}
+ extraction['actual_successor_controller_search_branch_sha256']=sha(successor_branch.encode())
+ extraction['actual_successor_controller_model_precheck_sha256']=sha(model_precheck.encode())
+ extraction['synthetic_controller_endpoints']=['model output and latency','token estimate metadata','post-effect old AX callback using real provider Frame']
  original_before=meta(args.loading_original) if args.loading_original else None
  report['external_loading_original']=original_before
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
