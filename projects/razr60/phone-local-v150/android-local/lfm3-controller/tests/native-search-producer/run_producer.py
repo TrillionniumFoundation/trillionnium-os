@@ -74,6 +74,7 @@ def main():
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()
+ parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
  template=(test/'SearchProducerHost.template').read_text()
  for key,value in parts.items():
   if template.count('{{'+key+'}}')!=1:raise RuntimeError('unique template slot '+key)
@@ -102,6 +103,12 @@ def main():
  s=s.replace('return count<0?0:count;', 'if(afterRead!=null){Runnable hook=afterRead;afterRead=null;hook.run();}return count<0?0:count;')
  s=s.replace('OPEN.get(fd).file.write(b,p,n);return n;', 'if(beforeWrite!=null)beforeWrite.run();OPEN.get(fd).file.write(b,p,n);return n;');osp.write_text(s)
  s=s.replace('if(fd.valid())fd.sync();', 'if(fd.valid())fd.sync();if(afterFsync!=null)afterFsync.accept(path);');osp.write_text(s)
+ # Dedicated, normally-null IO endpoint for the actual LTC record's final chmod.
+ # It does not rewrite record(), its FileOutputStream write or FD.sync.
+ chmod_start=' public static void chmod(String s,int mode)throws Exception{'
+ if s.count(chmod_start)!=1:raise RuntimeError('one actual host chmod endpoint required')
+ s=s.replace('public final class Os {','public final class Os {\n public static volatile java.util.function.Consumer<String> beforeChmod;')
+ s=s.replace(chmod_start,chmod_start+'if(beforeChmod!=null)beforeChmod.accept(s);');osp.write_text(s)
  additional=[]
  for path,text in {
   'android/util/DisplayMetrics.java':'package android.util;public final class DisplayMetrics{public int widthPixels,heightPixels;}\n',
@@ -110,6 +117,7 @@ def main():
   p=ports/path;write(p,text);additional.append(p)
  controller_raw=(pkg/'LocalTaskController.java').read_text()
  controller_signatures=['    private static final class NativeSearchLoadingReadFailure extends IllegalStateException {',
+  '    private static final class NativeSearchSamplingReadFailure extends IllegalStateException {',
   '    private void requireInitialSearchPlanningRead(', '    private NativeSearchPlanning awaitNativeSearchPlanning(',
   '    private NativeSearchPlanning awaitNativeSearchPlanningOnce(', '    private void checkActive(',
   '    private static final class Stopped extends Exception {','    private static void record(']

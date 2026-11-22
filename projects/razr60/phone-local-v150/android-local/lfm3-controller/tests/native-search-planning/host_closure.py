@@ -83,9 +83,13 @@ def prepare(source, output, extra_tests=()):
     outcome = query.java_block(service_source.read_bytes(), "public static final class ActionOutcome {")
     service_path = output / "ports/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
     service = service_path.read_text()
-    if not service.endswith("}") or "class ActionOutcome" in service:
+    if not service.endswith("}") or "class ActionOutcome" in service or "class NativeSearchSamplingExhaustionProof" in service:
         raise RuntimeError("nonunique original service IO port")
     no_effect_port = """
+    static final class NativeSearchSamplingExhaustionProof {
+        private NativeSearchSamplingExhaustionProof(){throw new AssertionError("No Android sampling successor proof in pure Session gate");}
+        void close(){throw new AssertionError("No Android sampling successor authority in pure Session gate");}
+    }
     static final class NativeSearchNoEffectReplanProof {
         private NativeSearchNoEffectReplanProof(){throw new AssertionError("Android no-effect successor proof is unavailable in this pure consumer gate");}
         void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean closed){throw new AssertionError("No Android no-effect proof in pure Session gate");}

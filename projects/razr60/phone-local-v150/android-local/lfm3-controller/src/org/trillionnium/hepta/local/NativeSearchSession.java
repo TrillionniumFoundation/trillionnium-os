@@ -12,6 +12,10 @@ final class NativeSearchSession {
     interface ObservationCallback {
         void onPlanning(NativeSearchPlanning value);void onError(String detail);
         default void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){onError(detail);}
+        default boolean acceptsSamplingReadRetry(){return false;}
+        default void onSamplingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchSamplingExhaustionProof proof){
+            try{onError(detail);}finally{proof.close();}
+        }
     }
     interface ActionCallback {
         void onResult(HeptaAccessibilityService.ActionOutcome value);

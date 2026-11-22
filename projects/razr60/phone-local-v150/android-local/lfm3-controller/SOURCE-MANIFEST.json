@@ -3,8 +3,8 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "ab6b58b_successor_r22_test_compatibility_fixed_source_complete_current_host_matrix_and_signed_apk_pending",
-  "complete_source_files": 2407,
+  "candidate_status": "fdc17e7e_successor_r23_fixed_source_complete_current_host_matrix_sdk_and_signed_apk_pending",
+  "complete_source_files": 2408,
   "files": [
     {
       "bytes": 100,
@@ -6502,9 +6502,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 508557,
+      "bytes": 534162,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "8dc9b23569b58f668338a3486a960c5c82b8370f6e575950e06f5e55621799ca"
+      "sha256": "250c882135b263314177039c533b5c663973fc577ff50cdac613862d30fea61a"
     },
     {
       "bytes": 711,
@@ -6557,9 +6557,9 @@
       "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
-      "bytes": 237821,
+      "bytes": 241281,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "9c3e11c02ccb603c3800adb8be63858a0118fc4eb15e2ed824c508c8a53fba59"
+      "sha256": "58c9b9042919512cc6a7abbdddc59aea26a5797745f9b5c2211d40d78299c0fe"
     },
     {
       "bytes": 59396,
@@ -6682,9 +6682,9 @@
       "sha256": "4b8efb072441af342ce48f4ebd5ff0935dbe551dea3a3a91e034de21d2f40917"
     },
     {
-      "bytes": 23107,
+      "bytes": 23374,
       "path": "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "sha256": "12e7d2e09de7e6915ee8cb013f5a167ad5f6b2cd3519738a9721bc6fbb2d9fbf"
+      "sha256": "0be8f72d6f56de5a151c3766d4162f1370733c362166956770e45ca83a0ee3cc"
     },
     {
       "bytes": 51970,
@@ -8157,9 +8157,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 23295,
+      "bytes": 23691,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "66fd7eb12741855518ffbb2fc033b1baa48137a1934c10e065b64a0cadf73ecb"
+      "sha256": "19d49ff6504f5db04ec0e01bf7c6a77c5b3ac57e8a76d02b5b23ef4edd19af5f"
     },
     {
       "bytes": 717,
@@ -8422,9 +8422,9 @@
       "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
     },
     {
-      "bytes": 51906,
+      "bytes": 52302,
       "path": "tests/native-app-provider/run_host.py",
-      "sha256": "7fb8fea5ca9a2f58e749810cd5f5a38e9b9026ea65d2cdf8a852419f387e7ea0"
+      "sha256": "72cfa0936e14eca98c2e15db4caa9bf255d0d98f201c91348e380755e68e09e0"
     },
     {
       "bytes": 6890,
@@ -8867,9 +8867,9 @@
       "sha256": "e24deade6532d12a3d220c204a7457be7c537a12de042b3cff71a52e953b81c8"
     },
     {
-      "bytes": 8694,
+      "bytes": 9072,
       "path": "tests/native-search-planning/host_closure.py",
-      "sha256": "14a9212a09bed1559b7bf304733904dbe7787cd3d4e942d711e9fc4c746f68a1"
+      "sha256": "e4a280bf7befb143a60257f4168aac432f4f64cffa0e3242f8469be1411b7178"
     },
     {
       "bytes": 5105,
@@ -8897,19 +8897,24 @@
       "sha256": "0d09fca8fcacd231c66c5cfe6043ef21a0f6149c14206d8fe6ea4975a77607d9"
     },
     {
-      "bytes": 41259,
+      "bytes": 41288,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "3e766df703a691e8eec4c8b18112e3e83e7456af9147d8c8693f6324de660ca7"
+      "sha256": "71b04d119d2ec40c88be101e8048715502f14181bbbd24d7bd9322dffa740c49"
     },
     {
-      "bytes": 26789,
+      "bytes": 31363,
+      "path": "tests/native-search-producer/SamplingExhaustionCases.fragment",
+      "sha256": "377e273bc229f9120f25e11d87925790a72f6f38df806501b5adb475507080d0"
+    },
+    {
+      "bytes": 26847,
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "sha256": "2c47ec4eaed5363771d3612aa1104c5b91958d2252a1221a3a2b5db65e06e80c"
+      "sha256": "593ee8b7d43b0fa5ab5b2ba43459fc408d4bac8716873825f4e1ef8cffbdea83"
     },
     {
-      "bytes": 17477,
+      "bytes": 18218,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "79e4db3118b6cc3883a586dea599727a19f6ae73d735b4a2827a70004a4d0da7"
+      "sha256": "7ca6d35032b9493a5741bb9dd0564e3480e932d75b7e639acf261400e56471d0"
     },
     {
       "bytes": 29903,
@@ -9062,9 +9067,9 @@
       "sha256": "8511dec3efab54f7849783a2b62f59cbd63b765bf7bc56cb07fabaea475fea17"
     },
     {
-      "bytes": 16206,
+      "bytes": 17318,
       "path": "tests/native-xiaomi-location/run_host.py",
-      "sha256": "8030fbf52bb9b2a80cb2d1924f8de9dcac2fa2d117066e9c5ac93725701739bf"
+      "sha256": "f0cee05b75de123d370a8f5edba64efce26dc8fd2cdb0c35df7ab912f0101e7a"
     },
     {
       "bytes": 28134,
@@ -10272,9 +10277,9 @@
       "sha256": "0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47"
     },
     {
-      "bytes": 18682,
+      "bytes": 19112,
       "path": "tests/public-profile-terminal-bridge/run_host.py",
-      "sha256": "d18fa73d5b7367965eb2866c3cf11361c49811d8899a9a67ee840163841211ec"
+      "sha256": "d14fb255097986278865ffe7eded57808f52ceac17922bc64be4662ac4234839"
     },
     {
       "bytes": 17308,
@@ -10537,9 +10542,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 36093,
+      "bytes": 37264,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "dbff73e906dc3ac8147a401f40ade8fc2842aa361ea9f5861fa9366f89dfe883"
+      "sha256": "315e241bed6af2a9fa17e71b0503cf24f4db97b27f9b1c3feed9adec28ea11ef"
     },
     {
       "bytes": 2997,
@@ -11752,9 +11757,9 @@
       "sha256": "397dfce959fd321225b5c2449dac7a59d14463679d7277d697370d59d4d5fc4b"
     },
     {
-      "bytes": 11812,
+      "bytes": 12208,
       "path": "tests/xiaomi-profile/run_native_host.py",
-      "sha256": "55dd7b8c4885a9935b581b1c85a8c4383b10f1dd67b0aa062348862f2f37eedd"
+      "sha256": "3006d846eebfbd4e289193142d225ce0bc745604574ca777bb8c2d92c3224bb7"
     },
     {
       "bytes": 10326,
@@ -12038,7 +12043,7 @@
     }
   ],
   "fixture_compatibility": {
-    "current_changes": "Keep every original case and assertion. Add strictly unavailable no-effect proof interfaces to legacy host carriers and an exact inverse proof for the reviewed provider driver. Extend the actual search producer with 34 successor cases while preserving its 73 existing cases. Add 18 actual controller incomplete-terminal cases with explicitly synthetic Android IO boundaries.",
+    "current_changes": "Preserve all 107 existing search-producer cases and assertions; append 43 sampling-exhaustion cases over verbatim actual producer and controller methods with explicitly synthetic Android, clock, queue and model endpoints. Add only nonconstructible always-refusing sampling-proof types to required legacy carriers, a permanently absent tracker where the unchanged retire body needs its type, and an exact reviewed provider inverse on a proof copy. Original case bodies and assertions are unchanged.",
     "historical_failed_attempts_preserved": true,
     "new_tests_do_not_claim_phone_success": true,
     "original_case_assertions_preserved": true
@@ -12046,26 +12051,18 @@
   "main_java_sources": 205,
   "phone_qualified": false,
   "production_build_inputs_count": 380,
-  "production_input_map_sha256": "f110cc5d048be491e2fb6f7e87d0678cfa87015dc18f3db9f7eb3588e92ade42",
+  "production_input_map_sha256": "54a9b71cce4e7a8703d9a2c16ef55b436586b2a80b42acc4ab1fc345cf99420c",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact successor to published ab6b58b. Preserve all prior native form-history, permission, profile, recovery, task and one-use input contracts. Delay only immutable diagnostic deep copies until final sealing before physical drain. A private typed first-post-D no-effect refusal may authorize at most one distinct full current planning read and one new model intent; old Offer, Attempt and model run remain spent, continuous unknown/boundary/untyped events refuse, the original action deadline never changes, and a 174000ms chain limit is fixed before the first planning request and clipped to the original task deadline. Actual graph ownership is cleared and closed before drain/proof publication. Strictly model/task/domain-bound Ctrip done.failure or done.partial is consumed as a controller-only non-effect terminal receipt before UI dispatch; success and independent completion checks remain unchanged. All historic business failures remain unchanged. Final required current host gates, Android SDK compile, publication, signed APK, installation and phone outcomes are separate evidence.",
-  "source_parent_head": "ab6b58b93b8e41ea341a72348a9aa6765fbf7f1e",
-  "source_parent_manifest_sha256": "dd9388b1be491db6751bd8bc71068ef209cde2fdeccd952c9aa02ac39737f092",
-  "source_snapshot_predecessor_manifest_sha256": "aaeb8bf4efeae033aa0a54b976a01a3388b676d04dec6a109e68ec8269327536",
+  "scope": "Exact source successor to published fdc17e7e. Preserve all prior profile, recovery, native form-history, strict non-success controller termination, first-post-D no-effect successor and action contracts. A distinct private local 10-second sampling-fence cause may produce at most one observation-only successor after the original read and its diagnostics are physically drained and durably preserved. Earliest complete historical owner/window identity is fixed; later mismatch or unknown, untyped or newly accumulated boundary events disqualify across every handoff. The proof carries no Graph, node, planning or current profile authority. Admission resamples time inside the event lock before the old 12-second deadline and shares the single initial ordinal2 with loading recovery. The independent new read must establish its own complete pair and fresh profile/window publication; all existing Role, model, C/D and final action checks remain. Original 10/12-second request, 8-second action, fixed 174000ms chain and task deadlines are unchanged. Unused, expired, canceled, failed or undelivered recovery is closed without automatic repost. All historic business failures remain unchanged. Current full host gates, SDK compile, source publication, signed APK and phone outcomes require separate actual evidence.",
+  "source_parent_head": "fdc17e7e2b338a7135ed1a08af9040dd37855c15",
+  "source_parent_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
+  "source_snapshot_predecessor_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
   "test_compatibility_changed_paths": [
-    "tests/exact-admission/prepare_fixture.py",
     "tests/native-action-integration/run_host.py",
     "tests/native-app-provider/run_host.py",
-    "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-    "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-    "tests/native-incomplete-termination/NativeIncompleteTerminationHostTest.java",
-    "tests/native-incomplete-termination/run_host.py",
-    "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-    "tests/native-observation-read-retry/run_host.py",
     "tests/native-search-planning/host_closure.py",
-    "tests/native-search-producer/NoEffectControllerHost.template",
-    "tests/native-search-producer/NoEffectSuccessorCases.fragment",
     "tests/native-search-producer/ProducerCases.fragment",
+    "tests/native-search-producer/SamplingExhaustionCases.fragment",
     "tests/native-search-producer/SearchProducerHost.template",
     "tests/native-search-producer/run_producer.py",
     "tests/native-xiaomi-location/run_host.py",
@@ -12073,18 +12070,30 @@
     "tests/qualification-scope/prepare_fixture.py",
     "tests/xiaomi-profile/run_native_host.py"
   ],
-  "test_compatibility_parent_manifest_sha256": "aaeb8bf4efeae033aa0a54b976a01a3388b676d04dec6a109e68ec8269327536",
+  "test_compatibility_parent_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
   "test_compatibility_successor_delta": {
-    "baseline": "integrated-r21",
+    "baseline": "integrated-r22",
     "changed_paths": [
-      "tests/exact-admission/prepare_fixture.py",
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "tests/native-observation-read-retry/run_host.py"
+      "tests/native-action-integration/run_host.py",
+      "tests/native-app-provider/run_host.py",
+      "tests/native-search-planning/host_closure.py",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/native-search-producer/SamplingExhaustionCases.fragment",
+      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/native-search-producer/run_producer.py",
+      "tests/native-xiaomi-location/run_host.py",
+      "tests/public-profile-terminal-bridge/run_host.py",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/xiaomi-profile/run_native_host.py"
     ],
     "original_cases_and_assertions_unchanged": true,
-    "production_changed": false,
-    "scope": "Retain actual ordinary runtime/native/form-history admission while removing only explicit typed search branches with a complete inverse; preserve unavailable legacy search ports; carry the entire actual pending-loop model guard with final-null non-search inputs. Original r21 failures remain unchanged."
+    "production_changed": true,
+    "scope": "Only legacy type closure and exact provider inverse; actual sampling behavior is covered by the independent actual-producer gate. All prior failures remain original artifacts.",
+    "separate_production_changed_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeSearchSession.java"
+    ]
   },
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"

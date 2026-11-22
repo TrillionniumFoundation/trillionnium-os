@@ -103,7 +103,7 @@ def main():
         service_before=service_port.read_bytes()
         service_text=service_before.decode("utf-8")
         require(bgfiles.count(service_port)==1 and service_text.endswith("}")
-                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text and "class NativeSearchNoEffectReplanProof" not in service_text,
+                and "class ActionOutcome" not in service_text and "class NativeSearchReadRetryProof" not in service_text and "class NativeSearchNoEffectReplanProof" not in service_text and "class NativeSearchSamplingExhaustionProof" not in service_text,
                 "one original Service type port required")
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
@@ -113,6 +113,10 @@ def main():
     }
     public static final class NativeSearchReadRetryProof {
         private NativeSearchReadRetryProof(){throw new AssertionError("native loading read retry is outside the legacy provider fixture");}
+    }
+    public static final class NativeSearchSamplingExhaustionProof {
+        private NativeSearchSamplingExhaustionProof(){throw new AssertionError("native sampling successor is outside this legacy fixture");}
+        public void close(){throw new AssertionError("no sampling successor authority in this legacy fixture");}
     }
     public static final class NativeSearchNoEffectReplanProof {
         private NativeSearchNoEffectReplanProof(){throw new AssertionError("native search no-effect successor is outside this legacy fixture");}

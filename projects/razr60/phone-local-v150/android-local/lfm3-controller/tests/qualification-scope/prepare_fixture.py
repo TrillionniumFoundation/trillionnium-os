@@ -106,6 +106,7 @@ def prepare(source, output):
     private volatile NativeSearchSession nativeSearchSession;
     private volatile NativeSearchRequest activeNativeSearchObservation;
     private volatile NativeSearchRequest nativeSearchRetryPending;
+    private final NativeSearchRequest nativeSearchSamplingTracked=null;
     private final java.util.concurrent.atomic.AtomicBoolean observationIoBusy=new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile SearchActionWork activeSearchAction;
     private final Object nativeSearchEventLock=new Object();
@@ -120,6 +121,13 @@ def prepare(source, output):
         void requireOriginal(HeptaAccessibilityService service,Object controller,NativeSearchSession session,String task,File directory,long deadline){throw new AssertionError("No initial planning retry authority in old fixture");}
         java.util.Map<String,Object> evidence(){throw new AssertionError("No initial planning retry evidence in old fixture");}
     }
+    static final class NativeSearchSamplingExhaustionProof {
+        private NativeSearchSamplingExhaustionProof(){throw new AssertionError("No sampling successor proof in old fixture");}
+        void requireOriginal(Object service,Object controller,NativeSearchSession session,String task,File directory,long deadline){throw new AssertionError("No sampling successor read authority in old fixture");}
+        java.util.Map<String,Object> evidence(){throw new AssertionError("No sampling successor evidence in old fixture");}
+        void close(){throw new AssertionError("No sampling successor authority in old fixture");}
+    }
+    private void closeNativeSearchSampling(NativeSearchRequest request){throw new AssertionError("No sampling history tracker in old fixture");}
     static final class NativeSearchNoEffectReplanProof {
         private NativeSearchNoEffectReplanProof(){throw new AssertionError("No no-effect successor proof in old fixture");}
         void requireOriginal(NativeSearchSession session,NativeSearchSession.Attempt attempt,long now,boolean closed){throw new AssertionError("No no-effect successor authority in old fixture");}
@@ -137,6 +145,7 @@ def prepare(source, output):
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){throw new AssertionError("No typed planning IO in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchReadRetryProof retry){throw new AssertionError("No typed planning recovery IO in old fixture");}
     void observeNativeSearchPlanningAfterNoEffect(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchNoEffectReplanProof successor){throw new AssertionError("No typed successor planning IO in old fixture");}
+    void observeNativeSearchPlanningAfterSamplingExhaustion(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchSamplingExhaustionProof successor){throw new AssertionError("No sampling successor planning IO in old fixture");}
     void performNativeOpenSearch(String task,NativeSearchSession.Attempt attempt,Cancellation cancel,NativeSearchSession.ActionCallback callback){throw new AssertionError("No typed effect IO in old fixture");}
     private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning planning,String error){throw new AssertionError("No typed publication in old fixture");}
 '''+search_legacy_gate+search_retire

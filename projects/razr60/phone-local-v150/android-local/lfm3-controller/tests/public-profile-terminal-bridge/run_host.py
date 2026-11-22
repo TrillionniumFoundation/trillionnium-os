@@ -164,7 +164,8 @@ def main():
         service_before=service_port.read_bytes();service_text=service_before.decode('utf-8')
         need(files.count(service_port)==1 and service_text.endswith('}')
                 and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text
-                and 'class NativeSearchNoEffectReplanProof' not in service_text,
+                and 'class NativeSearchNoEffectReplanProof' not in service_text
+                and 'class NativeSearchSamplingExhaustionProof' not in service_text,
                 'one original Service type port without new dispatch/retry types required')
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
@@ -174,6 +175,10 @@ def main():
     }"""
         retry_port="""    public static final class NativeSearchReadRetryProof {
         private NativeSearchReadRetryProof(){throw new AssertionError("native search retry proof is outside the legacy terminal fixture");}
+    }
+    public static final class NativeSearchSamplingExhaustionProof {
+        private NativeSearchSamplingExhaustionProof(){throw new AssertionError("native sampling successor proof is outside the legacy terminal fixture");}
+        public void close(){throw new AssertionError("No sampling successor authority in legacy terminal fixture");}
     }"""
         no_effect_port="""    public static final class NativeSearchNoEffectReplanProof {
         private NativeSearchNoEffectReplanProof(){throw new AssertionError("native search successor proof is outside the legacy terminal fixture");}

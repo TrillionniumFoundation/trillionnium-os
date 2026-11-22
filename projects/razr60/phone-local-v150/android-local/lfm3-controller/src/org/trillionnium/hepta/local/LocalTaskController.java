@@ -1321,6 +1321,13 @@ public final class LocalTaskController implements AutoCloseable {
             super(detail);if(proof==null)throw new IllegalArgumentException("actual typed initial planning read proof required");this.proof=proof;
         }
     }
+    private static final class NativeSearchSamplingReadFailure extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        final HeptaAccessibilityService.NativeSearchSamplingExhaustionProof proof;
+        NativeSearchSamplingReadFailure(String detail,HeptaAccessibilityService.NativeSearchSamplingExhaustionProof proof){
+            super(detail);if(proof==null)throw new IllegalArgumentException("actual typed sampling exhaustion proof required");this.proof=proof;
+        }
+    }
     private void requireInitialSearchPlanningRead(String id,NativeSearchSession session,long deadline)throws Exception{
         checkActive(Math.min(deadline,session.chainDeadlineElapsed));session.requireBeforeFirstPlanning(SystemClock.elapsedRealtime());
         if(session!=activeNativeSearch||session.nativeTask!=activeNativeTask||session.background!=activeNativeBackground
@@ -1330,7 +1337,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private NativeSearchPlanning awaitNativeSearchPlanning(final String id,final File directory,final NativeSearchSession session,long deadline)throws Exception{
         requireInitialSearchPlanningRead(id,session,deadline);
-        try{return awaitNativeSearchPlanningOnce(id,directory,session,deadline,null);}
+        try{return awaitNativeSearchPlanningOnce(id,directory,session,deadline,null,null);}
         catch(NativeSearchLoadingReadFailure failed){
             requireInitialSearchPlanningRead(id,session,deadline);
             failed.proof.requireOriginal(service,this,session,id,directory,deadline);
@@ -1343,36 +1350,68 @@ public final class LocalTaskController implements AutoCloseable {
             requireInitialSearchPlanningRead(id,session,deadline);
             failed.proof.requireOriginal(service,this,session,id,directory,deadline);
             emit("首页加载已完成，正在重新采集搜索规划…");
-            return awaitNativeSearchPlanningOnce(id,directory,session,deadline,failed.proof);
+            return awaitNativeSearchPlanningOnce(id,directory,session,deadline,failed.proof,null);
+        }catch(NativeSearchSamplingReadFailure failed){
+            try{
+                requireInitialSearchPlanningRead(id,session,deadline);
+                failed.proof.requireOriginal(service,this,session,id,directory,deadline);
+                record(directory,"native-search-initial-sampling-retry-01.json",new JSONObject()
+                        .put("schema","hepta.native-search-initial-sampling-retry-intent.v1").put("task_id",id)
+                        .put("failed_read_terminal",new JSONObject(failed.proof.evidence()).put("error",failed.getMessage()))
+                        .put("original_task_deadline_elapsed_ms",deadline).put("original_chain_deadline_elapsed_ms",session.chainDeadlineElapsed)
+                        .put("new_read_ordinal",2).put("retry_ordinal",1).put("old_request_renewed",false)
+                        .put("old_census_reused",false).put("old_pair_accepted",false).put("action_replayed",false)
+                        .put("first_model_request_not_submitted",true).put("current_profile_authority",false)
+                        .put("fresh_full_pair_required",true).put("business_verified",false));
+                requireInitialSearchPlanningRead(id,session,deadline);
+                failed.proof.requireOriginal(service,this,session,id,directory,deadline);
+                emit("页面读取未形成有效规划，正在重新采集…");
+                return awaitNativeSearchPlanningOnce(id,directory,session,deadline,null,failed.proof);
+            }finally{failed.proof.close();}
         }
     }
     private NativeSearchPlanning awaitNativeSearchPlanningOnce(final String id,final File directory,final NativeSearchSession session,
-            long deadline,final HeptaAccessibilityService.NativeSearchReadRetryProof retry)throws Exception{
+            long deadline,final HeptaAccessibilityService.NativeSearchReadRetryProof retry,
+            final HeptaAccessibilityService.NativeSearchSamplingExhaustionProof sampling)throws Exception{
         requireInitialSearchPlanningRead(id,session,deadline);service.verifyBackgroundRemote(id);checkActive(session.chainDeadlineElapsed);
         final long requestDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),session.chainDeadlineElapsed);
         final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<NativeSearchPlanning> value=new AtomicReference<NativeSearchPlanning>();
         final AtomicReference<String> error=new AtomicReference<String>();final AtomicBoolean abandoned=new AtomicBoolean(),delivered=new AtomicBoolean();
         final AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof> retryAvailable=new AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof>();
+        final AtomicReference<HeptaAccessibilityService.NativeSearchSamplingExhaustionProof> samplingAvailable=new AtomicReference<HeptaAccessibilityService.NativeSearchSamplingExhaustionProof>();
+        boolean samplingHandedOff=false;
         try{
-            service.observeNativeSearchPlanning(id,directory,session,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get()||abandoned.get();}},
-                    requestDeadline,new NativeSearchSession.ObservationCallback(){
+            HeptaAccessibilityService.Cancellation cancellation=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get()||abandoned.get();}};
+            NativeSearchSession.ObservationCallback callback=new NativeSearchSession.ObservationCallback(){
                         public void onPlanning(NativeSearchPlanning result){if(!abandoned.get()&&delivered.compareAndSet(false,true)){value.set(result);ready.countDown();}}
                         public void onError(String detail){if(!abandoned.get()&&delivered.compareAndSet(false,true)){error.set(detail);ready.countDown();}}
                         public void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){
                             if(!abandoned.get()&&delivered.compareAndSet(false,true)){retryAvailable.set(proof);error.set(detail);ready.countDown();}
                         }
-                    },retry);
+                        public boolean acceptsSamplingReadRetry(){return true;}
+                        public void onSamplingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchSamplingExhaustionProof proof){
+                            if(!abandoned.get()&&delivered.compareAndSet(false,true)){samplingAvailable.set(proof);error.set(detail);ready.countDown();}
+                            else proof.close();
+                        }
+                    };
+            if(sampling==null)service.observeNativeSearchPlanning(id,directory,session,cancellation,requestDeadline,callback,retry);
+            else service.observeNativeSearchPlanningAfterSamplingExhaustion(id,directory,session,cancellation,requestDeadline,callback,sampling);
             while(true){checkActive(deadline);long left=requestDeadline-SystemClock.elapsedRealtime();if(left<=0)throw new IllegalStateException("原生搜索规划观察在原期限内未完成");
                 if(ready.await(Math.min(100,left),TimeUnit.MILLISECONDS))break;}
             checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());
             if(SystemClock.elapsedRealtime()>=requestDeadline)throw new IllegalStateException("原生搜索规划回执迟到");
             if(error.get()!=null){
+                if(samplingAvailable.get()!=null){samplingHandedOff=true;throw new NativeSearchSamplingReadFailure(error.get(),samplingAvailable.get());}
                 if(retryAvailable.get()!=null)throw new NativeSearchLoadingReadFailure(error.get(),retryAvailable.get());
                 throw new IllegalStateException(error.get());
             }
             NativeSearchPlanning planning=value.get();if(planning==null||planning.publication==null)throw new IllegalStateException("缺少实际已发布的历史规划收据");
             record(directory,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));return planning;
-        }finally{abandoned.set(true);}
+        }finally{
+            abandoned.set(true);
+            if(sampling!=null)sampling.close();
+            if(!samplingHandedOff&&samplingAvailable.get()!=null)samplingAvailable.get().close();
+        }
     }
     private static final class NativeSearchActionReply {
         final HeptaAccessibilityService.ActionOutcome outcome;

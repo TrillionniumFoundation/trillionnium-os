@@ -69,6 +69,15 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
+        # Exact current sampling type-only inverse on a proof copy; compile the
+        # untouched current provider below. Every older pin remains required.
+        if sha(legacy_provider_bytes) == "72cfa0936e14eca98c2e15db4caa9bf255d0d98f201c91348e380755e68e09e0":
+            sampling_type_inverse = [b' and "class NativeSearchSamplingExhaustionProof" not in service_text', b'\n    public static final class NativeSearchSamplingExhaustionProof {\n        private NativeSearchSamplingExhaustionProof(){throw new AssertionError("native sampling successor is outside this legacy fixture");}\n        public void close(){throw new AssertionError("no sampling successor authority in this legacy fixture");}\n    }']
+            for current in sampling_type_inverse:
+                assert legacy_provider_bytes.count(current) == 1
+                legacy_provider_bytes = legacy_provider_bytes.replace(current, b"", 1)
+            assert sha(legacy_provider_bytes) == "7fb8fea5ca9a2f58e749810cd5f5a38e9b9026ea65d2cdf8a852419f387e7ea0"
+            report["retained_provider_sampling_type_exactly_reversible"] = True
         # Reverse only the exact reviewed no-effect proof type on a proof copy.
         # The actual current provider is compiled below without this projection.
         if sha(legacy_provider_bytes) == "7fb8fea5ca9a2f58e749810cd5f5a38e9b9026ea65d2cdf8a852419f387e7ea0":

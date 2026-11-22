@@ -2053,6 +2053,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     // is admitted. Event callback routing/handoff is atomic and never suppresses events.
     private final Object nativeSearchEventLock=new Object();
     private SearchActionWork nativeSearchTrackedAction;
+    // Read-only initial sampling history. This reference never grants a planning/effect capability.
+    private NativeSearchRequest nativeSearchSamplingTracked;
 
     synchronized void bindNativeSearchSession(NativeSearchSession session){
         if(session==null||nativeSearchSession!=null||nativeSearchPlanningAdmitted||taskObservationAdmissions!=0
@@ -2099,6 +2101,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(request!=null&&!request.finished)request.events.event(display,window,pkg,content,typed);
             NativeSearchRequest retry=nativeSearchRetryPending;
             if(retry!=null&&(retry!=request||request.finished))retry.events.event(display,window,pkg,content,typed);
+            NativeSearchRequest sampling=nativeSearchSamplingTracked;
+            if(sampling!=null&&sampling!=retry&&(sampling!=request||request.finished))
+                sampling.events.event(display,window,pkg,content,typed);
             SearchActionWork action=nativeSearchTrackedAction;
             if(action!=null)action.events.event(display,window,pkg,content,typed);
         }
@@ -2112,6 +2117,258 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void clearNativeSearchActionTracker(SearchActionWork work){
         synchronized(nativeSearchEventLock){if(nativeSearchTrackedAction==work)nativeSearchTrackedAction=null;}
     }
+    /** Only a local original sampling fence constructs this cause. It is deliberately
+     * not a StaleObservation: the inner resampling catch must never swallow it. */
+    private static final class NativeSearchSamplingExhausted extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        final NativeSearchRequest request;final long observedElapsed;final String fence;
+        private NativeSearchSamplingExhausted(NativeSearchRequest request,long at,String fence){
+            super("original native planning sampling deadline reached; no planning was produced");
+            this.request=request;observedElapsed=at;this.fence=fence;
+        }
+    }
+    private static final class NativeSearchSamplingAnchor {
+        final Map<String,Object> identity,evidence;
+        final NativeSearchPlanning.EventMark baseline;
+        NativeSearchSamplingAnchor(NativeSearchSample a,NativeSearchSample b,NativeSearchPlanning.Timing timing,
+                NativeSearchPlanning.CaptureContext context){
+            context.require(a.snapshot,b.snapshot,timing);
+            Map<String,Object> first=nativeSearchSamplingIdentity(a.snapshot),second=nativeSearchSamplingIdentity(b.snapshot);
+            if(!first.equals(second))throw new IllegalStateException("historical full-read ownership differs");
+            baseline=a.before;
+            requireNativeSearchSamplingMarks(baseline,a.after,b.before,b.after,context.sealed);
+            identity=second;
+            Map<String,Object> e=new LinkedHashMap<String,Object>();
+            e.put("schema","hepta.native-search-sampling-owner-anchor.v1");e.put("identity",identity);
+            e.put("first_census_sha256",a.snapshot.sha);e.put("second_census_sha256",b.snapshot.sha);
+            e.put("timing",timing.evidence());e.put("source_context",context.evidence());
+            e.put("baseline_watermark",baseline.evidence());e.put("historical_only",true);
+            e.put("pair_accepted_for_planning",false);e.put("current_profile_authority",false);
+            evidence=NativeAppEvidence.immutableMap(e);
+        }
+    }
+    private static Map<String,Object> nativeSearchSamplingIdentity(NativeActionSnapshotCheck.Snapshot value){
+        Map<String,Object> identity=new java.util.TreeMap<String,Object>(NativeSearchRole.stableEnvelope(value));
+        identity.remove("origin_observation_id");return NativeAppEvidence.immutableMap(identity);
+    }
+    private static void requireNativeSearchSamplingMarks(NativeSearchPlanning.EventMark baseline,
+            NativeSearchPlanning.EventMark... later){
+        if(baseline==null||baseline.unknown!=0||baseline.events-baseline.content-baseline.boundary!=0)
+            throw new IllegalStateException("sampling history contains unknown or untyped events");
+        NativeSearchPlanning.EventMark previous=baseline;
+        for(NativeSearchPlanning.EventMark current:later){
+            if(current==null||!current.monotonicSince(previous)||current.unknown!=0
+                    ||current.boundary!=baseline.boundary||current.events-current.content-current.boundary!=0
+                    ||current.events-baseline.events!=current.content-baseline.content)
+                throw new IllegalStateException("sampling history crossed its fixed historical event boundary");
+            previous=current;
+        }
+    }
+    private static void disqualifyNativeSearchSampling(NativeSearchRequest request,String reason){
+        synchronized(request){if(request.samplingDisqualified==null)request.samplingDisqualified=reason;}
+    }
+    private void noteNativeSearchSamplingAnchor(NativeSearchRequest request,NativeSearchSample a,NativeSearchSample b,
+            NativeSearchPlanning.Timing timing,NativeSearchPlanning.CaptureContext context){
+        synchronized(nativeSearchEventLock){
+            if(nativeSearchSamplingTracked!=request||request.samplingDisqualified!=null)return;
+            try{
+                NativeSearchSamplingAnchor next=new NativeSearchSamplingAnchor(a,b,timing,context);
+                if(request.samplingAnchor==null){
+                    request.samplingAnchor=next;request.samplingLastVerified=context.sealed;
+                }else{
+                    if(!request.samplingAnchor.identity.equals(next.identity))
+                        throw new IllegalStateException("later complete ownership differs from the earliest sampling anchor");
+                    requireNativeSearchSamplingMarks(request.samplingAnchor.baseline,request.samplingLastVerified,
+                            a.before,a.after,b.before,b.after,context.sealed);
+                    request.samplingLastVerified=context.sealed;
+                }
+            }catch(RuntimeException refused){disqualifyNativeSearchSampling(request,message(refused));}
+        }
+    }
+    private boolean nativeSearchSamplingHistoryLocked(NativeSearchRequest request){
+        if(request.samplingAnchor==null||request.samplingDisqualified!=null)return false;
+        try{
+            NativeSearchPlanning.EventMark current=request.events.mark();
+            requireNativeSearchSamplingMarks(request.samplingAnchor.baseline,request.samplingLastVerified,current);
+            if(request.failureWatermark!=null)
+                requireNativeSearchSamplingMarks(request.samplingAnchor.baseline,request.failureWatermark,current);
+            request.samplingLastVerified=current;return true;
+        }catch(RuntimeException refused){disqualifyNativeSearchSampling(request,message(refused));return false;}
+    }
+    private void closeNativeSearchSampling(NativeSearchRequest request){
+        synchronized(nativeSearchEventLock){
+            NativeSearchRequest original=request.samplingSubmission==null?request:request.samplingSubmission.failed;
+            original.samplingTrackingClosed=true;original.samplingRecoveryPending=false;
+            if(original.samplingIssued!=null)original.samplingIssued.closed=true;
+            if(nativeSearchSamplingTracked==original)nativeSearchSamplingTracked=null;
+        }
+    }
+    /** One inspection permit after local sampling exhaustion, not a loading
+     * classification, a current profile proof, a planning frame, or an effect permit. */
+    static final class NativeSearchSamplingExhaustionProof {
+        private final HeptaAccessibilityService issuer;private final NativeSearchRequest failed;
+        private final NativeSearchSession session;private final long drainedAt,issuedAt;
+        private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
+        private volatile boolean closed;private NativeSearchRequest admitted;
+        private NativeSearchSamplingExhaustionProof(HeptaAccessibilityService issuer,NativeSearchRequest failed,long drained,long issued){
+            this.issuer=issuer;this.failed=failed;session=failed.session;drainedAt=drained;issuedAt=issued;
+        }
+        private void requireLocked(long now){
+            if(closed||consumed.get()||failed.samplingIssued!=this||issuer.nativeSearchSamplingTracked!=failed
+                    ||failed.samplingTrackingClosed||!failed.samplingRecoveryPending||!failed.finished||!failed.workerDrained
+                    ||failed.published||failed.path!=null||failed.lastCompletePair!=null||failed.samplingExhaustion==null
+                    ||failed.samplingExhaustion.request!=failed||failed.samplingDiagnosticSha==null
+                    ||failed.retrySubmission!=null||failed.replanSubmission!=null||failed.samplingSubmission!=null
+                    ||now<issuedAt||issuedAt<drainedAt||drainedAt<failed.failureElapsed
+                    ||failed.failureElapsed<failed.samplingExhaustion.observedElapsed
+                    ||now>=failed.deadline||now>=session.chainDeadlineElapsed
+                    ||issuer.taskObservationAdmissions!=1||!issuer.nativeSearchSamplingHistoryLocked(failed))
+                throw new IllegalStateException("sampling successor original identity, drain, history or one-use deadline changed");
+            session.requireBeforeFirstPlanning(now);
+        }
+        void requireOriginal(Object service,Object controller,NativeSearchSession expected,String task,File directory,long taskDeadline){
+            if(service!=issuer||controller!=session.controller||session!=expected||!failed.taskId.equals(task)
+                    ||directory!=failed.directory||session.taskDeadlineElapsed!=taskDeadline
+                    ||!issuer.nativeSearchSessionCurrent(session,failed.scope)
+                    ||issuer.activeObservation!=null||issuer.activeNativeSearchObservation!=null||issuer.capturePending
+                    ||issuer.observationReadWorkPending()||issuer.actionWorkPending()||issuer.nativeCancellationWorkPending()
+                    ||issuer.locked(session.background))
+                throw new IllegalStateException("sampling successor current task or idle read ownership changed");
+            session.background.requireAdmissionActive();
+            synchronized(issuer.nativeSearchEventLock){requireLocked(SystemClock.elapsedRealtime());}
+        }
+        private void admit(NativeSearchRequest request){
+            // Caller owns the event handoff lock; take the clock here, not before waiting for that lock.
+            long now=SystemClock.elapsedRealtime();requireLocked(now);
+            if(request.session!=session||request.scope!=failed.scope||request.directory!=failed.directory
+                    ||request.started<drainedAt||request.started>now||request.id.equals(failed.id)
+                    ||request.deadline>session.chainDeadlineElapsed||now>=request.deadline||request.cancel.isCancelled()
+                    ||request.retrySubmission!=null||request.replanSubmission!=null
+                    ||request.samplingSubmission!=this||issuer.ownedController!=session.controller||issuer.nativeSearchSession!=session
+                    ||!consumed.compareAndSet(false,true))
+                throw new IllegalStateException("sampling successor changed its new request or repeated admission");
+            admitted=request;failed.samplingRecoveryPending=false;
+        }
+        private void requireSuccessor(NativeSearchRequest request){
+            synchronized(issuer.nativeSearchEventLock){
+                long now=SystemClock.elapsedRealtime();
+                if(closed||!consumed.get()||admitted!=request||issuer.nativeSearchSamplingTracked!=failed
+                        ||failed.samplingTrackingClosed||request.session!=session||request.scope!=failed.scope
+                        ||request.directory!=failed.directory||request.started<drainedAt||now<request.started||now>=request.deadline
+                        ||now>=session.chainDeadlineElapsed||!issuer.nativeSearchSamplingHistoryLocked(failed))
+                    throw new IllegalStateException("sampling successor no longer owns its continuous inspection history");
+                session.requireBeforeFirstPlanning(now);
+            }
+        }
+        private void requireIdentity(NativeActionSnapshotCheck.Snapshot current){
+            if(!failed.samplingAnchor.identity.equals(nativeSearchSamplingIdentity(current)))
+                throw new IllegalStateException("new sampling read changed the historical owner/window identity");
+        }
+        void close(){issuer.closeNativeSearchSampling(failed);}
+        Map<String,Object> evidence(){
+            synchronized(issuer.nativeSearchEventLock){
+                Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-sampling-exhaustion-proof.v1");
+                e.put("task_id",failed.taskId);e.put("failed_request_id",failed.id);e.put("session_binding",session.binding());
+                e.put("reason","actual_local_sampling_fence");e.put("sampling_fence",failed.samplingExhaustion.fence);
+                e.put("sampling_exhausted_elapsed_ms",failed.samplingExhaustion.observedElapsed);
+                e.put("failed_request_started_elapsed_ms",failed.started);e.put("failed_request_deadline_elapsed_ms",failed.deadline);
+                e.put("failed_request_terminal_elapsed_ms",failed.failureElapsed);e.put("read_queue_drain_observed_elapsed_ms",drainedAt);
+                e.put("issued_elapsed_ms",issuedAt);e.put("original_task_deadline_elapsed_ms",session.taskDeadlineElapsed);
+                e.put("original_chain_deadline_elapsed_ms",session.chainDeadlineElapsed);e.put("historical_owner_anchor",failed.samplingAnchor.evidence);
+                e.put("failure_watermark",failed.failureWatermark.evidence());e.put("current_watermark",failed.events.mark().evidence());
+                e.put("failed_diagnostic_leaf",failed.id+"-failed-native-search-planning.json");e.put("failed_diagnostic_sha256",failed.samplingDiagnosticSha);
+                e.put("read_worker_drained",true);e.put("original_read_ordinal",1);e.put("successor_read_ordinal",2);
+                e.put("old_request_renewed",false);e.put("old_census_reused",false);e.put("old_pair_accepted",false);
+                e.put("model_requested",false);e.put("action_replayed",false);e.put("current_profile_authority",false);
+                e.put("fresh_full_pair_required",true);e.put("grants_action_authority",false);e.put("business_verified",false);
+                return NativeAppEvidence.immutableMap(e);
+            }
+        }
+    }
+    private boolean nativeSearchSamplingEligible(NativeSearchRequest request,long now){
+        if(!request.callback.acceptsSamplingReadRetry()||request.samplingExhaustion==null||request.samplingExhaustion.request!=request
+                ||request.samplingExhaustion.observedElapsed<request.started+10000
+                ||request.samplingExhaustion.observedElapsed>=request.deadline
+                ||request.samplingSubmission!=null||request.retrySubmission!=null||request.replanSubmission!=null
+                ||request.samplingTrackingClosed||request.samplingDisqualified!=null||request.samplingAnchor==null
+                ||!request.finished||!request.admitted||!request.workerDrained||request.published||request.path!=null
+                ||request.lastCompletePair!=null||!request.failureDiagnosticClaimed||request.samplingDiagnosticSha==null
+                ||request.diagnosticWritePending||request.samplingDrainUncertain||request.callbackDelivered.get()
+                ||!"complete_pair_written".equals(request.diagnosticDisposition)
+                ||taskObservationAdmissions!=1||!nativeSearchSessionCurrent(request.session,request.scope)
+                ||request.cancel.isCancelled()||locked(request.session.background)||activeObservation!=null
+                ||activeNativeSearchObservation!=null||capturePending||observationIoBusy.get()
+                ||actionWorkPending()||nativeCancellationWorkPending()||now<request.failureElapsed
+                ||now>=request.deadline||now>=request.session.chainDeadlineElapsed)return false;
+        try{
+            request.session.requireBeforeFirstPlanning(now);request.session.background.requireAdmissionActive();
+            synchronized(nativeSearchEventLock){
+                return nativeSearchSamplingTracked==request&&nativeSearchSamplingHistoryLocked(request);
+            }
+        }catch(RuntimeException refused){return false;}
+    }
+    private void watchNativeSearchSamplingHandoff(final NativeSearchRequest request){
+        synchronized(nativeSearchEventLock){
+            if(nativeSearchSamplingTracked!=request||!request.samplingRecoveryPending)return;
+        }
+        long now=SystemClock.elapsedRealtime();
+        try{
+            if(now<request.failureElapsed||now>=request.deadline||!nativeSearchSessionCurrent(request.session,request.scope))
+                throw new IllegalStateException("unused sampling successor expired");
+            request.session.requireBeforeFirstPlanning(now);
+            if(!main.postDelayed(new Runnable(){public void run(){watchNativeSearchSamplingHandoff(request);}},
+                    Math.max(1,Math.min(100,request.deadline-now))))closeNativeSearchSampling(request);
+        }catch(RuntimeException unavailable){closeNativeSearchSampling(request);}
+    }
+    private boolean offerNativeSearchSamplingAfterDrain(final NativeSearchRequest request,final String detail){
+        if(!nativeSearchSamplingEligible(request,SystemClock.elapsedRealtime())||!observationIoBusy.compareAndSet(false,true))return false;
+        request.samplingRecoveryPending=true;
+        // Expiry cleanup also covers an accepted but never delivered marker/main callback.
+        watchNativeSearchSamplingHandoff(request);
+        if(request.samplingTrackingClosed){observationIoBusy.set(false);return false;}
+        try{observationIo.execute(new Runnable(){public void run(){
+            // Actual serial marker, after the producer's finally and return; no Android or node reads.
+            final long drained=SystemClock.elapsedRealtime();observationIoBusy.set(false);
+            boolean posted=false;
+            try{posted=main.post(new Runnable(){public void run(){
+                NativeSearchSamplingExhaustionProof proof=null;
+                try{
+                    if(!nativeSearchSamplingEligible(request,SystemClock.elapsedRealtime()))
+                        throw new IllegalStateException("sampling successor became unavailable after drain");
+                    synchronized(nativeSearchEventLock){
+                        long now=SystemClock.elapsedRealtime();
+                        if(now<drained||drained<request.failureElapsed||now>=request.deadline
+                                ||nativeSearchSamplingTracked!=request||!nativeSearchSamplingHistoryLocked(request))
+                            throw new IllegalStateException("sampling successor drain or clock changed");
+                        request.session.requireBeforeFirstPlanning(now);
+                        proof=new NativeSearchSamplingExhaustionProof(HeptaAccessibilityService.this,request,drained,now);
+                        request.samplingIssued=proof;
+                    }
+                    if(proof.closed)throw new IllegalStateException("sampling successor expiry watcher unavailable");
+                    if(!request.callbackDelivered.compareAndSet(false,true)){proof.close();return;}
+                    request.callback.onSamplingReadRetryAvailable(detail,proof);
+                }catch(RuntimeException unavailable){
+                    if(proof!=null)proof.close();else closeNativeSearchSampling(request);
+                    deliverNativeSearchReadFailure(request,detail,null);
+                }
+            }});}finally{
+                if(!posted){closeNativeSearchSampling(request);deliverNativeSearchReadFailure(request,detail,null);}
+            }
+        }});return true;}
+        catch(java.util.concurrent.RejectedExecutionException rejected){observationIoBusy.set(false);closeNativeSearchSampling(request);return false;}
+        catch(RuntimeException uncertain){
+            // The queue may own work. Do not invent a drain or clear its busy flag.
+            request.samplingDrainUncertain=true;closeNativeSearchSampling(request);return false;
+        }
+    }
+    private void throwNativeSearchSamplingExhausted(NativeSearchRequest request,String fence){
+        requireNativeSearchRead(request);
+        long now=SystemClock.elapsedRealtime();
+        if(now<request.started||now-request.started<10000||now>=request.deadline)throw new ObservationAbandoned();
+        if("complete_pair".equals(fence))request.lastSampleRejection="规划双读超过原10秒采样界限";
+        throw new NativeSearchSamplingExhausted(request,now,fence);
+    }
+
     /** One successor read, never an observation or action capability. The
      * issuer can create it only after the failed initial worker and private
      * diagnostic have returned through the same serial queue. */
@@ -2266,6 +2523,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final java.util.concurrent.atomic.AtomicBoolean callbackDelivered=new java.util.concurrent.atomic.AtomicBoolean();
         NativeSearchReadRetryProof retrySubmission;
         NativeSearchNoEffectReplanProof replanSubmission;
+        NativeSearchSamplingExhaustionProof samplingSubmission;
+        volatile NativeSearchSamplingExhausted samplingExhaustion;
+        volatile NativeSearchSamplingAnchor samplingAnchor;
+        volatile NativeSearchSamplingExhaustionProof samplingIssued;
+        volatile NativeSearchPlanning.EventMark samplingLastVerified;
+        volatile String samplingDisqualified,samplingDiagnosticSha;
+        volatile boolean samplingTrackingClosed,samplingRecoveryPending,samplingDrainUncertain;
         volatile NativeSearchPlanning publishedPlanning;
         volatile Map<String,Object> loadingRetryClassification,loadingRetryIdentity;
         volatile boolean retryDrainPending,retryDrainUncertain;
@@ -2308,21 +2572,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     void observeNativeSearchPlanning(final String taskId,final File directory,final NativeSearchSession session,
             final Cancellation cancel,final long deadline,final NativeSearchSession.ObservationCallback callback,
             final NativeSearchReadRetryProof proof){
-        observeNativeSearchPlanningInternal(taskId,directory,session,cancel,deadline,callback,proof,null);
+        observeNativeSearchPlanningInternal(taskId,directory,session,cancel,deadline,callback,proof,null,null);
     }
     void observeNativeSearchPlanningAfterNoEffect(final String taskId,final File directory,final NativeSearchSession session,
             final Cancellation cancel,final long deadline,final NativeSearchSession.ObservationCallback callback,
             final NativeSearchNoEffectReplanProof proof){
         if(proof==null)throw new IllegalArgumentException("actual no-effect planning successor proof required");
-        observeNativeSearchPlanningInternal(taskId,directory,session,cancel,deadline,callback,null,proof);
+        observeNativeSearchPlanningInternal(taskId,directory,session,cancel,deadline,callback,null,proof,null);
+    }
+    void observeNativeSearchPlanningAfterSamplingExhaustion(final String taskId,final File directory,final NativeSearchSession session,
+            final Cancellation cancel,final long deadline,final NativeSearchSession.ObservationCallback callback,
+            final NativeSearchSamplingExhaustionProof proof){
+        if(proof==null)throw new IllegalArgumentException("actual sampling exhaustion proof required");
+        observeNativeSearchPlanningInternal(taskId,directory,session,cancel,deadline,callback,null,null,proof);
     }
     private void observeNativeSearchPlanningInternal(final String taskId,final File directory,final NativeSearchSession session,
             final Cancellation cancel,final long deadline,final NativeSearchSession.ObservationCallback callback,
-            final NativeSearchReadRetryProof proof,final NativeSearchNoEffectReplanProof replan){
+            final NativeSearchReadRetryProof proof,final NativeSearchNoEffectReplanProof replan,
+            final NativeSearchSamplingExhaustionProof sampling){
         if(session==null||cancel==null||callback==null||directory==null||!taskId.equals(session.taskId))
             throw new IllegalArgumentException("actual search request/Session/callback required");
         final NativeSearchRequest request=new NativeSearchRequest(taskId,directory,session,scopeFor(taskId),cancel,deadline,callback);
-        request.retrySubmission=proof;request.replanSubmission=replan;
+        request.retrySubmission=proof;request.replanSubmission=replan;request.samplingSubmission=sampling;
         boolean posted=main.post(new Runnable(){public void run(){
             try{
                 long now=SystemClock.elapsedRealtime();
@@ -2334,7 +2605,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         ||deadline>ObservationStabilityGate.requestDeadline(request.started,session.chainDeadlineElapsed))
                     throw new IllegalStateException("native planning request admission is no longer current");
                 if(replan==null){
-                    if(nativeSearchPlanningAdmitted!=(proof!=null)||taskObservationAdmissions!=(proof==null?0:1))
+                    if(proof!=null&&sampling!=null)throw new IllegalStateException("initial recovery proof kinds are exclusive");
+                    boolean initialSuccessor=proof!=null||sampling!=null;
+                    if(nativeSearchPlanningAdmitted!=initialSuccessor||taskObservationAdmissions!=(initialSuccessor?1:0))
                         throw new IllegalStateException("original initial planning admission ordinal changed");
                     session.requireBeforeFirstPlanning(now);
                     if(proof!=null){
@@ -2343,14 +2616,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             throw new IllegalStateException("initial planning successor drain or one-use boundary changed");
                         nativeSearchRetryPending=null;
                     }else if(nativeSearchRetryPending!=null)throw new IllegalStateException("unconsumed loading read recovery exists");
+                    if(sampling!=null)sampling.requireOriginal(HeptaAccessibilityService.this,ownedController,session,taskId,directory,session.taskDeadlineElapsed);
                     synchronized(nativeSearchEventLock){
                         if(nativeSearchTrackedAction!=null)throw new IllegalStateException("search action tracker cannot enter initial planning");
                         if(nativeSearchPlanningDirectory==null)nativeSearchPlanningDirectory=directory;
                         if(nativeSearchPlanningDirectory!=directory)throw new IllegalStateException("search evidence directory changed");
+                        if(sampling!=null)sampling.admit(request);
+                        else{
+                            if(nativeSearchSamplingTracked!=null)throw new IllegalStateException("previous sampling tracker still owns initial admission");
+                            if(proof==null)nativeSearchSamplingTracked=request;
+                        }
                         activeNativeSearchObservation=request;
                     }
                 }else{
-                    if(!nativeSearchPlanningAdmitted||proof!=null||nativeSearchRetryPending!=null)
+                    if(!nativeSearchPlanningAdmitted||proof!=null||sampling!=null||nativeSearchRetryPending!=null||nativeSearchSamplingTracked!=null)
                         throw new IllegalStateException("no-effect planning successor crossed an initial read recovery");
                     session.requireFreshPlanningAfterNoEffect(replan,now);
                     replan.requireReadTarget(HeptaAccessibilityService.this,ownedController,session,taskId,directory,session.taskDeadlineElapsed);
@@ -2380,6 +2659,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||!nativeSearchSessionCurrent(request.session,request.scope)||now<request.started||now>=request.deadline)
             throw new ObservationAbandoned();
         request.session.requireLive(now);
+        if(request.samplingSubmission!=null)request.samplingSubmission.requireSuccessor(request);
         if(request.replanSubmission!=null)
             requireNativeSearchPairEvents(new NativeSearchPlanning.EventMark(0,0,0,0),request.events.mark());
     }
@@ -2397,12 +2677,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void finishNativeSearchObservation(NativeSearchRequest request,NativeSearchPlanning value,String error){
         final boolean diagnostic;
-        synchronized(request){
-            if(request.finished)return;
-            if(value==null)recordNativeSearchFailure(request,error);
-            request.publishedPlanning=value;request.finished=true;request.published=value!=null;
-            diagnostic=value==null&&request.admitted&&request.workerDrained&&!request.failureDiagnosticClaimed;
-            if(value!=null)request.lastCompletePair=null;
+        synchronized(nativeSearchEventLock){
+            // Last sampling-successor history check and publication state change are one handoff.
+            // No I/O or callback is performed while this lock is held.
+            if(value!=null&&request.samplingSubmission!=null){
+                try{request.samplingSubmission.requireSuccessor(request);}
+                catch(RuntimeException refused){value=null;error="sampling successor publication refused: "+message(refused);}
+            }
+            synchronized(request){
+                if(request.finished)return;
+                if(value==null)recordNativeSearchFailure(request,error);
+                request.publishedPlanning=value;request.finished=true;request.published=value!=null;
+                diagnostic=value==null&&request.admitted&&request.workerDrained&&!request.failureDiagnosticClaimed;
+                if(value!=null)request.lastCompletePair=null;
+            }
+            if(value!=null&&request.samplingSubmission!=null)closeNativeSearchSampling(request);
         }
         // A publication rejection can occur after the read worker really drained.
         // Its successor owns only a bounded private diagnostic write, never a new read.
@@ -2411,8 +2700,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(value==null&&request.workerDrained&&request.path!=null)request.path.delete();
         if(value==null){
             final String detail=error+" [diagnostic="+request.diagnosticDisposition+"]";
-            if(!offerNativeSearchLoadingRetryAfterDrain(request,detail))deliverNativeSearchReadFailure(request,detail,null);
-        }else if(request.callbackDelivered.compareAndSet(false,true))request.callback.onPlanning(value);
+            if(offerNativeSearchSamplingAfterDrain(request,detail))return;
+            boolean loading=offerNativeSearchLoadingRetryAfterDrain(request,detail);
+            closeNativeSearchSampling(request);
+            if(!loading)deliverNativeSearchReadFailure(request,detail,null);
+        }else{
+            closeNativeSearchSampling(request);
+            if(request.callbackDelivered.compareAndSet(false,true))request.callback.onPlanning(value);
+        }
     }
     private static void deliverNativeSearchReadFailure(NativeSearchRequest request,String detail,NativeSearchReadRetryProof proof){
         if(!request.callbackDelivered.compareAndSet(false,true))return;
@@ -2420,7 +2715,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private boolean nativeSearchLoadingRetryEligible(NativeSearchRequest request,long now){
         if((nativeSearchRetryPending!=null&&nativeSearchRetryPending!=request)
-                ||request.retrySubmission!=null||request.replanSubmission!=null||request.loadingRetryClassification==null||request.loadingRetryIdentity==null
+                ||request.retrySubmission!=null||request.replanSubmission!=null||request.samplingSubmission!=null||request.loadingRetryClassification==null||request.loadingRetryIdentity==null
                 ||!request.finished||!request.admitted||!request.workerDrained||request.published||request.path!=null
                 ||!request.failureDiagnosticClaimed||request.diagnosticWritePending||request.retryDrainPending||request.retryDrainUncertain
                 ||!"complete_pair_written".equals(request.diagnosticDisposition)||request.callbackDelivered.get()
@@ -2513,16 +2808,35 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 both.put("first",nativeSearchDiagnosticSample(pair.first));both.put("second",nativeSearchDiagnosticSample(pair.second));}
             out.put("last_complete_pair",both);out.put("diagnostic_only",true);out.put("planning_published",false);
             out.put("new_samples_taken_for_diagnostic",0);out.put("action_permission",false);
+            if(request.samplingExhaustion!=null){
+                Map<String,Object> sampling=new LinkedHashMap<String,Object>();
+                sampling.put("reason","actual_local_sampling_fence");sampling.put("fence",request.samplingExhaustion.fence);
+                sampling.put("observed_elapsed_ms",request.samplingExhaustion.observedElapsed);
+                sampling.put("historical_owner_anchor",request.samplingAnchor==null?null:request.samplingAnchor.evidence);
+                sampling.put("ineligible_reason",request.samplingDisqualified);
+                sampling.put("current_profile_authority",false);sampling.put("old_pair_accepted",false);
+                out.put("sampling_exhaustion",sampling);
+            }
             byte[] raw=NativeSearchPlanning.json(out).toString().getBytes(StandardCharsets.UTF_8);
             if(raw.length>NativeSearchPlanning.MAX_BYTES){out.put("last_complete_pair",null);out.put("pair_omitted_for_budget",pair!=null);
                 raw=NativeSearchPlanning.json(out).toString().getBytes(StandardCharsets.UTF_8);}
             if(raw.length>NativeSearchPlanning.MAX_BYTES){request.diagnosticDisposition="unavailable_metadata_budget";return;}
-            MobiMindPrivateFiles.writeNew(new File(request.directory,request.id+"-failed-native-search-planning.json"),raw);
+            File diagnosticPath=new File(request.directory,request.id+"-failed-native-search-planning.json");
+            MobiMindPrivateFiles.writeNew(diagnosticPath,raw);
+            if(request.samplingExhaustion!=null){
+                MobiMindPrivateFiles.Read saved=MobiMindPrivateFiles.read(diagnosticPath,NativeSearchPlanning.MAX_BYTES,true);
+                if(!java.util.Arrays.equals(raw,saved.bytes))throw new IllegalStateException("sampling failure diagnostic readback differs");
+                saved.unchangedPath();request.samplingDiagnosticSha=sha(saved.bytes);
+            }
             request.diagnosticDisposition=pair!=null&&both!=null&&Boolean.FALSE.equals(out.get("pair_omitted_for_budget"))?"complete_pair_written":"metadata_written";
         }catch(Exception unavailable){request.diagnosticDisposition="unavailable_write_failed";/* No successful outcome or retry permission. */}
         finally{request.lastCompletePair=null;}
     }
     private void retireNativeSearch(String taskId,String reason){
+        synchronized(nativeSearchEventLock){
+            if(nativeSearchSamplingTracked!=null&&nativeSearchSamplingTracked.taskId.equals(taskId))
+                closeNativeSearchSampling(nativeSearchSamplingTracked);
+        }
         NativeSearchRequest retry=nativeSearchRetryPending;
         if(retry!=null&&retry.taskId.equals(taskId))nativeSearchRetryPending=null;
         NativeSearchSession session=nativeSearchSession;
@@ -2537,7 +2851,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void waitNativeSearchSample(NativeSearchRequest request,long until){
         while(SystemClock.elapsedRealtime()<until){requireNativeSearchRead(request);
-            if(SystemClock.elapsedRealtime()>=Math.min(request.deadline,request.started+10000))throw new ObservationAbandoned();
+            if(SystemClock.elapsedRealtime()>=Math.min(request.deadline,request.started+10000))
+                throwNativeSearchSamplingExhausted(request,"sample_wait");
             SystemClock.sleep(Math.min(50,Math.max(1,until-SystemClock.elapsedRealtime())));
         }
         requireNativeSearchRead(request);
@@ -2547,6 +2862,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             graph=readGraph(nativeSearchReadBudget(request),request.session.background);requireNativeSearchRead(request);
             NativeActionSnapshotCheck.Snapshot snapshot=nativeSearchSnapshot(graph,request.session,request.id,request.started);
+            if(request.samplingSubmission!=null)request.samplingSubmission.requireIdentity(snapshot);
+            synchronized(nativeSearchEventLock){
+                if(nativeSearchSamplingTracked==request&&request.samplingAnchor!=null
+                        &&!request.samplingAnchor.identity.equals(nativeSearchSamplingIdentity(snapshot)))
+                    disqualifyNativeSearchSampling(request,"later complete census changed historical owner/window");
+            }
             if(request.retrySubmission!=null)request.retrySubmission.requireIdentity(snapshot);
             if(request.replanSubmission!=null)request.replanSubmission.requireFreshIdentity(snapshot);
             request.events.window=graph.windowId;
@@ -2561,22 +2882,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             while(encoded==null){
                 requireNativeSearchRead(request);
                 if(SystemClock.elapsedRealtime()>=Math.min(request.deadline,request.started+10000))
-                    throw new StaleObservation("规划样本未在原10秒内完成："+last);
+                    throwNativeSearchSamplingExhausted(request,"sample_loop");
                 try{
                     request.phase="planning_first_graph";first=readNativeSearchSample(request);
                     waitNativeSearchSample(request,first.captured+200);
                     request.phase="planning_second_graph";second=readNativeSearchSample(request);
                     request.lastCompletePair=new NativeSearchPair(first,second);
-                    if(second.readCompleted-request.started>=10000)throw new StaleObservation("规划双读超过原10秒采样界限");
+                    if(second.readCompleted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
                     NativeSearchPlanning.Timing timing=new NativeSearchPlanning.Timing(request.started,request.deadline,
                             first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime());
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
                             first.before,first.after,second.before,second.after,request.events.mark());
+                    noteNativeSearchSamplingAnchor(request,first,second,timing,context);
                     try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
                         last=message(unavailable);request.lastSampleRejection=last;
                         request.loadingRetryClassification=null;request.loadingRetryIdentity=null;
-                        if(request.retrySubmission==null){
+                        if(request.retrySubmission==null&&request.samplingSubmission==null){
                             try{
                                 Map<String,Object> classification=NativeSearchRole.loadingToSearch(first.snapshot,second.snapshot);
                                 NativeSearchPlanning.EventMark events=request.events.mark();
@@ -2589,8 +2911,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             if(request.loadingRetryClassification!=null)throw new NativeSearchLoadingTransition();
                         }
                     }
-                }catch(NoActiveWindow unavailable){last=message(unavailable);request.lastSampleRejection=last;}
-                catch(StaleObservation unavailable){last=message(unavailable);request.lastSampleRejection=last;}
+                }catch(NoActiveWindow unavailable){
+                    disqualifyNativeSearchSampling(request,"actual owned window became unavailable");
+                    last=message(unavailable);request.lastSampleRejection=last;
+                }catch(StaleObservation unavailable){
+                    if(!unavailable.backgroundChildUnavailable)disqualifyNativeSearchSampling(request,"unclassified graph freshness rejection");
+                    last=message(unavailable);request.lastSampleRejection=last;
+                }
                 if(encoded==null)waitNativeSearchSample(request,SystemClock.elapsedRealtime()+200);
             }
             requireNativeSearchRead(request);request.phase="planning_receipt_persist";
@@ -2608,8 +2935,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             long checkCompleted=SystemClock.elapsedRealtime();NativeSearchPlanning.EventMark checkAfter=request.events.mark();
             windowCheck=new NativeSearchPlanning.WindowCheck(nativeSearchWindowFacts(actual),checkStarted,checkCompleted,checkBefore,checkAfter);
             profile=actual.profileWindow;read.unchangedPath();requireNativeSearchRead(request);
-        }catch(Exception failed){error="规划观察失败："+message(failed)+" [phase="+request.phase+"]";recordNativeSearchFailure(request,error);}
-        finally{drainNativeSearchRead(request);}
+        }catch(Exception failed){
+            synchronized(request){
+                if(failed instanceof NativeSearchSamplingExhausted&&((NativeSearchSamplingExhausted)failed).request==request
+                        &&!request.finished&&request.failureReason==null)
+                    request.samplingExhaustion=(NativeSearchSamplingExhausted)failed;
+            }
+            error="规划观察失败："+message(failed)+" [phase="+request.phase+"]";recordNativeSearchFailure(request,error);
+        }finally{drainNativeSearchRead(request);}
         final NativeSearchPlanning value=sealed;final NativeSearchPlanning.WindowCheck check=windowCheck;
         final WindowOwnership actualProfile=profile;final String failure=error;
         boolean posted=false;
