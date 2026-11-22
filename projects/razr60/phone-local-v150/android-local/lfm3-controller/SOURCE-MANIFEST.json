@@ -3,8 +3,8 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "fdc17e7e_successor_r23_fixed_source_complete_current_host_matrix_sdk_and_signed_apk_pending",
-  "complete_source_files": 2408,
+  "candidate_status": "c9212d5_successor_r24_single_search_toolbar_source_frozen_host_sdk_and_apk_pending",
+  "complete_source_files": 2410,
   "files": [
     {
       "bytes": 100,
@@ -6687,9 +6687,9 @@
       "sha256": "0be8f72d6f56de5a151c3766d4162f1370733c362166956770e45ca83a0ee3cc"
     },
     {
-      "bytes": 51970,
+      "bytes": 57286,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "386663eedd80a87cc5c79b331bd010f11bac3da4a3c5299049d95791f0345861"
+      "sha256": "11d59748bed20d5a058dc6cbeceafa170dfc83148788d7069ceb75db080c6814"
     },
     {
       "bytes": 21274,
@@ -9200,6 +9200,16 @@
       "bytes": 2040,
       "path": "tests/native-xiaomi-search-entry/fixtures/manual-search-entry-RESULT.json",
       "sha256": "275dd04b104cd0a784807658b46ea76038783104a933e50c997cb95852174acf"
+    },
+    {
+      "bytes": 23264,
+      "path": "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
+      "sha256": "5dc98e5a92cae8b8a624d238bf29643fcf6cd8f7cc9a1c86c612772fd9b13be8"
+    },
+    {
+      "bytes": 10477,
+      "path": "tests/native-xiaomi-single-toolbar/run_host.py",
+      "sha256": "baa1bd44727341401524cca1faec210923ae95b7124bc66aacf1a23b2ab99621"
     },
     {
       "bytes": 29195,
@@ -12043,7 +12053,7 @@
     }
   ],
   "fixture_compatibility": {
-    "current_changes": "Preserve all 107 existing search-producer cases and assertions; append 43 sampling-exhaustion cases over verbatim actual producer and controller methods with explicitly synthetic Android, clock, queue and model endpoints. Add only nonconstructible always-refusing sampling-proof types to required legacy carriers, a permanently absent tracker where the unchanged retire body needs its type, and an exact reviewed provider inverse on a proof copy. Original case bodies and assertions are unchanged.",
+    "current_changes": "Add one isolated provider regression gate for the exact archived nested single-search-button toolbar. Preserve all 384 original provider cases and 1792 assertions unchanged. The 26 new case groups cover complete original native AX and profile data, a disabled non-authoritative sibling, exact real paths and literal label, geometry, selection, ownership bindings and conditional exact query readback. Historical facts are not current Android authority; mutated frames are explicit host-only ports. No original test source is changed.",
     "historical_failed_attempts_preserved": true,
     "new_tests_do_not_claim_phone_success": true,
     "original_case_assertions_preserved": true
@@ -12051,48 +12061,28 @@
   "main_java_sources": 205,
   "phone_qualified": false,
   "production_build_inputs_count": 380,
-  "production_input_map_sha256": "54a9b71cce4e7a8703d9a2c16ef55b436586b2a80b42acc4ab1fc345cf99420c",
+  "production_input_map_sha256": "f0bcd48e5cc39cbfc00701909c09f0a2385716929069525ede6018f54ea61d15",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact source successor to published fdc17e7e. Preserve all prior profile, recovery, native form-history, strict non-success controller termination, first-post-D no-effect successor and action contracts. A distinct private local 10-second sampling-fence cause may produce at most one observation-only successor after the original read and its diagnostics are physically drained and durably preserved. Earliest complete historical owner/window identity is fixed; later mismatch or unknown, untyped or newly accumulated boundary events disqualify across every handoff. The proof carries no Graph, node, planning or current profile authority. Admission resamples time inside the event lock before the old 12-second deadline and shares the single initial ordinal2 with loading recovery. The independent new read must establish its own complete pair and fresh profile/window publication; all existing Role, model, C/D and final action checks remain. Original 10/12-second request, 8-second action, fixed 174000ms chain and task deadlines are unchanged. Unused, expired, canceled, failed or undelivered recovery is closed without automatic repost. All historic business failures remain unchanged. Current full host gates, SDK compile, source publication, signed APK and phone outcomes require separate actual evidence.",
-  "source_parent_head": "fdc17e7e2b338a7135ed1a08af9040dd37855c15",
-  "source_parent_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
-  "source_snapshot_predecessor_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
+  "scope": "Exact source successor to published c9212d5. Preserve existing profile, recovery, planning and action contracts. Add one distinct NativeXiaomiProductPage template for a complete observed nested toolbar with a single real Search label and button, one enabled query EditText, and the observed disabled root EditText explicitly excluded. Exact parent/path/class/view-ID/selection/capability/membership and geometry predicates remain mandatory. The dynamic hint never selects the query. Only the immutable owner substring may be proposed as input; only a subsequent actual current field value equal to that substring may propose the exact normal Search button. No navigation replay, suggestion fallback, coordinates, inferred button or completion authority is introduced. The old double-search normal/toggle and direct-root templates are byte-preserved. NativeAppSession, HeptaAccessibilityService, LocalTaskController, all deadlines, complete census, profile/window verification and final action checks are unchanged. Current signed build and phone outcomes require separate actual evidence.",
+  "source_parent_head": "c9212d5c1f343af59034013c2c857049f4127ed7",
+  "source_parent_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
+  "source_snapshot_predecessor_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
   "test_compatibility_changed_paths": [
-    "tests/native-action-integration/run_host.py",
-    "tests/native-app-provider/run_host.py",
-    "tests/native-search-planning/host_closure.py",
-    "tests/native-search-producer/ProducerCases.fragment",
-    "tests/native-search-producer/SamplingExhaustionCases.fragment",
-    "tests/native-search-producer/SearchProducerHost.template",
-    "tests/native-search-producer/run_producer.py",
-    "tests/native-xiaomi-location/run_host.py",
-    "tests/public-profile-terminal-bridge/run_host.py",
-    "tests/qualification-scope/prepare_fixture.py",
-    "tests/xiaomi-profile/run_native_host.py"
+    "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
+    "tests/native-xiaomi-single-toolbar/run_host.py"
   ],
-  "test_compatibility_parent_manifest_sha256": "95647d3ef82e053d7bb798aace761db7b455122cb7ff8b0d0b24a750f0c503e9",
+  "test_compatibility_parent_manifest_sha256": "8407331034857157ab04f86e60d51719ee49fe96da9887f71e035872a52627bb",
   "test_compatibility_successor_delta": {
-    "baseline": "integrated-r22",
+    "baseline": "integrated-r23",
     "changed_paths": [
-      "tests/native-action-integration/run_host.py",
-      "tests/native-app-provider/run_host.py",
-      "tests/native-search-planning/host_closure.py",
-      "tests/native-search-producer/ProducerCases.fragment",
-      "tests/native-search-producer/SamplingExhaustionCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/run_producer.py",
-      "tests/native-xiaomi-location/run_host.py",
-      "tests/public-profile-terminal-bridge/run_host.py",
-      "tests/qualification-scope/prepare_fixture.py",
-      "tests/xiaomi-profile/run_native_host.py"
+      "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
+      "tests/native-xiaomi-single-toolbar/run_host.py"
     ],
     "original_cases_and_assertions_unchanged": true,
     "production_changed": true,
-    "scope": "Only legacy type closure and exact provider inverse; actual sampling behavior is covered by the independent actual-producer gate. All prior failures remain original artifacts.",
+    "scope": "One provider and two new test files only. Original provider execution is retained from the narrow candidate on identical production and original dependency bytes, and the new final test class was executed separately. All prior fixture and business failures remain original artifacts.",
     "separate_production_changed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeSearchSession.java"
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
     ]
   },
   "version_code": 69,

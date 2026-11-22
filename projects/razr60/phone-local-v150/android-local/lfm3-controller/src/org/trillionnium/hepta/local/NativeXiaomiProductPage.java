@@ -416,6 +416,7 @@ final class NativeXiaomiProductPage {
         if(fields.size()>1)return page(frame,"search_input_unverified","unique_native_query_field_required",null,null);
         if(fields.size()==1){
             NativeAppEvidence.Node field=fields.get(0);
+            Page single=singleNestedToolbarInput(goal,frame,field);if(single!=null)return single;
             if("android.widget.FrameLayout".equals(field.parentClass))return frameLayoutInput(goal,frame,field);
             String toolbar=parent(field.path);
             int fieldIndex=childIndex(field.path);
@@ -498,6 +499,73 @@ final class NativeXiaomiProductPage {
             return page(frame,HOME_LOADING,"native_home_search_content_not_loaded",null,null);
         return page(frame,"unrecognized_native_page","no_current_supported_native_page",null,null);
     }
+
+    /** Distinct observed single-button toolbar. The disabled root EditText and
+     * the blank root control are exclusions, never query or navigation targets.
+     * This recognizes current facts only; the Session and action consumer still
+     * require their original ownership, freshness and dispatch checks. */
+    private static Page singleNestedToolbarInput(NativeAppGoal goal,NativeAppEvidence.Frame frame,
+            NativeAppEvidence.Node field){
+        if(!"0/1/1".equals(field.path))return null;
+        String[] paths={"0/0","0/1","0/2","0/1/0","0/1/1","0/1/2","0/1/2/0"};
+        NativeAppEvidence.Node[] nodes=new NativeAppEvidence.Node[paths.length];
+        int edits=0,searchLabels=0,toolbarDescendants=0;
+        for(NativeAppEvidence.Node node:frame.nodes){
+            if(node.editable)edits++;
+            if(TEXT.equals(node.className)&&"搜索".equals(node.text))searchLabels++;
+            if(under(node.path,"0/1"))toolbarDescendants++;
+            for(int i=0;i<paths.length;i++)if(paths[i].equals(node.path)){
+                if(nodes[i]!=null)return null;nodes[i]=node;
+            }
+        }
+        if(edits!=2||searchLabels!=1||toolbarDescendants!=4||nodes[4]!=field
+                ||frame.left!=0||frame.top!=0||frame.right!=frame.width||frame.bottom!=frame.height)return null;
+        for(int i=0;i<nodes.length;i++){
+            NativeAppEvidence.Node n=nodes[i];boolean disabled=i==2,label=i==3||i==6;
+            String cls=i==2||i==4?"android.widget.EditText":label?TEXT:VIEW;
+            if(!frame.usable(n)||(!disabled&&!usable(frame,n))||n.enabled==disabled
+                    ||!cls.equals(n.className)||!(i<3?"android.widget.FrameLayout":VIEW).equals(n.parentClass)
+                    ||!n.viewId.isEmpty()||!n.description.isEmpty()||n.password
+                    ||n.clickable==label||n.editable!=(i==2||i==4)
+                    ||n.scrollable||!n.scrollDirections.isEmpty()||!unselected(n))return null;
+            if(i!=3&&i!=4&&i!=6&&!n.text.isEmpty())return null;
+        }
+        NativeAppEvidence.Node back=nodes[0],toolbar=nodes[1],disabled=nodes[2],hint=nodes[3];
+        NativeAppEvidence.Node normal=nodes[5],normalLabel=nodes[6];
+        if(!back.label.isEmpty()||!disabled.label.isEmpty()||hint.text.trim().isEmpty()
+                ||!hint.label.equals(ObservedTargetLabels.project(hint.text))
+                ||!toolbar.label.equals(hint.label)||!field.label.equals(ObservedTargetLabels.project(field.text))
+                ||!"搜索".equals(normalLabel.text)||!"搜索".equals(normalLabel.label)||!"搜索".equals(normal.label)
+                ||!hint.within(toolbar)||!field.within(toolbar)||!normal.within(toolbar)||!normalLabel.within(normal)
+                ||back.right!=toolbar.left||back.top<toolbar.top||back.bottom>toolbar.bottom
+                ||disabled.left!=frame.left||disabled.right>back.left
+                ||Math.min(disabled.bottom,toolbar.bottom)<=Math.max(disabled.top,toolbar.top)
+                ||field.left<=toolbar.left||hint.left!=field.left||hint.top<field.top||hint.bottom>field.bottom
+                ||hint.right>=normal.left||normal.left<=field.left||normal.right<=field.right
+                ||normal.top<field.top||normal.bottom>field.bottom||normalLabel.left<field.right)return null;
+        Map<String,Object> proof=map();proof.put("query_field",field.fact("text"));
+        proof.put("normal_search_button",normal.fact("description"));proof.put("normal_search_label",normalLabel.fact("text"));
+        proof.put("toolbar",toolbar.fact("description"));proof.put("hint_not_query",hint.fact("text"));
+        proof.put("excluded_disabled_field",disabled.fact("text"));proof.put("excluded_disabled_field_enabled",false);
+        proof.put("excluded_blank_control",back.fact("description"));proof.put("excluded_controls_offered",false);
+        proof.put("same_native_toolbar_path","0/1");proof.put("retained_toolbar_descendants",4);
+        proof.put("toolbar_shape","observed_nested_single_search_button.v1");
+        proof.put("search_toolbar_variant","nested_single_search_button");
+        proof.put("mode_toggle_offered",false);proof.put("derived_label_grants_authority",false);proof.put("hint_selects_query",false);
+        String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
+        proof.put("current_query_readback_equals_immutable_owner_literal",field.text.equals(literal));
+        Map<String,String> purposes=new LinkedHashMap<String,String>();Map<String,Object> facts=map();
+        if(!field.text.equals(literal)){
+            purposes.put(field.id,"set_product_query");facts.put(field.id,proof);
+            return new Page(frame,"search_input",Collections.<String>emptyList(),Collections.<String>emptySet(),
+                    Collections.singletonMap(field.id,literal),purposes,facts,null);
+        }
+        // No suggestion, disabled input or parent toolbar is a submit fallback.
+        purposes.put(normal.id,"submit_product_query");facts.put(normal.id,proof);
+        return new Page(frame,"search_submit",Collections.<String>emptyList(),Collections.singleton(normal.id),
+                Collections.<String,String>emptyMap(),purposes,facts,null);
+    }
+
 
     /** Exact observed root toolbar. Its two literal labels identify separate
      * current controls, not an arbitrary same-text history row or a coordinate.
