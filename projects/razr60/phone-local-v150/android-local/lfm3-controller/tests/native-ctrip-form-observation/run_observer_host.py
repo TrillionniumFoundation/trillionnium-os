@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import sys
 sys.dont_write_bytecode=True
 PKG=Path('src/org/trillionnium/hepta/local')
@@ -204,6 +205,11 @@ def generate(source,output,h):
         if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
             # Recognizes an additional Xiaomi owner. The actual Ctrip goal and all
             # the form-observer bodies and original cases compile and run below.
+            protected_files[name]=actual
+            continue
+        if name=='NativeActionSnapshotCheck.java' and actual=='dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05':
+            proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](current)
+            if h.sha(proof)!=r32_provider_pins[name]:raise RuntimeError('full prior comparator required')
             protected_files[name]=actual
             continue
         if name in r32_provider_pins and actual==r32_provider_pins[name]:

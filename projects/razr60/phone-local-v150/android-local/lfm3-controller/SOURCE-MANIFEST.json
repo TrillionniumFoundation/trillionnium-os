@@ -4,7 +4,7 @@
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
   "candidate_status": "xiaomi_wide_search_and_login_destination_candidate",
-  "complete_source_files": 2496,
+  "complete_source_files": 2497,
   "current_successor_delta": {
     "baseline": "6379598d8536699a1e677723ce02e78673b13d5f",
     "original_case_assertions_preserved": true,
@@ -19,6 +19,10 @@
       "tests/native-search-session/NativeSearchSessionHostTest.java",
       "tests/native-search-session/run_host.py",
       "tests/native-search-session/8436-retained-login.json",
+      "tests/native-search-producer/protected_snapshot.py",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-product/run_host.py",
       "tools/run_host_checks.py"
     ]
   },
@@ -8918,9 +8922,9 @@
       "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
     },
     {
-      "bytes": 66875,
+      "bytes": 67309,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "0ec59a76cffe997c14885eb09d4c9ed65e796ac91281c3d69a62ed9cfcbd870f"
+      "sha256": "58db703f32ba3bfed47475447b8d302df7eedd2aef19d7136446927b72f1c50d"
     },
     {
       "bytes": 3524,
@@ -9288,6 +9292,11 @@
       "sha256": "ebb895f5647bc01f712e81b2f699761efb349817c622036fdee58acbf1311090"
     },
     {
+      "bytes": 1358,
+      "path": "tests/native-search-producer/protected_snapshot.py",
+      "sha256": "ebb884e304919e1fc466b1c4e5de7749e2ddc055f672ca805d828af7d99b6d29"
+    },
+    {
       "bytes": 19000,
       "path": "tests/native-search-producer/run_producer.py",
       "sha256": "6cfcf12d1d7ba812ad1e6ccd89e252cf398f8efda2e6b71455290eceda4c5994"
@@ -9338,9 +9347,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 13620,
+      "bytes": 13865,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "c5e2785c69b1acf3537b534bbc9f16915a3de9b34fa422a2856f826dd086cad5"
+      "sha256": "8cbfbea415f83a1af1811c9b1ae26d8b99f37e791d1d0b0d3c85216c27536c47"
     },
     {
       "bytes": 14162,
@@ -9563,9 +9572,9 @@
       "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
     },
     {
-      "bytes": 9189,
+      "bytes": 9192,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "f802ebd59771d40d437bc341875f7bd123452e6444d41de6e24f90633d67f5d8"
+      "sha256": "f7c68d08d1feebe951656fa5daa28a4fb8865d6125f017f6c509389e571e56f8"
     },
     {
       "bytes": 2443,
