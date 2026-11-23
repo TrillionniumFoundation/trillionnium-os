@@ -1,0 +1,306 @@
+package org.trillionnium.hepta.local;
+
+import android.os.SystemClock;
+import android.os.Looper;
+import android.net.LocalSocket;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.*;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
+
+/** Verbatim HA methods over explicit Android node, clock, queue, display and RPC ports.
+ * Session/Gate/Offer/Attempt, persistent receipt IO and value validators are real production classes.
+ * This harness cannot issue phone commands or establish Android/business qualification. */
+public final class HeptaAccessibilityService {
+    interface Cancellation {boolean isCancelled();}
+    interface ActionCallback {void onResult(ActionOutcome value);}
+    {{outcome}}
+    {{graph_budget}}
+    {{stale}}
+    {{abandoned}}
+    {{no_root}}
+    {{profile_violation}}
+    {{mode}}
+    static final String DISPLAY_SERVICE="display";
+    static HeptaAccessibilityService live;
+    static final ActionExecutionState.Slot actionSlot=new ActionExecutionState.Slot();
+    static FakeExecutor actionIo=new FakeExecutor(),observationIo=new FakeExecutor();
+    static final AtomicBoolean observationIoBusy=new AtomicBoolean();
+    final MainQueue main=new MainQueue();
+    Object ownedController,taskWeb,activeObservation;
+    String lease;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;
+    BackgroundSession taskBackground;NativeAxMode nativeAxMode;ActionExecutionState lastActionExecution;
+    boolean capturePending,cancellationPending;int taskObservationAdmissions;
+    PhoneObservation current;Graph currentGraph;
+    Fixture fixture;
+    static final class ProfilePermissionUiSession {static boolean pending;static boolean workPending(){return pending;}void retire(String task,String reason){/* unrelated permission IO stays pending until its own owner drains */}}
+    final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession();
+    private static final class ActionWork {final ActionExecutionState state;private ActionWork(ActionExecutionState state){this.state=state;}}
+    private ActionWork activeAction;
+    boolean legacyObservationAllowedForHost(String task){return nativeSearchAllowsLegacyObservation(task);}
+    static final class FakeExecutor implements Executor {
+        final Deque<Runnable> jobs=new ArrayDeque<Runnable>();int submissions;boolean reject,uncertain;
+        public synchronized void execute(Runnable job){submissions++;if(reject)throw new java.util.concurrent.RejectedExecutionException("synthetic rejection");jobs.add(job);if(uncertain)throw new IllegalStateException("synthetic uncertain submit");}
+        synchronized boolean hasJobs(){return !jobs.isEmpty();}
+        synchronized void one(){if(jobs.isEmpty())throw new AssertionError("worker job missing");boolean old=Looper.main;Looper.main=false;try{jobs.remove().run();}finally{Looper.main=old;}}
+    }
+    static final class MainQueue {
+        final Deque<Runnable> jobs=new ArrayDeque<Runnable>();final List<Runnable> delayed=new ArrayList<Runnable>();boolean reject,rejectDelayed;
+        synchronized boolean post(Runnable job){if(reject)return false;jobs.add(job);return true;}
+        boolean postDelayed(Runnable job,long delay){if(rejectDelayed)return false;delayed.add(job);return true;}
+        synchronized boolean hasJobs(){return !jobs.isEmpty();}
+        synchronized void one(){if(jobs.isEmpty())throw new AssertionError("main job missing");boolean old=Looper.main;Looper.main=true;try{jobs.remove().run();}finally{Looper.main=old;}}
+    }
+    static final class Rect {
+        int left,top,right,bottom;Rect(){}Rect(int a,int b,int c,int d){left=a;top=b;right=c;bottom=d;}
+        Rect(Rect r){this(r.left,r.top,r.right,r.bottom);}boolean isEmpty(){return right<=left||bottom<=top;}
+        boolean contains(Rect r){return left<=r.left&&top<=r.top&&right>=r.right&&bottom>=r.bottom;}
+        static boolean intersects(Rect a,Rect b){return a.left<b.right&&b.left<a.right&&a.top<b.bottom&&b.top<a.bottom;}
+        public boolean equals(Object v){if(!(v instanceof Rect))return false;Rect r=(Rect)v;return left==r.left&&top==r.top&&right==r.right&&bottom==r.bottom;}
+        public int hashCode(){return Objects.hash(left,top,right,bottom);}public String toString(){return "Rect("+left+", "+top+" - "+right+", "+bottom+")";}
+    }
+    static void copy(Rect a,Rect b){b.left=a.left;b.top=a.top;b.right=a.right;b.bottom=a.bottom;}
+    static final class Display {static final int DEFAULT_DISPLAY=0;int getRotation(){return 0;}void getRealMetrics(android.util.DisplayMetrics m){m.widthPixels=1224;m.heightPixels=2992;}}
+    final class DisplayManager {Display getDisplay(int id){return fixture.displayPresent&&id==7?new Display():null;}}
+    static final class AccessibilityServiceInfo {static final int FLAG_RETRIEVE_INTERACTIVE_WINDOWS=64,CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT=1;int flags=64;int getCapabilities(){return 1;}}
+    static final class AccessibilityWindowInfo {
+        final HeptaAccessibilityService owner;AccessibilityWindowInfo(HeptaAccessibilityService owner){this.owner=owner;}
+        static final int TYPE_APPLICATION=1,TYPE_INPUT_METHOD=2;
+        int id=96,display=7,type=1,layer=1,task=1234;Rect bounds=new Rect(0,0,1224,2992);boolean focused=true,active=true;
+        int getId(){return id;}int getDisplayId(){return display;}int getType(){return type;}int getLayer(){return layer;}
+        void getBoundsInScreen(Rect b){copy(bounds,b);}boolean isFocused(){return focused;}boolean isActive(){return active;}
+        CharSequence getTitle(){return owner.fixture.windowTitle;}void recycle(){owner.fixture.windowReferencesReleased++;}
+    }
+    static final class NodeData {
+        final HeptaAccessibilityService owner;
+        Map<String,Object> v;NodeData parent;final List<NodeData> children=new ArrayList<NodeData>();
+        int obtained,recycled,effects,boundsReads,visibleReads;boolean refresh=true;Runnable beforeRefresh;
+        NodeData(HeptaAccessibilityService owner,Map<String,Object> v){this.owner=owner;this.v=new TreeMap<String,Object>(v);}
+    }
+    static final class AccessibilityNodeInfo {
+        static final int ACTION_CLICK=16,ACTION_LONG_CLICK=32,ACTION_SET_TEXT=2097152,ACTION_SCROLL_FORWARD=4096,ACTION_SCROLL_BACKWARD=8192;
+        static final class AccessibilityAction {static final AccessibilityAction ACTION_SCROLL_UP=new AccessibilityAction(101),ACTION_SCROLL_DOWN=new AccessibilityAction(102),ACTION_SCROLL_LEFT=new AccessibilityAction(103),ACTION_SCROLL_RIGHT=new AccessibilityAction(104);final int id;AccessibilityAction(int id){this.id=id;}int getId(){return id;}}
+        final NodeData data;boolean released;
+        AccessibilityNodeInfo(NodeData d){data=d;d.obtained++;}
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo original){return new AccessibilityNodeInfo(original.data);}
+        Object value(String k){if(released)throw new AssertionError("recycled node used");return data.v.get(k);}
+        String s(String k){return (String)value(k);}boolean b(String k){return ((Boolean)value(k)).booleanValue();}
+        void recycle(){if(released)throw new AssertionError("node double recycle");released=true;data.recycled++;
+            Fixture fixture=data.owner.fixture;
+            if(fixture.effects>0&&fixture.afterEffectRecycleHook!=null){Runnable hook=fixture.afterEffectRecycleHook;fixture.afterEffectRecycleHook=null;hook.run();}
+        }
+        boolean refresh(){if(data.beforeRefresh!=null){Runnable hook=data.beforeRefresh;data.beforeRefresh=null;hook.run();}return !released&&data.refresh;}
+        CharSequence getPackageName(){return s("package");}int getWindowId(){return ((Number)value("window_id")).intValue();}
+        CharSequence getClassName(){return s("class");}String getViewIdResourceName(){return s("view_id");}CharSequence getText(){return s("text");}CharSequence getContentDescription(){return s("description");}
+        boolean isPassword(){return b("password");}boolean isVisibleToUser(){data.visibleReads++;return b("visible");}boolean isEnabled(){return b("enabled");}
+        boolean isClickable(){return b("clickable");}boolean isEditable(){return b("editable");}boolean isScrollable(){return b("scrollable");}
+        boolean isFocused(){return b("focused");}boolean isSelected(){return b("selected");}boolean isCheckable(){return b("checkable");}boolean isChecked(){return b("checked");}
+        int getChildCount(){return data.children.size();}int getInputType(){return 0;}boolean isLongClickable(){return false;}
+        AccessibilityNodeInfo getChild(int i){return i<0||i>=data.children.size()||data.children.get(i)==null?null:new AccessibilityNodeInfo(data.children.get(i));}
+        AccessibilityNodeInfo getParent(){return data.parent==null?null:new AccessibilityNodeInfo(data.parent);}
+        void getBoundsInScreen(Rect b){data.boundsReads++;List<?> r=(List<?>)value("bounds");b.left=((Number)r.get(0)).intValue();b.top=((Number)r.get(1)).intValue();b.right=((Number)r.get(2)).intValue();b.bottom=((Number)r.get(3)).intValue();}
+        AccessibilityWindowInfo getWindow(){AccessibilityWindowInfo w=new AccessibilityWindowInfo(data.owner);w.id=getWindowId();w.task=data.owner.fixture.actualTask;return w;}
+        List<AccessibilityAction> getActionList(){return b("action_click")?Collections.singletonList(new AccessibilityAction(ACTION_CLICK)):Collections.<AccessibilityAction>emptyList();}
+        boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("non-click effect");data.effects++;Fixture fixture=data.owner.fixture;fixture.effects++;if(fixture.effectHook!=null)fixture.effectHook.run();return fixture.apiAccepts;}
+        public boolean equals(Object v){return v instanceof HeptaAccessibilityService.AccessibilityNodeInfo&&((AccessibilityNodeInfo)v).data==data;}public int hashCode(){return System.identityHashCode(data);}
+    }
+    static final class PhoneObservation {
+        static final class CollectionStats {int visited,retained,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean truncated(){return pending!=0||nodeBudgetOmissions!=0||textBudgetOmissions!=0||childSlotsOmitted!=0;}}
+        static final class Node {String id,packageName,nativeTreePath,nativeParentClass,observedAppTreeSignature,text,description;Boolean selected,checkable,checked;boolean selectionStateObserved;Rect bounds;ObservedChildText.Result childText;String label(){return ObservedChildText.displayLabel(text,description,childText);}}
+    }
+    static final class StateCarrier {ImeVisibility imeVisibility=ImeVisibility.HIDDEN;}
+    static final class Graph {
+        PhoneObservation.CollectionStats collectionStats;boolean nativeObservationComplete,nativeSearchInvalidRawVisibility,truncated;
+        String packageName,backgroundGeneration,backgroundOwnerSha,backgroundBootstrapPackage,backgroundSelectionRaw;
+        String nativeActionTaskId,nativeActionAuthorizationSha,nativeActionSelectionSha,nativeActionTargetSha,nativeActionGoalSha;
+        int windowId,displayId,rotation,nativeActionWidth,nativeActionHeight,nativeActionText,nativeActionBytes,nativeSearchRawVisibilityChecked;
+        String nativeSearchFirstInvalidRawPath;List<Integer> nativeSearchFirstInvalidRawBounds;
+        long nativeActionCapturedAt,readStartedElapsedMs,readCompletedElapsedMs;Rect bounds;StateCarrier state;
+        WindowOwnership profileWindow;ObservedWindowMetadata windowMetadata;List<String> backgroundAllowedPackages;
+        final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();final Map<String,NodeRef> refs=new LinkedHashMap<String,NodeRef>();
+        List<NativeActionSnapshotCheck.Node> nativeActionBuilding,nativeActionNodes;Map<String,Object> nativeActionWindows;
+        {{close_graph}}
+    }
+    {{node_ref}}
+    {{frozen_window}}
+    {{methods}}
+    {{observation}}
+    {{action}}
+    boolean nativeCancellationWorkPending(){return cancellationPending;}
+    boolean owns(String task){return lease!=null&&lease.equals(task)&&live==this;}
+    boolean locked(BackgroundSession background){try{background.requireAdmissionActive();return false;}catch(RuntimeException e){return true;}}
+    Object getSystemService(String name){if(!DISPLAY_SERVICE.equals(name))throw new AssertionError("unexpected service");return new DisplayManager();}
+    int rotation(int display){return 0;}
+    AccessibilityServiceInfo getServiceInfo(){return new AccessibilityServiceInfo();}
+    List<AccessibilityWindowInfo> windowsForDisplay(int display){
+        fixture.windowReads++;if(fixture.windowHook!=null)fixture.windowHook.run();
+        AccessibilityWindowInfo window=new AccessibilityWindowInfo(this);window.display=display;
+        window.id=fixture.actualWindow;window.task=fixture.actualTask;window.type=fixture.windowType;
+        return fixture.windowsMissing?Collections.<AccessibilityWindowInfo>emptyList():Collections.singletonList(window);
+    }
+    int actualProfileAccessibilityTaskId(AccessibilityWindowInfo window){return window.task;}
+    AccessibilityNodeInfo selectedRoot(BackgroundSession background,GraphBudget budget){
+        checkReadBudget(budget);background.requireActive();if(fixture.rootMissing)throw new NoActiveWindow();return new AccessibilityNodeInfo(fixture.nodes.get("0"));
+    }
+    static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){
+        if(node.data.owner.fixture.recordedPlanningNodes){
+            String raw=node.s("scroll_actions");
+            if("hepta.observed-scroll-actions.v1|observed".equals(raw))return ObservedScrollActions.observed(Collections.<String>emptyList());
+            if("hepta.observed-scroll-actions.v1|observed|forward".equals(raw))return ObservedScrollActions.observed(Collections.singletonList("forward"));
+            if("hepta.observed-scroll-actions.v1|observed|forward|backward".equals(raw))return ObservedScrollActions.observed(Arrays.asList("forward","backward"));
+            throw new AssertionError("unrecognized recorded scroll action");
+        }
+        return ObservedScrollActions.observed(node.isScrollable()?Arrays.asList("forward","backward"):Collections.<String>emptyList());
+    }
+    static ObservedImeEnter readImeEnter(AccessibilityNodeInfo node){
+        return ObservedImeEnter.ABSENT.fingerprintInput().equals(node.value("ime_enter"))?ObservedImeEnter.ABSENT:ObservedImeEnter.UNKNOWN;
+    }
+    Graph readGraph(GraphBudget budget,BackgroundSession background){return fixture.graph(budget,background);}
+    static void actualBackgroundChildRefresh(AccessibilityNodeInfo node,AccessibilityNodeInfo root,BackgroundSession background){
+        {{background_child_guard}}
+    }
+    static String string(CharSequence v){return v==null?"":v.toString();}
+    static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
+    static String sha(byte[] bytes){return QualificationScope.hash(bytes);}
+    static JSONObject callbackFlags(JSONObject original,boolean current,boolean cancelled){try{return (original==null?new JSONObject():new JSONObject(original.toString())).put("callback_lease_current",current).put("callback_cancelled",cancelled);}catch(Exception e){throw new IllegalStateException(e);}}
+    static final class LegacyWork {final ActionExecutionState state;boolean current=true;LegacyWork(ActionExecutionState state){this.state=state;}boolean currentLease(){return current;}}
+    static JSONObject actionDiagnosticEvidence(LegacyWork work){return new JSONObject(work.state.evidence());}
+    void legacyCallback(LegacyWork work,Cancellation cancel,ActionOutcome computed,ActionCallback callback){
+        {{legacy_callback}}
+    }
+    // Actual authorization and all expected/current object identities are set via the shared real Session fixture.
+    final class Fixture implements AutoCloseable {
+        boolean recordedPlanningNodes;
+        final NativeSearchSessionHostTest.Fixture base;final File directory;final Map<String,NodeData> nodes=new LinkedHashMap<String,NodeData>();
+        NativeActionSnapshotCheckHostTest.Fixture values;NativeSearchPlanning planning;String error;ActionOutcome outcome;NativeSearchReadRetryProof retryProof;String retryDetail;
+        int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
+        String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
+        Runnable graphHook,windowHook,effectHook,afterEffectRecycleHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
+        Fixture()throws Exception{this(new Object());}
+        Fixture(Object controller)throws Exception{
+            if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("previous physical capacity leaked");
+            actionIo=new FakeExecutor();observationIo=new FakeExecutor();ProfilePermissionUiSession.pending=false;
+            Looper.main=true;SystemClock.now=NativeSearchSessionHostTest.START;LocalSocket.reset();
+            fixture=this;live=HeptaAccessibilityService.this;ownedController=controller;
+            String owner=NativeProfileIdentityHostTest.OWNER;
+            String selectionSha=NativeAppObservation.selectionSha(NativeProfileIdentityHostTest.selection(owner,NativeProfileIdentityHostTest.xiaomi()));
+            base=new NativeSearchSessionHostTest.Fixture(owner,ownedController,selectionSha);
+            lease=base.search.taskId;taskAuthorization=base.gate;taskBackground=base.env.session;
+            taskScope=new QualificationScopeConfig.Bound(base.env.context,lease,null,new QualificationScopeConfig.FilesRoot(base.env.context));
+            nativeAxMode=new NativeAxMode(ownedController,base.nativeTask,base.gate,taskBackground,lease);
+            directory=MobiMindPrivateFiles.directory(new File(base.env.directory.toFile(),"task"),true);
+            values=base.census(SystemClock.now);syncNodes();
+            LocalSocket.responder=raw->{
+                JSONObject request=ProfileClientPort.decode(raw),response=base.env.reply(raw,base.env.target,true);
+                if("window".equals(request.getString("op"))){
+                    long deadline=request.optLong("deadline_elapsed_ms",SystemClock.now+4000);
+                    WindowOwnership w=new WindowOwnership(base.env.target,taskBackground.generation,7,request.getInt("window_id"),request.getInt("task_id"),1200,
+                            base.token,UUID.randomUUID().toString(),base.env.target.profile.userId,base.env.target.profile.serial,base.env.target.fullUid,
+                            SystemClock.now,Math.min(deadline,SystemClock.now+profileLifetime));
+                    response.put("window_ownership_wire",w.wire());
+                }
+                return ProfileClientPort.frame(response.toString().getBytes(StandardCharsets.UTF_8));
+            };
+            bindNativeSearchSession(base.search);
+        }
+        void syncNodes(){
+            nodes.keySet().retainAll(values.nodes.keySet());
+            for(Map.Entry<String,Map<String,Object>> entry:values.nodes.entrySet()){
+                NodeData data=nodes.get(entry.getKey());if(data==null){data=new NodeData(HeptaAccessibilityService.this,entry.getValue());nodes.put(entry.getKey(),data);}else data.v=new TreeMap<String,Object>(entry.getValue());
+                data.children.clear();data.parent=null;
+            }
+            for(Map.Entry<String,NodeData> entry:nodes.entrySet()){
+                String path=entry.getKey();int slash=path.lastIndexOf('/');if(slash<0)continue;
+                NodeData parent=nodes.get(path.substring(0,slash));int index=Integer.parseInt(path.substring(slash+1));
+                while(parent.children.size()<=index)parent.children.add(null);parent.children.set(index,entry.getValue());entry.getValue().parent=parent;
+            }
+        }
+        Graph graph(GraphBudget budget,BackgroundSession background){
+            checkReadBudget(budget);graphReads++;if(graphHook!=null)graphHook.run();if(rootMissing)throw new NoActiveWindow();syncNodes();
+            if(replaceTargetOnSecond&&graphReads%2==0){
+                String path=planning.role.actionPath;NodeData old=nodes.get(path);
+                NodeData replacement=new NodeData(HeptaAccessibilityService.this,old.v);nodes.put(path,replacement);
+                replacement.parent=old.parent;replacement.children.addAll(old.children);
+                replacement.parent.children.set(Integer.parseInt(path.substring(path.lastIndexOf('/')+1)),replacement);
+                for(NodeData child:replacement.children)child.parent=replacement;
+            }
+            Graph g=new Graph();Graph graph=g;try{g.readStartedElapsedMs=SystemClock.now;SystemClock.now+=graphDuration/3;checkReadBudget(budget);
+            g.packageName=NativeAppGoal.XIAOMI_PACKAGE;g.windowId=actualWindow;g.displayId=7;g.bounds=new Rect(0,0,1224,2992);g.state=new StateCarrier();
+            g.backgroundGeneration=background.generation;g.backgroundOwnerSha=background.ownerSha256;g.backgroundBootstrapPackage=background.selection.initialPackage;g.backgroundAllowedPackages=background.selection.allowedPackages;
+            g.nativeActionTaskId=background.taskId;g.nativeActionAuthorizationSha=taskAuthorization.authorization.sha256;g.nativeActionSelectionSha=base.nativeTask.selectionSha;
+            g.nativeActionTargetSha=base.nativeTask.target.targetSha256;g.nativeActionGoalSha=base.nativeTask.goal.contractSha256;
+            g.nativeActionWidth=1224;g.nativeActionHeight=2992;
+            AccessibilityNodeInfo root=new AccessibilityNodeInfo(nodes.get("0"));
+            try{g.windowMetadata=readWindowMetadata(root,g.bounds,g.windowId,g.displayId);g.profileWindow=readProfileWindow(root,background,budget);}finally{root.recycle();}
+            g.nativeActionWindows=readNativeActionWindows(g,budget);g.nativeActionBuilding=new ArrayList<NativeActionSnapshotCheck.Node>();
+            for(Map.Entry<String,NodeData> entry:nodes.entrySet()){
+                AccessibilityNodeInfo node=new AccessibilityNodeInfo(entry.getValue());
+                try{
+                    if(refreshGraphChildren)actualBackgroundChildRefresh(node,"0".equals(entry.getKey())?node:null,background);
+                    Rect bounds=new Rect();node.getBoundsInScreen(bounds);PhoneObservation.Node retained=null;NodeRef ref=null;
+                    if(node.isVisibleToUser()&&!bounds.isEmpty()&&(!observableLoadingProjection||node.isClickable()||node.isEditable()||node.isScrollable()||!string(node.getText()).isEmpty()||!string(node.getContentDescription()).isEmpty())){
+                        retained=new PhoneObservation.Node();retained.id="n"+g.rows.size();retained.packageName=string(node.getPackageName());retained.nativeTreePath=entry.getKey();
+                        retained.nativeParentClass=(String)entry.getValue().v.get("parent_class");retained.text=string(node.getText());retained.description=string(node.getContentDescription());
+                        retained.selected=node.isSelected();retained.checkable=node.isCheckable();retained.checked=node.isChecked();retained.selectionStateObserved=true;retained.bounds=bounds;
+                        retained.childText=observedChildText(node,false,budget);ref=new NodeRef(node,retained.childText,readScrollActions(node));retained.observedAppTreeSignature=ref.appTreeSignature;
+                        g.rows.add(retained);g.refs.put(retained.id,ref);
+                    }
+                    collectNativeActionNode(g,node,entry.getKey(),(String)entry.getValue().v.get("parent_class"),retained,ref);
+                }finally{node.recycle();}
+            }
+            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=true;
+            SystemClock.now+=graphDuration/3;g.nativeActionCapturedAt=SystemClock.now;g.nativeActionNodes=g.nativeActionBuilding;g.nativeActionBuilding=null;
+            SystemClock.now+=graphDuration/3;g.readCompletedElapsedMs=SystemClock.now;checkReadBudget(budget);return g;
+            }{{read_graph_failure_cleanup}}
+        }
+        Cancellation cancel(){return ()->cancelled;}
+        NativeSearchRequest startPlanning(){return startPlanning(null);}
+        NativeSearchRequest startPlanning(NativeSearchReadRetryProof retry){
+            observeNativeSearchPlanning(lease,directory,base.search,cancel(),SystemClock.now+12000,new NativeSearchSession.ObservationCallback(){
+                public void onPlanning(NativeSearchPlanning value){callbackCount++;planning=value;}public void onError(String value){callbackCount++;pendingAtError=observationReadWorkPending();error=value;}
+                public void onLoadingReadRetryAvailable(String value,NativeSearchReadRetryProof proof){callbackCount++;retryProof=proof;retryDetail=value;}
+            },retry);main.one();return activeNativeSearchObservation;
+        }
+        void plan(){startPlanning();observationIo.one();main.one();}
+        NativeSearchSession.Attempt intent()throws Exception{
+            plan();check(planning!=null,"actual producer planning: "+error);NativeSearchSession.Offer offer=base.search.offer(planning,SystemClock.now);
+            SystemClock.now+=20;return offer.reserve(base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+        }
+        SearchActionWork startAction(NativeSearchSession.Attempt attempt){
+            performNativeOpenSearch(lease,attempt,cancel(),result->{callbackCount++;outcome=result;});main.one();return activeSearchAction;
+        }
+        void action(NativeSearchSession.Attempt attempt){
+            SearchActionWork work=startAction(attempt);if(!actionIo.jobs.isEmpty())actionIo.one();
+            // An actual preclaim refusal now publishes only after its real serial drain marker.
+            if(work!=null&&work.hasNoEffectReplanFence()&&work.state.isDrained()&&!actionSlot.pending()&&actionIo.hasJobs())actionIo.one();
+            if(!main.jobs.isEmpty())main.one();
+        }
+        JSONObject diagnostic()throws Exception{
+            File[] files=directory.listFiles((dir,name)->name.endsWith("-failed-native-search-planning.json"));
+            check(files!=null&&files.length==1,"exactly one private failure diagnostic");
+            check((android.system.Os.lstat(files[0].getPath()).st_mode&0777)==0600,"private mode before/after raw write");
+            return new JSONObject(new String(Files.readAllBytes(files[0].toPath()),StandardCharsets.UTF_8));
+        }
+        public void close()throws IOException{
+            android.os.SystemClock.beforeRead=null;android.app.KeyguardManager.beforeCheck=null;android.system.Os.afterRead=null;android.system.Os.beforeWrite=null;android.system.Os.afterFsync=null;android.system.Os.beforeChmod=null;
+            if(!observationIo.jobs.isEmpty())observationIo.one();
+            if(!actionIo.jobs.isEmpty())actionIo.one();
+            if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("owned work has not drained");
+            base.close();live=null;
+        }
+    }
+    static final List<Map<String,Object>> cases=new ArrayList<Map<String,Object>>();static int assertions;
+    interface Case {void run()throws Exception;}
+    static void check(boolean yes,String reason){assertions++;if(!yes)throw new AssertionError(reason);}
+    static void rejected(Case action)throws Exception{boolean no=false;try{action.run();}catch(IllegalStateException|IllegalArgumentException|IOException expected){no=true;}check(no,"required rejection");}
+    static void one(String name,Case body){Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("name",name);try{body.run();row.put("passed",true);}catch(Throwable error){row.put("passed",false);row.put("failure",error.toString());StringWriter s=new StringWriter();error.printStackTrace(new PrintWriter(s));row.put("stack",s.toString());}cases.add(row);}
+    {{loading_cases}}
+    {{successor_cases}}
+    {{sampling_cases}}
+    {{cases}}
+}

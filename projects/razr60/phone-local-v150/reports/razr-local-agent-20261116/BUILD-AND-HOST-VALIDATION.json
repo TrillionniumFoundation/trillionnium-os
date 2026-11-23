@@ -1,0 +1,307 @@
+{
+  "actual_build_identity_sha256": "9e205aa3c86cd468d78f72d4a5d948560b5b00d559e5bd2f9c054760dce3725c",
+  "actual_compiler_inputs": 316,
+  "apk": {
+    "bytes": 21383084,
+    "file": "hepta-local-0.69.0.apk",
+    "sha256": "5dfa8eb6942aa1b1ce70fdc3ceffd57ade8571178ce11e85ca86a3570ed144f8"
+  },
+  "application_source_commit": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "build_receipts": {
+    "frozen_source_sha256": "98d06ac47a13ed4b0ea63b70406c4a940d0a4b386f5478e76d1b214c24f6bb7f",
+    "mac_build_sha256": "9917cd4f9109410cca723e382efa0ea7e5e43768a717ceb6d0a296f4d393f282",
+    "original_signer_assembly_sha256": "25dd01d1e0e138ef636a9222f2b511ff4bd4330a1a438f67d418eaa179786535",
+    "signature_output_sha256": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+    "static_acceptance_sha256": "7e6299a8d3e5a1e2239904a9387e0b921a7a46a0fb3ce4d25a1b5176c9ad484f",
+    "union_production_diff_sha256": "b704a16fbbc219e2dae8dc34755a7f7aa32671078fd43751fcf4e82bfbed8b06"
+  },
+  "controller_without_internet_permission_verified": true,
+  "current_host_gates": {
+    "all_pass": true,
+    "combined_receipt_sha256": "e4d2d32ba685c6bd51758cf78251a766120d9133e918bdad3d97aaba1df2d8b0",
+    "live_service_authority_or_business_result_qualified": false,
+    "phone_actions": 0,
+    "rows": [
+      {
+        "assertions": 145,
+        "cases": 66,
+        "name": "pre-dispatch-session-controller",
+        "platform_model_ipc_and_clock_mocked": true,
+        "production_methods_and_controller_control_flow_executed": true,
+        "receipt_sha256": "d2b521667a7c912ce66c20c62411ecec3db1fac737b75c67a412bdb8c9992cb6"
+      },
+      {
+        "actual_saved_callbacks": 0,
+        "assertions": 21,
+        "live_binder_authorization_tested": false,
+        "name": "complete-receipt-verifier",
+        "production_verifier_executed": true,
+        "receipt_sha256": "d2b521667a7c912ce66c20c62411ecec3db1fac737b75c67a412bdb8c9992cb6",
+        "synthetic_cases": 20
+      },
+      {
+        "actual_current_private_captures_used": false,
+        "assertions": 53,
+        "cases": 49,
+        "complete_native_boundaries_synthetic": true,
+        "name": "footer-readonly-observation-scope",
+        "receipt_sha256": "59bca07d7739fdd6a1ab3a617072a2de22e05bbc1be779d9fe443a142daf59f3"
+      },
+      {
+        "assertions": 129,
+        "cases": 18,
+        "name": "bounded-web-readiness",
+        "native_identity_ipc_mocked": true,
+        "receipt_sha256": "98cace6dfcd9937612092142d2d5927d22bb45697ec07f39914f683b8aa70848"
+      }
+    ],
+    "source_commit": "8d277617ae0263631d2bcdd30d5022e3c6cf7897"
+  },
+  "date": "2026-11-16",
+  "earlier_host_gates": [
+    {
+      "all_pass": true,
+      "combined_receipt_sha256": "b036acb11a15dd9f92a347f07b024d24a3ffd8f3524d81e41829fb513bcbc2a2",
+      "live_service_authority_or_business_result_qualified": false,
+      "phone_actions": 0,
+      "rows": [
+        {
+          "assertions": 50,
+          "cases": 43,
+          "name": "shopping-dom-native-policy",
+          "receipt_sha256": "f650e834335e1c2a74bb2a66e117bc31ced4c2e9d275557d8d16dbeaa932b496"
+        },
+        {
+          "assertions": 130,
+          "cases": 28,
+          "name": "shopping-quote-completion",
+          "receipt_sha256": "f650e834335e1c2a74bb2a66e117bc31ced4c2e9d275557d8d16dbeaa932b496"
+        },
+        {
+          "assertions": 32,
+          "cases": 15,
+          "name": "native-change-diagnostic",
+          "receipt_sha256": "6fe7ed00fd83f147664390b8d388eb9ef37100df09d491c6239b7b88fb11df57"
+        },
+        {
+          "assertions": 129,
+          "cases": 18,
+          "name": "web-readiness",
+          "receipt_sha256": "29db60cad568a96bd1470c3e12b6b810f9a111173ce175fafb9fee2879b8f452"
+        },
+        {
+          "assertions": 101,
+          "cases": 46,
+          "component_bytes_exact_after_integration": true,
+          "name": "calendar-display-label",
+          "optional_original_captures": 2,
+          "receipt_sha256": "d1f82bd40d0c7c85cfbac2cb91ec9e5bd1f97e462cc87a8a55b990d3efe85dba",
+          "with_originals_total_assertions": 113
+        },
+        {
+          "captures_each_round": 4,
+          "name": "same-call-geometry-equivalence",
+          "non_timing_field_comparisons": 144,
+          "receipt_sha256": "c6512f0c4092e63876e2a411b95df10bbfa78febf8e4d06fa0fa32c10ba97523",
+          "rounds_each": 4
+        }
+      ],
+      "source_commit": "47d47aec94bc52d7ef2b848762533d7bf8de3a07"
+    },
+    {
+      "combined_receipt_sha256": "69e3a27d5dd6c54234b6cc3d6134c8383636a57d67f98071e3bf23ee95c3827f",
+      "repeated_in_full_for_current_followup": false,
+      "rows": [
+        {
+          "checks": 112,
+          "name": "canonical-input-validation",
+          "receipt_sha256": "f6d7f04ad06ec6c9a77191d6d1cfdcf01646b25eb8fdc06495df5de4f84d3598"
+        },
+        {
+          "gates": 19,
+          "name": "native-workflow",
+          "receipt_sha256": "fa33d091bbf1c60aa56f592160123195a5f972952db4bbc6a36365f96b195a42"
+        },
+        {
+          "assertions": 1560,
+          "cases": 1560,
+          "name": "canonical-comparison-parity"
+        },
+        {
+          "assertions": 1215,
+          "cases": 1215,
+          "name": "canonical-projection-parity"
+        },
+        {
+          "assertions": 22,
+          "cases": 21,
+          "name": "private-capture-ownership"
+        },
+        {
+          "case_groups": [
+            36,
+            20,
+            34
+          ],
+          "name": "flight-carousel-policy-bracket-cardinality",
+          "receipt_sha256": "ed5e2f6bf2f40a7660795b8bc7efd25b7196c4b010d78aa895c8d2969e96a7ad"
+        },
+        {
+          "name": "notes-completion",
+          "new_readiness_cases": 9,
+          "receipt_sha256": "bae21d11ab6baaea5f0352a1a8998ccfd47ac2780d8d876de2cad5a2948976e9",
+          "stages": 19
+        }
+      ],
+      "scope": "Saved earlier gates remain historical results, with current production identity checked independently; counts are not added into an all-app success rate.",
+      "source_commit": "c662471c570170f42af855943224c71fc1eb960c"
+    }
+  ],
+  "historical_runtime_qualifications_not_rerun_here": [
+    "Generation-time ordinary Stop on its original APK",
+    "Orvena GPU deadline failure and subsequent ordinary UI acknowledgement",
+    "Standalone 35B MoE qualification on its separate runner"
+  ],
+  "install": {
+    "accessibility_bound_observed": true,
+    "actual_build_identity_sha256": "9e205aa3c86cd468d78f72d4a5d948560b5b00d559e5bd2f9c054760dce3725c",
+    "actual_installed_apk_sha256": "5dfa8eb6942aa1b1ce70fdc3ceffd57ade8571178ce11e85ca86a3570ed144f8",
+    "config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+    "continuous_focus_monitoring": false,
+    "data_cleared": false,
+    "finished_utc": "2026-11-16T09:25:01.486054+00:00",
+    "install_exit_code": 0,
+    "main_focus_endpoints_unchanged": true,
+    "main_screen_inputs": 0,
+    "model_config_changed": false,
+    "native_inventory_after_empty": true,
+    "new_business_task_executed_at_install": false,
+    "performed_by_report_author": false,
+    "preferences_preserved": true,
+    "receipt_sha256": "d975bc9632c0b4139889911475a182dd2d6e88632ae414372874e7db3eea446f",
+    "root_installed": true,
+    "runtime_config": {
+      "compute": "npu",
+      "context_tokens": 8192,
+      "model_profile": "lfm3-1.7b-qad-q4_0",
+      "schema": "hepta.local-runtime.v2",
+      "threads": 4
+    },
+    "session_preserved": true,
+    "started_utc": "2026-11-16T09:24:56.402137+00:00"
+  },
+  "native_comparison": {
+    "baseline_apk_sha256": "81c5dca8e57d047bcc4c9337b9ad0ac9abc01100daba68fbb0a8ca9086393f92",
+    "byte_identical_libraries": 18,
+    "changed_libraries": [],
+    "first_nonempty_token_diagnostic_retained": true,
+    "same_library_names": 18
+  },
+  "original_build_install_report_sha256": "24fe22d1d0b6aacbc3904be2c7a4a5cc59ae2ddd3241428b2566a48c936431f3",
+  "overall_requested_capabilities_qualified": false,
+  "parent_source_commit": "47d47aec94bc52d7ef2b848762533d7bf8de3a07",
+  "phone_results_in_separate_report": {
+    "build_and_host_gates_are_not_business_completion": true,
+    "file": "PHONE-VALIDATION.json",
+    "same_apk_business_goal_failures": 2,
+    "same_apk_cases": 3,
+    "same_apk_notes_goal_passes": 1,
+    "sha256": "0bbcb5f00b681a3fb390d7c3b24422d6ead42731c45f665401f38bdf275da105"
+  },
+  "privacy": {
+    "phone_raw_captures": false,
+    "private_host_paths": false,
+    "private_note_text": false,
+    "signing_secrets": false
+  },
+  "schema": "hepta.build-and-host-validation.sanitized.v2",
+  "scope": "These are source/build/policy and consistency gates, not an all-app success rate. Original failed phone tasks and legacy specification requests remain failed; a new natural-price-only case must be reported separately.",
+  "separately_tested_component_gates": {
+    "footer": {
+      "old_legacy_request_remains_failed": true,
+      "public_receipt": "tests/shopping-readonly-observation/FOOTER-HOST-VALIDATION.json",
+      "qualification": {
+        "APK_built": false,
+        "actual_DOM_plus_synthetic_price_purpose_only_accepted": true,
+        "actual_earlier_HEAD_error": "complete search DOM membership changed",
+        "actual_original_error": "footer visibility scope requires the original price-only observation purpose",
+        "actual_raw_inputs_unchanged": true,
+        "actual_scope_footer_changes": 2,
+        "all_host_gates_pass": true,
+        "baseline_red": {
+          "business_verified": false,
+          "expected_rejection": true,
+          "phone_actions": 0,
+          "reason": "non-recommendation semantic data changed",
+          "schema": "hepta.footer-strict-baseline-red.v1"
+        },
+        "counts": {
+          "existing_observation": 43,
+          "existing_quote": 28,
+          "footer": 49,
+          "footer_assertions": 53,
+          "readiness": 18,
+          "readiness_assertions": 129
+        },
+        "integration_manifest_sha256": "8b17cf79ced0de7691b6124347cc7a1d6e5324deb5f3e8c52cea6a62d6bd96c2",
+        "limits": [
+          "Actual legacy phone task remains failed; no binding or original captured file modified.",
+          "Actual four DOM scope with a synthetic natural-price purpose is structural host evidence only, not actual task success.",
+          "Native and IPC boundaries in default tests are synthetic; no claim of phone timing, completed task or whole-page pixel visibility."
+        ],
+        "natural_price_owner_exact": "查一下小米官网AX3000T的价格",
+        "original_actual_legacy_accepted": false,
+        "original_attempt_rejection": {
+          "file": "actual-replay-01/stderr.txt",
+          "sha256": "d5376fbf446a9045c2f75ef896206bc8b95c62d241edec70f73c04b0c48305e1"
+        },
+        "phone_actions": 0,
+        "production_pins_unchanged_since_review": true,
+        "protected_source": {
+          "file": "PROTECTED-SOURCE.json",
+          "sha256": "8ec7a7d1740857eb575b2c704256bc66e9774c1ddb8b0aef5de3caf3a9579436"
+        },
+        "reports": {
+          "actual": {
+            "file": "actual-replay-02/RESULT.json",
+            "sha256": "0aea7c234a4f7dac83e850d16cbd82822fc601cbcd4890eb0004ebc37ef96e11"
+          },
+          "existing": {
+            "file": "existing-gates-01/RESULT.json",
+            "sha256": "69f17cf60f86b980d4e2ac288ff84bd828071590abeb00351393483a957f1233"
+          },
+          "footer": {
+            "file": "final-gate-03/RESULT.json",
+            "sha256": "db98f2e9f24d279f29e351911c607aef7461c7340ef7bfe6939dc6ee5fb0e618"
+          },
+          "readiness": {
+            "file": "readiness-gate-01/RESULT.json",
+            "sha256": "bb684439d64956940dea308c0724004bf418acb4d43cc21f1f16897b7b9c74e3"
+          }
+        },
+        "schema": "hepta.footer-observation-final-qualification.v1",
+        "strict_pre_done_accepted": false
+      },
+      "sha256": "d7494a649afc5099fa90031a2c5c92963eeec3cb782677ef400ac810e7f45868",
+      "synthetic_natural_price_purpose_is_not_original_task_acceptance": true,
+      "unchanged_existing_observation_cases": 43,
+      "unchanged_existing_quote_cases": 28
+    },
+    "predispatch": {
+      "controller_bytes_equal_tested_component": true,
+      "expected_behavioral_red": true,
+      "legacy_completion_io_mocked": true,
+      "legacy_completion_receipt_sha256": "ed58b79c100309123124add2cc799d1b3ce9f1ed907669f6bf5040b3c872bfcc",
+      "legacy_completion_stages": 19,
+      "original_callback_unchanged": true,
+      "original_saved_callback_replays": 1,
+      "private_receipt_sha256": "bc2355f450b0d62b643f8093851914c3b46efc28aaf9a3b2a8b4a3b97795cc6e",
+      "public_receipt": "tests/web-pre-dispatch/HOST-VALIDATION.json",
+      "sha256": "bfa0dc57c096c5f0bfa4791f552e35bec76c8780e267de823e3c9e8fb1038961"
+    }
+  },
+  "signature_v3_verified": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "source_manifest_members": 2024,
+  "source_manifest_sha256": "69188071e4ec8e78438c59a385b35bcd9351f9f3ed16dd9d7573c9351f1cf37f"
+}

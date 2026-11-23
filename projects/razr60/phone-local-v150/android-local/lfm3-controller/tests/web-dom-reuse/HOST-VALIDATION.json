@@ -1,0 +1,454 @@
+{
+  "all_native_source_members_identical_to_parent": true,
+  "all_pass": true,
+  "android_compiled": false,
+  "base_commit": "2b46214ba63277f474a10ea054564356632846fe",
+  "canonical": {
+    "checks": 112,
+    "receipt_sha256": "f6d7f04ad06ec6c9a77191d6d1cfdcf01646b25eb8fdc06495df5de4f84d3598"
+  },
+  "comparison": {
+    "all_pass": true,
+    "assertions": 1560,
+    "cases": 1560,
+    "oracle": "unchanged canonical(left).equals(canonical(right))",
+    "phone_operations": 0,
+    "schema": "hepta.canonical-comparison-parity.v1"
+  },
+  "component_integration": {
+    "all_pass": true,
+    "android_or_phone_qualification_claimed": false,
+    "base_commit": "2b46214ba63277f474a10ea054564356632846fe",
+    "flight_carousel": {
+      "accepted_counts": [
+        7,
+        8
+      ],
+      "all_three_original_calls_bind_their_own_dom_proof": true,
+      "complete_continuous_id_sets_required": true,
+      "dom_native_cardinality_and_membership_pairing_required": true,
+      "existing_booking_dom_and_native_target_guards_unchanged": true,
+      "external_original_capture_replay": {
+        "accepted_complete_button_captures": 2,
+        "comparison_scope": "Each saved complete DOM before/after pair; no actual Android dispatch or business query is claimed.",
+        "inputs": [
+          {
+            "bytes": 225760,
+            "expect_admitted": true,
+            "sha256": "9b666a7e8bd34ac803135c4cb1c17e25fe1654d3b01feefdbbca0b971ce19f90"
+          },
+          {
+            "bytes": 225784,
+            "expect_admitted": true,
+            "sha256": "e1134c4552f0f82d1736ff68a0d293d6c5322e0fff6cb2ad4fc2645d819ee19c"
+          },
+          {
+            "bytes": 224019,
+            "expect_admitted": false,
+            "sha256": "c44410e3c14097556ab5774d96168e1a234403e26c406ba8be2f502685f1cc86"
+          }
+        ],
+        "missing_aria_capture_remains_rejected": 1,
+        "raw_captures_published": false,
+        "receipt_sha256": "fd94c28cab0c124f1893cd925c416bf962032e9acbab67ce894269f8ac3118eb",
+        "rejection_reason": "complete unchanged booking button missing"
+      },
+      "gate_sha256": "ed5e2f6bf2f40a7660795b8bc7efd25b7196c4b010d78aa895c8d2969e96a7ad",
+      "missing_dom_proof_parameter_compile_rejected": true,
+      "synthetic_bracket_cases": 20,
+      "synthetic_cardinality_and_pairing_cases": 34,
+      "synthetic_policy_cases": 36
+    },
+    "notes_reopen": {
+      "actions_replayed": false,
+      "baseline_red_receipt_sha256": "d56ca2a662d0d8088567275b97c877f71c7c72374617b6be49d2e1b09b3e2529",
+      "baseline_red_test_sha256": "2131cf4323242d8cd4a803dc11a527a105d6dba54b5564f73c5b58da05f2545c",
+      "completion_gate_sha256": "bae21d11ab6baaea5f0352a1a8998ccfd47ac2780d8d876de2cad5a2948976e9",
+      "completion_stages_passed": 19,
+      "current_test_report_only_amendment": "The optional actual replay count is now the number of rows actually processed; the regression cases and production behavior are unchanged.",
+      "current_test_sha256": "3f5bd2d37b25a17a3f98195ecead147453c5d6d1f036fec9c3add273db172f4a",
+      "explicit_external_original_capture_replay": {
+        "original_frames": 2,
+        "original_missing_body_still_rejected": true,
+        "passed": true,
+        "raw_fixture_published": false,
+        "receipt_sha256": "d0030c1a139d3fc9fee3a9b358d18f6173a1a7d86ff9ae01a69a740d869a164c",
+        "test_sha256": "2131cf4323242d8cd4a803dc11a527a105d6dba54b5564f73c5b58da05f2545c"
+      },
+      "fresh_complete_body_and_separate_stable_read_required": true,
+      "original_and_rejected_observation_bytes_retained": true,
+      "original_workflow_deadline_retained": true,
+      "prior_baseline_behavioral_red": true,
+      "public_default_private_capture_count": 0,
+      "readiness_gate_sha256": "41c6809fcca4e3d9e6fe1e93f313a1299465a12ae5452f2f2fa9e0bf99bd35e8",
+      "recovery_only_after_verified_same_item_click": true,
+      "synthetic_cases": [
+        "delayed",
+        "never",
+        "window",
+        "duplicate",
+        "changed-apk",
+        "cancel",
+        "cache-false",
+        "sdk32",
+        "expired"
+      ]
+    },
+    "phone_actions": 0,
+    "production_delta_sha256": "cba2e3a35568b1cbeaeca578243bdce3d62417136ae5f661173d1b355367f8af",
+    "production_inputs": [
+      {
+        "after_sha256": "bdd9d743d66f3452b15e74544a4f89c463b72efa30c7299059eb5f9b4c7f6175",
+        "before_sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7",
+        "bytes": 11283,
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java"
+      },
+      {
+        "after_sha256": "d6daff55e02af33debadee3c36f49c81a63353191e5dc85e1f32ae5aa0e05561",
+        "before_sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53",
+        "bytes": 15911,
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java"
+      },
+      {
+        "after_sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a",
+        "before_sha256": "6556d804a2e51823366bbc164a9813c6888021e0dd03a2088ec9fd72c15eae30",
+        "bytes": 33073,
+        "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java"
+      },
+      {
+        "after_sha256": "348360d71f6a2b324885b1e173594d3333ae193c21368c4f05f5bb33d02b6797",
+        "before_sha256": "7a802a24a7e14ee6194374dc6db79cb506e2d5cddab661c7c98067e266934ea2",
+        "bytes": 37928,
+        "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java"
+      },
+      {
+        "after_sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c",
+        "before_sha256": "9c6fdbce5b8ee20870b1436972becc477fb904ff1bd217dcbccf111a6e1a6717",
+        "bytes": 66223,
+        "path": "src/org/trillionnium/hepta/local/WebFlightSession.java"
+      },
+      {
+        "after_sha256": "70d6452bc9a7781a26c2b0c4e21af616976a21c406438af67c054f0e1b319192",
+        "before_sha256": "0f2c457fd2937549df06bd491e6c86c73ca5b911c48685ca218cc825f2da8b8c",
+        "bytes": 1398,
+        "path": "src/org/trillionnium/hepta/local/TaskDisplayText.java"
+      },
+      {
+        "after_sha256": "15a934bb9ad19c1e3eeafdeb225a9863d990a01fd0d9f95ce323da980f4ddf64",
+        "before_sha256": "8f66fc429386c7748a37d7c1730e081fb65ea13ae89ca27c98ccc8c3cd464d60",
+        "bytes": 22766,
+        "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java"
+      },
+      {
+        "after_sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c",
+        "before_sha256": "4ef392d7a5f5425d6a0353ee65f49286826d86d1c39537d2146be605deec5432",
+        "bytes": 171352,
+        "path": "src/org/trillionnium/hepta/local/LocalTaskController.java"
+      },
+      {
+        "after_sha256": "bfae931eb2d00142b908ea920647c328a3b9ffc873688a821844ad2146cfaf86",
+        "before_sha256": "e0111b3d4d5c6b766770144c4d36fa76576bd05ac7c4e757a023cba8342e06ed",
+        "bytes": 34367,
+        "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java"
+      },
+      {
+        "after_sha256": "7f0934dd1180cc2f897efffdd93bd7c3ad1a0e0a76eb67269d53c654e7728820",
+        "before_sha256": "3d3649d25abb619eaf87892f1b0b9346341d1f50fac11e9378b714faf031095f",
+        "bytes": 271896,
+        "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+      }
+    ],
+    "schema": "hepta.dom-reuse-component-integration.v1"
+  },
+  "exact_original_replay": {
+    "ABBA": {
+      "baseline": {
+        "before_dom_raw_accessor": {
+          "max_ms": 56.255742,
+          "median_ms": 21.121191500000002,
+          "min_ms": 6.357882,
+          "samples": 30
+        },
+        "capture_accessor": {
+          "max_ms": 51.773093,
+          "median_ms": 17.5069545,
+          "min_ms": 6.268592,
+          "samples": 30
+        },
+        "capture_transfer_proof_hashing": {
+          "max_ms": 11.832939,
+          "median_ms": 2.651234,
+          "min_ms": 1.748837,
+          "samples": 30
+        },
+        "dom_accessor": {
+          "max_ms": 47.855714,
+          "median_ms": 25.64047,
+          "min_ms": 8.318574,
+          "samples": 30
+        },
+        "full_receipt_verify_recorded_time_bounds": {
+          "max_ms": 738.638449,
+          "median_ms": 487.6232585,
+          "min_ms": 312.620836,
+          "samples": 30
+        },
+        "own_dom_stability": {
+          "max_ms": 490.882571,
+          "median_ms": 338.9825015,
+          "min_ms": 221.626993,
+          "samples": 30
+        },
+        "shopping_eligibility_pair_1": {
+          "max_ms": 1010.299723,
+          "median_ms": 669.1586050000001,
+          "min_ms": 536.120795,
+          "samples": 6
+        },
+        "shopping_eligibility_pair_2": {
+          "max_ms": 1668.899048,
+          "median_ms": 789.7330400000001,
+          "min_ms": 661.526032,
+          "samples": 6
+        },
+        "strict_capture_envelope": {
+          "max_ms": 45.365442,
+          "median_ms": 21.1412295,
+          "min_ms": 7.806446,
+          "samples": 30
+        },
+        "strict_two_dom": {
+          "max_ms": 100.379391,
+          "median_ms": 49.7314145,
+          "min_ms": 15.992897,
+          "samples": 30
+        }
+      },
+      "candidate": {
+        "before_dom_raw_accessor": {
+          "max_ms": 0.002375,
+          "median_ms": 0.001663,
+          "min_ms": 0.001192,
+          "samples": 30
+        },
+        "capture_accessor": {
+          "max_ms": 0.183451,
+          "median_ms": 0.08933050000000001,
+          "min_ms": 0.066486,
+          "samples": 30
+        },
+        "capture_transfer_proof_hashing": {
+          "max_ms": 8.787147,
+          "median_ms": 2.555526,
+          "min_ms": 1.614691,
+          "samples": 30
+        },
+        "dom_accessor": {
+          "max_ms": 43.068953,
+          "median_ms": 23.775577499999997,
+          "min_ms": 9.09258,
+          "samples": 30
+        },
+        "full_receipt_verify_recorded_time_bounds": {
+          "max_ms": 656.120626,
+          "median_ms": 395.3928775,
+          "min_ms": 284.063291,
+          "samples": 30
+        },
+        "own_dom_stability": {
+          "max_ms": 468.486705,
+          "median_ms": 224.042731,
+          "min_ms": 139.524294,
+          "samples": 30
+        },
+        "shopping_eligibility_pair_1": {
+          "max_ms": 158.007423,
+          "median_ms": 140.7302675,
+          "min_ms": 112.172473,
+          "samples": 6
+        },
+        "shopping_eligibility_pair_2": {
+          "max_ms": 301.831303,
+          "median_ms": 186.18425100000002,
+          "min_ms": 116.369932,
+          "samples": 6
+        },
+        "strict_capture_envelope": {
+          "max_ms": 41.383556,
+          "median_ms": 19.8978775,
+          "min_ms": 7.927556,
+          "samples": 30
+        },
+        "strict_two_dom": {
+          "max_ms": 103.587699,
+          "median_ms": 54.220285000000004,
+          "min_ms": 15.575931,
+          "samples": 30
+        }
+      }
+    },
+    "all_pass": true,
+    "artifacts": [
+      {
+        "path": "abba-baseline-a/STAGES.json",
+        "sha256": "1e7fa918f70322a4c7783e7023e865b5ff5639b9efc9b2ccbac302eef5465cb9"
+      },
+      {
+        "path": "abba-candidate-a/STAGES.json",
+        "sha256": "eb028ca8d09b4e415878cd097fa4bee897dc9be9f165d1755433b21733d433c9"
+      },
+      {
+        "path": "abba-candidate-b/STAGES.json",
+        "sha256": "b15f1acbb58c477195321510695be4f021a11561e20927fe087c9d6c86e7ffea"
+      },
+      {
+        "path": "abba-baseline-b/STAGES.json",
+        "sha256": "c48dade89458b2839fbaeb6813424ffed8b5cfcef8c39f26405fbba7ebf3f5bd"
+      },
+      {
+        "path": "OLD-87F-REPLAY.json",
+        "sha256": "447e790d44072598ee98b7be8252c12f96ad5c08f86ed742ea9e73a71bc3d87f"
+      }
+    ],
+    "baseline_commit": "2b46214ba63277f474a10ea054564356632846fe",
+    "full_receipt_replays_accepted": 80,
+    "host_json_boundary": "JSONObject(Map) explicit null map entries retained to match Android; authority comparator and all saved input bytes unchanged",
+    "host_other_work_may_overlap": true,
+    "host_timing_is_not_phone_timing": true,
+    "measured_stages_are_independent_not_additive": true,
+    "old_87f_accepted_pair_proof_sha256": "735a771f0452592dd8d6d4b6ca3f9252281b87981de65f6fe08de968fa92ddda",
+    "old_87f_four_captures_verdict_and_proof_sha256_unchanged": true,
+    "original_price_pair_rejections_unchanged": [
+      "complete search DOM membership changed",
+      "non-recommendation semantic data changed"
+    ],
+    "original_raw_inputs_unchanged": true,
+    "own_stability_proofs_unchanged": {
+      "raw-08e1ef62301d4b8e9c6f8e7503015562ff105f3b504643eaa3b5c4cca4927bd9.json": "722f3baf3aed2e65e200e9243dd4e407a44efaa2683e8358da537ea4e9c10112",
+      "raw-25a1e79554904a309504240c790b238e4c9974c4b3b24179884cc57a7e8f43d2.json": "1603d69f2aa057e0df51c50ee5f8c9b1d04ae0807600d989b9c09bdac64d92b8",
+      "raw-5346b8c037f74fd0af0e9cd314d9744915ed490bf0314b77a4756df4a70079d5.json": "254bfba0ad888f90df2fc291ee0195bcb429dab771e3cbec97cc26e1ea019795",
+      "raw-6b76e9c1a915471b85f31bcf406a9b98dc985834a0ea4c0da7922e3b1c707ba8.json": "84dd36be9129034d3af250259d44977796400da6a7e4b7dad6e44257293ac7ad",
+      "raw-b9c9130515d04ffca78969ecf9fccc2b75a3b55b90654d5d94db75987b6d2c4f.json": "7aa0cdd6fac72d305350a0d97c2cf552dc5c68c71c3fe3163693e9f8acf64068"
+    },
+    "phone_actions": 0,
+    "phone_timing_claimed": false,
+    "raw_inputs": [
+      {
+        "bytes": 2052256,
+        "file": "raw-08e1ef62301d4b8e9c6f8e7503015562ff105f3b504643eaa3b5c4cca4927bd9.json",
+        "sha256": "a02d7abc790d711dbca245a0b3ec56ce29ee01c14293490ac1dfdb5cb8f4999a"
+      },
+      {
+        "bytes": 2051066,
+        "file": "raw-25a1e79554904a309504240c790b238e4c9974c4b3b24179884cc57a7e8f43d2.json",
+        "sha256": "98fa7e69ed346d83a31deddd58ed31fd35b606c3f22a88e6cd9e3c1a7d920f26"
+      },
+      {
+        "bytes": 2052232,
+        "file": "raw-5346b8c037f74fd0af0e9cd314d9744915ed490bf0314b77a4756df4a70079d5.json",
+        "sha256": "6abfc5080c4924fb4eda575d94a1034cc6d6e195269568208d339c46c97f8d4d"
+      },
+      {
+        "bytes": 2052253,
+        "file": "raw-6b76e9c1a915471b85f31bcf406a9b98dc985834a0ea4c0da7922e3b1c707ba8.json",
+        "sha256": "51f091bb43227198d5c995be9be4f8729d145dee23dce503c63a1b5728a84f4b"
+      },
+      {
+        "bytes": 2052256,
+        "file": "raw-b9c9130515d04ffca78969ecf9fccc2b75a3b55b90654d5d94db75987b6d2c4f.json",
+        "sha256": "a5fafe85e29cf788a183d4445227b8c850d85d70cbcafd1410a72f70a5eaeab7"
+      },
+      {
+        "bytes": 1404,
+        "file": "reply-08e1ef62301d4b8e9c6f8e7503015562ff105f3b504643eaa3b5c4cca4927bd9.json",
+        "sha256": "6003fd22fb145d6b754eba9cce2b0d005f06df0f7525a7b5a9c67fc798841c4f"
+      },
+      {
+        "bytes": 1404,
+        "file": "reply-25a1e79554904a309504240c790b238e4c9974c4b3b24179884cc57a7e8f43d2.json",
+        "sha256": "0afc972312254a0059606e8108e195be2db095c00f5f81839e1f53bbfc1e3e26"
+      },
+      {
+        "bytes": 1404,
+        "file": "reply-5346b8c037f74fd0af0e9cd314d9744915ed490bf0314b77a4756df4a70079d5.json",
+        "sha256": "c00345586b4d9473fbd2ffc1f4fb266091cadbe8ad8fd69451088c2b52e66029"
+      },
+      {
+        "bytes": 1404,
+        "file": "reply-6b76e9c1a915471b85f31bcf406a9b98dc985834a0ea4c0da7922e3b1c707ba8.json",
+        "sha256": "345b8527fd007e6df04d054588d9b694697355b3b0fa887d6941f810e3089c1b"
+      },
+      {
+        "bytes": 1404,
+        "file": "reply-b9c9130515d04ffca78969ecf9fccc2b75a3b55b90654d5d94db75987b6d2c4f.json",
+        "sha256": "32037c08d43d02ec8f9dad7996d06b1491a15e052777accb9996df740c1cc22d"
+      },
+      {
+        "bytes": 741,
+        "file": "request-08e1ef62301d4b8e9c6f8e7503015562ff105f3b504643eaa3b5c4cca4927bd9.json",
+        "sha256": "f80b27dc4dee68b2f16e1b6ab87e6534099a88971caa130bc16702d96204ef7a"
+      },
+      {
+        "bytes": 708,
+        "file": "request-25a1e79554904a309504240c790b238e4c9974c4b3b24179884cc57a7e8f43d2.json",
+        "sha256": "5593f9b5e11a12063d3b86f095e8ebb219f642c63474afa500f20b630c5356a0"
+      },
+      {
+        "bytes": 741,
+        "file": "request-5346b8c037f74fd0af0e9cd314d9744915ed490bf0314b77a4756df4a70079d5.json",
+        "sha256": "c8ce035af3162b0a8beba9a8a0ba7562d7f405a00167243bc650f4649aba5b38"
+      },
+      {
+        "bytes": 741,
+        "file": "request-6b76e9c1a915471b85f31bcf406a9b98dc985834a0ea4c0da7922e3b1c707ba8.json",
+        "sha256": "6cff1162029fb51ebcaade0812be8eb379e92e90b65cabe8b44f0771e1c16045"
+      },
+      {
+        "bytes": 741,
+        "file": "request-b9c9130515d04ffca78969ecf9fccc2b75a3b55b90654d5d94db75987b6d2c4f.json",
+        "sha256": "a30a18309682ffb70e888a70318a938b000fa204a431cb09aa54ef3e7a9b921f"
+      }
+    ],
+    "schema": "hepta.exact-capture-optimization-host-summary.v1",
+    "time_scope": "Recorded request/reply journal bounds used for structural receipt replay; live IPC identity and callback arrival are not requalified",
+    "warm_rounds_exclude_round_zero": true
+  },
+  "native19": {
+    "gates": 19,
+    "receipt_sha256": "fa33d091bbf1c60aa56f592160123195a5f972952db4bbc6a36365f96b195a42"
+  },
+  "native_source_members": 116,
+  "phone_actions": 0,
+  "phone_tested": false,
+  "private_capture_ownership": {
+    "all_pass": true,
+    "assertions": 22,
+    "cases": 21,
+    "formal_receipt_verification_covered_here": false,
+    "native_freshness_covered_here": false,
+    "phone_actions": 0,
+    "schema": "hepta.receipt-reuse-ownership.v1",
+    "synthetic_private_constructor_boundary": true
+  },
+  "projection": {
+    "all_pass": true,
+    "assertions": 1215,
+    "cases": 1215,
+    "original_all_field_validation_preserved": true,
+    "phone_actions": 0,
+    "returned_projection_detached": true,
+    "schema": "hepta.canonical-projection-parity.v1"
+  },
+  "readiness": {
+    "assertions": 129,
+    "cases": 18,
+    "receipt_sha256": "f3c4ab5dc44693cc06e0c129b6e303759d2191cd369af2f0b9dde3c9341625e3"
+  },
+  "schema": "hepta.dom-reuse-combined-validation.v1",
+  "scope": "host_only",
+  "shopping": {
+    "cases": 43,
+    "quote_cases": 28,
+    "receipt_sha256": "5eed612c315a321b54b50884599c8dc817b4b77954cc35579b1408c83f8ff467"
+  }
+}

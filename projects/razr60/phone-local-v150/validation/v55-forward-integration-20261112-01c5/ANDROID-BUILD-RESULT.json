@@ -1,0 +1,214 @@
+{
+  "schema": "hepta.v55-android-build.v1",
+  "scope": "host_android_build_only",
+  "phone_operations": false,
+  "installed": false,
+  "signed": false,
+  "dependencies_downloaded": false,
+  "external_model_used": false,
+  "all_pass": true,
+  "started_unix_ms": 1794464456435,
+  "steps": [
+    {
+      "name": "source-closure-before",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.14658141599999996,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "android-build",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "build_mac.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 22.826349833000002,
+      "stdout_sha256": "d0de6fcced42f7d6c2d96189bdafe941d1029204ab42611779d6cc0523f6556d",
+      "stderr_sha256": "5cbf94a585784f00ef31c1d10db44f2b4f94a0c5d9b018ac6189a3a3c0b2f7d0"
+    },
+    {
+      "name": "source-closure-after",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.20139433299999965,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source": {
+    "payload_sha256": "b8a5b9752d0b5bdfb86121566b3af81e27dd61dc8b7ca622bc57b5ec71e32a0f",
+    "local_component_commit": "66314803ddf85cfcfde878b0d13d4470a6760242",
+    "component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+    "source_root": "/Users/qianqi/hepta-v55-01c5-20261112/source",
+    "seed_root": "/Users/qianqi/hepta-v54-a356-20261111-r1/source",
+    "members": 1377,
+    "seeded": 1321,
+    "overlaid": 56,
+    "manifest_sha256": "1caa51fbbbced802cdea93be8395433a29839743fd16b1c2204ba9bf3f1d711d",
+    "all_materialized_git_blobs_verified": true,
+    "upstream_repository_commit_claimed": false
+  },
+  "link_runtime_archive": {
+    "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/geniex-bench-android-arm64-v0.10.0.tar.gz",
+    "sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "bytes": 98545327,
+    "selected_members": {
+      "libgeniex.so": {
+        "bytes": 19781824,
+        "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+      },
+      "llama_cpp/libggml-cpu.so": {
+        "bytes": 936328,
+        "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+      },
+      "llama_cpp/libggml-base.so": {
+        "bytes": 3534496,
+        "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+      },
+      "llama_cpp/libggml-opencl.so": {
+        "bytes": 7886880,
+        "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+      },
+      "llama_cpp/libmtmd.so": {
+        "bytes": 1643536,
+        "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+      },
+      "llama_cpp/libggml-hexagon.so": {
+        "bytes": 3874328,
+        "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+      },
+      "llama_cpp/libggml-htp-v73.so": {
+        "bytes": 842432,
+        "sha256": "e8ed08627e9faa5739c6185187a2c3dbe0a2ac7d0a9aded15fea3f1009de18c8"
+      },
+      "llama_cpp/libllama-common.so": {
+        "bytes": 6242864,
+        "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+      },
+      "llama_cpp/libgeniex_plugin.so": {
+        "bytes": 377040,
+        "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a"
+      },
+      "llama_cpp/libggml-htp-v85.so": {
+        "bytes": 871232,
+        "sha256": "3a4c104a0a12b2b63245f1f866f0f37bff0be5eebc08d104678a71a379618c7a"
+      },
+      "llama_cpp/libggml-htp-v75.so": {
+        "bytes": 838272,
+        "sha256": "bd7837ec03fd123cb0cf33608fb0d8c7d49f86fdd4001683e0918b72f0f1ca07"
+      },
+      "llama_cpp/libggml-htp-v79.so": {
+        "bytes": 858848,
+        "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+      },
+      "llama_cpp/libllama.so": {
+        "bytes": 5642424,
+        "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+      },
+      "llama_cpp/libggml.so": {
+        "bytes": 41088,
+        "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+      },
+      "llama_cpp/libggml-htp-v81.so": {
+        "bytes": 871232,
+        "sha256": "1bd534df154a45a261aeedaf7be316d01e4f6c0d2c18ed2c235e991c74160d00"
+      },
+      "llama_cpp/libomp.so": {
+        "bytes": 1234864,
+        "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+      }
+    }
+  },
+  "toolchain": {
+    "java_home": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+    "java_release": "IMPLEMENTOR=\"Eclipse Adoptium\"\nIMPLEMENTOR_VERSION=\"Temurin-17.0.7+7\"\nJAVA_VERSION=\"17.0.7\"\nJAVA_VERSION_DATE=\"2023-04-18\"\nLIBC=\"default\"\nMODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.foreign jdk.incubator.vector jdk.internal.le jdk.internal.opt jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom jdk.zipfs\"\nOS_ARCH=\"x86_64\"\nOS_NAME=\"Darwin\"\nSOURCE=\".:git:0a1ee3e09ae5\"\nBUILD_SOURCE=\"git:7c3aa6443f9d395b8603d37ebf8107e12bfc3e91\"\nBUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"\nSOURCE_REPO=\"https://github.com/adoptium/jdk17u.git\"\nFULL_VERSION=\"17.0.7+7\"\nSEMANTIC_VERSION=\"17.0.7+7\"\nBUILD_INFO=\"OS: Mac OS X Version: 10.14.6 18G84\"\nJVM_VARIANT=\"Hotspot\"\nJVM_VERSION=\"17.0.7+7\"\nIMAGE_TYPE=\"JDK\"\n",
+    "sdk": "/Users/qianqi/Library/Android/sdk",
+    "ndk": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+    "ndk_source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+    "geniex_lib_dir": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib",
+    "files": [
+      {
+        "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "bytes": 28208,
+        "sha256": "be6cc6b785dcd1893ce4726bf3cd92590d2d31a987c99e00a83e98c114c3d38f"
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "bytes": 28208,
+        "sha256": "520a565c285dd7d8e7da4979fc6d2e99abee7a7d534693eeb56155e85f4d1005"
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/lib/ct.sym",
+        "bytes": 8301486,
+        "sha256": "6f2beae47b3208c75fbdc8ac409b91646dbb8731373c127d29b0196b76e2a984"
+      },
+      {
+        "path": "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "bytes": 26361808,
+        "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+      },
+      {
+        "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "bytes": 10240448,
+        "sha256": "22d092d529b050c71016f3f4402f53fadcd358a65fe16df408c400f0fe9ffe62"
+      },
+      {
+        "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/lib/d8.jar",
+        "bytes": 14929869,
+        "sha256": "d43c8a94c9b1f1da1a7cc49c32b81e8cee1708b37ee8b530a81a0688222b42c0"
+      },
+      {
+        "path": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "bytes": 172733264,
+        "sha256": "ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6"
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/libgeniex.so",
+        "bytes": 19781824,
+        "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libllama.so",
+        "bytes": 5642424,
+        "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+      }
+    ]
+  },
+  "android_compiled": true,
+  "compiler_source_inputs": 201,
+  "build_receipt_sha256": "c0345e6bb9997baa0d73490d4f06ef175a3ac74c77c5ef94a1c68d42198d7402",
+  "artifacts": [
+    {
+      "path": "/Users/qianqi/hepta-v55-01c5-20261112/out/dex/classes.dex",
+      "bytes": 882264,
+      "sha256": "bd89d731a3c3f1360c0f59f321e39154cf8fc221b7de54b605486b3c2007d269"
+    },
+    {
+      "path": "/Users/qianqi/hepta-v55-01c5-20261112/out/base.apk",
+      "bytes": 3408,
+      "sha256": "b3f14e4e04983f30b2aae8a7eb52290e5c32978696c0b84122d4a8bf85bf77f9"
+    },
+    {
+      "path": "/Users/qianqi/hepta-v55-01c5-20261112/out/libhepta_local_runner.so",
+      "bytes": 59952,
+      "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5"
+    }
+  ],
+  "compiled_archive": {
+    "path": "/Users/qianqi/hepta-v55-01c5-20261112/mac-artifacts.tar.gz",
+    "bytes": 509193,
+    "sha256": "ccd97abe638e91c6c8cbb03da16936f837650344339acb59c682408abf989c23"
+  },
+  "finished_unix_ms": 1794464481059
+}

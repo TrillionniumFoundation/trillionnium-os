@@ -1,0 +1,126 @@
+    // The original R30 C/D pair is replayed unchanged. The subsequent effect,
+    // Android node identity and arrival observations below are host fixtures.
+    static NativeActionSnapshotCheck.Snapshot fullSwapSnapshot(JSONObject x){
+        List<NativeActionSnapshotCheck.Node> nodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(Object row:x.getJSONArray("nodes"))nodes.add(new NativeActionSnapshotCheck.Node(((JSONObject)row).toMap()));
+        return new NativeActionSnapshotCheck.Snapshot(x.getJSONObject("envelope").toMap(),nodes);
+    }
+    static JSONObject swapNode(JSONObject snapshot,String path){
+        for(Object value:snapshot.getJSONArray("nodes")){
+            JSONObject node=(JSONObject)value;if(path.equals(node.getString("path")))return node;
+        }
+        throw new AssertionError("missing recorded path "+path);
+    }
+    static void switchFullBanner(Fixture f){
+        advanceTestBanner(f);f.values.nodes.get(SEARCH_BANNER+"/1").put("visible",true);
+        f.values.nodes.get("0/0/0/0").put("description","搜索路由器推荐");
+        f.values.nodes.get("0/0/0/0/0").put("text","路由器推荐");
+        f.values.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(156,301,420,360));
+    }
+    static void recordedDelayedPlanningPair()throws Exception{
+        byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.fullPageCensuses")).resolveSibling("dcc738-planning-censuses.json"));
+        check("bfa12881a9ab19f967047fc9b06ce8ec138287f157f15c19e927259eeb1b058e".equals(sha(bytes)),"unchanged dcc738 source projection");
+        JSONObject r=new JSONObject(new String(bytes,StandardCharsets.UTF_8)),pair=r.getJSONObject("last_complete_pair");
+        JSONObject first=pair.getJSONObject("first"),second=pair.getJSONObject("second");
+        NativeActionSnapshotCheck.Snapshot a=fullSwapSnapshot(first.getJSONObject("census")),b=fullSwapSnapshot(second.getJSONObject("census"));
+        NativeSearchPlanning.EventMark a0=NativeSearchPlanning.EventMark.read(first.getJSONObject("before_watermark").toMap());
+        NativeSearchPlanning.EventMark a1=NativeSearchPlanning.EventMark.read(first.getJSONObject("after_watermark").toMap());
+        NativeSearchPlanning.EventMark b0=NativeSearchPlanning.EventMark.read(second.getJSONObject("before_watermark").toMap());
+        NativeSearchPlanning.EventMark b1=NativeSearchPlanning.EventMark.read(second.getJSONObject("after_watermark").toMap());
+        Map<String,Object> wA=first.getJSONObject("windows").toMap(),wB=second.getJSONObject("windows").toMap();
+        NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(wA,wB,a0,a1,b0,b1,b1);
+        long start=r.getLong("request_started_elapsed_ms"),deadline=r.getLong("request_deadline_elapsed_ms");
+        long aStart=first.getLong("read_started_elapsed_ms"),aEnd=first.getLong("read_completed_elapsed_ms"),aCaptured=first.getLong("census_captured_elapsed_ms");
+        long bStart=second.getLong("read_started_elapsed_ms"),bEnd=second.getLong("read_completed_elapsed_ms"),bCaptured=second.getLong("census_captured_elapsed_ms");
+        String id=r.getString("request_id");Map<String,Object> bind=r.getJSONObject("session_binding").toMap();
+        // Persistence times below are host-only. Both captured frames, their bounds and event counters are from the device.
+        NativeSearchPlanning.Timing t=new NativeSearchPlanning.Timing(start,deadline,aStart,aEnd,aCaptured,bStart,bEnd,bCaptured,bEnd+1,true);
+        one("dcc738_complete_inflight_planning_pair_survives_blank_banner_swap",()->{
+            check(a.nodes.size()==77&&b.nodes.size()==77&&bStart-start==8459&&bEnd-start==10981,"original pair within the original hard deadline");
+            byte[] encoded=NativeSearchPlanning.encode(id,a,b,bind,t,context);
+            NativeSearchPlanning replay=NativeSearchPlanning.fromSealedBytes(encoded,sha(encoded),bind,bEnd+2);
+            check(replay.role.fullPageSwap&&replay.role.changedPaths.size()==9&&replay.publication==null,"only historical planning without window publication");
+            check(!((Boolean)replay.role.evidence().get("grants_dispatch"))&&replay.timing.requestDeadline==deadline,"no action or harder deadline renewal");
+            rejected(()->NativeSearchPlanning.fromSealedBytes(encoded,sha(encoded),bind,deadline));
+        });
+        one("dcc738_late_pair_with_new_window_event_cannot_plan",()->{
+            NativeSearchPlanning.EventMark boundary=new NativeSearchPlanning.EventMark(b1.events+1,b1.unknown,b1.content,b1.boundary+1);
+            NativeSearchPlanning.CaptureContext changed=new NativeSearchPlanning.CaptureContext(wA,wB,a0,a1,b0,b1,boundary);
+            rejected(()->NativeSearchPlanning.encode(id,a,b,bind,t,changed));
+        });
+        one("dcc738_second_read_cannot_start_in_the_publication_margin",()->{
+            rejected(()->new NativeSearchPlanning.Timing(start,deadline,aStart,aEnd,aCaptured,start+10000,bEnd,bCaptured,bEnd+1,true));
+        });
+    }
+    static void fullPageSwapCases()throws Exception{
+        recordedDelayedPlanningPair();
+        byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.fullPageCensuses")));
+        check("443f25ee1ff14efa857a8e588b4e7f4b4f82a1978cc5acaebbfdd53cbc21f328".equals(sha(bytes)),"complete 0b742 recorded C/D projection");
+        final JSONObject record=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
+        final NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(record.getJSONObject("current_C"));
+        final NativeActionSnapshotCheck.Snapshot d=fullSwapSnapshot(record.getJSONObject("latest_D"));
+        one("full_page_0b742_reserved_role_survives_proved_hint_and_blank_page_change",()->{
+            NativeSearchRole first=NativeSearchRole.compare(c,c);
+            check("f2976247f8374ea2d04be50d5f9ca0aee921b9ecd922d6d774dc980389c9c28c".equals(first.roleId),"exact original model-selected role");
+            check("0/0/3".equals(first.targetPath)&&c.nodes.size()==76&&d.nodes.size()==76,"two complete recorded censuses and original switcher");
+            rejected(()->NativeSearchRole.compare(c,d));
+            check(!NativeActionSnapshotCheck.rejectedSearchBannerMotion(c,d,first.targetPath),"not the one-pixel re-observation case");
+            NativeSearchRole live=NativeSearchRole.compareForExecution(c,d);first.requireSameRole(live);
+            Map<?,?> changes=(Map<?,?>)live.evidence().get("changed_path_classification");
+            check(changes.size()==12&&Collections.frequency(changes.values(),"same_full_blank_banner_coverage")==9
+                    &&Collections.frequency(changes.values(),"validated_search_hint")==3,"classify precisely the real variations");
+            check(!live.fullTreeEqual&&!((Boolean)live.evidence().get("grants_dispatch")),"comparison alone cannot issue an action");
+        });
+        for(String scenario:Arrays.asList("overlap","gap","nonblank_page","lost_click","hint_mismatch","target_bounds","profile","changed_icon","unrelated")){
+            one("full_page_0b742_refuses_"+scenario,()->{
+                JSONObject changed=new JSONObject(record.getJSONObject("latest_D").toString());
+                JSONObject leaf=swapNode(changed,"0/0/1/0/0/1");
+                if("overlap".equals(scenario)){JSONObject other=swapNode(changed,"0/0/1/0/0/0");other.put("visible",true)
+                        .put("bounds",new JSONArray(Arrays.asList(0,0,2,931))).put("label","").put("ref_signature_sha256",leaf.getString("ref_signature_sha256"));}
+                else if("gap".equals(scenario))leaf.getJSONArray("bounds").put(0,2);
+                else if("nonblank_page".equals(scenario))leaf.put("description","优惠");
+                else if("lost_click".equals(scenario))leaf.put("action_click",false);
+                else if("hint_mismatch".equals(scenario))swapNode(changed,"0/0/3/0").put("description","打开商品");
+                else if("target_bounds".equals(scenario))swapNode(changed,"0/0/3").getJSONArray("bounds").put(0,157);
+                else if("profile".equals(scenario))changed.getJSONObject("envelope").put("target_sha256",NativeAppEvidence.hash("other selection"));
+                else if("changed_icon".equals(scenario))swapNode(changed,"0/0/4").put("description","查看商品");
+                else swapNode(changed,"0/0/1/1/0/0/0").put("selected",true);
+                rejected(()->NativeSearchRole.compareForExecution(c,fullSwapSnapshot(changed)));
+            });
+        }
+        for(String scenario:Arrays.asList("fresh_input","target_replaced","unknown_event","rejected_effect","cancelled_after_entry")){
+            one("full_page_raw_node_action_"+scenario,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();
+                try(Fixture f=s.new Fixture()){
+                    installTestBanner(f,0);f.values.nodes.get(SEARCH_BANNER+"/1").put("visible",false);
+                    NativeSearchSession.Attempt attempt=f.intent();int latest=f.graphReads+2;
+                    f.graphHook=()->{if(f.graphReads==latest){
+                        switchFullBanner(f);
+                        if("target_replaced".equals(scenario))f.replaceTargetOnSecond=true;
+                        if("unknown_event".equals(scenario))successorEvent(s,0);
+                    }};
+                    if("rejected_effect".equals(scenario))f.apiAccepts=false;
+                    if("cancelled_after_entry".equals(scenario))f.effectHook=()->f.cancelled=true;
+                    f.action(attempt);
+                    if("target_replaced".equals(scenario)||"unknown_event".equals(scenario)){
+                        check(!f.outcome.accepted&&!f.outcome.dispatched&&f.effects==0,"changed identity/event prevents native call");return;
+                    }
+                    check(f.effects==1&&f.outcome.dispatched,"a single original node action reached the Android port");
+                    if(!"fresh_input".equals(scenario)){
+                        check(!f.outcome.accepted,"uncertain or rejected effect cannot be treated as accepted");
+                        rejected(()->f.base.search.acceptOutcome(attempt,f.outcome,successorReceipt(f.outcome),SystemClock.now));
+                        check(!s.nativeSearchAllowsLegacyObservation(s.lease),"uncertain effect cannot open business observation");return;
+                    }
+                    check(f.outcome.accepted,"exact same current switcher can accept one semantic node click");
+                    JSONObject proof=finalCensusEvidence(f).getJSONObject("role_comparison").getJSONObject("changed_path_classification");
+                    check("same_full_blank_banner_coverage".equals(proof.get(SEARCH_BANNER+"/0"))
+                            &&"validated_search_hint".equals(proof.get("0/0/0")),"real producer used classified C/D");
+                    f.base.search.acceptOutcome(attempt,f.outcome,successorReceipt(f.outcome),SystemClock.now);
+                    rejected(()->f.base.nativeTask.requireModelPlanning());
+                    SystemClock.now+=10;NativeAppEvidence.Frame input=f.base.inputFrame(SystemClock.now,true);
+                    f.base.nativeTask.observed(input);f.base.search.navigationObserved(input);f.base.nativeTask.requireModelPlanning();
+                    check(f.effects==1,"subsequent fresh, bound input permits further planning");
+                }
+            });
+        }
+    }

@@ -1,0 +1,734 @@
+{
+  "agent_action_semantics": {
+    "children_model_issued": false,
+    "completion_actor": "controller/tool_workflow",
+    "controller_children": [
+      "back",
+      "click"
+    ],
+    "interpretation": "The local model selected the authorized create tool. A bounded controller workflow saved, observed the list, reopened the matching item and verified the body; one model decision, not general autonomous multi-step planning.",
+    "model_action": "notes.create",
+    "model_action_result": "draft_opened",
+    "model_decisions": 1,
+    "model_done_synthesized": false,
+    "model_reported_success": false
+  },
+  "apk_sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+  "audit_checks": {
+    "all_four_content_observations_match": true,
+    "all_frame_display_and_generation_match_task": true,
+    "background_release_and_broker_exit_observed": true,
+    "child_actions_dispatched_and_drained": true,
+    "child_actions_match_parent_request": true,
+    "child_proofs_bind_actual_observations": true,
+    "click_target_is_observed_clickable_list_ancestor": true,
+    "driver_task_matches_controller": true,
+    "frames_are_complete_native_background_observations": true,
+    "model_chose_notes_create": true,
+    "model_hash_app_native_equal": true,
+    "model_payload_unchanged": true,
+    "model_raw_output_sha_matches_native": true,
+    "model_request_matches_controller_step": true,
+    "no_external_model_or_automatic_replay": true,
+    "no_main_display_input_and_focus_preserved": true,
+    "no_remaining_native_process_in_collected_inventory": true,
+    "parent_action_really_dispatched": true,
+    "parent_only_claimed_draft_opened": true,
+    "payload_matches_owner_contract_hash": true,
+    "reopened_and_stable_state_hash_equal": true,
+    "task_done_with_independent_goal_proof": true,
+    "task_id_matches_request_and_worker": true,
+    "tool_children_are_back_then_click": true,
+    "tool_children_not_model_issued": true,
+    "warm_process_and_generation_cleanly_exited": true,
+    "worker_generation_matches": true,
+    "workflow_frames_bind_actual_observations": true
+  },
+  "audit_checks_passed": true,
+  "background": {
+    "broker_exit_code": 0,
+    "broker_exit_observed": true,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "ordinary_stop_required": false,
+    "ordinary_stop_sent": false,
+    "released": true,
+    "remaining_native_process_count": 0,
+    "stop_requested_elapsed_ms": null,
+    "task_display_nonzero": true
+  },
+  "build_source_commit": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "business_verified_interpretation": "The generic driver/route flag is separate from the independently verified notes goal.",
+  "case_id": "lfm3_npu_notes_home_structure_build",
+  "completion_evidence": {
+    "current_editor_body_matched": true,
+    "current_editor_raw_exact": false,
+    "editor_body_observed": true,
+    "list_observed": true,
+    "missing": [],
+    "new_database_item_identity_verified": false,
+    "notes_create_workflow_verified": true,
+    "notes_launch_observed": true,
+    "persistent_storage_bytes_verified": false,
+    "same_list_item_reopened": true
+  },
+  "content_verification_limit": "Observed accessibility text only. Editor rule permits exactly the observed 40-LF suffix; list text is exact. No direct database byte, new database item identity, restart-persistence or visual-clipping assertion.",
+  "driver_business_verified": false,
+  "evidence": [
+    {
+      "artifact": "driver/RESULT.json",
+      "bytes": 82546,
+      "private_original_published": false,
+      "sha256": "e079d09ed129523781c9b6975f511ca69896f63ac45db70d249f9b7b5e73403f"
+    },
+    {
+      "artifact": "prepare/STATE.json",
+      "bytes": 1119,
+      "private_original_published": false,
+      "sha256": "b31af3f269b5333bb67a0b4137a584ad35be4d89ab87fa50c0495a0e71841b41"
+    },
+    {
+      "artifact": "request/app-receipt.json",
+      "bytes": 13814,
+      "private_original_published": false,
+      "sha256": "ebf7662bb38a177892c04adc149dd95beecee3532b650612f88cddf655ca3624"
+    },
+    {
+      "artifact": "request/native-result.json",
+      "bytes": 5015,
+      "private_original_published": false,
+      "sha256": "a3305cb2c406b869c6bf45f45377ea30011608a93c42c274203e787988c06f72"
+    },
+    {
+      "artifact": "session/app-session-receipt.json",
+      "bytes": 6427,
+      "private_original_published": false,
+      "sha256": "8827ab491c613bc9a6248b3587ca5bb83b255a2119ce8a8ac96fe14ad2f23202"
+    },
+    {
+      "artifact": "session/stderr.log",
+      "bytes": 46444,
+      "private_original_published": false,
+      "sha256": "ac32b180f18e0983041b802f13a6e5e1e47daaeac17a2eb4c6192cbceb8e99d1"
+    },
+    {
+      "artifact": "task/step-01-after.json",
+      "bytes": 16693,
+      "private_original_published": false,
+      "sha256": "1856ebbf8421d19387fb076b6f3803d4360599b684e6b14dcdd0dd258fec08de"
+    },
+    {
+      "artifact": "task/step-01-notes-workflow-observation-1.json",
+      "bytes": 16691,
+      "private_original_published": false,
+      "sha256": "e33d050dcb12db8ef30941c537aa4c6c9f9790ac0dd561ac90d7416f21576056"
+    },
+    {
+      "artifact": "task/step-01-tool-child-01-before.json",
+      "bytes": 16691,
+      "private_original_published": false,
+      "sha256": "e33d050dcb12db8ef30941c537aa4c6c9f9790ac0dd561ac90d7416f21576056"
+    },
+    {
+      "artifact": "task/step-01-tool-child-01-after.json",
+      "bytes": 59201,
+      "private_original_published": false,
+      "sha256": "c796a542d10e145eee02e85c6db639234d01ebe5b5f49392706450469b9f7bd1"
+    },
+    {
+      "artifact": "task/step-01-tool-child-02-before.json",
+      "bytes": 59201,
+      "private_original_published": false,
+      "sha256": "c796a542d10e145eee02e85c6db639234d01ebe5b5f49392706450469b9f7bd1"
+    },
+    {
+      "artifact": "task/step-01-tool-child-02-after.json",
+      "bytes": 16693,
+      "private_original_published": false,
+      "sha256": "5c257451e76d6746b1bfe60f329f665f6f66aabea81894167aa84aa64343491a"
+    },
+    {
+      "artifact": "task/step-01-notes-workflow-observation-3.json",
+      "bytes": 16693,
+      "private_original_published": false,
+      "sha256": "5c257451e76d6746b1bfe60f329f665f6f66aabea81894167aa84aa64343491a"
+    },
+    {
+      "artifact": "task/step-01-notes-workflow-observation-4.json",
+      "bytes": 16691,
+      "private_original_published": false,
+      "sha256": "94bebce284449dce3880916344ae61b4ab97876b6ec5d3fa3913a757fecd41be"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 59003,
+      "private_original_published": false,
+      "sha256": "5726981cb1a976689c1766e0a83aa5689cc3a0364d0a1e2d6f177ecfd042ccf2"
+    },
+    {
+      "artifact": "task/step-01-action.json",
+      "bytes": 25536,
+      "private_original_published": false,
+      "sha256": "b339b2f68aa1a6ca27bedb88ab4542cbb7c8da26241a5a2ca9bd18ffd6b23355"
+    },
+    {
+      "artifact": "task/step-01-model-0.json",
+      "bytes": 651,
+      "private_original_published": false,
+      "sha256": "976e0197eca5fd9844f45840779418ea4008cceafe931d34ee2eb9a85db76545"
+    },
+    {
+      "artifact": "task/step-01-notes-workflow-result.json",
+      "bytes": 12374,
+      "private_original_published": false,
+      "sha256": "d8583043ea2488fa983473704857de1848dcffa31300c01cd5206af100d2110b"
+    },
+    {
+      "artifact": "task/background-bootstrap.json",
+      "bytes": 8468,
+      "private_original_published": false,
+      "sha256": "6182049d43b7636baffc5472aa0a8269e579520055e0fee7889f77da06275ac8"
+    },
+    {
+      "artifact": "task/background-cleanup.json",
+      "bytes": 7185,
+      "private_original_published": false,
+      "sha256": "1c8c626c15eb9b08dbb598a9caa8cd72db3cbb4a3075736deab676cefe96a373"
+    },
+    {
+      "artifact": "task/step-01-tool-child-01-action.json",
+      "bytes": 17839,
+      "private_original_published": false,
+      "sha256": "10c3785015a9e4c8aeaa6973fe7ba4f8234721c3d28427793e6fc8650b763bb0"
+    },
+    {
+      "artifact": "task/step-01-tool-child-02-action.json",
+      "bytes": 18263,
+      "private_original_published": false,
+      "sha256": "a68368e480f314c5615990516cc8f6b2ebdbc1b27020479396a74498a1fa959c"
+    },
+    {
+      "artifact": "task/step-01-tool-child-01-proof.json",
+      "bytes": 4367,
+      "private_original_published": false,
+      "sha256": "a6580872fdbb505c5081f92c51250c1956ba3a9b81102237f4bca1b061ec6748"
+    },
+    {
+      "artifact": "task/step-01-tool-child-02-proof.json",
+      "bytes": 4459,
+      "private_original_published": false,
+      "sha256": "a6bff1fb183e968ab17cb5c11ffb4e998a4bf78746117d93ec6716ff8e5ed6dd"
+    }
+  ],
+  "foreground_sampling": {
+    "after_release_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "alias_text_file_count": 12,
+    "alias_text_files_excluded_from_sample_count": true,
+    "all_sampled_components_equal_to_before_start": true,
+    "all_sampled_raw_focus_values_equal_to_before_start": true,
+    "all_samples_have_nonnull_focus": true,
+    "before_start_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "endpoint_unchanged": true,
+    "foreground_frame_rate_or_touch_latency_measured": false,
+    "host_wall_clock_only": true,
+    "interpretation": "All existing saved main-display window dumps are audited, with command copies counted once. The recorded focus applies at sampled instants; unsampled gaps and foreground interaction responsiveness remain unmeasured. Zero main-display input is a separate routing fact.",
+    "main_screen_inputs": 0,
+    "max_running_sample_start_gap_s": 4.650171518325806,
+    "max_saved_sample_start_gap_s": 40.90145778656006,
+    "phase_counts": {
+      "before_start": 1,
+      "preparation": 6,
+      "release": 1,
+      "running": 5
+    },
+    "sample_count": 13,
+    "samples": [
+      {
+        "artifact": "commands/prepare-0012-before-windows.stdout",
+        "command_receipt_sha256": "5187366fa41d382b9a49232087b64cbee683cced4889a3ae57e82be62c1a1294",
+        "completed_host_wall_s": 1794825008.630471,
+        "dump_sha256": "57b2b0e84b42add2b4ba6c331e72b5ddc4b288ed7d6613fd0c45f34b1eb9102d",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825008.6019397,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0021-prelaunch-windows.stdout",
+        "command_receipt_sha256": "d37bac03a9e74450f27aa4e477e8c240db606e4f1cb36369da3b694fa602c232",
+        "completed_host_wall_s": 1794825009.3460999,
+        "dump_sha256": "9c60a1ceb26f1c9f93ceecfe3cf6dce970c201ba273a9d40c1ea3547bc6cd612",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825009.3186207,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0030-after-windows.stdout",
+        "command_receipt_sha256": "2903e1105e085d9ae3787fcf71b957cc94284211a1fbefc7dc8f33d4df2f6ee1",
+        "completed_host_wall_s": 1794825010.7809796,
+        "dump_sha256": "1201ffc6b54f64e8efe489d052e194935143832710ccbee64bc9f0bd1b2c1100",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825010.759522,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-notes-a216db51/commands/select-notes-0012-before-selection-windows.stdout",
+        "command_receipt_sha256": "3d55101acb08d3dfe134658682899093f4a72f1b93394debd9cacffbe605b28e",
+        "completed_host_wall_s": 1794825011.6047766,
+        "dump_sha256": "1201ffc6b54f64e8efe489d052e194935143832710ccbee64bc9f0bd1b2c1100",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825011.5839767,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-notes-a216db51/commands/select-notes-0039-snapshot-windows.stdout",
+        "command_receipt_sha256": "c9502ef7163975d23fdd7e88d28b4cf37984cfa9d9799d349d3b34d080053894",
+        "completed_host_wall_s": 1794825014.1441152,
+        "dump_sha256": "27f5814549052a002295a1dcc41a750207cfb078ec7aeeab109d5f6aed8cc4d2",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825014.1111639,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "root-frame-refresh/commands/root-frame-refresh-0028-snapshot-windows.stdout",
+        "command_receipt_sha256": "67f1260e29579d86d5c8e32a2dd51a312cb456a9772ad24ca4249683544d4009",
+        "completed_host_wall_s": 1794825016.3266597,
+        "dump_sha256": "27f5814549052a002295a1dcc41a750207cfb078ec7aeeab109d5f6aed8cc4d2",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825016.3075023,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0021-before-start-window.stdout",
+        "command_receipt_sha256": "839f6706b390fb7a3a08c6df6f4876f9c6f3e111c881e453e3464e96b53349fd",
+        "completed_host_wall_s": 1794825057.234079,
+        "dump_sha256": "27f5814549052a002295a1dcc41a750207cfb078ec7aeeab109d5f6aed8cc4d2",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "before_start",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825057.20896,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0027-running-windows.stdout",
+        "command_receipt_sha256": "86090dad11520e04ceee59d1ef2265c7b210d1a7abe2d01b72479d75e314f2cb",
+        "completed_host_wall_s": 1794825058.0729764,
+        "dump_sha256": "27f5814549052a002295a1dcc41a750207cfb078ec7aeeab109d5f6aed8cc4d2",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825058.0456734,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0032-running-windows.stdout",
+        "command_receipt_sha256": "fd5f8c42b38f152186983f3f83572a4e14981b1740d57607bd87351ba261437a",
+        "completed_host_wall_s": 1794825062.6676428,
+        "dump_sha256": "b334e6414bc52f17d9ea9e42d5ea06c2ef78514eb0af7ec5e00f52ceb5f8ebf1",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825062.618796,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0037-running-windows.stdout",
+        "command_receipt_sha256": "3c90f255569091198140e31bde41bc42f8f28f895aa51779b4313a79847d72d8",
+        "completed_host_wall_s": 1794825067.2431056,
+        "dump_sha256": "b334e6414bc52f17d9ea9e42d5ea06c2ef78514eb0af7ec5e00f52ceb5f8ebf1",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825067.2087991,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0042-running-windows.stdout",
+        "command_receipt_sha256": "060736627c70b17fe5f210ae770126bae460b2deb614c363d964443472382ec8",
+        "completed_host_wall_s": 1794825071.8661225,
+        "dump_sha256": "b334e6414bc52f17d9ea9e42d5ea06c2ef78514eb0af7ec5e00f52ceb5f8ebf1",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825071.8346457,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0047-running-windows.stdout",
+        "command_receipt_sha256": "004c24a60086071765c303f22e58a5887b7f8b7ba564f1082b603780d95b2254",
+        "completed_host_wall_s": 1794825076.5261369,
+        "dump_sha256": "f8c2a6b36f350d6d97f0582491052c207623a742f4b4bf26514e2f55410c03f7",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825076.4848173,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-c1cf9322/commands/run-0059-release-windows-0000.stdout",
+        "command_receipt_sha256": "6e9c75d8ea2e471138a84fdad3b2cd9f7cdeab42a8ab6a4cf2d9a392131c17f4",
+        "completed_host_wall_s": 1794825081.885127,
+        "dump_sha256": "929686e0e5491321729902cbe3bab1e32df7c40691d6647c407f1269d773404a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "release",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794825081.8516374,
+        "unknown_focus": false
+      }
+    ],
+    "snapshots_are_not_continuous_monitoring": true,
+    "unknown_focus_sample_count": 0,
+    "unsampled_intervals_present": true
+  },
+  "independent_saved_observation_checks": {
+    "created_editor": {
+      "matched": true,
+      "matches": [
+        {
+          "raw_exact": false,
+          "trailing_lf_count": 40
+        }
+      ],
+      "matching_node_count": 1
+    },
+    "reopened_editor": {
+      "matched": true,
+      "matches": [
+        {
+          "raw_exact": false,
+          "trailing_lf_count": 40
+        }
+      ],
+      "matching_node_count": 1
+    },
+    "saved_list": {
+      "matched": true,
+      "matches": [
+        {
+          "raw_exact": true,
+          "trailing_lf_count": 0
+        }
+      ],
+      "matching_node_count": 1
+    },
+    "stable_editor_readback": {
+      "matched": true,
+      "matches": [
+        {
+          "raw_exact": false,
+          "trailing_lf_count": 40
+        }
+      ],
+      "matching_node_count": 1
+    }
+  },
+  "model_execution": {
+    "backend_log_observation": {
+      "adreno_830_enumerated": true,
+      "buffers": [
+        {
+          "device": "CPU",
+          "kind": "model",
+          "mib": 205.08
+        },
+        {
+          "device": "HTP0",
+          "kind": "model",
+          "mib": 1006.99
+        },
+        {
+          "device": "HTP0",
+          "kind": "KV",
+          "mib": 96.0
+        },
+        {
+          "device": "HTP0",
+          "kind": "KV",
+          "mib": 12.5
+        },
+        {
+          "device": "HTP0",
+          "kind": "RS",
+          "mib": 0.61
+        },
+        {
+          "device": "HTP0",
+          "kind": "compute",
+          "mib": 640.59
+        },
+        {
+          "device": "CPU",
+          "kind": "compute",
+          "mib": 50.55
+        }
+      ],
+      "hexagon_hardware_metadata": {
+        "hmx": 1,
+        "hvx": 6,
+        "threads": 6,
+        "vtcm_mb": 8
+      },
+      "htp_v79_library_observed": true,
+      "interpretation": "Runtime receipt and backend/allocation logs, without independent per-operator hardware profiling. The generic layer-offload log word GPU does not alone identify Adreno.",
+      "offloaded_layers": 25,
+      "selected_backend_line_present": true,
+      "total_layers": 25
+    },
+    "model": {
+      "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+      "model_profile": "lfm3-1.7b-qad-q4_0",
+      "model_revision": "",
+      "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+    },
+    "model_architecture": "lfm3",
+    "model_file_bytes": 1049615680,
+    "native": {
+      "callback_count": 134,
+      "deadline_observed": false,
+      "elapsed_ms": 14285.288,
+      "generation_complete": true,
+      "max_tokens": 256,
+      "request_id": "98196389139e472b8b4a147a9b030d9d",
+      "request_status": 0,
+      "signal_observed": 0,
+      "stop_reason": "eos",
+      "task_id": "bb5707641b2744848b5e92057e0cc15f",
+      "worker_generation": "d10cea0d17b14b8d84450fc002709f7a",
+      "worker_outcome": "completed"
+    },
+    "phase_timing": {
+      "clock": "CLOCK_MONOTONIC",
+      "schema": "hepta.native-phase-timing.v1",
+      "stages": {
+        "create": {
+          "clock_valid": true,
+          "elapsed_ms": 1414.933,
+          "ended": true,
+          "started": true
+        },
+        "deinit": {
+          "clock_valid": false,
+          "elapsed_ms": null,
+          "ended": false,
+          "started": false
+        },
+        "destroy": {
+          "clock_valid": false,
+          "elapsed_ms": null,
+          "ended": false,
+          "started": false
+        },
+        "generate": {
+          "clock_valid": true,
+          "elapsed_ms": 11706.905,
+          "ended": true,
+          "started": true
+        },
+        "hash": {
+          "clock_valid": true,
+          "elapsed_ms": 854.797,
+          "ended": true,
+          "started": true
+        },
+        "template_tokenize": {
+          "clock_valid": true,
+          "elapsed_ms": 33.78,
+          "ended": true,
+          "started": true
+        },
+        "vocab": {
+          "clock_valid": true,
+          "elapsed_ms": 266.909,
+          "ended": true,
+          "started": true
+        }
+      },
+      "unit": "ms"
+    },
+    "profile": {
+      "decode_time_us": 5719363,
+      "decode_tokens_per_second": 23.42918258554318,
+      "draft_n_accepted": 0,
+      "draft_n_total": 0,
+      "generated_tokens": 134,
+      "media_time_us": 0,
+      "prefill_tokens_per_second": 867.3683366278069,
+      "prompt_time_us": 5984770,
+      "prompt_tokens": 5191,
+      "ttft_us": 5985432
+    },
+    "request": {
+      "cancel_requested": false,
+      "elapsed_ms": 14309,
+      "error": null,
+      "exit_code": null,
+      "fallback_allowed": false,
+      "force_destroy_sent": false,
+      "grammar_binding_valid": true,
+      "hardware_execution_independently_verified": false,
+      "inference_completed": true,
+      "native_result_binding_valid": true,
+      "process_exit_observed": false,
+      "request_committed": true,
+      "run_id": "98196389139e472b8b4a147a9b030d9d",
+      "runtime_device_selection_valid": true,
+      "status": "request_completed",
+      "timeout_observed": false
+    },
+    "runtime": {
+      "automatic_cpu_fallback": false,
+      "compute_requested": "npu",
+      "device_resolved": "HTP0",
+      "mode": "llm",
+      "n_ctx_create": 8192,
+      "n_gpu_layers_create": -1,
+      "power_mode_name": "sustained_high_performance",
+      "runtime": "llama_cpp",
+      "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+      "sdk_version": "v0.10.0"
+    },
+    "warm_session": {
+      "automatic_restart": false,
+      "cancel_requested": false,
+      "cancellation_sdk_cleanup_binding_valid": false,
+      "cleanup_classification": "normal_close_with_observed_sdk_cleanup",
+      "cleanup_known": true,
+      "cross_task_reuse": false,
+      "exit_code": 0,
+      "force_destroy_sent": false,
+      "generation_cleanup_known": true,
+      "generation_unforced": true,
+      "native_session_binding_valid": true,
+      "parent_force_destroy_sent": false,
+      "process_exit_observed": true,
+      "process_started": true,
+      "requests_accepted": 1,
+      "requests_sent": 1,
+      "task_id": "bb5707641b2744848b5e92057e0cc15f",
+      "worker_generation": "d10cea0d17b14b8d84450fc002709f7a"
+    }
+  },
+  "outcome": "PASS_OBSERVED_NOTES_SAVE_LIST_REOPEN",
+  "reopen_readiness": {
+    "delayed_reopen_recovery_exercised_in_this_case": false,
+    "interpretation": "This successful case already had body evidence on its original first reopened frame. It is a regression pass; it does not independently exercise the new missing-body recovery branch.",
+    "original_first_reopened_body_present": true,
+    "workflow_current_is_first_reopened_observation": true
+  },
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "sample_count": 1,
+  "strict_prepare": {
+    "after_launch_no_controller_task_on_display0": true,
+    "all_three_prepare_gates_replayed": true,
+    "atomic_android_transaction": false,
+    "initial_and_prelaunch_no_controller_task_on_display0": true,
+    "interpretation": "The original guard functions are replayed over their saved snapshots. Activity/window snapshots and launch are separate Android operations; the host lock does not serialize concurrent user or system activity.",
+    "original_main_focus_not_rebased": true,
+    "outer_display_id": 119,
+    "own_ui_transfer": false,
+    "phone_operations_by_auditor": 0,
+    "prepare_sha256": "49f9b49c231475a4f0373d547303b9df60e17544a1dc2d168e08729567c2beff",
+    "snapshots": [
+      {
+        "artifact": "prepare/before-activities.txt",
+        "bytes": 61391,
+        "private_original_published": false,
+        "sha256": "1fef7035d212e6a1c5265461f3d5620da9fc56c7ea2c108ae63331c21fc1bcb5"
+      },
+      {
+        "artifact": "prepare/before-windows.txt",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "57b2b0e84b42add2b4ba6c331e72b5ddc4b288ed7d6613fd0c45f34b1eb9102d"
+      },
+      {
+        "artifact": "prepare/prelaunch-activities.txt",
+        "bytes": 67184,
+        "private_original_published": false,
+        "sha256": "a4e11b9755bd97a21c58d4c97df62f3689a36cfa5d6ddbb799bf3f6ca69e0565"
+      },
+      {
+        "artifact": "prepare/prelaunch-windows.txt",
+        "bytes": 36667,
+        "private_original_published": false,
+        "sha256": "9c60a1ceb26f1c9f93ceecfe3cf6dce970c201ba273a9d40c1ea3547bc6cd612"
+      },
+      {
+        "artifact": "prepare/after-activities.txt",
+        "bytes": 73637,
+        "private_original_published": false,
+        "sha256": "f5700e852bd50255dc308e66c7de6f4d2c208d9dc9b10fd791536e0606d7cc41"
+      },
+      {
+        "artifact": "prepare/after-windows.txt",
+        "bytes": 37696,
+        "private_original_published": false,
+        "sha256": "1201ffc6b54f64e8efe489d052e194935143832710ccbee64bc9f0bd1b2c1100"
+      }
+    ],
+    "source_driver_and_action_bytes_preserved": true,
+    "strict_manifest_sha256": "45e4a1fb975061f7e5f5ca3b4ff50506225f6b00b3d05101df9bb12ee9ae70f7"
+  },
+  "task_id": "bb5707641b2744848b5e92057e0cc15f",
+  "task_verification": {
+    "action_worker_pending_at_terminal": false,
+    "automatic_replay": false,
+    "cleanup_known": true,
+    "completion_verified": true,
+    "external_model": false,
+    "goal_independently_verified": true,
+    "native_cancel_worker_pending_at_terminal": false,
+    "observation_read_worker_pending_at_terminal": false,
+    "status": "controller_verified_done",
+    "steps": 1
+  },
+  "timing": {
+    "app_request_elapsed_ms": 14309,
+    "background_created_to_terminal_decision_elapsed_ms": 22294,
+    "background_interval_clock": "Android elapsedRealtime",
+    "collection_wall_time_used_as_task_duration": false,
+    "native_request_elapsed_ms": 14285.288,
+    "overall_task_elapsed_explanation": "No complete admission-to-terminal monotonic interval is exposed in the reviewed receipts. Background interval excludes earlier preflight. Host collection wall times are not task duration.",
+    "overall_task_elapsed_ms": null
+  },
+  "virtual_display_cleanup": {
+    "both_displays_absent_in_final_saved_window_inventory": true,
+    "controller_outer_display_id": 119,
+    "display_inventory_is_a_final_snapshot": true,
+    "evidence": [
+      {
+        "artifact": "driver/run-0057-release-receipt.stdout",
+        "bytes": 0,
+        "private_original_published": false,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "driver/run-0058-release-receipt.stdout",
+        "bytes": 179,
+        "private_original_published": false,
+        "sha256": "f1769dea1809b4f407745ffac0a6e70a40c5e97852d0b178eb45d352f8200fb6"
+      },
+      {
+        "artifact": "driver/run-0059-release-windows-0000.stdout",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "929686e0e5491321729902cbe3bab1e32df7c40691d6647c407f1269d773404a"
+      }
+    ],
+    "initial_empty_outer_release_poll_count": 1,
+    "outer_release_receipt_matches_original_lease": true,
+    "product_target_release_and_broker_exit_verified": true,
+    "target_app_display_id": 120
+  }
+}

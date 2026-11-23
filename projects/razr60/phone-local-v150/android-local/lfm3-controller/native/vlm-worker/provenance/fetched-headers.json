@@ -1,0 +1,58 @@
+[
+  {
+    "path": "common/chat.h",
+    "git_blob": "29aaf8b6847d92d1c80476b4a9e22205e1122b5f"
+  },
+  {
+    "path": "common/sampling.h",
+    "git_blob": "f19bd27c40f8b41de21d409caaa9e343a1eb7d5b"
+  },
+  {
+    "path": "common/common.h",
+    "git_blob": "a0d960c5eeaefb016514454453aa2a465054f490"
+  },
+  {
+    "path": "common/peg-parser.h",
+    "git_blob": "6b348fab0132739220398d531c138a29f07ec874"
+  },
+  {
+    "path": "common/jinja/parser.h",
+    "git_blob": "f1cc0212c6a471dfd402af98c4e93c969c57938a"
+  },
+  {
+    "path": "common/jinja/runtime.h",
+    "git_blob": "101e927c4b7f40ae5b02c3e1f3ad47161e2e3d31"
+  },
+  {
+    "path": "common/jinja/caps.h",
+    "git_blob": "b81dd95f2ed672a1e43c3acf367e8e48adf98695"
+  },
+  {
+    "path": "llama-cpp.h",
+    "git_blob": "880a6a5fae8f539352ac2cc7e0920e9057d2ac62"
+  },
+  {
+    "path": "common/json.h",
+    "git_blob": "95b6d6f212e533fc83072b0c8f40120b36c33eef"
+  },
+  {
+    "path": "common/json-schema.h",
+    "git_blob": "084208c962014a45571fd2610fecc3b683c00e7f"
+  },
+  {
+    "path": "common/jinja/lexer.h",
+    "git_blob": "439c85764c24af6d6ee57234b541be61350d061a"
+  },
+  {
+    "path": "common/jinja/value.h",
+    "git_blob": "9bb1a87bd0182eb510f9e831b0e8d98fec577218"
+  },
+  {
+    "path": "common/jinja/utils.h",
+    "git_blob": "da3757a4aae628e482577d850d2afcd42562935f"
+  },
+  {
+    "path": "common/jinja/string.h",
+    "git_blob": "669afb8f1da07ea4e246d3c5dfb7829420019c80"
+  }
+]

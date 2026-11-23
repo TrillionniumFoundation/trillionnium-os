@@ -1,0 +1,167 @@
+package org.trillionnium.hepta.background;
+import android.os.IBinder;
+import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.InputEvent;
+import android.view.KeyCharacterMap;
+import android.view.MotionEvent;
+import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.JSONObject;
+/** Complete exact date broker methods; Android owner/display/IPC reads are explicit ports. */
+final class BrokerDateHost {
+ final Object dispatchGate=new Object();
+ final BrokerProtocol.Config config;
+ final long expires;
+ int displayId=7;
+ final String displayName="fixture-owned-display";
+ ProfilePackages.Readback profileReadback;
+ final ProfilePackages profilePackages;
+ final Displays displays=new Displays();
+ final Owned profileOwnedTask;
+ final AtomicBoolean closing=new AtomicBoolean(),publicAdmissionRetired=new AtomicBoolean(),calendarDateConsumed=new AtomicBoolean();
+ final android.hardware.input.InputManager inputManager=new android.hardware.input.InputManager();
+ final Method injectInput;
+ volatile WindowInfosCapture calendarWindowCapture;
+ volatile JSONObject calendarDateEvidence;
+ volatile String calendarDateRequest;
+ volatile boolean effectInFlight,profileRequestDispatched;
+ String state="ACTIVE";
+ boolean cancelled;
+ Runnable beforeGuard;
+ int guards,displayReads;
+ BrokerDateHost(BrokerProtocol.Config c,ProfilePackages p)throws Exception{
+  config=c;expires=c.expiresElapsedMs;profilePackages=p;p.installedTarget=c.profileTarget;
+  profileReadback=new ProfilePackages.Readback(c.profileTarget);profileOwnedTask=new Owned();
+  injectInput=android.hardware.input.InputManager.class.getMethod("injectInputEvent",InputEvent.class,int.class,int.class);
+ }
+ boolean run(BrokerProtocol.Request r)throws Exception{r.authenticate(config,config.ownerUid);return dispatchCalendarDate(r);}
+ static int constant(Class<?> type,String name)throws Exception{return calendarPlatformInt(type,name);}
+ void requireUnlocked()throws Exception{guards++;if(beforeGuard!=null)beforeGuard.run();if(cancelled)throw new BrokerProtocol.Refusal("BROKER_CANCELLED");if(publicAdmissionRetired.get())throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_RETIRED");}
+ void verifyDisplay()throws Exception{displayReads++;if(displays.value==null||!displayName.equals(displays.value.name))throw new BrokerProtocol.Refusal("DISPLAY_IDENTITY_LOST");}
+ static String code(Throwable e){if(e instanceof InputChannelIsolation.Refusal)return((InputChannelIsolation.Refusal)e).code;if(e instanceof BrokerProtocol.Refusal)return e.getMessage();return e.getClass().getName();}
+ final class Owned {
+  boolean observeStateUntil(long d){throw unrelated();}String initializationState(long d){throw unrelated();}
+  ProfileOwnedTask.PermissionRead permissionForInitialization(int w,int t,long d){throw unrelated();}
+  boolean confirmInitializationReady(long d)throws ProfileTaskPolicy.Refusal{throw unrelated();}
+  int reads;Runnable beforeRead;String taskToken="00000000-0000-4000-8000-000000000007";
+  WindowOwnership window(int window,int task,long deadline)throws Exception{reads++;if(beforeRead!=null)beforeRead.run();if(SystemClock.elapsedRealtime()>=deadline)throw new BrokerProtocol.Refusal("OWNED_READ_DEADLINE");
+   return new WindowOwnership(config.profileTarget,config.generation,displayId,window,task,99,taskToken,
+    "00000000-0000-4000-8000-000000000008",10,config.profileTarget.profile.serial,config.profileTarget.fullUid,SystemClock.elapsedRealtime(),Math.min(deadline,SystemClock.elapsedRealtime()+1000));}
+ }
+ static final class DisplayGeometry {
+  final BrokerProbeHost.DisplayGeometry actual;
+  final int width,height,rotation;final int density=240;final String name;
+  DisplayGeometry(BrokerProbeHost.DisplayGeometry d){actual=d;width=d.width;height=d.height;rotation=d.rotation;name=d.name;}
+  static DisplayGeometry snapshotDefault(Displays d){throw unrelated();}
+  static DisplayGeometry read(BrokerProbeHost.DisplayGeometry d,int id){return new DisplayGeometry(BrokerProbeHost.DisplayGeometry.read(d,id));}
+  boolean sameSize(DisplayGeometry d){return width==d.width&&height==d.height;}
+  java.util.Map<String,Object> evidence(){return actual.evidence();}
+ }
+
+ // Only these cleanup/serialization IO ports are reachable from the calendar entry cases.
+ static final long CLEANUP_MS=1500;
+ BrokerProtocol.Request activeProfileRequest;WindowOwnership profileWindow;String profileWindowRequest;
+ Object permissionWindow;String permissionWindowRequest;boolean profilePreparing,serve=true;
+ String profileConfirmationSample;boolean profileConfirmationDeferred;
+ String profilePreparationState="NOT_STARTED";int cleanupCalls,cleanupWaits,responseCalls;long cleanupWaitBudget;String cleanupReason;
+ byte[] runHandler(byte[] wire,int peerUid)throws Exception{
+  BrokerProtocol.Request r=BrokerProtocol.Request.parse(wire);r.authenticate(config,peerUid);return perform(r);
+ }
+ void beginCleanup(String why){cleanupCalls++;cleanupReason=why;closing.set(true);state="CLOSING";}
+ void awaitCleanup(long remaining){cleanupWaits++;cleanupWaitBudget=remaining;}
+ byte[] response(BrokerProtocol.Request r,boolean ok,String error,boolean dispatched)throws Exception{
+  responseCalls++;return new JSONObject().put("host_response_port",true).put("ok",ok)
+   .put("error",error==null?JSONObject.NULL:error).put("dispatched",dispatched).put("state",state)
+   .put("calendar_date_input",calendarDateEvidence==null?JSONObject.NULL:calendarDateEvidence)
+   .toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+ }
+ // Type carriers for unexecuted create/launch/back/permission branches of the complete perform method.
+ // Every callable port refuses; these operations are not qualified by this gate.
+ static AssertionError unrelated(){return new AssertionError("unrelated broker branch executed");}
+ boolean createInFlight;int virtualFlags,imeHide,activeRequestPeerPid=-1;long cleanupAt,requestDeadline;
+ final AtomicBoolean cleanupStarted=new AtomicBoolean();
+ VirtualDisplay publicCreateReturnedHandle,virtual;DisplayGeometry displayGeometry;HandlerThread displayThread;ImageReader surfaceReader;
+ Object activityTasks,windowManager,permissionControllerUi,permissionProjectionBaseline,permissionProjectionCurrent;
+ Method setImePolicy,startActivityAsUser,keyDisplayId;
+ Custody publicNotesCustody;final Custody profileCustody=new Custody();PublicPersonalNotesReader publicNotesReader;
+ BackgroundOwnedSingleTask ownedSingleTask;Shell shell=new Shell();
+ java.util.Map<Integer,String> permissionPhysicalBaseline;
+ final java.util.Set<String> launched=new java.util.HashSet<String>(),fixedToolsConsumed=new java.util.HashSet<String>();
+ final java.util.Map<String,JSONObject> taskLaunchPolicies=new java.util.LinkedHashMap<String,JSONObject>(),fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
+ void ensureNameAbsent(){throw unrelated();}ProfilePackages.Readback profilePreflight(long d){throw unrelated();}
+ void startPublicSurfaceDetach(VirtualDisplay v){throw unrelated();}void acquirePublicScreenLease(VirtualDisplay v,long d){throw unrelated();}
+ void shutdown(String s){throw unrelated();}void requireUnlaunchedProfileEmpty(){throw unrelated();}void refreshProfileTaskEvidence(){throw unrelated();}
+ TaskSnapshot snapshot(){throw unrelated();}void verifyLaunchedLocations(TaskSnapshot s){throw unrelated();}
+ boolean launchProfile(BrokerProtocol.Request r){throw unrelated();}boolean launchProfile(BrokerProtocol.Request r,boolean p){throw unrelated();}
+ boolean backProfile(BrokerProtocol.Request r){throw unrelated();}void requirePermissionPreparing(BrokerProtocol.Request r){throw unrelated();}
+ java.util.Map<Integer,String> permissionPhysicalFence(BrokerProtocol.Request r){throw unrelated();}
+ void requirePermissionPhysicalUnchanged(java.util.Map<Integer,String> p){throw unrelated();}
+ void probeCalendarWindow(BrokerProtocol.Request r){throw unrelated();}
+ BackgroundOwnedTaskPolicy.Activity launchActivityInfo(Object c,String p,int u){throw unrelated();}
+ JSONObject taskLaunchPolicyEvidence(BrokerProtocol.Request r,BackgroundOwnedTaskPolicy.Activity a,BackgroundOwnedTaskPolicy.Plan p){throw unrelated();}
+ void requireIsolatedTaskLaunch(BackgroundOwnedTaskPolicy.Plan p){throw unrelated();}
+ interface Check {void run()throws Exception;}interface Clock {long now();}
+ static final class Custody {void beforeCreate(){throw unrelated();}void bindDisplay(int d){throw unrelated();}int expectedUid(){throw unrelated();}void markLaunch(){throw unrelated();}}
+ static final class PublicPersonalNotesReader {int uid;PublicPersonalNotesReader(Shell s,Object a,int d,Clock c){throw unrelated();}}
+ static final class PublicPermissionControllerUi {
+  static final class Session {Session(Object... a){throw unrelated();}}
+  static Object bind(Object... a){throw unrelated();}
+ }
+ static final class ProfileTaskPolicy {static final class Refusal extends Exception {private static final long serialVersionUID=1L;}}
+ static final class ProfileOwnedTask {static final class PermissionRead {} static boolean verifiedPermissionDuringConfirmation(ProfileTaskPolicy.Refusal refused){throw unrelated();}}
+ static final class PermissionWindowObservation {static Object fromLive(Object... a){throw unrelated();}}
+ static final class BackgroundTaskOrganizer {
+  BackgroundTaskOrganizer(Object a,ActivityOptions o,int d,Check before,Check after,Clock c){throw unrelated();}
+  static Object readOnlyControllerTask(Object a,int task,int display,Clock c){throw unrelated();}
+  static Intent nativeHome(Shell s,Intent i){throw unrelated();}static void recheckHome(Shell s,BackgroundOwnedTaskPolicy.Activity a){throw unrelated();}
+ }
+ static final class TaskSnapshot {void requireNoOtherDisplay(String p,int d){throw unrelated();}String singleVisibleTop(int d){throw unrelated();}}
+ static final class FixedIntentTarget {int uid;static String payloadSha256(String s){throw unrelated();}java.util.Map<String,Object> evidence(){throw unrelated();}}
+ static final class FixedIntentDispatch {static FixedIntentTarget inspect(Shell s,int uid,String op){throw unrelated();}static Intent intent(FixedIntentTarget t,String p){throw unrelated();}static void recheck(Shell s,int u,FixedIntentTarget t){throw unrelated();}}
+ static final class BackgroundOwnedTaskPolicy {
+  static final class Activity {int uid;boolean same(Activity a){throw unrelated();}}
+  static final class Plan {int outboundFlags;}
+  static Plan choose(String g,int d,String p,Activity a,int f){throw unrelated();}
+ }
+ static final class BackgroundOwnedSingleTask {
+  BackgroundOwnedSingleTask(BackgroundTaskOrganizer o,String g,String r,int d,BackgroundOwnedTaskPolicy.Activity a,int f){throw unrelated();}
+  static boolean eligible(BackgroundOwnedTaskPolicy.Activity a,int f){throw unrelated();}
+  void prepare(){throw unrelated();}void beforeDispatch(){throw unrelated();}void accepted(int x){throw unrelated();}boolean observe(){throw unrelated();}
+ }
+ static final class Shell {Packages getPackageManager(){throw unrelated();}}
+ static final class Packages {Intent getLaunchIntentForPackage(String p){throw unrelated();}ActivityInfo getActivityInfo(Component c,int x){throw unrelated();}ApplicationInfo getApplicationInfo(String p,int x){throw unrelated();}}
+ static final class ApplicationInfo {int uid;}
+ static final class ActivityInfo {boolean enabled,exported;}
+ static final class Component {String getPackageName(){throw unrelated();}}
+ static final class Intent {
+  static final String ACTION_MAIN="android.intent.action.MAIN",CATEGORY_LAUNCHER="android.intent.category.LAUNCHER";
+  static final int FLAG_ACTIVITY_NEW_TASK=0x10000000,FLAG_ACTIVITY_MULTIPLE_TASK=0x08000000;
+  Intent(String s){throw unrelated();}Component getComponent(){throw unrelated();}
+  Intent addCategory(String s){throw unrelated();}Intent setComponent(Component c){throw unrelated();}Intent addFlags(int f){throw unrelated();}int getFlags(){throw unrelated();}void setFlags(int f){throw unrelated();}
+ }
+ static final class ActivityOptions {static ActivityOptions makeBasic(){throw unrelated();}ActivityOptions setLaunchDisplayId(int d){throw unrelated();}Object toBundle(){throw unrelated();}}
+ static final class Displays {
+  BrokerProbeHost.DisplayGeometry value=new BrokerProbeHost.DisplayGeometry();
+  BrokerProbeHost.DisplayGeometry getDisplay(int id){if(id!=7)throw new AssertionError("physical display lookup");return value;}
+  VirtualDisplay createVirtualDisplay(String n,int w,int h,int den,Object s,int flags){throw unrelated();}
+ }
+ static final class Display {static final int DEFAULT_DISPLAY=0;int getDisplayId(){throw unrelated();}}
+ static final class VirtualDisplay {Display getDisplay(){throw unrelated();}}
+ static final class HandlerThread {HandlerThread(String s){throw unrelated();}void start(){throw unrelated();}Object getLooper(){throw unrelated();}}
+ static final class Handler {Handler(Object o){throw unrelated();}}
+ static final class PixelFormat {static final int RGBA_8888=1;}
+ static final class Image implements AutoCloseable {public void close(){throw unrelated();}}
+ static final class ImageReader {
+  interface Listener {void onImage(ImageReader r);}
+  static ImageReader newInstance(int w,int h,int p,int n){throw unrelated();}
+  void setOnImageAvailableListener(Listener l,Handler h){throw unrelated();}Image acquireLatestImage(){throw unrelated();}Object getSurface(){throw unrelated();}
+ }
+ static final class KeyEvent extends InputEvent {
+  static final int ACTION_DOWN=0,ACTION_UP=1,KEYCODE_BACK=4,FLAG_FROM_SYSTEM=8;
+  KeyEvent(long a,long b,int c,int d,int e,int f,int g,int h,int i,int j){throw unrelated();}
+  public int getDisplayId(){throw unrelated();}public int getDeviceId(){throw unrelated();}
+ }
+
+// EXACT_DATE_METHODS
+}

@@ -1,0 +1,61 @@
+    static void recordedSearchIconCases()throws Exception{
+        byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.fullPageCensuses")).resolveSibling("6bea-search-icon-censuses.json"));
+        check("25138641e8dd4f8c49701009dd4d854a698c47daac1015cd112a9b43e35d2452".equals(sha(bytes)),"four complete recorded original native censuses");
+        JSONObject raw=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
+        final NativeActionSnapshotCheck.Snapshot a=fullSwapSnapshot(raw.getJSONObject("A")),b=fullSwapSnapshot(raw.getJSONObject("B"));
+        final NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(raw.getJSONObject("C")),d=fullSwapSnapshot(raw.getJSONObject("D"));
+        one("6bea_recorded_icon_role_matches_same_literal_leaf_and_ancestor_despite_carousel",()->{
+            NativeSearchRole icon=NativeSearchRole.iconPair(a,b,true),current=icon.compareCurrent(c,d,true);
+            icon.requireSameRole(current);check("0/0/4".equals(icon.actionPath)&&"0/0/3".equals(icon.targetPath),"model target is distinct from the switcher");
+            check("搜索".equals(d.node(icon.actionPath).label)&&NativeSearchRole.ICON_ROLE.equals(icon.modelRole),"model action names the observed icon");
+            check(a.nodes.size()==77&&b.nodes.size()==77&&c.nodes.size()==77&&d.nodes.size()==77,"all four actual traversals complete");
+            for(NativeActionSnapshotCheck.Snapshot phase:Arrays.asList(b,c,d)){
+                check(a.node(icon.actionPath).v.equals(phase.node(icon.actionPath).v)&&a.node("0/0").v.equals(phase.node("0/0").v)&&a.node("0").v.equals(phase.node("0").v),"all preserved icon and ancestor fields match");
+            }
+            check(!b.node(icon.targetPath).label.equals(c.node(icon.targetPath).label)&&!b.node(icon.targetPath).v.get("ref_signature_sha256").equals(c.node(icon.targetPath).v.get("ref_signature_sha256")),"recorded B-C suggested product and derived reference changed");
+            check(icon.changedPaths.size()==9&&current.changedPaths.size()==9,"9 independently classified banner changes in each pair");
+            NativeSearchRole legacy=NativeSearchRole.compareForPlanning(a,b);rejected(()->legacy.requireSameRole(icon));
+            check(!raw.getBoolean("phases_truncated")&&!raw.getBoolean("effect_entered")&&!raw.getBoolean("platform_call_invoked")
+                    &&Collections.frequency(raw.getJSONArray("phases").toList(),"node_refresh")==1,"original run rejected the switcher before parent inspection");
+        });
+        for(String fault:Arrays.asList("description","resource","label","action_click","bounds","package","ancestor","new_signature","wrong_window")){
+            one("6bea_icon_refuses_"+fault,()->{
+                JSONObject changed=new JSONObject(raw.getJSONObject("D").toString());JSONObject icon=swapNode(changed,"0/0/4");
+                if("description".equals(fault))icon.put("description","进入商品");
+                else if("resource".equals(fault))icon.put("view_id","com.xiaomi.shop:id/promotion");
+                else if("label".equals(fault))icon.put("label","促销");
+                else if("action_click".equals(fault))icon.put("action_click",false);
+                else if("bounds".equals(fault))icon.getJSONArray("bounds").put(0,156);
+                else if("package".equals(fault))icon.put("package","foreign.app");
+                else if("ancestor".equals(fault))swapNode(changed,"0/0").put("ref_signature_sha256",NativeAppEvidence.hash("another actual parent"));
+                else if("new_signature".equals(fault))icon.put("ref_signature_sha256",NativeAppEvidence.hash("another actual leaf"));
+                else changed.getJSONObject("envelope").put("window_id",18);
+                rejected(()->NativeSearchRole.iconPair(c,fullSwapSnapshot(changed),true));
+            });
+        }
+        one("6bea_new_model_offer_clicks_exact_icon_once_and_requires_fresh_input_observation",()->{
+            HeptaAccessibilityService service=new HeptaAccessibilityService();try(Fixture f=service.new Fixture()){
+                f.plan();check(f.planning!=null&&f.planning.role.iconAction,"current production publishes only icon proposal");
+                NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);
+                JSONObject prompt=new JSONObject(offer.promptEvidence()),target=prompt.getJSONObject("model_proposed_target");
+                String icon=f.planning.role.actionPath,entry=f.planning.role.targetPath;
+                check(target.getString("path").equals(icon)&&target.getString("label").equals("搜索")&&!icon.equals(entry),"model sees distinct clickable leaf");
+                NativeSearchRole old=NativeSearchRole.compareForPlanning(f.planning.first,f.planning.second);
+                rejected(()->offer.reserve(f.base.decision(offer,f.planning.id,old.roleId),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000));
+                SystemClock.now+=20;NativeSearchSession.Attempt action=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+                // At the first final icon refresh, independently alter only the old
+                // switcher's two descendant labels. Neither node supplies this action.
+                f.graphHook=()->{if(f.graphReads==4){
+                    f.nodes.get(icon).beforeRefresh=()->{
+                        f.nodes.get(entry+"/0").v.put("description","搜索另一款数据线");
+                        f.nodes.get(entry+"/0/0").v.put("text","另一款数据线");
+                    };
+                }};
+                f.action(action);
+                check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.nodes.get(icon).effects==1&&f.nodes.get(entry).effects==0,"one actual production call only on the exact C icon reference");
+                check(!f.base.search.navigationEffectRecorded(),"platform return alone cannot create page evidence");
+                f.base.search.acceptOutcome(action,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(f.base.search.navigationEffectRecorded()&&service.nativeSearchAllowsLegacyObservation(service.lease),"accepted navigation enables only a new existing owned observation");
+            }
+        });
+    }

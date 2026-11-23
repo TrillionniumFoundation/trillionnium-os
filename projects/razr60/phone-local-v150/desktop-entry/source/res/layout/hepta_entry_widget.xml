@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/entry_container" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:orientation="horizontal"
+    android:gravity="center_vertical" android:padding="16dp"
+    android:background="@drawable/widget_background" android:contentDescription="@string/open_hepta">
+    <ImageView android:layout_width="36dp" android:layout_height="36dp"
+        android:src="@drawable/ic_hepta_entry" android:contentDescription="@null" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_weight="1" android:orientation="vertical" android:paddingStart="12dp">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/hepta_name" android:textColor="#173B3F" android:textStyle="bold" android:textSize="18sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/widget_hint" android:textColor="#42666A" android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

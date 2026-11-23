@@ -1,0 +1,2 @@
+REAL_DELAYED_CHILD elapsed_ms=4315 exit=143 term_calls=1 force_calls=0 sdk_health_verified=false
+OwnedWorkerCancellation PASS cases=11 assertions=67 native_sdk_executed=false phone_tested=false

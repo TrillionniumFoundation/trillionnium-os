@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hepta_accessibility_description">在你发起的任务期间，读取当前屏幕，执行点击、输入、滚动和应用切换。模型推理仅在手机本地运行，不接入外部模型。你可以随时回到 Hepta 本地停止任务。</string>
+</resources>

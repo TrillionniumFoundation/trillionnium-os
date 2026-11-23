@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.archived-case05-partial-output-fixture.v1",
+  "source_kind": "actual_failed_request_raw_text",
+  "task_id": "ab4df56264144debad0415a69cb800f6",
+  "generation_id": "c75226b7f1864c32804bc5be0e124d3a",
+  "request_id": "0b9a53b5daf4462cbd6740f6bc4d2aad",
+  "model_profile": "lfm2.5-8b-a1b-q4_0",
+  "fixture": {
+    "path": "case05-partial.txt",
+    "bytes": 565,
+    "sha256": "56b791ee9a83b504619ef465f2ffbf21e53c108e32c332749e99a2f24e8a2ed1"
+  },
+  "source": {
+    "path": "/home/alex/hepta-razr-resume-20261120-e6a5823a-r1/supplemental-case05-collector-prep-r1/collection-r1/raw/0b9a53b5daf4462cbd6740f6bc4d2aad/raw-text.txt",
+    "bytes": 565,
+    "sha256": "56b791ee9a83b504619ef465f2ffbf21e53c108e32c332749e99a2f24e8a2ed1"
+  },
+  "actual_outcome": {
+    "stop_reason": "length",
+    "generated_tokens": 256,
+    "sdk_generate": 0,
+    "deadline_observed": false,
+    "signal": 0,
+    "generation_complete": false
+  },
+  "synthetic_completion_policy": "Appending the immutable test OWNER body is a synthetic format counterexample only; never a phone/model/tool/business result.",
+  "private_data_review": "Raw text contains generic reasoning and Moto Notes public app/package metadata; no account, phone number, credentials, personal note content, payment details, or unrelated screen content.",
+  "phone_operations": 0
+}
