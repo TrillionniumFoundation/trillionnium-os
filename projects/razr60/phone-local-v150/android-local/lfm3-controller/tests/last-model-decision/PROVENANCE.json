@@ -1,0 +1,21 @@
+{
+  "source_payload_sha256": "875ead6a5cc3b3069d51a6f2fe8676607978b6a9cca37268606c2ae58f08329f",
+  "source_version": 37,
+  "source_task_id": "840809ea48af4da2aa9b80fe4f3eba8a",
+  "step_3_model_run_id": "60ae7b32a9824fd4b3e2d7acdac43b19",
+  "step_4_model_run_id": "f84a07b1409d4fffbd8ca10e106b2c07",
+  "fixture_role": "retained actual model output and following prompt; no predicted next action or task oracle",
+  "model_test_performed_by_host_test": false,
+  "files": [
+    {
+      "path": "step-03-model-output.txt",
+      "bytes": 319,
+      "sha256": "302c7c73ee8e738a70fe40d27d1144c48f6a1afc8aa142eaea8e39f30b6b57a5"
+    },
+    {
+      "path": "step-04-prompt.txt",
+      "bytes": 5587,
+      "sha256": "23397c1ba00ab85ed9bfdaadadc0eb96985ea3813a8939262f63aa02757015dd"
+    }
+  ]
+}

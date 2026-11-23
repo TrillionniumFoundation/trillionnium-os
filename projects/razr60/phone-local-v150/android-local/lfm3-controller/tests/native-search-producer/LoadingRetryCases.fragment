@@ -1,0 +1,171 @@
+    static Map<String,Object> shellNode(Map<String,Object> prototype,String path,String cls,String view,List<Integer> bounds,
+            String text,String desc,boolean click,boolean selected,boolean visible){
+        Map<String,Object> n=new TreeMap<String,Object>(prototype);
+        n.put("path",path);n.put("class",cls);n.put("parent_class",path.equals("0")?"":"android.widget.FrameLayout");
+        n.put("view_id",view);n.put("bounds",bounds);n.put("text",text);n.put("description",desc);n.put("label",null);
+        n.put("children",path.equals("0")?13:0);n.put("clickable",click);n.put("action_click",click);n.put("selected",selected);n.put("visible",visible);
+        for(String key:Arrays.asList("editable","scrollable","focused","password","checkable","checked"))n.put(key,false);
+        n.put("enabled",true);n.put("scroll_actions","hepta.observed-scroll-actions.v1|observed");
+        n.put("ref_signature_sha256",null);n.put("input_sha256",null);return n;
+    }
+    static void loadingShell(Fixture f){
+        f.observableLoadingProjection=true;f.values=f.base.census(SystemClock.now);Map<String,Object> prototype=new TreeMap<String,Object>(f.values.nodes.get("0"));f.values.nodes.clear();
+        String p="com.xiaomi.shop.plugin.homepage:id/";
+        f.values.nodes.put("0",shellNode(prototype,"0","android.widget.FrameLayout","",Arrays.asList(0,0,1224,2992),"","",false,false,true));
+        f.values.nodes.put("0/0",shellNode(prototype,"0/0","androidx.viewpager.widget.ViewPager",p+"home_3_vp",Arrays.asList(0,0,1224,2992),"","",false,false,true));
+        f.values.nodes.put("0/1",shellNode(prototype,"0/1","android.widget.HorizontalScrollView",p+"sliding_layout",Arrays.asList(612,130,612,266),"","",false,false,false));
+        f.values.nodes.put("0/2",shellNode(prototype,"0/2","android.widget.RelativeLayout",p+"msgLayout",Arrays.asList(1054,130,1190,266),"","消息",true,false,true));
+        String[] labels={"首页","分类","服务","购物车","我的"},buttons={"home","category","discovery","cart","mine"};
+        for(int i=0;i<5;i++){
+            int left=i*1224/5,right=(i+1)*1224/5;String textPath="0/"+(3+2*i),buttonPath="0/"+(4+2*i);
+            f.values.nodes.put(textPath,shellNode(prototype,textPath,"android.widget.TextView",p+"main_view_nav_bar_text",Arrays.asList(left,2937,right,2992),labels[i],"",false,i==0,true));
+            f.values.nodes.put(buttonPath,shellNode(prototype,buttonPath,"android.view.View",p+"main_bottom_"+buttons[i],Arrays.asList(left,2849,right,2992),"",i==2?"星球":labels[i],true,i==0,true));
+        }
+    }
+    static void loadingTransition(Fixture f){f.graphHook=()->{if(f.graphReads==1)loadingShell(f);else {f.observableLoadingProjection=false;f.values=f.base.census(SystemClock.now);}};}
+    static NativeSearchRequest loadingRetryReady(HeptaAccessibilityService service,Fixture f)throws Exception{
+        loadingTransition(f);NativeSearchRequest request=f.startPlanning();observationIo.one();
+        check(request.workerDrained&&!observationIoBusy.get(),"failed original read and diagnostic have actually drained");
+        service.main.one();check(f.planning==null&&f.error==null&&f.retryProof==null&&observationIoBusy.get(),"proof waits for serial drain marker: "+f.error);
+        check(f.graphReads==2&&request.lastCompletePair==null,"private raw owns the old pair; no graph survives");
+        JSONObject raw=f.diagnostic();check(raw.getBoolean("complete_pair_available")&&!raw.getBoolean("action_permission"),"original failed pair retained privately");
+        observationIo.one();check(f.retryProof==null,"queue marker does not publish directly from worker");service.main.one();
+        check(f.retryProof!=null&&f.planning==null&&f.error==null&&!observationIoBusy.get(),"actual same-owner one-read proof issued: "+f.error);
+        check(!service.nativeSearchAllowsLegacyObservation(service.lease)&&f.effects==0,"recovery proof grants no old observer or effect");return request;
+    }
+    static void loadingRetryCases(String[] args)throws Exception{
+        progressHomeCases();
+        one("loading_transition_one_drained_successor_has_two_new_censuses_and_one_later_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest old=loadingRetryReady(s,f);NativeSearchReadRetryProof proof=f.retryProof;
+                long taskDeadline=f.base.search.taskDeadlineElapsed;NativeSearchRequest fresh=f.startPlanning(proof);
+                check(fresh!=null&&fresh!=old&&!fresh.id.equals(old.id)&&fresh.started>=proof.drainedAt,"independent actual request after queue drain");
+                observationIo.one();s.main.one();check(f.planning!=null&&f.graphReads==4,"new full A/B read, no old B seed: "+f.error);
+                check(f.planning.timing.requestStarted==fresh.started&&f.planning.timing.requestDeadline==fresh.deadline
+                        &&fresh.deadline-fresh.started<=12000&&f.planning.timing.bReadCompleted-fresh.started<10000
+                        &&f.base.search.taskDeadlineElapsed==taskDeadline,"original per-request and overall deadlines");
+                check(old.finished&&!old.published&&old.deadline==old.started+12000&&proof.consumed.get(),"old request remains terminal failed and proof one-use");
+                check(s.current==null&&s.currentGraph==null&&f.effects==0,"no synthetic generic frame or effect");
+                NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);SystemClock.now+=20;
+                NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+                f.action(attempt);check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"real new C/D gates and one effect still required");
+                f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(s.nativeSearchAllowsLegacyObservation(s.lease),"same real navigation handoff only after actual effect");
+                check(s.taskObservationAdmissions==2,"two initial planning admissions do not block later navigation handoff");
+                SystemClock.now+=10;NativeAppEvidence.Frame input=f.base.inputFrame(SystemClock.now,true);
+                f.base.nativeTask.observed(input);f.base.search.navigationObserved(input);f.base.nativeTask.requireModelPlanning();
+                check("search_input".equals(f.base.nativeTask.domain().phase)&&!f.base.nativeTask.domain().resultReady,"actual provider accepts a new complete synthetic search-input frame, no price claim");
+                rejected(()->f.base.search.requireBeforeFirstPlanning(SystemClock.now));
+                int reads=f.graphReads;f.startPlanning();check(f.error!=null&&f.graphReads==reads,"successful navigation cannot restart initial planning recovery");
+            }
+        });
+        one("loading_read_proof_cannot_be_consumed_twice",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);NativeSearchReadRetryProof proof=f.retryProof;f.startPlanning(proof);observationIo.one();s.main.one();
+                int reads=f.graphReads,submissions=observationIo.submissions;f.startPlanning(proof);
+                check(f.error!=null&&f.graphReads==reads&&observationIo.submissions==submissions,"second consume is rejected before a read");
+            }
+        });
+        one("loading_read_proof_rejects_different_service_controller_task_directory_and_session",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);NativeSearchReadRetryProof p=f.retryProof;
+                rejected(()->p.requireOriginal(new Object(),s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,new Object(),f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,null,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,"wrong",f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,s.lease,new File(f.directory.getPath()),f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed+1));
+                check(!p.consumed.get()&&f.effects==0,"rejected identities do not consume or authorize");
+            }
+        });
+        for(int kind=0;kind<3;kind++){final int actual=kind;one("loading_read_"+new String[]{"unknown","boundary","untyped"}[kind]+"_during_drain_marker_refuses_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingTransition(f);f.startPlanning();observationIo.one();s.main.one();
+                if(actual==0)s.noteNativeSearchEvent(-1,-1,null,false,false);else s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,actual==1);
+                observationIo.one();s.main.one();check(f.retryProof==null&&f.error!=null&&f.planning==null,"late event cannot qualify loading retry");
+                check(f.graphReads==2&&f.effects==0&&!observationIoBusy.get(),"no extra read/effect/capacity leak");
+            }
+        });}
+        one("loading_read_boundary_after_proof_before_consume_is_rejected",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);int submissions=observationIo.submissions;
+                f.startPlanning(f.retryProof);check(f.error!=null&&observationIo.submissions==submissions&&!f.retryProof.consumed.get(),"all pending proof events stay live until admission");
+            }
+        });
+        for(int kind=0;kind<3;kind++){final int actual=kind;one("loading_read_"+new String[]{"cancel","old_deadline","controller_change"}[kind]+"_before_marker_refuses_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingTransition(f);NativeSearchRequest old=f.startPlanning();observationIo.one();s.main.one();
+                if(actual==0)f.cancelled=true;else if(actual==1)SystemClock.now=old.deadline;else s.ownedController=new Object();
+                observationIo.one();s.main.one();check(f.retryProof==null&&f.error!=null&&f.effects==0,"proof cannot cross cancellation/original deadline/actual owner");
+            }
+        });}
+        one("loading_read_diagnostic_failure_cannot_mint_recovery_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingTransition(f);android.system.Os.beforeWrite=()->{throw new IllegalStateException("synthetic diagnostic write failure");};
+                f.plan();check(f.error!=null&&f.retryProof==null&&f.planning==null&&!observationIoBusy.get(),"original failure cannot be hidden by unavailable evidence");
+            }
+        });
+        one("loading_read_marker_rejection_retains_failure_without_retrying_queue",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingTransition(f);f.startPlanning();observationIo.one();observationIo.reject=true;s.main.one();
+                check(f.error!=null&&f.retryProof==null&&observationIo.submissions==2&&!observationIoBusy.get(),"definite marker refusal has no proof or automatic submit");
+            }
+        });
+        one("loading_read_marker_uncertain_submit_waits_for_real_drain_without_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingTransition(f);f.startPlanning();observationIo.one();observationIo.uncertain=true;s.main.one();
+                check(f.error!=null&&f.retryProof==null&&observationIoBusy.get(),"uncertain marker is not a drain proof");
+                observationIo.one();s.main.one();check(f.retryProof==null&&!observationIoBusy.get()&&f.callbackCount==1,"actual marker exit drains once but cannot issue a second terminal");
+            }
+        });
+        one("loading_read_successor_still_refuses_window_identity_change",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);f.windowTitle="changed actual window";f.startPlanning(f.retryProof);observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&f.error.contains("successor window/ownership identity changed")&&f.graphReads==3,"new actual whole-window proof must match original owner");
+                check(f.effects==0&&s.taskObservationAdmissions==2,"no third request or action");
+            }
+        });
+        one("loading_read_successor_failure_cannot_offer_a_third_read",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);NativeSearchReadRetryProof old=f.retryProof;f.graphHook=()->{if((f.graphReads&1)==1)loadingShell(f);else {f.observableLoadingProjection=false;f.values=f.base.census(SystemClock.now);}};
+                f.startPlanning(old);observationIo.one();s.main.one();check(f.error!=null&&f.planning==null&&f.retryProof==old&&f.callbackCount==2,"second failed request cannot create another proof");
+                check(s.taskObservationAdmissions==2&&f.effects==0,"no renewed deadline or repeated effect");
+            }
+        });
+        one("same_unique_resource_error_without_loading_shell_never_qualifies",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.values.nodes.get("0/0/0").put("view_id","synthetic.missing.switcher");f.plan();JSONObject d=f.diagnostic();
+                check(f.retryProof==null&&f.planning==null&&f.error!=null,"no exception-string recovery whitelist");
+                check(d.getString("last_sample_rejection").contains("unique resource")&&f.effects==0,"same message keeps its actual failure semantics");
+            }
+        });
+        one("actual_LTC_loading_retry_preserves_original_failure_and_returns_only_new_planning",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchLoadingControllerHost controller=new NativeSearchLoadingControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f.base.search);loadingTransition(f);
+                java.util.concurrent.atomic.AtomicReference<NativeSearchPlanning> result=new java.util.concurrent.atomic.AtomicReference<NativeSearchPlanning>();
+                java.util.concurrent.atomic.AtomicReference<Throwable> failure=new java.util.concurrent.atomic.AtomicReference<Throwable>();
+                Thread worker=new Thread(()->{try{result.set(controller.run(f.directory));}catch(Throwable e){failure.set(e);}},"actual-LTC-initial-planning");worker.start();
+                long end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+                while(worker.isAlive()&&System.nanoTime()<end){if(s.main.hasJobs())s.main.one();if(observationIo.hasJobs())observationIo.one();Thread.yield();}
+                if(worker.isAlive()){controller.cancelled.set(true);worker.interrupt();worker.join(1000);}
+                check(!worker.isAlive()&&failure.get()==null&&result.get()!=null,"actual controller fresh-read flow: "+failure.get());
+                JSONObject intent=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"native-search-initial-read-retry-01.json").toPath()),StandardCharsets.UTF_8));
+                check(!intent.getBoolean("old_request_renewed")&&!intent.getBoolean("old_census_reused")&&!intent.getBoolean("action_replayed")
+                        &&intent.getBoolean("first_model_request_not_submitted"),"actual controller records honest independent recovery");
+                check(f.graphReads==4&&f.effects==0&&s.current==null&&s.currentGraph==null,"actual controller does not synthesize a frame, model or effect");
+                f.diagnostic();
+            }
+        });
+        if(args.length>2)one("actual_private_14_to_83_pair_is_loading_classification_only_never_planning",()->{
+            byte[] raw=Files.readAllBytes(Paths.get(args[2]));JSONObject original=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+            JSONObject pair=original.getJSONObject("last_complete_pair");
+            NativeActionSnapshotCheck.Snapshot a=NativeSearchPlanning.readSnapshot(NativeSearchPlanning.map(pair.getJSONObject("first").getJSONObject("census")));
+            NativeActionSnapshotCheck.Snapshot b=NativeSearchPlanning.readSnapshot(NativeSearchPlanning.map(pair.getJSONObject("second").getJSONObject("census")));
+            check(a.nodes.size()==14&&b.nodes.size()==83,"actual immutable failed complete pair size");
+            Map<String,Object> classification=NativeSearchRole.loadingToSearch(a,b);
+            check(Boolean.FALSE.equals(classification.get("original_pair_accepted"))&&Boolean.FALSE.equals(classification.get("grants_action_authority")),"real failure classified only as loading transition");
+            rejected(()->NativeSearchRole.compare(a,b));
+            check(original.getBoolean("diagnostic_only")&&!original.getBoolean("planning_published")&&!original.getBoolean("action_permission"),"original failed request remains failed");
+        });
+    }

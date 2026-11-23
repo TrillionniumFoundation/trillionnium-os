@@ -1,0 +1,54 @@
+package org.trillionnium.hepta.local;
+
+import android.os.SystemClock;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.JSONObject;
+
+/** Verbatim controller consumers. Only surrounding task scheduling and the
+ * first Android observation are explicit host ports; no inference is supplied. */
+final class ProbeDiagnosticHost {
+    interface ReadPort {PhoneObservation read() throws Exception;}
+    final HeptaAccessibilityService service;
+    final Object handleLock=new Object();
+    final AtomicBoolean cancelled=new AtomicBoolean();
+    String currentTaskId;
+    Object activeNativeTask,activeNativeSearch,activeWebTask,activeInference;
+    ReadPort readPort;
+    int observationReads,modelBegins;
+    PhoneObservation observation;
+    String finalStatus,summary;
+    ProbeDiagnosticHost(HeptaAccessibilityService actual,String id){service=actual;currentTaskId=id;}
+    private PhoneObservation awaitObservationRaw(String id,File directory,
+            TaskAuthorization.Gate auth,long deadline)throws Exception{
+        observationReads++;
+        if(readPort==null)throw new IllegalStateException("explicit Android observation port unavailable");
+        return readPort.read();
+    }
+    void runFinite(String taskId,String instruction,File evidence,TaskAuthorization.Gate authorization,
+            BackgroundSession background,BackgroundSession.Selection backgroundSelection,
+            QualificationScopeConfig.Bound scope,long deadline)throws Exception{
+@@EARLY_BRANCH@@
+        // Background bootstrap already exists in Env; no launch is emulated here.
+@@PROBE_BRANCH@@
+        modelBegins++;
+        throw new AssertionError("diagnostic must return before the model boundary");
+    }
+    void requireSelection(String id,String owner,TaskAuthorization.Gate auth,
+            BackgroundSession.Selection selected,long deadline)throws Exception{
+        requireCalendarWindowProbeSelection(id,owner,auth,selected,deadline);
+    }
+    PhoneObservation probe(String id,String owner,File directory,TaskAuthorization.Gate auth,
+            BackgroundSession background,BackgroundSession.Selection selected,
+            QualificationScopeConfig.Bound scope,long deadline)throws Exception{
+        return runCalendarWindowProbeOnly(id,owner,directory,auth,background,selected,scope,deadline);
+    }
+@@OWNER_CONSTANT@@
+@@SELECTION_METHOD@@
+@@PROBE_METHOD@@
+@@CHECK_ACTIVE@@
+@@STOPPED@@
+@@RECORD@@
+}

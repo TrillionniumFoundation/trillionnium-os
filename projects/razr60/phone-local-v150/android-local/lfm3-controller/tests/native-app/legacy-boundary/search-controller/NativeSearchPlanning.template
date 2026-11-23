@@ -1,0 +1,27 @@
+package org.trillionnium.hepta.local;
+import java.util.Map;
+import org.json.JSONObject;
+/** Type-only old Controller compile boundary; never planning, publication or authority. */
+final class NativeSearchPlanning {
+    static final long INITIAL_READ_LIMIT_MS=30000;
+    static long initialReadDeadline(long started,long chainDeadline){throw unavailable();}
+    final String id=null,packageName=null,receiptSha256=null;
+    final Timing timing=null;
+    static final class Timing {
+        final long requestStarted=0,requestDeadline=0;
+        private Timing(){throw unavailable();}
+    }
+    final NativeActionSnapshotCheck.Snapshot second=null;
+    final Role role=null;
+    final Map<String,Object> publication=null;
+    private NativeSearchPlanning(){throw unavailable();}
+    static final class Role {
+        final String roleId=null;
+        private Role(){throw unavailable();}
+    }
+    Map<String,Object> evidence(){throw unavailable();}
+    static JSONObject json(Map<String,Object> value){throw unavailable();}
+    private static UnsupportedOperationException unavailable(){
+        return new UnsupportedOperationException("No typed search planning in old Controller fixtures");
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "actual_rejected_native_rows_replayed": false,
+  "all_pass": true,
+  "apk_built": false,
+  "baseline_head": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "baseline_inputs_verified": 316,
+  "gates": [
+    {
+      "all_pass": true,
+      "assertions": 31,
+      "cases": 8,
+      "native_authority_tested_here": false,
+      "path": "host-structure-01/RESULT.json",
+      "sha256": "4fc97c2ca45f5e41225ffad054aa8ae2047ade6d72dda48e5e2a0626bc6ccf54"
+    },
+    {
+      "all_pass": true,
+      "assertions": 32,
+      "cases": 15,
+      "native_authority_tested_here": false,
+      "path": "host-legacy-02/RESULT.json",
+      "sha256": "dca160a285db8c422a01b640bf05946a7df3b12a5691530b648efd27748ed6e6"
+    }
+  ],
+  "host_only": true,
+  "limits": [
+    "No benign classification or action permission.",
+    "Rectangle intersection does not establish visibility, occlusion, or harmless animation.",
+    "Candidate card is a retained unique search-card candidate; successful DOM/native bridge is not asserted.",
+    "Phone capture availability and performance await a separately authorized APK build and actual reproduction."
+  ],
+  "measured_native_span_end_unchanged": true,
+  "metadata_added_only_after_original_failure": true,
+  "native_authority_tested_here": false,
+  "original_compare_and_permissions_unchanged": true,
+  "outer_observation_may_include_bounded_post_failure_metadata_cost": true,
+  "patch_sha256": "1237c37c45ce71c54a39a47dfc7435d397c2d456b83e81512c545b510c9105f2",
+  "phone_actions": 0,
+  "production": [
+    {
+      "baseline_sha256": "4e218ab1a82889693c48bac6d601e68e6f95d5bab289e6cb0f2b3bc6046e6523",
+      "candidate_sha256": "d21e5a2c063a3670350591cc2dc12280f6f4b4ff5bb4c25136121520515c4bc9",
+      "path": "src/org/trillionnium/hepta/local/WebNativeObservationChanged.java"
+    },
+    {
+      "baseline_sha256": "61dad9573d09d6effb77975b008dd8a9190585e971d07d8a6c18548c23ce5a29",
+      "candidate_sha256": "9654d2a5b4609e4ff526bb52af214bc111831a4287651a78485694dc956d4449",
+      "path": "src/org/trillionnium/hepta/local/WebObservationTiming.java"
+    },
+    {
+      "baseline_sha256": "b181815b38be0efe9a3f98178e6dd6ca5e9d36c4e955b81a6a80ba4e73f56e03",
+      "candidate_sha256": "ef6d3da1e657eba3fb710f9656a1f2a42e192d2b3243dcbaf139d2b5dc654646",
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+    }
+  ],
+  "protected_source": {
+    "all_unchanged": true,
+    "path": "PROTECTED-SOURCE.json",
+    "sha256": "e4d28e6a8b8551918c1348a88b08ceca80121395c4278f0daff6e718d751b1b1"
+  },
+  "revision": 2,
+  "row_producer_binding": {
+    "bytes": 8778,
+    "path": "ROW-PRODUCER-BINDING.json",
+    "sha256": "9ac1b46dab637bec8fbd86a26eda71854c4f2067a430844bf4bf0b3f2afa6e4e"
+  },
+  "same_original_exception_rethrown": true,
+  "schema": "hepta.native-failure-structure-qualified-host.v1",
+  "success_path_metadata_unchanged": true,
+  "tests": [
+    {
+      "path": "tests/native-change-diagnostic/NativeRejectedRowStructureHostTest.java",
+      "sha256": "357f0dbdb8ff91f6ff40034fa5be34ceff65bf8ed2b654d133488f1d3e75f098"
+    },
+    {
+      "path": "tests/native-change-diagnostic/run_structure_host.py",
+      "sha256": "771a12428468bcf1013f450117fd38a0d16252f429e7ea1fa6b650f9d9ace877"
+    }
+  ]
+}

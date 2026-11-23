@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.native-setup-ui-step-result.v1",
+  "specification_sha256": "3aca3e1c602886c22dbc33b944971f3f5f6dc9348a0bb4ecc16462519035760e",
+  "started_utc": "2026-11-13T14:07:29.309939+00:00",
+  "setup_action": "tap",
+  "model_executed": false,
+  "business_verified": false,
+  "action_attempted": true,
+  "all_pass": true,
+  "before_focus": [
+    "mCurrentFocus=null",
+    "mFocusedApp=null",
+    "mCurrentFocus=Window{380c801 u0 com.xiaomi.shop/com.xiaomi.shop2.activity.MainActivity}",
+    "mFocusedApp=ActivityRecord{194875603 u0 com.xiaomi.shop/com.xiaomi.shop2.activity.MainActivity t1079}"
+  ],
+  "actual_target": {
+    "index": "1",
+    "text": "",
+    "resource-id": "com.xiaomi.shop.plugin.homepage:id/switcher",
+    "class": "android.widget.ViewSwitcher",
+    "package": "com.xiaomi.shop",
+    "content-desc": "",
+    "checkable": "false",
+    "checked": "false",
+    "clickable": "true",
+    "enabled": "true",
+    "focusable": "true",
+    "focused": "false",
+    "scrollable": "false",
+    "long-clickable": "false",
+    "password": "false",
+    "selected": "false",
+    "bounds": "[156,287][1000,375]",
+    "drawing-order": "3",
+    "hint": ""
+  },
+  "after_screenshot_before_tree": {
+    "bytes": 23340,
+    "sha256": "ddd77812280d5039cd83d32076467e2a40dbcf0269b2509f1d8f8ff72f0b9d57"
+  },
+  "xiaomi_package_present": true,
+  "after_screenshot": {
+    "bytes": 880316,
+    "sha256": "3c75f80f485c9e466b962bd8850aa635c18c030f06c8b8507ee6928de7eee1bb"
+  },
+  "after_focus": [
+    "mCurrentFocus=null",
+    "mFocusedApp=null",
+    "mCurrentFocus=Window{5c8a25b u0 com.xiaomi.shop/com.xiaomi.miot.store.mirn.RNMainActivity}",
+    "mFocusedApp=ActivityRecord{69175827 u0 com.xiaomi.shop/com.xiaomi.miot.store.mirn.RNMainActivity t1079}"
+  ],
+  "after_tree": {
+    "bytes": 60766,
+    "sha256": "390e9d5c8cf5c7baa89f318d6a48d0a87a33a71dbd6121e19628c71ea49a2e48",
+    "nodes": 172,
+    "packages": [
+      "com.xiaomi.shop"
+    ]
+  },
+  "hepta_session_unchanged": true,
+  "finished_utc": "2026-11-13T14:07:37.941158+00:00"
+}

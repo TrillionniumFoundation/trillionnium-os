@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.v55-public-build-evidence.v1",
+  "scope": "strict_host_checks_android_compile_and_original_signer_assembly",
+  "component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+  "phone_tested": false,
+  "signed": true,
+  "android_compiled": true,
+  "installed": false,
+  "current_phone_identity_observed": false,
+  "retained_historical_v53_signer_match": true,
+  "files": [
+    {
+      "path": "ANDROID-BUILD-RESULT.json",
+      "bytes": 10104,
+      "sha256": "27a911f07220cf431b0afb6538bea25add96b17969f5eee17b95ae25b652b0f6"
+    },
+    {
+      "path": "ANDROID-BUILD.stderr",
+      "bytes": 131,
+      "sha256": "5cbf94a585784f00ef31c1d10db44f2b4f94a0c5d9b018ac6189a3a3c0b2f7d0"
+    },
+    {
+      "path": "ASSEMBLY-RESULT.json",
+      "bytes": 3071,
+      "sha256": "c5c35a93e41c84806a39c69abd3b1efa0a4b252ff1b9634687cf02c475e70cde"
+    },
+    {
+      "path": "BACKGROUND-LAUNCH-RESULT.json",
+      "bytes": 1135,
+      "sha256": "1f8493503d531f29a2f5c3a265a58dc0ae4e77f6c8b0585464e7a827a3e9d642"
+    },
+    {
+      "path": "BACKGROUND-LAUNCH.stdout",
+      "bytes": 114,
+      "sha256": "cb1d5a86334becf28045600206a341cf93eee2e5460f0b226e53a71dd1e1e56a"
+    },
+    {
+      "path": "HOST-CHECKS.json",
+      "bytes": 100178,
+      "sha256": "a04917855e9bcc8afd24e394e567061e54e379dab7dfc6416476b4e19ca426c8"
+    },
+    {
+      "path": "HOST-DRIVER.py",
+      "bytes": 7765,
+      "sha256": "96d208d32d0d408ef4f069430da9a867be9032168cd7de39dda0bbf3f2587763"
+    },
+    {
+      "path": "HOST-INTEGRATION-RESULT.json",
+      "bytes": 3892,
+      "sha256": "1203157f20a567a1ec20af1d14c3fda65493b900700d312837d8a1a0d05f2581"
+    },
+    {
+      "path": "LAUNCH-CALLSITE-NEGATIVE.stderr",
+      "bytes": 477,
+      "sha256": "fc508dff541e09b1408dc8e8b50809c90952526141b84191ca815f707cfe5f7c"
+    },
+    {
+      "path": "MAC-BUILD-RECEIPT.json",
+      "bytes": 40489,
+      "sha256": "c0345e6bb9997baa0d73490d4f06ef175a3ac74c77c5ef94a1c68d42198d7402"
+    },
+    {
+      "path": "OBSERVER-RESULT.json",
+      "bytes": 1739,
+      "sha256": "a193cae467e4f59503566e0a2bbe953bc9bf957d891c65559d127ba6637b863c"
+    },
+    {
+      "path": "OWNED-WORKER-CANCELLATION-RESULT.json",
+      "bytes": 2192,
+      "sha256": "2492c1e8fe165016e06f02237f4b30ea89cb5dfdd2431fa602e0b4dfde315035"
+    },
+    {
+      "path": "OWNED-WORKER-CANCELLATION.stdout",
+      "bytes": 194,
+      "sha256": "77b52dba2e33d6ac819581d5e6dc9c1a682e1516d9dbb5738356129d846dd558"
+    },
+    {
+      "path": "PATCH-REPLAY.json",
+      "bytes": 800,
+      "sha256": "c31b60f6bc01d9a92a5415c0c2871fc17393beeb72e5f9320c00ddac73098697"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7407,
+      "sha256": "c6f0961cf2f28cc85c407300d77d67611553b208ca4123ad6eb6d2477786e8b3"
+    },
+    {
+      "path": "SOURCE-PRESERVATION.json",
+      "bytes": 894,
+      "sha256": "dd9de0458edb411d01ae9a551500c16c2b0b01b8446c59d523584d56fe7854e0"
+    },
+    {
+      "path": "STATIC-ACCEPTANCE.json",
+      "bytes": 17553,
+      "sha256": "b4138a7be609ffcefbe19f5e0302038620e101bc3f783e4d293fd0a97cdf29e8"
+    },
+    {
+      "path": "apk-badging.txt",
+      "bytes": 1015,
+      "sha256": "cceb45d608d6bb5b6380789e259ca4f346a5b9cc7bfa3742b6efc3d8cc6351c1"
+    },
+    {
+      "path": "apk-permissions.txt",
+      "bytes": 120,
+      "sha256": "cd77666cf50bdf1af95f031147c7a89a89aa5045d088a2f751cbd23e0610d9b4"
+    },
+    {
+      "path": "apk-signature.txt",
+      "bytes": 969,
+      "sha256": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53"
+    }
+  ]
+}

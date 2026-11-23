@@ -1,0 +1,50 @@
+{
+  "accessibility_enabled_unchanged_and_bound": true,
+  "actual_build_identity_sha256": "00148e3fd13e41f489865eb65c661fd26694d2713a6a26c319daaf51f8e46ae8",
+  "both_pure_guards_replayed": true,
+  "data_cleared": false,
+  "device_operations_by_this_analysis": 0,
+  "finished_utc": "2026-11-16T12:13:23.966280+00:00",
+  "guard_source_sha256": "8e6c40b8141c68c3cb0262808e447e9287005c1c797093182d1794334c5a9810",
+  "install_exit_code": 0,
+  "main_guards": [
+    {
+      "activities_sha256": "9ff01d729e585291d23c85b13483b3bb50402eb5e0ff49a9c41d0c617bedf69e",
+      "focus_equals_original": true,
+      "no_controller_task_on_display0": true,
+      "phase": "preinstall",
+      "pure_guard_replayed": true,
+      "windows_sha256": "82291ef0e5bac3314d407548bf7cf611f44ea170c6179682061e1b43115308d3"
+    },
+    {
+      "activities_sha256": "24eb36c66273cdf667484d27aa55aed253a29fa1d6cbd8a619d341bf5ff361fb",
+      "focus_equals_original": true,
+      "no_controller_task_on_display0": true,
+      "phase": "postinstall",
+      "pure_guard_replayed": true,
+      "windows_sha256": "82291ef0e5bac3314d407548bf7cf611f44ea170c6179682061e1b43115308d3"
+    }
+  ],
+  "main_screen_inputs": 0,
+  "model_config_changed": false,
+  "native_workers_after": [],
+  "new_apk_sha256": "bc683d4a3685883a3a7c1be623e947a7cf04978f150c26e7deeec88f442cba5d",
+  "old_apk_sha256": "ff0a1b713336575dcf6406d57cbc7b1df6f782a41a4daa8950e32c6c95537f77",
+  "phone_task_not_started_by_install": true,
+  "runtime_config": {
+    "compute": "npu",
+    "context_tokens": 8192,
+    "model_profile": "lfm2.5-8b-a1b-q4_0",
+    "schema": "hepta.local-runtime.v2",
+    "threads": 4
+  },
+  "runtime_config_sha256": "334ab319f5b3a1b28d30afaabee031ef03ea6eb5c8c2563adaadb90fd285dc53",
+  "saved_main_focus_before_after_equal": true,
+  "schema": "hepta.pending-capture-install-audit.public.v1",
+  "session_and_preferences_preserved": true,
+  "setup_is_not_a_business_task": true,
+  "snapshots_are_not_continuous_responsiveness_evidence": true,
+  "source_head": "f2f1b8710f4b33dcf2ae5f7512d9ee4472215f6e",
+  "source_result_sha256": "18587f665325103b0b5ba86361259c108461ef8743ef345649376deaf4654bd1",
+  "started_utc": "2026-11-16T12:13:19.080502+00:00"
+}
