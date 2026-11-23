@@ -3,48 +3,27 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "r35_ctrip_verified_dated_calendar_minimum",
-  "complete_source_files": 2486,
+  "candidate_status": "released_notes_launch_before_first_model",
+  "complete_source_files": 2488,
   "current_successor_delta": {
-    "baseline": "0d32fcb08e46c296f8a2a36f202918cc287b9a1d",
-    "integrated_topics": [
-      {
-        "head": "c6272f9a2c3cdbde1892483b0d2e5152e29f6800",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/LocalTaskController.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-          "tests/native-ctrip-form-observation/run_observer_host.py",
-          "tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json",
-          "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
-          "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java",
-          "tests/native-ctrip-login-form-terminal/run_host.py",
-          "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "0f5c162a2003ffdd54edcaf30a07750116926457a8f5ac2f01109704dac9f942"
-      }
-    ],
+    "baseline": "377c0fc10fdd8f4fe7b0b9dd72af9af20c2c58a0",
     "original_case_assertions_preserved": true,
     "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java"
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java"
     ],
     "test_changed_paths": [
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json",
-      "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
-      "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java",
-      "tests/native-ctrip-login-form-terminal/run_host.py",
-      "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
-      "tools/run_host_checks.py"
+      "tests/personal-notes-absence/PersonalNotesAbsenceHostTest.java",
+      "tests/personal-notes-absence/PersonalNotesLostLaunchClientHostTest.java",
+      "tests/personal-notes-absence/PersonalNotesLostLaunchHostTest.java",
+      "tests/personal-notes-absence/run_host.py"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a"
+    "previous_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622"
   },
   "files": [
     {
@@ -6398,14 +6377,14 @@
       "sha256": "878ef7a5662d54e2ac3f92889b5870c46f9d145ed868e76fdf3e4a38bb84c247"
     },
     {
-      "bytes": 16364,
+      "bytes": 16386,
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
-      "sha256": "cb2d44b73c27bc991fc8276704867081fc7887f471987b9efdf33169c1e9cb41"
+      "sha256": "0123feeb924ee24a63eba816efc684555d9682996867ac39378f01571aa13c0e"
     },
     {
-      "bytes": 89489,
+      "bytes": 102483,
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "sha256": "9589fc95295e4a44bc5222dc56390aa1361091a78f8e3d2fd5b1285785e93f17"
+      "sha256": "abcabd502dbcda52fdde21322cc1dfef16c079a923d9808d4f4fdca8136c4bac"
     },
     {
       "bytes": 22658,
@@ -6933,9 +6912,9 @@
       "sha256": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688"
     },
     {
-      "bytes": 28030,
+      "bytes": 31123,
       "path": "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "sha256": "110a08a85c810b24169fc33ff241544f979f1d6534dff44899c1eb1c93ff9965"
+      "sha256": "664dd069a8ed49416bde3e430ea47d149bb55cea2ae3c0d776237a1cd839802b"
     },
     {
       "bytes": 34857,
@@ -10123,14 +10102,24 @@
       "sha256": "0b1a6bd5490976f2420a90173fd5e862230d4d27881efe29d51070f2fdcb935f"
     },
     {
-      "bytes": 35516,
+      "bytes": 35581,
       "path": "tests/personal-notes-absence/PersonalNotesAbsenceHostTest.java",
-      "sha256": "a89f74fe186af50296cbe658f8f576b3da5b621b9b03b28aa4f862599f68e3d7"
+      "sha256": "ea28f00f00d5aba650d5f03b85d1c45720c277e7f48d4e274993c97c2854d3c8"
     },
     {
       "bytes": 6474,
       "path": "tests/personal-notes-absence/PersonalNotesDisplayCensusHostTest.java",
       "sha256": "dbda70c2b916aacb7dd188443b8b5715462be8b2a92a741e866d60bfc0432238"
+    },
+    {
+      "bytes": 9247,
+      "path": "tests/personal-notes-absence/PersonalNotesLostLaunchClientHostTest.java",
+      "sha256": "3f3d1c6a35a874ffce08c37bc138f7841daa307ba0fd6cdcf5256cf759b2fead"
+    },
+    {
+      "bytes": 6913,
+      "path": "tests/personal-notes-absence/PersonalNotesLostLaunchHostTest.java",
+      "sha256": "e01d3dd9105c2fd00dd82a298aea9fc76ee208d906592f573e2ab4ac2cd266df"
     },
     {
       "bytes": 41794,
@@ -10148,9 +10137,9 @@
       "sha256": "5125fe5ab13bae46515e02e4643993add57c4c1144204024f8c82ae76883bf9d"
     },
     {
-      "bytes": 15615,
+      "bytes": 16748,
       "path": "tests/personal-notes-absence/run_host.py",
-      "sha256": "4903995a4896367bb7fcac9531b1db430d6f98671385742bc700b88d01e50211"
+      "sha256": "8704c0dfef7da771c4cc1c1e666598674a67ee69290190ab6288341d1a8cf91f"
     },
     {
       "bytes": 27862,
@@ -12474,9 +12463,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "2905f564a7f1dbe4814bfe9841a3c0b403ec5a0f",
+    "previous_component_git_tree_sha1": "91cb07976de08f29eaa921b09f3ea697d7089dba",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a"
+    "previous_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12485,12 +12474,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "1351afef09c696b0cba14ba665b70969ad97f6a7151a751b7b7130bedae6df82",
+  "production_input_map_sha256": "8c7abe8c48e24c924c314c2d33685634d49f85a696c075dd51bda64189f88e8f",
   "schema": "hepta.local-source.v3",
-  "scope": "Show the scoped Ctrip calendar minimum for the user-requested route and exact travel date after the observed native query and login return. Preserve the explicit partial result and every R34 navigation, release and model setting safeguard.",
-  "source_parent_head": "0d32fcb08e46c296f8a2a36f202918cc287b9a1d",
-  "source_parent_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a",
-  "source_snapshot_predecessor_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a",
+  "scope": "Reconcile the historical broker-confirmed retirement of a personal Notes launch when its app launch reply never arrived and no model started. Verify the current independent absence and preserve the complete private task, blocked control and optional upgrade startup archive before retiring its exact lease.",
+  "source_parent_head": "377c0fc10fdd8f4fe7b0b9dd72af9af20c2c58a0",
+  "source_parent_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622",
+  "source_snapshot_predecessor_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

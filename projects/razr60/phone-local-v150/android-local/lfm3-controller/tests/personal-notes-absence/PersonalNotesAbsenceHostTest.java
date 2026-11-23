@@ -138,7 +138,7 @@ public final class PersonalNotesAbsenceHostTest {
             .put("started_elapsed_ms",r.started+1).put("finished_elapsed_ms",r.started+20).put("deadline_elapsed_ms",r.deadline)
             .put("before",sample(r,r.started+1,r.started+5,5)).put("after",sample(r,r.started+10,r.started+20,5))
             .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true).put("foreign_history_preserved",true).put("cleanup_known",true)
-            .put("automatic_resume",false).put("broker_release_response",false).put("historical_broker_release_observed",false).put("business_success",false).put("rewrites_original_task_result",false);}
+            .put("automatic_resume",false).put("broker_release_response",false).put("historical_broker_release_observed",r.recordedOwnedIdentity().optBoolean("broker_launch_dispatched",false)).put("business_success",false).put("rewrites_original_task_result",false);}
     static void badProof(String name,Mutation change)throws Exception{test(name,()->{Fixture f=new Fixture();PublicPersonalNotesAbsenceRecovery.Request r=f.request();JSONObject p=proof(r);change.run(p);
         refuse(()->PublicPersonalNotesAbsenceRecovery.validate(p,r,r.started+21,r.requestBoot));});}
     static void badPrelaunchProof(String name,Mutation change)throws Exception{test(name,()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().prelaunch().request();JSONObject p=proof(r);change.run(p);
