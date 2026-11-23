@@ -103,6 +103,8 @@ public final class BackgroundDisplayBroker {
     private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
     private volatile LocalSocket connection;
+    // Only the authenticated, already admitted work-profile close RPC can own this peer.
+    private volatile LocalSocket authenticatedProfileClosePeer;
     private volatile LocalServerSocket server;
     private volatile Context shell;
     private volatile DisplayManager displays;
@@ -263,7 +265,12 @@ public final class BackgroundDisplayBroker {
         Thread locks = new Thread(() -> {
             while (serve && !closing.get()) {
                 try { requireUnlocked(); Thread.sleep(100); }
-                catch (Throwable error) { shutdown(code(error)); return; }
+                catch (Throwable error) {
+                    // requireUnlocked may have entered just before the ordinary close retired
+                    // the wake lock. Its late result cannot cut the close reader off mid-frame.
+                    if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));
+                    return;
+                }
             }
         }, "HeptaBackgroundKeyguard");
         locks.setDaemon(true); locks.start();
@@ -316,6 +323,8 @@ public final class BackgroundDisplayBroker {
                         request.checkDeadline(SystemClock.elapsedRealtime(), expires);
                         requestDeadline = Math.min(request.deadline, expires);
                         connectionDeadline = requestDeadline;
+                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))
+                            authenticatedProfileClosePeer=accepted;
                         response = perform(request);
                         receipts.remember(request, response);
                     }
@@ -344,6 +353,7 @@ public final class BackgroundDisplayBroker {
                 if (requestDeadline != 0) shutdown("CLIENT_TRANSPORT_LOST");
             } finally {
                 try { accepted.close(); } catch (IOException ignored) {}
+                authenticatedProfileClosePeer=null;
                 connection = null; requestDeadline = 0; connectionDeadline = 0;activeRequestPeerPid=-1;
             }
         }
@@ -1416,7 +1426,7 @@ public final class BackgroundDisplayBroker {
                 // This independent watchdog is the authoritative absolute screen-lease deadline.
                 if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);
                 if(config.publicOwnGroupScope!=null)publicSurfaceRetirement.observeDeadline(now);
-                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS) {
+                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
                     if(config.profileTarget!=null&&profileCustody.known()){
                         state=releasedState();haltAfterBootRead(0);
@@ -1450,6 +1460,18 @@ public final class BackgroundDisplayBroker {
             }
         }, "HeptaBackgroundDeadline");
         watchdog.setDaemon(true); watchdog.start();
+    }
+
+    private boolean profileCloseReplyPending(long now){
+        LocalSocket peer=authenticatedProfileClosePeer;
+        return peer!=null&&peer==connection&&closing.get()&&now<requestDeadline;
+    }
+    private boolean releasedProfileReplyMayFlush(long now){
+        // The cleanup deadline and unknown-custody watchdog are unchanged. Only a
+        // verified release may finish its reply on the original socket, within both
+        // the original request deadline and a short independent write bound.
+        return profileCloseReplyPending(now)&&cleanupDone.getCount()==0&&"RELEASED".equals(state)
+                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;
     }
 
     private void shutdown(String reason) {

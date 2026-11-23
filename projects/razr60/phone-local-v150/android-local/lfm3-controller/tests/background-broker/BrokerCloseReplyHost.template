@@ -1,0 +1,64 @@
+package org.trillionnium.hepta.background;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+final class BrokerCloseReplyHost {
+    private static final long CLEANUP_MS=1500;
+    private final CountDownLatch cleanupDone=new CountDownLatch(1);
+    private final AtomicBoolean closing=new AtomicBoolean();
+    private final Custody profileCustody=new Custody();
+    private static final class Custody { boolean released;boolean known(){return released;} }
+    private static final class LocalSocket {}
+    private LocalSocket connection,authenticatedProfileClosePeer;
+    private long requestDeadline,cleanupAt;
+    private String state="CLOSING";
+    private static void closePeer(OutputStream peer)throws IOException{peer.close();}
+    private static int checks;
+    private static void check(boolean value){if(!value)throw new AssertionError("check "+checks);checks++;}
+    METHODS
+    public static void main(String[] args)throws Exception{
+        long screenOff=Long.parseLong(args[0]),lastAbsence=Long.parseLong(args[1]);
+        BrokerCloseReplyHost s=new BrokerCloseReplyHost();
+        s.connection=new LocalSocket();s.authenticatedProfileClosePeer=s.connection;
+        s.cleanupAt=screenOff;s.requestDeadline=screenOff+3500;
+        check(!s.profileCloseReplyPending(screenOff));
+        s.closing.set(true);
+        check(s.profileCloseReplyPending(screenOff));
+        check(!s.releasedProfileReplyMayFlush(lastAbsence));
+        s.state="RELEASED";s.profileCustody.released=true;
+        check(!s.releasedProfileReplyMayFlush(lastAbsence));
+        s.cleanupDone.countDown();
+        check(s.releasedProfileReplyMayFlush(screenOff+1500));
+        check(s.releasedProfileReplyMayFlush(screenOff+2249));
+        check(!s.releasedProfileReplyMayFlush(screenOff+2250));
+        s.state="CLEANUP_UNKNOWN";check(!s.releasedProfileReplyMayFlush(screenOff+1500));s.state="RELEASED";
+        s.profileCustody.released=false;check(!s.releasedProfileReplyMayFlush(screenOff+1500));s.profileCustody.released=true;
+        s.requestDeadline=screenOff+1600;check(!s.releasedProfileReplyMayFlush(screenOff+1600));s.requestDeadline=screenOff+3500;
+        check(!s.profileCloseReplyPending(s.requestDeadline));check(!s.releasedProfileReplyMayFlush(s.cleanupAt-1));
+        LocalSocket original=s.connection;s.connection=new LocalSocket();check(!s.profileCloseReplyPending(screenOff));s.connection=original;
+        s.authenticatedProfileClosePeer=null;check(!s.profileCloseReplyPending(screenOff));s.authenticatedProfileClosePeer=original;
+
+        // Only the transport and clock are fixtures. Exercise real framed output while a
+        // separate monitor has returned after retirement. The old unconditional close
+        // produces EOF on this same pipe before any response can be consumed.
+        for(boolean preserve:new boolean[]{false,true}){
+            try(PipedInputStream client=new PipedInputStream();PipedOutputStream broker=new PipedOutputStream(client)){
+                CountDownLatch observed=new CountDownLatch(1);
+                Thread monitor=new Thread(()->{
+                    try{if(!preserve||!s.profileCloseReplyPending(screenOff))closePeer(broker);}
+                    catch(IOException e){throw new AssertionError(e);}finally{observed.countDown();}
+                });monitor.start();observed.await();monitor.join();
+                if(!preserve){check(client.read()==-1);continue;}
+                byte[] payload="synthetic root RPC reply for original request".getBytes(StandardCharsets.UTF_8);
+                BrokerProtocol.writeFrame(broker,payload);
+                DataInputStream read=new DataInputStream(client);byte[] frame=new byte[read.readInt()];read.readFully(frame);
+                check(Arrays.equals(payload,frame));
+            }
+        }
+        System.out.println("{\"checks\":"+checks+",\"phone_operations\":0,\"old_reader_eof_reproduced\":true,\"original_pipe_framing_verified\":true}");
+    }
+}
