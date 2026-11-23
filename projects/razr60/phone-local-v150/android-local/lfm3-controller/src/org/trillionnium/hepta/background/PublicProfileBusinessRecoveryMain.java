@@ -100,7 +100,7 @@ public final class PublicProfileBusinessRecoveryMain {
                 .put("target_sha256",installation.target.sha256);
     }
     private static JSONObject processes(AndroidProc proc,PublicProfileBusinessAbsenceRecovery.Request r)throws Exception{
-        return ProfileRecoveryProcesses.capture(proc,android.os.Process.myPid(),r.ownerUid,r.generation,r.started,r.deadline).put("model_worker_absent",true);
+        return ProfileRecoveryProcesses.captureBusiness(proc,android.os.Process.myPid(),r.ownerUid,r.generation,r.started,r.deadline).put("model_worker_absent",true);
     }
     private static JSONObject liveEvidence(ProfileTaskPolicy.Snapshot snapshot,PublicProfileBusinessAbsenceRecovery.Request request)throws Exception{
         ProfileTarget target=request.target;
