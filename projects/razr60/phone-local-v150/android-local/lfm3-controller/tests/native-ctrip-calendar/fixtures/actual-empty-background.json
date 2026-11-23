@@ -1,0 +1,183 @@
+{
+  "observation_id": "4782b816030d46ed800ac98c745c7495",
+  "package": "ctrip.android.view",
+  "screen_width": 720,
+  "screen_height": 1280,
+  "rotation": 0,
+  "window_id": 48,
+  "screen_sha256": "d99c2c890d7a773b1bef83ea17180fee1bd58d9ffa2790fc7988ec0538c5b234",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 48,
+    "root_bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 6,
+    "bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "title": "携程旅行",
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "ctrip.android.view"
+    ],
+    "bootstrap_package": "ctrip.android.view",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "recognition": "complete_literal_native_single_adult_flight.v1",
+      "original_ui_initial_package": "ctrip.android.view",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "com.xiaomi.shop",
+        "ctrip.android.view",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "ctrip.android.view",
+      "effective_allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "generation": "19028b45-d9f2-455e-8170-31095c1fa453",
+    "display_id": 6
+  },
+  "app_tree_sha256": "ac8b0b054a2df6e1588e059a667c4c56a34325ae1bb1bb9fdbd0fdb703f93a74",
+  "observation_state_sha256": "ee4c51571f3acc698821f618870df656e6bef6be80a02111dd7933e8f4150329",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 512,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 10,
+    "retained_nodes": 2,
+    "retained_text_utf16": 30,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 7,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        0,
+        720,
+        1231
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.View",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id\/view_calendar_title",
+      "node_app_tree_sha256": "fdb34d8a4417f40f214a26eb165611b7d934fb725bafe0f815530a3fcadd4c17",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        0,
+        1231,
+        720,
+        1280
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "所选日期为出发地日期，显示单成人价，变价频繁以实际支付价为准",
+      "view_id": "ctrip.android.view:id\/price_change_disclaimer",
+      "node_app_tree_sha256": "95711ed776eb8763b2028682218c1107c9cfbd20344f961408a2fd227420129b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

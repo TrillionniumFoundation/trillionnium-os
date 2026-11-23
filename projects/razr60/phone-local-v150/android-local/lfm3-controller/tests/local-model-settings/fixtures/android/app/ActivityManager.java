@@ -1,0 +1,1 @@
+package android.app;public class ActivityManager {public static long available=0,total=16L<<30;public static boolean low;public static final class MemoryInfo {public long availMem,totalMem;public boolean lowMemory;}public void getMemoryInfo(MemoryInfo info){info.availMem=available;info.totalMem=total;info.lowMemory=low;}}

@@ -1,0 +1,716 @@
+    static Fixture setup(String purpose,String name)throws Exception{NativeActionBridgeHost h=new NativeActionBridgeHost();return h.new Fixture(purpose,name);}
+    static void run(java.nio.file.Path source)throws Exception{
+        sourceRoot=source;
+        for(String purpose:Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH)){
+            final String p=purpose;
+            one("actual_bridge_accepts_complete_disjoint_change_"+p,()->{
+                Fixture f=setup(p,"positive:"+p);f.neutralText();yes(f.dispatch(),"same purpose through actual validate/final/click blocks");
+                yes(f.effects()==1&&f.work.state.effectEntered(),"one explicit host effect after original worker gate");
+                JSONObject proof=new JSONObject(f.work.nativeActionProof);
+                yes(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("reported_windows_before_after_equal"),"actual final bridge proof");
+                yes(!proof.getBoolean("all_nodes_simultaneous_or_pixels_stable_claimed"),"no atomic whole-UI guarantee");
+                yes(f.service.events.indexOf("scope")<f.service.events.lastIndexOf("full_census"),"scope endpoint precedes final census");
+                IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"claim cannot effect twice");yes(f.effects()==1,"no second dispatch");
+            });
+        }
+        one("actual_census_keeps_unretained_and_invisible_disabled_slots",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"all-slots");
+            yes(f.work.graph.nativeActionNodes.size()>f.service.currentGraph.rows.size(),"full census includes non-useful containers");
+            Map<String,Object> n=f.fresh.nodes.get("0/0/7/0");n.put("visible",false);n.put("enabled",false);
+            Graph fresh=f.graph(f.fresh,null);boolean found=false;
+            for(NativeActionSnapshotCheck.Node x:fresh.nativeActionNodes)if("0/0/7/0".equals(x.path)){found=true;yes(!x.visible()&&x.v.get("label")==null,"unretained slot kept without fabricated label");}
+            yes(found&&fresh.collectionStats.visited==fresh.nativeActionNodes.size(),"complete visited population");fresh.close();
+            yes(f.dispatch(),"neutral disabled child cannot hide protected state");
+        });
+        one("actual_bridge_allows_descendant_motion_inside_fixed_disjoint_anchor",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"neutral-motion");f.fresh.nodes.get("0/0/7/0").put("bounds",Arrays.asList(60,2470,690,2570));
+            yes(f.dispatch(),"motion only inside unchanged disjoint anchor");
+            yes(!new JSONObject(f.work.nativeActionProof).getBoolean("changed_paths_truncated"),"all changed paths recorded");
+        });
+        signatureCases();rejectionCases();effectCases();equalOpenCases();
+    }
+    static void signatureCases()throws Exception{
+        one("actual_NodeRef_census_Intent_live_chain_share_full_signature_hash",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"full-ref");NodeRef ref=f.work.graph.refs.get(f.action.nodeId);String full=ref.signature;
+            yes(!full.matches("[0-9a-f]{64}")&&full.startsWith(ref.appTreeSignature+"\nscroll_actions="),"actual composite NodeRef, not fake64hex");
+            yes(full.contains("\nime_enter=")&&full.contains("|focused=false|full_input=null"),"all suffix fields present");
+            NativeActionSnapshotCheck.Snapshot snapshot=nativeActionSnapshot(f.work.graph,f.work.nativeGuard);
+            String mapped=(String)snapshot.node(f.raw.target).v.get("ref_signature_sha256");
+            yes(hash(full).equals(mapped)&&!mapped.equals(ref.appTreeSignature),"producer hashes full raw string once");
+            yes(mapped.equals(f.work.nativeGuard.intent(full).refSha256),"collector and Intent representation equal");
+            f.neutralText();yes(f.dispatch(),"same full representation succeeds through actual live chain");
+        });
+        one("app_tree_or_shortened_signature_cannot_replace_full_reference",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"wrong-ref-source");NodeRef ref=f.work.graph.refs.get(f.action.nodeId);Graph fresh=f.graph(f.fresh,null);
+            try{
+                NativeActionSnapshotCheck.Snapshot a=nativeActionSnapshot(f.work.graph,f.work.nativeGuard),b=nativeActionSnapshot(fresh,f.work.nativeGuard);
+                IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(f.work.nativeGuard.intent(ref.appTreeSignature),a,b,SystemClock.now),"appTree cannot replace full signature");
+                String shorter=ref.signature.substring(0,ref.signature.indexOf("\nime_enter="));
+                IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(f.work.nativeGuard.intent(shorter),a,b,SystemClock.now),"missing suffix cannot bind");
+            }finally{fresh.close();}f.noEffect("wrong representation has no effect");
+        });
+        signatureMutationCases();
+    }
+    static void signatureMutationCases()throws Exception{
+        for(String field:Arrays.asList("focus","scroll","ime")){
+            final String part=field;one("actual_full_ref_change_rejected_with_same_app_tree_"+part,()->{
+                Fixture f=setup(NativeActionSnapshotCheck.YEAR,"full-ref-change:"+part);NodeRef before=f.work.graph.refs.get(f.action.nodeId);
+                if("focus".equals(part))f.fresh.nodes.get(f.raw.target).put("focused",true);
+                else if("scroll".equals(part))f.data.get(f.raw.target).scrollOverride=ObservedScrollActions.observed(Collections.singleton("left"));
+                else f.data.get(f.raw.target).imeOverride=ObservedImeEnter.present("搜索");
+                Graph fresh=f.graph(f.fresh,null);NodeRef after=fresh.refs.get(f.ids.get(f.raw.target));
+                try{yes(before.appTreeSignature.equals(after.appTreeSignature)&&!before.signature.equals(after.signature),"same appTree, different actual composite signature");
+                    IntegrationChecks.rejects(()->f.service.compareNativeAction(f.task,f.service.current,f.action,fresh,f.work),"actual full-string equality rejects");
+                }finally{fresh.close();}f.noEffect("changed reference never effects");
+            });
+        }
+        one("old_ambiguous_ref_key_cannot_substitute_new_full_ref_hash_key",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"schema-key");NativeActionSnapshotCheck.Node node=nativeActionSnapshot(f.work.graph,f.work.nativeGuard).node(f.raw.target);
+            Map<String,Object> old=new TreeMap<String,Object>(node.v);Object value=old.remove("ref_signature_sha256");old.put("ref_signature",value);
+            IntegrationChecks.rejects(()->new NativeActionSnapshotCheck.Node(old),"exact schema distinguishes new field");
+        });
+    }
+    static void rejectionCases()throws Exception{
+        one("equal_metadata_replaced_live_NodeRef_is_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"replaced-node");f.neutralText();
+            f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            yes(!f.dispatch(),"same path/content cannot replace actual original live reference");f.noEffect("replaced node no effect");
+        });
+        one("actual_ancestor_geometry_change_is_not_neutral",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"ancestor");f.neutralText();
+            f.fresh.nodes.get("0/0/2").put("bounds",Arrays.asList(1,490,1223,1433));
+            yes(!f.dispatch(),"protected ancestor differs despite same selected target");f.noEffect("ancestor no effect");
+        });
+        one("actual_trip_selection_change_refuses_query",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"selected");f.neutralText();f.fresh.nodes.get("0/0/2/0/0").put("selected",false);
+            yes(!f.dispatch(),"same query button is insufficient without unchanged trip selection");f.noEffect("selection no effect");
+        });
+        one("same_target_text_and_stamp_do_not_allow_foreign_window",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"window");Graph fresh=f.graph(f.fresh,null);fresh.windowId++;
+            try{IntegrationChecks.rejects(()->f.service.compareNativeAction(f.task,f.service.current,f.action,fresh,f.work),"exact same window required");}finally{fresh.close();}
+            f.noEffect("window no effect");
+        });
+        one("equal_looking_replaced_Selection_is_refused_by_actual_bridge",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"selection-object");f.neutralText();
+            f.service.background.selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(f.selection.taskTarget);
+            yes(!f.dispatch(),"same target payload does not replace bound Selection object");f.noEffect("selection object no effect");
+        });
+        one("background_generation_or_owner_replacement_does_not_pass_bridge",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"owner");f.neutralText();f.service.background.ownerSha256=hash("foreign owner");
+            yes(!f.dispatch(),"same node cannot replace OWNER");f.noEffect("foreign owner no effect");
+            Fixture z=setup(NativeActionSnapshotCheck.YEAR,"generation");z.service.background.generation="12345678-1234-4234-8234-123456789abd";
+            IntegrationChecks.rejects(()->z.service.requireNativeActionGuard(z.task,z.service.current,z.action,z.work),"original generation required");z.noEffect("foreign generation no effect");
+        });
+        one("changed_reported_overlay_or_missing_capability_is_not_hidden",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"overlay");f.neutralText();AccessibilityWindowInfo overlay=new AccessibilityWindowInfo();overlay.id=99;overlay.layer=2;
+            f.service.windowRows.add(overlay);yes(!f.dispatch(),"overlapping new reported window vetoes census");f.noEffect("overlay no effect");
+            Fixture z=setup(NativeActionSnapshotCheck.YEAR,"capability");z.neutralText();z.service.serviceInfo.flags=0;
+            yes(!z.dispatch(),"missing real window retrieval capability yields no census");z.noEffect("capability no effect");
+        });
+        censusRejectionCases();
+    }
+    static void censusRejectionCases()throws Exception{
+        one("incomplete_native_census_and_unknown_IME_are_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"incomplete");Graph fresh=f.graph(f.fresh,null);fresh.collectionStats.childSlotsOmitted=1;
+            try{IntegrationChecks.rejects(()->f.service.compareNativeAction(f.task,f.service.current,f.action,fresh,f.work),"complete child slots required");}finally{fresh.close();}
+            Graph ime=f.graph(f.fresh,null);ime.state=new ObservationState(ime.digest,ImeVisibility.UNKNOWN);
+            try{IntegrationChecks.rejects(()->f.service.compareNativeAction(f.task,f.service.current,f.action,ime,f.work),"known hidden IME required");}finally{ime.close();}
+            f.noEffect("no completeness/IME inference");
+        });
+        one("original_saved_census_cannot_be_filled_from_later_read",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"missing-origin");f.neutralText();f.work.graph.nativeActionNodes=null;
+            yes(!f.dispatch(),"fresh full census cannot retroactively manufacture original capture");f.noEffect("missing original no effect");
+        });
+        one("actual_action_copy_preserves_immutable_full_census_not_partial_flag",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"copy");
+            yes(f.work.graph.rows.isEmpty()&&f.work.graph.refs.size()==1&&!f.work.graph.nativeObservationComplete,"original action copy remains partial");
+            yes(f.work.graph.nativeActionNodes==f.service.currentGraph.nativeActionNodes&&f.work.graph.nativeActionWindows==f.service.currentGraph.nativeActionWindows,"complete immutable holders transferred exactly");
+            IntegrationChecks.immutable(()->f.work.graph.nativeActionNodes.clear(),"full census immutable");
+            yes(f.work.graph.nativeActionNodes.size()==f.work.graph.collectionStats.visited,"all actual host-visited nodes retained separately");
+        });
+        one("no_guard_keeps_original_whole_graph_stale_refusal",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"legacy-null");f.neutralText();f.work.nativeGuard.close();
+            NativeActionBridgeHost h=f.service;
+            f.work=h.new ActionWork(f.task,h.current,f.run,h.scope,f.gate,h.background,()->h.cancelled,h.currentGraph.copyForAction(f.action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,null);
+            yes(!f.dispatch()&&h.staleDiagnostics==1,"legacy null guard still rejects changed whole graph");f.noEffect("legacy no effect");
+        });
+    }
+    static void effectCases()throws Exception{
+        one("query_final_census_rechecks_whole_form_after_scope_IO",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"scope-form-change");f.neutralText();
+            f.service.scopeMutation=()->{f.fresh.nodes.get("0/0/2/9").put("text","2成人");f.fresh.nodes.get("0/0/2/9").put("label","2成人");};
+            IntegrationChecks.rejects(()->f.dispatch(),"non-target passenger change after initial validate must fail final complete form");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"initial and final complete census both read");f.noEffect("changed form cannot query");
+        });
+        one("actual_parent_child_link_replacement_before_effect_is_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"parent-link");f.neutralText();NodeData target=f.data.get(f.raw.target);
+            target.beforeRefresh=()->{target.beforeRefresh=()->{target.parent.children.set(5,new NodeData(target.values));};};
+            IntegrationChecks.rejects(()->f.dispatch(),"actual live parent child identity must remain original");f.noEffect("wrong live link cannot effect");
+        });
+        one("deadline_or_cancel_during_scope_cannot_renew_permit",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"scope-deadline");f.neutralText();f.service.scopeMutation=()->{SystemClock.now=f.work.state.deadlineElapsed;};
+            IntegrationChecks.rejects(()->f.dispatch(),"original worker deadline remains absolute");f.noEffect("deadline no effect");
+            Fixture z=setup(NativeActionSnapshotCheck.YEAR,"scope-cancel");z.neutralText();z.service.scopeMutation=()->{z.service.cancelled=true;};
+            IntegrationChecks.rejects(()->z.dispatch(),"cancel wins existing worker gate");z.noEffect("cancel no effect");
+        });
+        one("claimed_guard_cannot_bypass_original_worker_cancellation",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"claimed-cancel");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);f.service.cancelled=true;
+            IntegrationChecks.rejects(()->f.service.enterActionEffect(f.work),"actual ActionExecutionState still checks cancellation after claim");f.noEffect("claimed guard is not effect authority alone");
+        });
+    }
+
+
+    static final class IconCensus {
+        final NativeActionSnapshotCheck.Intent intent;
+        final NativeActionSnapshotCheck.Snapshot before,fresh;final long now;
+        IconCensus(NativeActionSnapshotCheck.Intent i,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot z,long n){
+            intent=i;before=a;fresh=z;now=n;
+        }
+    }
+    static void rotateIconHint(Fixture f,String term){
+        Map<String,Object> entry=f.fresh.nodes.get("0/0/0"),hint=f.fresh.nodes.get("0/0/0/0"),text=f.fresh.nodes.get("0/0/0/0/0");
+        entry.put("label",ObservedTargetLabels.project("搜索"+term+" · "+term));
+        hint.put("description","搜索"+term);hint.put("label","搜索"+term);text.put("text",term);text.put("label",term);
+    }
+    static IconCensus iconCensus(String name,String term)throws Exception{
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-census:"+name);
+        if(term!=null)rotateIconHint(f,term);
+        Graph fresh=f.graph(f.fresh,f.work.budget());
+        try{return retainedIconPredicate(f,fresh); }
+        finally{fresh.close();}
+    }
+    /** The retired icon parser/predicate remains tested as detached data only.
+     * No private icon Attempt is fabricated; current Session admits SEARCH. */
+    private static IconCensus retainedIconPredicate(Fixture f,Graph fresh){
+        NativeActionSnapshotCheck.Snapshot a=nativeActionSnapshot(f.work.graph,f.work.nativeGuard),z=nativeActionSnapshot(fresh,f.work.nativeGuard);
+        NativeActionSnapshotCheck.Node icon=a.node("0/0/1");
+        NativeActionSnapshotCheck.Intent i=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH_ICON,icon.pkg,icon.path,icon.label,
+                (String)icon.v.get("ref_signature_sha256"),f.run,f.ids.get(icon.path),hash("HOST_PURE_ICON_INTENT_NOT_A_PRIVATE_ATTEMPT"),null,
+                f.work.nativeGuard.identity,f.work.nativeGuard.issued,f.work.nativeGuard.deadline);
+        return new IconCensus(i,a,z,SystemClock.now);
+    }
+    static void stableIconLiveCases()throws Exception{
+        one("search_entry_actual_service_keeps_original_node_and_one_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-live");
+            yes("com.xiaomi.shop.plugin.homepage:id/switcher".equals(f.frame.byId.get(f.action.nodeId).viewId),"production default selects actual query entry");
+            NodeRef original=f.work.graph.refs.get(f.action.nodeId);rotateIconHint(f,"REDMI K系列电池换新");
+            yes(f.dispatch()&&f.effects()==1,"complete compare, live chain and one explicit host effect");
+            yes(f.work.graph.refs.get(f.action.nodeId)==original&&f.work.nativeActionRevalidated,"original retained ref, not a replacement target");
+            yes(f.data.get("0/0/1").effects==0,"adjacent icon never receives a fallback effect");
+        });
+        one("search_entry_final_scope_io_revalidates_rotated_hint",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-final");rotateIconHint(f,"充电宝");
+            f.service.scopeMutation=()->rotateIconHint(f,"电视");
+            yes(f.dispatch()&&f.effects()==1,"second full census keeps only classified hint rotation");
+        });
+        one("search_entry_actual_node_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-replaced");rotateIconHint(f,"电视");
+            f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            yes(!f.dispatch(),"same fields do not replace original actual node");f.noEffect("replaced icon not entered");
+        });
+        one("search_entry_installed_uid_or_apk_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-install");rotateIconHint(f,"电视");f.installedCurrent=false;
+            IntegrationChecks.rejects(()->f.dispatch(),"same original installed verifier remains required");f.noEffect("no effect after PM replacement");
+        });
+        stableIconWidthCases();
+        currentSearchEntryCases();
+    }
+
+    /** Full production precheck/validate/selected refresh/final/effect bodies;
+     * all Android nodes, clocks and actual action endpoints are host doubles. */
+    static void installLiveHint(Fixture f){
+        for(String p:Arrays.asList("0/0/0","0/0/0/0","0/0/0/0/0")){
+            NodeData d=f.data.get(p);d.values.clear();d.values.putAll(f.fresh.nodes.get(p));
+        }
+    }
+    static void currentSearchEntryCases()throws Exception{
+        one("search_entry_purpose_cannot_alias_adjacent_icon",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-wrong-icon");
+            NativeActionSnapshotCheck.Snapshot before=nativeActionSnapshot(f.work.graph,f.work.nativeGuard);
+            NativeActionSnapshotCheck.Node icon=before.node("0/0/1");
+            NativeActionSnapshotCheck.Intent wrong=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH,icon.pkg,icon.path,icon.label,
+                    (String)icon.v.get("ref_signature_sha256"),f.run,f.ids.get(icon.path),hash("HOST_DETACHED_WRONG_ENTRY_INTENT"),null,
+                    f.work.nativeGuard.identity,f.work.nativeGuard.issued,f.work.nativeGuard.deadline);
+            yes(!NativeActionSnapshotCheck.searchEntryOwnFactsForFullRecheck(wrong,before,icon),"a SEARCH label does not make the adjacent icon a query entry");
+            IntegrationChecks.rejects(()->NativeActionSnapshotCheck.compare(wrong,before,before,SystemClock.now),"complete purpose structure still rejects the icon");
+            f.noEffect("detached malformed purpose has no private effect permit");
+        });
+        one("search_entry_original_precheck_defers_only_to_full_currentness",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-precheck");
+            NodeRef original=f.work.graph.refs.get(f.action.nodeId);String signature=original.signature,label=f.action.nodeLabel;
+            rotateIconHint(f,"REDMI K100");iconTermBounds(f,156,301,410,360);installLiveHint(f);
+            f.service.exerciseBackgroundPrecheck=true;
+            f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,original.node,true,f.work);
+            yes(f.work.nativeActionProof==null&&Integer.valueOf(0).equals(f.work.nativeGuard.evidence().get("state")),"precheck creates no compatible census or claim");
+            f.noEffect("precheck cannot effect");
+            yes(!signature.equals(nodeSignature(original.node,observedChildText(original.node,true,f.work.budget()))),"real derived signature changed before read-only precheck");
+            yes(f.dispatch()&&f.effects()==1,"actual precheck, two full comparisons and final fresh signature reach one host endpoint");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"both whole censuses are mandatory");
+            yes(f.work.graph.refs.get(f.action.nodeId)==original&&signature.equals(original.signature)&&label.equals(f.action.nodeLabel),"no original reference, model label or signature replaced");
+            yes(f.data.get("0/0/1").effects==0&&!f.session.domain().resultReady,"icon and business completion untouched");
+        });
+        one("search_entry_equal_digest_still_requires_final_full_census_and_claim",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-equal");f.service.exerciseBackgroundPrecheck=true;
+            yes(f.dispatch()&&f.effects()==1,"equal initial graph may perform one guarded navigation");
+            yes(!f.work.nativeActionRevalidated&&Collections.frequency(f.service.events,"full_census")==2,"final compare is forced even when validate had no digest mismatch");
+            yes(f.work.nativeActionProof!=null&&Integer.valueOf(1).equals(f.work.nativeGuard.evidence().get("state")),"full proof precedes single claim");
+            IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"no second claim on equal graph");yes(f.effects()==1,"one effect only");
+        });
+        one("search_entry_last_hint_rotation_after_final_census_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-last-hint");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.afterFinalCensus=()->{rotateIconHint(f,"充电宝");iconTermBounds(f,156,301,250,360);installLiveHint(f);};
+            IntegrationChecks.rejects(()->f.dispatch(),"latest full signature changes again before effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"failure is after the final complete census");f.noEffect("late hint is not silently current");
+        });
+        one("search_entry_final_policy_uses_latest_verified_child_text",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-final-policy");rotateIconHint(f,"电视");
+            f.service.scopeMutation=()->rotateIconHint(f,"删除所有数据");
+            IntegrationChecks.rejects(()->f.dispatch(),"latest prohibited child text must still pass original PersistentActionPolicy");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"policy recheck follows final complete comparison");f.noEffect("read-only projection is not a persistent-deletion exception");
+        });
+        one("search_entry_precheck_never_accepts_replaced_same_path_node",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-replaced");NodeRef ref=f.work.graph.refs.get(f.action.nodeId);
+            rotateIconHint(f,"电视");installLiveHint(f);AccessibilityNodeInfo replacement=new AccessibilityNodeInfo(new NodeData(f.data.get(f.raw.target).values));
+            try{IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,replacement,true,f.work),"same path metadata cannot replace original object");}
+            finally{replacement.recycle();}yes(ref==f.work.graph.refs.get(f.action.nodeId),"original ref retained");f.noEffect("replacement refused before full compare");
+        });
+        one("search_entry_wrong_own_resource_or_capability_never_defers",()->{
+            for(String field:Arrays.asList("view_id","class","bounds","enabled","clickable","action_click","focused","selected","editable")){
+                Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-own-"+field);rotateIconHint(f,"电视");
+                Map<String,Object> row=f.fresh.nodes.get(f.raw.target);
+                if("view_id".equals(field))row.put(field,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
+                else if("class".equals(field))row.put(field,"android.widget.ImageView");
+                else if("bounds".equals(field))row.put(field,Arrays.asList(156,287,999,375));
+                else row.put(field,!(Boolean)row.get(field));
+                installLiveHint(f);NodeRef ref=f.work.graph.refs.get(f.action.nodeId);
+                IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,ref.node,true,f.work),"own target "+field+" remains exact");f.noEffect("no own-fact deferral");
+            }
+        });
+        one("search_entry_qualification_scope_has_no_signature_exception",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-qualified");rotateIconHint(f,"电视");installLiveHint(f);f.service.scope.config=new Object();
+            IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work),"explicit qualification scope keeps original full signature");f.noEffect("no wider scope permission");
+        });
+        one("search_entry_deferral_does_not_classify_new_interactive_hint",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-new-interactive");rotateIconHint(f,"电视");
+            f.fresh.nodes.get("0/0/0/0/0").put("clickable",true);f.fresh.nodes.get("0/0/0/0/0").put("action_click",true);installLiveHint(f);
+            f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work);
+            yes(!f.dispatch(),"full fresh census rejects new actionable descendant");f.noEffect("precheck was not a successful full comparison");
+        });
+        one("search_entry_final_complete_census_cannot_be_missing",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-no-final");rotateIconHint(f,"电视");
+            f.service.scopeMutation=()->{f.service.serviceInfo.flags=0;};
+            IntegrationChecks.rejects(()->f.dispatch(),"final full census is mandatory");f.noEffect("no missing-census exception");
+        });
+        one("search_entry_original_8s_and_cancellation_apply_before_deferral",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-deadline");rotateIconHint(f,"电视");installLiveHint(f);SystemClock.now=f.work.state.deadlineElapsed;
+            IntegrationChecks.rejects(()->f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,f.work.graph.refs.get(f.action.nodeId).node,true,f.work),"deadline exclusive before precheck");f.noEffect("expired guard cannot defer");
+            Fixture z=setup(NativeActionSnapshotCheck.SEARCH,"entry-pre-cancel");rotateIconHint(z,"电视");installLiveHint(z);z.service.cancelled=true;
+            IntegrationChecks.rejects(()->z.service.backgroundBeforeDispatch(z.task,z.service.current,z.action,z.work.graph.refs.get(z.action.nodeId).node,true,z.work),"cancel before deferral");z.noEffect("cancelled guard cannot defer");
+        });
+    }
+
+    /** Synthetic Android endpoints only. Every census/ref below is rebuilt by
+     * the original extracted Service methods, not by editing a signature hash. */
+    interface IconWidthMutation {void change(Fixture fixture);}
+    static void iconTermBounds(Fixture f,int left,int top,int right,int bottom){
+        f.fresh.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(left,top,right,bottom));
+    }
+    static IconCensus iconWidthCensus(String name,String term,IconWidthMutation mutation)throws Exception{
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"icon-width:"+name);
+        if(term!=null)rotateIconHint(f,term);mutation.change(f);
+        Graph fresh=f.graph(f.fresh,f.work.budget());
+        try{return retainedIconPredicate(f,fresh); }
+        finally{fresh.close();}
+    }
+    static Map<String,Object> compareIconWidth(IconCensus c){
+        return NativeActionSnapshotCheck.compare(c.intent,c.before,c.fresh,c.now);
+    }
+    static void widthRejected(String name,String term,IconWidthMutation mutation)throws Exception{
+        one("stable_icon_width_rejects_"+name,()->{
+            IconCensus c=iconWidthCensus(name,term,mutation);
+            IntegrationChecks.rejects(()->compareIconWidth(c),"actual full-reference census must reject "+name);
+        });
+    }
+    static void stableIconWidthCases()throws Exception{
+        for(int right:new int[]{250,536,1000}){
+            final int edge=right;
+            one("stable_icon_changed_literal_bounded_right_"+edge,()->{
+                IconCensus c=iconWidthCensus("edge-"+edge,"Type-C快充数据线",f->iconTermBounds(f,156,301,edge,360));
+                Map<String,Object> proof=compareIconWidth(c);
+                NativeActionSnapshotCheck.Node a=c.before.node("0/0/0/0/0"),z=c.fresh.node("0/0/0/0/0");
+                yes(a.bounds.equals(Arrays.asList(156,301,302,360))&&z.bounds.equals(Arrays.asList(156,301,edge,360)),"raw actual bounds are preserved");
+                yes(!a.text.equals(z.text)&&!a.v.get("ref_signature_sha256").equals(z.v.get("ref_signature_sha256")),"actual literal and full Service reference both changed");
+                yes(c.before.node("0/0/1").v.equals(c.fresh.node("0/0/1").v)&&c.before.node("0/0").v.equals(c.fresh.node("0/0").v),"complete target and ancestor stay exact");
+                yes(new TreeSet<Object>((List<?>)proof.get("changed_paths")).equals(new TreeSet<Object>(Arrays.<Object>asList("0/0/0","0/0/0/0","0/0/0/0/0"))),"only three fully recorded hint nodes differ");
+                yes("noninteractive_hint_literals_and_contained_term_right_edge_with_recomputed_actual_references".equals(((Map<?,?>)proof.get("xiaomi_search_home_variations")).get("0/0/0")),"bounded width uses the canonical purpose-specific variation evidence");
+                yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("business_verified"))&&Boolean.FALSE.equals(proof.get("navigation_semantics_device_verified")),"comparison does not prove a dispatch or navigation");
+            });
+        }
+        one("stable_icon_literal_only_uses_canonical_variation_evidence_tag",()->{
+            Map<String,Object> proof=compareIconWidth(iconWidthCensus("literal-only","电视",f->{}));
+            yes("noninteractive_hint_literals_and_contained_term_right_edge_with_recomputed_actual_references".equals(((Map<?,?>)proof.get("xiaomi_search_home_variations")).get("0/0/0")),"literal-only comparison uses the same canonical purpose-specific variation evidence");
+        });
+        one("stable_icon_same_literal_contained_right_change_compares_without_dispatch_authority",()->{
+            IconCensus c=iconWidthCensus("same-literal",null,f->iconTermBounds(f,156,301,536,360));
+            NativeActionSnapshotCheck.Node a=c.before.node("0/0/0/0/0"),z=c.fresh.node("0/0/0/0/0");
+            yes(a.text.equals(z.text),"literal really did not change");
+            Map<String,Object> proof=compareIconWidth(c);
+            yes(a.bounds.equals(Arrays.asList(156,301,302,360))&&z.bounds.equals(Arrays.asList(156,301,536,360)),"actual contained right-edge-only resize is recorded without rewriting bounds");
+            yes(!a.v.get("ref_signature_sha256").equals(z.v.get("ref_signature_sha256")),"actual full references are recomputed for the changed geometry");
+            yes(c.before.node("0/0/1").v.equals(c.fresh.node("0/0/1").v)&&c.before.node("0/0").v.equals(c.fresh.node("0/0").v),"complete action target and ancestor stay exact");
+            yes(c.before.node("0/0/0/0").bounds.equals(c.fresh.node("0/0/0/0").bounds)&&c.before.node("0/0/0").bounds.equals(c.fresh.node("0/0/0").bounds),"fixed hint and entry enclosures stay exact");
+            for(String key:c.intent.identity.keySet())yes(c.intent.identity.get(key).equals(c.before.env.get(key))&&c.intent.identity.get(key).equals(c.fresh.env.get(key)),"original authority identity stays exact: "+key);
+            yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("business_verified"))&&Boolean.FALSE.equals(proof.get("navigation_semantics_device_verified")),"comparison grants no dispatch, navigation proof or business success");
+        });
+        widthRejected("left","电视",f->iconTermBounds(f,157,301,536,360));
+        widthRejected("top","电视",f->iconTermBounds(f,156,302,536,360));
+        widthRejected("bottom","电视",f->iconTermBounds(f,156,301,536,359));
+        widthRejected("outside_fixed_hint","电视",f->iconTermBounds(f,156,301,1001,360));
+        widthRejected("zero_width","电视",f->iconTermBounds(f,156,301,156,360));
+        widthRejected("hint_parent_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0").put("bounds",Arrays.asList(156,301,999,360));});
+        widthRejected("entry_parent_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0").put("bounds",Arrays.asList(156,287,999,375));f.fresh.nodes.get("0/0/0/0").put("bounds",Arrays.asList(156,301,999,360));});
+        for(String flag:Arrays.asList("clickable","action_click","editable","scrollable","focused","selected")){
+            final String field=flag;
+            widthRejected("new_"+field,"电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0/0").put(field,true);});
+        }
+        widthRejected("different_term_resource","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/0/0/0").put("view_id","com.xiaomi.shop:id/other");});
+        widthRejected("new_semantic_role","Xiaomi路由器AX3000T",f->iconTermBounds(f,156,301,536,360));
+        widthRejected("target_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0/1").put("bounds",Arrays.asList(1001,290,1156,372));});
+        widthRejected("ancestor_geometry","电视",f->{iconTermBounds(f,156,301,536,360);f.fresh.nodes.get("0/0").put("bounds",Arrays.asList(0,1,1224,400));});
+        one("search_entry_bounded_hint_is_detached_comparison_not_authority",()->{
+            IconCensus c=iconWidthCensus("legacy-switcher","电视",f->iconTermBounds(f,156,301,536,360));
+            NativeActionSnapshotCheck.Intent i=c.intent;NativeActionSnapshotCheck.Node entry=c.before.node("0/0/0");
+            NativeActionSnapshotCheck.Intent legacy=new NativeActionSnapshotCheck.Intent(NativeActionSnapshotCheck.SEARCH,i.pkg,entry.path,entry.label,
+                    (String)entry.v.get("ref_signature_sha256"),i.run,i.node,i.actionSha,i.historySha,i.identity,i.started,i.deadline);
+            Map<String,Object> proof=NativeActionSnapshotCheck.compare(legacy,c.before,c.fresh,c.now);
+            yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.TRUE.equals(proof.get("search_entry_original_reference_retained_fresh_signature_required")),
+                    "same bound entry may classify the hint but still needs its private original node and final live signature");
+        });
+        one("search_entry_width_passes_both_real_service_comparisons_before_one_host_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-live");NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+            long deadline=f.work.state.deadlineElapsed;rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->{rotateIconHint(f,"充电宝");iconTermBounds(f,156,301,250,360);};
+            yes(f.dispatch()&&f.effects()==1,"fresh first and final complete census allow one explicit host effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.work.graph.refs.get(f.action.nodeId)==original,"both original whole-census passes and original retained target remain");
+            yes(f.work.state.deadlineElapsed==deadline&&new JSONObject(f.work.nativeActionProof).getBoolean("final_complete_census_compared"),"original deadline and final comparison remain required");
+        });
+        one("search_entry_width_final_same_literal_compares_before_exactly_one_guarded_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-final-same");iconTermBounds(f,156,301,536,360);rotateIconHint(f,"电视");
+            NodeRef original=f.work.graph.refs.get(f.action.nodeId);long deadline=f.work.state.deadlineElapsed;
+            Map<String,Object> identity=new TreeMap<String,Object>(f.work.nativeGuard.intent(original.signature).identity);
+            f.service.scopeMutation=()->{rotateIconHint(f,"洗衣机");iconTermBounds(f,156,301,536,360);};
+            yes(f.dispatch()&&f.effects()==1&&f.work.state.effectEntered(),"only the original live action gates permit one explicit host effect");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.service.events.indexOf("scope")<f.service.events.lastIndexOf("full_census"),"both complete census comparisons follow the original live scope ordering");
+            yes(f.work.graph.refs.get(f.action.nodeId)==original&&f.work.nativeActionRevalidated,"original retained target and live revalidation stay required");
+            yes(f.work.state.deadlineElapsed==deadline&&f.work.nativeGuard.intent(original.signature).identity.equals(identity),"original deadline, owner, window, task and lease identity remain unchanged");
+            JSONObject proof=new JSONObject(f.work.nativeActionProof);
+            yes(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("reported_windows_before_after_equal"),"final complete census and window equality proof remain required");
+            yes(f.data.get("0/0/1").effects==0,"adjacent icon never substitutes for the original search entry");
+            IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"same action claim cannot enter an effect twice");yes(f.effects()==1,"no second effect");
+        });
+        one("search_entry_width_final_other_edge_refuses_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-final-top");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->iconTermBounds(f,156,302,536,360);
+            IntegrationChecks.rejects(()->f.dispatch(),"final whole census retains top geometry");f.noEffect("final top refusal has no effect");
+        });
+        one("search_entry_width_does_not_extend_deadline_or_override_cancel",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-deadline");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.service.scopeMutation=()->{SystemClock.now=f.work.state.deadlineElapsed;};
+            IntegrationChecks.rejects(()->f.dispatch(),"same original 8s deadline applies");f.noEffect("expired action has no effect");
+            Fixture z=setup(NativeActionSnapshotCheck.SEARCH,"width-cancel");rotateIconHint(z,"电视");iconTermBounds(z,156,301,536,360);
+            z.service.scopeMutation=()->{z.service.cancelled=true;};
+            IntegrationChecks.rejects(()->z.dispatch(),"cancellation still wins before original effect claim");z.noEffect("cancelled action has no effect");
+        });
+        one("search_entry_width_does_not_replace_original_live_node",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"width-node");rotateIconHint(f,"电视");iconTermBounds(f,156,301,536,360);
+            f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            yes(!f.dispatch(),"equal-looking new icon cannot replace original live reference");f.noEffect("replacement node has no effect");
+        });
+    }
+
+
+    /** The actual unchanged-tree path still needs its private pre-effect claim. */
+    static void equalOpenCases()throws Exception{
+        one("equal_tree_OPEN_runs_final_complete_census_and_one_claim_before_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-positive");Graph same=f.graph(f.fresh,null);
+            try{yes(f.work.graph.digest.equals(same.digest),"explicit equal-tree fixture reaches the formerly unclaimed path");}finally{same.close();}
+            long deadline=f.work.state.deadlineElapsed;NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+            yes(f.dispatch()&&f.effects()==1,"one explicit host effect through actual Service click branch");
+            yes(!f.work.nativeActionRevalidated&&Collections.frequency(f.service.events,"full_census")==2,"equal initial digest still requires a final full census");
+            yes(f.work.nativeActionProof!=null&&Integer.valueOf(1).equals(f.work.nativeGuard.evidence().get("state")),"real claim exists before effect receipt; JSON state is not rewritten");
+            yes(new JSONObject(f.work.nativeActionProof).getBoolean("final_complete_census_compared")
+                &&f.work.graph.refs.get(f.action.nodeId)==original&&f.work.state.deadlineElapsed==deadline,"same original NodeRef and absolute action deadline");
+            IntegrationChecks.rejects(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work),"private claim cannot enter another effect");
+            yes(f.effects()==1,"no second effect");
+        });
+        one("equal_tree_OPEN_closed_guard_cannot_enter_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-closed");f.work.nativeGuard.close();
+            IntegrationChecks.rejects(()->f.dispatch(),"equal tree cannot revive a closed guard");f.noEffect("closed claim has no effect");
+        });
+        one("equal_tree_OPEN_preclaimed_guard_cannot_enter_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-preclaimed");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);
+            IntegrationChecks.rejects(()->f.dispatch(),"equal tree cannot consume an already claimed guard again");f.noEffect("one-use guard cannot be replayed");
+        });
+        one("equal_tree_OPEN_rechecks_installed_uid_and_apk",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-installed");f.installedCurrent=false;
+            IntegrationChecks.rejects(()->f.dispatch(),"independent actual installed verifier remains mandatory");f.noEffect("changed installed identity has no effect");
+        });
+        one("equal_tree_OPEN_rejects_same_value_selection_replacement",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-selection");
+            f.service.scopeMutation=()->f.service.background.selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(f.selection.taskTarget);
+            IntegrationChecks.rejects(()->f.dispatch(),"same payload cannot replace original Selection object");f.noEffect("new selection gains no claim");
+        });
+        one("equal_tree_OPEN_preserves_original_deadline_and_cancel",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-deadline");long deadline=f.work.state.deadlineElapsed;
+            f.service.scopeMutation=()->SystemClock.now=deadline;IntegrationChecks.rejects(()->f.dispatch(),"original eight-second action cap is exclusive");
+            f.noEffect("deadline cannot be renewed by full recheck");
+            Fixture z=setup(NativeActionSnapshotCheck.OPEN,"equal-open-cancel");z.service.scopeMutation=()->z.service.cancelled=true;
+            IntegrationChecks.rejects(()->z.dispatch(),"original cancellation wins");z.noEffect("cancelled action has no effect");
+        });
+        one("equal_tree_OPEN_rejects_missing_final_complete_census",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-census");f.service.scopeMutation=()->f.service.serviceInfo.flags=0;
+            IntegrationChecks.rejects(()->f.dispatch(),"equal initial graph cannot replace final complete reported-window census");f.noEffect("missing complete census has no effect");
+        });
+        one("equal_tree_OPEN_final_read_cannot_replace_original_live_NodeRef",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-reference");
+            f.service.scopeMutation=()->f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            IntegrationChecks.rejects(()->f.dispatch(),"equal looking new node is not the original retained reference");f.noEffect("replacement reference has no effect");
+        });
+        one("equal_tree_OPEN_last_target_geometry_change_is_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"equal-open-last-geometry");
+            f.service.afterFinalCensus=()->f.data.get(f.raw.target).values.put("bounds",Arrays.asList(0,0,1,1));
+            IntegrationChecks.rejects(()->f.dispatch(),"original live target and ancestor chain still follow the final census");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"refusal after actual final complete read");f.noEffect("late geometry has no effect");
+        });
+    }
+
+
+    /** Same synthetic Android bridge as the retained action cases. The Controller
+     * await/finally, Session, guard, ActionExecutionState and writer are actual.
+     * This endpoint never calls guard.claim: the extracted click branch must. */
+    static final class OpenController {
+        final Fixture fixture;final File directory;
+        final NativeAppSession activeNativeTask;
+        final java.util.concurrent.atomic.AtomicBoolean cancelled=new java.util.concurrent.atomic.AtomicBoolean();
+        final HeptaAccessibilityService service;
+        HeptaAccessibilityService.ActionOutcome outcome;
+        long taskDeadline,finished;
+        OpenController(Fixture value,File directory){
+            fixture=value;this.directory=directory;activeNativeTask=value.session;
+            service=new HeptaAccessibilityService(this);taskDeadline=SystemClock.elapsedRealtime()+480000;
+        }
+        void checkActive(long deadline){
+            if(cancelled.get()||SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("synthetic task stopped or expired");
+        }
+        synchronized void stop(){cancelled.set(true);fixture.service.cancelled=true;}
+        static final class android {static final class system {static final class Os {
+            static void chmod(String path,int mode)throws java.io.IOException{
+                if(mode!=0600)throw new AssertionError("only original private receipt mode");
+                java.nio.file.Files.setPosixFilePermissions(java.nio.file.Paths.get(path),java.util.EnumSet.of(
+                        java.nio.file.attribute.PosixFilePermission.OWNER_READ,java.nio.file.attribute.PosixFilePermission.OWNER_WRITE));
+            }
+        }}}
+        {{open_record}}
+        {{open_cleanup_unknown}}
+        {{open_execution_projection}}
+        {{open_await_action}}
+        static JSONObject wire(Map<?,?> value){
+            JSONObject result=new JSONObject();for(Map.Entry<?,?> entry:value.entrySet()){
+                if(!(entry.getKey() instanceof String))throw new IllegalArgumentException("actual receipt string keys required");
+                result.put((String)entry.getKey(),wireValue(entry.getValue()));
+            }return result;
+        }
+        private static Object wireValue(Object value){
+            // Explicit Android JSONObject.NULL contract; desktop JSONObject(Map)
+            // otherwise removes null retirement_reason/query_history fields.
+            if(value==null)return JSONObject.NULL;
+            if(value instanceof Map<?,?>)return wire((Map<?,?>)value);
+            if(value instanceof List<?>){JSONArray result=new JSONArray();for(Object item:(List<?>)value)result.put(wireValue(item));return result;}
+            if(value instanceof String||value instanceof Number||value instanceof Boolean)return value;
+            throw new IllegalArgumentException("unsupported actual receipt value");
+        }
+        static final class HeptaAccessibilityService {
+            interface Cancellation {boolean isCancelled();}
+            interface ActionCallback {void onResult(ActionOutcome value);}
+            static final class ActionOutcome {
+                final boolean accepted,dispatched,stale;final JSONObject actionExecution;
+                ActionOutcome(boolean a,boolean d,boolean s,JSONObject execution){accepted=a;dispatched=d;stale=s;actionExecution=execution;}
+            }
+            final OpenController controller;final ActionExecutionState.Slot slot=new ActionExecutionState.Slot();
+            NativeAppSession.ActionGuard guard;ActionWork lastWork;
+            int performCalls,retireCalls;boolean legacyBranch,drain=true,callbackCurrent=true,cancelWhenClaimed;
+            IntegrationChecks.Work beforeCallback;
+            HeptaAccessibilityService(OpenController value){controller=value;}
+            boolean actionWorkPending(){return slot.pending();}
+            boolean nativeCancellationWorkPending(){return false;}
+            void retireActionWork(String task,String reason){
+                yes(controller.fixture.task.equals(task),"retirement keeps the actual task");retireCalls++;
+                if(lastWork!=null)lastWork.state.retire(reason);
+            }
+            void perform(String task,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,
+                    org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,
+                    String run,long deadline,NativeAppSession.ActionGuard supplied,Cancellation cancellation,ActionCallback callback)throws Exception{
+                performCalls++;guard=supplied;Fixture f=controller.fixture;NativeActionBridgeHost bridge=f.service;
+                yes(task.equals(f.task)&&observed==bridge.current&&action==f.action&&authorization==f.gate&&run.equals(f.run),
+                        "real await receives the same action, observation and private authorization");
+                yes(supplied!=null&&supplied.selection==f.selection&&supplied.authorization==authorization&&supplied.frame==f.frame,
+                        "one real Session/selection/Attempt supplies the guard; no copied authority");
+                yes(f.work==null&&deadline==supplied.deadline&&supplied.issued==SystemClock.elapsedRealtime(),
+                        "deferred fixture has no preclaimed guard or work; actual await supplies eight-second deadline");
+                NativeActionBridgeHost.Cancellation checkedCancellation=()->{
+                    if(cancelWhenClaimed&&Integer.valueOf(1).equals(supplied.evidence().get("state")))controller.stop();
+                    return cancellation.isCancelled();
+                };
+                f.work=bridge.new ActionWork(task,observed,run,bridge.scope,authorization,bridge.background,checkedCancellation,
+                        bridge.currentGraph.copyForAction(action.nodeId,null),null,SystemClock.elapsedRealtime(),deadline,supplied);
+                lastWork=f.work;yes(slot.acquire(lastWork.state),"actual ActionExecutionState slot acquired once");
+                boolean accepted=false,stale=false;
+                try{
+                    SystemClock.now++;lastWork.phase("worker_started");
+                    bridge.scopeBeforeDispatch(task,bridge.scope,observed,action,null,false,lastWork);
+                    bridge.scopeBeforeDispatch(task,bridge.scope,observed,action,lastWork.graph.refs.get(action.nodeId).node,true,lastWork);
+                    String refusal=bridge.validate(task,observed,action,targets,checkedCancellation,lastWork);
+                    if(refusal!=null)stale=refusal.startsWith("stale:");
+                    else{
+                        if(legacyBranch)bridge.legacyOpenClickBranch(task,observed,action,lastWork);
+                        else bridge.clickBranch(task,observed,action,lastWork);
+                        accepted=bridge.callbackAccepted;
+                    }
+                }catch(StaleObservation refusal){stale=true;}
+                catch(IllegalArgumentException|IllegalStateException refusal){accepted=false;}
+                finally{
+                    lastWork.graph.close();
+                    if(drain){SystemClock.now++;lastWork.state.drained();slot.release(lastWork.state);}
+                }
+                if(beforeCallback!=null)beforeCallback.run();
+                SystemClock.now++;
+                boolean published=drain&&lastWork.state.publish(cancellation.isCancelled(),callbackCurrent&&lastWork.currentLease());
+                Map<String,Object> raw=lastWork.state.evidence();raw.put("native_action_guard",supplied.evidence());
+                if(lastWork.nativeActionProof!=null)raw.put("native_action_revalidation",new JSONObject(lastWork.nativeActionProof).toMap());
+                callback.onResult(new ActionOutcome(accepted&&published,lastWork.state.effectEntered(),stale,wire(raw)));
+            }
+        }
+        void invoke()throws Exception{
+            outcome=awaitAction(fixture.task,fixture.service.current,fixture.action,null,null,fixture.gate,fixture.run,taskDeadline);
+        }
+        void commit()throws Exception{
+            yes(outcome!=null,"actual callback and Controller finally precede the durable outcome");finished=SystemClock.elapsedRealtime();
+            JSONObject receipt=new JSONObject().put("explicit_host_android_endpoint",true).put("accepted",outcome.accepted)
+                    .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("action_execution",outcome.actionExecution);
+            record(directory,"step-01-action.json",receipt);
+            activeNativeTask.modelActionOutcome(fixture.action,fixture.run,outcome.accepted,outcome.dispatched,outcome.stale,
+                    sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8)),finished,nativeQueryExecution(outcome.actionExecution));
+        }
+        NativeAppSession.PostEffectReadPermit permit(){return activeNativeTask.postEffectReadPermit(fixture.action,fixture.run,fixture.frame.observationId);}
+    }
+    /** The old 1079 click body is a fixed-hash inverse of the sole dispatch
+     * condition change. It demonstrates the retained failure, not a live route. */
+    void legacyOpenClickBranch(String taskId,PhoneObservation expected,ActionDecision action,ActionWork work)throws Exception{
+        Graph graph=work.graph;Cancellation cancel=work.cancel;QualificationScopeConfig.Bound dispatchScope=work.scope;
+        TaskAuthorization.Gate authorization=work.authorization;String modelRunId=work.state.modelRunId;
+        ActionCallback callback=outcome->{callbackAccepted=outcome.accepted;};
+        {{open_legacy_selected_refresh}}
+        boolean accepted;
+        {{open_legacy_click_branch}}
+    }
+    static OpenController openController(java.nio.file.Path directory,String label)throws Exception{
+        java.nio.file.Path path=directory.resolve(label);java.nio.file.Files.createDirectory(path);
+        NativeActionBridgeHost service=new NativeActionBridgeHost();
+        Fixture fixture=service.new Fixture(NativeActionSnapshotCheck.OPEN,"exact-open:"+label,null,true,path.toFile());
+        service.exerciseBackgroundPrecheck=true;return new OpenController(fixture,path.toFile());
+    }
+    static boolean openAvailable(OpenController controller){
+        for(Map<String,Object> entry:controller.fixture.journal){
+            if(!"native-app-outcome-01.json".equals(entry.get("leaf")))continue;
+            Map<?,?> value=(Map<?,?>)entry.get("value"),attempt=(Map<?,?>)value.get("attempt");
+            Map<?,?> receipt=(Map<?,?>)attempt.get("actual_action_receipt");
+            return Boolean.TRUE.equals(receipt.get("post_effect_read_recovery_available"));
+        }return false;
+    }
+    static void runOpenClaim(java.nio.file.Path source,java.nio.file.Path directory)throws Exception{
+        sourceRoot=source;java.nio.file.Files.createDirectories(directory);
+        one("open_claim_equal_tree_actual_service_finally_durable_once_permit",()->{
+            OpenController c=openController(directory,"equal");Fixture f=c.fixture;
+            yes(f.work==null&&c.permit()==null,"no fixture work or permit before extracted awaitAction");
+            c.invoke();
+            yes(c.outcome.accepted&&c.outcome.dispatched&&!c.outcome.stale&&f.effects()==1,"one real extracted click through fake Android endpoint");
+            yes(!f.work.nativeActionRevalidated,"equal-digest validation does not mark a variation comparison");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.work.nativeActionProof!=null,"original final census runs even for unchanged OPEN");
+            yes(c.outcome.actionExecution.getJSONObject("native_action_guard").getInt("state")==1,"actual callback sees the real claim before Controller closes");
+            yes(Integer.valueOf(2).equals(c.service.guard.evidence().get("state")),"actual Controller finally seals a closed guard");
+            yes(c.outcome.actionExecution.getBoolean("effect_entered")&&c.outcome.actionExecution.getBoolean("effect_returned")
+                    &&c.outcome.actionExecution.getBoolean("worker_drained")&&c.outcome.actionExecution.getBoolean("callback_authority_current"),"actual ActionExecutionState lifecycle");
+            yes(!c.service.actionWorkPending()&&!c.service.nativeCancellationWorkPending()&&c.permit()==null,"drained callback alone is not durable read authority");
+            c.commit();yes(openAvailable(c),"actual Session durable receipt explicitly records recovery availability");
+            yes(java.nio.file.Files.size(directory.resolve("equal/native-app-outcome-01.json"))>0,"actual writer creates and fsyncs the Session outcome");
+            NativeAppSession.PostEffectReadPermit permit=c.permit();yes(permit!=null&&permit.transitionDeadline()==c.finished+15000,"same private pending OPEN and unchanged original transition deadline");
+            yes(permit.originalObservationId().equals(c.fixture.frame.observationId),"private read lineage binds the original accepted frame");
+            IntegrationChecks.rejects(()->c.permit(),"permit cannot be issued twice");
+            permit.admit(false);permit.admit(true);IntegrationChecks.rejects(()->permit.admit(true),"no third observation admission");
+            IntegrationChecks.rejects(()->c.service.guard.requireClaimed(),"closed guard cannot enter a second effect");
+            yes(c.service.performCalls==1&&f.effects()==1,"no repeated click or synthetic manual guard claim");
+        });
+        one("open_claim_old_exact_branch_preserves_actual_unclaimed_failure",()->{
+            OpenController c=openController(directory,"old-branch");c.service.legacyBranch=true;c.invoke();
+            yes(c.outcome.accepted&&c.outcome.dispatched&&c.fixture.effects()==1,"old complete equal-tree click really reaches effect endpoint");
+            yes(Collections.frequency(c.fixture.service.events,"full_census")==1&&c.fixture.work.nativeActionProof==null,"old branch skipped final native claim");
+            yes(c.outcome.actionExecution.getJSONObject("native_action_guard").getInt("state")==0,"old callback preserves unclaimed state0");
+            yes(Integer.valueOf(2).equals(c.service.guard.evidence().get("state")),"old actual await finally still closes guard");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"state0 then bare state2 cannot issue the private entered permit");
+        });
+        one("open_claim_changed_tree_retains_existing_purpose_comparison",()->{
+            OpenController c=openController(directory,"changed");c.fixture.neutralText();c.invoke();c.commit();
+            yes(c.outcome.accepted&&c.fixture.work.nativeActionRevalidated&&c.fixture.effects()==1,"existing complete variation branch preserved");
+            yes(openAvailable(c)&&c.permit()!=null,"real final guard still connects to durable entered handoff");
+        });
+        one("open_claim_stop_before_final_claim_never_enters_effect",()->{
+            OpenController c=openController(directory,"stop-before");c.fixture.service.afterFinalCensus=()->c.stop();c.invoke();
+            yes(!c.outcome.accepted&&!c.outcome.dispatched&&c.fixture.effects()==0,"stop before claim blocks effect");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"no entered permit after stopped read-only precheck");
+        });
+        one("open_claim_stop_after_atomic_claim_before_effect_never_enters",()->{
+            OpenController c=openController(directory,"stop-after");c.service.cancelWhenClaimed=true;c.invoke();
+            yes(c.cancelled.get()&&!c.outcome.dispatched&&c.fixture.effects()==0,"same cancellation token wins after claim and before effect");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"claim without entered accepted effect is not a permit");
+        });
+        one("open_claim_changed_private_authorization_refuses_before_effect",()->{
+            OpenController c=openController(directory,"authorization");c.fixture.service.afterFinalCensus=()->c.fixture.service.authorizationCurrent=false;c.invoke();
+            yes(!c.outcome.dispatched&&c.fixture.effects()==0,"actual final authorization check remains required");
+            c.commit();yes(c.permit()==null,"foreign authorization cannot acquire entered read context");
+        });
+        one("open_claim_same_values_new_selection_pointer_refuses",()->{
+            OpenController c=openController(directory,"selection");
+            c.fixture.service.afterFinalCensus=()->c.fixture.service.background.selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(c.fixture.selection.executionTarget());
+            c.invoke();yes(!c.outcome.dispatched&&c.fixture.effects()==0,"final checker keeps exact private selection object");
+            c.commit();yes(c.permit()==null,"same textual target cannot substitute private selection");
+        });
+        one("open_claim_final_census_keeps_original_eight_second_deadline",()->{
+            OpenController c=openController(directory,"deadline");c.fixture.service.afterFinalCensus=()->SystemClock.now=c.service.guard.deadline;
+            boolean refused=false;try{c.invoke();}catch(OpenController.CleanupUnknown expected){refused=true;}
+            yes(refused&&c.cancelled.get()&&c.fixture.effects()==0,"late final read refuses without extending action budget");
+            yes(c.service.retireCalls==1&&c.permit()==null,"real await timeout cleanup retains no permit");
+        });
+        one("open_claim_undrained_real_action_state_refuses_handoff",()->{
+            OpenController c=openController(directory,"undrained");c.service.drain=false;
+            boolean refused=false;try{c.invoke();}catch(OpenController.CleanupUnknown expected){refused=true;}
+            yes(refused&&c.cancelled.get()&&c.fixture.effects()==1&&c.service.actionWorkPending(),"entered work without actual drain remains pending");
+            yes(c.permit()==null,"no read permit while original action still owns its slot");
+        });
+        one("open_claim_noncurrent_actual_callback_does_not_issue",()->{
+            OpenController c=openController(directory,"callback");c.service.callbackCurrent=false;c.invoke();c.commit();
+            yes(c.fixture.effects()==1&&!c.outcome.accepted&&!openAvailable(c)&&c.permit()==null,"entered effect does not override noncurrent callback refusal");
+        });
+        one("open_claim_stop_before_real_finally_erases_entered_handoff",()->{
+            OpenController c=openController(directory,"stop-callback");c.service.beforeCallback=()->c.stop();c.invoke();c.commit();
+            yes(c.fixture.effects()==1&&c.cancelled.get()&&!openAvailable(c)&&c.permit()==null,"stop monitor revokes pending entered receipt");
+        });
+        one("open_claim_durable_outcome_failure_keeps_inflight_and_no_permit",()->{
+            OpenController c=openController(directory,"journal");c.invoke();c.fixture.failActualOutcome=true;
+            IntegrationChecks.ioRejects(()->c.commit(),"actual Session journal endpoint fails before outcome creation");
+            yes(c.fixture.effects()==1&&c.permit()==null&&!java.nio.file.Files.exists(directory.resolve("journal/native-app-outcome-01.json")),"failed journal cannot issue a permit or repeat effect");
+        });
+        one("open_claim_ordinary_close_cannot_replace_private_seal",()->{
+            OpenController c=openController(directory,"normal-close");c.invoke();c.service.guard.close();c.commit();
+            yes(c.fixture.effects()==1&&!openAvailable(c)&&c.permit()==null,"bare state2 remains insufficient after private seal is cleared");
+        });
+    }

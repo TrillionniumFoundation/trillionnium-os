@@ -1,0 +1,151 @@
+package org.trillionnium.hepta.local;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.hardware.HardwareBuffer;
+import android.os.SystemClock;
+import android.os.Looper;
+import android.view.Display;
+import android.view.accessibility.AccessibilityWindowInfo;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.JSONObject;
+import org.trillionnium.hepta.background.WindowOwnership;
+
+/** Host Android/read/scheduling ports only. Marked blocks are exact production.
+ * Private proof/receipt constructors and their admission logic are never replaced. */
+final class HeptaAccessibilityService {
+    static HeptaAccessibilityService live;
+    final Context context;
+    LocalTaskController ownedController;
+    String lease;TaskAuthorization.Gate taskAuthorization;BackgroundSession taskBackground;Object taskWeb;
+    QualificationScopeConfig.Bound taskScope;
+    Object nativeSearchSession,activeNativeSearchObservation,nativeSearchRetryPending,nativeAxMode;
+    PhoneObservation current;Graph currentGraph;Bitmap currentBitmap;
+    private ObservationRequest activeObservation;
+    final AtomicBoolean observationIoBusy=new AtomicBoolean();
+    boolean capturePending,actionBusy,cancelBusy;long captureSerial,lastScreenshotAt;int taskObservationAdmissions;
+    final HostMain main=new HostMain();final HostQueue observationIo=new HostQueue();
+    java.util.concurrent.Callable<Graph> graphProvider;
+    java.util.concurrent.Callable<Bitmap> screenshotProvider;
+    int graphReads,captureCalls,closedGraphs;boolean workerRunnableExecuting,callbackInsideWorker;
+    ObservationRequest lastRequest;CalendarFreshObservation lastProof;
+    Runnable beforePublishHook,afterCallbackHook;boolean inlinePublication;
+    HeptaAccessibilityService(Context c){context=c;live=this;}
+    File getFilesDir(){return context.getFilesDir();}
+    static String sha(byte[] b){return MobiMindContract.sha(b);}
+    static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
+    static final class HostQueue {
+        final ArrayDeque<Runnable> queue=new ArrayDeque<Runnable>();boolean reject;
+        synchronized void execute(Runnable r){if(reject)throw new RejectedExecutionException("explicit host queue rejection");queue.add(r);notifyAll();}
+        synchronized Runnable take()throws Exception{long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
+            while(queue.isEmpty()&&System.nanoTime()<end)wait(10);
+            if(queue.isEmpty())throw new AssertionError("expected actual queued work");return queue.remove();}
+        synchronized int size(){return queue.size();}
+    }
+    final class HostMain {
+        final HostQueue queue=new HostQueue();
+        boolean post(Runnable r){
+            if(workerRunnableExecuting&&inlinePublication){
+                if(beforePublishHook!=null)beforePublishHook.run();
+                callbackInsideWorker=true;r.run();if(afterCallbackHook!=null)afterCallbackHook.run();return true;
+            }
+            queue.execute(r);return true;
+        }
+        boolean postDelayed(Runnable r,long delay){throw new AssertionError("host watchdog scheduling is an explicit omitted timer port");}
+    }
+    void hostRunAdmission()throws Exception{main.queue.take().run();}
+    void hostRunReadWorker()throws Exception{workerRunnableExecuting=true;try{observationIo.take().run();}finally{workerRunnableExecuting=false;}}
+    void hostRunPublication()throws Exception{if(beforePublishHook!=null)beforePublishHook.run();main.queue.take().run();if(afterCallbackHook!=null)afterCallbackHook.run();}
+    int[] hostReadCounters(){ObservationRequest r=lastRequest;return r==null?new int[]{0,0}:new int[]{r.readWorksStarted,r.readWorksFinished};}
+    boolean hostOriginalWaiterAbandoned(){return lastRequest!=null&&lastRequest.cancel.isCancelled();}
+    static final class Graph {
+        final String packageName,digest,backgroundGeneration,backgroundBootstrapPackage,backgroundSelectionRaw,backgroundOwnerSha;
+        final int windowId,displayId,rotation;final Rect bounds;
+        final ObservationState state;final ObservedWindowMetadata windowMetadata;
+        final List<PhoneObservation.Node> rows;final List<String> backgroundAllowedPackages;
+        final PhoneObservation.CollectionStats collectionStats;final WindowOwnership profileWindow;
+        final boolean truncated=false,nativeObservationComplete=true;
+        final long readStartedElapsedMs,readCompletedElapsedMs;
+        final ObservationDiagnostics.GraphStamp diagnosticStamp=null;
+        boolean closed;final HeptaAccessibilityService owner;
+        Graph(HeptaAccessibilityService owner,PhoneObservation p,long start,long end){
+            this.owner=owner;packageName=p.packageName;digest=p.treeSha256;backgroundGeneration=p.backgroundGeneration;
+            backgroundBootstrapPackage=p.backgroundBootstrapPackage;backgroundSelectionRaw=p.backgroundSelectionEvidence().toString();
+            backgroundOwnerSha=owner.taskBackground.ownerSha256;windowId=p.windowId;displayId=p.windowMetadata.displayId.intValue();rotation=p.rotation;
+            bounds=new Rect(p.windowBounds);state=p.state;windowMetadata=p.windowMetadata;rows=p.nodes;
+            backgroundAllowedPackages=p.backgroundAllowedPackages;collectionStats=p.collectionStats;profileWindow=p.profileWindow;
+            readStartedElapsedMs=start;readCompletedElapsedMs=end;
+        }
+        void close(){if(!closed){closed=true;owner.closedGraphs++;}}
+    }
+    static final class ScreenshotResult {
+        final HardwareBuffer buffer;ScreenshotResult(Bitmap b){buffer=new HardwareBuffer(b);}
+        HardwareBuffer getHardwareBuffer(){return buffer;}Object getColorSpace(){return null;}
+    }
+    interface TakeScreenshotCallback {void onFailure(int code);void onSuccess(ScreenshotResult result);}
+    static final int ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT=3;
+    java.util.concurrent.Executor getMainExecutor(){return new java.util.concurrent.Executor(){public void execute(Runnable r){r.run();}};}
+    void takeScreenshot(int display,java.util.concurrent.Executor ignored,TakeScreenshotCallback callback)throws Exception{
+        captureCalls++;if(taskBackground==null||display!=taskBackground.displayId()||display==Display.DEFAULT_DISPLAY)throw new IllegalStateException("wrong synthetic screenshot display");
+        callback.onSuccess(new ScreenshotResult(screenshotProvider.call()));
+    }
+    Graph readGraph(GraphBudget budget,BackgroundSession background)throws Exception{
+        budget.check();if(background!=taskBackground)throw new IllegalStateException("wrong synthetic graph scope");
+        graphReads++;Graph g=graphProvider.call();budget.check();return g;
+    }
+    void sampleObservation(ObservationRequest request){
+        // The initial Android BFS/stability sampler is the explicit platform frontier.
+        // The complete screenshot worker below still executes both full-graph reads.
+        lastRequest=request;
+        try{request.captured=graphProvider.call();request.nativeSample=false;captureObservation(request);}
+        catch(Exception e){failObservation(request,"host graph frontier: "+message(e));}
+    }
+    void watchObservation(ObservationRequest request){} // No wall-time Android watchdog thread is claimed.
+    void watchCapture(ObservationRequest request,long deadline){} // Deadline is checked by actual work/publication.
+    boolean actionWorkPending(){return actionBusy;}boolean nativeCancellationWorkPending(){return cancelBusy;}
+    boolean observationReadWorkPending(){return observationIoBusy.get();}
+    boolean locked(BackgroundSession background){try{if(background==null||!ownsBackground(background.taskId,background))return true;background.requireActive();return false;}catch(RuntimeException e){return true;}}
+    boolean nativeSearchAllowsLegacyObservation(String task){return nativeSearchSession==null&&activeNativeSearchObservation==null&&nativeSearchRetryPending==null;}
+    void bindNativeAxObservationRequest(ObservationRequest r){if(nativeAxMode!=null)throw new IllegalStateException("AX unavailable in pixel-only host bridge");}
+    boolean nativeObservationRecheckAllowed(ObservationRequest r,Graph g){return false;} // Always keeps both full graph checks.
+    void captureNativeAxObservation(ObservationRequest r){throw new AssertionError("AX path not provided");}
+    void failObservation(ObservationRequest r,String detail){if(r.finished)return;r.finished=true;r.gate.retire();if(activeObservation==r)activeObservation=null;if(r.captured!=null){r.captured.close();r.captured=null;}r.callback.onError(detail);}
+    void retryObservation(ObservationRequest r,long delay){failObservation(r,"host fail-closed retry frontier");}
+    void retryObservation(ObservationRequest r,long delay,NativeResampleSeed seed){failObservation(r,"host fail-closed retry frontier");}
+    void consumeObservationRetry(ObservationRequest r,NativeObservationRetryProof p){throw new AssertionError("unavailable retry");}
+    void admitInitialObservation(ObservationRequest r,Object a,BackgroundSession b){throw new AssertionError("unavailable initial route");}
+    void admitPostEffectObservation(ObservationRequest r,Object a,BackgroundSession b){throw new AssertionError("unavailable post route");}
+    boolean initialObservationOwner(ObservationRequest r){return false;}
+    boolean postEffectObservationOwner(ObservationRequest r){return false;}
+    void failInitialObservationAfterReadDrain(ObservationRequest r,String e){failObservation(r,e);}
+    void failPostEffectObservationAfterReadDrain(ObservationRequest r,String e){failObservation(r,e);}
+    boolean nativeLateEventReadFailure(ObservationRequest r,ObservationProduct p,boolean b){return false;}
+    boolean initialLateEventReadFailure(ObservationRequest r,ObservationProduct p,boolean b){return false;}
+    boolean postEffectLateEventReadFailure(ObservationRequest r,ObservationProduct p,boolean b){return false;}
+    boolean recheckPostEffectPublication(ObservationRequest r,ObservationProduct p){return false;}
+    Map<String,Object> nativeCtripFormPair(ObservationRequest r,CaptureIdentity i,Graph g){return null;}
+    NativeResampleSeed nativeSavedGraphSeed(ObservationRequest r,CaptureIdentity i,Graph g,long e,long u){return null;}
+    void recordNativeFullGraphChange(ObservationRequest r,String s,Graph a,Graph b){}
+    void recordSavedGraphChange(ObservationRequest r,CaptureIdentity i,Graph g,NativeResampleSeed s){}
+    static FrozenObservationWindow frozenObservationWindow(Graph g){throw new AssertionError("native sealed/window-only path unavailable");}
+    FrozenObservationWindow readFrozenObservationWindow(ObservationRequest r,CaptureIdentity i){throw new AssertionError("window-only read unavailable");}
+    ObservationDiagnostics observationDiagnostic(ObservationRequest r){return null;}
+    static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String>{DiagnosticSnapshot(ObservationDiagnostics d){throw new AssertionError("diagnostic callback disabled");}public String call(){throw new AssertionError("disabled");}}
+    static final class PrivateCensusSnapshot implements java.util.concurrent.Callable<String>{PrivateCensusSnapshot(ObservationDiagnostics d){throw new AssertionError("private census callback disabled");}public String call(){throw new AssertionError("disabled");}}
+    static final class NativeReadIdentity {NativeReadIdentity(Graph g){throw new AssertionError("native retry identity unavailable");}boolean matches(Graph g){return false;}}
+    static final class NativeResampleSeed {}
+    static final class NativeObservationRetryProof {}
+    static final class InitialObservationRetryProof {}
+    static final class PostEffectObservationRetryProof {}
+    static final class NoActiveWindow extends RuntimeException {private static final long serialVersionUID=1L;}
+    static final class StaleObservation extends RuntimeException {private static final long serialVersionUID=1L;}
+    static final class ProfileOwnershipViolation extends IllegalStateException {private static final long serialVersionUID=1L;ProfileOwnershipViolation(String m){super(m);}ProfileOwnershipViolation(String m,Throwable t){super(m,t);}}
+    private interface GraphBudget {void check();default Cancellation cancellation(){return null;}default long deadline(){return 0;}}
+@@OLD_TYPES@@
+@@ACTUAL_HA@@
+}

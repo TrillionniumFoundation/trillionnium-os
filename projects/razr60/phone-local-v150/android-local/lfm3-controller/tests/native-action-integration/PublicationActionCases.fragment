@@ -1,0 +1,44 @@
+
+    /** A historical sealed pair supplies context only. These actual validate and
+     * pre-effect click methods must still read the complete live graph. */
+    static void publicationActionCases()throws Exception{
+        one("historical_pair_same_window_changed_protected_body_is_refused_before_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"historical-protected-body");
+            f.fresh.nodes.get("0/0/2/0/0").put("selected",false);
+            Graph changed=f.graph(f.fresh,null);
+            try{yes(f.work.graph.sameWindow(changed),"selected package/display/window/geometry unchanged");}
+            finally{changed.close();}
+            yes(!f.dispatch()&&Collections.frequency(f.service.events,"full_census")>=1,
+                    "actual validate compares body, not only window metadata");
+            f.noEffect("historical proposal has no authority over changed protected content");
+        });
+        one("historical_pair_same_window_new_interactive_modal_body_is_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"historical-modal-body");
+            Map<String,Object> node=f.fresh.nodes.get("0/0/7/0");
+            node.put("clickable",true);node.put("action_click",true);node.put("text","确认支付");node.put("label","确认支付");
+            node.put("bounds",Arrays.asList(0,0,1224,2992)); // Actual in-window occlusion, not a disjoint ad/control.
+            Graph changed=f.graph(f.fresh,null);
+            try{yes(f.work.graph.sameWindow(changed),"in-window modal leaves selected window identity unchanged");}
+            finally{changed.close();}
+            yes(!f.dispatch(),"a formerly neutral subtree becoming interactive is not a stable page");
+            f.noEffect("same-window modal has no effect");
+        });
+        one("historical_pair_protected_change_after_validate_is_refused_by_final_live_census",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.QUERY,"historical-final-protected-body");f.neutralText();
+            f.service.scopeMutation=()->f.fresh.nodes.get("0/0/2/0/0").put("selected",false);
+            IntegrationChecks.rejects(()->f.dispatch(),"final full live census rejects a later protected-state change");
+            yes(Collections.frequency(f.service.events,"full_census")==2,"both initial and final full content reads execute");
+            f.noEffect("late protected content never enters effect");
+        });
+        one("historical_pair_original_capture_age_expires_before_action_even_with_live_worker_budget",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.OPEN,"historical-expired-capture");
+            long actionDeadline=f.work.state.deadlineElapsed;
+            f.service.current.capturedElapsedMillis=SystemClock.now-MAX_OBSERVATION_AGE_MS-1;
+            long originalCapture=f.service.current.capturedElapsedMillis;
+            yes(SystemClock.now<actionDeadline,"action request still has its original valid budget");
+            yes(!f.dispatch()&&Collections.frequency(f.service.events,"full_census")==0,"old capture age is rejected before any live content read");
+            yes(f.service.current.capturedElapsedMillis==originalCapture
+                    &&f.work.state.deadlineElapsed==actionDeadline,"neither publication nor action check refreshes age/deadline");
+            f.noEffect("expired historical capture never clicks");
+        });
+    }

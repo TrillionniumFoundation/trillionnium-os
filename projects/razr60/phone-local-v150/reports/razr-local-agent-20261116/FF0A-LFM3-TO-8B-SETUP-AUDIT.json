@@ -1,0 +1,152 @@
+{
+  "all_four_pure_guards_replayed": true,
+  "all_four_saved_focus_samples_equal": true,
+  "apk_sha256": "ff0a1b713336575dcf6406d57cbc7b1df6f782a41a4daa8950e32c6c95537f77",
+  "case": "long-web-booking-budget-ff0a1b71/switch-lfm3-lfm8b-main-guard-01",
+  "configs": [
+    {
+      "artifact": "prior-config.json",
+      "configuration": {
+        "compute": "npu",
+        "context_tokens": 8192,
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "schema": "hepta.local-runtime.v2",
+        "threads": 4
+      },
+      "sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2"
+    },
+    {
+      "artifact": "next-config.json",
+      "configuration": {
+        "compute": "npu",
+        "context_tokens": 8192,
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "schema": "hepta.local-runtime.v2",
+        "threads": 4
+      },
+      "sha256": "334ab319f5b3a1b28d30afaabee031ef03ea6eb5c8c2563adaadb90fd285dc53"
+    },
+    {
+      "artifact": "readback-config.json",
+      "configuration": {
+        "compute": "npu",
+        "context_tokens": 8192,
+        "model_profile": "lfm2.5-8b-a1b-q4_0",
+        "schema": "hepta.local-runtime.v2",
+        "threads": 4
+      },
+      "sha256": "334ab319f5b3a1b28d30afaabee031ef03ea6eb5c8c2563adaadb90fd285dc53"
+    }
+  ],
+  "configuration_committed_and_read_back": true,
+  "configuration_ui_switch_claimed": false,
+  "device_operations_by_this_analysis": 0,
+  "force_stop_used": false,
+  "guard_source_sha256": "f0db0b044a2830b6d5ff58ffb3daa3702223caee4dce13e4e3cd356d24999f9e",
+  "main_guards": [
+    {
+      "no_controller_task_on_display0": true,
+      "original_evidence": [
+        {
+          "command_exit_code": 0,
+          "kind": "activities",
+          "raw_sha256": "3a1237de08cf24bd40ad0034005db9900b3303f16de6568600aaddff2598e358",
+          "receipt_sha256": "8b010dd9260a06dd331e34afc72f1af7f339559d2f2442aeaf4424a732bc36f7",
+          "started_host_wall_s": 1794828034.8886466
+        },
+        {
+          "command_exit_code": 0,
+          "kind": "windows",
+          "raw_sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe",
+          "receipt_sha256": "9113256829955389ab53d3837c524cadf696bbd79e60761b1247801db5c07ac6",
+          "started_host_wall_s": 1794828034.9330149
+        }
+      ],
+      "phase": "main-after-idle",
+      "pure_guard_replay_passed": true,
+      "sampled_focus_equals_original": true
+    },
+    {
+      "no_controller_task_on_display0": true,
+      "original_evidence": [
+        {
+          "command_exit_code": 0,
+          "kind": "activities",
+          "raw_sha256": "936a30271301975be1cca20153e899e0b9108975107e07842336024cf5f1e8ef",
+          "receipt_sha256": "4e73b0ecb3050273c03bf96c9421d60a14874c1b1560f81f5dae376cb06d5ebb",
+          "started_host_wall_s": 1794828035.3993602
+        },
+        {
+          "command_exit_code": 0,
+          "kind": "windows",
+          "raw_sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe",
+          "receipt_sha256": "8a971e84eff31e62fbbdbc1739b68b8e457553f7d3698554adfec24e47bb543d",
+          "started_host_wall_s": 1794828035.461861
+        }
+      ],
+      "phase": "main-before-cas",
+      "pure_guard_replay_passed": true,
+      "sampled_focus_equals_original": true
+    },
+    {
+      "no_controller_task_on_display0": true,
+      "original_evidence": [
+        {
+          "command_exit_code": 0,
+          "kind": "activities",
+          "raw_sha256": "cdd7a3dc14bf44078c6975afc877e1689376e372632b92674b25117ba010b3dc",
+          "receipt_sha256": "e0782fc047e56a7aa2a1d776fc7e26ff4eb5c77cdd6d35ca5272e5d8d7cbb7c1",
+          "started_host_wall_s": 1794828036.4713218
+        },
+        {
+          "command_exit_code": 0,
+          "kind": "windows",
+          "raw_sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe",
+          "receipt_sha256": "6d5fc33566180f5ffdf77a437dda102113f2bff99de5126cea4cbf7815e84bdc",
+          "started_host_wall_s": 1794828036.5286152
+        }
+      ],
+      "phase": "main-before-term",
+      "pure_guard_replay_passed": true,
+      "sampled_focus_equals_original": true
+    },
+    {
+      "no_controller_task_on_display0": true,
+      "original_evidence": [
+        {
+          "command_exit_code": 0,
+          "kind": "activities",
+          "raw_sha256": "57b5c8b91f617afa73d458d551262a6b0638d075dcc7e8fb9cddff9b9af46ade",
+          "receipt_sha256": "abd994ca2b10356331c911321f12255c5a06a53eadf59b7840ff38b5fbde3e31",
+          "started_host_wall_s": 1794828036.8524652
+        },
+        {
+          "command_exit_code": 0,
+          "kind": "windows",
+          "raw_sha256": "3f2302db222ec901304e2dcf4bef1afffb0a21807b60e3a2937f045d319e22fe",
+          "receipt_sha256": "d5ded83c6d7ea35db79ea763ef2c692f890f87a3c508acbccc88660589f4fe55",
+          "started_host_wall_s": 1794828036.8950942
+        }
+      ],
+      "phase": "main-after-transition",
+      "pure_guard_replay_passed": true,
+      "sampled_focus_equals_original": true
+    }
+  ],
+  "main_screen_inputs": 0,
+  "native_model_profile_proved_by_setup": false,
+  "next_profile": "lfm-npu",
+  "next_real_native_request_required_to_qualify_profile": true,
+  "old_controller_process_exit_recorded": true,
+  "original_idle_failed_task_preserved": true,
+  "prior_controller_process_identity_bound": true,
+  "prior_profile": "lfm3-npu",
+  "reload_required": false,
+  "reloaded_engine_still_requires_actual_request_evidence": true,
+  "samples_are_not_continuous_monitoring": true,
+  "schema": "hepta.configuration-setup-audit.public.v1",
+  "setup_is_not_a_model_task": true,
+  "snapshots_and_transition_not_atomic_android_transaction": true,
+  "source_result_sha256": "5628eaab1e17aee6819b26568b6554c2e39e509afe9d5b6fbc2f18854ccba092",
+  "term_command_receipt_sha256": "a721f73d22d8139d336604334bb53a4d905ceed3178be3f941087307e2393a84"
+}

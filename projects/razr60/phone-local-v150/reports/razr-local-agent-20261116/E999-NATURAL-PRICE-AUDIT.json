@@ -1,0 +1,460 @@
+{
+  "actions": [],
+  "apk_sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+  "audit_checks": {
+    "actual_action_sequence_matches": true,
+    "all_request_identities_match": true,
+    "completion_still_unverified": true,
+    "focus_result_matches_recorded_endpoints": true,
+    "goal_still_unverified": true,
+    "harness_cleanup_flags_and_exit_guard": true,
+    "no_external_model_or_automatic_replay": true,
+    "no_main_display_input": true,
+    "no_remaining_native_in_collected_inventory": true,
+    "no_terminal_pending_worker": true,
+    "selected_route_verified": true,
+    "task_cleanup_known": true,
+    "task_identity_matches": true,
+    "terminal_status_matches": true
+  },
+  "audit_checks_passed": true,
+  "background": {
+    "focus_scope": "Task before-Start and after-release endpoints; not continuous display monitoring. A foreground change is preserved without assigning its cause.",
+    "foreground_changed_before_start": false,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "native_process_count_after_collection": 0,
+    "ordinary_stop_sent": false,
+    "stop_requested_elapsed_ms": null,
+    "task_time_limit_reached": null
+  },
+  "build_source_commit": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "business_flag_is_separate_from_goal_proof": true,
+  "case_id": "official_natural_price_home_structure_build",
+  "case_label": "Independent natural-price-only official Xiaomi request",
+  "controller_summary": "visible native recommendation escaped its container",
+  "dispatched_model_action_count": 0,
+  "driver_business_verified": false,
+  "evidence": [
+    {
+      "artifact": "driver/RESULT.json",
+      "bytes": 16924,
+      "private_original_published": false,
+      "sha256": "6ddd514227164634ad5a86b0543512742433ca719458f4e96cbcef72dd25d938"
+    },
+    {
+      "artifact": "prepare/STATE.json",
+      "bytes": 1090,
+      "private_original_published": false,
+      "sha256": "ec7d9b6b9c9b54ce048f813f150e1f92368ff6a3fe57e948fe5c6186e84e8d0f"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 22943,
+      "private_original_published": false,
+      "sha256": "fa97a885991ebdadbe910726751765a06eec977360e74797fb660a79ff2a379f"
+    },
+    {
+      "artifact": "audit/NATURAL-PRICE-PURPOSE.json",
+      "bytes": 1240,
+      "private_original_published": false,
+      "sha256": "855fbeafcd8ab6a5240eb6f9f16434c83cdc155473cb2e2e16e87510a843a0d6"
+    },
+    {
+      "artifact": "task/web-flight-owner.json",
+      "bytes": 2723,
+      "private_original_published": false,
+      "sha256": "a4c8592a3b8b7f920fcd3bf2df380705d42abbf2ec9c04510a222739893b0403"
+    },
+    {
+      "artifact": "task/web-helper/raw-26ce88f4622b47f0a9505fcce436e370fafe9fe1175a4beeab360d033eac4364.json",
+      "bytes": 2051090,
+      "private_original_published": false,
+      "sha256": "089525551165b737051b57a2ac677145f3958074f44235c7bf7508b162911df2"
+    },
+    {
+      "artifact": "task/web-helper/raw-3e1c96276e3c47bca522b4b01c329e20edcf45d48521457eabd89f59a4ccd1d6.json",
+      "bytes": 2052241,
+      "private_original_published": false,
+      "sha256": "d96bdc222c63eef05ea580a35b2583c45e1b23928ea14635ebe9e871cdffea18"
+    },
+    {
+      "artifact": "task/web-helper/raw-887bd54f1b9247af92eab0b8059ccf34970153ebf39b4657afd2bb01448416ef.json",
+      "bytes": 2052277,
+      "private_original_published": false,
+      "sha256": "24bbce16800b1d8075d26e5fcc6da6afb292186516530cab75ed14193d9c7ed1"
+    },
+    {
+      "artifact": "task/web-helper/raw-b3fda96f58244c7585ef18aba558ac5d9cd8bb97ca254757999f824eba7ebc27.json",
+      "bytes": 2052265,
+      "private_original_published": false,
+      "sha256": "2916639d60ca476039e0cccbdc797dd2a43246fcbef6bb4cdbfbd740d14ae334"
+    },
+    {
+      "artifact": "task/web-observation-timing-398e66623ccf4d42bcc418a54bfa03eb.json",
+      "bytes": 7591,
+      "private_original_published": false,
+      "sha256": "a0c21365a7a3e784904c8624ba84e33bfc63d340f3874db446e3514a393f9ca3"
+    }
+  ],
+  "foreground_sampling": {
+    "after_release_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "alias_text_file_count": 16,
+    "alias_text_files_excluded_from_sample_count": true,
+    "all_sampled_components_equal_to_before_start": true,
+    "all_sampled_raw_focus_values_equal_to_before_start": true,
+    "all_samples_have_nonnull_focus": true,
+    "before_start_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "endpoint_unchanged": true,
+    "foreground_frame_rate_or_touch_latency_measured": false,
+    "host_wall_clock_only": true,
+    "interpretation": "All existing saved main-display window dumps are audited, with command copies counted once. The recorded focus applies at sampled instants; unsampled gaps and foreground interaction responsiveness remain unmeasured. Zero main-display input is a separate routing fact.",
+    "main_screen_inputs": 0,
+    "max_running_sample_start_gap_s": 4.80911922454834,
+    "max_saved_sample_start_gap_s": 71.99859929084778,
+    "phase_counts": {
+      "before_start": 1,
+      "preparation": 6,
+      "release": 1,
+      "running": 10
+    },
+    "sample_count": 18,
+    "samples": [
+      {
+        "artifact": "commands/prepare-0012-before-windows.stdout",
+        "command_receipt_sha256": "59291af552f2ddca12cb5ab39e50e1a1ab9117e6069ec4c198ee490fd102de61",
+        "completed_host_wall_s": 1794824515.5817916,
+        "dump_sha256": "9979c3a95066e17866c272c31ff4653bed1e225a481699d55e029d06daac471f",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824515.5608413,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0021-prelaunch-windows.stdout",
+        "command_receipt_sha256": "21e520c9b3df9e2e2f2915d1ab7ac82757a86dcb007bb2cb111209d3a004d471",
+        "completed_host_wall_s": 1794824516.2947578,
+        "dump_sha256": "ae24ea8868589ddd89f9d06869529628a7ab7ba108410aad8d05cdeddd30d244",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824516.261283,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0030-after-windows.stdout",
+        "command_receipt_sha256": "23d6c2e523756cbd6b4cbb1bef8f94c7e6bc6fced3fec074813c7521c811c498",
+        "completed_host_wall_s": 1794824517.7481143,
+        "dump_sha256": "a0bc938c1dd9d486ae176ed4a25d1bf09b528ea63fb6a687ef370459b80bc10a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824517.7188544,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-ea6c3746/commands/select-webhelper-0012-before-selection-windows.stdout",
+        "command_receipt_sha256": "8d9537a78c9f009bfb6354a4837cfcf6d2a1952bfaa618fac30e98726a789af8",
+        "completed_host_wall_s": 1794824518.6481154,
+        "dump_sha256": "a0bc938c1dd9d486ae176ed4a25d1bf09b528ea63fb6a687ef370459b80bc10a",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824518.6072671,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-ea6c3746/commands/select-webhelper-0039-snapshot-windows.stdout",
+        "command_receipt_sha256": "6356b542c3e6a49b9407fd27975692823ae6442aee979b5cf2b1fda1a9ddcb59",
+        "completed_host_wall_s": 1794824521.292097,
+        "dump_sha256": "5e3b326522e5246cabbcb4cd1ec53d9b992313dca229c1f480da96826a0507fa",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824521.253993,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "root-frame-refresh/commands/root-frame-refresh-0027-snapshot-windows.stdout",
+        "command_receipt_sha256": "aeb95ca3e8aeb93ca6819e50eb63f4fe46dc428240221acdd1d3754fc108c1ba",
+        "completed_host_wall_s": 1794824523.5312746,
+        "dump_sha256": "5e3b326522e5246cabbcb4cd1ec53d9b992313dca229c1f480da96826a0507fa",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824523.5115883,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0021-before-start-window.stdout",
+        "command_receipt_sha256": "cee95104f9282a0adf71b7161558fffc1e88b76e32d52b6690bfc2dc49a70fa8",
+        "completed_host_wall_s": 1794824595.537343,
+        "dump_sha256": "5e3b326522e5246cabbcb4cd1ec53d9b992313dca229c1f480da96826a0507fa",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "before_start",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824595.5101876,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0027-running-windows.stdout",
+        "command_receipt_sha256": "1afa82733c4506702cf5d0ff50e361a1c57a2e957e85d9517eafa8247aa05730",
+        "completed_host_wall_s": 1794824596.614097,
+        "dump_sha256": "5e3b326522e5246cabbcb4cd1ec53d9b992313dca229c1f480da96826a0507fa",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824596.5861194,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0032-running-windows.stdout",
+        "command_receipt_sha256": "61338d99a982290fd03571489aa63258dbb97c9ff75e79f7a76b6827cf74b792",
+        "completed_host_wall_s": 1794824600.973087,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824600.9382231,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0037-running-windows.stdout",
+        "command_receipt_sha256": "f8ccfc7ccafe76a75bc11b30a86baeb86e9db59ed5b67ffabfb8196463b56bf3",
+        "completed_host_wall_s": 1794824605.669138,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824605.6275625,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0042-running-windows.stdout",
+        "command_receipt_sha256": "8ebb5e80d5508728df69bc5551b44295a41256914312ca8210bcfcb90f3901da",
+        "completed_host_wall_s": 1794824610.3200989,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824610.2782888,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0047-running-windows.stdout",
+        "command_receipt_sha256": "e9219ade418e895360971bf48a7a0f2ec70ddb8688b825aaeab94b4ada594a66",
+        "completed_host_wall_s": 1794824614.9431603,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824614.8990846,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0052-running-windows.stdout",
+        "command_receipt_sha256": "462d3e53e3ebecd9abf41645d7d0c731971466c077a92725a375547d676e8259",
+        "completed_host_wall_s": 1794824619.746472,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824619.7082038,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0057-running-windows.stdout",
+        "command_receipt_sha256": "d9476506c88330ee2ff80059e29095b23fa7a5da486ea8d8705c04485b2645a2",
+        "completed_host_wall_s": 1794824624.240093,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824624.2052777,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0062-running-windows.stdout",
+        "command_receipt_sha256": "d6d680a5fbe17caa5ce91410efb32c3863c7fef661e9182d8c1720b492e2b40a",
+        "completed_host_wall_s": 1794824628.8482263,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824628.8148782,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0067-running-windows.stdout",
+        "command_receipt_sha256": "890320e6bdd3a950442f61e195eddf58037bb18a2814bf4aae02fa7fdaba56f0",
+        "completed_host_wall_s": 1794824633.429138,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824633.3895032,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0072-running-windows.stdout",
+        "command_receipt_sha256": "2a7f0b9b13c7e5796d817ac5c06d7316735c6ef38843a7e8aa9f04a8476b1d3d",
+        "completed_host_wall_s": 1794824638.1971498,
+        "dump_sha256": "4ac426c2190f576a29eebe6eaa30b5fe858588b657146d50ec68e1fd5f442455",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824638.1539361,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-12ebafcc/commands/run-0082-release-windows.stdout",
+        "command_receipt_sha256": "9ff255f4236ab175317e818fe17553d1972d7ddf37693bbc93a9c84150c26938",
+        "completed_host_wall_s": 1794824641.2477586,
+        "dump_sha256": "6bf3f1216028e564d3bf708c53bd7ab505bf8df4315c4be235abfe042467d47d",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "release",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824641.2177186,
+        "unknown_focus": false
+      }
+    ],
+    "snapshots_are_not_continuous_monitoring": true,
+    "unknown_focus_sample_count": 0,
+    "unsampled_intervals_present": true
+  },
+  "interpretation": "The natural-price-only task failed before any model request or tool action with visible native recommendation escaped its container. This is the unchanged native recommendation geometry guard, distinct from the typed changed-row diagnostic. No price quote, purchase, or harmlessness classification is inferred.",
+  "model_request_count": 0,
+  "model_requests": [],
+  "outcome": "FAIL_GOAL_NOT_VERIFIED",
+  "recorded_action_count": 0,
+  "route": "official_website",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "sample_count": 1,
+  "shopping_intent": {
+    "actual_capture_bindings_checked": 4,
+    "classification_reused_exact_owner_and_unchanged_parser": true,
+    "contract_sha256": "234b1ccc8c991ebdb7c4915a9eb3ef4c1585bf97d1b463993cf45390fa72c9af",
+    "does_not_replace_legacy_specification_failures": true,
+    "legacy_explicit_owner": false,
+    "natural_readonly_intent": true,
+    "original_owner_and_all_capture_bindings_verified": true,
+    "original_owner_unchanged": true,
+    "owner_sha256": "413fca2c85d41f3d988b4c0e9da56cd43faf3f0529df389decedb4afe5ee8e8f",
+    "price_result_verified": false,
+    "recognition": "bounded_natural_official_product_price.v1",
+    "single_unit_requested": false,
+    "specifications_requested": false,
+    "state_sha256": "ec7d9b6b9c9b54ce048f813f150e1f92368ff6a3fe57e948fe5c6186e84e8d0f"
+  },
+  "steps_are_not_business_progress": true,
+  "strict_prepare": {
+    "after_launch_no_controller_task_on_display0": true,
+    "all_three_prepare_gates_replayed": true,
+    "atomic_android_transaction": false,
+    "initial_and_prelaunch_no_controller_task_on_display0": true,
+    "interpretation": "The original guard functions are replayed over their saved snapshots. Activity/window snapshots and launch are separate Android operations; the host lock does not serialize concurrent user or system activity.",
+    "original_main_focus_not_rebased": true,
+    "outer_display_id": 115,
+    "own_ui_transfer": false,
+    "phone_operations_by_auditor": 0,
+    "prepare_sha256": "200c665583f776be4a4741a5b46b3ec524fe55d2cf4ea317393ef7c11272214c",
+    "snapshots": [
+      {
+        "artifact": "prepare/before-activities.txt",
+        "bytes": 61393,
+        "private_original_published": false,
+        "sha256": "38ef7493945e99cb6f0d6548fa8e03c4f7852bd80b8019c5b4939a9e84609704"
+      },
+      {
+        "artifact": "prepare/before-windows.txt",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "9979c3a95066e17866c272c31ff4653bed1e225a481699d55e029d06daac471f"
+      },
+      {
+        "artifact": "prepare/prelaunch-activities.txt",
+        "bytes": 67188,
+        "private_original_published": false,
+        "sha256": "f88591051b1b0e1768acdfe7ed952897652e380cbbdd284c53424777141bc752"
+      },
+      {
+        "artifact": "prepare/prelaunch-windows.txt",
+        "bytes": 36667,
+        "private_original_published": false,
+        "sha256": "ae24ea8868589ddd89f9d06869529628a7ab7ba108410aad8d05cdeddd30d244"
+      },
+      {
+        "artifact": "prepare/after-activities.txt",
+        "bytes": 73641,
+        "private_original_published": false,
+        "sha256": "4829f3df272c3a204b8e55348f75ad8bde3a85af11d3fba1c79b15aefa53b337"
+      },
+      {
+        "artifact": "prepare/after-windows.txt",
+        "bytes": 37696,
+        "private_original_published": false,
+        "sha256": "a0bc938c1dd9d486ae176ed4a25d1bf09b528ea63fb6a687ef370459b80bc10a"
+      }
+    ],
+    "source_driver_and_action_bytes_preserved": true,
+    "strict_manifest_sha256": "41424c1423283da125c127ccb63c5ecc3e1c41cd477051d2ce0c3006ff929c9a"
+  },
+  "task_id": "1c76f9b603704ae5ae271a19792c08c4",
+  "task_verification": {
+    "action_worker_pending_at_terminal": false,
+    "automatic_replay": false,
+    "cleanup_known": true,
+    "completion_verified": false,
+    "external_model": false,
+    "goal_independently_verified": false,
+    "native_cancel_worker_pending_at_terminal": false,
+    "observation_read_worker_pending_at_terminal": false,
+    "status": "failed",
+    "steps": 0
+  },
+  "timing": {
+    "collection_wall_time_used_as_task_duration": false,
+    "overall_task_elapsed_ms": null
+  },
+  "virtual_display_cleanup": {
+    "both_displays_absent_in_final_saved_window_inventory": true,
+    "controller_outer_display_id": 115,
+    "evidence": [
+      {
+        "artifact": "driver/run-0080-release-receipt.stdout",
+        "bytes": 0,
+        "private_original_published": false,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "driver/run-0081-release-receipt.stdout",
+        "bytes": 179,
+        "private_original_published": false,
+        "sha256": "35282c5a5e0aad7191caa025f1b3be19b5add2508026ab90c67373a8c106671c"
+      },
+      {
+        "artifact": "driver/run-0082-release-windows.stdout",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "6bf3f1216028e564d3bf708c53bd7ab505bf8df4315c4be235abfe042467d47d"
+      },
+      {
+        "artifact": "task/background-bootstrap.json",
+        "bytes": 8672,
+        "private_original_published": false,
+        "sha256": "d93df4925fa80e52bbd461b631b9513a0e7eb3742873b201e8319d4b4b89c669"
+      },
+      {
+        "artifact": "task/background-cleanup.json",
+        "bytes": 7306,
+        "private_original_published": false,
+        "sha256": "b803e38e803bf13cfb892be0b03068ae15939a3b40c78eb8d0f3242ab445f6f0"
+      }
+    ],
+    "initial_empty_outer_release_poll_retained": 1,
+    "outer_release_receipt_matches_original_lease": true,
+    "product_target_release_and_broker_exit_verified": true,
+    "target_app_display_id": 116
+  }
+}

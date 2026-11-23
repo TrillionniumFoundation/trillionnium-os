@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.v55-source-preservation.v1",
+  "local_component_commit": "66314803ddf85cfcfde878b0d13d4470a6760242",
+  "current_component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+  "v53_added_members": {
+    "members": 23,
+    "changed": [
+      "src/org/trillionnium/hepta/local/WebHelperIdentity.java"
+    ],
+    "missing": []
+  },
+  "all_v53_native_members": {
+    "members": 45,
+    "changed": [],
+    "missing": []
+  },
+  "v53_web_package_members": {
+    "members": 5,
+    "changed": [],
+    "missing": []
+  },
+  "v54_observation_worker_section": {
+    "unchanged": true,
+    "sha256": "8b123d07416daf341ee5cd53554fd42374d2cf12ec1b7d8dd52cc860c270b502"
+  },
+  "web_identity_git_blob": "438572f6ec9819a1e024035376a538c2194088c7",
+  "expected_pr145_web_identity_git_blob": "438572f6ec9819a1e024035376a538c2194088c7",
+  "v53_deleted_members": [],
+  "phone_operations": false
+}

@@ -1,0 +1,216 @@
+package org.trillionnium.hepta.local;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.JSONObject;
+
+/** Actual Controller await/close, writer, receipt projection and outcome call.
+ * The Service endpoint/scheduler and Android clock/chmod are explicit host IO. */
+final class ControllerGuardClosureHost {
+    static Path outputRoot;static int ordinal;
+    static ControllerGuardClosureHost clockOwner;static Runnable clockHook;
+    static final class SystemClock {static long elapsedRealtime(){
+        if(clockHook!=null&&Thread.holdsLock(clockOwner)){Runnable hook=clockHook;clockHook=null;hook.run();}
+        return NativeActionBridgeHost.SystemClock.now;
+    }}
+    static final class PhoneObservation {final String id;PhoneObservation(String value){id=value;}}
+    static final class android {static final class system {static final class Os {
+        static void chmod(String path,int mode)throws Exception{
+            if(mode!=0600)throw new AssertionError("unexpected evidence permissions");
+            Files.setPosixFilePermissions(Paths.get(path),java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"));
+        }
+    }}}
+    static final class HeptaAccessibilityService {
+        interface Cancellation {boolean isCancelled();}
+        interface ActionCallback {void onResult(ActionOutcome value);}
+        static final class ActionOutcome {
+            final boolean accepted,dispatched,stale;final JSONObject actionExecution;
+            ActionOutcome(boolean a,boolean d,boolean s,JSONObject x){accepted=a;dispatched=d;stale=s;actionExecution=x;}
+        }
+        final ControllerGuardClosureHost host;String mode="normal";NativeAppSession.ActionGuard actualGuard;
+        int retires,performs;ActionCallback callback;ActionOutcome delivered;
+        HeptaAccessibilityService(ControllerGuardClosureHost value){host=value;}
+        void perform(String id,PhoneObservation observation,ActionDecision action,ObservedTargetLabels targets,
+                org.trillionnium.hepta.background.FixedIntentTarget fixed,TaskAuthorization.Gate authorization,
+                String run,long deadline,NativeAppSession.ActionGuard guard,Cancellation cancellation,ActionCallback cb)throws Exception{
+            performs++;actualGuard=guard;callback=cb;
+            yes(id.equals(host.fixture.task)&&observation==host.before&&action==host.action&&run.equals(host.decisionRunId)
+                    &&authorization==host.fixture.gate,"same actual Controller inputs reach Service endpoint");
+            if("throw".equals(mode))throw new IllegalStateException("explicit host Service failure");
+            JSONObject execution=NativeActionBridgeHost.controllerAwaitExecution(host.fixture,guard,action,run,deadline,mode);
+            if("malformed-seal".equals(mode))execution.getJSONObject("native_action_guard").put("purpose",new Object());
+            if("timeout".equals(mode)){NativeActionBridgeHost.SystemClock.now=deadline;return;}
+            if("interrupt".equals(mode)){Thread.currentThread().interrupt();return;}
+            if("cancel".equals(mode))host.cancelled.set(true);
+            if("null".equals(mode)){cb.onResult(null);return;}
+            delivered=new ActionOutcome("accepted".equals(mode),"dispatched".equals(mode),!"not-stale".equals(mode),execution);
+            cb.onResult(delivered);
+            if("duplicate".equals(mode))cb.onResult(new ActionOutcome(true,true,false,new JSONObject()));
+        }
+        boolean actionWorkPending(){return "pending".equals(mode);}
+        void retireActionWork(String id,String reason){retires++;}
+        void requestNativeCancellation(TaskCancellationQueue.Ticket ticket,Runnable work){work.run();}
+        static String sha(byte[] data)throws Exception{
+            byte[] digest=java.security.MessageDigest.getInstance("SHA-256").digest(data);StringBuilder out=new StringBuilder();
+            for(byte b:digest)out.append(String.format(Locale.ROOT,"%02x",b&255));return out.toString();
+        }
+    }
+    final NativeActionBridgeHost.Fixture fixture;final PhoneObservation before;final ActionDecision action;
+    final String decisionRunId;final File evidence;final HeptaAccessibilityService service;
+    final AtomicBoolean cancelled=new AtomicBoolean();NativeAppSession activeNativeTask;
+    // Explicit absent typed search binding; the actual Controller retirement remains verbatim.
+    final NativeSearchSession activeNativeSearch=null;
+    final Object handleLock=new Object();final LocalInference inference=new LocalInference();
+    final AtomicLong stopRequestedElapsed=new AtomicLong(-1);final TaskCancellationQueue.Ticket taskCancellation=new TaskCancellationQueue.Ticket();
+    LocalInference.Handle activeInference;boolean running=true,terminalDecisionSealed;String currentTaskId;
+    static final class LocalInference {static final class Handle {void cancel(){}}void cancelTask(){}}
+    static final class TaskCancellationQueue {static final class Ticket {}}
+    void emitForTask(String task,String message){}
+    boolean failJournal;IntegrationChecks.Work afterFsync;int durableWrites;
+    ControllerGuardClosureHost(String name)throws Exception{
+        fixture=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.OPEN,"await-closure:"+name);
+        // Retire the fixture's preparation Attempt without claiming a proof;
+        // the next Attempt obtains its one guard inside the actual awaitAction.
+        fixture.session.modelActionOutcome(fixture.action,fixture.run,false,false,true,
+                NativeActionBridgeHost.hash("host-preparation-receipt"),++NativeActionBridgeHost.SystemClock.now);
+        fixture.observeGraph(fixture.raw);before=new PhoneObservation(fixture.frame.observationId);
+        action=fixture.click(fixture.action.nodeId);decisionRunId=NativeActionBridgeHost.id("actual-await-run:"+name);
+        fixture.gate.check(action,decisionRunId);fixture.session.beforeModelAction(++fixture.step,action,decisionRunId,++NativeActionBridgeHost.SystemClock.now);
+        activeNativeTask=fixture.session;service=new HeptaAccessibilityService(this);
+        currentTaskId=fixture.task;
+        Path path=outputRoot.resolve(String.format(Locale.ROOT,"case-%03d",++ordinal));Files.createDirectory(path);evidence=path.toFile();
+    }
+{{await_action}}
+{{check_active}}
+{{stopped}}
+{{cleanup_unknown}}
+{{stop}}
+{{projection}}
+    static final class Disk {
+{{record}}
+    }
+    void record(File directory,String name,JSONObject value)throws Exception{
+        if(failJournal)throw new java.io.IOException("explicit host disk failure");
+        Disk.record(directory,name,value);durableWrites++;
+        yes(Files.readAllBytes(new File(directory,name).toPath()).length>0,"real action receipt created and fsynced");
+        if(afterFsync!=null)afterFsync.run();
+    }
+    HeptaAccessibilityService.ActionOutcome await()throws Exception{
+        return awaitAction(fixture.task,before,action,null,null,fixture.gate,decisionRunId,SystemClock.elapsedRealtime()+480000);
+    }
+    void persist(HeptaAccessibilityService.ActionOutcome outcome)throws Exception{
+        int steps=fixture.step;long nativeDispatchEnded=SystemClock.elapsedRealtime();
+        JSONObject actionReceipt=new JSONObject().put("accepted",outcome.accepted).put("dispatched",outcome.dispatched)
+                .put("stale",outcome.stale).put("action_execution",outcome.actionExecution);
+{{record_call}}
+{{outcome_call}}
+    }
+    Object permit()throws Exception{return NativeActionBridgeHost.recoveryPermit(fixture.session,action,decisionRunId,before.id);}
+    void closed()throws Exception{
+        IntegrationChecks.rejects(()->service.actualGuard.requireOpen(action,decisionRunId,SystemClock.elapsedRealtime()),"guard is closed before any journal IO");
+        IntegrationChecks.rejects(()->service.actualGuard.claim(action,decisionRunId,SystemClock.elapsedRealtime()),"closed guard can never enter a later effect");
+    }
+    static void yes(boolean value,String reason){IntegrationChecks.yes(value,reason);}
+    static void one(String name,IntegrationChecks.Work body)throws Exception{IntegrationChecks.one(name,body);}
+    static void positive()throws Exception{
+        one("actual_await_close_fsync_outcome_recovers_without_reopening_guard",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("positive");
+            HeptaAccessibilityService.ActionOutcome outcome=f.await();f.closed();
+            yes(f.permit()==null,"await seal alone is not a recovery permit");
+            f.afterFsync=()->{f.closed();};f.persist(outcome);
+            yes(f.durableWrites==1&&f.permit()!=null,"normal awaited unentered receipt must survive close and durable outcome");
+            java.lang.reflect.Method consume=NativeAppSession.ActionGuard.class.getDeclaredMethod("consumeUnenteredOutcome",Map.class);
+            consume.setAccessible(true);
+            yes(Boolean.FALSE.equals(consume.invoke(f.service.actualGuard,nativeQueryExecution(outcome.actionExecution))),"exact private seal is consumed once and cannot be consumed again");
+            f.fixture.observeGraph(f.fixture.fresh);
+            yes(NativeActionBridgeHost.recoveryContext(f.fixture)!=null,"actual closure path publishes recovery only on a new observed frame");
+            f.closed();f.fixture.noEffect("recovery never dispatches an effect");
+            IntegrationChecks.rejects(()->f.persist(outcome),"duplicate receipt cannot consume the seal again");
+        });
+    }
+    static void negatives()throws Exception{
+        for(final String mode:Arrays.asList("claimed","ordinary-close","retired","entered","accepted","dispatched","not-stale","cancel"))
+            one("actual_await_closed_lineage_refuses_"+mode,()->{
+                ControllerGuardClosureHost f=new ControllerGuardClosureHost(mode);f.service.mode=mode;
+                HeptaAccessibilityService.ActionOutcome outcome=f.await();f.closed();f.persist(outcome);
+                yes(f.permit()==null,"nonqualifying real lifetime has no recovery permit");
+            });
+        for(final String mode:Arrays.asList("throw","timeout","interrupt","pending","null","malformed-seal"))
+            one("actual_await_abnormal_exit_closes_without_lineage_"+mode,()->{
+                ControllerGuardClosureHost f=new ControllerGuardClosureHost(mode);f.service.mode=mode;
+                try{
+                    try{f.await();throw new AssertionError("abnormal actual await returned a usable result");}
+                    catch(CleanupUnknown|IllegalArgumentException|IllegalStateException expected){yes(true,"actual await propagates its specific terminal failure");}
+                }
+                finally{Thread.interrupted();}
+                f.closed();yes(f.permit()==null&&f.durableWrites==0,"abandoned await cannot mint durable recovery");
+            });
+        one("closed_lineage_binds_exact_immutable_scalar_receipt",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("changed-receipt");
+            HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            outcome.actionExecution.put("operation_id",NativeActionBridgeHost.id("different-valid-operation"));
+            f.persist(outcome);yes(f.permit()==null,"otherwise valid operation substitution cannot match private seal");f.closed();
+        });
+        one("ordinary_close_after_await_revokes_private_seal",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("revoked");HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            f.service.actualGuard.close();f.persist(outcome);yes(f.permit()==null,"later ordinary close erases private lineage");f.closed();
+        });
+        one("actual_stop_after_seal_before_outcome_invalidates_lineage",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("stop-after-seal");HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            f.stop();f.persist(outcome);yes(f.cancelled.get()&&f.permit()==null,"actual Stop token invalidates a completed private handoff");f.closed();
+        });
+        one("actual_stop_and_finally_share_one_publication_monitor",()->{
+            final ControllerGuardClosureHost f=new ControllerGuardClosureHost("stop-interleaving");final AtomicReference<Thread> thread=new AtomicReference<Thread>();
+            clockOwner=f;clockHook=()->{
+                Thread stop=new Thread(()->f.stop(),"host-stop-race");thread.set(stop);stop.start();
+                long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+                while(stop.getState()!=Thread.State.BLOCKED&&System.nanoTime()<until)Thread.yield();
+                yes(Thread.holdsLock(f)&&stop.getState()==Thread.State.BLOCKED&&!f.cancelled.get(),"Stop cannot interleave between final gate and seal");
+            };
+            HeptaAccessibilityService.ActionOutcome outcome=f.await();yes(thread.get()!=null,"real finally entered shared monitor");thread.get().join(2000);
+            yes(!thread.get().isAlive()&&f.cancelled.get(),"Stop proceeds immediately after the publication gate");
+            f.persist(outcome);yes(f.permit()==null,"Stop before outcome consumption invalidates seal");f.closed();
+        });
+        one("actual_finally_rechecks_original_action_deadline",()->{
+            final ControllerGuardClosureHost f=new ControllerGuardClosureHost("final-deadline");clockOwner=f;
+            clockHook=()->NativeActionBridgeHost.SystemClock.now=f.service.actualGuard.deadline;
+            HeptaAccessibilityService.ActionOutcome outcome=f.await();f.closed();f.persist(outcome);
+            yes(f.permit()==null,"crossing original deadline before seal publishes no recovery");
+        });
+        one("exact_integer_types_are_not_collapsed_by_canonical_hash",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("integer-type");HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            int number=outcome.actionExecution.getInt("window_id");Object original=outcome.actionExecution.get("window_id");
+            yes(original instanceof Integer,"host actual window identity begins as Integer");outcome.actionExecution.put("window_id",Long.valueOf(number));
+            f.persist(outcome);yes(f.permit()==null,"same numeric value with a different runtime type cannot match sealed projection");f.closed();
+        });
+        one("actual_fsync_failure_cannot_publish_recovery",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("disk");HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            f.failJournal=true;IntegrationChecks.ioRejects(()->f.persist(outcome),"real outcome call is after successful journal");
+            yes(f.permit()==null&&f.durableWrites==0,"no durable action receipt means no recovery");f.closed();
+            f.fixture.session.retire();f.closed();
+        });
+        one("session_retirement_after_action_fsync_cannot_publish_recovery",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("retire-after-sync");HeptaAccessibilityService.ActionOutcome outcome=f.await();
+            f.afterFsync=()->f.fixture.session.retire();IntegrationChecks.rejects(()->f.persist(outcome),"real Session retirement wins after journal");
+            yes(f.durableWrites==1,"durable receipt retained without eligibility");f.closed();
+        });
+        one("duplicate_service_callback_cannot_substitute_the_sealed_outcome",()->{
+            ControllerGuardClosureHost f=new ControllerGuardClosureHost("duplicate");f.service.mode="duplicate";
+            HeptaAccessibilityService.ActionOutcome outcome=f.await();yes(outcome==f.service.delivered,"first actual callback wins");
+            f.persist(outcome);yes(f.permit()!=null,"first exact drained refusal remains recoverable");f.closed();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        NativeActionBridgeHost.sourceRoot=Paths.get(args[0]);NativeAppProviderHostTest.fixtures=NativeActionBridgeHost.sourceRoot.resolve("tests/native-app-provider/fixtures");
+        outputRoot=Paths.get(args[2]);Files.createDirectory(outputRoot);positive();
+        if(args.length>3&&"baseline-positive".equals(args[3]))throw new AssertionError("R17 unexpectedly passes real Controller close regression");
+        negatives();IntegrationChecks.finish(Paths.get(args[1]),"hepta.native-controller-guard-closure-host.v1",
+                "Verbatim Controller await/projection/writer/outcome call, actual Session/ActionExecutionState/strict comparison. Synthetic Service scheduling, graph, clock and Android IO; no phone or business pass.");
+    }
+}

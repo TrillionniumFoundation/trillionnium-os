@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.background-display-route-audit.v1",
+  "source_commit": "47d47aec94bc52d7ef2b848762533d7bf8de3a07",
+  "apk_sha256": "81c5dca8e57d047bcc4c9337b9ad0ac9abc01100daba68fbb0a8ca9086393f92",
+  "scope": "Host source review and saved exact-case evidence. No phone operations performed by this audit.",
+  "source_sha256": {
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java": "7f0934dd1180cc2f897efffdd93bd7c3ad1a0e0a76eb67269d53c654e7728820",
+    "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": "f3eaa5ab438c39cc69653b2ce73da6df740ea0b4833f8076ad44abdadb5d580c",
+    "src/org/trillionnium/hepta/local/MainActivity.java": "aec6a6cef2efe428d48706f5caaf5e8d7a3adf98d838e658ac7b716c1e10780a"
+  },
+  "routes": [
+    {
+      "tool": "open",
+      "service_lines": [
+        1706,
+        1707,
+        1905,
+        1926
+      ],
+      "broker_lines": [
+        295,
+        318,
+        321,
+        369,
+        387
+      ],
+      "background_behavior": "The current background lease routes launch through the broker with setLaunchDisplayId; unrelated-display task guards run before and after launch. Failure returns without a foreground retry."
+    },
+    {
+      "tool": "back",
+      "service_lines": [
+        1722,
+        1723,
+        1905,
+        1926
+      ],
+      "broker_lines": [
+        388,
+        420
+      ],
+      "background_behavior": "Both key events have the session display id. UID-targeted injection is preceded by current package/display/task checks."
+    },
+    {
+      "tool": "home",
+      "service_lines": [
+        1190,
+        1908
+      ],
+      "background_behavior": "Refused for background sessions; no global HOME fallback."
+    },
+    {
+      "tool": "coordinate-click",
+      "service_lines": [
+        1191,
+        1937
+      ],
+      "background_behavior": "Refused for background sessions; no coordinate gesture or main-display fallback."
+    },
+    {
+      "tool": "click/type",
+      "service_lines": [
+        1679,
+        1681,
+        1733,
+        1748
+      ],
+      "background_behavior": "Uses an observed NodeRef revalidated against current owned application window, display, package, signature and lease."
+    },
+    {
+      "tool": "submit/enter",
+      "service_lines": [
+        1798,
+        1827,
+        3170,
+        3175
+      ],
+      "background_behavior": "The observed editor node's ACTION_IME_ENTER, not a global Enter key. Native window and display are rechecked, with a consumed attempt journal and no replay."
+    },
+    {
+      "tool": "scroll",
+      "service_lines": [
+        1835,
+        1840
+      ],
+      "background_behavior": "Uses only an action supported by the observed and revalidated node."
+    },
+    {
+      "tool": "fixed local intent",
+      "service_lines": [
+        1855,
+        1901
+      ],
+      "broker_lines": [
+        295,
+        387
+      ],
+      "background_behavior": "Background branch captures the lease and dispatches through its bound broker; failure returns an uncertain/failed receipt without automatic retry."
+    }
+  ],
+  "lease_guards": {
+    "service_lines": [
+      353,
+      405,
+      1187,
+      1218,
+      1392,
+      1416
+    ],
+    "conclusion": "Retired ownership throws. A former background observation cannot be reinterpreted as foreground. The captured action compares task/scope/authorization/background object/display/generation before entering an effect."
+  },
+  "explicit_foreground_entries": {
+    "service_global_navigation_line": 1728,
+    "service_foreground_launch_line": 1716,
+    "fixed_intent_foreground_launch_line": 1871,
+    "owner_settings_button_line": 131,
+    "owner_root_manager_button_line": 185,
+    "main_activity_source": "src/org/trillionnium/hepta/local/MainActivity.java",
+    "interpretation": "Separate foreground mode and ordinary owner navigation still exist. The strict background test workflow must retain its background selection and must not press the Settings or root-manager buttons; their startActivity calls have no explicit display option."
+  },
+  "display_policy": {
+    "broker_lines": [
+      145,
+      148,
+      279
+    ],
+    "required": [
+      "OWN_FOCUS",
+      "STEAL_TOP_FOCUS_DISABLED"
+    ],
+    "default_display_refused": true,
+    "destroy_content_on_removal": true
+  },
+  "saved_native_app_evidence": {
+    "case": "405f-notes-01",
+    "product_target_display_id": 93,
+    "back": {
+      "display_id": 93,
+      "before_window_id": 598,
+      "after_window_id": 596,
+      "accepted": true,
+      "dispatched": true,
+      "stale": false,
+      "worker_drained": true,
+      "action_sha256": "67ff3aeea3baca7493c522bc658e34b6b52d220a23413690bf8774ae21c964e8",
+      "proof_sha256": "e48b12b94d6d495606c54a2459b5487275ad659c078667cc6dff6d467d8034a6"
+    },
+    "click": {
+      "display_id": 93,
+      "before_window_id": 596,
+      "after_window_id": 599,
+      "accepted": true,
+      "dispatched": true,
+      "stale": false,
+      "worker_drained": true,
+      "action_sha256": "acb00f59eea82024687728ede3b72024d320a3097225f2c7bcaf9979b842d085",
+      "proof_sha256": "3efa6472a5975a253d348d3087b59486947304ad91287e82c05057ad8347df84"
+    },
+    "bootstrap_sha256": "0eef82722ff71b498098952b2144024bc0d4cc598e47e39351dc2fa0a1cf5f1a",
+    "same_background_generation_across_frames": true,
+    "source_for_these_routes_identical_to_current": true
+  },
+  "limits": [
+    "This audit covers issued tool routing, not a proof that arbitrary third-party app internals cannot open other windows.",
+    "The previously observed flight foreground changes retain their unknown cause; this static review does not erase that evidence.",
+    "The outer display that carries Hepta's control UI is a host/ADB test helper and is separate from the product target display.",
+    "A target already present on the main display remains refused. No closing or moving that main-display task is authorized by this audit.",
+    "No concurrent foreground touch/frame-rate, host-disconnect or reboot qualification is inferred."
+  ]
+}

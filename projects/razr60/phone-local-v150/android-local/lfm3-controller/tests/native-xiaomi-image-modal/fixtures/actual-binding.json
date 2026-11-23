@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.native-app-session.v1",
+  "task_id": "6acbbe0c9a4a4b1ca12a91ab6c596768",
+  "owner_sha256": "8d76e0c231b30a3c18fd4c57967ba8546e6d8d9fe0a6132086c24536a540b421",
+  "execution_target_sha256": "1dd8f49a5b90995ff035ec20980cbc9c0eceec6511603620785d9282280989a7",
+  "authorization_sha256": "e698a3aa764f67b15d252545fce642bf974c2a1c08f6bc295cee0345d1229cad",
+  "installed_app": {
+    "package": "com.xiaomi.shop",
+    "uid": 10485,
+    "version_code": 20261010,
+    "apk_hashes": {
+      "base": "95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"
+    },
+    "apk_set_sha256": "ae070b251cd4977754c498f24a527de1d28e38df878fdd2628fe8cfb3f026eab"
+  },
+  "selection_projection_sha256": "5423afc74e10604c644d2d1177e836e60c34f9fd78f747ff7a2d7374c3a9ba22",
+  "goal": {
+    "schema": "hepta.native-app-owner.v1",
+    "kind": "native_product_price",
+    "package_name": "com.xiaomi.shop",
+    "owner_sha256": "8d76e0c231b30a3c18fd4c57967ba8546e6d8d9fe0a6132086c24536a540b421",
+    "contract_sha256": "22da71a059fed392cc706ee46937763ec3109a327726f7450251ae33ef922591",
+    "recognition": "complete_literal_native_ax3000t_price.v1",
+    "owner_start_utf16": 0,
+    "owner_end_utf16": 20,
+    "owner_rewritten": false,
+    "source": "complete_immutable_owner_and_explicit_initial_package",
+    "tool_ceiling": [
+      "back",
+      "click",
+      "done",
+      "open",
+      "scroll",
+      "submit",
+      "type",
+      "wait"
+    ],
+    "product_model": "AX3000T",
+    "model_start_utf16": 10,
+    "model_end_utf16": 17,
+    "variant_inferred": false,
+    "specifications_inferred": false,
+    "price_kind_inferred": false,
+    "provider_support_claimed": false,
+    "installed_identity_verified": false,
+    "grants_tool_authority": false,
+    "query_executed": false,
+    "business_verified": false
+  },
+  "background_generation": "535cae0a-acea-488f-a363-710f552ffd9c",
+  "display_id": 4,
+  "model_actions_required": true,
+  "screenshots_used_as_text": false,
+  "automatic_actions_or_replay": false,
+  "query_result_verified": false
+}

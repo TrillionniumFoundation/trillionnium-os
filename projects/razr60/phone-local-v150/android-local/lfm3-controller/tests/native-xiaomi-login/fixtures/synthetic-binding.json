@@ -1,0 +1,21 @@
+{
+  "authorization_sha256": "38f7593c7375c87a16a6796861a8dd5b609f3f011ad77bbeeb2132025641aca8",
+  "background_generation": "00000000-0000-4000-8000-000000000071",
+  "display_id": 7,
+  "execution_target_sha256": "2f09a2f1dfaa062a8a248d90eedd988fbedba897fd43f6eac30c7644b462adcf",
+  "fixture_kind": "synthetic_portable_host_fixture",
+  "installed_app": {
+    "apk_hashes": {
+      "base": "95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"
+    },
+    "package": "com.xiaomi.shop",
+    "uid": 12345,
+    "version_code": 20261010
+  },
+  "is_phone_receipt": false,
+  "owner": "在小米商城查一下小米AX3000T的售价",
+  "owner_sha256": "8d76e0c231b30a3c18fd4c57967ba8546e6d8d9fe0a6132086c24536a540b421",
+  "schema": "hepta.synthetic-native-login-binding.v1",
+  "selection_projection_sha256": "80ae741d320798d812ddba19280e2619464ab430a65c62a6dca9a8648d20c9d3",
+  "task_id": "a8ca325db309e7e8c7738d32527da815"
+}
