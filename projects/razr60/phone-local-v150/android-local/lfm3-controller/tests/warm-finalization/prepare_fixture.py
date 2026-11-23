@@ -25,6 +25,7 @@ def prepare(source, output):
     if len(completion_kinds) != 1:
         raise RuntimeError("production completion kind declaration is not unique")
     parts = {
+        "cancellation_summary": section(controller, "        String cancellationSummary=", "        boolean controllerSuccess=false,controllerCompletionRequested=false;"),
         "stop": section(controller, "    public void stop(){", "    @Override public synchronized void close()"),
         "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            boolean nativeInstalledRechecked=false;\n"),
         "cleanup_contract": section(inference, "    final class TaskCleanup {", "    interface Handle {"),
@@ -129,7 +130,7 @@ public final class ControllerFinalizationFixture {
         String finalStatus=previousStatus,summary=previousSummary;
         boolean modelSuccess=previousSuccess,cleanup=previousCleanup,controllerSuccess=false;
         blocked=previouslyBlocked;
-""" + parts["close_result"] + """
+""" + parts["cancellation_summary"] + parts["close_result"] + """
         running=false;
         return new Outcome(finalStatus,summary,modelSuccess,cleanup,blocked);
     }

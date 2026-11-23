@@ -321,6 +321,51 @@
                 completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));check(s.taskObservationAdmissions==3,"ordinary post-navigation gate remains usable after all three admissions");
             }
         });
+        one("99c24_recorded_issued_and_physical_drain_bound_without_inventing_callback",()->{
+            JSONObject original=new JSONObject(new String(Files.readAllBytes(Paths.get(System.getProperty("hepta.test.retiredSearch"))),StandardCharsets.UTF_8));
+            JSONObject state=original.getJSONObject("execution"),binding=original.getJSONObject("binding");
+            long deadline=binding.getLong("deadline"),drained=state.getLong("worker_drained_elapsed_ms");
+            check("f52da4c3874420ee2a3827c00879b77d2adb6336e607e1879ac7a19db02bd0b8".equals(original.getJSONObject("original_sha256").getString("result.json"))
+                    &&!original.getBoolean("late_callback_payload_exported")&&drained-deadline==69,"exact original result and real 69 ms exit after expiry");
+            check(!NativeSearchNoEffectControllerHost.replayRetired(null,state,binding,deadline,drained+1),"R33 original never exported the late callback; alone it cannot qualify");
+            check(NativeSearchNoEffectControllerHost.replayRetired(new JSONObject(state.toString()),state,binding,deadline,drained+1),
+                    "separate callback with the same sealed state can qualify cleanup only");
+            for(String key:new String[]{"task_id","model_run_id","operation_id","observation_id","authorization_sha256","background_generation",
+                    "window_id","display_id","queued_elapsed_ms","deadline_elapsed_ms","effect_entered","effect_returned","api_accepted","worker_drained",
+                    "worker_drained_elapsed_ms","callback_published","callback_authority_current","retired","schema","execution_kind","automatic_redispatch"}){
+                JSONObject bad=new JSONObject(state.toString());bad.remove(key);
+                check(!NativeSearchNoEffectControllerHost.replayRetired(bad,state,binding,deadline,drained+1),"missing callback "+key);
+                check(!NativeSearchNoEffectControllerHost.replayRetired(state,bad,binding,deadline,drained+1),"missing current state "+key);
+            }
+            check(!NativeSearchNoEffectControllerHost.replayRetired(state,state,binding,deadline-1,drained+1)
+                    &&!NativeSearchNoEffectControllerHost.replayRetired(state,state,binding,deadline,deadline+1001)
+                    &&!NativeSearchNoEffectControllerHost.replayRetired(state,state,binding,deadline,drained-1),"original expiry and separate finite cleanup interval");
+        });
+        for(int kind=0;kind<3;kind++){final int scenario=kind;
+        one("expired_search_actual_LTC_owned_exit_"+kind,()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);f.apiAccepts=scenario!=1;
+                f.effectHook=()->{SystemClock.now=s.activeSearchAction.state.deadlineElapsed-294;};
+                File record=new File(f.directory,"native-search-retired-drain.json");
+                if(scenario==2)Files.write(record.toPath(),new byte[]{4,9},StandardOpenOption.CREATE_NEW);
+                Throwable stopped=pumpController(controller,f);check(stopped!=null&&controller.modelCalls==1&&f.effects==1&&controller.oldAxCalls==0,
+                        "one original model and API call, zero new UI reads/actions/price completion");
+                if(scenario==0){
+                    check("Stopped".equals(stopped.getClass().getSimpleName()),"known late rejected callback only terminates: "+stopped);
+                    JSONObject terminal=new JSONObject(new String(Files.readAllBytes(record.toPath()),StandardCharsets.UTF_8));
+                    JSONObject evidence=terminal.getJSONObject("execution");
+                    check(evidence.getBoolean("retired")&&evidence.getBoolean("worker_drained")&&evidence.getBoolean("callback_published")
+                            &&!evidence.getBoolean("callback_authority_current")&&!terminal.getBoolean("navigation_verified")
+                            &&!terminal.getBoolean("automatic_redispatch"),"actual service publishes only retired evidence");
+                }else{
+                    check("CleanupUnknown".equals(stopped.getClass().getSimpleName()),"missing accepted return or write failure remains blocked: "+stopped);
+                    if(scenario==1)check(!record.exists(),"no qualified drain for unaccepted platform call");
+                    else check(Arrays.equals(Files.readAllBytes(record.toPath()),new byte[]{4,9}),"old record never replaced");
+                }
+                check(!actionSlot.pending()&&!new File(f.directory,"step-01-action.json").exists(),"physical slot drained and no timely action receipt");
+            }
+        });}
         one("successor_actual_LTC_two_models_failed_receipt_new_intent_once",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
             try(Fixture f=s.new Fixture(controller)){

@@ -9,6 +9,7 @@ final class NativeSearchPlanning {
         final long requestStarted=0,requestDeadline=0;
         private Timing(){throw unavailable();}
     }
+    final NativeActionSnapshotCheck.Snapshot second=null;
     final Role role=null;
     final Map<String,Object> publication=null;
     private NativeSearchPlanning(){throw unavailable();}

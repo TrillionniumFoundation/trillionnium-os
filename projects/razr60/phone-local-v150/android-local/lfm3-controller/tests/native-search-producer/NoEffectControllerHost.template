@@ -69,5 +69,10 @@ final class NativeSearchNoEffectControllerHost {
         record(directory,"host-old-failed-action.json",receipt);
         return HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8));
     }
+    static boolean replayRetired(JSONObject callback,JSONObject state,JSONObject binding,long start,long at){
+        return retiredSearchDrain(callback,state,binding.getString("task"),binding.getString("run"),
+                binding.getString("observation"),binding.getString("authorization"),binding.getString("generation"),
+                binding.getInt("display"),binding.getInt("window"),binding.getLong("queued"),binding.getLong("deadline"),start,at);
+    }
     {{actual_controller_methods}}
 }
