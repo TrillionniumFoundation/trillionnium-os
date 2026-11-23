@@ -536,6 +536,54 @@ final class NativeActionSnapshotCheck {
                 +"\nime_enter="+s(n.v,"ime_enter")+"|focused="+b(n.v,"focused")+"|full_input=null";
         return hash(full).equals(n.v.get("ref_signature_sha256"));
     }
+    /** Identify one ambiguous blank home banner for a new read only. The full
+     * page and its one-pixel edge neighbour are recorded as overlapping. They
+     * can never contribute to a role proof, a target, or an effect. */
+    static boolean rejectedSearchBannerMotion(Snapshot a,Snapshot b,String target){
+        if(!a.nodes.keySet().equals(b.nodes.keySet()))return false;
+        List<Node> found=findId(a,"com.xiaomi.shop:id/bannerViewPager");
+        if(found.size()!=1)return false;
+        Node banner=found.get(0);
+        if(!"androidx.viewpager.widget.ViewPager".equals(banner.cls)||!banner.visible()
+                ||!b(banner.v,"enabled")||!b(banner.v,"scrollable")||!neutralFlags(banner)
+                ||!intersects(banner.bounds,a.node(target).bounds)||banner.children<2
+                ||"0".equals(banner.path))return false;
+        Node holder=a.node(parent(banner.path));
+        if(!"android.widget.FrameLayout".equals(holder.cls)||holder.children!=1||"0".equals(holder.path))return false;
+        Node content=a.node(parent(holder.path));
+        if(!"androidx.recyclerview.widget.RecyclerView".equals(content.cls)
+                ||!"com.xiaomi.shop:id/recyclerView".equals(content.view)||"0".equals(content.path))return false;
+        Node pager=a.node(parent(content.path));
+        if(!"androidx.viewpager.widget.ViewPager".equals(pager.cls)
+                ||!"com.xiaomi.shop.plugin.homepage:id/home_3_vp".equals(pager.view)||!under(target,pager.path))return false;
+        int fullA=0,fullB=0,edgeA=0,edgeB=0;boolean changed=false;
+        for(Node old:a.nodes.values()){
+            Node fresh=b.node(old.path);
+            if(!under(old.path,banner.path)){
+                if(!old.v.equals(fresh.v))return false;
+                continue;
+            }
+            if(!parent(old.path).equals(banner.path)||!"android.widget.FrameLayout".equals(old.cls)
+                    ||old.children!=0||!old.view.isEmpty()||!old.text.isEmpty()||!old.desc.isEmpty()
+                    ||!b(old.v,"enabled")||!b(old.v,"clickable")||!b(old.v,"action_click")||b(old.v,"scrollable")
+                    ||!neutralFlags(old)||!sameExcept(old,fresh,"bounds","visible","label","ref_signature_sha256"))return false;
+            int x=blankBannerSlot(old,banner),y=blankBannerSlot(fresh,banner);
+            if(x<0||y<0)return false;
+            if(x==1)fullA++;if(y==1)fullB++;if(x==2)edgeA++;if(y==2)edgeB++;
+            changed|=!old.v.equals(fresh.v);
+        }
+        return changed&&fullA==1&&fullB==1&&edgeA+edgeB==1;
+    }
+    // 0 hidden, 1 full page, 2 one-pixel visible edge beside a full page.
+    private static int blankBannerSlot(Node n,Node banner){
+        if(!b(n.v,"visible"))return hiddenBannerLeaf(n,banner)?0:-1;
+        if(!n.visible()||!blankBannerLeafReference(n))return -1;
+        if(n.bounds.equals(banner.bounds))return 1;
+        List<Integer> r=n.bounds,outer=banner.bounds;
+        return r.get(1).equals(outer.get(1))&&r.get(3).equals(outer.get(3))
+                &&(long)r.get(2)-r.get(0)==1
+                &&(r.get(0).equals(outer.get(0))||r.get(2).equals(outer.get(2)))?2:-1;
+    }
     private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){
         List<Node> visibleOld=new ArrayList<Node>(),visibleFresh=new ArrayList<Node>();int count=0;
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(under(p,anchor.path)){

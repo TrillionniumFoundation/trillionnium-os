@@ -22,6 +22,14 @@ final class NativeSearchRole {
     final List<String> changedPaths,enclosures;
     private final Map<String,Object> proof;
 
+    static final class RejectedBannerMotion extends IllegalArgumentException {
+        private static final long serialVersionUID=1L;
+        final NativeActionSnapshotCheck.Snapshot first,second;
+        private RejectedBannerMotion(NativeActionSnapshotCheck.Snapshot first,NativeActionSnapshotCheck.Snapshot second,String path){
+            super("native search role: changed node has no fixed complete disjoint enclosure: "+path);
+            this.first=first;this.second=second;
+        }
+    }
     private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;
@@ -73,6 +81,8 @@ final class NativeSearchRole {
                 }
                 enclosure=parent(enclosure);
             }
+            if(!proved&&NativeActionSnapshotCheck.rejectedSearchBannerMotion(a,b,targetPath))
+                throw new RejectedBannerMotion(a,b,path);
             need(proved,"changed node has no fixed complete disjoint enclosure: "+path);
         }
         // Keep a disjoint antichain: a proven outer enclosure subsumes its
