@@ -53,7 +53,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
             JSONObject files=value.getJSONObject("files");need(files.length()>0&&files.length()<=MAX_FILES,"BUSINESS_FILE_COUNT");
             TreeMap<String,String> ds=new TreeMap<String,String>();long total=0;
             Iterator<String> names=files.keys();while(names.hasNext()){
-                String path=names.next();requireRelative(path,taskId);JSONObject d=files.getJSONObject(path);requireDescriptor(d,ownerUid);
+                String path=names.next();requireRelative(path,taskId);JSONObject d=files.getJSONObject(path);requireDescriptor(d,ownerUid,originalLimit(path));
                 if(JOURNAL.equals(path))need(number(d,"bytes")<=16384,"BUSINESS_JOURNAL_BOUND");
                 if(CONTROL.equals(path)||LATCH.equals(path)||path.equals(originSummary))need(number(d,"bytes")<=65536,"BUSINESS_SUMMARY_BOUND");
                 total+=number(d,"bytes");need(total<=MAX_BUNDLE,"BUSINESS_TOTAL_BOUND");ds.put(path,canonical(d));
@@ -91,12 +91,42 @@ public final class PublicProfileBusinessAbsenceRecovery {
         boolean known=JOURNAL.equals(path)||CONTROL.equals(path)||LATCH.equals(path)||path.matches("session-recovery/control-session\\.json\\.[0-9a-f]{64}\\.json");
         String prefix="control-tasks/"+task+"/";if(path.startsWith(prefix))known=leaf(path.substring(prefix.length()));
         if(path.matches("runs/[0-9a-f]{32}/(?:app-session-receipt\\.json|native-session-result\\.json|worker-generation\\.identity|generation-cleanup-[0-9a-f]{32}\\.json|app-receipt\\.json|native-result\\.json|raw-text\\.txt)"))known=true;
+        if(path.matches("runs/[0-9a-f]{32}/vlm-task-(?:terminal|pending)\\.json")||
+                path.matches("runs/[0-9a-f]{32}/vlm/[0-9a-f]{32}/(?:app-receipt\\.json|app-delivery\\.json|native-result\\.json|owner\\.json|raw\\.txt)"))known=true;
         need(known,"BUSINESS_PATH_NOT_ALLOWLISTED");
     }
+    /** Build paths from typed identifiers. Recorded absolute paths are only cross-checks. */
+    public static java.util.Set<String> visualModelPaths(JSONObject aggregate,String task,String logical)throws Exception {
+        need(task.matches("[0-9a-f]{32}")&&logical.matches("[0-9a-f]{32}")&&!task.equals(logical)
+                &&"hepta.vlm.task-aggregate.v1".equals(string(aggregate,"schema"))
+                &&logical.equals(string(aggregate,"task_generation"))&&task.equals(string(aggregate,"task_id")),"BUSINESS_VISUAL_AGGREGATE_ID");
+        JSONArray rows=aggregate.getJSONArray("requests");
+        need(rows.length()>0&&rows.length()<=256,"BUSINESS_VISUAL_COUNT");
+        TreeSet<String> paths=new TreeSet<String>(),ids=new TreeSet<String>();
+        ids.add(task);ids.add(logical);
+        String prefix="runs/"+logical+"/";
+        paths.add(prefix+"vlm-task-terminal.json");paths.add(prefix+"vlm-task-pending.json");
+        for(int i=0;i<rows.length();i++){
+            JSONObject row=rows.getJSONObject(i);
+            String generation=string(row,"generation"),request=string(row,"request_id"),nonce=string(row.getJSONObject("generation_cleanup"),"cleanup_nonce");
+            need(generation.matches("[0-9a-f]{32}")&&request.matches("[0-9a-f]{32}")&&nonce.matches("[0-9a-f]{32}")
+                    &&ids.add(generation)&&ids.add(request)&&ids.add(nonce),"BUSINESS_VISUAL_REQUEST_ID");
+            String worker="runs/"+generation+"/",round=worker+"vlm/"+request+"/";
+            paths.add(worker+"worker-generation.identity");paths.add(worker+"generation-cleanup-"+nonce+".json");
+            for(String leaf:new String[]{"app-receipt.json","app-delivery.json","native-result.json","owner.json","raw.txt"})paths.add(round+leaf);
+        }
+        return Collections.unmodifiableSet(paths);
+    }
+
     public static boolean leaf(String name){return name!=null&&name.matches("[A-Za-z0-9][A-Za-z0-9._-]{0,199}")&&!name.contains("..");}
-    public static void requireDescriptor(JSONObject d,int uid)throws Exception{
+    /** Task screenshots use the same 8 MiB bound as the observation producer. */
+    public static int originalLimit(String relative){
+        return relative.matches("control-tasks/[0-9a-f]{32}/[0-9a-f]{32}\\.png")?8*1024*1024:MAX_ORIGINAL;
+    }
+    public static void requireDescriptor(JSONObject d,int uid)throws Exception{requireDescriptor(d,uid,MAX_ORIGINAL);}
+    public static void requireDescriptor(JSONObject d,int uid,int limit)throws Exception{
         keys(d,"bytes","sha256","device","inode","uid","mode","nlink","mtime_seconds","mtime_nanos","ctime_seconds","ctime_nanos");
-        need(number(d,"bytes")>=0&&number(d,"bytes")<=MAX_ORIGINAL&&ProfileIdentity.hash(string(d,"sha256"))
+        need(number(d,"bytes")>=0&&number(d,"bytes")<=limit&&ProfileIdentity.hash(string(d,"sha256"))
                 &&number(d,"device")>=0&&number(d,"inode")>0&&number(d,"uid")==uid&&number(d,"mode")==0100600&&number(d,"nlink")==1,"BUSINESS_FILE_METADATA");
         for(String k:new String[]{"mtime_nanos","ctime_nanos"})need(number(d,k)>=0&&number(d,k)<1000000000L,"BUSINESS_FILE_CLOCK");
         need(number(d,"mtime_seconds")>=0&&number(d,"ctime_seconds")>=0,"BUSINESS_FILE_CLOCK");
@@ -163,8 +193,13 @@ public final class PublicProfileBusinessAbsenceRecovery {
             long terminal=number(result,"terminal_decided_elapsed_ms");need(terminal>=created&&terminal<=started,"BUSINESS_TERMINAL_CLOCK");
             requireLastAction(result,terminal);
             modelGeneration=string(result.getJSONObject("model_session"),"worker_generation");need(modelGeneration.matches("[0-9a-f]{32}")&&!modelGeneration.equals(taskId),"BUSINESS_MODEL_GENERATION");modelPrefix="runs/"+modelGeneration+"/";
-            modelRequests=requireNormalModelClose(result.getJSONObject("model_session"),broker);
-            requireControl(result,owner);requireOnlyBoundModelPaths();
+            if(originals.containsKey(modelPrefix+"vlm-task-terminal.json")){
+                modelRequests=requireVisualClose(result.getJSONObject("model_session"),broker);
+            }else{
+                modelRequests=requireNormalModelClose(result.getJSONObject("model_session"),broker);
+                requireOnlyBoundModelPaths();
+            }
+            requireControl(result,owner);
             journalSha256=ProfileIdentity.sha(original(JOURNAL));originalsSha256=ProfileIdentity.sha(canonical(inputHashes()));requireFence(started,requestBoot);
         }
         public byte[] task(String leaf)throws Exception{return original(taskPrefix+leaf);}
@@ -263,6 +298,106 @@ public final class PublicProfileBusinessAbsenceRecovery {
             JSONArray owned=h.getJSONArray("owned_task_ids"),baseline=h.getJSONArray("baseline_task_ids");need(owned.length()==2&&numberAt(owned,0)==root&&numberAt(owned,1)==leaf,"BUSINESS_HISTORY_OWNED_SET");
             TreeSet<Long> ids=new TreeSet<Long>();for(int i=0;i<baseline.length();i++){long n=numberAt(baseline,i);need(n>0&&n<=Integer.MAX_VALUE&&n!=root&&n!=leaf&&ids.add(n),"BUSINESS_HISTORY_BASELINE");}
         }
+        private void requireVisualStamp(JSONObject stamp,String path)throws Exception{
+            byte[] bytes=original(path);
+            need(privatePathEnds(string(stamp,"path"),path)&&number(stamp,"bytes")==bytes.length
+                    &&ProfileIdentity.sha(bytes).equals(string(stamp,"sha256")),"BUSINESS_VISUAL_ORIGINAL_CHANGED");
+        }
+
+        private int requireVisualClose(JSONObject projection,JSONObject broker)throws Exception{
+            JSONObject aggregate=object(model("vlm-task-terminal.json"));
+            java.util.Set<String> required=visualModelPaths(aggregate,taskId,modelGeneration);
+            TreeSet<String> actual=new TreeSet<String>();
+            for(String path:originals.keySet())if(path.startsWith("runs/"))actual.add(path);
+            need(actual.equals(required),"BUSINESS_VISUAL_INPUT_SET");
+            need(taskId.equals(string(projection,"task_id"))&&modelGeneration.equals(string(projection,"worker_generation"))
+                    &&number(projection,"exit_code")==0&&ProfileIdentity.sha(model("vlm-task-terminal.json")).equals(string(projection,"app_receipt_sha256")),"BUSINESS_VISUAL_PROJECTION");
+            yes(projection,"process_started","process_exit_observed","receipt_valid");
+            need("logical_task_reservation".equals(string(aggregate,"generation_semantics"))&&number(aggregate,"aggregate_exit_code")==0
+                    &&"all_serial_requests_accepted_with_actual_exit_zero_and_generation_cleanup".equals(string(aggregate,"aggregate_exit_zero_semantics")),"BUSINESS_VISUAL_FINISH");
+            yes(aggregate,"serial_generations","process_started","all_started_process_exits_observed","cleanup_known","all_request_bindings_valid");
+            no(aggregate,"cancel_requested","native_task_session_receipt_fabricated","automatic_retry","automatic_restart","cross_task_reuse","external_model","business_completion_verified");
+            long submitted=number(aggregate,"finisher_submitted_monotonic_ns"),deadline=number(aggregate,"finisher_deadline_monotonic_ns"),published=number(aggregate,"published_monotonic_ns");
+            need(submitted>0&&deadline>submitted&&published>=submitted&&published<=deadline,"BUSINESS_VISUAL_FINISH_CLOCK");
+            requireVisualStamp(aggregate.getJSONObject("original_pending"),modelPrefix+"vlm-task-pending.json");
+            JSONObject pending=object(model("vlm-task-pending.json"));
+            need("hepta.vlm.task-pending.v1".equals(string(pending,"schema"))&&taskId.equals(string(pending,"task_id"))
+                    &&modelGeneration.equals(string(pending,"task_generation"))&&number(pending,"app_uid")==ownerUid
+                    &&number(pending,"app_pid")==number(broker,"app_pid"),"BUSINESS_VISUAL_PENDING");
+            yes(pending,"pending","serial_generations");no(pending,"cleanup_known","automatic_resume","automatic_retry");
+            java.util.Map<String,JSONObject> stepsByRequest=new TreeMap<String,JSONObject>();
+            for(String f:manifest.taskFiles())if(f.matches("step-[0-9]+-model-[0-9]+\\.json")){
+                JSONObject step=object(task(f));String id=string(step,"run_id");
+                need(stepsByRequest.put(id,step)==null&&ownerSha256.equals(string(step,"original_instruction_sha256")),"BUSINESS_VISUAL_STEP");
+            }
+            JSONArray rows=aggregate.getJSONArray("requests");
+            for(int i=0;i<rows.length();i++){
+                JSONObject row=rows.getJSONObject(i);
+                String request=string(row,"request_id"),worker=string(row,"generation");
+                JSONObject step=stepsByRequest.remove(request);
+                need(step!=null&&string(step,"observation_id").equals(string(row,"observation_id")),"BUSINESS_VISUAL_STEP_MISSING");
+                requireVisualRound(row,step,broker,worker,request);
+            }
+            need(stepsByRequest.isEmpty(),"BUSINESS_VISUAL_STEP_EXTRA");
+            return rows.length();
+        }
+
+        private void requireVisualRound(JSONObject row,JSONObject step,JSONObject broker,String worker,String request)throws Exception{
+            String workerPath="runs/"+worker+"/",path=workerPath+"vlm/"+request+"/";
+            need("hepta.vlm.serial-generation-summary.v1".equals(string(row,"schema"))&&taskId.equals(string(row,"task_id"))
+                    &&modelGeneration.equals(string(row,"task_generation"))&&ownerSha256.equals(string(row,"owner_sha256"))
+                    &&generation.equals(string(row,"background_generation"))&&number(row,"actual_exit_code")==0
+                    &&row.get("delivery_rejection")==JSONObject.NULL,"BUSINESS_VISUAL_ROUND");
+            yes(row,"process_started","process_exit_observed","cleanup_known","native_contract_valid","success_callback_returned");
+            requireVisualStamp(row.getJSONObject("app_receipt"),path+"app-receipt.json");
+            requireVisualStamp(row.getJSONObject("native_receipt"),path+"native-result.json");
+            requireVisualStamp(row.getJSONObject("delivery_receipt"),path+"app-delivery.json");
+            JSONObject app=object(original(path+"app-receipt.json")),nativeReceipt=object(original(path+"native-result.json")),delivery=object(original(path+"app-delivery.json"));
+            for(String k:new String[]{"task_id","task_generation","generation","request_id","owner_sha256","observation_id","background_generation","scope_token"})
+                need(same(row.get(k),app.get(k))&&same(row.get(k),delivery.get(k)),"BUSINESS_VISUAL_REQUEST_BINDING");
+            for(String k:new String[]{"task_id","generation","request_id","scope_token"})
+                need(same(row.get(k),nativeReceipt.get(k)),"BUSINESS_VISUAL_NATIVE_BINDING");
+            byte[] ownerBytes=original(path+"owner.json");
+            JSONObject frameOwner=object(ownerBytes);
+            requireVisualStamp(app.getJSONObject("original_inputs").getJSONObject("owner.json"),path+"owner.json");
+            need("hepta.vlm.current-frame.v1".equals(string(frameOwner,"schema"))
+                    &&ProfileIdentity.sha(ownerBytes).equals(string(nativeReceipt,"owner_sha256"))
+                    &&ownerSha256.equals(string(frameOwner,"task_owner_sha256"))
+                    &&same(frameOwner,nativeReceipt.getJSONObject("current_frame"))
+                    &&target.packageName.equals(string(frameOwner,"package_name"))&&displayId==number(frameOwner,"display_id")
+                    &&string(frameOwner,"image_sha256").equals(string(nativeReceipt,"image_sha256")),"BUSINESS_VISUAL_FRAME_OWNER");
+            for(String k:new String[]{"task_id","generation","request_id","scope_token","observation_id","background_generation"})
+                need(same(row.get(k),frameOwner.get(k)),"BUSINESS_VISUAL_FRAME_SCOPE");
+            need("hepta.vlm.app-request.v1".equals(string(app,"schema"))&&"hepta.vlm.request-delivery.v1".equals(string(delivery,"schema"))
+                    &&"hepta.vlm.result.v1".equals(string(nativeReceipt,"schema"))&&same(nativeReceipt,app.getJSONObject("native_receipt"))
+                    &&number(app,"actual_exit_code")==0&&number(nativeReceipt,"native_return_code")==0
+                    &&number(nativeReceipt,"app_uid")==ownerUid&&number(nativeReceipt,"app_pid")==number(broker,"app_pid")
+                    &&number(nativeReceipt,"worker_pid")>1&&row.getJSONObject("app_receipt").getString("sha256").equals(string(delivery,"app_receipt_sha256"))
+                    &&delivery.get("failure")==JSONObject.NULL,"BUSINESS_VISUAL_DELIVERY");
+            yes(delivery,"success_admitted","cleanup_known");no(delivery,"callback_already_delivered","model_output_dispatched");
+            yes(app,"process_started","process_exit_observed","cleanup_known","native_contract_valid","serial_generations");
+            no(app,"timeout_observed","log_limit_observed","automatic_retry","automatic_restart","automatic_device_fallback","external_model","actions_dispatched","business_completion_verified");
+            yes(nativeReceipt,"generation_completed","full_multimodal_admission_passed","parent_verified_before","parent_verified_after");
+            no(nativeReceipt,"automatic_device_fallback","actions_dispatched","action_authorized","business_completion_verified","process_exit_observed","cleanup_known");
+            String observation=string(row,"observation_id");
+            need(observation.matches("[0-9a-f]{32}")&&ProfileIdentity.sha(task(observation+".png")).equals(string(nativeReceipt,"image_sha256")),"BUSINESS_VISUAL_FRAME");
+            byte[] raw=original(path+"raw.txt");
+            requireVisualStamp(app.getJSONObject("native_sidecars").getJSONObject("raw.txt"),path+"raw.txt");
+            need(Arrays.equals(raw,string(step,"raw_text").getBytes(StandardCharsets.UTF_8))&&number(nativeReceipt,"raw_bytes")==raw.length
+                    &&ProfileIdentity.sha(raw).equals(string(nativeReceipt,"raw_sha256")),"BUSINESS_VISUAL_OUTPUT");
+            JSONObject cancel=app.getJSONObject("cancellation");
+            need("hepta.owned-worker-cancellation.v1".equals(string(cancel,"schema"))&&taskId.equals(string(cancel,"task_id"))
+                    &&worker.equals(string(cancel,"worker_generation"))&&number(cancel,"term_destroy_attempts")==0&&number(cancel,"force_destroy_attempts")==0
+                    &&cancel.get("signal_error")==JSONObject.NULL,"BUSINESS_VISUAL_CANCEL");
+            yes(cancel,"process_bound");no(cancel,"requested","term_destroy_returned","force_destroy_returned");
+            JSONObject g=row.getJSONObject("generation_cleanup");String nonce=string(g,"cleanup_nonce");
+            need(same(g,app.getJSONObject("generation_cleanup"))&&same(g.get("scope_token"),row.get("scope_token"))
+                    &&privatePathEnds(string(g,"identity_file"),workerPath+"worker-generation.identity")
+                    &&privatePathEnds(string(g,"native_receipt_file"),workerPath+"generation-cleanup-"+nonce+".json"),"BUSINESS_VISUAL_GENERATION_BINDING");
+            requireGenerationEvidence(g,worker,workerPath,number(nativeReceipt,"app_pid"),number(nativeReceipt,"worker_pid"),
+                    number(app,"finisher_submitted_monotonic_ns"),number(app,"finisher_deadline_monotonic_ns"));
+        }
+
         private int requireNormalModelClose(JSONObject projection,JSONObject broker)throws Exception{
             JSONObject session=object(model("app-session-receipt.json")),nativeSession=object(model("native-session-result.json"));
             long appPid=number(session,"app_pid"),count=number(session,"requests_sent");need(count>0&&count<=256,"BUSINESS_MODEL_COUNT");
@@ -313,20 +448,24 @@ public final class PublicProfileBusinessAbsenceRecovery {
             yes(c,"process_bound");no(c,"requested","termination_started","term_destroy_returned","force_destroy_returned","sdk_cleanup_proven_by_this_object");
         }
         private void requireGeneration(JSONObject session,JSONObject nativeSession)throws Exception{
-            JSONObject g=session.getJSONObject("worker_generation_cleanup");String nonce=string(g,"cleanup_nonce");need(nonce.matches("[0-9a-f]{32}"),"BUSINESS_GENERATION_NONCE");
-            byte[] identity=model("worker-generation.identity"),raw=model("generation-cleanup-"+nonce+".json");JSONObject receipt=object(raw);
-            need("hepta.worker-generation.app-cleanup.v1".equals(string(g,"schema"))&&taskId.equals(string(g,"task_id"))&&modelGeneration.equals(string(g,"worker_generation"))
-                    &&number(g,"app_uid")==ownerUid&&number(g,"app_pid")==number(session,"app_pid")&&ProfileIdentity.sha(identity).equals(string(g,"identity_sha256"))
+            requireGenerationEvidence(session.getJSONObject("worker_generation_cleanup"),modelGeneration,modelPrefix,
+                    number(session,"app_pid"),number(nativeSession,"pid"),number(session,"finisher_submitted_monotonic_ns"),number(session,"finisher_deadline_monotonic_ns"));
+        }
+        private void requireGenerationEvidence(JSONObject g,String worker,String prefix,long appPid,long workerPid,long finishStart,long finishDeadline)throws Exception{
+            String nonce=string(g,"cleanup_nonce");need(nonce.matches("[0-9a-f]{32}"),"BUSINESS_GENERATION_NONCE");
+            byte[] identity=original(prefix+"worker-generation.identity"),raw=original(prefix+"generation-cleanup-"+nonce+".json");JSONObject receipt=object(raw);
+            need("hepta.worker-generation.app-cleanup.v1".equals(string(g,"schema"))&&taskId.equals(string(g,"task_id"))&&worker.equals(string(g,"worker_generation"))
+                    &&number(g,"app_uid")==ownerUid&&number(g,"app_pid")==appPid&&ProfileIdentity.sha(identity).equals(string(g,"identity_sha256"))
                     &&ProfileIdentity.sha(raw).equals(string(g,"native_receipt_sha256"))&&same(receipt,g.getJSONObject("native_cleanup")),"BUSINESS_GENERATION_RAW_BINDING");
             yes(g,"direct_process_exit_observed","helper_started","helper_exit_observed","cleanup_known","descendant_force_known","generation_unforced");no(g,"helper_force_destroy_sent","helper_currently_alive","descendant_force_used","automatic_retry","escaped_sessions_proven_absent");
             need(number(g,"helper_exit_code")==0&&g.get("error")==JSONObject.NULL&&"pinned_sdk_inheriting_process_group_and_generation_markers".equals(string(g,"scope"))
-                    &&number(g,"finisher_submitted_monotonic_ns")==number(session,"finisher_submitted_monotonic_ns")&&number(g,"finisher_deadline_monotonic_ns")==number(session,"finisher_deadline_monotonic_ns"),"BUSINESS_GENERATION_CLOSE");
+                    &&number(g,"finisher_submitted_monotonic_ns")==finishStart&&number(g,"finisher_deadline_monotonic_ns")==finishDeadline,"BUSINESS_GENERATION_CLOSE");
             for(String k:new String[]{"task_id","worker_generation","scope_token","app_uid","app_pid","app_start_ticks","boot_id","identity_sha256","cleanup_nonce"})need(same(g.get(k),receipt.get(k)),"BUSINESS_GENERATION_IDENTITY");
-            need("hepta.worker-generation.cleanup.v1".equals(string(receipt,"schema"))&&number(receipt,"leader_pid")==number(nativeSession,"pid")&&number(receipt,"pgid")==number(nativeSession,"pid")
+            need("hepta.worker-generation.cleanup.v1".equals(string(receipt,"schema"))&&number(receipt,"leader_pid")==workerPid&&number(receipt,"pgid")==workerPid
                     &&number(receipt,"term_attempts")==0&&number(receipt,"kill_attempts")==0&&receipt.getJSONArray("targets").length()==0,"BUSINESS_GENERATION_UNFORCED");
             long submitted=number(g,"submitted_monotonic_ns"),deadline=number(g,"deadline_monotonic_ns"),begin=number(receipt,"started_monotonic_ns"),end=number(receipt,"ended_monotonic_ns");
-            need(submitted>=number(session,"finisher_submitted_monotonic_ns")&&deadline>submitted&&deadline-submitted<=4000000000L
-                    &&deadline<=number(session,"finisher_deadline_monotonic_ns")&&begin>=submitted&&begin<deadline&&end>=begin&&end<=deadline
+            need(submitted>=finishStart&&deadline>submitted&&deadline-submitted<=4000000000L
+                    &&deadline<=finishDeadline&&begin>=submitted&&begin<deadline&&end>=begin&&end<=deadline
                     &&number(receipt,"deadline_monotonic_ns")==deadline,"BUSINESS_GENERATION_MONOTONIC_CLOCK");
             yes(receipt,"cleanup_known","scan_complete","pidfd_supported");no(receipt,"numeric_pid_signal_used","group_signal_used","sdk_called","worker_started");
             for(String k:new String[]{"remaining_owned_count","unknown_count","escaped_generation_count"})need(number(receipt,k)==0,"BUSINESS_GENERATION_UNKNOWN");
@@ -345,11 +484,27 @@ public final class PublicProfileBusinessAbsenceRecovery {
             JSONObject current=object(original(CONTROL)),origin=object(original(manifest.originSummary));
             requireControlIdentity(origin);need("blocked".equals(string(origin,"status"))&&number(origin,"steps")==steps&&same(origin.getJSONObject("background_request"),owner.getJSONObject("background_request"))
                     &&string(origin,"task_authorization_sha256").equals(string(result,"task_authorization_sha256")),"BUSINESS_ORIGINAL_CONTROL");
-            no(origin,"completion_verified","model_reported_success");JSONObject ref=origin.getJSONObject("task_result_reference"),d=manifest.descriptor(taskPrefix+"result.json");
-            need("hepta.session-terminal-evidence.v1".equals(string(origin,"terminal_evidence_schema"))&&"hepta.session-task-result-reference.v1".equals(string(ref,"schema"))
-                    &&taskId.equals(string(ref,"task_id"))&&(taskPrefix+"result.json").equals(string(ref,"relative_path"))&&number(ref,"bytes")==number(d,"bytes")
-                    &&string(ref,"sha256").equals(string(d,"sha256"))&&number(ref,"file_device")==number(d,"device")&&number(ref,"file_inode")==number(d,"inode")
-                    &&number(ref,"file_uid")==ownerUid&&number(ref,"file_mode")==number(d,"mode")&&number(ref,"file_nlink")==1,"BUSINESS_RESULT_REFERENCE");no(ref,"grants_tool_authority");
+            no(origin,"completion_verified","model_reported_success");
+            if(origin.has("terminal_evidence_schema")||origin.has("task_result_reference")){
+                JSONObject ref=origin.getJSONObject("task_result_reference"),d=manifest.descriptor(taskPrefix+"result.json");
+                need("hepta.session-terminal-evidence.v1".equals(string(origin,"terminal_evidence_schema"))&&"hepta.session-task-result-reference.v1".equals(string(ref,"schema"))
+                        &&taskId.equals(string(ref,"task_id"))&&(taskPrefix+"result.json").equals(string(ref,"relative_path"))&&number(ref,"bytes")==number(d,"bytes")
+                        &&string(ref,"sha256").equals(string(d,"sha256"))&&number(ref,"file_device")==number(d,"device")&&number(ref,"file_inode")==number(d,"inode")
+                        &&number(ref,"file_uid")==ownerUid&&number(ref,"file_mode")==number(d,"mode")&&number(ref,"file_nlink")==1,"BUSINESS_RESULT_REFERENCE");no(ref,"grants_tool_authority");
+            }else{
+                // The session writer embeds its complete completion evidence while it fits the journal.
+                JSONObject completion=origin.getJSONObject("completion_evidence");
+                need("hepta.native-app-terminal-completion.v1".equals(string(completion,"schema"))
+                        &&ownerSha256.equals(string(completion,"owner_sha256"))&&taskId.equals(string(completion,"task_id"))
+                        &&same(completion,result.getJSONObject("completion_evidence"))
+                        &&same(origin.getJSONObject("task_authorization"),owner.getJSONObject("task_authorization"))
+                        &&privatePathEnds(string(origin,"evidence_directory"),taskPrefix.substring(0,taskPrefix.length()-1))
+                        &&same(origin.get("state"),result.get("summary")),"BUSINESS_INLINE_CONTROL_BINDING");
+                for(String k:new String[]{"status","steps","completion_verified","goal_independently_verified","model_reported_success",
+                        "cleanup_known","external_model","expected_scope_sha256","actual_scope_sha256"})
+                    need(same(origin.get(k),result.get(k)),"BUSINESS_INLINE_CONTROL_RESULT");
+                yes(origin,"background_lease_unreleased");no(origin,"web_helper_lease_unreleased");
+            }
             requireControlIdentity(current);
             if(!CONTROL.equals(manifest.originSummary)){
                 need("interrupted".equals(string(current,"status"))&&manifest.originSummary.equals("session-recovery/control-session.json."+ProfileIdentity.sha(original(manifest.originSummary))+".json"),"BUSINESS_STARTUP_ARCHIVE");

@@ -72,6 +72,7 @@ def main():
     ap.add_argument("--original-paths", required=True, type=Path)
     ap.add_argument("--java-home", required=True, type=Path)
     ap.add_argument("--json-jar", required=True, type=Path)
+    ap.add_argument("--visual", action="store_true", help="Replay genuine visual-task originals from the supplied manifest and path map")
     args = ap.parse_args()
     source = args.source.resolve(strict=True)
     output = args.output.absolute()
@@ -83,6 +84,7 @@ def main():
     jar = args.json_jar.resolve(strict=True)
     script = Path(__file__).resolve(strict=True)
     host_test = source/"tests/public-profile-business-recovery/PublicProfileBusinessRecoveryHostTest.java"
+    visual_test = host_test.with_name("PublicProfileBusinessVisualHostTest.java")
     before = inventory(source)
     tools_before = {n: ref(p) for n,p in (("java",java),("javac",javac),("json_jar",jar),("runner",script))}
     originals_before = external_refs(manifest, original_paths)
@@ -92,11 +94,18 @@ def main():
     classes.mkdir(mode=0o700)
     argv = [str(javac), "--release", "8", "-encoding", "UTF-8", "-Xlint:all", "-Werror",
             "-cp", str(jar), "-sourcepath", str(source/"src"), "-d", str(classes), str(host_test)]
+    if args.visual:
+        argv.append(str(visual_test))
     stages = [stage("compile", argv, output, source)]
     if stages[0]["exit_code"] == 0:
         stages.append(stage("policy", [str(java), "-Xmx512m", "-cp", str(classes)+os.pathsep+str(jar),
-            "org.trillionnium.hepta.background.PublicProfileBusinessRecoveryHostTest", str(manifest),
-            str(original_paths), str(output/"POLICY-RESULT.json")], output, source))
+            "org.trillionnium.hepta.background."+("PublicProfileBusinessVisualHostTest" if args.visual else "PublicProfileBusinessRecoveryHostTest"),
+            str(manifest), str(original_paths)]+([] if args.visual else [str(output/"POLICY-RESULT.json")]), output, source))
+        if args.visual and stages[-1]["exit_code"] == 0:
+            observed = json.loads((output/"policy.stdout").read_bytes())
+            if observed.get("passed") is not True:
+                raise RuntimeError("visual policy did not confirm the external replay")
+            write(output/"POLICY-RESULT.json", dict(observed, status="PASS"))
     after = inventory(source)
     originals_after = external_refs(manifest, original_paths)
     tools_after = {n: ref(p) for n,p in (("java",java),("javac",javac),("json_jar",jar),("runner",script))}
@@ -111,6 +120,8 @@ def main():
         if candidate.is_file():
             used.add(candidate.relative_to(source).as_posix())
     used.add(host_test.relative_to(source).as_posix())
+    if args.visual:
+        used.add(visual_test.relative_to(source).as_posix())
     inputs = {}
     for relative in sorted(used):
         inputs[relative] = ref(source/relative)
@@ -126,7 +137,7 @@ def main():
         tools_unchanged=tools_before==tools_after, external_originals_before=ref(output/"ORIGINALS-BEFORE.json"),
         external_originals_after=ref(output/"ORIGINALS-AFTER.json"), external_originals_unchanged=originals_before==originals_after,
         original_refs=originals_before, report=ref(report) if report.exists() else None,
-        counts=({"cases":assertions["cases"],"assertions":assertions["assertions"]} if assertions else None),
+        counts=({k: assertions[k] for k in ("cases","assertions") if k in assertions} if assertions else None),
         actual_pure_policy_executed=True, actual_session_recovery_decision_executed=True,
         fixture_boundary="actual original bytes; synthetic current controller/stat/clock/root samples/archive-root; no Android IO/root census/CAS",
         phone_commands=0, production_source_writes=0)
