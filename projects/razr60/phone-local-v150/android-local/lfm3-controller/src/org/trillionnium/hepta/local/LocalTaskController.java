@@ -1599,6 +1599,7 @@ public final class LocalTaskController implements AutoCloseable {
         NativeSearchDecision decision=NativeSearchDecision.parse(answer.text);
         final long issued=SystemClock.elapsedRealtime(),actionDeadline=Math.min(taskDeadline,issued>Long.MAX_VALUE-8000?Long.MAX_VALUE:issued+8000);
         final NativeSearchSession.Attempt attempt=offer.reserve(decision,answer.runId,issued,actionDeadline);
+        final long navigationDrainedElapsed;
         try{
             NativeSearchActionReply reply=awaitNativeOpenSearch(id,attempt);HeptaAccessibilityService.ActionOutcome outcome=reply.outcome;
             JSONObject receipt=new JSONObject().put("schema","hepta.native-search-action-outcome.v1").put("action",new JSONObject(decision.evidence()))
@@ -1617,8 +1618,17 @@ public final class LocalTaskController implements AutoCloseable {
                 throw new NativeSearchNoEffectReplanRequired(attempt,reply.proof,receiptSha);
             }
             session.acceptOutcome(attempt,outcome,receiptSha,SystemClock.elapsedRealtime());
+            navigationDrainedElapsed=outcome.actionExecution.getLong("worker_drained_elapsed_ms");
         }finally{attempt.close();}
         checkActive(taskDeadline);emit("正在核对后台应用的实际搜索输入框…");
+        // Let the navigation settle before the first read, after the one-use action has closed.
+        // This interval belongs to the original task/chain clock and cannot authorize any input.
+        long now=SystemClock.elapsedRealtime();session.requireLive(now);
+        if(navigationDrainedElapsed<0||navigationDrainedElapsed>now)
+            throw new IllegalStateException("搜索导航回执与当前观察时钟不一致");
+        long remainingSettle=350L-(now-navigationDrainedElapsed);
+        if(remainingSettle>0)SystemClock.sleep(Math.min(remainingSettle,taskDeadline-now));
+        checkActive(taskDeadline);session.requireLive(SystemClock.elapsedRealtime());
         // This is a new ordinary complete AX request on the same owned task.
         // Planning never enters PhoneObservation/current/currentGraph or the old provider.
         PhoneObservation observed=awaitObservation(id,directory,authorization,taskDeadline);

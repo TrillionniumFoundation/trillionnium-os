@@ -511,6 +511,30 @@
                 check(f.outcome.actionExecution.getBoolean("effect_returned"),"real return retained");check(!actionSlot.pending(),"cancelled effect worker drains");
             }
         });
+        one("accepted_search_294ms_before_original_deadline_publishes_drained_navigation_before_settle",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();long deadline=attempt.deadlineElapsed;
+                f.effectHook=()->SystemClock.now=deadline-294;
+                f.action(attempt);
+                JSONObject receipt=f.outcome.actionExecution;
+                check(f.effects==1&&f.outcome.accepted&&f.outcome.dispatched&&!f.outcome.stale,"single accepted click published before original cutoff");
+                check(receipt.getBoolean("worker_drained")&&receipt.getBoolean("callback_authority_current")
+                        &&receipt.getLong("deadline_elapsed_ms")==deadline&&receipt.getLong("worker_drained_elapsed_ms")<deadline,
+                        "worker drained with original live action authority");
+                check(!f.base.search.navigationEffectRecorded()&&!s.nativeSearchAllowsLegacyObservation(s.lease),"platform return alone cannot open ordinary input");
+                check(!receipt.getJSONObject("native_search_execution").getBoolean("query_or_price_verified"),"navigation cannot establish purchase or query evidence");
+            }
+        });
+        one("search_effect_return_at_deadline_stays_factual_and_cannot_publish_authority",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.effectHook=()->SystemClock.now=attempt.deadlineElapsed;
+                f.action(attempt);JSONObject receipt=f.outcome.actionExecution;
+                check(f.effects==1&&f.outcome.dispatched&&!f.outcome.accepted,"late true API return remains a single historical effect");
+                check(receipt.getBoolean("effect_returned")&&receipt.getBoolean("api_accepted")&&!receipt.getBoolean("callback_authority_current"),
+                        "actual API and unavailable callback authority remain distinct");
+                check(!f.base.search.navigationEffectRecorded()&&!s.nativeSearchAllowsLegacyObservation(s.lease),"late return cannot open later observation");
+            }
+        });
         one("platform_API_false_is_not_promoted_to_navigation_success",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.apiAccepts=false;f.action(attempt);
