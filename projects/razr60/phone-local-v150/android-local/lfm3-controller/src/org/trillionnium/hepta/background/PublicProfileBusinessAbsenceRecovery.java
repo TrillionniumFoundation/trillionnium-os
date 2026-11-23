@@ -140,6 +140,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
         public final ProfileTarget target;
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final boolean postlaunch=true;
+        public final boolean retainedBeforeFirstModel;
         private final Map<String,byte[]> originals;
         private final String taskPrefix,modelPrefix;
         private Request(Manifest m,Map<String,byte[]> files)throws Exception{
@@ -171,14 +172,21 @@ public final class PublicProfileBusinessAbsenceRecovery {
             JSONObject bootstrap=object(task("background-bootstrap.json")),cleanup=object(task("background-cleanup.json")),result=object(task("result.json"));
             bindBackground(bootstrap);bindBackground(cleanup);
             need("ACTIVE".equals(string(bootstrap,"state"))&&"CLEANUP_UNKNOWN".equals(string(cleanup,"state")),"BUSINESS_BACKGROUND_STATE");
-            yes(bootstrap,"spawn_attempted");no(bootstrap,"retired");yes(cleanup,"retired","spawn_attempted","broker_process_exit_observed");no(cleanup,"cleanup_known");
-            need(number(cleanup,"broker_process_exit_code")==0,"BUSINESS_BROKER_EXIT");
+            yes(bootstrap,"spawn_attempted");no(bootstrap,"retired");yes(cleanup,"retired","spawn_attempted");no(cleanup,"cleanup_known");
+            retainedBeforeFirstModel=number(result,"steps")==0&&Boolean.FALSE.equals(cleanup.get("broker_process_exit_observed"));
+            if(retainedBeforeFirstModel){
+                no(cleanup,"broker_process_exit_observed");
+                need(cleanup.get("broker_process_exit_code")==JSONObject.NULL,"BEFORE_MODEL_HISTORICAL_EXIT");
+            }else{
+                yes(cleanup,"broker_process_exit_observed");
+                need(number(cleanup,"broker_process_exit_code")==0,"BUSINESS_BROKER_EXIT");
+            }
             JSONObject broker=object(task("background-broker-"+generation+".json")),finalBroker=cleanup.getJSONObject("broker_output");requireBroker(broker);requireBroker(finalBroker);
             need(same(broker,finalBroker)&&Boolean.TRUE.equals(broker.get("persisted")),"BUSINESS_BROKER_RECEIPT");byte[] output=task("background-broker-"+generation+".bin");
             need(number(broker,"stored_bytes")==output.length&&number(broker,"observed_bytes")==output.length&&ProfileIdentity.sha(output).equals(string(broker,"stored_sha256")),"BUSINESS_BROKER_BYTES");
             requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
-            JSONObject owned=businessOrigin(bootstrap,cleanup,output);ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");ownedLeafTaskToken=string(owned,"leaf_task_token");
-            long count=number(result,"steps");need(count>0&&count<=256&&taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status")),"BUSINESS_TERMINAL");steps=(int)count;
+            JSONObject owned=retainedBeforeFirstModel?retainedOrigin(bootstrap,cleanup,output):businessOrigin(bootstrap,cleanup,output);ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");ownedLeafTaskToken=string(owned,"leaf_task_token");
+            long count=number(result,"steps");need((count>0||retainedBeforeFirstModel)&&count>=0&&count<=256&&taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status")),"BUSINESS_TERMINAL");steps=(int)count;
             no(result,"cleanup_known","completion_verified","model_reported_success","external_model","automatic_replay","controller_completion_requested");
             for(String k:new String[]{"observation_read_worker_pending_at_terminal","action_worker_pending_at_terminal","native_cancel_worker_pending_at_terminal"})no(result,k);
             need(result.get("model_done_status")==JSONObject.NULL&&result.get("completion_actor")==JSONObject.NULL&&result.get("profile_permission_preparation")==JSONObject.NULL
@@ -193,7 +201,8 @@ public final class PublicProfileBusinessAbsenceRecovery {
             long terminal=number(result,"terminal_decided_elapsed_ms");need(terminal>=created&&terminal<=started,"BUSINESS_TERMINAL_CLOCK");
             requireLastAction(result,terminal);
             modelGeneration=string(result.getJSONObject("model_session"),"worker_generation");need(modelGeneration.matches("[0-9a-f]{32}")&&!modelGeneration.equals(taskId),"BUSINESS_MODEL_GENERATION");modelPrefix="runs/"+modelGeneration+"/";
-            if(originals.containsKey(modelPrefix+"vlm-task-terminal.json")){
+            if(retainedBeforeFirstModel){requireNoModelOriginal(result,broker);modelRequests=0;}
+            else if(originals.containsKey(modelPrefix+"vlm-task-terminal.json")){
                 modelRequests=requireVisualClose(result.getJSONObject("model_session"),broker);
             }else{
                 modelRequests=requireNormalModelClose(result.getJSONObject("model_session"),broker);
@@ -212,6 +221,85 @@ public final class PublicProfileBusinessAbsenceRecovery {
             long queued=number(a,"queued_elapsed_ms"),drained=number(a,"worker_drained_elapsed_ms");need(queued>=created&&drained>=queued&&drained<=terminal,"BUSINESS_LAST_ACTION_CLOCK");
             need(a.get("effect_entered") instanceof Boolean&&a.get("effect_returned") instanceof Boolean,"BUSINESS_LAST_ACTION_TYPE");
             if(Boolean.TRUE.equals(a.get("effect_entered")))yes(a,"effect_returned");return drained;
+        }
+        private JSONObject retainedOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
+            int half=output.length/2;
+            need(half>1&&output.length==2*half&&output[half-1]=='\n'&&output[output.length-1]=='\n'
+                    &&Arrays.equals(Arrays.copyOf(output,half),Arrays.copyOfRange(output,half,output.length)),"RETAINED_BROKER_RECORDS");
+            for(int i=0;i<half-1;i++)need(output[i]!='\n'&&output[i]!='\r',"RETAINED_BROKER_RECORD_BOUNDARY");
+            JSONObject terminal=object(Arrays.copyOf(output,half-1)),first=bootstrap.getJSONObject("last_broker_response"),last=cleanup.getJSONObject("last_broker_response");
+            requireHistoricalResponse(first,bootstrap.getJSONObject("app_display_readback"));
+            need("launch".equals(string(first,"operation"))&&Boolean.TRUE.equals(first.get("dispatched")),"RETAINED_BOOTSTRAP_LAUNCH");
+            need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))&&"client_close".equals(string(terminal,"reason"))
+                    &&"CLEANUP_UNKNOWN".equals(string(terminal,"state"))&&generation.equals(string(terminal,"generation"))
+                    &&displayId==number(terminal,"display_id")&&publicScope.sha256.equals(string(terminal,"display_scope_sha256"))
+                    &&terminal.get("owned_single_task")==JSONObject.NULL&&terminal.get("boot_count_read_retirement_failure")==JSONObject.NULL,"RETAINED_BROKER_TERMINAL");
+            yes(terminal,"public_scope_admission_retired","profile_custody_retained");no(terminal,"release_confirmed");
+            need(number(last,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION&&ProfileIdentity.uuid(string(last,"request_id"))
+                    &&"close".equals(string(last,"operation"))&&"CLEANUP_NOT_CONFIRMED".equals(string(last,"error"))
+                    &&"CLEANUP_UNKNOWN".equals(string(last,"state"))&&displayName.equals(string(last,"display_name"))
+                    &&generation.equals(string(last,"generation"))&&displayId==number(last,"display_id")&&expires==number(last,"expires_elapsed_ms")
+                    &&publicScope.sha256.equals(string(last,"display_scope_sha256")),"RETAINED_CLOSE_RESPONSE");
+            yes(last,"public_scope_admission_retired","public_scope_closing","profile_custody_retained");no(last,"ok","dispatched");
+            need(target.wire().equals(string(last,"profile_target_wire"))&&last.get("public_own_group_readback_wire")==JSONObject.NULL,"RETAINED_CLOSE_PROFILE");
+            JSONObject openRead=bootstrap.getJSONObject("app_display_readback"),lastRead=cleanup.getJSONObject("app_display_readback");
+            String[] volatileReadFields={"broker_request_id","broker_readback_sha256","observed_started_elapsed_ms","observed_ended_elapsed_ms"};
+            need(same(without(openRead,volatileReadFields),without(lastRead,volatileReadFields))
+                    &&ProfileIdentity.uuid(string(lastRead,"broker_request_id"))&&ProfileIdentity.hash(string(lastRead,"broker_readback_sha256"))
+                    &&number(lastRead,"observed_started_elapsed_ms")>=number(openRead,"observed_ended_elapsed_ms")
+                    &&number(lastRead,"observed_ended_elapsed_ms")>=number(lastRead,"observed_started_elapsed_ms")
+                    &&number(lastRead,"observed_ended_elapsed_ms")<expires,"RETAINED_LAST_APP_READBACK");
+
+            JSONObject end=terminal.getJSONObject("profile_cleanup"),begin=first.getJSONObject("profile_cleanup");
+            need(same(end,last.getJSONObject("profile_cleanup"))&&same(terminal.getJSONObject("profile_last_leaf_validation"),last.getJSONObject("profile_last_leaf_validation"))
+                    &&same(terminal.getJSONObject("public_surface_detach"),last.getJSONObject("public_surface_detach")),"RETAINED_CLOSE_BINDING");
+            JSONObject detach=terminal.getJSONObject("public_surface_detach");
+            yes(detach,"admission_irrevocably_retired","worker_finished");no(detach,"provides_task_or_display_cleanup_proof","allows_input_or_model_resumption");
+            need("API_RETURNED_UNVERIFIED".equals(string(detach,"state")),"RETAINED_SURFACE_NOT_PROOF");
+            need("hepta.profile-task-cleanup.v1".equals(string(begin,"schema"))&&generation.equals(string(begin,"generation"))
+                    &&number(begin,"display_id")==displayId&&target.sha256.equals(string(begin,"target_sha256"))
+                    &&number(begin,"user_id")==target.profile.userId&&number(begin,"user_serial")==target.profile.serial&&number(begin,"full_uid")==target.fullUid
+                    &&same(without(begin,"identity_unknown","public_foreign_recent_history"),without(end,"identity_unknown","public_foreign_recent_history")),"RETAINED_TASK_BINDING");
+            no(begin,"identity_unknown","cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present");yes(end,"identity_unknown");
+            JSONArray tasks=begin.getJSONArray("owned_tasks");need(tasks.length()==1,"RETAINED_TASK_COUNT");JSONObject owned=tasks.getJSONObject(0);
+            long root=number(owned,"parent_task_id"),leaf=number(owned,"task_id");String token=string(owned,"task_token_id");
+            need(root>0&&root<=Integer.MAX_VALUE&&leaf>0&&leaf<=Integer.MAX_VALUE&&root!=leaf&&ProfileIdentity.uuid(token)
+                    &&number(owned,"user_id")==target.profile.userId&&number(owned,"user_serial")==target.profile.serial&&number(owned,"full_uid")==target.fullUid,"RETAINED_TASK_OWNER");
+            no(owned,"live_absent","recents_absent");requireHistoricalLeaf(first.getJSONObject("profile_last_leaf_validation"),root,leaf);
+            requireHistoricalLeaf(terminal.getJSONObject("profile_last_leaf_validation"),root,leaf);
+            JSONObject before=begin.getJSONObject("public_foreign_recent_history"),after=end.getJSONObject("public_foreign_recent_history");
+            requireHistoricalHistory(before,root,leaf,false);requireHistoricalHistory(after,root,leaf,true);
+            for(String key:new String[]{"schema","target_sha256","baseline_elapsed_ms","baseline_raw_sha256","baseline_task_ids","owned_task_ids","protected_history_sha256"})
+                need(same(before.get(key),after.get(key)),"RETAINED_HISTORY_BINDING");
+            return new JSONObject().put("root_task_id",root).put("leaf_task_id",leaf).put("leaf_task_token",token);
+        }
+        private void requireNoModelOriginal(JSONObject result,JSONObject broker)throws Exception{
+            JSONObject session=result.getJSONObject("model_session"),app=object(model("app-session-receipt.json"));
+            need(taskId.equals(string(session,"task_id"))&&ProfileIdentity.sha(model("app-session-receipt.json")).equals(string(session,"app_receipt_sha256"))
+                    &&"hepta.local-model.task-session.v1".equals(string(app,"schema"))&&taskId.equals(string(app,"task_id"))
+                    &&modelGeneration.equals(string(app,"worker_generation"))&&ownerUid==number(app,"app_uid")&&number(broker,"app_pid")==number(app,"app_pid")
+                    &&"not_started".equals(string(app,"cleanup_classification"))&&number(app,"requests_sent")==0&&number(app,"requests_accepted")==0
+                    &&app.get("exit_code")==JSONObject.NULL&&session.get("exit_code")==JSONObject.NULL&&app.get("worker_generation_cleanup")==JSONObject.NULL
+                    &&app.getJSONObject("native_session_receipt").length()==0,"BEFORE_MODEL_RECEIPT");
+            no(session,"process_started","process_exit_observed");yes(session,"receipt_valid");
+            yes(app,"cleanup_known","native_session_binding_valid","generation_cleanup_known","generation_unforced");
+            no(app,"process_started","process_exit_observed","force_destroy_sent","parent_force_destroy_sent","cancel_requested","automatic_restart","cross_task_reuse");
+            JSONObject cancel=app.getJSONObject("owned_worker_cancellation");need(taskId.equals(string(cancel,"task_id"))&&modelGeneration.equals(string(cancel,"worker_generation"))
+                    &&number(cancel,"term_destroy_attempts")==0&&number(cancel,"force_destroy_attempts")==0,"BEFORE_MODEL_CANCELLATION");
+            no(cancel,"requested","termination_started","process_bound","process_exit_observed");
+            need(result.get("last_action_execution")==JSONObject.NULL&&result.get("final_observation_id")==JSONObject.NULL,"BEFORE_MODEL_EFFECT");
+            JSONObject retired=object(task("native-app-retired.json")),binding=object(task("native-app-binding.json"));
+            for(JSONObject row:new JSONObject[]{retired,binding})need(taskId.equals(string(row,"task_id"))&&ownerSha256.equals(string(row,"owner_sha256"))
+                    &&string(result,"task_authorization_sha256").equals(string(row,"authorization_sha256"))
+                    &&target.sha256.equals(string(row.getJSONObject("profile_target"),"target_identity_sha256")),"BEFORE_MODEL_NATIVE_OWNER");
+            need(displayId==number(binding,"display_id")&&generation.equals(string(binding,"background_generation")),"BEFORE_MODEL_NATIVE_DISPLAY");
+            yes(retired,"action_domain_retired");no(retired,"pending_action","accepted_completion_candidate","invalid");
+            JSONObject progress=retired.getJSONObject("progress");need(number(progress,"actual_model_actions")==0&&progress.get("pending")==JSONObject.NULL
+                    &&progress.getJSONArray("transitions").length()==0,"BEFORE_MODEL_NATIVE_ACTIVITY");
+            JSONObject gate=result.getJSONObject("task_authorization");need(gate.getJSONArray("found_packages").length()==0&&gate.getJSONObject("last_check").length()==0,"BEFORE_MODEL_GATE");
+            for(String path:manifest.paths())if(path.startsWith("runs/"))need(path.equals(modelPrefix+"app-session-receipt.json"),"BEFORE_MODEL_GENERATION_MEMBERSHIP");
+            for(String leaf:manifest.taskFiles())need(!leaf.startsWith("step-")&&!leaf.startsWith("ime-submit-")&&!leaf.startsWith("fixed-intent-")
+                    &&!leaf.startsWith("controller-completion-"),"BEFORE_MODEL_EFFECT_FILE");
         }
         private JSONObject businessOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
             JSONObject terminal=object(output);
@@ -400,7 +488,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
 
         private int requireNormalModelClose(JSONObject projection,JSONObject broker)throws Exception{
             JSONObject session=object(model("app-session-receipt.json")),nativeSession=object(model("native-session-result.json"));
-            long appPid=number(session,"app_pid"),count=number(session,"requests_sent");need(count>0&&count<=256,"BUSINESS_MODEL_COUNT");
+            long appPid=number(session,"app_pid"),count=number(session,"requests_sent");need((count>0||retainedBeforeFirstModel)&&count>=0&&count<=256,"BUSINESS_MODEL_COUNT");
             need("hepta.local-model.task-session.v1".equals(string(session,"schema"))&&taskId.equals(string(session,"task_id"))&&modelGeneration.equals(string(session,"worker_generation"))
                     &&number(session,"app_uid")==ownerUid&&appPid>1&&appPid==number(broker,"app_pid")&&number(session,"exit_code")==0&&number(session,"requests_accepted")==count
                     &&"normal_close_with_observed_sdk_cleanup".equals(string(session,"cleanup_classification"))&&same(nativeSession,session.getJSONObject("native_session_receipt")),"BUSINESS_MODEL_SESSION");
@@ -552,7 +640,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
                     &&number(b,"started_elapsed_ms")<=started&&number(b,"output_limit_bytes")==65536
                     &&("background-broker-"+generation+".bin").equals(string(b,"output_file"))
                     &&("background-broker-"+generation+".json").equals(string(b,"receipt_file"))
-                    &&Boolean.TRUE.equals(b.get("eof_seen"))&&Boolean.FALSE.equals(b.get("read_failed"))&&Boolean.FALSE.equals(b.get("overflow"))
+                    &&Boolean.valueOf(!retainedBeforeFirstModel).equals(b.get("eof_seen"))&&Boolean.FALSE.equals(b.get("read_failed"))&&Boolean.FALSE.equals(b.get("overflow"))
                     &&Boolean.TRUE.equals(b.get("merged_stdout_stderr"))&&Boolean.FALSE.equals(b.get("model_input"))
                     &&Boolean.FALSE.equals(b.get("release_evidence")),"PUBLIC_RECOVERY_BROKER_TRANSPORT");
         }
@@ -593,7 +681,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
         public void requireFence(long now,int boot)throws Exception{need(boot==requestBoot&&boot==oldBoot&&now>=started&&now<deadline&&now>expires+EXPIRY_GRACE_MS,"BUSINESS_BOOT_TTL_OR_DEADLINE");}
         public byte[] original(String relative)throws Exception{byte[] b=originals.get(relative);need(b!=null,"BUSINESS_INPUT_MISSING");return b.clone();}
         public String proofSchema(){return SCHEMA;}
-        public String source(){return SOURCE;}
+        public String source(){return retainedBeforeFirstModel?"fresh_public_profile_absence_after_unconfirmed_pre_model_close":SOURCE;}
         public JSONObject controller()throws Exception{return manifest.controller();}
         public String wire()throws Exception{return manifest.wire();}
         public JSONObject inputHashes()throws Exception{JSONObject out=new JSONObject();for(String p:originals.keySet()){byte[] b=originals.get(p);out.put(p,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
@@ -613,15 +701,18 @@ public final class PublicProfileBusinessAbsenceRecovery {
                 "recovery_interval_physical_unchanged","foreign_dormant_history_preserved","cleanup_known","automatic_resume","broker_release_response","business_steps",
                 "model_requests","model_generation","historical_model_exit_verified","historical_broker_release_observed","business_dispatch_absent_in_original_receipts",
                 "recorded_owned_identity","rewrites_business_outcome","acknowledges_control_session");
-        need(SCHEMA.equals(string(value,"schema"))&&SOURCE.equals(string(value,"source"))&&r.requestId.equals(string(value,"request_id"))&&r.taskId.equals(string(value,"task_id"))
+        need(SCHEMA.equals(string(value,"schema"))&&r.source().equals(string(value,"source"))&&r.requestId.equals(string(value,"request_id"))&&r.taskId.equals(string(value,"task_id"))
                 &&r.generation.equals(string(value,"generation"))&&number(value,"owner_uid")==r.ownerUid&&r.ownerSha256.equals(string(value,"owner_sha256"))
                 &&r.journalSha256.equals(string(value,"journal_sha256"))&&r.manifest.sha256.equals(string(value,"manifest_sha256"))&&r.originalsSha256.equals(string(value,"originals_sha256"))
                 &&r.publicScope.wire().equals(string(value,"public_scope_wire"))&&r.publicScope.sha256.equals(string(value,"public_scope_sha256"))&&r.target.wire().equals(string(value,"profile_target_wire"))
                 &&r.target.sha256.equals(string(value,"target_sha256"))&&r.displayName.equals(string(value,"display_name"))&&same(r.controller(),value.getJSONObject("current_controller"))
                 &&same(r.recordedOwnedIdentity(),value.getJSONObject("recorded_owned_identity")),"BUSINESS_PROOF_BINDING");
         need(number(value,"business_steps")==r.steps&&number(value,"model_requests")==r.modelRequests&&r.modelGeneration.equals(string(value,"model_generation")),"BUSINESS_PROOF_HISTORY");
-        yes(value,"current_absence_verified","recovery_interval_physical_unchanged","foreign_dormant_history_preserved","cleanup_known","historical_model_exit_verified","historical_broker_release_observed");
-        no(value,"automatic_resume","broker_release_response","business_dispatch_absent_in_original_receipts","rewrites_business_outcome","acknowledges_control_session");
+        yes(value,"current_absence_verified","recovery_interval_physical_unchanged","foreign_dormant_history_preserved","cleanup_known");
+        need(Boolean.valueOf(!r.retainedBeforeFirstModel).equals(value.get("historical_model_exit_verified"))
+                &&Boolean.valueOf(!r.retainedBeforeFirstModel).equals(value.get("historical_broker_release_observed"))
+                &&Boolean.valueOf(r.retainedBeforeFirstModel).equals(value.get("business_dispatch_absent_in_original_receipts")),"BUSINESS_HISTORICAL_STATUS");
+        no(value,"automatic_resume","broker_release_response","rewrites_business_outcome","acknowledges_control_session");
         need(number(value,"old_boot_count")==r.oldBoot&&number(value,"current_boot_count")==boot&&number(value,"lease_expires_elapsed_ms")==r.expires
                 &&number(value,"request_started_elapsed_ms")==r.started&&number(value,"deadline_elapsed_ms")==r.deadline,"BUSINESS_PROOF_CLOCK");
         long begin=number(value,"started_elapsed_ms"),end=number(value,"finished_elapsed_ms");need(begin>=r.started&&end>=begin&&end<=now&&end<r.deadline,"BUSINESS_PROOF_CLOCK");
@@ -629,12 +720,14 @@ public final class PublicProfileBusinessAbsenceRecovery {
         need(number(first,"finished_elapsed_ms")<=number(last,"started_elapsed_ms")&&same(first.getJSONObject("physical"),last.getJSONObject("physical"))
                 &&number(first.getJSONObject("process"),"self_pid")==number(last.getJSONObject("process"),"self_pid")
                 &&number(first.getJSONObject("process"),"self_start_ticks")==number(last.getJSONObject("process"),"self_start_ticks"),"BUSINESS_DOUBLE_SAMPLE");
+        if(r.retainedBeforeFirstModel)need(string(first,"firmware_fingerprint_sha256").equals(string(last,"firmware_fingerprint_sha256")),"RETAINED_FIRMWARE_CHANGED");
         long age=(number(last,"finished_elapsed_ms")-number(first,"started_elapsed_ms"))/1000+2;
         PublicProfileRecentHistory.requireSameEvidence(first.getJSONObject("recents"),last.getJSONObject("recents"),r.target,age);
         return object(value.toString().getBytes(StandardCharsets.UTF_8));
     }
     private static void sample(JSONObject s,Request r,long begin,long end)throws Exception{
-        ProfilePrelaunchRecovery.keys(s,"started_elapsed_ms","finished_elapsed_ms","process","live","recents","displays","physical","target_sha256");
+        ProfilePrelaunchRecovery.keys(r.retainedBeforeFirstModel?without(s,"firmware_fingerprint_sha256"):s,"started_elapsed_ms","finished_elapsed_ms","process","live","recents","displays","physical","target_sha256");
+        if(r.retainedBeforeFirstModel)need(ProfileIdentity.hash(string(s,"firmware_fingerprint_sha256")),"RETAINED_FIRMWARE_IDENTITY");
         long a=number(s,"started_elapsed_ms"),b=number(s,"finished_elapsed_ms");need(a>=begin&&b>=a&&b<=end&&r.target.sha256.equals(string(s,"target_sha256")),"PUBLIC_RECOVERY_SAMPLE_CLOCK");
         JSONObject p=s.getJSONObject("process");ProfilePrelaunchRecovery.keys(p,"complete","old_creator_absent","started_elapsed_ms","finished_elapsed_ms","self_pid","self_start_ticks","process_count","inspected_count","inventory_sha256","model_worker_absent");
         need(Boolean.TRUE.equals(p.get("model_worker_absent"))&&Boolean.TRUE.equals(p.get("complete"))&&Boolean.TRUE.equals(p.get("old_creator_absent"))&&number(p,"started_elapsed_ms")>=a

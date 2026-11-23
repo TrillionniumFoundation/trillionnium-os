@@ -41,6 +41,7 @@ def main():
     ap=argparse.ArgumentParser()
     for name in ('source','output','java-home','json-jar','original-paths'):ap.add_argument('--'+name,required=True,type=Path)
     ap.add_argument('--visual',action='store_true',help='Use an external map of genuine visual-task originals')
+    ap.add_argument('--retained-before-model',action='store_true',help='Replay a stopped zero-request task with retained custody')
     a=ap.parse_args();src=a.source.resolve();out=a.output.absolute();out.mkdir(mode=0o700)
     bg=src/'src/org/trillionnium/hepta/background';local=src/'src/org/trillionnium/hepta/local'
     test=src/'tests/public-profile-business-client';helper=src/'tests/background-session/prepare_fixture.py'
@@ -89,6 +90,7 @@ import org.json.*;
 /** Explicit current-PM synthetic boundary; historical model/controller bytes remain real originals. */
 public final class RecoveryControllerIdentity {
  public static boolean changed;
+ public static String firmwareFingerprintSha256(){return ProfileIdentity.sha("host-recovery-fixture");}
  public static JSONObject read(android.content.Context c,int uid,long deadline)throws Exception{
   if(android.os.SystemClock.elapsedRealtime()>=deadline)throw new java.io.IOException("synthetic identity expired");
   String hash=String.join("",java.util.Collections.nCopies(64,changed?"b":"a"));
@@ -112,7 +114,7 @@ public final class RecoveryControllerIdentity {
     stages=[stage('compile',javac,out,src)]
     if stages[0]['exit_code']==0:
         stages.append(stage('client',[str(jdk/'bin/java'),'-Xmx768m','-cp',str(classes)+os.pathsep+str(jar),
-            'org.trillionnium.hepta.local.PublicProfileBusinessClientHostTest',str(a.original_paths.resolve()),str(out/'CASES.json')]+(['--visual'] if a.visual else []),out,src))
+            'org.trillionnium.hepta.local.PublicProfileBusinessClientHostTest',str(a.original_paths.resolve()),str(out/'CASES.json')]+(['--visual'] if a.visual else ['--retained-before-model'] if a.retained_before_model else []),out,src))
     after=inventory(src);write(out/'SOURCE-AFTER.json',after);tools_after=[ref(p) for p in toolpaths]
     originals_after={k:ref(v) for k,v in original_paths.items()};originals_after['path_map']=ref(a.original_paths)
     counts=json.loads((out/'CASES.json').read_bytes()) if (out/'CASES.json').is_file() else None

@@ -466,7 +466,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return task!=null&&task.matches("[0-9a-f]{32}")&&owner!=null&&owner.matches("[0-9a-f]{64}")
                 &&live==this&&ownedController==expected&&(expected==null||!expected.isRunning()&&task.equals(expected.currentTaskId()))
                 &&activeObservation==null&&activeNativeSearchObservation==null&&!capturePending&&!observationIoBusy.get()&&!actionWorkPending()&&!nativeCancellationWorkPending()
-                &&(taskBackground==null||taskBackground.publicProfileRecoveryEligible()&&task.equals(taskBackground.taskId)&&owner.equals(taskBackground.ownerSha256))
+                &&(taskBackground==null||taskBackground.publicProfileBusinessRecoveryEligible()&&task.equals(taskBackground.taskId)&&owner.equals(taskBackground.ownerSha256))
                 &&(taskWeb==null||taskWeb.released())&&(lease==null||lease.equals(task));
     }
     /** Personal Notes receipt admission has its own type and eligibility; it grants no action authority. */

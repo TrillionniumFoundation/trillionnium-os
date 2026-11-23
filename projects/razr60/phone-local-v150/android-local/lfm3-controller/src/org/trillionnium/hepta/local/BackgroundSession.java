@@ -616,6 +616,13 @@ final class BackgroundSession {
     private boolean publicProfilePostlaunchRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null
             &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
             &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
+    /** Admission for read-only verification. An old live broker or retained
+     * controller process still prevents acceptance of the new absence receipt. */
+    synchronized boolean publicProfileBusinessRecoveryEligible(){
+        return publicProfileRecoveryEligible()||publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
+                &&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state)
+                &&!brokerExitObserved&&brokerExitCode==null&&(brokerProcess==null||!brokerProcess.isAlive());
+    }
     /** Read-only absence recovery for a stopped personal Notes lease. The original
      * broker exit/release remains unknown; only a new opaque receipt can close it.
      * A failed display create can precede bootstrap launch. Eligibility admits
@@ -627,7 +634,7 @@ final class BackgroundSession {
         if(result.businessRecovery!=null){
             PublicProfileBusinessRecoveryClient.Receipt receipt=result.businessRecovery;
             if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null||result.personalNotesRecovery!=null
-                    ||!result.known||!publicProfileRecoveryEligible()||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                    ||!result.known||!(receipt.request.retainedBeforeFirstModel?publicProfileBusinessRecoveryEligible():publicProfileRecoveryEligible())||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
                     ||!generation.equals(result.evidence.getString("generation"))||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
                     ||!receipt.receiptSha256().equals(result.evidence.getString("business_receipt_sha256")))
                 throw new IOException("业务恢复凭据不属于当前原始停止租约");
@@ -1536,7 +1543,7 @@ final class BackgroundSession {
         try{return MobiMindPrivateFiles.exists(new File(new QualificationScopeConfig.FilesRoot(context).path,JOURNAL));}
         catch(Exception unknown){return true;}
     }
-    /** Distinct positive-step absence contract; the ordinary zero-step path below is unchanged. */
+    /** Reconcile a manifest-bound task only through an independently validated current absence receipt. */
     static Cleanup reconcileBusiness(Context context,BusinessReconciliationCheck check)throws Exception{
         if(check==null)throw new IOException("业务恢复缺少真实任务与队列预约");
         QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);File path=new File(root.path,JOURNAL);

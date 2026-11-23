@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -59,7 +60,15 @@ final class PublicProfileBusinessRecoveryClient {
             if(!PublicProfileBusinessAbsenceRecovery.CONTROL.equals(origin))throw new IOException("业务恢复归档缺少原始步骤数");
             return false;
         }
-        long steps=number(summary,"steps");if(steps<0||steps>256)throw new IOException("业务恢复步骤数越界");return steps>0;
+        long steps=number(summary,"steps");if(steps<0||steps>256)throw new IOException("业务恢复步骤数越界");
+        if(steps>0)return true;
+        // A retained zero-step task with a recorded model-session binding is
+        // validated by the full task/generation manifest on the worker.
+        String task=string(journal,"task_id");
+        if(!task.matches("[0-9a-f]{32}"))throw new IOException("业务恢复原任务标识无效");
+        return number(journal,"display_id")>1&&"CLEANUP_UNKNOWN".equals(journal.opt("state"))
+                &&Boolean.TRUE.equals(journal.opt("profile_launch_attempted"))
+                &&MobiMindPrivateFiles.exists(new File(root.path,"control-tasks/"+task+"/native-app-retired.json"));
     }
     private static String originPath(JSONObject current)throws Exception{
         if(!"interrupted".equals(current.opt("status")))return PublicProfileBusinessAbsenceRecovery.CONTROL;
@@ -177,6 +186,8 @@ final class PublicProfileBusinessRecoveryClient {
                 throw new IOException("后台状态检查未能确认空间已释放（退出码 "+exit+"）");
             }
             JSONObject verified=PublicProfileBusinessAbsenceRecovery.validate(object(capture.bytes),request,SystemClock.elapsedRealtime(),boot(context));
+            if(request.retainedBeforeFirstModel&&!RecoveryControllerIdentity.firmwareFingerprintSha256()
+                    .equals(string(verified.getJSONObject("before"),"firmware_fingerprint_sha256")))throw new IOException("清理期间的系统固件身份不一致");
             if(!PublicProfileBusinessAbsenceRecovery.same(controller,RecoveryControllerIdentity.read(context,uid,request.deadline)))throw new IOException("业务恢复期间安装代码发生变化");
             check.checkBusiness(request.taskId,request.ownerSha256);inputs.unchanged(true);request.requireFence(SystemClock.elapsedRealtime(),boot(context));
             return new Receipt(context,request,inputs,verified,capture.bytes,command,SystemClock.elapsedRealtime());
@@ -202,6 +213,7 @@ final class PublicProfileBusinessRecoveryClient {
             if(MobiMindPrivateFiles.exists(new File(root.path,PublicProfileBusinessAbsenceRecovery.LATCH)))read(PublicProfileBusinessAbsenceRecovery.LATCH,SUMMARY_LIMIT);
             stableMetadata();
         }
+        private File neverStartedDirectory;private String neverStartedDirectoryKey;
         void readAll()throws Exception{
             for(String name:taskFiles){
                 String path="control-tasks/"+taskId+"/"+name;read(path,PublicProfileBusinessAbsenceRecovery.originalLimit(path));
@@ -218,7 +230,13 @@ final class PublicProfileBusinessRecoveryClient {
                     read(path,PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
                 unchanged(true);return;
             }
-            read(prefix+"app-session-receipt.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);read(prefix+"native-session-result.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+            read(prefix+"app-session-receipt.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+            if(number(result,"steps")==0){
+                neverStartedDirectory=existingDirectory(new File(root.path,"runs/"+generation));
+                neverStartedDirectoryKey=directoryIdentity(neverStartedDirectory);
+                unchanged(true);return;
+            }
+            read(prefix+"native-session-result.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
             JSONObject session=object(get(prefix+"app-session-receipt.json"));String nonce=string(session.getJSONObject("worker_generation_cleanup"),"cleanup_nonce");
             if(!nonce.matches("[0-9a-f]{32}"))throw new IOException("业务恢复原模型退出 nonce 无效");
             read(prefix+"worker-generation.identity",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);read(prefix+"generation-cleanup-"+nonce+".json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
@@ -246,6 +264,9 @@ final class PublicProfileBusinessRecoveryClient {
             if(!leasePresent&&MobiMindPrivateFiles.exists(new File(root.path,PublicProfileBusinessAbsenceRecovery.JOURNAL)))throw new IOException("业务恢复已提交后租约再次出现");
         }
         private void stableMetadata()throws Exception{
+            if(neverStartedDirectory!=null&&(!neverStartedDirectoryKey.equals(directoryIdentity(neverStartedDirectory))
+                    ||!members(neverStartedDirectory).equals(Collections.singleton("app-session-receipt.json"))))
+                throw new IOException("零次模型请求的原始目录已改变");
             root.unchanged(context);if(!taskKey.equals(directoryIdentity(task))||!taskFiles.equals(members(task)))throw new IOException("业务恢复原任务目录集合发生变化");
             if(otherModelTerminal!=null&&MobiMindPrivateFiles.exists(otherModelTerminal))throw new IOException("业务恢复期间新增了另一种本地模型退出记录");
             for(String name:new String[]{"control-session.json.bak","control-session.json.new"})if(MobiMindPrivateFiles.exists(new File(root.path,name)))throw new IOException("业务恢复遇到未提交会话记录");
@@ -255,6 +276,9 @@ final class PublicProfileBusinessRecoveryClient {
     }
     private static void requireModelGeneration(Inputs inputs)throws Exception{
         JSONObject result=object(inputs.get("control-tasks/"+inputs.taskId+"/result.json"));String generation=string(result.getJSONObject("model_session"),"worker_generation"),prefix="runs/"+generation+"/";
+        if(inputs.neverStartedDirectory!=null){
+            inputs.stableMetadata();return; // The app and root each validate the complete never-started receipt.
+        }
         if(inputs.reads.containsKey(prefix+"vlm-task-terminal.json")){
             JSONArray rounds=object(inputs.get(prefix+"vlm-task-terminal.json")).getJSONArray("requests");
             for(int i=0;i<rounds.length();i++){

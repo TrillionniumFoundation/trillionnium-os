@@ -55,7 +55,7 @@ public final class LocalSocket implements Closeable {
 }''',
  'org/trillionnium/hepta/background/RecoveryControllerIdentity.java':'''package org.trillionnium.hepta.background;
 /** Explicit unavailable PackageManager/APK IO for generic legacy tests. */
-public final class RecoveryControllerIdentity {public static org.json.JSONObject read(android.content.Context context,int uid,long deadline)throws Exception{throw new java.io.IOException("host fixture cannot certify a current installed APK");}}''',
+public final class RecoveryControllerIdentity {public static String firmwareFingerprintSha256()throws java.io.IOException{throw new java.io.IOException("generic fixture cannot attest firmware");}public static org.json.JSONObject read(android.content.Context context,int uid,long deadline)throws Exception{throw new java.io.IOException("host fixture cannot certify a current installed APK");}}''',
  'org/trillionnium/hepta/local/HostRecoveryProcessBoundary.java':'''package org.trillionnium.hepta.local;
 /** Root-process IO is unavailable in this generic host fixture; never returns synthetic authority. */
 final class HostRecoveryProcessBoundary {static Process start(String command)throws java.io.IOException{throw new java.io.IOException("host fixture cannot launch a recovery root process");}}''',

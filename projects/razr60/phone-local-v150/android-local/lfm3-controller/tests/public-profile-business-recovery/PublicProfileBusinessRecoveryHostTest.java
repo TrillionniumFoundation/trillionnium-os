@@ -119,7 +119,7 @@ public final class PublicProfileBusinessRecoveryHostTest {
     }
 
     private static JSONObject syntheticSample(PublicProfileBusinessAbsenceRecovery.Request r,long at)throws Exception{
-        return new JSONObject().put("started_elapsed_ms",at).put("finished_elapsed_ms",at+3).put("target_sha256",r.target.sha256)
+        JSONObject sample=new JSONObject().put("started_elapsed_ms",at).put("finished_elapsed_ms",at+3).put("target_sha256",r.target.sha256)
             .put("process",new JSONObject().put("complete",true).put("old_creator_absent",true).put("model_worker_absent",true)
                 .put("started_elapsed_ms",at+1).put("finished_elapsed_ms",at+2).put("self_pid",43210).put("self_start_ticks",123456)
                 .put("process_count",512).put("inspected_count",35).put("inventory_sha256",HASH))
@@ -129,6 +129,7 @@ public final class PublicProfileBusinessRecoveryHostTest {
             .put("recents",new JSONObject(PublicProfileRecentHistory.absence(syntheticRecents(),r.target).evidence()))
             .put("displays",new JSONObject().put("complete",true).put("count",2).put("snapshot_sha256",HASH).put("exact_name_absent",true).put("recorded_id_absent",true))
             .put("physical",new JSONObject().put("0",HASH).put("1",HASH));
+        if(r.retainedBeforeFirstModel)sample.put("firmware_fingerprint_sha256",ProfileIdentity.sha("host-recovery-fixture"));return sample;
     }
     private static String syntheticRecents(){
         return "ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)\nmRecentsUid=1000\n"
@@ -154,8 +155,8 @@ public final class PublicProfileBusinessRecoveryHostTest {
             .put("current_controller",r.controller()).put("before",syntheticSample(r,r.started+2)).put("after",syntheticSample(r,r.started+20))
             .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true).put("foreign_dormant_history_preserved",true)
             .put("cleanup_known",true).put("automatic_resume",false).put("broker_release_response",false).put("business_steps",r.steps)
-            .put("model_requests",r.modelRequests).put("model_generation",r.modelGeneration).put("historical_model_exit_verified",true)
-            .put("historical_broker_release_observed",true).put("business_dispatch_absent_in_original_receipts",false)
+            .put("model_requests",r.modelRequests).put("model_generation",r.modelGeneration).put("historical_model_exit_verified",!r.retainedBeforeFirstModel)
+            .put("historical_broker_release_observed",!r.retainedBeforeFirstModel).put("business_dispatch_absent_in_original_receipts",r.retainedBeforeFirstModel)
             .put("recorded_owned_identity",r.recordedOwnedIdentity()).put("rewrites_business_outcome",false).put("acknowledges_control_session",false);
     }
     private static void proofReject(String name,String code,Edit edit)throws Exception{

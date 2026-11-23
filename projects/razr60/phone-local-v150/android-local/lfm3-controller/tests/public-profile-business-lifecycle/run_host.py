@@ -148,7 +148,7 @@ final class BackgroundSession {
  interface HostWork {Cleanup run(BusinessReconciliationCheck check)throws Exception;}
  static volatile boolean hostLeasePresent=true;static volatile int calls;static volatile HostWork hostWork;
  static volatile Cleanup last;final String taskId=HostFacts.TASK;String ownerSha256=HostFacts.OWNER;boolean eligible=true;int accepts;
- boolean publicProfileRecoveryEligible(){return eligible;}
+ boolean publicProfileBusinessRecoveryEligible(){return eligible;}
  void acceptReconciliation(Cleanup cleanup)throws Exception{if(!cleanup.known)throw new IOException("unknown fixture cleanup");accepts++;eligible=false;}
  static Cleanup reconcileBusiness(Context context,BusinessReconciliationCheck check)throws Exception{calls++;return hostWork.run(check);}
  static Cleanup hostKnown()throws Exception{

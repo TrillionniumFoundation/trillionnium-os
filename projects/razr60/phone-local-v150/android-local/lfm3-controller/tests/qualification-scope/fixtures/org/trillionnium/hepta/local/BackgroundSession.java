@@ -34,6 +34,7 @@ final class BackgroundSession {
     boolean released(){return testClosed;}
     boolean prelaunchRecoveryEligible(){return false;} // This legacy IO fake cannot establish profile recovery.
     boolean postlaunchRecoveryEligible(){return false;} // No launched-profile absence authority in this IO fake.
+    boolean publicProfileBusinessRecoveryEligible(){return false;}
     boolean publicProfileRecoveryEligible(){return false;} // No public-profile absence authority in this legacy IO fake.
     boolean personalNotesRecoveryEligible(){return false;} // No personal Notes recovery or receipt authority in this legacy IO fake.
     boolean allows(String p){return selection.allowedPackages.contains(p);}
