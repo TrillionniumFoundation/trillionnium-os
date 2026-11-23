@@ -958,12 +958,19 @@ final class NativeAppSession {
                     :"首页内容等待预算已耗尽；根据当前未就绪证据结束 failure，不能声称查询成功。");
             missing.add(waiting?"native_home_content_loading":"native_home_loading_budget_exhausted");
         }
-        else if(productWideSearchReturnedHome){
-            view.put("observed_login_page",false);view.put("returned_to_home_after_wide_search",true);view.put("actual_return_destination","home_search");
+        else if(productWideSearchReturnedHome&&!NativeXiaomiProductPage.LOGIN.equals(phase)){
+            boolean home="home_search".equals(product.phase);
             phase=NativeXiaomiProductPage.LOGIN_BLOCKED;
-            view.put("next_goal","从小米账号登录页返回了已尝试的搜索首页，当前没有商品搜索框。结束查询并报告这次遇到的登录页面。");
-            view.put("credentials_or_agreement_actions_available",false);
-            missing.add("native_login_returned_to_home_after_wide_search");
+            view.put("observed_login_page",false);view.put("returned_to_home_after_wide_search",home);
+            view.put("current_provider_phase",product.phase);view.put("credentials_or_agreement_actions_available",false);
+            if(home){
+                view.put("actual_return_destination","home_search");
+                view.put("next_goal","从小米账号登录页返回了已尝试的搜索首页，当前没有商品搜索框。结束查询并报告这次遇到的登录页面。");
+                missing.add("native_login_returned_to_home_after_wide_search");
+            }else{
+                view.put("next_goal","登录返回以后应用页面已改变。当前页面没有已核实的商品结果；结束本次查询。");
+                missing.add("native_login_return_destination_changed");
+            }
         }
         else if(NativeXiaomiProductPage.LOGIN.equals(phase)){
             view.put("observed_login_page",true);view.put("login_exit_reserved",productLoginExitReserved);
