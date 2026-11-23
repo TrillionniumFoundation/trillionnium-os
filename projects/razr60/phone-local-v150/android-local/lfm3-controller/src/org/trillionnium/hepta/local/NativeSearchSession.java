@@ -139,7 +139,7 @@ final class NativeSearchSession {
     synchronized void retire(){retired=true;if(attempted!=null)attempted.close();}
     synchronized boolean navigationEffectRecorded(){return navigationEffectRecorded;}
     synchronized void navigationObserved(NativeAppEvidence.Frame frame)throws Exception{
-        need(navigationEffectRecorded&&!navigationObserved&&frame!=null,"navigation effect must precede the actual search-input observation");
+        need(navigationEffectRecorded&&!navigationObserved&&frame!=null,"navigation effect must precede the actual destination observation");
         nativeTask.requireSearchNavigationObserved(this,frame);navigationObserved=true;
     }
 
@@ -161,10 +161,10 @@ final class NativeSearchSession {
             e.put("full_tree_equal",planning.fullTreeEqual);e.put("observation_id",planning.id);e.put("package",planning.packageName);
             e.put("phase","home_search");e.put("role_id",planning.role.roleId);e.put("role",planning.role.modelRole);
             e.put("offered_action",NativeSearchDecision.ACTION);e.put("purpose",planning.role.iconAction?"点击当前独立、标有「搜索」的图标以打开搜索输入框":"打开当前搜索输入框；不选择轮播提示词");
-            if(planning.role.iconAction){
+            {
                 NativeActionSnapshotCheck.Node button=planning.second.node(planning.role.actionPath);
                 Map<String,Object> target=new LinkedHashMap<String,Object>();target.put("path",button.path);
-                target.put("view_id",button.view);target.put("label",button.label);target.put("android_action","ACTION_CLICK");
+                target.put("view_id",button.view);target.put("class",button.cls);target.put("label",button.label);target.put("android_action","ACTION_CLICK");
                 e.put("model_proposed_target",target);
             }
             e.put("hint_is_owner_query",false);e.put("owner_product_model",session.goal.productModel);
@@ -307,7 +307,7 @@ final class NativeSearchSession {
                 &&e.optBoolean("worker_drained",false)&&e.optBoolean("callback_published",false)&&e.optBoolean("callback_authority_current",false)
                 &&!e.optBoolean("retired",true),"actual shared action lifecycle does not prove a current drained single effect");
         need(now<attempt.deadlineElapsed,"navigation outcome is late");
-        nativeTask.recordSearchNavigationEffect(this,attempt,actualReceiptSha,NativeSearchPlanning.map(e),now);
+        nativeTask.recordSearchNavigationEffect(this,attempt,actualReceiptSha,NativeSearchPlanning.map(e),now,!attempt.offer.planning.role.iconAction);
         synchronized(this){navigationEffectRecorded=true;}attempt.close();
     }
     private static void need(boolean value,String why){if(!value)throw new IllegalStateException("native search Session: "+why);}

@@ -103,10 +103,30 @@ public final class LocalTaskController implements AutoCloseable {
                     ||!TaskCompletionGate.webFrameSha(frame).equals(source.get("completion_frame_sha256")))
                 return java.util.Collections.emptyMap();
             String phase=String.valueOf(domain.get("phase")),code,message;
-            if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&yes(provider,"observed_login_page")
-                    &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))){
-                code="native_xiaomi_login_page";
-                message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
+            boolean currentXiaomiLogin=NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&yes(provider,"observed_login_page")
+                    &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase));
+            boolean returnedFromXiaomiLogin=NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)
+                    &&NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase)
+                    &&yes(provider,"returned_to_home_after_wide_search")&&"home_search".equals(provider.get("actual_return_destination"))
+                    &&Boolean.FALSE.equals(provider.get("observed_login_page"))&&Boolean.FALSE.equals(provider.get("credentials_or_agreement_actions_available"))
+                    &&java.util.Collections.singletonList("native_login_returned_to_home_after_wide_search").equals(domain.get("missing"))
+                    &&boundXiaomiLoginHistory(task,owner,frame,source,session);
+            if(currentXiaomiLogin||returnedFromXiaomiLogin){
+                code=currentXiaomiLogin?"native_xiaomi_login_page":"native_xiaomi_search_returned_home_after_login";
+                java.util.Map<?,?> goal=map(map(completion.get("contract")).get("native_app_goal"));
+                boolean preview=owner.equals(goal.get("owner_sha256"))&&frame.packageName.equals(goal.get("package_name"))
+                        &&NativeAppGoal.PRODUCT_ORDER_PREVIEW.equals(goal.get("kind"));
+                String missing=preview?"当前页面没有商品售价和结算总额，无法核对预算。":"当前页面没有显示商品售价。";
+                java.util.Map<?,?> target=map(session.get("profile_target")),profile=map(target.get("profile"));
+                java.util.Map<?,?> window=map(source.get("actual_profile_window"));
+                Object identity=target.get("target_identity_sha256");
+                boolean workProfile=frame.packageName.equals(target.get("package"))
+                        &&"android.os.usertype.profile.MANAGED".equals(profile.get("user_type"))
+                        &&identity instanceof String&&((String)identity).matches("[0-9a-f]{64}")&&identity.equals(window.get("target_identity_sha256"))
+                        &&sameNumber(profile.get("user_id"),window.get("user_id"))&&sameNumber(profile.get("user_serial"),window.get("user_serial"));
+                String location=workProfile?"本次使用的工作资料中的小米商城":"本次选中的小米商城";
+                String page=currentXiaomiLogin?"小米商城显示了账号登录页。":"在小米商城打开搜索时出现了账号登录页，返回后显示商城首页。";
+                message=page+missing+"如要继续，可在"+location+"完成登录后重新运行任务。";
             }else if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&"product_detail_quote".equals(phase)
                     &&provider.containsKey("order_preview_price_review")){
                 java.util.Map<?,?> review=map(provider.get("order_preview_price_review")),quote=map(review.get("detail_quote"));
@@ -172,6 +192,38 @@ public final class LocalTaskController implements AutoCloseable {
             out.put("observation_id",frame.observationId);out.put("completion_frame_sha256",source.get("completion_frame_sha256"));
             out.put("package",frame.packageName);out.put("phase",phase);out.put("display_id",frame.displayId);
             out.put("background_generation",frame.backgroundGeneration);return out;
+        }
+        private static boolean boundXiaomiLoginHistory(String task,String owner,NotesCompletionEvidence.Frame frame,
+                java.util.Map<?,?> source,java.util.Map<?,?> session){
+            java.util.Map<?,?> progress=map(session.get("progress")),login=map(progress.get("typed_search_login_observed"));
+            java.util.Map<?,?> earlier=map(login.get("fresh_frame")),page=map(login.get("provider"));
+            return "hepta.native-search-login-observed.v1".equals(login.get("schema"))&&NativeXiaomiProductPage.LOGIN.equals(login.get("phase"))
+                    &&task.equals(login.get("task_id"))&&task.equals(earlier.get("task_id"))
+                    &&owner.equals(login.get("owner_sha256"))&&owner.equals(earlier.get("owner_sha256"))
+                    &&sameSha(source.get("execution_target_sha256"),login.get("execution_target_sha256"),earlier.get("execution_target_sha256"))
+                    &&sameSha(source.get("task_authorization_sha256"),login.get("authorization_sha256"),earlier.get("task_authorization_sha256"))
+                    &&frame.packageName.equals(earlier.get("package"))&&frame.backgroundGeneration.equals(earlier.get("background_generation"))
+                    &&number(earlier.get("display_id"),frame.displayId)&&!frame.observationId.equals(earlier.get("observation_id"))
+                    &&NativeXiaomiProductPage.LOGIN.equals(page.get("phase"))&&earlier.equals(page.get("frame"))
+                    &&Boolean.FALSE.equals(login.get("query_or_price_verified"))&&Boolean.FALSE.equals(login.get("fresh_search_contract_observed"))
+                    &&yes(progress,"product_login_exit_reserved")&&Boolean.FALSE.equals(progress.get("typed_search_navigation_observed"))
+                    &&Boolean.FALSE.equals(progress.get("product_query_observed"))&&observedXiaomiReturn(progress,login,source);
+        }
+        private static boolean observedXiaomiReturn(java.util.Map<?,?> progress,java.util.Map<?,?> login,java.util.Map<?,?> current){
+            Object sequence=progress.get("transitions");
+            if(!(sequence instanceof java.util.List<?>))return false;
+            boolean sawLogin=false;
+            for(Object item:(java.util.List<?>)sequence){
+                if(login.equals(item)){sawLogin=true;continue;}
+                java.util.Map<?,?> transition=map(item),attempt=map(transition.get("attempt")),after=map(transition.get("after"));
+                if(sawLogin&&NativeXiaomiProductPage.LOGIN_EXIT.equals(attempt.get("purpose"))
+                        &&"home_search".equals(transition.get("actual_return_destination"))&&yes(transition,"navigation_only")
+                        &&Boolean.FALSE.equals(transition.get("query_or_result_proof_created"))
+                        &&current.get("task_id").equals(after.get("task_id"))&&current.get("owner_sha256").equals(after.get("owner_sha256"))
+                        &&current.get("package").equals(after.get("package"))&&current.get("background_generation").equals(after.get("background_generation"))
+                        &&sameNumber(after.get("window_id"),current.get("window_id"))&&sameNumber(after.get("display_id"),current.get("display_id")))return true;
+            }
+            return false;
         }
         private static boolean originalCalendarMinimum(java.util.Map<?,?> progress,java.util.Map<?,?> minimum){
             Object transitions=progress.get("transitions");
@@ -832,6 +884,9 @@ public final class LocalTaskController implements AutoCloseable {
                                     authorization.frame(),notesReadiness.started,notesReadiness.finished)
                             :completion.notesCreateWorkflow(steps,decisionRunId,action,workflowObservation(observation),authorization.frame()):null;
                 if(notesReadiness!=null&&workflowGrant==null)
+                    workflowGrant=completion.notesOpaqueEditorWorkflow(steps,decisionRunId,action,notesReadiness.reads,
+                            authorization.frame(),notesReadiness.started,notesReadiness.finished);
+                if(notesReadiness!=null&&workflowGrant==null)
                     throw new IllegalStateException("本次正文后续就绪证据未能绑定原始新建操作，停止自动导航");
                 if(workflowGrant!=null){
                     emit("本次新建笔记正在按已授权工具流程保存并重新打开…");
@@ -840,6 +895,12 @@ public final class LocalTaskController implements AutoCloseable {
                             notesPhase,calculatorInput,completionInstalled,workflowGrant,observation,deadline);
                     observation=workflow.observation;
                     if(workflow.error!=null)throw workflow.error;
+                    if(workflowGrant.opaque()&&!workflow.verified){
+                        finalStatus=workflowGrant.savedToNewRow()?"partial":"failed";
+                        summary=workflowGrant.savedToNewRow()?"已在返回后的笔记列表首项核对本次新增正文。未能核实重新打开后的完整内容。"
+                                :"已打开本次笔记编辑器，未能在返回后的列表核实新增正文。";
+                        break;
+                    }
                     // History keeps named scalar facts; the complete typed workflow stays in its receipt.
                     row.put("tool_workflow_id",workflowGrant.workflowId)
                             .put("tool_workflow_actor_kind","tool_workflow").put("tool_workflow_model_issued",false)
@@ -1205,6 +1266,7 @@ public final class LocalTaskController implements AutoCloseable {
             PhoneObservation initial,long taskDeadline,NotesCreateWorkflow.Grant reopenGrant,NotesCreateWorkflow.ChildCall reopenChild){
         final boolean reopened=reopenChild!=null;
         long started=SystemClock.elapsedRealtime(),deadline=Math.min(taskDeadline,started+TaskCompletionGate.NOTES_EDITOR_READINESS_MS);
+        boolean allOpaque=true;
         PhoneObservation current=initial;Exception failure=null;boolean bodyReady=false;
         java.util.List<NotesCreateWorkflow.Observation> reads=new java.util.ArrayList<NotesCreateWorkflow.Observation>();
         java.util.Set<String> seen=new java.util.HashSet<String>();JSONArray samples=new JSONArray();JSONObject reset=null;
@@ -1240,6 +1302,8 @@ public final class LocalTaskController implements AutoCloseable {
                 sample.put("validation_accepted",domainValid).put("current_body_matched",currentBody).put("domain_valid",domainValid);
                 if(!domainValid)throw new IllegalStateException("Notes create or installed observation identity is unproved");
                 if(currentBody){bodyReady=true;break;}
+                allOpaque&=completion.notesOpaqueEditor(read.frame);
+                sample.put("opaque_editor_without_body",allOpaque);
                 if(count+1>=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)break;
                 if(count==0){
                     // clearCache is a public read-side client operation. Its return
@@ -1248,13 +1312,17 @@ public final class LocalTaskController implements AutoCloseable {
                     checkActive(deadline);installed.verify(service);
                 }
                 long pauseUntil=Math.min(deadline,SystemClock.elapsedRealtime()+200);
+                // A WebView can publish its editable child after its toolbar and editor root.
+                // Use the same four reads and 15s deadline, leaving time for the final full traversal.
+                if(allOpaque&&count>=1)pauseUntil=Math.min(deadline,Math.max(pauseUntil,started+(count==1?4000:9000)));
                 while(SystemClock.elapsedRealtime()<pauseUntil){
                     checkActive(deadline);Thread.sleep(Math.min(50,Math.max(1,pauseUntil-SystemClock.elapsedRealtime())));
                 }
                 checkActive(deadline);current=awaitObservationRaw(task,directory,auth,deadline);
             }
             checkActive(deadline);installed.verify(service);
-            if(!bodyReady)throw new IllegalStateException("本次笔记正文尚未取得完整无障碍证据，有限读取已结束；没有重发新建或借用旧正文");
+            if(!bodyReady&&((reopened&&!reopenGrant.opaque())||!allOpaque||reads.size()!=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS))
+                throw new IllegalStateException("本次笔记正文尚未取得完整无障碍证据，有限读取已结束；没有重发新建或借用旧正文");
         }catch(Exception error){failure=error;}
         long finished=SystemClock.elapsedRealtime();
         try{
@@ -1268,7 +1336,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("max_observations",TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)
                     .put("max_elapsed_ms",TaskCompletionGate.NOTES_EDITOR_READINESS_MS).put("started_elapsed_ms",started)
                     .put("finished_elapsed_ms",finished).put("elapsed_ms",finished-started)
-                    .put("body_verified",bodyReady&&failure==null).put("samples",samples)
+                    .put("body_verified",bodyReady&&failure==null).put("complete_opaque_editor_reads",!bodyReady&&allOpaque&&reads.size()==TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS).put("samples",samples)
                     .put("client_cache_reset",reset==null?JSONObject.NULL:reset)
                     .put("error",failure==null?JSONObject.NULL:HeptaAccessibilityService.message(failure))
                     .put("model_requests",0).put("app_actions",0).put("automatic_create_retry",false)

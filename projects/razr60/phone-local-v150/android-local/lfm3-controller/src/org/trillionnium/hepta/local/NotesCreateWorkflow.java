@@ -51,7 +51,46 @@ public final class NotesCreateWorkflow {
         final String body;
         final NotesCompletionEvidence.Installed installed;
         final TaskAuthorization authorization;
+        // Present only for a new, not-yet-readable editor opened from a fully observed list.
+        private Observation opaqueStart;
+        private List<String> previousRows;
+        private java.util.Set<String> readinessIds;
+        private String insertedListObservation;
+        private int originalListWindow;
         private boolean consumed,retired;
+        void bindOpaqueStart(Observation start,List<String> previous,int listWindow,java.util.Set<String> seen){
+            require(!consumed&&!retired&&opaqueStart==null&&previous.size()>=3&&!previous.contains(bodySha256)
+                    &&listWindow>=0&&listWindow!=start.frame.windowId&&workflowInitialObservationId.equals(start.frame.observationId)&&domain(start)
+                    &&NotesCompletionEvidence.opaqueEditor(start.frame,installed),"opaque editor/list binding");
+            readinessIds=Collections.unmodifiableSet(new java.util.HashSet<String>(seen));
+            opaqueStart=start;originalListWindow=listWindow;previousRows=Collections.unmodifiableList(new ArrayList<String>(previous));
+        }
+        boolean opaque(){return opaqueStart!=null;}
+        boolean sameNewEditor(Observation read){
+            return opaque()&&domain(read)&&opaqueStart.stableWith(read)&&NotesCompletionEvidence.opaqueEditor(read.frame,installed);
+        }
+        boolean savedToNewRow(){return insertedListObservation!=null;}
+        boolean canLeave(Observation o){
+            return opaque()?(sameNewEditor(o)||(domain(o)&&o.frame.windowId==opaqueStart.frame.windowId&&body(o))):body(o);
+        }
+        synchronized boolean ownsChild(ActionDecision action){
+            return consumed&&!retired&&current!=null&&!current.finished&&action.toolChildOrigin==current;
+        }
+        synchronized boolean opaqueExitPhase(NotesCompletionEvidence.Frame f){
+            return opaque()&&current!=null&&"back".equals(current.action)&&current.ordinal==1
+                    &&current.observationId.equals(f.observationId);
+        }
+        synchronized boolean opaqueReopenPhase(NotesCompletionEvidence.Frame f){
+            return opaque()&&current!=null&&"click".equals(current.action)&&current.ordinal==2
+                    &&current.observationId.equals(f.observationId)&&current.observationId.equals(insertedListObservation);
+        }
+        private void recordNewRow(ChildRecord row){
+            if(opaque()&&row.call.ordinal==1&&"back".equals(row.call.action)&&row.bound()
+                    &&canLeave(row.before)&&domain(row.after)&&row.after.frame.windowId==originalListWindow
+                    &&!parentObservationId.equals(row.after.frame.observationId)&&!readinessIds.contains(row.after.frame.observationId)
+                    &&NotesCompletionEvidence.insertedAtHead(previousRows,row.after.frame,body))
+                insertedListObservation=row.after.frame.observationId;
+        }
         private int issued;
         private ChildCall current;
         Grant(String task,int step,String run,String beforeId,String afterId,String attempt,
@@ -76,15 +115,16 @@ public final class NotesCreateWorkflow {
         private synchronized void consume(Observation initial){
             require(!consumed&&!retired&&workflowInitialObservationId.equals(initial.frame.observationId),"workflow grant used or wrong initial frame");
             require(authorization.allows("notes.create")&&authorization.allows("back")&&authorization.allows("click"),"workflow child authority missing");
-            require(body(initial),"created body required before workflow");consumed=true;
+            require(canLeave(initial),"created editor required before workflow");consumed=true;
         }
         private synchronized ChildCall issue(String action,Observation before){
             require(consumed&&!retired&&current==null&&issued<MAX_CHILDREN,"workflow child grant unavailable");
             require(domain(before)&&authorization.allows(action),"child outside original owner/domain");
             String node=null,label=null;
-            if("back".equals(action))require(body(before),"Back requires current created body");
+            if("back".equals(action))require(canLeave(before)&&(!opaque()||issued==0),"Back requires the current created editor");
             else if("click".equals(action)){
-                NotesCompletionEvidence.ListEvidence list=list(before);require(list.matched,"unique complete list item required");
+                NotesCompletionEvidence.ListEvidence list=list(before);require(list.matched&&(!opaque()||(issued==1
+                        &&before.frame.observationId.equals(insertedListObservation))),"verified new list item required");
                 node=list.item.nodeId;label=list.item.label;
             }else throw new IllegalArgumentException("workflow primitive not supported");
             current=new ChildCall(this,++issued,action,before.frame.observationId,node,label);return current;
@@ -114,6 +154,10 @@ public final class NotesCreateWorkflow {
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("task_authorization_sha256",authorizationSha256);
             o.put("body_sha256",bodySha256);o.put("target_package",installed.packageName);o.put("target_uid",installed.uid);
             o.put("target_apk_sha256",installed.apkHashes);o.put("display_id",displayId);o.put("background_generation",generation);
+            if(opaque()){
+                o.put("created_editor_body_ax_verified",false);o.put("save_exit_limit",1);
+                o.put("before_visible_row_count",previousRows.size());o.put("new_list_observation_id",insertedListObservation);
+            }
             o.put("grant_consumed",consumed);o.put("grant_retired",retired);o.put("grants_tool_authority",false);return o;
         }
     }
@@ -218,7 +262,7 @@ public final class NotesCreateWorkflow {
         }
         /** Pure replay of the actual child chain, not trust in an IO success flag. */
         boolean completeFor(Grant expected){
-            if(grant!=expected||!grant.consumed||!grant.retired||stopReason!=null||!grant.body(initial)
+            if(grant!=expected||!grant.consumed||!grant.retired||stopReason!=null||!grant.canLeave(initial)
                     ||!grant.body(current)||!grant.body(stableReadback)||!current.stableWith(stableReadback)
                     ||children.isEmpty()||children.size()>MAX_CHILDREN)return false;
             int backs=0,clicks=0;Observation last=null;
@@ -227,7 +271,9 @@ public final class NotesCreateWorkflow {
                 if(r.call.grant!=grant||r.call.ordinal!=i+1||!r.bound())return false;
                 if(last!=null&&!last.frame.observationId.equals(r.before.frame.observationId))return false;
                 if("back".equals(r.call.action)){
-                    if(clicks!=0||++backs>MAX_BACK||!grant.body(r.before))return false;
+                    if(clicks!=0||++backs>(grant.opaque()?1:MAX_BACK)||!grant.canLeave(r.before))return false;
+                    if(grant.opaque()&&(!grant.domain(r.after)||!r.after.frame.observationId.equals(grant.insertedListObservation)
+                            ||!NotesCompletionEvidence.insertedAtHead(grant.previousRows,r.after.frame,grant.body)))return false;
                     if(!grant.body(r.after)&&!grant.list(r.after).matched)return false;
                 }else if("click".equals(r.call.action)){
                     NotesCompletionEvidence.ListEvidence list=grant.list(r.before);
@@ -253,15 +299,17 @@ public final class NotesCreateWorkflow {
         try{
             grant.consume(initial);io.checkpoint("grant-consumed",grant.evidence());
             current=io.observe();
-            if(!grant.body(current)&&!(grant.domain(current)&&grant.list(current).matched))
+            if(grant.opaque()&&(current==null||grant.readinessIds.contains(current.frame.observationId)))
+                return new Result(grant,initial,current,null,records,"created_editor_fresh_read_unavailable");
+            if(!grant.canLeave(current)&&(grant.opaque()||!(grant.domain(current)&&grant.list(current).matched)))
                 return new Result(grant,initial,current,null,records,"fresh_created_body_or_unique_list_unavailable");
             int backs=0;
             while(true){
                 require(grant.domain(current),"workflow observation left its Notes domain");
                 NotesCompletionEvidence.ListEvidence list=grant.list(current);
                 String action;
-                if(list.matched)action="click";
-                else if(grant.body(current)&&backs<MAX_BACK){action="back";backs++;}
+                if(list.matched&&(!grant.opaque()||current.frame.observationId.equals(grant.insertedListObservation)))action="click";
+                else if(grant.canLeave(current)&&backs<(grant.opaque()?1:MAX_BACK)){action="back";backs++;}
                 else{reason="created_body_or_unique_list_unavailable_within_navigation_bound";break;}
                 ChildCall child=grant.issue(action,current);io.checkpoint("child-"+child.ordinal+"-planned",child.evidence());
                 Dispatch dispatch=io.dispatch(child,current);
@@ -278,13 +326,13 @@ public final class NotesCreateWorkflow {
                             &&after.rotation==firstAfter.rotation,"reopen readiness replaced its original window/domain");
                 }
                 ChildRecord row=new ChildRecord(child,current,after,dispatch);
-                records.add(row);io.recorded(row);current=after;
+                records.add(row);io.recorded(row);grant.recordNewRow(row);current=after;
                 if("click".equals(action)){
                     if(!grant.body(current)){reason="reopened_full_body_missing";break;}
                     stable=io.observe();if(!grant.body(stable)||!current.stableWith(stable))reason="reopened_body_not_stable";
                     break;
                 }
-                if(!grant.body(current)&&!(grant.domain(current)&&grant.list(current).matched)){
+                if((grant.opaque()&&!grant.savedToNewRow())||(!grant.body(current)&&!(grant.domain(current)&&grant.list(current).matched))){
                     reason="left_created_editor_without_unique_verified_list";break;
                 }
             }
