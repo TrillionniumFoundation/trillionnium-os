@@ -344,6 +344,7 @@ public final class LocalTaskController implements AutoCloseable {
         SubmitAttemptGuard submitAttempts=null;FixedIntentAttemptGuard fixedIntentAttempts=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true,rawModelSuccessClaimed=false;
+        String cancellationSummary="已停止；已经发生的操作不会自动重做";
         boolean controllerSuccess=false,controllerCompletionRequested=false;
         String lastModelDoneStatus=null,lastModelDoneSummary=null,acceptedCompletionModelRunId=null;
         TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization,backgroundSelection);
@@ -818,7 +819,10 @@ public final class LocalTaskController implements AutoCloseable {
                         outcome.accepted,outcome.dispatched,outcome.stale);
             }
             if(steps>=MAX_STEPS&&"failed".equals(finalStatus)&&"任务未完成".equals(summary))summary="已达到本次任务的步骤上限，停止继续操作";
-        }catch(Stopped error){controllerSuccess=false;finalStatus="cancelled";summary="已停止；已经发生的操作不会自动重做";}
+        }catch(Stopped error){
+            if(error.getMessage()!=null)cancellationSummary=error.getMessage();
+            controllerSuccess=false;finalStatus="cancelled";summary=cancellationSummary;
+        }
         catch(CleanupUnknown error){controllerSuccess=false;blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
         catch(Exception error){controllerSuccess=false;finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
@@ -874,7 +878,7 @@ public final class LocalTaskController implements AutoCloseable {
             // Stop can arrive while endTask waits for the retained worker to exit.
             // Preserve an unresolved action/cleanup block before classifying cancellation.
             else if(cleanup&&cancelled.get()){
-                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary=cancellationSummary;
             }
             else if(modelCleanup.processStarted&&!modelCleanup.receiptValid
                     &&("model_reported_done".equals(finalStatus)||"controller_verified_done".equals(finalStatus)||"partial".equals(finalStatus))){
@@ -892,7 +896,7 @@ public final class LocalTaskController implements AutoCloseable {
             // model-done and controller-workflow completion must be revoked.
             // Unknown cleanup remains blocked instead of being relabeled cancelled.
             if(cleanup&&cancelled.get()){
-                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary=cancellationSummary;
             }
             // LocalInference.onSuccess seals the parent's exact request/grammar/
             // output binding. Unlike the legacy no-worker test default, this new
@@ -909,7 +913,7 @@ public final class LocalTaskController implements AutoCloseable {
             // cancellation that wins this lock cannot be promoted by a late CLOSE.
             synchronized(this){
                 if(cleanup&&cancelled.get()){
-                    finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                    finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary=cancellationSummary;
                 }
                 NotesCompletionEvidence.Frame finalFrame=completionFrame(observation);
                 if(TaskCompletionGate.WEB.equals(completion.contract.kind)){
@@ -1599,8 +1603,9 @@ public final class LocalTaskController implements AutoCloseable {
         NativeSearchDecision decision=NativeSearchDecision.parse(answer.text);
         final long issued=SystemClock.elapsedRealtime(),actionDeadline=Math.min(taskDeadline,issued>Long.MAX_VALUE-8000?Long.MAX_VALUE:issued+8000);
         final NativeSearchSession.Attempt attempt=offer.reserve(decision,answer.runId,issued,actionDeadline);
+        final long navigationDrainedElapsed;
         try{
-            NativeSearchActionReply reply=awaitNativeOpenSearch(id,attempt);HeptaAccessibilityService.ActionOutcome outcome=reply.outcome;
+            NativeSearchActionReply reply=awaitNativeOpenSearch(id,attempt,directory);HeptaAccessibilityService.ActionOutcome outcome=reply.outcome;
             JSONObject receipt=new JSONObject().put("schema","hepta.native-search-action-outcome.v1").put("action",new JSONObject(decision.evidence()))
                     .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
                     .put("model_run_id",answer.runId).put("model_issued",true).put("navigation_only",true).put("query_or_price_verified",false)
@@ -1617,8 +1622,17 @@ public final class LocalTaskController implements AutoCloseable {
                 throw new NativeSearchNoEffectReplanRequired(attempt,reply.proof,receiptSha);
             }
             session.acceptOutcome(attempt,outcome,receiptSha,SystemClock.elapsedRealtime());
+            navigationDrainedElapsed=outcome.actionExecution.getLong("worker_drained_elapsed_ms");
         }finally{attempt.close();}
         checkActive(taskDeadline);emit("正在核对后台应用的实际搜索输入框…");
+        // Let the navigation settle before the first read, after the one-use action has closed.
+        // This interval belongs to the original task/chain clock and cannot authorize any input.
+        long now=SystemClock.elapsedRealtime();session.requireLive(now);
+        if(navigationDrainedElapsed<0||navigationDrainedElapsed>now)
+            throw new IllegalStateException("搜索导航回执与当前观察时钟不一致");
+        long remainingSettle=350L-(now-navigationDrainedElapsed);
+        if(remainingSettle>0)SystemClock.sleep(Math.min(remainingSettle,taskDeadline-now));
+        checkActive(taskDeadline);session.requireLive(SystemClock.elapsedRealtime());
         // This is a new ordinary complete AX request on the same owned task.
         // Planning never enters PhoneObservation/current/currentGraph or the old provider.
         PhoneObservation observed=awaitObservation(id,directory,authorization,taskDeadline);
@@ -1626,7 +1640,7 @@ public final class LocalTaskController implements AutoCloseable {
         record(directory,String.format(java.util.Locale.ROOT,"step-%02d-after.json",step),observed.toEvidenceJson());
         return observed;
     }
-    private NativeSearchActionReply awaitNativeOpenSearch(String id,final NativeSearchSession.Attempt attempt)throws Exception{
+    private NativeSearchActionReply awaitNativeOpenSearch(String id,final NativeSearchSession.Attempt attempt,File directory)throws Exception{
         final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<NativeSearchActionReply> outcome=new AtomicReference<NativeSearchActionReply>();
         try{
             service.performNativeOpenSearch(id,attempt,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
@@ -1642,8 +1656,35 @@ public final class LocalTaskController implements AutoCloseable {
             while(true){
                 if(cancelled.get())service.retireActionWork(id,"cancelled");
                 long remaining=attempt.deadlineElapsed-SystemClock.elapsedRealtime();
-                if(remaining<=0){cancelled.set(true);service.retireActionWork(id,"deadline");throw new CleanupUnknown("搜索导航回执超时；工作真实退出前保持阻塞，不重试");}
-                if(ready.await(Math.min(100,remaining),TimeUnit.MILLISECONDS))break;
+                if(remaining<=0||ready.await(Math.min(100,remaining),TimeUnit.MILLISECONDS))break;
+            }
+            if(SystemClock.elapsedRealtime()>=attempt.deadlineElapsed){
+                // Retire first. This separate bounded wait can only observe disposal of the original effect.
+                cancelled.set(true);service.retireActionWork(id,"deadline");
+                long cleanupStarted=SystemClock.elapsedRealtime();
+                if(ready.await(1000,TimeUnit.MILLISECONDS)){
+                    NativeSearchActionReply late=outcome.get();
+                    if(late!=null&&late.proof==null&&!late.outcome.accepted&&late.outcome.dispatched
+                            &&attempt.session==activeNativeSearch&&id.equals(currentTaskId)&&!service.actionWorkPending()){
+                        JSONObject execution=late.outcome.actionExecution;
+                        JSONObject state=service.actionExecutionEvidence(id);
+                        long now=SystemClock.elapsedRealtime();
+                        int window=((Number)attempt.offer.planning.second.env.get("window_id")).intValue();
+                        if(retiredSearchDrain(execution,state,id,attempt.modelRunId,attempt.offer.planning.id,
+                                attempt.session.authorization.authorization.sha256,attempt.session.nativeTask.generation,
+                                attempt.session.nativeTask.displayId,window,attempt.startedElapsed,attempt.deadlineElapsed,cleanupStarted,now)){
+                            try{
+                                record(directory,"native-search-retired-drain.json",new JSONObject()
+                                        .put("schema","hepta.native-search-retired-drain.v1").put("execution",state)
+                                        .put("retirement_wait_started_elapsed_ms",cleanupStarted).put("drain_checked_elapsed_ms",now)
+                                        .put("navigation_verified",false).put("accepted_for_continuation",false)
+                                        .put("automatic_redispatch",false));
+                            }catch(Exception failure){throw new CleanupUnknown("搜索动作退出凭据未能保存，保留中断状态");}
+                            throw new Stopped("搜索入口点击已返回，但未在期限内核验新页面；本次操作已停止，未重试。");
+                        }
+                    }
+                }
+                throw new CleanupUnknown("搜索导航回执超时；工作或原迟到回执未能核验，不重试");
             }
         }catch(InterruptedException interrupted){cancelled.set(true);service.retireActionWork(id,"controller_abandoned");Thread.currentThread().interrupt();
             throw new CleanupUnknown("搜索导航等待被中断，实际派发和退出状态未知；不重试");}
@@ -1651,6 +1692,29 @@ public final class LocalTaskController implements AutoCloseable {
             cancelled.set(true);service.retireActionWork(id,"controller_abandoned");throw new CleanupUnknown("搜索导航回执迟到或工作尚未真实退出");}
         checkActive(attempt.session.chainDeadlineElapsed);NativeSearchActionReply result=outcome.get();
         if(result==null)throw new IllegalStateException("搜索导航回执为空");return result;
+    }
+    /** Both inputs come from the original private callback and the service's last physically drained state.
+     * No action, observation, successful navigation, or clearance of another cleanup failure is minted here. */
+    private static boolean retiredSearchDrain(JSONObject callback,JSONObject current,String task,String run,String observation,
+            String authorization,String generation,int display,int window,long queued,long deadline,long cleanupStarted,long now){
+        if(callback==null||current==null||display<=0||window<0||queued<0||deadline<=queued||cleanupStarted<deadline
+                ||now<cleanupStarted||now-cleanupStarted>1000)return false;
+        String operation=current.optString("operation_id","");
+        if(!operation.matches("[0-9a-f]{32}"))return false;
+        for(JSONObject state:new JSONObject[]{callback,current}){
+            long drained=state.optLong("worker_drained_elapsed_ms",-1);
+            if(!"hepta.action-execution.v1".equals(state.opt("schema"))||!"serial_action_worker".equals(state.opt("execution_kind"))
+                    ||!operation.equals(state.opt("operation_id"))||!task.equals(state.opt("task_id"))||!run.equals(state.opt("model_run_id"))
+                    ||!observation.equals(state.opt("observation_id"))||!authorization.equals(state.opt("authorization_sha256"))
+                    ||!generation.equals(state.opt("background_generation"))||state.optInt("display_id",-1)!=display
+                    ||state.optInt("window_id",-1)!=window||state.optLong("queued_elapsed_ms",-1)!=queued
+                    ||state.optLong("deadline_elapsed_ms",-1)!=deadline||drained<queued||drained>now
+                    ||!Boolean.TRUE.equals(state.opt("retired"))||!Boolean.TRUE.equals(state.opt("effect_entered"))
+                    ||!Boolean.TRUE.equals(state.opt("effect_returned"))||!Boolean.TRUE.equals(state.opt("api_accepted"))
+                    ||!Boolean.TRUE.equals(state.opt("worker_drained"))||!Boolean.TRUE.equals(state.opt("callback_published"))
+                    ||!Boolean.FALSE.equals(state.opt("callback_authority_current"))||!Boolean.FALSE.equals(state.opt("automatic_redispatch")))return false;
+        }
+        return callback.optLong("worker_drained_elapsed_ms",-1)==current.optLong("worker_drained_elapsed_ms",-1);
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private static final String NATIVE_CALENDAR_SYSTEM=
@@ -2499,7 +2563,11 @@ public final class LocalTaskController implements AutoCloseable {
     }
 
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
-    private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
+    private static final class Stopped extends Exception {
+        private static final long serialVersionUID=1L;
+        Stopped(){}
+        Stopped(String reason){super(reason);}
+    }
     private static final class CleanupUnknown extends Exception {private static final long serialVersionUID=1L;CleanupUnknown(String m){super(m);}}
     private static final class PromptFrame {
         final String text;final JSONObject visualPromptOriginal;

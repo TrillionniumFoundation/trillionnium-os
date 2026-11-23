@@ -28,6 +28,8 @@ public final class JSONObject {
     public JSONObject optJSONObject(String key){
         try{return getJSONObject(key);}catch(JSONException missingOrWrongType){return null;}
     }
+    public int optInt(String key,int fallback){Object value=opt(key);return value instanceof Number?((Number)value).intValue():fallback;}
+    public long optLong(String key,long fallback){Object value=opt(key);return value instanceof Number?((Number)value).longValue():fallback;}
     public boolean optBoolean(String key,boolean fallback){Object value=fields.get(key);return value instanceof Boolean?(Boolean)value:fallback;}
     public Object opt(String key){try{return get(key);}catch(JSONException missing){return null;}}
     public String optString(String key){return optString(key,"");}

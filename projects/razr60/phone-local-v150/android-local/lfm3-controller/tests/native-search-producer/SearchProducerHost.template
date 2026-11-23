@@ -90,7 +90,10 @@ public final class HeptaAccessibilityService {
         static AccessibilityNodeInfo obtain(AccessibilityNodeInfo original){return new AccessibilityNodeInfo(original.data);}
         Object value(String k){if(released)throw new AssertionError("recycled node used");return data.v.get(k);}
         String s(String k){return (String)value(k);}boolean b(String k){return ((Boolean)value(k)).booleanValue();}
-        void recycle(){if(released)throw new AssertionError("node double recycle");released=true;data.recycled++;}
+        void recycle(){if(released)throw new AssertionError("node double recycle");released=true;data.recycled++;
+            Fixture fixture=data.owner.fixture;
+            if(fixture.effects>0&&fixture.afterEffectRecycleHook!=null){Runnable hook=fixture.afterEffectRecycleHook;fixture.afterEffectRecycleHook=null;hook.run();}
+        }
         boolean refresh(){if(data.beforeRefresh!=null){Runnable hook=data.beforeRefresh;data.beforeRefresh=null;hook.run();}return !released&&data.refresh;}
         CharSequence getPackageName(){return s("package");}int getWindowId(){return ((Number)value("window_id")).intValue();}
         CharSequence getClassName(){return s("class");}String getViewIdResourceName(){return s("view_id");}CharSequence getText(){return s("text");}CharSequence getContentDescription(){return s("description");}
@@ -177,7 +180,7 @@ public final class HeptaAccessibilityService {
         NativeActionSnapshotCheckHostTest.Fixture values;NativeSearchPlanning planning;String error;ActionOutcome outcome;NativeSearchReadRetryProof retryProof;String retryDetail;
         int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
         String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
-        Runnable graphHook,windowHook,effectHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
+        Runnable graphHook,windowHook,effectHook,afterEffectRecycleHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
         Fixture()throws Exception{this(new Object());}
         Fixture(Object controller)throws Exception{
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("previous physical capacity leaked");

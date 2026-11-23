@@ -12,6 +12,9 @@ PKG=Path('src/org/trillionnium/hepta/local')
 TEST=Path('tests/native-action-integration')
 JSON_SHA='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 METHODS={
+ 'query_budget':'    private final class QueryGraphBudget implements GraphBudget {',
+ 'query_read':'    private Graph readNativeActionGraph(',
+
  'snapshot_node':'    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference){',
  'snapshot_node_raw':'    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference,Graph rawOwner){',
  'windows':'    private Map<String,Object> readNativeActionWindows(',

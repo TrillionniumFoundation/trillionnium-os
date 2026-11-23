@@ -56,8 +56,10 @@ final class NativeSearchNoEffectControllerHost {
         modelRuns.add(run);modelObservations.add(grammar.observationId);SystemClock.now+=syntheticModelDelay;
         return new ModelAnswer(text,run);
     }
+    Runnable beforeFreshAx;
     private PhoneObservation awaitObservation(String id,File directory,TaskAuthorization.Gate auth,long deadline)throws Exception{
         if(!service.legacyObservationAllowedForHost(id))throw new AssertionError("actual legacy observation admission remains closed");
+        if(beforeFreshAx!=null)beforeFreshAx.run();
         oldAxCalls++;SystemClock.now+=40;NativeAppEvidence.Frame frame=fixture.base.inputFrame(SystemClock.now,true);
         activeNativeTask.observed(frame);return new PhoneObservation(frame);
     }
@@ -68,6 +70,11 @@ final class NativeSearchNoEffectControllerHost {
                 .put("action_execution",outcome.actionExecution).put("no_effect_proof",new JSONObject(proof.evidence()));
         record(directory,"host-old-failed-action.json",receipt);
         return HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8));
+    }
+    static boolean replayRetired(JSONObject callback,JSONObject state,JSONObject binding,long start,long at){
+        return retiredSearchDrain(callback,state,binding.getString("task"),binding.getString("run"),
+                binding.getString("observation"),binding.getString("authorization"),binding.getString("generation"),
+                binding.getInt("display"),binding.getInt("window"),binding.getLong("queued"),binding.getLong("deadline"),start,at);
     }
     {{actual_controller_methods}}
 }

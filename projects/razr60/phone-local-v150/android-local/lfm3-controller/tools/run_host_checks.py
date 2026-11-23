@@ -78,6 +78,8 @@ def main():
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
+        paths.add(ROOT/"tests/native-form-history-actions/d1e685-query-refusals.json")
+        paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         paths.add(ROOT/"tests/native-auto-target/fixtures/legacy-ctrip-gui.json")
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
@@ -590,6 +592,8 @@ final class NativeCalendarDateIntent {
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
         run("ctrip-form-observation",[sys.executable,"-B",ROOT/"tests/native-ctrip-form-observation/run_host.py",
             "--source",ROOT,"--output",out/"ctrip-form-observation","--java-home",java_home,"--json-jar",json_jar])
+        run("native-form-history-actions",[sys.executable,"-B",ROOT/"tests/native-form-history-actions/run_host.py",
+            "--source",ROOT,"--output",out/"native-form-history-actions","--java-home",java_home])
         run("ctrip-startup-promotion",[sys.executable,"-B",ROOT/"tests/native-ctrip-promotion/run_host.py",
             "--out",out/"ctrip-startup-promotion","--java-home",java_home,"--json-jar",json_jar])
         run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",
