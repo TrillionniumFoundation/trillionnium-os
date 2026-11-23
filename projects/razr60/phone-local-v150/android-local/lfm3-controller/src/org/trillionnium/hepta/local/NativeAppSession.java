@@ -779,7 +779,7 @@ final class NativeAppSession {
                 &&searchNavigationOrdinal==1&&!searchNavigationReleased&&searchNoEffectReceiptSha==null
                 &&searchNavigationEffect==null&&current==null&&inFlight==null&&pending==null
                 &&NativeAppEvidence.sha(receiptSha)&&proof!=null,"one original no-effect search reservation required");
-        proof.requireOriginal(session,attempt,now,false);attempt.requireUnclaimedRevalidated(now);
+        proof.requireOriginal(session,attempt,now,false);attempt.requireUnclaimedForRetirement(now);
         Map<String,Object> e=base();e.put("schema","hepta.native-search-no-effect-retirement.v1");
         e.put("attempt",attempt.evidence());e.put("failed_action_receipt_sha256",receiptSha);e.put("no_effect_proof",proof.evidence());
         e.put("recorded_elapsed_ms",now);e.put("old_model_run_remains_consumed",true);e.put("action_ordinal_preserved",ordinal);

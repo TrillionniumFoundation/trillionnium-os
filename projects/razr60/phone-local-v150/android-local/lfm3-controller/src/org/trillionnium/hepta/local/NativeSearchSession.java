@@ -126,7 +126,7 @@ final class NativeSearchSession {
         requireLive(now);need(successorProof==null&&closedSuccessorAttempt==null&&!successorOffered
                 &&value!=null&&value==attempted&&value.offer==offered&&!navigationEffectRecorded&&!navigationObserved,
                 "no second search replanning authority");
-        value.requireUnclaimedRevalidated(now);
+        value.requireUnclaimedForRetirement(now);
     }
     synchronized void requireModelPlanning(DecisionGrammar grammar,long now){
         requireLive(now);need(offered!=null&&attempted==null&&grammar!=null
@@ -201,6 +201,7 @@ final class NativeSearchSession {
         final NativeSearchSession session;final Offer offer;final NativeSearchDecision decision;
         final String modelRunId;final long startedElapsed,deadlineElapsed;
         private int state;private boolean claimed,closedForSuccessor,finalCensusResampled;private NativeSearchRole revalidation;private long revalidatedElapsed;
+        private NativeSearchRole.RejectedBannerMotion bannerRefusal;
         private Attempt(Offer offer,NativeSearchDecision decision,String run,long started,long deadline){
             this.offer=offer;session=offer.session;this.decision=decision;modelRunId=run;startedElapsed=started;deadlineElapsed=deadline;
         }
@@ -208,7 +209,7 @@ final class NativeSearchSession {
             synchronized(this){need(session.attempted==this&&state<2&&now>=startedElapsed&&now<deadlineElapsed,"original one-use search Attempt unavailable");}}
         void verifyInstalled()throws Exception{session.verifyInstalled();}
         void requireUnvalidatedRead(long now){requireLive(now);synchronized(this){
-            need(state==0&&!claimed&&revalidation==null,"current C reads require the original unclaimed, unvalidated Attempt");}}
+            need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"current C reads require the original unclaimed, unvalidated Attempt");}}
         /** Pure C/D proof is retained only for this already reserved intent. It
          * does not replace HA's C original NodeRef, D latest full signature,
          * actual ancestor/window reread, or final event/ownership fence. */
@@ -219,8 +220,19 @@ final class NativeSearchSession {
             need(offer.planning.id.equals(current.env.get("origin_observation_id"))&&offer.planning.id.equals(latest.env.get("origin_observation_id")),"current census not bound to this Offer");
             long c=((Number)current.env.get("captured_elapsed_ms")).longValue(),d=((Number)latest.env.get("captured_elapsed_ms")).longValue();
             need(startedElapsed<=c&&c<=d&&d<=now,"current actual C/D clocks precede the Attempt");
-            NativeSearchRole proof=NativeSearchRole.compare(current,latest);offer.planning.role.requireSameRole(proof);
-            synchronized(this){need(state==0&&revalidation==null,"one full current C/D proof only");revalidation=proof;revalidatedElapsed=now;}
+            synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"live unused C/D comparison required");}
+            final NativeSearchRole proof;
+            try{proof=NativeSearchRole.compare(current,latest);}
+            catch(NativeSearchRole.RejectedBannerMotion refused){
+                offer.planning.role.requireSameRole(NativeSearchRole.compare(latest,latest));
+                synchronized(this){
+                    need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"unused original attempt required for refusal");
+                    bannerRefusal=refused;
+                }
+                throw refused;
+            }
+            offer.planning.role.requireSameRole(proof);
+            synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"one full current C/D proof only");revalidation=proof;revalidatedElapsed=now;}
             return proof;
         }
         /** Only HA's actual final preclaim content fence may discard its old
@@ -244,12 +256,19 @@ final class NativeSearchSession {
             requireLive(now);synchronized(this){need(state==0&&!claimed&&revalidation!=null&&!closedForSuccessor,
                     "actual unclaimed revalidated search Attempt required");}
         }
+        synchronized boolean ownsBannerRefusal(NativeSearchRole.RejectedBannerMotion refusal){
+            return refusal!=null&&bannerRefusal==refusal&&revalidation==null&&!claimed;
+        }
+        void requireUnclaimedForRetirement(long now){
+            requireLive(now);synchronized(this){need(state==0&&!claimed&&!closedForSuccessor
+                    &&(revalidation!=null||bannerRefusal!=null),"unclaimed original revalidation or actual recorded refusal required");}
+        }
         private void closeForSuccessor(){
-            synchronized(this){need(state==0&&!claimed&&revalidation!=null&&!closedForSuccessor,
+            synchronized(this){need(state==0&&!claimed&&(revalidation!=null||bannerRefusal!=null)&&!closedForSuccessor,
                     "only an unclaimed search Attempt may close for a successor");closedForSuccessor=true;state=2;}
         }
         void requireClosedForSuccessor(){
-            synchronized(this){need(state==2&&!claimed&&closedForSuccessor&&revalidation!=null,
+            synchronized(this){need(state==2&&!claimed&&closedForSuccessor&&(revalidation!=null||bannerRefusal!=null),
                     "old search Attempt was not irrevocably closed for one successor");}
         }
         void claim(long now){requireLive(now);synchronized(this){need(state==0&&!claimed&&revalidation!=null&&now>=revalidatedElapsed,"one fresh revalidated search claim required");state=1;claimed=true;}}

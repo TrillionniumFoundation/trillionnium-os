@@ -2896,7 +2896,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("old_attempt_started_elapsed_ms",work.attempt.startedElapsed);e.put("old_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
             e.put("original_read_ordinal",work.planningReadOrdinal);e.put("successor_read_ordinal",work.planningReadOrdinal+1);
             e.put("replan_ordinal",1);e.put("rejection_reason",work.noEffectRejectionReason());
-            e.put("first_final_event_check_elapsed_ms",work.firstFinalEventsElapsed);
+            e.put("first_final_event_check_elapsed_ms",work.firstFinalEventsElapsed<0?null:Long.valueOf(work.firstFinalEventsElapsed));
             e.put("after_target_refresh_event_check_elapsed_ms",work.afterTargetRefreshEventsElapsed<0?null:Long.valueOf(work.afterTargetRefreshEventsElapsed));
             e.put("rejection_watermark",work.noEffectRejectionWatermark().evidence());e.put("D_completed_watermark",work.pairCompleted.evidence());
             e.put("action_queue_drain_marker_elapsed_ms",work.replanDrainMarkerElapsed);e.put("issued_elapsed_ms",now);
@@ -4564,6 +4564,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final java.util.concurrent.atomic.AtomicBoolean callbackQueued=new java.util.concurrent.atomic.AtomicBoolean();
         volatile boolean replanDrainUncertain,replanDrainMarkerCompleted;
         volatile long replanDrainMarkerElapsed=-1;
+        NativeSearchRole.RejectedBannerMotion bannerRefusal;
+        NativeSearchPlanning.EventMark bannerRefusalWatermark;
         boolean firstPostDEventRejected;NativeSearchPlanning.EventMark firstRejectedWatermark;
         // Only the exact root/ancestor refresh fence may offer the second preclaim cause.
         boolean typedAfterTargetRefreshPostDEventRejected;
@@ -4642,14 +4644,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
         }
         boolean hasNoEffectReplanFence(){
+            if(bannerRefusal!=null)return !firstPostDEventRejected&&!typedAfterTargetRefreshPostDEventRejected;
             return firstPostDEventRejected!=typedAfterTargetRefreshPostDEventRejected;
         }
         NativeSearchPlanning.EventMark noEffectRejectionWatermark(){
             if(!hasNoEffectReplanFence())throw new IllegalStateException("exactly one actual preclaim event fence required");
+            if(bannerRefusal!=null)return bannerRefusalWatermark;
             return firstPostDEventRejected?firstRejectedWatermark:afterTargetRefreshRejectedWatermark;
         }
         String noEffectRejectionReason(){
             if(!hasNoEffectReplanFence())throw new IllegalStateException("exactly one actual preclaim event fence required");
+            if(bannerRefusal!=null)return "overlapping_blank_home_banner_before_claim";
             return firstPostDEventRejected?"post_D_event_before_target_refresh":"post_D_event_after_target_refresh_before_claim";
         }
         /** The only recovery boundary is after the complete window/profile/policy
@@ -4807,7 +4812,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void requireNativeSearchNoEffectFacts(SearchActionWork work,ActionOutcome outcome){
         Map<String,Object> execution=work.state.evidence();
-        if(!work.hasNoEffectReplanFence()||work.noEffectRejectionWatermark()==null||work.roleProof==null||work.currentGraph!=null
+        boolean originalPairRecorded=work.bannerRefusal==null?work.roleProof!=null:
+                work.roleProof==null&&work.attempt.ownsBannerRefusal(work.bannerRefusal)
+                        &&work.bannerRefusal.first==work.currentSnapshot&&work.bannerRefusal.second==work.latestSnapshot;
+        if(!work.hasNoEffectReplanFence()||work.noEffectRejectionWatermark()==null||!originalPairRecorded||work.currentGraph!=null
                 ||!work.currentNodeIdentityChecked||work.ancestorChainChecked||work.windowsChecked
                 ||work.platformCallInvoked||work.state.effectEntered()||!work.state.isDrained()||work.state.retired()
                 ||!work.replanDrainMarkerCompleted||work.replanDrainUncertain||work.sealedDiagnostic==null
@@ -4880,6 +4888,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("first_final_event_check_elapsed_ms",work.firstFinalEventsElapsed<0?null:Long.valueOf(work.firstFinalEventsElapsed));
             proof.put("first_final_event_rejection_watermark",work.firstRejectedWatermark==null?null:work.firstRejectedWatermark.evidence());
             proof.put("typed_post_D_first_fence_rejected",work.firstPostDEventRejected);
+            proof.put("overlapping_blank_banner_pair_rejected",work.bannerRefusal!=null);
             proof.put("after_target_refresh_event_check_elapsed_ms",work.afterTargetRefreshEventsElapsed<0?null:Long.valueOf(work.afterTargetRefreshEventsElapsed));
             proof.put("after_target_refresh_event_rejection_watermark",work.afterTargetRefreshRejectedWatermark==null?null:work.afterTargetRefreshRejectedWatermark.evidence());
             proof.put("typed_post_D_after_target_refresh_fence_rejected",work.typedAfterTargetRefreshPostDEventRejected);
@@ -4961,7 +4970,24 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NativeActionSnapshotCheck.Snapshot latest=nativeSearchSnapshot(fresh,work.session,work.attempt.offer.planning.id,work.attempt.startedElapsed);
             work.latestSnapshot=latest;work.latestSnapshotCompletedElapsed=SystemClock.elapsedRealtime();
             requireNativeSearchPairEvents(work.pairStart,work.pairCompleted);
-            NativeSearchRole revalidated=work.attempt.revalidate(current,latest,SystemClock.elapsedRealtime());work.roleProof=revalidated.evidence();work.roleComparedElapsed=SystemClock.elapsedRealtime();
+            final NativeSearchRole revalidated;
+            try{revalidated=work.attempt.revalidate(current,latest,SystemClock.elapsedRealtime());}
+            catch(NativeSearchRole.RejectedBannerMotion refused){
+                work.check();
+                NodeRef latestTarget=nativeSearchNode(fresh,currentRole.targetPath);
+                if(!work.attempt.ownsBannerRefusal(refused)||refused.first!=current||refused.second!=latest
+                        ||!original.node.equals(latestTarget.node)||!original.signature.equals(latestTarget.signature))
+                    throw new StaleObservation("ambiguous search carousel and changed current target");
+                synchronized(nativeSearchEventLock){
+                    NativeSearchPlanning.EventMark observed=work.events.mark();
+                    requireNativeSearchPairEvents(work.pairCompleted,observed);
+                    if(nativeSearchTrackedAction!=work||activeSearchAction!=work||work.platformCallInvoked||work.state.effectEntered())
+                        throw new StaleObservation("ambiguous search carousel after action lease changed");
+                    work.currentNodeIdentityChecked=true;work.bannerRefusal=refused;work.bannerRefusalWatermark=observed;
+                }
+                throw new StaleObservation(refused.getMessage());
+            }
+            work.roleProof=revalidated.evidence();work.roleComparedElapsed=SystemClock.elapsedRealtime();
             NodeRef same=nativeSearchNode(fresh,revalidated.targetPath);
             if(!original.node.equals(same.node)||!NativeAppEvidence.hash(same.signature).equals(latest.node(revalidated.targetPath).v.get("ref_signature_sha256")))
                 throw new StaleObservation("new search current C node was replaced before D");

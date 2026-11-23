@@ -121,7 +121,70 @@
         boolean refused=false;try{state.publish(false,true);}catch(IllegalStateException expected){refused=true;}
         check(refused&&!state.isDrained(),"real ActionExecutionState refuses a callback before its original finally drain");
     }
+    static final String SEARCH_BANNER="0/0/2/0/0";
+    static void installTestBanner(Fixture f,int edge){
+        NativeActionSnapshotCheckHostTest.Fixture v=f.values;
+        List<Integer> full=Arrays.asList(0,0,1224,395);
+        v.add("0/0/2","androidx.recyclerview.widget.RecyclerView","com.xiaomi.shop:id/recyclerView","","",full);
+        v.add("0/0/2/0","android.widget.FrameLayout","","","",full);
+        v.add(SEARCH_BANNER,"androidx.viewpager.widget.ViewPager","com.xiaomi.shop:id/bannerViewPager","","",full);
+        v.nodes.get(SEARCH_BANNER).put("scrollable",true);
+        v.add(SEARCH_BANNER+"/0","android.widget.FrameLayout","","","",full);
+        v.add(SEARCH_BANNER+"/1","android.widget.FrameLayout","","","",Arrays.asList(0,0,edge,395));
+        for(String path:Arrays.asList(SEARCH_BANNER+"/0",SEARCH_BANNER+"/1")){
+            v.click(path);v.nodes.get(path).put("ime_enter",ObservedImeEnter.ABSENT.fingerprintInput());
+        }
+        v.link();
+    }
+    static void advanceTestBanner(Fixture f){
+        f.values.nodes.get(SEARCH_BANNER+"/0").put("bounds",Arrays.asList(0,0,0,395));
+        f.values.nodes.get(SEARCH_BANNER+"/0").put("visible",false);
+        f.values.nodes.get(SEARCH_BANNER+"/1").put("bounds",Arrays.asList(0,0,1224,395));
+    }
     static void successorCases(String[] args)throws Exception{
+        for(String scenario:Arrays.asList("fresh_decision","wider_overlap","unrelated_mutation","target_replaced","unknown_event","cancelled","deadline","spent_model_run","spent_successor")){
+            one("ambiguous_banner_"+scenario,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installTestBanner(f,"wider_overlap".equals(scenario)?2:1);
+                    NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    f.graphHook=()->{if(f.graphReads==d){
+                        advanceTestBanner(f);
+                        if("unrelated_mutation".equals(scenario))f.values.nodes.get("0/2/0").put("selected",true);
+                        if("target_replaced".equals(scenario))f.replaceTargetOnSecond=true;
+                    }};
+                    NoEffectRun r=submitCapturedSearch(s,f,old);actionIo.one();
+                    f.graphHook=null;f.replaceTargetOnSecond=false;
+                    if("unknown_event".equals(scenario))successorEvent(s,0);
+                    if("cancelled".equals(scenario))f.cancelled=true;
+                    if("deadline".equals(scenario))SystemClock.now=old.deadlineElapsed;
+                    if(actionIo.hasJobs())r.marker();else s.main.one();
+                    check(r.outcome!=null&&!r.outcome.accepted&&!r.outcome.dispatched&&f.effects==0
+                            &&r.work.roleProof==null&&!r.work.platformCallInvoked,"ambiguous pair never grants or dispatches an effect");
+                    if(!"fresh_decision".equals(scenario)&&!"spent_successor".equals(scenario)&&!"spent_model_run".equals(scenario)){
+                        check(r.proof==null,"ineligible variant cannot authorize a new read");return;
+                    }
+                    check(r.proof!=null&&r.outcome.stale&&"overlapping_blank_home_banner_before_claim".equals(r.proof.evidence().get("rejection_reason")),
+                            "one bounded fresh read requires the recorded preclaim banner refusal: "+r.outcome.detail);
+                    rejected(()->old.claim(SystemClock.now));
+                    r.closeOld();NativeSearchSession.Offer fresh=r.publish();
+                    if("spent_model_run".equals(scenario)){
+                        rejected(()->fresh.reserve(f.base.decision(fresh),old.modelRunId,SystemClock.now,SystemClock.now+8000));
+                        check(f.effects==0,"the previous model run never dispatches a second action");return;
+                    }
+                    if("spent_successor".equals(scenario)){
+                        installTestBanner(f,1);int secondD=f.graphReads+2;
+                        f.graphHook=()->{if(f.graphReads==secondD)advanceTestBanner(f);};
+                        NativeSearchSession.Attempt next=fresh.reserve(f.base.decision(fresh),UUID.randomUUID().toString().replace("-",""),SystemClock.now,SystemClock.now+8000);
+                        NoEffectRun second=submitCapturedSearch(s,f,next);actionIo.one();second.marker();
+                        check(second.proof==null&&f.effects==0,"a second ambiguous attempt stays terminal");
+                    }else{
+                        completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));
+                        check(f.effects==1&&f.base.search.navigationEffectRecorded(),"only a new decision with fresh stable C/D reaches the search input");
+                    }
+                }
+            });
+        }
+
         one("successor_opaque_actual_drain_marker_and_graph_release",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 int declared=0;for(java.lang.reflect.Constructor<?> ctor:NativeSearchNoEffectReplanProof.class.getDeclaredConstructors()){check(!java.lang.reflect.Modifier.isPublic(ctor.getModifiers()),"no public proof constructor");if(!ctor.isSynthetic()){declared++;check(java.lang.reflect.Modifier.isPrivate(ctor.getModifiers()),"opaque source constructor remains private");}}check(declared==1,"exact one source constructor; Java 8 synthetic access bridge is not a source API");
