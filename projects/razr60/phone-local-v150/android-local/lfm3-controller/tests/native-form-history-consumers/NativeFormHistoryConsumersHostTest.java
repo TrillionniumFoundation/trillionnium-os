@@ -67,9 +67,10 @@ public final class NativeFormHistoryConsumersHostTest {
         final NativeAppSession task;final String selectionSha,token=UUID.randomUUID().toString();
         final List<Map<String,Object>> journal=new ArrayList<Map<String,Object>>();
         int verifies,sequence;
-        Fixture()throws Exception{
-            env=new NativeProfileIdentityHostTest.Env(NativeProfileIdentityHostTest.ctrip(),OWNER);env.active();
-            authority=TaskAuthorization.parse(OWNER).forExecutionSelection(env.session.selection);
+        Fixture()throws Exception{this(OWNER);}
+        Fixture(String owner)throws Exception{
+            env=new NativeProfileIdentityHostTest.Env(NativeProfileIdentityHostTest.ctrip(),owner);env.active();
+            authority=TaskAuthorization.parse(owner).forExecutionSelection(env.session.selection);
             gate=authority.bind(NativeProfileIdentityHostTest.TASK);
             selectionSha=NativeAppObservation.selectionSha(env.session.selection);
             task=new NativeAppSession(NativeProfileIdentityHostTest.TASK,gate,env.session.selection,

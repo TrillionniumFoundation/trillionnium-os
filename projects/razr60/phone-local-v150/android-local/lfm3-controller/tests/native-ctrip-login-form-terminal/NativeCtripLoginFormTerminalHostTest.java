@@ -30,11 +30,12 @@ public final class NativeCtripLoginFormTerminalHostTest {
     }
     static JSONObject progress(NativeAppSession s){return new JSONObject(s.evidence()).getJSONObject("progress");}
     static final class Env implements AutoCloseable {
-        final NativeFormHistoryConsumersHostTest.Fixture actual=new NativeFormHistoryConsumersHostTest.Fixture();
+        final NativeFormHistoryConsumersHostTest.Fixture actual;
         final NativeAppProviderHostTest.Harness raw=new NativeAppProviderHostTest.Harness("explicit-terminal:"+UUID.randomUUID());
         NativeAppEvidence.Frame current;NotesCompletionEvidence.Frame completion;long now=NativeFormHistoryConsumersHostTest.START+500;
         int step;String run;
-        Env()throws Exception{}
+        Env()throws Exception{this(NativeFormHistoryConsumersHostTest.OWNER);}
+        Env(String owner)throws Exception{actual=new NativeFormHistoryConsumersHostTest.Fixture(owner);}
         NativeAppEvidence.Frame remap(NativeAppEvidence.Frame f)throws Exception{
             WindowOwnership w=actual.window(f.capturedElapsedMs);List<NotesCompletionEvidence.Node> retained=new ArrayList<NotesCompletionEvidence.Node>();
             for(NativeAppEvidence.Node n:f.nodes)retained.add(new NotesCompletionEvidence.Node(n.id,n.packageName,n.text,n.label,n.viewId,null,
@@ -155,6 +156,7 @@ public final class NativeCtripLoginFormTerminalHostTest {
             check(last.getBoolean("navigation_only")&&!last.getBoolean("query_or_result_proof_created")&&!last.getBoolean("business_transition_verified"),"arrival cannot create result evidence");
             check(last.getBoolean("login_exit_ended_without_target_result"),"explicit truthful ending");
         }});
+        NativeCtripCalendarMinimumHostTest.run(Paths.get(args[3]));
         boolean pass=true;for(Map<String,Object> r:results)pass&=Boolean.TRUE.equals(r.get("passed"));
         Map<String,Object> result=new LinkedHashMap<String,Object>();result.put("schema","hepta.native-ctrip-login-form-terminal-host.v1");result.put("all_pass",pass);
         result.put("case_names",names);result.put("cases",names.size());result.put("assertions",assertions);result.put("results",results);
