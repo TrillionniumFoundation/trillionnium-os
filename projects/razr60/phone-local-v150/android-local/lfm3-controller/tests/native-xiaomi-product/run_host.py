@@ -22,6 +22,8 @@ SHARED["src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java"]="ba48
 # Preserve the preceding reviewed capture pins; only the complete current
 # Frame/capture dependency closure changes. Parser cases/fixtures stay exact.
 PRE_FORM_HISTORY_SHARED=dict(SHARED)
+# Current profile equality uses the same canonical bytes without Base64 allocations.
+SHARED["src/org/trillionnium/hepta/background/ProfileTarget.java"]="268dc50e7d3205cc8fb35883843fbdf8a10cc517f773867a9aae6d00fe07f2fd"
 SHARED.update({
   "src/org/trillionnium/hepta/local/NativeAppEvidence.java": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14",
   "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java": "b89d0adf0c1cf0b7f4e13375b570b670e78fd5ee64d6a66cdb64cb303a94e155",

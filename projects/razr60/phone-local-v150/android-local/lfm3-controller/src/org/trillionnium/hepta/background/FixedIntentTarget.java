@@ -24,9 +24,19 @@ public final class FixedIntentTarget {
         return other!=null&&action.equals(other.action)&&uid==other.uid&&packageName.equals(other.packageName)
                 &&className.equals(other.className)&&appLabel.equals(other.appLabel)&&Objects.equals(permission,other.permission);
     }
+    private static final String LOWER_HEX="0123456789abcdef";
     public static String payloadSha256(String value){
         if(value==null)throw new IllegalArgumentException("payload required");
-        try{StringBuilder hex=new StringBuilder(64);for(byte b:java.security.MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)))hex.append(String.format(java.util.Locale.ROOT,"%02x",b&255));return hex.toString();}
+        try{
+            byte[] digest=java.security.MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            char[] hex=new char[digest.length*2];
+            for(int i=0;i<digest.length;i++){
+                int unsigned=digest[i]&255;
+                hex[2*i]=LOWER_HEX.charAt(unsigned>>>4);
+                hex[2*i+1]=LOWER_HEX.charAt(unsigned&15);
+            }
+            return new String(hex);
+        }
         catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
     }
     public Map<String,Object> evidence(){
