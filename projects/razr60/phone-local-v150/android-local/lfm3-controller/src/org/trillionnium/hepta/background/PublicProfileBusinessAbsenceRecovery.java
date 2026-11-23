@@ -189,7 +189,8 @@ public final class PublicProfileBusinessAbsenceRecovery {
             long count=number(result,"steps");need((count>0||retainedBeforeFirstModel)&&count>=0&&count<=256&&taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status")),"BUSINESS_TERMINAL");steps=(int)count;
             no(result,"cleanup_known","completion_verified","model_reported_success","external_model","automatic_replay","controller_completion_requested");
             for(String k:new String[]{"observation_read_worker_pending_at_terminal","action_worker_pending_at_terminal","native_cancel_worker_pending_at_terminal"})no(result,k);
-            need(result.get("model_done_status")==JSONObject.NULL&&result.get("completion_actor")==JSONObject.NULL&&result.get("profile_permission_preparation")==JSONObject.NULL
+            requireIncompleteModelDisposition(result);
+            need(result.get("completion_actor")==JSONObject.NULL&&result.get("profile_permission_preparation")==JSONObject.NULL
                     &&result.getJSONArray("submit_attempts").length()==0&&result.getJSONArray("fixed_intent_attempts").length()==0,"BUSINESS_UNSUPPORTED_PENDING_CONTRACT");
             JSONObject cancellation=result.getJSONObject("native_cancellation");need(taskId.equals(string(cancellation,"task_id"))&&cancellation.get("run_id")==JSONObject.NULL,"BUSINESS_NATIVE_IDENTITY");
             yes(cancellation,"native_cleanup_known");no(cancellation,"request_reserved","executor_accepted","worker_started","signal_entered","submission_unknown","automatic_requeue");
@@ -213,6 +214,36 @@ public final class PublicProfileBusinessAbsenceRecovery {
         }
         public byte[] task(String leaf)throws Exception{return original(taskPrefix+leaf);}
         public byte[] model(String leaf)throws Exception{return original(modelPrefix+leaf);}
+        private void requireIncompleteModelDisposition(JSONObject result)throws Exception{
+            if(result.get("model_done_status")==JSONObject.NULL)return;
+            need(steps>0&&"failure".equals(result.get("model_done_status")),"BUSINESS_MODEL_DISPOSITION");
+            no(result,"model_done_synthesized");
+            String prefix=String.format(java.util.Locale.ROOT,"step-%02d-",steps);
+            JSONObject controller=object(task(prefix+"controller-terminal.json")),action=controller.getJSONObject("action");
+            String observation=string(result,"final_observation_id"),run=string(controller,"model_run_id");
+            need("hepta.controller-incomplete-terminal.v1".equals(string(controller,"schema"))&&"controller".equals(string(controller,"actor"))
+                    &&taskId.equals(string(controller,"task_id"))&&number(controller,"step")==steps&&"failed".equals(string(controller,"terminal_status"))
+                    &&observation.matches("[0-9a-f]{32}")&&observation.equals(string(controller,"observation_id"))&&run.matches("[0-9a-f]{32}")
+                    &&string(result,"task_authorization_sha256").equals(string(controller,"task_authorization_sha256"))
+                    &&controller.get("action_execution")==JSONObject.NULL,"BUSINESS_MODEL_TERMINAL_BINDING");
+            yes(controller,"model_issued","accepted","terminal_accepted");
+            no(controller,"dispatched","service_perform_called","stale","business_completion_verified");
+            need("done".equals(string(action,"action"))&&"failure".equals(string(action,"status"))&&target.packageName.equals(string(action,"package"))
+                    &&observation.equals(string(action,"observation_id"))&&string(result,"model_done_summary").equals(string(action,"summary")),
+                    "BUSINESS_MODEL_TERMINAL_ACTION");
+            int matches=0;
+            for(String leaf:manifest.taskFiles()){
+                if(!leaf.startsWith(prefix+"model-")||!leaf.matches("step-[0-9]+-model-[0-9]+\\.json"))continue;
+                JSONObject model=object(task(leaf));
+                if(!run.equals(string(model,"run_id")))continue;
+                need(ownerSha256.equals(string(model,"original_instruction_sha256"))&&observation.equals(string(model,"observation_id"))
+                        &&same(action,object(string(model,"raw_text").getBytes(StandardCharsets.UTF_8))),"BUSINESS_MODEL_TERMINAL_RECEIPT");
+                matches++;
+            }
+            need(matches==1,"BUSINESS_MODEL_TERMINAL_RECEIPT");
+            long begin=number(controller,"controller_started_elapsed_ms"),end=number(controller,"controller_consumed_elapsed_ms");
+            need(created<=begin&&begin<=end&&end<=number(result,"terminal_decided_elapsed_ms"),"BUSINESS_MODEL_TERMINAL_CLOCK");
+        }
         private long requireLastAction(JSONObject result,long terminal)throws Exception{
             if(result.get("last_action_execution")==JSONObject.NULL)return created;
             JSONObject a=result.getJSONObject("last_action_execution");need("hepta.action-execution.v1".equals(string(a,"schema"))&&taskId.equals(string(a,"task_id"))
@@ -307,7 +338,8 @@ public final class PublicProfileBusinessAbsenceRecovery {
                     &&"RELEASED".equals(string(terminal,"state"))&&publicScope.sha256.equals(string(terminal,"display_scope_sha256"))
                     &&terminal.get("boot_count_read_retirement_failure")==JSONObject.NULL&&terminal.get("owned_single_task")==JSONObject.NULL,"BUSINESS_HISTORICAL_TERMINAL");
             yes(terminal,"release_confirmed","public_scope_admission_retired");no(terminal,"profile_custody_retained");
-            need(string(terminal,"reason").matches("[A-Z0-9_]{1,96}"),"BUSINESS_TERMINAL_REASON");
+            String reason=string(terminal,"reason");
+            need("client_close".equals(reason)||reason.matches("[A-Z0-9_]{1,96}"),"BUSINESS_TERMINAL_REASON");
             JSONObject first=bootstrap.getJSONObject("last_broker_response"),last=cleanup.getJSONObject("last_broker_response");
             requireHistoricalResponse(first,bootstrap.getJSONObject("app_display_readback"));requireHistoricalResponse(last,cleanup.getJSONObject("app_display_readback"));
             need(number(bootstrap.getJSONObject("app_display_readback"),"observed_ended_elapsed_ms")<=number(cleanup.getJSONObject("app_display_readback"),"observed_ended_elapsed_ms"),"BUSINESS_RESPONSE_CLOCK");
