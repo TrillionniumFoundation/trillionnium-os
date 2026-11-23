@@ -17,7 +17,7 @@ final class NativeAppDomain {
     final String phase;
     final Set<String> clickIds,resourceClickIds;
     final Map<String,String> editValues,purposes;
-    final boolean backAllowed,resultReady,incompleteLoginReturn;
+    final boolean backAllowed,resultReady,incompleteLoginReturn,incompleteOrderPreview;
     final List<String> missing;
     private final Map<String,Object> providerView,result;
 
@@ -50,6 +50,11 @@ final class NativeAppDomain {
                 &&clickIds.isEmpty()&&editValues.isEmpty()&&this.purposes.isEmpty()&&!back&&result==null
                 &&missing.contains("native_ctrip_login_returned_to_form_without_target_result"),
                 "a completed login-return navigation admits only incomplete termination");
+        incompleteOrderPreview=providerView.containsKey("order_preview_price_review");
+        if(incompleteOrderPreview)NativeAppEvidence.need(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)
+                &&"product_detail_quote".equals(phase)&&clickIds.isEmpty()&&editValues.isEmpty()&&this.purposes.isEmpty()
+                &&!back&&result==null&&missing.contains("selected_sku_quantity_and_checkout_total_unverified"),
+                "a price review confers no checkout action or completion");
         backAllowed=back;this.providerView=NativeAppEvidence.immutableMap(providerView);
         this.result=result==null?null:NativeAppEvidence.immutableMap(result);resultReady=result!=null;
         this.missing=Collections.unmodifiableList(new ArrayList<String>(missing));
@@ -91,7 +96,7 @@ final class NativeAppDomain {
         if(NativeXiaomiProductPage.LOGIN.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
         if(NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))out.retainAll(Collections.singleton("done"));
         if(NativeCtripFlightPage.PROMOTION.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
-        if(incompleteLoginReturn)out.retainAll(Collections.singleton("done"));
+        if(incompleteLoginReturn||incompleteOrderPreview)out.retainAll(Collections.singleton("done"));
         return out;}
     DecisionGrammar boundedWaitGrammar(ObservedTargetLabels targets,ObservedAppLabels apps,TaskAuthorization.Frame authorization,Set<String> original){
         NativeAppEvidence.need(NativeXiaomiProductPage.HOME_LOADING.equals(phase)&&frame.metadataObserved&&frame.windowType==1
@@ -107,6 +112,10 @@ final class NativeAppDomain {
             if(NativeCtripFlightPage.PROMOTION.equals(phase))
                 NativeAppEvidence.need("click".equals(action.action)||"done".equals(action.action)
                         &&doneStatuses().contains(action.status),"startup promotion admits its close control or incomplete termination");
+            if(incompleteOrderPreview){
+                NativeAppEvidence.need("done".equals(action.action)&&("partial".equals(action.status)||"failure".equals(action.status)),
+                        "the shopping goal can only end incomplete on an observed detail-price review");return;
+            }
             if(incompleteLoginReturn){
                 NativeAppEvidence.need("done".equals(action.action)&&("failure".equals(action.status)||"partial".equals(action.status)),
                         "login returned to the form without target results; incomplete termination only");return;

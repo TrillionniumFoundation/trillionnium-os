@@ -15,6 +15,8 @@ ORIGINAL_SHARED={
 # The original parser fixtures/cases retain their bytes. The shared Frame DTO now
 # has the reviewed typed capture contract; bind the actual current DTO/helper.
 SHARED=dict(ORIGINAL_SHARED)
+# The original parser fixture and quote-only cases still run with the current owner contract.
+SHARED["src/org/trillionnium/hepta/local/NativeAppGoal.java"]="9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4"
 SHARED["src/org/trillionnium/hepta/local/NativeAppEvidence.java"]="2f7895c8314959aaafeaa827b1d64f8ce8a8aca62c1de4b7eb82060e567c87be"
 SHARED["src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java"]="ba48a7788e308d987b96923aa4f15fd837b4f11a642b484ff02453af93a5035f"
 # Preserve the preceding reviewed capture pins; only the complete current

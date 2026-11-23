@@ -3544,7 +3544,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||!nativeTask.generation.equals(background.generation))
             throw new IllegalArgumentException("native text observation requires the actual current controller/session/lease");
         boolean supported=NativeCtripFlightPage.supported(nativeTask.goal)
-                ||(NativeAppGoal.PRODUCT_PRICE.equals(nativeTask.goal.kind)&&NativeAppGoal.XIAOMI_PACKAGE.equals(nativeTask.goal.packageName));
+                ||(nativeTask.goal.readsXiaomiProduct()&&NativeAppGoal.XIAOMI_PACKAGE.equals(nativeTask.goal.packageName));
         boolean text=ObservationCaptureEvidence.nativeTextMode(supported,config.profile.visual(),inference.acceptsObservedImage());
         if(!text)return;
         if(nativeAxMode!=null&&nativeAxMode.authorization==authorization)

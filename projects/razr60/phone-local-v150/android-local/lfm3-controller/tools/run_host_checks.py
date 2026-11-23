@@ -552,6 +552,8 @@ final class NativeCalendarDateIntent {
             "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("native-auto-target",[sys.executable,"-B",ROOT/"tests/native-auto-target/run_host.py",
             "--source",ROOT,"--output",out/"native-auto-target","--java-home",java_home,"--json-jar",json_jar])
+        run("native-xiaomi-budget-preview",[sys.executable,"-B",ROOT/"tests/native-xiaomi-budget-preview/run_host.py",
+            "--source",ROOT,"--output",out/"native-xiaomi-budget-preview","--java-home",java_home,"--json-jar",json_jar])
         run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
             "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
         census_source=ROOT/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"

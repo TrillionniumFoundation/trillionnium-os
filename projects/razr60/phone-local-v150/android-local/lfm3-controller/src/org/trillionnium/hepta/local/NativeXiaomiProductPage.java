@@ -126,7 +126,7 @@ final class NativeXiaomiProductPage {
     }
     private static Page inspect(NativeAppGoal goal,NativeAppEvidence.Frame frame,boolean preferSearchIcon){
         NativeAppEvidence.need(goal!=null&&frame!=null,"Xiaomi goal and actual frame required");
-        NativeAppEvidence.need(NativeAppGoal.PRODUCT_PRICE.equals(goal.kind)
+        NativeAppEvidence.need(goal.readsXiaomiProduct()
                 &&NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)
                 &&NativeAppGoal.PRODUCT_MODEL.equals(goal.productModel),"recognized literal Xiaomi product-price goal required");
         NativeAppEvidence.need(goal.ownerSha256.equals(frame.ownerSha)&&goal.packageName.equals(frame.packageName),
