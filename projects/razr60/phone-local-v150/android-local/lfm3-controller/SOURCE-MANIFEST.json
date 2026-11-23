@@ -3,48 +3,29 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "r35_ctrip_verified_dated_calendar_minimum",
-  "complete_source_files": 2486,
+  "candidate_status": "xiaomi_model_search_icon_candidate",
+  "complete_source_files": 2488,
   "current_successor_delta": {
-    "baseline": "0d32fcb08e46c296f8a2a36f202918cc287b9a1d",
-    "integrated_topics": [
-      {
-        "head": "c6272f9a2c3cdbde1892483b0d2e5152e29f6800",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/LocalTaskController.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-          "tests/native-ctrip-form-observation/run_observer_host.py",
-          "tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json",
-          "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
-          "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java",
-          "tests/native-ctrip-login-form-terminal/run_host.py",
-          "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "0f5c162a2003ffdd54edcaf30a07750116926457a8f5ac2f01109704dac9f942"
-      }
-    ],
+    "baseline": "377c0fc10fdd8f4fe7b0b9dd72af9af20c2c58a0",
     "original_case_assertions_preserved": true,
-    "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java"
+      "src/org/trillionnium/hepta/local/NativeSearchRole.java",
+      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
+      "src/org/trillionnium/hepta/local/NativeSearchSession.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
     ],
     "test_changed_paths": [
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json",
-      "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
-      "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java",
-      "tests/native-ctrip-login-form-terminal/run_host.py",
-      "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
+      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/native-search-producer/SearchIconCases.fragment",
+      "tests/native-search-producer/6bea-search-icon-censuses.json",
+      "tests/native-search-producer/run_producer.py",
       "tools/run_host_checks.py"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a"
+    "previous_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622"
   },
   "files": [
     {
@@ -6578,9 +6559,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 616341,
+      "bytes": 617594,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "01fb8a4732e23abc7d1e7290ebcc4ee8e71e2035a96cbcc90d344c14f1cb37eb"
+      "sha256": "6968d287cec67a0ea1b136bdfa89cf8a85068bd642969f1fd7c5928bedc6522a"
     },
     {
       "bytes": 711,
@@ -6763,19 +6744,19 @@
       "sha256": "71bc8f2c41c991e8240106d0d7f9977df590f5c2e9a00e5649c9013c5e67f2c8"
     },
     {
-      "bytes": 30605,
+      "bytes": 31419,
       "path": "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-      "sha256": "96e06ed9a566dcceb8aea43e8458dad78f82f5bcd8121dc9f3f7d29aec4885e0"
+      "sha256": "4a77586235091331f099ec414f73aa6cc731806f977cc60e8344d88a5a80c58a"
     },
     {
-      "bytes": 25680,
+      "bytes": 27435,
       "path": "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "sha256": "e09314d261d7c3d8a177e7e9786487d8159967cbd1f115c69a2154199b6ef907"
+      "sha256": "206c91d2d3f3578cc75b2c0623c5fab21634f5e0b2ccf2c90eb6910911a841f5"
     },
     {
-      "bytes": 25869,
+      "bytes": 26646,
       "path": "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "sha256": "900dd5d6968aa84ac89454d17c666a8c7c2046a00b2a48c99b70393d783cbf98"
+      "sha256": "a3ad00a29a1d898d50d0bd41a9829291a671cb798723eb6244aba2e8f0adfd40"
     },
     {
       "bytes": 57286,
@@ -9233,6 +9214,11 @@
       "sha256": "443f25ee1ff14efa857a8e588b4e7f4b4f82a1978cc5acaebbfdd53cbc21f328"
     },
     {
+      "bytes": 217385,
+      "path": "tests/native-search-producer/6bea-search-icon-censuses.json",
+      "sha256": "25138641e8dd4f8c49701009dd4d854a698c47daac1015cd112a9b43e35d2452"
+    },
+    {
       "bytes": 2830,
       "path": "tests/native-search-producer/99c24-retired-search.json",
       "sha256": "d47cbf9c36918fd0fa412c2659a05cb2b7d4d3a1374240aa3aeb43a8ce5d6ed2"
@@ -9263,9 +9249,9 @@
       "sha256": "3b999f5129206142198254baa53d7e587d06ff26eaa7f4f200bde1a0294f4de5"
     },
     {
-      "bytes": 73942,
+      "bytes": 74070,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "590bddc94262e04f564885986df87282635d725c55806aba819ad4a92e7e6c6b"
+      "sha256": "52e2815fafbedad3b853553ecafab2e5ecd4da380d7629be8fdc517ad88b81ff"
     },
     {
       "bytes": 7814,
@@ -9278,9 +9264,14 @@
       "sha256": "377e273bc229f9120f25e11d87925790a72f6f38df806501b5adb475507080d0"
     },
     {
-      "bytes": 28211,
+      "bytes": 6387,
+      "path": "tests/native-search-producer/SearchIconCases.fragment",
+      "sha256": "17ebe9460e639ea58332e27b04e360763ff6d35fb50c1608fcf7a2274aa016d1"
+    },
+    {
+      "bytes": 28400,
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "sha256": "b6b1482d323a6a9d98d9c00db97dd4ceddb2e374416be5a58b8fcffcf6b73075"
+      "sha256": "4775dd644f24f0f898f8853fc9c8ac26eeae808db99bafbaad8100443fe55931"
     },
     {
       "bytes": 112963,
@@ -9293,9 +9284,9 @@
       "sha256": "ebb895f5647bc01f712e81b2f699761efb349817c622036fdee58acbf1311090"
     },
     {
-      "bytes": 18954,
+      "bytes": 19000,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "fb7ae7616c737a95e000706a57749098b436801889235ab25073dc1d1e890135"
+      "sha256": "6cfcf12d1d7ba812ad1e6ccd89e252cf398f8efda2e6b71455290eceda4c5994"
     },
     {
       "bytes": 29903,
@@ -12263,9 +12254,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 66009,
+      "bytes": 66175,
       "path": "tools/run_host_checks.py",
-      "sha256": "3d5725b1dbe87fc356e3a7736ca22a6a0a5fea26e1254413a87acce3e3ecb0d1"
+      "sha256": "97a009d237ebbc2172ce31227ad90443f0be2bfe3ca20e3116ea1d153202f1b5"
     },
     {
       "bytes": 13873,
@@ -12474,9 +12465,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "2905f564a7f1dbe4814bfe9841a3c0b403ec5a0f",
+    "previous_component_git_tree_sha1": "91cb07976de08f29eaa921b09f3ea697d7089dba",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a"
+    "previous_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12485,12 +12476,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "1351afef09c696b0cba14ba665b70969ad97f6a7151a751b7b7130bedae6df82",
+  "production_input_map_sha256": "c3fd56078e9fd8324a25e81e39d14a5a411bdd89381371094dfaf577ca4e1fd8",
   "schema": "hepta.local-source.v3",
-  "scope": "Show the scoped Ctrip calendar minimum for the user-requested route and exact travel date after the observed native query and login return. Preserve the explicit partial result and every R34 navigation, release and model setting safeguard.",
-  "source_parent_head": "0d32fcb08e46c296f8a2a36f202918cc287b9a1d",
-  "source_parent_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a",
-  "source_snapshot_predecessor_manifest_sha256": "ae6bb8bc3cd321661fffb86c977c1cfae0995cd611ab4baa50a69405c927941a",
+  "scope": "Let a new model offer select the exact observed native search icon independently of rotating search hints; keep full actual reference, ancestor and post-navigation checks.",
+  "source_parent_head": "377c0fc10fdd8f4fe7b0b9dd72af9af20c2c58a0",
+  "source_parent_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622",
+  "source_snapshot_predecessor_manifest_sha256": "516c1ac63619f958a927ee7d692754ec17189dffe84ccc1f2a5645828cdad622",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

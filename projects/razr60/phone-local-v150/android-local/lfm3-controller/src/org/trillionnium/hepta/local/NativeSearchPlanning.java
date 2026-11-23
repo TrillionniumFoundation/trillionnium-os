@@ -17,7 +17,7 @@ import org.json.JSONObject;
 /** Actual persisted planning receipt. This type cannot be passed as a
  * PhoneObservation, executable native Frame, image, or completion candidate. */
 final class NativeSearchPlanning {
-    static final String KIND="native_ax_planning",SCHEMA="hepta.native-search-planning.v1";
+    static final String KIND="native_ax_planning",SCHEMA="hepta.native-search-planning.v1",ICON_SCHEMA="hepta.native-search-icon-planning.v1";
     static final int MAX_BYTES=2*1024*1024;
     final String id,packageName,receiptSha256,kind=KIND;
     final NativeActionSnapshotCheck.Snapshot first,second;
@@ -172,9 +172,17 @@ final class NativeSearchPlanning {
      * encoding time grants observation freshness or an effect capability. */
     static byte[] encode(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
             Map<String,Object> binding,Timing timing,CaptureContext context)throws Exception{
+        return encode(id,a,b,binding,timing,context,false);
+    }
+    static byte[] encodeIcon(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
+            Map<String,Object> binding,Timing timing,CaptureContext context)throws Exception{
+        return encode(id,a,b,binding,timing,context,true);
+    }
+    private static byte[] encode(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
+            Map<String,Object> binding,Timing timing,CaptureContext context,boolean icon)throws Exception{
         need(context!=null,"actual source context required");context.require(a,b,timing);
-        NativeSearchRole role=checked(id,a,b,binding,timing,context);
-        Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",SCHEMA);e.put("capture_kind",KIND);
+        NativeSearchRole role=checked(id,a,b,binding,timing,context,icon);
+        Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",icon?ICON_SCHEMA:SCHEMA);e.put("capture_kind",KIND);
         e.put("observation_id",id);e.put("package",NativeAppGoal.XIAOMI_PACKAGE);e.put("binding",binding);e.put("timing",timing.evidence());
         e.put("first",snapshot(a));e.put("second",snapshot(b));e.put("role",role.evidence());e.put("source_context",context.evidence());
         e.put("full_tree_equal",role.fullTreeEqual);e.put("planning_only",true);e.put("screenshot_observed",false);
@@ -192,13 +200,14 @@ final class NativeSearchPlanning {
                 .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(owned)).toString();
         Map<String,Object> e=map(new JSONObject(text));
         need(e.keySet().equals(NativeActionSnapshotCheck.keys("schema,capture_kind,observation_id,package,binding,timing,first,second,role,source_context,full_tree_equal,planning_only,screenshot_observed,screenshot_sha256,generic_action_authority,completion_authority")),"exact planning receipt fields");
-        need(SCHEMA.equals(e.get("schema"))&&KIND.equals(e.get("capture_kind"))&&NativeAppGoal.XIAOMI_PACKAGE.equals(e.get("package"))
+        boolean icon=ICON_SCHEMA.equals(e.get("schema"));
+        need((icon||SCHEMA.equals(e.get("schema")))&&KIND.equals(e.get("capture_kind"))&&NativeAppGoal.XIAOMI_PACKAGE.equals(e.get("package"))
                 &&Boolean.TRUE.equals(e.get("planning_only"))&&Boolean.FALSE.equals(e.get("screenshot_observed"))&&e.get("screenshot_sha256")==null
                 &&Boolean.FALSE.equals(e.get("generic_action_authority"))&&Boolean.FALSE.equals(e.get("completion_authority")),"planning kind cannot acquire pixel/action/completion authority");
         Map<String,Object> binding=object(e,"binding");need(equal(binding,expectedBinding),"receipt belongs to another Session identity");
         Timing timing=Timing.read(object(e,"timing"));NativeActionSnapshotCheck.Snapshot a=readSnapshot(object(e,"first")),b=readSnapshot(object(e,"second"));
         CaptureContext context=CaptureContext.read(object(e,"source_context"));context.require(a,b,timing);
-        String id=string(e,"observation_id");NativeSearchRole role=checked(id,a,b,binding,timing,context);
+        String id=string(e,"observation_id");NativeSearchRole role=checked(id,a,b,binding,timing,context,icon);
         need(equal(role.evidence(),object(e,"role"))&&Boolean.valueOf(role.fullTreeEqual).equals(e.get("full_tree_equal")),"actual complete role/tree claims differ");
         need(timing.sealedElapsed<=persistedElapsed&&persistedElapsed<timing.requestDeadline,"original persistence deadline exceeded");
         return new NativeSearchPlanning(id,owned,a,b,role,binding,timing,context,persistedElapsed);
@@ -235,7 +244,7 @@ final class NativeSearchPlanning {
         persistedElapsed=original.persistedElapsed;publishedElapsed=now;this.publication=publication;
     }
     private static NativeSearchRole checked(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
-            Map<String,Object> binding,Timing timing,CaptureContext context){
+            Map<String,Object> binding,Timing timing,CaptureContext context,boolean icon){
         need(NativeAppEvidence.id(id)&&a!=null&&b!=null&&binding!=null&&timing!=null,"actual planning identity/timing required");
         requireBinding(binding);
         need(id.equals(a.env.get("origin_observation_id"))&&id.equals(b.env.get("origin_observation_id")),"census observation ID differs");
@@ -245,12 +254,13 @@ final class NativeSearchPlanning {
         EventMark before=context.aBefore,after=context.sealed;
         boolean contentOnly=after.unknown==before.unknown&&after.boundary==before.boundary
                 &&after.events-before.events==after.content-before.content;
-        NativeSearchRole role=contentOnly?NativeSearchRole.compareForPlanning(a,b):NativeSearchRole.compare(a,b);
+        NativeSearchRole role=icon?NativeSearchRole.iconPair(a,b,contentOnly):
+                contentOnly?NativeSearchRole.compareForPlanning(a,b):NativeSearchRole.compare(a,b);
         if(timing.bReadCompleted-timing.requestStarted>=10000)
             need(contentOnly&&role.fullPageSwap,"only a fully classified in-flight banner pair can use the publication margin");
         return role;
     }
-    Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",SCHEMA);e.put("capture_kind",KIND);
+    Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",role.iconAction?ICON_SCHEMA:SCHEMA);e.put("capture_kind",KIND);
         e.put("observation_id",id);e.put("package",packageName);e.put("receipt_sha256",receiptSha256);e.put("receipt_bytes",receiptBytes);
         e.put("timing",timing.evidence());e.put("source_context",context.evidence());e.put("persisted_elapsed_ms",persistedElapsed);e.put("publication",publication);e.put("binding",binding);e.put("role",role.evidence());
         e.put("planning_only",true);e.put("full_tree_equal",fullTreeEqual);e.put("screenshot_observed",false);e.put("screenshot_sha256",null);
