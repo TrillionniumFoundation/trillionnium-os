@@ -45,6 +45,7 @@ final class NativeAppSession {
     private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
     private boolean productLoginExitReserved;
     private String productLoginProposalObservation;
+    private boolean flightPromotionCloseAttempted;
     private boolean flightLoginExitAttempted;
     private boolean flightLoginReturnedToForm;
     private String flightLoginProposalObservation;
@@ -959,7 +960,12 @@ final class NativeAppSession {
             view.put("from",goal.fromCity);view.put("to",goal.toCity);view.put("requested_departure_date",goal.departureDate.toString());
             view.put("adults",goal.adults);view.put("calendar_year_proved",calendarYearProof!=null);
             view.put("last_explicit_query_date",lastQueryDate==null?null:lastQueryDate.toString());
-            if(NativeCtripFlightPage.HOME.equals(phase))grant(clicks,purposes,flight.homeFlight,"open_flight_form");
+            if(NativeCtripFlightPage.PROMOTION.equals(phase)){
+                if(mayCloseFlightPromotion()){
+                    grant(clicks,purposes,NativeCtripFlightPage.promotionClose(frame),NativeCtripFlightPage.CLOSE_PROMOTION);
+                    view.put("next_goal","携程启动广告遮住了机票入口。可点击当前唯一的关闭广告控件，再读取实际页面继续查机票。关闭本身不会产生查询结果。");
+                }else missing.add("native_ctrip_startup_promotion_close_unavailable");
+            }else if(NativeCtripFlightPage.HOME.equals(phase))grant(clicks,purposes,flight.homeFlight,"open_flight_form");
             else if(NativeCtripFlightPage.FORM.equals(phase)){
                 view.put("observed_form_date",flight.form.date.text);view.put("observed_passengers","1成人/0儿童/0婴儿");
                 if(calendarYearProof==null){grant(clicks,purposes,flight.form.date,"inspect_departure_year");missing.add("actual_calendar_year_round_trip_missing");}
@@ -1208,6 +1214,14 @@ final class NativeAppSession {
     }
     void requireModelPlanning(){live();need(calendarDateOffer==null||calendarSelection!=null,"calendar one-use model/input/selection chain has not completed");need(searchNavigationAttempt==null||searchNavigationObserved,"native search navigation requires a fresh actual input observation before another model decision");need(pending==null&&inFlight==null,"pending native transition requires observation before another model request");}
 
+    private boolean mayCloseFlightPromotion(){
+        return pending==null&&!flightPromotionCloseAttempted&&queryAttempts.isEmpty()&&calendarYearProof==null
+                &&lastQueryProof==null&&installed.profileTarget!=null&&installed.versionCode==NativeCtripFlightPage.VERSION_CODE
+                &&installed.apkHashes.equals(Collections.singletonMap("base",NativeCtripFlightPage.BASE_APK_SHA256))
+                &&"ctrip.android.view/ctrip.business.splash.CtripSplashActivity".equals(installed.profileTarget.component)
+                &&installed.profileTarget.signerSha256.equals(Collections.singleton(
+                        "8155dc0644fed517e8ef6bef9718c363d0eb3eb2c22c06455044d88268bdcf0a"));
+    }
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
     /** The new prompt branch is qualified only for the actual managed-profile
@@ -1416,6 +1430,13 @@ final class NativeAppSession {
                     &&!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
                     "one model click on the exact pinned optional-location decline control required");
             productModalExitAttempted=true; // Shared budget; stale/rejected/unknown never authorizes a replay.
+        }
+        else if(NativeCtripFlightPage.CLOSE_PROMOTION.equals(purpose)){
+            requireFrame(current.frame);
+            need(mayCloseFlightPromotion()&&NativeCtripFlightPage.PROMOTION.equals(current.phase)&&"click".equals(action.action)
+                    &&NativeCtripFlightPage.resourcePromotionCloseClick(current.frame,action.nodeId),
+                    "one model proposal on the observed managed Ctrip promotion close required");
+            flightPromotionCloseAttempted=true;
         }
         else if(NativeCtripFlightPage.LOGIN_EXIT.equals(purpose)){
             NativeAppEvidence.Node loginReturn=NativeCtripFlightPage.loginReturnControl(flight);
@@ -1653,6 +1674,14 @@ final class NativeAppSession {
                 proof.put("actual_return_destination",NativeCtripFlightPage.FORM);proof.put("form_after",flight.form.evidence());
                 proof.put("prior_actual_query_proof_sha256",NativeAppEvidence.fingerprint(lastQueryProof));
                 proof.put("returned_form_date",a.date.toString());flightLoginReturnedToForm=true;complete=true;
+            }else if(NativeCtripFlightPage.CLOSE_PROMOTION.equals(p)&&flightPromotionCloseAttempted
+                    &&a.flight!=null&&NativeCtripFlightPage.PROMOTION.equals(a.flight.phase)
+                    &&(NativeCtripFlightPage.HOME.equals(flight.phase)||NativeCtripFlightPage.FORM.equals(flight.phase))
+                    &&(frame.capture==null||!frame.capture.formHistory())&&frame.capturedElapsedMs>a.finished
+                    &&!a.before.frame.observationId.equals(frame.observationId)&&a.before.frame.profileWindow!=null
+                    &&NativeAppEvidence.sameProfileOwner(a.before.frame.profileWindow,frame.profileWindow)){
+                proof.put("navigation_only",true);proof.put("actual_return_destination",flight.phase);
+                proof.put("query_or_result_proof_created",false);proof.put("business_transition_verified",false);complete=true;
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
@@ -1713,6 +1742,7 @@ final class NativeAppSession {
         e.put("product_modal_exit_attempted",productModalExitAttempted);
         e.put("product_login_exit_reserved",productLoginExitReserved);
         e.put("product_login_proposal_observation",productLoginProposalObservation);
+        e.put("flight_promotion_close_attempted",flightPromotionCloseAttempted);
         e.put("flight_login_exit_attempted",flightLoginExitAttempted);e.put("flight_login_returned_to_form",flightLoginReturnedToForm);
         e.put("flight_login_proposal_observation",flightLoginProposalObservation);
         e.put("product_home_loading_since_elapsed_ms",productHomeLoadingSince<0?null:Long.valueOf(productHomeLoadingSince));
