@@ -101,6 +101,17 @@ public final class PublicProfileBusinessClientHostTest {
             FakeBusinessRecoveryProcess.afterReply=operation(()->MobiMindPrivateFiles.writeNew(other.toFile(),new byte[]{123,125}));
             reject(e::recover);need(Files.exists(e.journal)&&FakeBusinessRecoveryProcess.calls==1&&e.commits()==0);e.unchanged();
         }});
+        for(String outcome:new String[]{"matching","wrong_nonce","other_exit","trailing_output"}){
+            test("process_census_failure_message_"+outcome,()->{try(Env e=new Env()){
+                FakeBusinessRecoveryProcess.exit="other_exit".equals(outcome)?71:70;
+                FakeBusinessRecoveryProcess.badNonce="wrong_nonce".equals(outcome);
+                FakeBusinessRecoveryProcess.checkerError="RECOVERY_PROC_CENSUS_UNSTABLE";
+                if("trailing_output".equals(outcome))FakeBusinessRecoveryProcess.suffix="other output";
+                try{e.recover();throw new AssertionError("failed census must preserve the lease");}
+                catch(IOException error){need(error.getMessage().contains("稍后可再次点击")=="matching".equals(outcome));}
+                need(Files.exists(e.journal)&&e.commits()==0&&FakeBusinessRecoveryProcess.calls==1);e.unchanged();
+            }});
+        }
         if(visual){
             test("visual_originals_checker_durable_receipt_and_one_lease_retirement",()->{try(Env e=new Env()){
                 need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
