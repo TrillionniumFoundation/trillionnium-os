@@ -18,7 +18,7 @@ final class NativeSearchRole {
     final Map<String,Object> facts,authority;
     final Map<String,Map<String,Object>> ancestors;
     final NativeActionSnapshotCheck.Snapshot first,second;
-    final boolean fullTreeEqual;
+    final boolean fullTreeEqual,fullPageSwap;
     final List<String> changedPaths,enclosures;
     private final Map<String,Object> proof;
 
@@ -30,7 +30,7 @@ final class NativeSearchRole {
             this.first=first;this.second=second;
         }
     }
-    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean execution){
+    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;
         Map<String,Object> ae=stableEnvelope(a),be=stableEnvelope(b);
@@ -68,7 +68,8 @@ final class NativeSearchRole {
         roleId=NativeAppEvidence.fingerprint(identity);
         Set<String> paths=new TreeSet<String>(a.nodes.keySet());paths.addAll(b.nodes.keySet());
         List<String> changed=new ArrayList<String>();Set<String> regions=new TreeSet<String>();
-        String banner=execution?NativeActionSnapshotCheck.fullPageSearchBannerSwap(a,b,targetPath,hints):null;
+        String banner=allowFullPageSwap?NativeActionSnapshotCheck.fullPageSearchBannerSwap(a,b,targetPath,hints):null;
+        fullPageSwap=banner!=null;
         for(String path:paths){
             NativeActionSnapshotCheck.Node old=a.nodes.get(path),fresh=b.nodes.get(path);
             if(old!=null&&fresh!=null&&old.v.equals(fresh.v))continue;
@@ -174,6 +175,10 @@ final class NativeSearchRole {
     }
 
     static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b,false);}
+    // Historical AX semantics can support model planning. A decision still needs a new C/D pair and a live node.
+    static NativeSearchRole compareForPlanning(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+        return new NativeSearchRole(a,b,true);
+    }
     // Obtained only from a model's reserved Attempt. All actual window, role,
     // original target/ancestor refresh, event and one-use effect checks still run.
     static NativeSearchRole compareForExecution(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){

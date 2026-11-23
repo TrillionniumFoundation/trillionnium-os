@@ -36,11 +36,16 @@ final class NativeSearchPlanning {
                 bReadStarted,bReadCompleted,bCensusCaptured,sealedElapsed;
         Timing(long requestStarted,long requestDeadline,long aReadStarted,long aReadCompleted,long aCensusCaptured,
                 long bReadStarted,long bReadCompleted,long bCensusCaptured,long sealedElapsed){
+            this(requestStarted,requestDeadline,aReadStarted,aReadCompleted,aCensusCaptured,bReadStarted,bReadCompleted,bCensusCaptured,sealedElapsed,false);
+        }
+        Timing(long requestStarted,long requestDeadline,long aReadStarted,long aReadCompleted,long aCensusCaptured,
+                long bReadStarted,long bReadCompleted,long bCensusCaptured,long sealedElapsed,boolean completingInFlightPair){
             need(requestStarted>=0&&requestDeadline>requestStarted&&requestDeadline-requestStarted<=12000,"original 12s request bound");
             need(requestStarted<=aReadStarted&&aReadStarted<=aCensusCaptured&&aCensusCaptured<=aReadCompleted
                     &&aReadCompleted<=bReadStarted&&bReadStarted<=bCensusCaptured&&bCensusCaptured<=bReadCompleted
                     &&bReadCompleted<=sealedElapsed&&sealedElapsed<requestDeadline,"actual read/census/seal clock order");
-            need(bReadCompleted-requestStarted<10000&&bCensusCaptured-aCensusCaptured>=200,"original 10s settle and separated actual samples");
+            need((bReadCompleted-requestStarted<10000||(completingInFlightPair&&bReadStarted-requestStarted<10000))
+                    &&bCensusCaptured-aCensusCaptured>=200,"both reads must start within the settle window and remain separated");
             this.requestStarted=requestStarted;this.requestDeadline=requestDeadline;this.aReadStarted=aReadStarted;
             this.aReadCompleted=aReadCompleted;this.aCensusCaptured=aCensusCaptured;this.bReadStarted=bReadStarted;
             this.bReadCompleted=bReadCompleted;this.bCensusCaptured=bCensusCaptured;this.sealedElapsed=sealedElapsed;
@@ -51,7 +56,7 @@ final class NativeSearchPlanning {
             e.put("second_read_started_elapsed_ms",bReadStarted);e.put("second_read_completed_elapsed_ms",bReadCompleted);e.put("second_census_captured_elapsed_ms",bCensusCaptured);
             e.put("sealed_elapsed_ms",sealedElapsed);return NativeAppEvidence.immutableMap(e);}
         static Timing read(Map<String,Object> e){need(e.keySet().equals(NativeActionSnapshotCheck.keys("request_started_elapsed_ms,request_deadline_elapsed_ms,first_read_started_elapsed_ms,first_read_completed_elapsed_ms,first_census_captured_elapsed_ms,second_read_started_elapsed_ms,second_read_completed_elapsed_ms,second_census_captured_elapsed_ms,sealed_elapsed_ms")),"exact timing fields");
-            return new Timing(number(e,"request_started_elapsed_ms"),number(e,"request_deadline_elapsed_ms"),number(e,"first_read_started_elapsed_ms"),number(e,"first_read_completed_elapsed_ms"),number(e,"first_census_captured_elapsed_ms"),number(e,"second_read_started_elapsed_ms"),number(e,"second_read_completed_elapsed_ms"),number(e,"second_census_captured_elapsed_ms"),number(e,"sealed_elapsed_ms"));}
+            return new Timing(number(e,"request_started_elapsed_ms"),number(e,"request_deadline_elapsed_ms"),number(e,"first_read_started_elapsed_ms"),number(e,"first_read_completed_elapsed_ms"),number(e,"first_census_captured_elapsed_ms"),number(e,"second_read_started_elapsed_ms"),number(e,"second_read_completed_elapsed_ms"),number(e,"second_census_captured_elapsed_ms"),number(e,"sealed_elapsed_ms"),true);}
     }
 
     static final class EventMark {
@@ -167,7 +172,8 @@ final class NativeSearchPlanning {
      * encoding time grants observation freshness or an effect capability. */
     static byte[] encode(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
             Map<String,Object> binding,Timing timing,CaptureContext context)throws Exception{
-        NativeSearchRole role=checked(id,a,b,binding,timing);need(context!=null,"actual source context required");context.require(a,b,timing);
+        need(context!=null,"actual source context required");context.require(a,b,timing);
+        NativeSearchRole role=checked(id,a,b,binding,timing,context);
         Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",SCHEMA);e.put("capture_kind",KIND);
         e.put("observation_id",id);e.put("package",NativeAppGoal.XIAOMI_PACKAGE);e.put("binding",binding);e.put("timing",timing.evidence());
         e.put("first",snapshot(a));e.put("second",snapshot(b));e.put("role",role.evidence());e.put("source_context",context.evidence());
@@ -191,9 +197,9 @@ final class NativeSearchPlanning {
                 &&Boolean.FALSE.equals(e.get("generic_action_authority"))&&Boolean.FALSE.equals(e.get("completion_authority")),"planning kind cannot acquire pixel/action/completion authority");
         Map<String,Object> binding=object(e,"binding");need(equal(binding,expectedBinding),"receipt belongs to another Session identity");
         Timing timing=Timing.read(object(e,"timing"));NativeActionSnapshotCheck.Snapshot a=readSnapshot(object(e,"first")),b=readSnapshot(object(e,"second"));
-        String id=string(e,"observation_id");NativeSearchRole role=checked(id,a,b,binding,timing);
-        need(equal(role.evidence(),object(e,"role"))&&Boolean.valueOf(role.fullTreeEqual).equals(e.get("full_tree_equal")),"actual complete role/tree claims differ");
         CaptureContext context=CaptureContext.read(object(e,"source_context"));context.require(a,b,timing);
+        String id=string(e,"observation_id");NativeSearchRole role=checked(id,a,b,binding,timing,context);
+        need(equal(role.evidence(),object(e,"role"))&&Boolean.valueOf(role.fullTreeEqual).equals(e.get("full_tree_equal")),"actual complete role/tree claims differ");
         need(timing.sealedElapsed<=persistedElapsed&&persistedElapsed<timing.requestDeadline,"original persistence deadline exceeded");
         return new NativeSearchPlanning(id,owned,a,b,role,binding,timing,context,persistedElapsed);
     }
@@ -229,14 +235,20 @@ final class NativeSearchPlanning {
         persistedElapsed=original.persistedElapsed;publishedElapsed=now;this.publication=publication;
     }
     private static NativeSearchRole checked(String id,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,
-            Map<String,Object> binding,Timing timing){
+            Map<String,Object> binding,Timing timing,CaptureContext context){
         need(NativeAppEvidence.id(id)&&a!=null&&b!=null&&binding!=null&&timing!=null,"actual planning identity/timing required");
         requireBinding(binding);
         need(id.equals(a.env.get("origin_observation_id"))&&id.equals(b.env.get("origin_observation_id")),"census observation ID differs");
         for(Map.Entry<String,Object> e:binding.entrySet())need(a.env.containsKey(e.getKey())&&b.env.containsKey(e.getKey())
                 &&equalValue(e.getValue(),a.env.get(e.getKey()))&&equalValue(e.getValue(),b.env.get(e.getKey())),"census Session binding differs: "+e.getKey());
         need(number(a.env,"captured_elapsed_ms")==timing.aCensusCaptured&&number(b.env,"captured_elapsed_ms")==timing.bCensusCaptured,"census time was refreshed");
-        return NativeSearchRole.compare(a,b);
+        EventMark before=context.aBefore,after=context.sealed;
+        boolean contentOnly=after.unknown==before.unknown&&after.boundary==before.boundary
+                &&after.events-before.events==after.content-before.content;
+        NativeSearchRole role=contentOnly?NativeSearchRole.compareForPlanning(a,b):NativeSearchRole.compare(a,b);
+        if(timing.bReadCompleted-timing.requestStarted>=10000)
+            need(contentOnly&&role.fullPageSwap,"only a fully classified in-flight banner pair can use the publication margin");
+        return role;
     }
     Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema",SCHEMA);e.put("capture_kind",KIND);
         e.put("observation_id",id);e.put("package",packageName);e.put("receipt_sha256",receiptSha256);e.put("receipt_bytes",receiptBytes);

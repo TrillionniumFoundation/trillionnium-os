@@ -3348,14 +3348,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     waitNativeSearchSample(request,first.captured+200);
                     request.phase="planning_second_graph";second=readNativeSearchSample(request);
                     request.lastCompletePair=new NativeSearchPair(first,second);
-                    if(second.readCompleted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
+                    boolean completingInFlightPair=second.readCompleted-request.started>=10000;
+                    if(completingInFlightPair&&second.readStarted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
                     NativeSearchPlanning.Timing timing=new NativeSearchPlanning.Timing(request.started,request.deadline,
-                            first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime());
+                            first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime(),completingInFlightPair);
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
                             first.before,first.after,second.before,second.after,request.events.mark());
-                    noteNativeSearchSamplingAnchor(request,first,second,timing,context);
+                    if(!completingInFlightPair)noteNativeSearchSamplingAnchor(request,first,second,timing,context);
                     try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
+                        if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
                         request.loadingRetryClassification=null;request.loadingRetryIdentity=null;
                         if(request.retrySubmission==null&&request.samplingSubmission==null){
