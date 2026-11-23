@@ -44,7 +44,7 @@ def main():
     files += [process, os_fake]
     extraction['ordinary_android_uid_io_fake'] = {'uid': 10481, 'host_uid_mapped': os.getuid(), 'not_android_permission_proof': True}
     files += [source / 'tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java', source / 'tests/completion/TaskCompletionGateHostTest.java']
-    files += [source / 'tests/completion/NotesNamedReopenTest.java']
+    files += [source / 'tests/completion/NotesNamedReopenTest.java', source / 'tests/completion/NotesOpaqueEditorHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesTaskPhaseHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesListProvenanceHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesRecoveryHostTest.java']
@@ -80,6 +80,7 @@ def main():
         ('compile', compiler + flags + ['-encoding', 'UTF-8', lint, '-Werror', '-d', str(classes), *map(str, files)]),
         ('actual-completion', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.TaskCompletionGateHostTest', str(out / 'cases')]),
         ('notes-quoted-save-reopen', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesNamedReopenTest']),
+        ('notes-opaque-created-editor', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesOpaqueEditorHostTest']),
         ('notes-task-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesTaskPhaseHostTest', str(phase_fixture), str(out / 'notes-task-phase')]),
         ('notes-task-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-phase/grammar-cases.json')]),
         ('notes-list-provenance', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesListProvenanceHostTest', str(list_fixture)]),

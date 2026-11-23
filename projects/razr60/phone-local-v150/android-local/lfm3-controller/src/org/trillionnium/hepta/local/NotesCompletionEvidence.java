@@ -218,6 +218,77 @@ public final class NotesCompletionEvidence {
         return new ListEvidence(null,item,rule,matchedSource);
     }
 
+    /** The known installed editor is open, but the WebView has published no text child.
+     * This is presentation evidence only. It never proves the requested text. */
+    static boolean opaqueEditor(Frame frame,Installed installed){
+        if(!installedValid(installed)||!observedSingleBase(installed)||frameError(frame)!=null||frame.displayId<=0)return false;
+        Node context=null,title=null;
+        for(Node n:frame.nodes){
+            if(!NOTES.equals(n.packageName)||n.editable||n.password||!nativePath(n.nativeTreePath))return false;
+            if("NoteEditor".equals(n.text)){
+                if(context!=null||!n.enabled||n.clickable||!validBounds(n)
+                        ||!"android.webkit.WebView".equals(n.className)||!isSha(n.observedAppTreeSignature))return false;
+                context=n;
+            }
+            if((NOTES+":id/title").equals(n.viewId)){
+                if(title!=null||!"标题".equals(n.text)||!"android.widget.TextView".equals(n.className)
+                        ||!n.enabled||!validBounds(n))return false;
+                title=n;
+            }
+            if((NOTES+":id/note_item_content").equals(n.viewId)||(NOTES+":id/note_summary").equals(n.viewId))return false;
+        }
+        if(context==null||title==null||title.bottom>context.top)return false;
+        for(Node n:frame.nodes)if(n.nativeTreePath.startsWith(context.nativeTreePath+"/"))return false;
+        return true;
+    }
+
+    /** The visible order is measured from the native RecyclerView's child paths.
+     * Raw note text remains in its original local AX observations. */
+    static List<String> orderedSummaryDigests(Frame frame){
+        if(frameError(frame)!=null||frame.displayId<=0)return Collections.emptyList();
+        Node grid=null;int titles=0,pagers=0;
+        for(Node n:frame.nodes){
+            if(!NOTES.equals(n.packageName)||n.editable||n.password||"NoteEditor".equals(n.text))return Collections.emptyList();
+            if((NOTES+":id/title_text").equals(n.viewId)&&"所有笔记".equals(n.text)&&n.enabled&&validBounds(n))titles++;
+            if((NOTES+":id/view_pager2").equals(n.viewId)&&n.scrollable&&n.enabled&&validBounds(n))pagers++;
+            if((NOTES+":id/note_grid").equals(n.viewId)){
+                if(grid!=null||!"androidx.recyclerview.widget.RecyclerView".equals(n.className)||!nativePath(n.nativeTreePath)
+                        ||!n.enabled||!validBounds(n))return Collections.emptyList();
+                grid=n;
+            }
+        }
+        if(grid==null||titles!=1||pagers!=1)return Collections.emptyList();
+        List<String> entries=new ArrayList<String>();
+        for(Node item:frame.nodes){
+            if(!(NOTES+":id/note_item_content").equals(item.viewId))continue;
+            if(!item.enabled||!item.clickable||!validBounds(item)||!inside(item,grid)
+                    ||!(grid.nativeTreePath+"/"+entries.size()).equals(item.nativeTreePath))return Collections.emptyList();
+            String found=null;
+            for(Node summary:frame.nodes){
+                if(!(NOTES+":id/note_summary").equals(summary.viewId)||summary.nativeTreePath==null
+                        ||!summary.nativeTreePath.startsWith(item.nativeTreePath+"/"))continue;
+                ObservedChildText.Source src=summarySource(item,summary.text);
+                if(found!=null||!summary.enabled||!validBody(summary.text)||summary.text.length()>=95
+                        ||summary.text.endsWith("…")||src==null||!"text".equals(src.property)
+                        ||!(item.nativeTreePath+"/"+src.descendantPath).equals(summary.nativeTreePath))return Collections.emptyList();
+                found=src.textSha256;
+            }
+            if(found==null)return Collections.emptyList();
+            entries.add(found);
+        }
+        return entries.size()>=3&&new HashSet<String>(entries).size()>=2
+                ?Collections.unmodifiableList(entries):Collections.<String>emptyList();
+    }
+
+    static boolean insertedAtHead(List<String> before,Frame after,String body){
+        if(before==null||before.size()<3||before.contains(sha(body)))return false;
+        List<String> visible=orderedSummaryDigests(after);
+        if(visible.size()<3||visible.size()>before.size()+1||visible.size()<before.size()
+                ||!sha(body).equals(visible.get(0))||!list(after,body).matched)return false;
+        for(int i=1;i<visible.size();i++)if(!visible.get(i).equals(before.get(i-1)))return false;
+        return true;
+    }
+
     private static ObservedChildText.Source summarySource(Node node,String body){
         ObservedChildText.Result child=node.childText;
         if(!(NOTES+":id/note_item_content").equals(node.viewId)||!node.text.isEmpty()

@@ -3,85 +3,27 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "r37_native_shopping_preview_and_first_notes_census",
-  "complete_source_files": 2495,
+  "candidate_status": "notes_created_editor_list_readback",
+  "complete_source_files": 2496,
   "current_successor_delta": {
-    "baseline": "07b9648b9189ad8cb3d4c3f7c66eaf875a585325",
-    "integrated_topics": [
-      {
-        "head": "54b158ea2fb21bf687ea39f99dbdc4233effefd2",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-          "src/org/trillionnium/hepta/local/LocalTaskController.java",
-          "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-          "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-          "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-          "src/org/trillionnium/hepta/local/TaskAuthorization.java",
-          "tests/native-app-routing/prepare_native_entry.py",
-          "tests/native-auto-target/AutomaticTargetHostTest.java",
-          "tests/native-ctrip-form-observation/run_observer_host.py",
-          "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
-          "tests/native-xiaomi-budget-preview/run_host.py",
-          "tests/native-xiaomi-product/run_host.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "fe8a7477ed0e5401ba2645a8176e60393b372a0368bd36b6c347e7b921c03462"
-      },
-      {
-        "head": "801cb7b5ffdbf4950420593605573abcdbc1abf3",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-          "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-          "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-          "tests/notes-after-release-reader/run_host.py",
-          "tests/notes-task-info-reader/8a2c-first-failure.json",
-          "tests/notes-task-info-reader/NotesTaskInfoReaderHostTest.java",
-          "tests/notes-task-info-reader/first_root_history.py",
-          "tests/notes-task-info-reader/run_host.py",
-          "tests/owned-single-task/run_host.py",
-          "tests/profile-permission-ready-confirmation/late_ready_history.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "016a3a7c50f2f334755230b40b66a7d9e8faa124e10b37089d24d349572af9ef"
-      }
-    ],
+    "baseline": "6379598d8536699a1e677723ce02e78673b13d5f",
     "original_case_assertions_preserved": true,
     "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
       "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "src/org/trillionnium/hepta/local/TaskAuthorization.java"
+      "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+      "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+      "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
+      "src/org/trillionnium/hepta/local/TaskCompletionGate.java"
     ],
     "test_changed_paths": [
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
-      "tests/native-xiaomi-budget-preview/run_host.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/notes-after-release-reader/run_host.py",
-      "tests/notes-task-info-reader/8a2c-first-failure.json",
-      "tests/notes-task-info-reader/NotesTaskInfoReaderHostTest.java",
-      "tests/notes-task-info-reader/first_root_history.py",
-      "tests/notes-task-info-reader/run_host.py",
-      "tests/owned-single-task/run_host.py",
-      "tests/profile-permission-ready-confirmation/late_ready_history.py",
-      "tools/run_host_checks.py"
+      "tests/completion/NotesOpaqueEditorHostTest.java",
+      "tests/completion/run_host_tests.py"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "475b4938367ad1cb9daf19618cbbca98ad7f6a8bf7d9aae30451bb111539d54c"
+    "previous_manifest_sha256": "41d31b81574e859952684f070d73814bb306630740bc231dc81305f0e06a84b1"
   },
   "files": [
     {
@@ -6670,9 +6612,9 @@
       "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
-      "bytes": 284346,
+      "bytes": 285865,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "60de7a4136d80498ebf6e729b09db11210fc05137da180bf2c4552e29416a219"
+      "sha256": "2985c83efcc2669765f669f2c4eeeb393e0eb9f9509fd24222e4f3e922b0e4a9"
     },
     {
       "bytes": 59396,
@@ -6820,14 +6762,14 @@
       "sha256": "4384a396b76a429e4c393f0a31b18587f24c767e19c7c35b0f02bb2ffd774e54"
     },
     {
-      "bytes": 21274,
+      "bytes": 25765,
       "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
-      "sha256": "2a0962c9e6050d0e0282333636aa71bf3c6fe30b502d1848c26751617f699ba9"
+      "sha256": "4d3b0b1f8fb96d98ba71576404f9d4c73e6bac08fd90ae1b93f6c54fa02bdbf5"
     },
     {
-      "bytes": 22766,
+      "bytes": 26713,
       "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
-      "sha256": "15a934bb9ad19c1e3eeafdeb225a9863d990a01fd0d9f95ce323da980f4ddf64"
+      "sha256": "358fcb5c3ce0c285aecb3deccd7ce4a8e708cacf0d0e3ea42ba6f3f6562cb1db"
     },
     {
       "bytes": 14857,
@@ -6835,9 +6777,9 @@
       "sha256": "669c720643a45dc1ced6b1b187ea5210fd4331044c075d4e39f98b927b144eff"
     },
     {
-      "bytes": 15478,
+      "bytes": 16200,
       "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
-      "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
+      "sha256": "f58ee2d03528521cc4c2e0a6eccb1eaccbcd2bf223464f70fe565bae73f9100d"
     },
     {
       "bytes": 21252,
@@ -7085,9 +7027,9 @@
       "sha256": "fe9b0717a548735d0e576dfad675deb9b91b41f0c17b3adfd310ed453a664c7b"
     },
     {
-      "bytes": 63783,
+      "bytes": 67064,
       "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "sha256": "944909571b2adf9c23ee5bac950cec13d27f5bb31c31a2a6e33c782d7853ef71"
+      "sha256": "4bf400aa7d04efd67cf4ca67ca69cf40186b42781936660ce3cac0699f82d36a"
     },
     {
       "bytes": 1398,
@@ -7860,6 +7802,11 @@
       "sha256": "c4462a30fffbe8ae96208f4c087f431643a71147d02be67c8332694ac7cbbfb6"
     },
     {
+      "bytes": 13582,
+      "path": "tests/completion/NotesOpaqueEditorHostTest.java",
+      "sha256": "2d14094896611917d3222594784a689fdef1b0b79e7503ce6bad983f147bda4b"
+    },
+    {
       "bytes": 51609,
       "path": "tests/completion/TaskCompletionGateHostTest.java",
       "sha256": "126452bab9fc057612a329c4f777b8e02f0814df306d4050b989a3961a305af2"
@@ -7895,9 +7842,9 @@
       "sha256": "8dab056051467bf29fd37f42a0793450cd631d7ac965c49a2c83d435d34249f2"
     },
     {
-      "bytes": 9685,
+      "bytes": 9875,
       "path": "tests/completion/run_host_tests.py",
-      "sha256": "d311a65f030de153357ab06873b8d3fb1dc7f1d720784a81c3a9852811b4929c"
+      "sha256": "40fcde787db1f8a61fe4be9cc295c87a0ec781dfc2cfb3e4e84ab22db43cd136"
     },
     {
       "bytes": 22278,
@@ -12556,9 +12503,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "4a7548e0ffccf001ccd3046ce83faa61020934ce",
+    "previous_component_git_tree_sha1": "4b7c6fd62a467f0ca300b13b6d58764908f0810e",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "475b4938367ad1cb9daf19618cbbca98ad7f6a8bf7d9aae30451bb111539d54c"
+    "previous_manifest_sha256": "41d31b81574e859952684f070d73814bb306630740bc231dc81305f0e06a84b1"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12567,12 +12514,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "56c2edbba953d973ec41bddf71916311fb81942c5bfc3bab4b93fa762db95a72",
+  "production_input_map_sha256": "f6b95fdeadade4f9364b37ca6de4059ab91f65fc887af328d3ac885d9df24bc8",
   "schema": "hepta.local-source.v3",
-  "scope": "Recognize bounded product-price requests in the native app and stop at verified detail. During personal Notes startup, repeat one complete, read-only root census only when its original action-free ownership checks prove a compatible transition.",
-  "source_parent_head": "07b9648b9189ad8cb3d4c3f7c66eaf875a585325",
-  "source_parent_manifest_sha256": "475b4938367ad1cb9daf19618cbbca98ad7f6a8bf7d9aae30451bb111539d54c",
-  "source_snapshot_predecessor_manifest_sha256": "475b4938367ad1cb9daf19618cbbca98ad7f6a8bf7d9aae30451bb111539d54c",
+  "scope": "Allow one original-workflow return from a stable new Moto Notes editor that has no accessibility text child. Require an independently read new list head with unchanged prior rows before reopening. Full completion still requires the verified reopened body and stable readback.",
+  "source_parent_head": "6379598d8536699a1e677723ce02e78673b13d5f",
+  "source_parent_manifest_sha256": "41d31b81574e859952684f070d73814bb306630740bc231dc81305f0e06a84b1",
+  "source_snapshot_predecessor_manifest_sha256": "41d31b81574e859952684f070d73814bb306630740bc231dc81305f0e06a84b1",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
