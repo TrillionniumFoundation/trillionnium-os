@@ -61,6 +61,7 @@ def main():
         paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
         paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","OBSERVE-CASE-CONTRACT.json","README.md"))
         paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
+        paths.add(ROOT/"tests/background-broker/535-close-reply.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))

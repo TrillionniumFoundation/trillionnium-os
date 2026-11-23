@@ -4,7 +4,7 @@
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
   "candidate_status": "r41_owned_display_and_search",
-  "complete_source_files": 2509,
+  "complete_source_files": 2511,
   "current_successor_delta": {
     "baseline": "ce5bc3e27f2f0b2e355ff9b96d360addde71933b",
     "integrated_topics": [
@@ -57,6 +57,17 @@
           "tests/public-profile-business-recovery/run_host.py"
         ],
         "source_manifest_sha256": "3e02619748d279d82123844a6e1f081892923c4bdb7a31582c2375fb5b7cbce5"
+      },
+      {
+        "head": "3d8d9d68bd23b6fc59136490758ec4dbb0b46eb7",
+        "reviewed_paths": [
+          "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+          "tests/background-broker/535-close-reply.json",
+          "tests/background-broker/BrokerCloseReplyHost.template",
+          "tests/background-broker/run_host_checks.py",
+          "tools/run_host_checks.py"
+        ],
+        "source_manifest_sha256": "8dbe5ce8ec05f850bdced2d7173e725d064b0857bed137fad37c6586452124f6"
       }
     ],
     "original_case_assertions_preserved": true,
@@ -77,6 +88,9 @@
       "src/org/trillionnium/hepta/local/NativeSearchSession.java"
     ],
     "test_changed_paths": [
+      "tests/background-broker/535-close-reply.json",
+      "tests/background-broker/BrokerCloseReplyHost.template",
+      "tests/background-broker/run_host_checks.py",
       "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
       "tests/native-search-producer/1d0e0e-navigation-censuses.json",
       "tests/native-search-producer/2a5063-navigation-censuses.json",
@@ -6274,9 +6288,9 @@
       "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
     },
     {
-      "bytes": 143966,
+      "bytes": 145408,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "a79063a237ecffb4f0accc6aab3a7f8bbfde2809eaab79a5085602172c8bbd59"
+      "sha256": "18c05f0f7bb1ab6ecb5dfe3413c9ff1e4ae9f641bb3915c1fb358917967a0099"
     },
     {
       "bytes": 25279,
@@ -7654,6 +7668,16 @@
       "sha256": "89b62d64d2d3d321aba20005d8cd788bc1664856b032d456a37734f332ec0743"
     },
     {
+      "bytes": 1478,
+      "path": "tests/background-broker/535-close-reply.json",
+      "sha256": "251696da23360e7212b7095763f088a7d3d09414de50286f1cf9aaa86f83879f"
+    },
+    {
+      "bytes": 4081,
+      "path": "tests/background-broker/BrokerCloseReplyHost.template",
+      "sha256": "7e88c2b456a3bae20f29bbea0af1fc009b0a8231ffebf17343cd1a964d093d7d"
+    },
+    {
       "bytes": 16222,
       "path": "tests/background-broker/BrokerProtocolHostTest.java",
       "sha256": "a78199b1744c56d69478c00f6753b6e551dbbb618977fcf16bc07ffaccf9a565"
@@ -7664,9 +7688,9 @@
       "sha256": "59c0655e0eae7e1242eac2cc2f1ca3746f52797c6ca37873607fbc9bc66bd298"
     },
     {
-      "bytes": 9998,
+      "bytes": 13226,
       "path": "tests/background-broker/run_host_checks.py",
-      "sha256": "11ee4cfcddd250dcd420a124a1b5c52b81c0ec67923ba6f0ce21dc1494873a31"
+      "sha256": "aa681d9786566f7a17db7ab9058ae4d1cbac8826ed28b80c2e02e0445ca3eb85"
     },
     {
       "bytes": 3268,
@@ -12434,9 +12458,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 67507,
+      "bytes": 67578,
       "path": "tools/run_host_checks.py",
-      "sha256": "39124065d63d5b011f6c320ecea05fc87366fbc457dcfc7148a02e4f992ff909"
+      "sha256": "c49fd1742d3d09dcb4ec61453e83a671e20db21f4e56a91591cf27b30ecaccb8"
     },
     {
       "bytes": 13873,
@@ -12656,9 +12680,9 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "c3a0555ab31935effe171e9942ea4a00e16c7bf92bbf3f666a524b09cbbad85f",
+  "production_input_map_sha256": "d459058e0138b2b98693a076b9981984578dbcbde1982d63889ecce9f6449d21",
   "schema": "hepta.local-source.v3",
-  "scope": "Run the Xiaomi work-profile search entry on the verified virtual display and recover a formerly retained, empty managed-profile display through its original owner after sealing the initial uncertainty. Recover and preserve the genuine failed model outcome after an observed released broker loses its normal close reply.",
+  "scope": "Run the Xiaomi work-profile search entry on the verified virtual display and recover a formerly retained, empty managed-profile display through its original owner after sealing the initial uncertainty. Recover and preserve the genuine failed model outcome after an observed released broker loses its normal close reply. Allow the original verified close response to flush after a completed cleanup and reject stale screen-monitor shutdowns.",
   "source_parent_head": "ce5bc3e27f2f0b2e355ff9b96d360addde71933b",
   "source_parent_manifest_sha256": "aaa1d3dc97a5dc447019214aa722fdcada05572119c4c4318c003e476385f527",
   "source_snapshot_predecessor_manifest_sha256": "aaa1d3dc97a5dc447019214aa722fdcada05572119c4c4318c003e476385f527",
