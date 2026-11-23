@@ -34,6 +34,7 @@
         check(!service.nativeSearchAllowsLegacyObservation(service.lease)&&f.effects==0,"recovery proof grants no old observer or effect");return request;
     }
     static void loadingRetryCases(String[] args)throws Exception{
+        progressHomeCases();
         one("loading_transition_one_drained_successor_has_two_new_censuses_and_one_later_effect",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchRequest old=loadingRetryReady(s,f);NativeSearchReadRetryProof proof=f.retryProof;

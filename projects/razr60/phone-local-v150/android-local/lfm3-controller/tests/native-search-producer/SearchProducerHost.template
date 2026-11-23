@@ -144,7 +144,16 @@ public final class HeptaAccessibilityService {
     AccessibilityNodeInfo selectedRoot(BackgroundSession background,GraphBudget budget){
         checkReadBudget(budget);background.requireActive();if(fixture.rootMissing)throw new NoActiveWindow();return new AccessibilityNodeInfo(fixture.nodes.get("0"));
     }
-    static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){return ObservedScrollActions.observed(node.isScrollable()?Arrays.asList("forward","backward"):Collections.<String>emptyList());}
+    static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){
+        if(node.data.owner.fixture.recordedPlanningNodes){
+            String raw=node.s("scroll_actions");
+            if("hepta.observed-scroll-actions.v1|observed".equals(raw))return ObservedScrollActions.observed(Collections.<String>emptyList());
+            if("hepta.observed-scroll-actions.v1|observed|forward".equals(raw))return ObservedScrollActions.observed(Collections.singletonList("forward"));
+            if("hepta.observed-scroll-actions.v1|observed|forward|backward".equals(raw))return ObservedScrollActions.observed(Arrays.asList("forward","backward"));
+            throw new AssertionError("unrecognized recorded scroll action");
+        }
+        return ObservedScrollActions.observed(node.isScrollable()?Arrays.asList("forward","backward"):Collections.<String>emptyList());
+    }
     static ObservedImeEnter readImeEnter(AccessibilityNodeInfo node){
         return ObservedImeEnter.ABSENT.fingerprintInput().equals(node.value("ime_enter"))?ObservedImeEnter.ABSENT:ObservedImeEnter.UNKNOWN;
     }
@@ -163,6 +172,7 @@ public final class HeptaAccessibilityService {
     }
     // Actual authorization and all expected/current object identities are set via the shared real Session fixture.
     final class Fixture implements AutoCloseable {
+        boolean recordedPlanningNodes;
         final NativeSearchSessionHostTest.Fixture base;final File directory;final Map<String,NodeData> nodes=new LinkedHashMap<String,NodeData>();
         NativeActionSnapshotCheckHostTest.Fixture values;NativeSearchPlanning planning;String error;ActionOutcome outcome;NativeSearchReadRetryProof retryProof;String retryDetail;
         int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
