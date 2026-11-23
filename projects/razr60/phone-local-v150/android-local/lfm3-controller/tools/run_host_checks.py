@@ -79,6 +79,7 @@ def main():
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
+        paths.add(ROOT/"tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json")
         paths.add(ROOT/"tests/native-auto-target/fixtures/legacy-ctrip-gui.json")
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
@@ -592,6 +593,8 @@ final class NativeCalendarDateIntent {
             "--source",ROOT,"--output",out/"ctrip-form-observation","--java-home",java_home,"--json-jar",json_jar])
         run("ctrip-startup-promotion",[sys.executable,"-B",ROOT/"tests/native-ctrip-promotion/run_host.py",
             "--out",out/"ctrip-startup-promotion","--java-home",java_home,"--json-jar",json_jar])
+        run("ctrip-login-return-calendar-minimum",[sys.executable,"-B",ROOT/"tests/native-ctrip-login-form-terminal/run_host.py",
+            "--source",ROOT,"--output",out/"ctrip-login-return-calendar-minimum","--java-home",java_home,"--json-jar",json_jar])
         run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",
             "--source",ROOT,"--output",out/"public-profile-terminal-bridge","--java-home",java_home,"--json-jar",json_jar])
         bridge_raw=(out/"public-profile-terminal-bridge/RESULT.json").read_bytes()

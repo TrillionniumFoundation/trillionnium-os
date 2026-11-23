@@ -191,6 +191,16 @@ def generate(source,output,h):
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
+        if name=='NativeCtripFlightPage.java' and actual=='8f848806d0761d1ba33c9a1f8030bb2bacb385c7ae534992daa88349705821cb':
+            # This added reader is independent of the earlier form observer.
+            # Removing its sole block must reproduce every byte of its original provider.
+            start=b'        /** Exact displayed fare strip only.'
+            end=b'        LocalDate displayedMonthDay('
+            if current.count(start)!=1 or current.count(end)!=1:raise RuntimeError('calendar minimum reader boundaries')
+            prior=current[:current.index(start)]+current[current.index(end):]
+            if h.sha(prior)!=r32_provider_pins[name]:raise RuntimeError('calendar minimum reader must reverse to R32 provider')
+            protected_files[name]=actual
+            continue
         if name in r32_provider_pins and actual==r32_provider_pins[name]:
             protected_files[name]=actual
             continue
