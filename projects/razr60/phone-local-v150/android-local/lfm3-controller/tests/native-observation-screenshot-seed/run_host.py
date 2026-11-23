@@ -385,7 +385,7 @@ def main():
         need(cases['all_pass'] is True and len(cases['case_names']) == len(set(cases['case_names'])) == cases['cases'], 'complete unique passing event cases required')
         need(new['all_pass'] is True and new['original_cases'] == 238 and new['original_assertions'] == 3671,
              'all original 238 cases and 3670 assertions plus the reviewed before-accept assertion must execute')
-        need(new['new_cases'] == len(new['new_case_names']) == 33 and all(name.startswith('screenshot_seed_') for name in new['new_case_names'])
+        need(new['new_cases'] == len(new['new_case_names']) == 35 and all(name.startswith('screenshot_seed_') for name in new['new_case_names'])
              and cases['cases'] == new['original_cases'] + new['new_cases']
              and cases['assertions'] == new['original_assertions'] + new['new_assertions'], 'independent seed case accounting differs')
         result.update(all_pass=True, cases=cases['cases'], assertions=cases['assertions'], original_cases=new['original_cases'],

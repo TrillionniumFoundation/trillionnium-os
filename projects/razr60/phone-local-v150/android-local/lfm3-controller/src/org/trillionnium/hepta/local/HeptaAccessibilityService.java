@@ -2464,6 +2464,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
                     failPostEffectObservationAfterReadDrain(request,"操作后页面仍在变化，当前截图未发布");return;
                 }
+                // A discarded post-navigation screenshot requires a new pair even when it seeds
+                // the first sample. Starting another Binder read cannot satisfy a sub-gap budget.
+                long remaining=request.deadline-SystemClock.elapsedRealtime();
+                if(request.postEffectController!=null&&remaining<=ObservationStabilityGate.SAMPLE_GAP_MS){
+                    failObservation(request,"操作后的页面仍在变化，本次观察剩余时间不足以重新采样");return;
+                }
                 retryObservation(request,200,seed);return;
             }
             if(eventsRechecked)request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RECHECKED);
