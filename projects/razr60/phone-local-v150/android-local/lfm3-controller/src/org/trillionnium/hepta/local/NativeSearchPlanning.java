@@ -32,6 +32,12 @@ final class NativeSearchPlanning {
     final long publishedElapsed;
 
     static final long INITIAL_READ_LIMIT_MS=30000;
+    static final long NAVIGATION_LIMIT_MS=24000;
+    static final long FINAL_CENSUS_MAX_AGE_MS=8000;
+    static long navigationDeadline(long started,long chainDeadline){
+        need(started>=0&&chainDeadline>started,"live original navigation chain required");
+        return started+Math.min(chainDeadline-started,NAVIGATION_LIMIT_MS);
+    }
     static long initialReadDeadline(long started,long chainDeadline){
         need(started>=0&&chainDeadline>=0,"original elapsed planning deadlines required");
         long end=started>Long.MAX_VALUE-INITIAL_READ_LIMIT_MS?Long.MAX_VALUE:started+INITIAL_READ_LIMIT_MS;

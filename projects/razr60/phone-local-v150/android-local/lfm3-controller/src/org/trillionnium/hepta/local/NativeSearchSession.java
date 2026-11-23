@@ -198,7 +198,7 @@ final class NativeSearchSession {
                         &&planning.id.equals(decision.observationId)&&planning.packageName.equals(decision.packageName)
                         &&planning.role.roleId.equals(decision.roleId),"new real model intent must select this exact Offer");
                 need(started>=planning.persistedElapsed&&started-planning.capturedElapsed<=90000&&deadline>started
-                        &&deadline-started<=8000&&deadline<=session.chainDeadlineElapsed,"original observation age/8s action/task deadline");
+                        &&deadline<=NativeSearchPlanning.navigationDeadline(started,session.chainDeadlineElapsed),"original observation age and bounded navigation deadline");
                 session.authorization.checkNativeSearchIntent(session.selection,session.goal,modelRunId,planning.id,planning.role.roleId);
                 value=new Attempt(this,decision,modelRunId,started,deadline);session.attempted=value;
             }
@@ -210,7 +210,7 @@ final class NativeSearchSession {
     static final class Attempt {
         final NativeSearchSession session;final Offer offer;final NativeSearchDecision decision;
         final String modelRunId;final long startedElapsed,deadlineElapsed;
-        private int state;private boolean claimed,closedForSuccessor,finalCensusResampled;private NativeSearchRole revalidation;private long revalidatedElapsed;
+        private int state;private boolean claimed,closedForSuccessor,finalCensusResampled;private NativeSearchRole revalidation;private long revalidatedElapsed,latestCensusElapsed=-1;
         private NativeSearchRole.RejectedBannerMotion bannerRefusal;
         private Attempt(Offer offer,NativeSearchDecision decision,String run,long started,long deadline){
             this.offer=offer;session=offer.session;this.decision=decision;modelRunId=run;startedElapsed=started;deadlineElapsed=deadline;
@@ -242,7 +242,7 @@ final class NativeSearchSession {
                 throw refused;
             }
             offer.planning.role.requireSameRole(proof);
-            synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"one full current C/D proof only");revalidation=proof;revalidatedElapsed=now;}
+            synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"one full current C/D proof only");revalidation=proof;revalidatedElapsed=now;latestCensusElapsed=d;}
             return proof;
         }
         /** Only HA's actual final preclaim content fence may discard its old
@@ -257,7 +257,7 @@ final class NativeSearchSession {
             synchronized(this){
                 need(state==0&&!claimed&&!closedForSuccessor&&!finalCensusResampled&&revalidation==previous,
                         "old proof must remain current and unclaimed through discard");
-                finalCensusResampled=true;revalidation=null;revalidatedElapsed=-1;
+                finalCensusResampled=true;revalidation=null;revalidatedElapsed=-1;latestCensusElapsed=-1;
             }
         }
         /** Must be adjacent to the shared ActionExecutionState.enterEffect;
@@ -281,7 +281,15 @@ final class NativeSearchSession {
             synchronized(this){need(state==2&&!claimed&&closedForSuccessor&&(revalidation!=null||bannerRefusal!=null),
                     "old search Attempt was not irrevocably closed for one successor");}
         }
-        void claim(long now){requireLive(now);synchronized(this){need(state==0&&!claimed&&revalidation!=null&&now>=revalidatedElapsed,"one fresh revalidated search claim required");state=1;claimed=true;}}
+        synchronized void requireFreshFinalCensus(long now){
+            need(state<2&&revalidation!=null&&latestCensusElapsed>=startedElapsed&&now>=revalidatedElapsed
+                    &&now<deadlineElapsed&&now-latestCensusElapsed<NativeSearchPlanning.FINAL_CENSUS_MAX_AGE_MS,
+                    "the final complete search census must still be fresh for the original effect");
+        }
+        void claim(long now){
+            requireLive(now);synchronized(this){requireFreshFinalCensus(now);
+                need(state==0&&!claimed,"one fresh revalidated search claim required");state=1;claimed=true;}
+        }
         synchronized void close(){state=2;}
         synchronized Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-attempt.v1");
             e.put("task_id",session.taskId);e.put("model_run_id",modelRunId);e.put("action",decision.evidence());e.put("planning_receipt_sha256",offer.planning.receiptSha256);

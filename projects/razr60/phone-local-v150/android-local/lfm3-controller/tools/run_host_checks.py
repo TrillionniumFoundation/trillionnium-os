@@ -76,6 +76,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/profile-permission-transient/fixtures").rglob("*") if p.is_file())
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
+        paths.add(ROOT/"tests/native-search-producer/2a5063-navigation-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/1d0e0e-navigation-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/r38-planning-captures.json")
