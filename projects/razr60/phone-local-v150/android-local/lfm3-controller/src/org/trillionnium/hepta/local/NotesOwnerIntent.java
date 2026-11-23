@@ -26,6 +26,12 @@ public final class NotesOwnerIntent {
     private static final String PREFIX = "(?:记一下|记录一下|记个笔记|记一条笔记|新建(?:一条|一个)?(?:笔记|备忘录))[：:]";
     private static final String QUOTED_NEW = "(?:新建|创建|写)(?:一条|一个|一则)?(?:笔记|备忘录)"
             + "[，,]?" + SPACE + "(?:正文|内容)(?:为|是)[：:]?" + SPACE;
+    private static final String APP_SAVE_PREFIX = SPACE + POLITE
+            + "(?:在" + SPACE + "(?i:Moto)" + SPACE + "笔记(?:里|中)" + SPACE + ")?"
+            + "(?:新建|创建)并保存(?:一条|一个|一则)?(?:笔记|备忘录)[，,]" + SPACE
+            + "(?:正文|内容)(?:为|是)[：:]?" + SPACE;
+    private static final String REOPEN_FROM_LIST = SPACE + "[，,]" + SPACE
+            + "(?:然后|随后)?从(?:笔记)?列表(?:中)?重新打开(?:并)?核对正文" + END;
     private static final String DESTINATION = "(?:记到|记在|写入|保存到)(?:备忘录|笔记)(?:里|中)?";
     // A colon is required here so the entire remaining source span is one body.
     private static final Pattern UNQUOTED_NEW_BODY = full(SPACE + POLITE
@@ -135,10 +141,11 @@ public final class NotesOwnerIntent {
                 SPACE + POLITE + PREFIX + SPACE + body + END,
                 SPACE + POLITE + QUOTED_NEW + body + END,
                 SPACE + POLITE + "把" + body + DESTINATION + END,
-                SPACE + body + "[，,]?记一下" + END
+                SPACE + body + "[，,]?记一下" + END,
+                APP_SAVE_PREFIX + body + REOPEN_FROM_LIST
             };
             String[] forms = {"quoted_note_prefix.v1", "quoted_new_note.v1",
-                    "quoted_note_destination.v1", "quoted_note_suffix.v1"};
+                    "quoted_note_destination.v1", "quoted_note_suffix.v1", "quoted_save_reopen_note.v1"};
             for (int i = 0; i < expressions.length; i++) {
                 Matcher match = full(expressions[i]).matcher(owner);
                 if (match.matches()) return candidate(owner, match, forms[i], true);

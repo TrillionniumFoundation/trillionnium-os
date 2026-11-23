@@ -3,68 +3,22 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "84589ef_successor_r30_r7_frozen_test_dependencies_repaired",
-  "complete_source_files": 2468,
+  "candidate_status": "notes_quoted_save_reopen_host_candidate",
+  "complete_source_files": 2469,
   "current_successor_delta": {
-    "baseline": "integrated-r29-r3",
-    "new_tests_do_not_claim_phone_success": true,
+    "baseline": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
     "original_case_assertions_preserved": true,
-    "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
-      "src/org/trillionnium/hepta/local/BackgroundAutoTargetPreferences.java",
-      "src/org/trillionnium/hepta/local/BackgroundAutoTargetResolver.java",
-      "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/MainActivity.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "src/org/trillionnium/hepta/local/RuntimeInferenceAdapter.java"
+      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java"
     ],
     "test_changed_paths": [
-      "tests/background-session/prepare_fixture.py",
-      "tests/exact-admission/prepare_fixture.py",
-      "tests/local-model-settings-visual/run_host.py",
-      "tests/native-action-integration/run_host.py",
-      "tests/native-app-provider/run_host.py",
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-app-routing/run_host.py",
-      "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
-      "tests/native-app/legacy-boundary/prepare_search_pure.py",
-      "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "tests/native-auto-target/host_ports.py",
-      "tests/native-auto-target/manual_boundary.py",
-      "tests/native-auto-target/run_host.py",
-      "tests/native-calendar-date-actions/run_host.py",
-      "tests/native-calendar-date-fresh/run_host.py",
-      "tests/native-calendar-runtime-adapter/NativeCalendarRuntimeAdapterHostTest.java",
-      "tests/native-calendar-runtime-adapter/run_host.py",
-      "tests/native-search-planning/host_closure.py",
-      "tests/native-search-producer/ProducerCases.fragment",
-      "tests/native-xiaomi-location/run_host.py",
-      "tests/notes-new-body/NotesNewBodyHostTest.java",
-      "tests/notes-new-body/run_host_tests.py",
-      "tests/profile-permission-launch-cookie-exit/ProfilePermissionLaunchCookieExitHostTest.java",
-      "tests/profile-permission-launch-cookie-exit/run_host.py",
-      "tests/public-profile-terminal-bridge/run_host.py",
-      "tests/qualification-scope/prepare_fixture.py",
-      "tests/qualification-scope/run_host_tests.py",
-      "tests/runtime-config-ui/run_host_tests.py",
-      "tests/xiaomi-profile/run_native_host.py"
+      "tests/completion/NotesNamedReopenTest.java",
+      "tests/completion/run_host_tests.py"
     ]
   },
   "current_test_dependency_repairs": {
-    "changed_paths": [
-      "tests/public-profile-terminal-bridge/run_host.py"
-    ],
-    "executed_by_this_integration": false,
-    "new_legacy_authority_endpoints_all_refuse": true,
-    "original_canonical_run_calls_ast_unchanged": true,
-    "original_java_case_assertions_unchanged": true,
-    "previous_manifest_sha256": "a9c2bf121cb7e9d4d65e11afb20e53b8323ceaceac84a214535347d213dc9d62",
-    "previous_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r30-r6/source",
-    "production_bytes_and_modes_unchanged": true
+    "changed_paths": [],
+    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
   },
   "files": [
     {
@@ -6813,9 +6767,9 @@
       "sha256": "15a934bb9ad19c1e3eeafdeb225a9863d990a01fd0d9f95ce323da980f4ddf64"
     },
     {
-      "bytes": 14272,
+      "bytes": 14857,
       "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "sha256": "7baf1d95aeeae3f58ebbfe7ec3eeba8b212b1487a509bd84ea87714c12006cb0"
+      "sha256": "669c720643a45dc1ced6b1b187ea5210fd4331044c075d4e39f98b927b144eff"
     },
     {
       "bytes": 15478,
@@ -7838,6 +7792,11 @@
       "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
+      "bytes": 4298,
+      "path": "tests/completion/NotesNamedReopenTest.java",
+      "sha256": "c4462a30fffbe8ae96208f4c087f431643a71147d02be67c8332694ac7cbbfb6"
+    },
+    {
       "bytes": 51609,
       "path": "tests/completion/TaskCompletionGateHostTest.java",
       "sha256": "126452bab9fc057612a329c4f777b8e02f0814df306d4050b989a3961a305af2"
@@ -7873,9 +7832,9 @@
       "sha256": "8dab056051467bf29fd37f42a0793450cd631d7ac965c49a2c83d435d34249f2"
     },
     {
-      "bytes": 9494,
+      "bytes": 9685,
       "path": "tests/completion/run_host_tests.py",
-      "sha256": "bcc35d7883c69bed10fe798fed4ef2702e76e03e25b1e414cab3c210a1531b12"
+      "sha256": "d311a65f030de153357ab06873b8d3fb1dc7f1d720784a81c3a9852811b4929c"
     },
     {
       "bytes": 22278,
@@ -12404,30 +12363,23 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "1786ff1eb981e24f35d3c542e7d9ad54023d0325",
+    "previous_component_git_tree_sha1": "34e5109e386a8ce1858f457b2e41c9f7c6affdab",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "ec31ca00026f956f75a4b5f2af6065387631b26b8bdfa12f8dcec385a3873ed6",
-    "previous_source": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/integrated-r29-r3/source"
+    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
   },
   "host_validation_at_preparation": {
-    "android_sdk_compile_passed_for_identical_production_inputs": true,
-    "android_sdk_result": {
-      "bytes": 39730,
-      "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/android-javac-preflight-r17/MAC-RESULT.json",
-      "sha256": "414894b3b1363a75617fe2cf6cf18d68b3fbce32660977b40f674b36029d91c9"
-    },
-    "current_merged_test_execution_pending": true,
-    "previous_compile_dependency_failures_preserved": true
+    "android_sdk_compile_passed_for_identical_production_inputs": false,
+    "current_host_execution": false
   },
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "df2b23546b288607ee94d549c6209443e08a50db4288dcb95c1b71cdf4efdb85",
+  "production_input_map_sha256": "91e473da0d4429ad58b8c29a8018fba6b0ddd8f37195ecb9a6fc6833f980d128",
   "schema": "hepta.local-source.v3",
-  "scope": "Exact successor to 84589ef. Integrates explicit automatic App-instance selection and per-target existing local-model settings transactions; literal natural new-note body recognition; exact retained background permission-to-HOME launch-cookie retirement; original RuntimeInferenceAdapter calendar-producer binding; one bounded full Xiaomi C/D resample after a typed preclaim content event. No deadline extension, claimed action replay, target substitution or main/cover-screen fallback. Includes reviewed additive tests and narrowly refusing legacy compiler shapes. Existing native runtime, models, network policy, task/profile/display ownership, input and cleanup contracts are retained. Isolated host passes are recorded separately; this freeze performs no merged tests, Android build, phone qualification or Git publication. The r30-r2 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained. The r30-r3 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained. The r30-r4 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained. The r30-r5 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained. The r30-r6 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained. The r30-r7 snapshot only repairs explicit legacy test compiler dependencies; the complete Android production input map remains byte-identical to the successful actual SDK compile. Original failed executions remain separate records. Original canonical run calls and Java case assertions are retained.",
-  "source_parent_head": "84589ef2d16e5660dc8753a7f3deb9b40c82854c",
-  "source_parent_manifest_sha256": "ec31ca00026f956f75a4b5f2af6065387631b26b8bdfa12f8dcec385a3873ed6",
-  "source_snapshot_predecessor_manifest_sha256": "a9c2bf121cb7e9d4d65e11afb20e53b8323ceaceac84a214535347d213dc9d62",
+  "scope": "Recognize a quoted request to create and save a note and reopen it from the list to verify its exact body, optionally naming Moto Notes.",
+  "source_parent_head": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
+  "source_parent_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
+  "source_snapshot_predecessor_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
