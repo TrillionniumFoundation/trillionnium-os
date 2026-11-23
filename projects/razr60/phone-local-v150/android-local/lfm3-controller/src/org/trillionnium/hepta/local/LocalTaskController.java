@@ -1730,15 +1730,30 @@ public final class LocalTaskController implements AutoCloseable {
                 long cleanupStarted=SystemClock.elapsedRealtime();
                 if(ready.await(1000,TimeUnit.MILLISECONDS)){
                     NativeSearchActionReply late=outcome.get();
-                    if(late!=null&&late.proof==null&&!late.outcome.accepted&&late.outcome.dispatched
+                    if(late!=null&&late.proof==null&&!late.outcome.accepted
                             &&attempt.session==activeNativeSearch&&id.equals(currentTaskId)&&!service.actionWorkPending()){
                         JSONObject execution=late.outcome.actionExecution;
                         JSONObject state=service.actionExecutionEvidence(id);
                         long now=SystemClock.elapsedRealtime();
                         int window=((Number)attempt.offer.planning.second.env.get("window_id")).intValue();
-                        if(retiredSearchDrain(execution,state,id,attempt.modelRunId,attempt.offer.planning.id,
+                        boolean dispatched=late.outcome.dispatched;
+                        java.util.Map<String,Object> originalAttempt=dispatched?null:attempt.evidence();
+                        if(retiredSearchDrain(execution,state,dispatched,id,attempt.modelRunId,attempt.offer.planning.id,
                                 attempt.session.authorization.authorization.sha256,attempt.session.nativeTask.generation,
-                                attempt.session.nativeTask.displayId,window,attempt.startedElapsed,attempt.deadlineElapsed,cleanupStarted,now)){
+                                attempt.session.nativeTask.displayId,window,attempt.startedElapsed,attempt.deadlineElapsed,cleanupStarted,now)
+                                &&(dispatched||unclaimedSearchAtDisposal(execution,attempt.offer.planning.receiptSha256,originalAttempt))){
+                            if(!dispatched){
+                                try{
+                                    record(directory,"native-search-retired-without-input.json",new JSONObject()
+                                            .put("schema","hepta.native-search-retired-without-input.v1")
+                                            .put("callback_execution",execution).put("execution",state)
+                                            .put("attempt_at_disposal",new JSONObject(originalAttempt))
+                                            .put("callback_dispatched",false).put("navigation_verified",false)
+                                            .put("retirement_wait_started_elapsed_ms",cleanupStarted).put("drain_checked_elapsed_ms",now)
+                                            .put("accepted_for_continuation",false).put("automatic_redispatch",false));
+                                }catch(Exception failure){throw new CleanupUnknown("未能保存搜索动作未派发的退出凭据，保留中断状态");}
+                                throw new Stopped("核验搜索入口时超时，未点击；工作已退出，本次任务已停止。");
+                            }
                             try{
                                 record(directory,"native-search-retired-drain.json",new JSONObject()
                                         .put("schema","hepta.native-search-retired-drain.v1").put("execution",state)
@@ -1761,7 +1776,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     /** Both inputs come from the original private callback and the service's last physically drained state.
      * No action, observation, successful navigation, or clearance of another cleanup failure is minted here. */
-    private static boolean retiredSearchDrain(JSONObject callback,JSONObject current,String task,String run,String observation,
+    private static boolean retiredSearchDrain(JSONObject callback,JSONObject current,boolean dispatched,String task,String run,String observation,
             String authorization,String generation,int display,int window,long queued,long deadline,long cleanupStarted,long now){
         if(callback==null||current==null||display<=0||window<0||queued<0||deadline<=queued||cleanupStarted<deadline
                 ||now<cleanupStarted||now-cleanupStarted>1000)return false;
@@ -1775,12 +1790,34 @@ public final class LocalTaskController implements AutoCloseable {
                     ||!generation.equals(state.opt("background_generation"))||state.optInt("display_id",-1)!=display
                     ||state.optInt("window_id",-1)!=window||state.optLong("queued_elapsed_ms",-1)!=queued
                     ||state.optLong("deadline_elapsed_ms",-1)!=deadline||drained<queued||drained>now
-                    ||!Boolean.TRUE.equals(state.opt("retired"))||!Boolean.TRUE.equals(state.opt("effect_entered"))
-                    ||!Boolean.TRUE.equals(state.opt("effect_returned"))||!Boolean.TRUE.equals(state.opt("api_accepted"))
+                    ||!Boolean.TRUE.equals(state.opt("retired"))||!Boolean.valueOf(dispatched).equals(state.opt("effect_entered"))
+                    ||!Boolean.valueOf(dispatched).equals(state.opt("effect_returned"))
                     ||!Boolean.TRUE.equals(state.opt("worker_drained"))||!Boolean.TRUE.equals(state.opt("callback_published"))
                     ||!Boolean.FALSE.equals(state.opt("callback_authority_current"))||!Boolean.FALSE.equals(state.opt("automatic_redispatch")))return false;
+            if(dispatched){
+                if(!Boolean.TRUE.equals(state.opt("api_accepted")))return false;
+            }else if(!"deadline".equals(state.opt("retirement_reason"))||drained<deadline
+                    ||(state.opt("api_accepted")!=null&&state.opt("api_accepted")!=JSONObject.NULL))return false;
         }
         return callback.optLong("worker_drained_elapsed_ms",-1)==current.optLong("worker_drained_elapsed_ms",-1);
+    }
+    /** The worker seals its own platform boundary before draining. The controller still holds
+     * the original one-use Attempt. Neither a planning reservation nor a missing phase proves non-dispatch. */
+    private static boolean unclaimedSearchAtDisposal(JSONObject callback,String planningSha,java.util.Map<String,Object> live){
+        JSONObject worker=callback.optJSONObject("native_search_execution");
+        if(worker==null||!"hepta.native-search-current-execution.v1".equals(worker.opt("schema"))
+                ||!"native.open_search".equals(worker.opt("action"))||!Boolean.FALSE.equals(worker.opt("platform_call_invoked"))
+                ||!planningSha.equals(worker.opt("planning_receipt_sha256")))return false;
+        JSONObject sealed=worker.optJSONObject("attempt");
+        if(sealed==null)return false;
+        for(String key:new String[]{"task_id","model_run_id","authorization_sha256","role_id","planning_receipt_sha256",
+                "started_elapsed_ms","deadline_elapsed_ms","state","claimed"}){
+            Object actual=live.get(key);
+            if(actual==null||!actual.equals(sealed.opt(key)))return false;
+        }
+        // Attempt.close() changes state to 2 on expiry and preserves the monotonic claim bit.
+        Object state=live.get("state");
+        return (Integer.valueOf(0).equals(state)||Integer.valueOf(2).equals(state))&&Boolean.FALSE.equals(live.get("claimed"));
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private static final String NATIVE_CALENDAR_SYSTEM=
