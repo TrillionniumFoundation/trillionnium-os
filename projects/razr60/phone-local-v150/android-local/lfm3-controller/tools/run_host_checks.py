@@ -580,6 +580,8 @@ final class NativeCalendarDateIntent {
             raise RuntimeError("Foreground concurrency compile/run stages incomplete")
         report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
+        run("ctrip-form-observation",[sys.executable,"-B",ROOT/"tests/native-ctrip-form-observation/run_host.py",
+            "--source",ROOT,"--output",out/"ctrip-form-observation","--java-home",java_home,"--json-jar",json_jar])
         run("ctrip-startup-promotion",[sys.executable,"-B",ROOT/"tests/native-ctrip-promotion/run_host.py",
             "--out",out/"ctrip-startup-promotion","--java-home",java_home,"--json-jar",json_jar])
         run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",

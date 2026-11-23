@@ -1125,6 +1125,7 @@ final class NativeAppSession {
         private final java.util.concurrent.atomic.AtomicInteger admissions=new java.util.concurrent.atomic.AtomicInteger();
         private PostEffectReadPermit(NativeAppSession session,Attempt attempt){this.session=session;this.attempt=attempt;}
         void requireCurrent(){session.requirePostEffectRead(attempt);}
+        String originalObservationId(){requireCurrent();return attempt.before.frame.observationId;}
         long transitionDeadline(){requireCurrent();return attempt.finished+OBSERVED_TRANSITION_MS;}
         void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){
             requireCurrent();need(owner==session&&authorization==session.authorization&&session.taskId.equals(task)
