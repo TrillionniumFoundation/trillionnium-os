@@ -670,6 +670,8 @@ public final class BackgroundDisplayBroker {
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);return actual;
     }
     private long profileDeadline(){
+        Long retainedDeadline=retainedReadDeadline.get();
+        if(retainedDeadline!=null)return retainedDeadline.longValue();
         return cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:
                 Math.min(expires,requestDeadline>0?requestDeadline:started+STARTUP_MS);
     }
@@ -1420,7 +1422,7 @@ public final class BackgroundDisplayBroker {
                         state=releasedState();haltAfterBootRead(0);
                     }
                     if(config.profileTarget!=null&&profileCustody.retain()){
-                        quarantineProfile("cleanup_deadline");printTerminal();return;
+                        quarantineProfile("cleanup_deadline");printTerminal();retainedWatchdogHoldPublished=true;return;
                     }
                     if(publicNotesCustody!=null&&publicNotesCustody.known()){
                         state=releasedState();haltAfterBootRead(0);
@@ -1651,7 +1653,7 @@ public final class BackgroundDisplayBroker {
                     // already in flight can still time out; its custodian then remains alive.
                     if(!profileCustody.mayRelease())throw new IOException("PROFILE_CUSTODY_QUARANTINED");
                     VirtualDisplay owned=virtual;
-                    if(owned!=null)owned.release();
+                    if(owned!=null){profileDisplayReleaseAttempted=true;owned.release();}
                     ImageReader reader=surfaceReader;if(reader!=null)reader.close();
                     HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
                 }
@@ -1710,11 +1712,80 @@ public final class BackgroundDisplayBroker {
         LocalServerSocket listening=server;
         if(listening!=null)try{listening.close();}catch(IOException ignored){}
     }
+    private final AtomicBoolean retainedRecheckStarted=new AtomicBoolean();
+    private final ThreadLocal<Long> retainedReadDeadline=new ThreadLocal<Long>();
+    private volatile boolean profileDisplayReleaseAttempted,retainedWatchdogHoldPublished;
+    private volatile String retainedRecheckOutcome="";
+    private void recheckRetainedEmptyDisplay(){
+        if(config.publicOwnGroupScope==null||publicProfileHistory==null||!publicAdmissionRetired.get()
+                ||!closing.get()||serve||createInFlight||effectInFlight||cleanupDone.getCount()!=0||!retainedWatchdogHoldPublished
+                ||profileDisplayReleaseAttempted||!publicSurfaceRetirement.originalDetachCompleted()
+                ||!retainedRecheckStarted.compareAndSet(false,true))return;
+        if(!capturedRetainedSnapshot()){retainedRecheckOutcome="ORIGINAL_SNAPSHOT_ACK_UNAVAILABLE";return;}
+        final long deadline=SystemClock.elapsedRealtime()+10000;
+        retainedReadDeadline.set(deadline);
+        try{
+            synchronized(dispatchGate){
+                final ProfileOwnedTask tasks=profileOwnedTask;final VirtualDisplay exact=virtual;
+                if(tasks==null||exact==null||exact!=publicCreateReturnedHandle||profileDisplayReleaseAttempted
+                        ||createInFlight||effectInFlight||!publicOwnGroupFramework.hasFrozenIdentity())
+                    throw new IOException("PROFILE_RETAINED_ORIGINAL_HANDLE_MISSING");
+                tasks.closeRetainedEmptyDisplay(deadline,new ProfileOwnedTask.RetiredDisplay(){
+                    private PublicProfileRecentHistory.Snapshot first;
+                    private long initial;
+                    public void requireState(boolean before)throws Exception{
+                        if(SystemClock.elapsedRealtime()>=deadline||exact!=virtual||exact!=publicCreateReturnedHandle)
+                            throw new IOException("PROFILE_RETAINED_ORIGINAL_HANDLE_CHANGED");
+                        if(before)publicOwnGroupFramework.requireRetiredDestroyHandle(displayId,displayName);
+                        else if(!publicOwnedDisplayAbsent())throw new IOException("PROFILE_RETAINED_DISPLAY_STILL_PRESENT");
+                        String raw=BackgroundTaskOrganizer.profileRecents(()->deadline);
+                        long now=SystemClock.elapsedRealtime();PublicProfileRecentHistory.Snapshot actual=PublicProfileRecentHistory.absence(raw,config.profileTarget);
+                        if(first==null){first=actual;initial=now;}else first.requireSame(actual,(now-initial)/1000+2);
+                    }
+                    public void awaitAbsent()throws Exception{
+                        while(!publicOwnedDisplayAbsent()){
+                            if(SystemClock.elapsedRealtime()>=deadline)throw new IOException("PROFILE_RETAINED_DISPLAY_STILL_PRESENT");
+                            Thread.sleep(25);
+                        }
+                    }
+                    public void releaseOriginalHandle()throws Exception{
+                        if(profileDisplayReleaseAttempted||exact!=virtual||exact!=publicCreateReturnedHandle
+                                ||createInFlight||effectInFlight||SystemClock.elapsedRealtime()>=deadline)
+                            throw new IOException("PROFILE_RETAINED_RELEASE_ALREADY_ATTEMPTED");
+                        profileDisplayReleaseAttempted=true;exact.release();
+                        if(surfaceReader!=null)surfaceReader.close();
+                        if(displayThread!=null)displayThread.quitSafely();
+                    }
+                });
+                profileCustody.retainedObservedAbsent(tasks);refreshProfileTaskEvidence();
+                retainedRecheckOutcome="RELEASED_AFTER_ORIGINAL_UNKNOWN";state=releasedState();printTerminal();
+            }
+        }catch(Throwable refusal){retainedRecheckOutcome=code(refusal);}
+        finally{retainedReadDeadline.remove();}
+    }
+    private boolean capturedRetainedSnapshot(){
+        byte[] expected=PublicOwnGroupPolicy.retainedSnapshotAcknowledgement(config.publicOwnGroupScope);
+        byte[] actual=new byte[expected.length];long until=SystemClock.elapsedRealtime()+6000;
+        try{
+            // One reader, bounded wait, the original ProcessBuilder pipe only. No socket
+            // is reopened and neither a serialized task id nor the pipe grants ownership.
+            while(SystemClock.elapsedRealtime()<until){
+                int count=System.in.available();if(count>actual.length)return false;
+                if(count==actual.length){
+                    new java.io.DataInputStream(System.in).readFully(actual);
+                    return SystemClock.elapsedRealtime()<until&&java.util.Arrays.equals(expected,actual);
+                }
+                Thread.sleep(20);
+            }
+        }catch(Exception unavailable){return false;}
+        return false;
+    }
     private void holdProfileCustody(){
         // Retaining the live binder owner is intentional. DESTROY_CONTENT_ON_REMOVAL remains
         // enabled; removing that flag would allow main-display migration instead. Unexpected
         // SIGKILL, OS process death or power loss is still UNKNOWN, never a cleanup proof.
         while(config.profileTarget!=null&&profileCustody.retain()){
+            recheckRetainedEmptyDisplay();
             try{Thread.sleep(250);}catch(InterruptedException ignored){}
         }
     }
@@ -1833,6 +1904,7 @@ public final class BackgroundDisplayBroker {
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence())
                     .put("public_screen_lease",new JSONObject(publicScreenLease.evidence()))
                     .put("public_policy_diagnostics",new JSONObject(publicPolicyFailures.evidence()));
+            if(!retainedRecheckOutcome.isEmpty())terminal.put("profile_retained_recheck_outcome",retainedRecheckOutcome);
             if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
                     .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
             System.out.println(terminal); }

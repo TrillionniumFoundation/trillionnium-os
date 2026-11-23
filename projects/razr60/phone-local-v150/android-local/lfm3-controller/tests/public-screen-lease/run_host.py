@@ -52,9 +52,11 @@ def main():
     if broker.count(deadline)!=1 or broker.count(create)!=1 or broker.index(deadline)>broker.index(create):
         raise RuntimeError('initial readiness deadline must be frozen before the actual create call')
     start='    PublicOwnGroupScreenLease.Snapshot screenSnapshot(int id,String name)throws Exception{'
-    end='    synchronized boolean hasFrozenIdentity()'
+    end='    synchronized void requireRetiredDestroyHandle('
     if framework.count(start)!=1 or framework.count(end)!=1:raise RuntimeError('exact actual census hunk missing')
     census=framework[framework.index(start):framework.index(end)]
+    if hashlib.sha256(census.encode()).hexdigest() != '5b4d4a1a741aabb91cc9b982d479365906b85e2dec4a9a021608298f28fc59e2':
+        raise RuntimeError('qualified screen census method changed')
     fixture=out/'PublicScreenCensusFixture.java'
     fixture.write_text('''package org.trillionnium.hepta.background;
 import java.io.IOException;import java.lang.reflect.Method;
