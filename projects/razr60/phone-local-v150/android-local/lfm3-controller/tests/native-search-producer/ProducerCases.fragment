@@ -689,6 +689,7 @@
             }
         });}
         loadingRetryCases(args);
+        fullPageSwapCases();
         successorCases(args);
         samplingCases(args);
         finalCensusRecoveryCases();

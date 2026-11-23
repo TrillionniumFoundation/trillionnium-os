@@ -3,27 +3,27 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "xiaomi_ambiguous_banner_reobservation_host_candidate",
-  "complete_source_files": 2468,
+  "candidate_status": "xiaomi_full_page_swap_execution_host_candidate",
+  "complete_source_files": 2470,
   "current_successor_delta": {
-    "baseline": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
+    "baseline": "32c65992b82af400d9efdd1f3e0d797c426a82d5",
     "original_case_assertions_preserved": true,
-    "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
       "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
       "src/org/trillionnium/hepta/local/NativeSearchRole.java",
       "src/org/trillionnium/hepta/local/NativeSearchSession.java"
     ],
     "test_changed_paths": [
-      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template"
+      "tests/native-search-producer/0b742-execution-censuses.json",
+      "tests/native-search-producer/FullPageSwapCases.fragment",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/native-search-producer/run_producer.py",
+      "tools/run_host_checks.py"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
+    "previous_manifest_sha256": "1d91a00114edf032eb2c8f523df520ffed130d973fa73dfb7576f5703852ae94"
   },
   "files": [
     {
@@ -6677,9 +6677,9 @@
       "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
     },
     {
-      "bytes": 69475,
+      "bytes": 71162,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "c1b4725be5da09d57f5c1c7edeff18f05d8a9baa1262ce652d28e56c44b70fc0"
+      "sha256": "4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b"
     },
     {
       "bytes": 12982,
@@ -6747,14 +6747,14 @@
       "sha256": "1200406fa1000ab8a9b334aff1cc83ff57471c6d706763d529c3394aba397ba9"
     },
     {
-      "bytes": 19977,
+      "bytes": 20647,
       "path": "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "sha256": "82d2a4f69d6468dc8835f2df5affdd5030c094e0fccb2301bf2781d4b9d43040"
+      "sha256": "e8f0fc7d23e65d3e997129b1fb703fda8cce644a8faf253f7f3f82791e48bf8c"
     },
     {
-      "bytes": 25857,
+      "bytes": 25869,
       "path": "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "sha256": "89f4e5ffe0fb9fcd7e0e27179ea2e270aad4c9dc745c792fe1213b796fa0a8d2"
+      "sha256": "900dd5d6968aa84ac89454d17c666a8c7c2046a00b2a48c99b70393d783cbf98"
     },
     {
       "bytes": 57286,
@@ -9167,6 +9167,16 @@
       "sha256": "939f20aa509d04ac4b42bf622637f17608d6261f69f2294a1f6384d6d2a070e3"
     },
     {
+      "bytes": 107097,
+      "path": "tests/native-search-producer/0b742-execution-censuses.json",
+      "sha256": "443f25ee1ff14efa857a8e588b4e7f4b4f82a1978cc5acaebbfdd53cbc21f328"
+    },
+    {
+      "bytes": 7631,
+      "path": "tests/native-search-producer/FullPageSwapCases.fragment",
+      "sha256": "c79728f3594ecd5f0773b91808241324ed51e9701c8c2142492735d9fd7a60c5"
+    },
+    {
       "bytes": 1382,
       "path": "tests/native-search-producer/LoadingControllerHost.template",
       "sha256": "08aeb77c0b982439f52cd899a532aff0d0c227e74d076cde1d0a44d907acc552"
@@ -9187,9 +9197,9 @@
       "sha256": "9f93e45d7565ffd42d024c2cc4e11a1646df2a2144104c66a8a67692c4a7c8d7"
     },
     {
-      "bytes": 71641,
+      "bytes": 71670,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "4814643a409dacc1328f5862c68cc0ff215d238933ff117b9414a0b3556c899a"
+      "sha256": "31da2be0011b536089ad82e82df97e2116b8ca13b144efb54b889161a15d4254"
     },
     {
       "bytes": 31363,
@@ -9202,9 +9212,9 @@
       "sha256": "b663823d1cec936e6c4999f57340cc0b3e29a41ed88998670f09bf272aaf8052"
     },
     {
-      "bytes": 18551,
+      "bytes": 18674,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "df205c76492be670e001246b899a3dfcc22d9a0d0a6f1c078776c3dec119de23"
+      "sha256": "b30b1f42c077b7914c38a7de277dfc18fad1a63240b42d567ae2d69f07d365fd"
     },
     {
       "bytes": 29903,
@@ -12152,9 +12162,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 63519,
+      "bytes": 63910,
       "path": "tools/run_host_checks.py",
-      "sha256": "44aeae30eefe6aa51121763026bc5dee1c8b7d763bbdcc9b78eacba62ec676c7"
+      "sha256": "09ae0caa91649d9e85b788e4da144e2b8f2a608a528802cd1ce09529dc93d3cd"
     },
     {
       "bytes": 13873,
@@ -12363,9 +12373,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "34e5109e386a8ce1858f457b2e41c9f7c6affdab",
+    "previous_component_git_tree_sha1": "eea329d56c124bc727b1a1ca6b192cebd40c5596",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
+    "previous_manifest_sha256": "1d91a00114edf032eb2c8f523df520ffed130d973fa73dfb7576f5703852ae94"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12374,12 +12384,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "6cbe0218a9e6cf9a7903158bdb0f3a4788520ba27371135f6585d9a42b1888a5",
+  "production_input_map_sha256": "98f9192764704caa5f2880ba876dd5710e1144f01a6f7a7e0eb47602842ea3a4",
   "schema": "hepta.local-source.v3",
-  "scope": "Permit one new full search observation and a new local decision after a recorded undispatched ambiguous single-pixel Xiaomi banner transition.",
-  "source_parent_head": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
-  "source_parent_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
-  "source_snapshot_predecessor_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
+  "scope": "Validate the reserved Xiaomi search role across an exact full-width blank banner slot swap and a fully verified search hint change. The original node, reference refresh, window, profile and one-use dispatch continue to apply.",
+  "source_parent_head": "32c65992b82af400d9efdd1f3e0d797c426a82d5",
+  "source_parent_manifest_sha256": "1d91a00114edf032eb2c8f523df520ffed130d973fa73dfb7576f5703852ae94",
+  "source_snapshot_predecessor_manifest_sha256": "1d91a00114edf032eb2c8f523df520ffed130d973fa73dfb7576f5703852ae94",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

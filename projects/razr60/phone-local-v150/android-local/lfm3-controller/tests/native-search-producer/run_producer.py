@@ -73,7 +73,7 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()
- parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()
+ parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
  template=(test/'SearchProducerHost.template').read_text()
  for key,value in parts.items():
@@ -191,7 +191,7 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
