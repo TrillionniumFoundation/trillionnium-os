@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.code21.public-build-qualification.v1",
+  "version_code": 21,
+  "version_name": "0.21.0-local-history-recovery",
+  "retained_device_build": {
+    "source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+    "source_members": 1096,
+    "apk_bytes": 20694790,
+    "apk_sha256": "c95378452e2754261825bbbdaa18115a52e11924851c4c59867f2af738fc960f",
+    "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+    "new_signing_key_created": false,
+    "permissions": [],
+    "actual_java_dex_ndk_compilation": true,
+    "all_17_native_members_equal_code20": true,
+    "reference_code20_apk_sha256": "2400c79fb140d730d08d4fb16b13092850137287ece5e6d3675bc5ab184231f9"
+  },
+  "actual_host_qualification": {
+    "source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+    "linux_original_runner_checks_passed": 62,
+    "linux_original_runner_checks_total": 62,
+    "linux_jdk": "17.0.20.1",
+    "java_release": 8,
+    "warnings_are_errors": true,
+    "mac_java_related_checks_passed": 40,
+    "mac_recovery_application_and_inventory_jdk17_passed": true,
+    "mac_python_tests_passed": 163,
+    "mac_python_tests_total": 164,
+    "mac_failure_retained": "test_projection_script_exports_only_whitelisted_scalars_in_a_host_fixture",
+    "linux_full_run_replaces_no_original_record": true
+  },
+  "public_source_derivative": {
+    "source_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+    "same_identity_as_device_build": false,
+    "compiled_java_and_native_code_bytes_unchanged": true,
+    "public_source_ci_status": "pending",
+    "derivation_receipt_sha256": "e796be08632c61c93b6d762c1f86093e7e77de3783c20df03e068ebcedf3c730"
+  },
+  "retained_artifact_hashes": {
+    "source_freeze": "4783d4c14a6bfa56016a2ffa77d3a7e9dc97551b347265cf86dd707b5ceec5c2",
+    "actual_android_build_handoff": "99573e5bdc20e19ea7e81b8db3ffb5e61428801d7e513029b619e32bfc1c460f",
+    "mac_build_receipt": "e1139cda69a6e64243418fbc34864a7cfef65ff254d56da1621581017b230b42",
+    "static_acceptance": "32d1f611a58bf4de94e66fc7e418f0627bf18d45ae4a18a052164fb0c77602ee",
+    "native_closure": "f081546964873c15747f2b9f4ee80df62be7597300c18d1c88728ea1a5897626",
+    "same_signer_assembly": "31e25890674aa6c00cfa81b389f53141e803efd0e4bcbd772d51c07c79f6eed8",
+    "prepared_before_linux_completion": "562d74301aa5cb5f450801be05c6f21b4d4f1f6e6f789db6dda8a4bf6daec14c",
+    "linux_host_checks": "2dd9c6308ebbce89232b6a5bf1e879fc7498bd6e55e07d8fdaf68c9d99a9415c",
+    "complete_linux_host_report": "54f943b8edc6d5b2960c85bf2bda182fdb0fb765ef0339e88cce6b437aaf1bde"
+  },
+  "original_failures_retained": [
+    {
+      "scope": "Code21 initial SDK compilation",
+      "source_manifest_sha256": "f8bd05396037a7751857adec30e2128577995940f05000ac985b3e74e5266c20",
+      "reason": "Os.unlink is not exposed by the Android SDK34 public API; the separate r2 derivative uses Os.remove after unchanged regular-file and equality checks."
+    },
+    {
+      "scope": "r2 host artifact handoff after successful actual compilation",
+      "report_sha256": "e3cb6b16c7355981b87de0ab7db538219fb2597ef51210fb45f4db6da09ace00",
+      "reason": "The first wrapper looked for classes.dex at the wrong output location. A separate verified handoff used the existing actual dex/classes.dex and original build receipt, without source changes or recompilation."
+    }
+  ],
+  "phone_acceptance_qualified_by_this_build_record": false,
+  "model_inference_performed_by_this_build": false,
+  "external_model_used_by_this_build": false,
+  "recovery_scope": {
+    "old_native_cleanup_claim": "unknown",
+    "inventory_scope": "app_visible_procfs_same_uid",
+    "owner_confirmation_required": true,
+    "automatic_task_resume": false,
+    "original_task_and_native_records_preserved": true,
+    "actual_phone_recovery_not_established_by_host_tests": true
+  }
+}

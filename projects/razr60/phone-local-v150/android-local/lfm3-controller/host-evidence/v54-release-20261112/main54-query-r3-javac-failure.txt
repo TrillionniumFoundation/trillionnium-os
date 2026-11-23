@@ -1,0 +1,13 @@
+/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r3/source/tests/web-flight/WebFlightQueryHostTest.java:108: 错误: 未报告的异常错误Exception; 必须对其进行捕获或声明以便抛出
+                ObservedImeEnter.UNKNOWN,null,false,WebEvidenceJson.sha("synthetic native "+id+" "+text+" "+path),path,parent);
+                                                                       ^
+/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r3/source/tests/web-flight/WebFlightQueryHostTest.java:134: 错误: 未报告的异常错误Exception; 必须对其进行捕获或声明以便抛出
+                WebEvidenceJson.sha("synthetic tree "+obs),WebEvidenceJson.sha("synthetic screen "+obs),
+                                   ^
+/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r3/source/tests/web-flight/WebFlightQueryHostTest.java:134: 错误: 未报告的异常错误Exception; 必须对其进行捕获或声明以便抛出
+                WebEvidenceJson.sha("synthetic tree "+obs),WebEvidenceJson.sha("synthetic screen "+obs),
+                                                                              ^
+/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r3/source/tests/web-flight/WebFlightQueryHostTest.java:135: 错误: 未报告的异常错误Exception; 必须对其进行捕获或声明以便抛出
+                new ObservationState(WebEvidenceJson.sha("synthetic app tree "+obs),ImeVisibility.HIDDEN),
+                                                        ^
+4 个错误

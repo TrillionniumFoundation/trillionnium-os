@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.code19.focused-observation-public-evidence.v1",
+  "original_report_sha256": "96c35676a2d5299e258015a42ff2d3c197063dea472affda8b9bcce2d317f56f",
+  "record_scope": "Focused host run on exact code/test bytes before final Android version/manifest metadata freeze.",
+  "all_targeted_checks_pass": true,
+  "full_host_suite_run": false,
+  "source_version_freeze_pending_at_focused_run": true,
+  "contract_count": 8,
+  "checks": [
+    {
+      "name": "parent-baseline-compile",
+      "exit_code": 0,
+      "elapsed_s": 1.2405648671556264,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_negative_control": false
+    },
+    {
+      "name": "parent-baseline-run",
+      "exit_code": 0,
+      "elapsed_s": 0.07012278400361538,
+      "stdout_sha256": "729c95c339606f739e3acbac1f0071a43f8028771100834dc53acaa46e9dc791",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_negative_control": false
+    },
+    {
+      "name": "code19-compile",
+      "exit_code": 0,
+      "elapsed_s": 2.011841804953292,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_negative_control": false
+    },
+    {
+      "name": "code19-run",
+      "exit_code": 0,
+      "elapsed_s": 0.22800704091787338,
+      "stdout_sha256": "1b0bf43ab6828b80e433a81f838d1881d367ea4ee482a4d83b44997aec9e3b42",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_negative_control": false
+    },
+    {
+      "name": "old-gate-negative-control-compile",
+      "exit_code": 0,
+      "elapsed_s": 2.6338490990456194,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_negative_control": false
+    },
+    {
+      "name": "old-gate-negative-control-run",
+      "exit_code": 1,
+      "elapsed_s": 0.1589694309514016,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f5109298ce0896dfde79624e81def3eca45ad1904a3cc155464df78939160d47",
+      "expected_negative_control": true,
+      "expected_failure_confirmed": true
+    }
+  ],
+  "code_test_inputs": {
+    "HeptaAccessibilityService.java": {
+      "bytes": 45712,
+      "sha256": "6a72f1020df59af49d9876af3dcfe550eb6320167ceb26512e36a06cd367df1e"
+    },
+    "ObservationStabilityGate.java": {
+      "bytes": 3870,
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+    },
+    "ObservationStabilityHostTest.java": {
+      "bytes": 8731,
+      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+    }
+  },
+  "published_source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "phone_tested": false,
+  "native_or_model_executed": false
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.independent-validation-qualification.v1",
+  "phone_contacted": false,
+  "app_source_modified": false,
+  "base_apk_version": 8,
+  "lifecycle": {
+    "revision": 2,
+    "host": "Pocket4 Linux",
+    "contracts_passed": 14,
+    "source_archive_sha256": "98226ad3716591a80423a270e7469fe88cfa3563601f862085db96fde332e75b",
+    "device_cancellation": "not_claimed"
+  },
+  "offline": {
+    "revision": 1,
+    "host": "Pocket4 Linux",
+    "contracts_passed": 16,
+    "real_two_sigterm_host_contract_passed": true,
+    "source_archive_sha256": "e48b0dbe004ef21a76cac8d9d308aecd4677a5398efe5e10cebe3060e1624ec6",
+    "phone_radio_mutations_submitted": 0,
+    "real_phone_offline_test": "not_run"
+  },
+  "compatibility": {
+    "revision": 1,
+    "changed_source": [
+      "phone_acceptance.py",
+      "test_phone_acceptance.py"
+    ],
+    "driver_contracts_passed": 108,
+    "core_v2_contracts_passed": 35,
+    "prior_results_overwritten": false
+  }
+}

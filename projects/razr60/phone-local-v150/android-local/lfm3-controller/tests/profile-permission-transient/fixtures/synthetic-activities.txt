@@ -1,0 +1,30 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+# SYNTHETIC TEST FIXTURE. Authored hierarchy; not a captured device dump.
+Display #0 (activities from top to bottom):
+  * Task{viewer_task #100 type=standard U=0 visible=true sz=1}
+    * Hist  #0: ActivityRecord{viewer_record u0 com.example.viewer/.Main t100}
+
+Display #7 (activities from top to bottom):
+  * Task{owned_root #200 type=undefined U=0 visible=true sz=1}
+    mCreatedByOrganizer=true
+    * Task{owned_leaf #300 type=undefined A=1010367:ctrip.android.view U=10 rootTaskId=200 visible=true sz=2}
+      * Hist  #1: ActivityRecord{permission_record u10 com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity t300}
+        packageName=com.android.permissioncontroller processName=com.android.permissioncontroller
+        launchedFromUid=1010367 launchedFromPackage=ctrip.android.view launchedFromFeature=null userId=10
+        app=ProcessRecord{permission_process 2000:com.android.permissioncontroller/u10a335}
+        Intent { act=android.content.pm.action.REQUEST_PERMISSIONS pkg=com.android.permissioncontroller cmp=com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity }
+        rootOfTask=false task=Task{owned_leaf #300 type=undefined A=1010367:ctrip.android.view}
+        taskAffinity=1010335:com.android.permissioncontroller
+        mActivityComponent=com.android.permissioncontroller/.permission.ui.GrantPermissionsActivity
+        baseDir=/apex/com.android.permission/priv-app/PermissionController@W1VL36M-53-ST9.1/PermissionController.apk
+        dataDir=/data/user_de/10/com.android.permissioncontroller
+        resultTo=ActivityRecord{target_record u10 ctrip.android.view/ctrip.android.publicproduct.home.view.CtripHomeActivity t300} resultWho=@android:requestPermissions: resultCode=7
+        state=RESUMED delayedResume=false finishing=false
+      * Hist  #0: ActivityRecord{target_record u10 ctrip.android.view/ctrip.android.publicproduct.home.view.CtripHomeActivity t300}
+        packageName=ctrip.android.view processName=ctrip.android.view
+        rootOfTask=true task=Task{owned_leaf #300 type=undefined A=1010367:ctrip.android.view}
+        app=ProcessRecord{target_process 2001:ctrip.android.view/u10a367}
+
+ActivityTaskSupervisor state:
+  TaskOrganizerController:
+  SleepTokens=[]

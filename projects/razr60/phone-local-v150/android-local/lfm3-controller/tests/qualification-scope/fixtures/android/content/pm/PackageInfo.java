@@ -1,0 +1,1 @@
+package android.content.pm;public final class PackageInfo {public String packageName;public ApplicationInfo applicationInfo;public String[] splitNames;public long version=1;public long getLongVersionCode(){return version;}}

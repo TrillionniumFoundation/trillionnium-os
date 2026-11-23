@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.flight-home-goal-equivalence.v1",
+  "all_pass": true,
+  "baseline_head": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "baseline_apk_sha256": "5dfa8eb6942aa1b1ce70fdc3ceffd57ade8571178ce11e85ca86a3570ed144f8",
+  "production_changes": "one next_goal conditional after result/submitted/pending/ready; no authority or dispatch change",
+  "home_regression": {
+    "baseline_exit_code": 2,
+    "candidate_exit_code": 0,
+    "baseline_desired_checks": [
+      false,
+      false,
+      false
+    ],
+    "candidate_desired_checks": [
+      true,
+      true,
+      true
+    ],
+    "stages": 16,
+    "assertions_per_side": 31,
+    "only_stage_value_differences": [
+      "stages[0].current.next_goal",
+      "stages[1].current.next_goal",
+      "stages[2].current.next_goal"
+    ],
+    "other_stage_fields_equal": true,
+    "actual_home_capture_sha256": "73e20002f8f2cea161084681f558504d8afb58d09e8e2812ce8ff22a96b7a6c5",
+    "actual_prompt_sha256": "85d6d118b66375f368c3fbcb26ea66aed6f1b58a8f2083e2f6bb22d51f472b14",
+    "fixture_scope": "Pinned actual home DOM and original prompt, synthetic unit task/receipt/native envelope and action outcomes"
+  },
+  "existing_gates": {
+    "baseline": {
+      "query40": {
+        "cases": 40,
+        "assertions": 187
+      },
+      "lifetime": {
+        "cases": 31,
+        "assertions": 99
+      },
+      "composition": {
+        "cases": 17,
+        "assertions": 70
+      }
+    },
+    "candidate": {
+      "query40": {
+        "cases": 40,
+        "assertions": 187
+      },
+      "lifetime": {
+        "cases": 31,
+        "assertions": 99
+      },
+      "composition": {
+        "cases": 17,
+        "assertions": 70
+      }
+    }
+  },
+  "artifacts": {
+    "PRODUCTION.patch": {
+      "sha256": "f533d24d90ff36d92e75f36ccee31f2dbfc85c38136a77f14a1ac0c0bd33e63a",
+      "bytes": 951
+    },
+    "CANDIDATE.json": {
+      "sha256": "26bc22eefb48aa07290f46b96e40c3e7d7c3626c4d190d31697cbc9648135c78",
+      "bytes": 909
+    },
+    "ORIGINAL-METHOD.txt": {
+      "sha256": "2821accadbc585c89e0df9286922024dc791e321fdc431f75097f01bc2854edb",
+      "bytes": 6167
+    },
+    "baseline/WebFlightDomain.java": {
+      "sha256": "cd2caf1854af873a761ef3124c53e4db5827a7f1a890928ce3479f6bf522ff0b",
+      "bytes": 60355
+    },
+    "candidate/WebFlightDomain.java": {
+      "sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01",
+      "bytes": 60443
+    },
+    "WebFlightHomeGoalHostTest.java": {
+      "sha256": "c9d52a9ac22a8f88321b8702e076b8d37e312edf7409027f87e7a98e39b8040d",
+      "bytes": 18343
+    },
+    "run_stage_gate_private.py": {
+      "sha256": "a6d84604ad1c8e943181f0a1c179d551124323b67a91fa1eb35d19e4cbde2322",
+      "bytes": 2458
+    },
+    "MIRROR-MANIFEST.json": {
+      "sha256": "3c50724e2a0c131ee3d27c709dd51a2c8bd0028164e227d255d297ad17fc1ce1",
+      "bytes": 25716
+    },
+    "HOME-GATE-LAUNCH.json": {
+      "sha256": "e1c0652acff67a0de45a757070cb9ec92a2f2cb361d5f581bd464556dd175c78",
+      "bytes": 1457
+    },
+    "baseline-home-gate/CASES.json": {
+      "sha256": "bae7fa9f699345eb440b795f0ebb3be1389ac4b1b891ebc7aa126fb55c3cd111",
+      "bytes": 328564
+    },
+    "candidate-home-gate/CASES.json": {
+      "sha256": "53c2baa94051d9506040483e26f06c7d577b05d004f5dc5ff15cae7acad581cc",
+      "bytes": 328479
+    },
+    "baseline-result-gate/RESULT.json": {
+      "sha256": "3a22490144f4da3de551a4a8e62a77e016ed608083e00e40234043b8a0f83571",
+      "bytes": 13330
+    },
+    "candidate-result-gate/RESULT.json": {
+      "sha256": "c9bb21d4994cae7e317d0d38ecee634bf4997075cdc724a06303631d85c29de1",
+      "bytes": 13353
+    },
+    "fixtures/calendar-stable.json": {
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa",
+      "bytes": 386724
+    },
+    "fixtures/calendar-stable.xml": {
+      "sha256": "59d753e32edd620eb2e1fb0947c898df89eb7bf8dbc63dc4138a1636272b82ec",
+      "bytes": 178888
+    }
+  },
+  "frozen_source_unchanged": true,
+  "phone_actions": 0,
+  "model_calls": 0,
+  "apk_built": false,
+  "business_verified": false,
+  "limitations": [
+    "No new model or phone behavior was executed.",
+    "Corrected next_goal does not establish that the model will click or the website query will complete.",
+    "The existing result gates use declared synthetic provider carriers, not live website result proof."
+  ]
+}

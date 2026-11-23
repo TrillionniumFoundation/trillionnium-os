@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.public-validation.capability-scope.v1",
+  "analysis_only": true,
+  "phone_commands_by_report_author": 0,
+  "raw_evidence_modified": false,
+  "current_source": {
+    "commit": "c662471c570170f42af855943224c71fc1eb960c",
+    "manifest_sha256": "dee70b9a392b4adac028f7db64e46f5178acc2c522868ae41d907e7cab821edc",
+    "apk_sha256": "405fccd21cebffb5b16f409c98ded3d1cd92a4d16b34639fc7cccb16e27d8943",
+    "historical_tests_below_are_not_current_apk_requalification": true,
+    "source_sha256": {
+      "ModelProfile.java": "11ff3d26283dc4e8789c427363043675427e647bff6524b1c5a987afba4a8a9c",
+      "BackgroundTaskTarget.java": "a97ab4c75d5f7838b5c0953b11147b852023c674a53a5d55f984e2653ba85a9a",
+      "TaskCompletionGate.java": "da4afaa5437331e731799718e591dd5e3f62e0f7448dbd1009e234cd8c084772",
+      "NativeAppGoal.java": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5",
+      "NativeAppDomain.java": "495f9d98854d8137e48e07b074987d81bcfbab8f3b3fe437cdd3239c16719f1a",
+      "NotesOwnerIntent.java": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+      "ActionDecision.java": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20",
+      "LocalTaskController.java": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c"
+    }
+  },
+  "generic_tools": {
+    "execution": "The native-app route has a general observe/model/validate/action loop over observed targets, allowed packages and task authorization.",
+    "examples": ["find_app", "open", "click", "type", "submit", "scroll", "back", "home", "wait", "done"],
+    "explicit_app_selection_preserved": true,
+    "unsupported_native_goal_may_reach_generic_action_loop": true,
+    "successful_completion": "TaskCompletionGate has goal-specific independent verifiers. Unsupported goals remain unverified_goal; the grammar excludes success when no verifier is available.",
+    "supported_scope": [
+      {"kind": "notes", "scope": "Several natural-language prefixes and literal body forms; save-and-reopen proof is required. Natural-form body limit is 94 UTF-16 code units."},
+      {"kind": "flight", "scope": "Supported provider pages with explicit date and city parameters for one-way, one-adult read-only searches."},
+      {"kind": "shopping", "scope": "Recognized AX3000T price queries on supported Xiaomi app or official website pages."}
+    ],
+    "only_three_exact_owner_strings": false,
+    "arbitrary_natural_language_app_completion_proven": false,
+    "arbitrary_app_automation_proven": false,
+    "order_placement_or_payment_tested": false,
+    "limits": ["A general action layer does not supply a general business-goal verifier.", "The web-helper route requires a recognized supported web goal.", "Recognized native flight and shopping domains forbid booking, purchase and payment.", "Provider/page support and current accessibility or visual evidence remain necessary."]
+  },
+  "visual_models": [
+    {
+      "model": "GUI-Owl-1.5-4B-Instruct",
+      "profile": "gui-owl-1.5-4b-instruct-i1-q4_0",
+      "current_integration": "Ordinary VlmInferenceAdapter with observe or tools mode; exact NPU, 8192-context and 4-thread configuration with pinned image, projector and worker checks.",
+      "model_bytes": 2375774624,
+      "model_sha256": "c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df",
+      "projector_bytes": 836180288,
+      "projector_sha256": "eabdc0291d460f2e68874f51044030a7da8fe956c2a6b86abd69fd701227c105",
+      "historical_apk_sha256": "12d86be38d9cb672f86c4bc24032f8b5c3e3979ad477122afc680703680c8b08",
+      "historical_cases": [
+        {"case": "notes-vlm-tools-maxalloc-r6-01", "result": "controller_verified_done", "steps": 1, "goal_independently_verified": true, "cleanup_known": true, "result_sha256": "77e6cccbf73cb516b9f041a748e67c9c4e334ec5c54b32244b47d3b8d41319be", "run_sha256": "d5f4bca564fbfbc7cbe71b929d6816a32f0e34d0344a12ce112712482876c34e", "prepare_sha256": "69d5a28bbc457d12105dc17181024f3bf1d71859b731aa3fd67c50015e63e89a"},
+        {"case": "notes-vlm-coexistence-maxalloc-r6-01", "result": "controller_verified_done", "steps": 1, "goal_independently_verified": true, "cleanup_known": true, "result_sha256": "1e42165c8859ed23cec82b9fa7548b9bc681ab17f80361df18d5f634d661c9e3", "scope": "Notes result reviewed; other historical foreground-coexistence operations are not independently scored here."},
+        {"case": "flight-vlm-tools-maxalloc-r6-01", "result": "failed_before_inference", "reason": "APP_ALREADY_ON_MAIN_DISPLAY", "steps": 0, "cleanup_known": true, "result_sha256": "b03136db941cc02ae3353ed2ef292e1584a3cdd185e2e9b1891052ec05545585"},
+        {"case": "shopping-vlm-tools-maxalloc-r6-01", "result": "failed", "reason": "VISUAL_FRAME_UNAVAILABLE: original frame entirely RGB-zero or fully transparent", "cleanup_known": true, "result_sha256": "b01fd4cb8582f2e16ca72252ff7d12832a59e0c69121965029ad954d13dea3ec"},
+        {"case": "notes-vlm-observe-maxalloc-r6-01", "result": "partial_observe_only", "steps": 1, "tool_dispatch_enabled": false, "cleanup_known": true, "result_sha256": "c802ed65f758c5459da61842585804f945f72db205abd30319015ae1ecb83573"}
+      ],
+      "historical_notes_model_execution": {"lm_device": "HTP0", "vision_device": "GPUOpenCL", "vision_device_description": "QUALCOMM Adreno(TM) 830", "automatic_device_fallback": false, "zero_cpu_operations_proven": false, "full_multimodal_admission_passed": true, "native_total_ms": 85688.087675, "prompt_tokens": 6494, "prompt_positions": 5544, "image_tokens": 1000, "generated_tokens_including_eog": 125, "eog_observed": true, "native_contract_valid": true, "actual_exit_code": 0, "process_exit_observed": true, "cleanup_known": true, "native_result_sha256": "31b1a05328f8ae59eaf740fb7a531d362d88e822913b36197751e09e77de12a7", "app_receipt_sha256": "9f90f486d1b46f8a626cd382f2549c88af69077b47ef43f20d8f0da670a1f47a"},
+      "conclusion": "An existing ordinary visual-tools candidate with real historical Notes successes. Current-APK flight, shopping, purchase and arbitrary-GUI completion are not established."
+    },
+    {
+      "model": "UI-Venus-2-9B",
+      "current_integration": "Pinned independent diagnostic engine and worker; absent from the ordinary visual ModelProfile selection.",
+      "ordinary_app_runtime_qualified": false,
+      "tool_dispatch_qualified": false,
+      "historical_case": "code20-ui-venus-app-host-qualification-r1",
+      "historical_result": "HOST_QUALIFIED_NO_PHONE",
+      "historical_report_sha256": "e925a9765c46ff32c21f0e91d63110863c1178655079bf81e3b6e7d5aaf61c46"
+    },
+    {
+      "model": "MobiMind-1.5-2B-W8A8",
+      "current_integration": "Separate MNN diagnostic engine; neither the new MobiInfer 35B worker nor an ordinary controller model profile.",
+      "historical_case": "code15-mobimind-bolt-home-sameframe-model-only-r2",
+      "historical_report_sha256": "87c5aaf96602914af0112c0d435ecb6688eba78af957e279b94ba65f65941be5",
+      "historical_result": {"phone_model_started": true, "native_contract_valid": true, "ordinary_app_gpu_qualified": true, "cleanup_known": true, "actions_dispatched": false, "gui_semantics_scored": false, "all_gpu_claim": false}
+    },
+    {
+      "models": ["MAI-UI-2B", "MAI-UI-8B", "GUI-Owl-1.5-2B", "UI-Venus-2-27B"],
+      "current_integration": "No pinned ordinary ModelProfile or same-APK qualification identified in the inspected source and evidence.",
+      "scope_limit": "A scoped evidence finding, not a claim that no artifacts exist elsewhere or integration is impossible."
+    }
+  ],
+  "recommendation_scope": "Choose the default using same-APK ordinary tasks and verified cleanup/background behavior. Model-card scores or tokens per second alone do not justify replacement."
+}

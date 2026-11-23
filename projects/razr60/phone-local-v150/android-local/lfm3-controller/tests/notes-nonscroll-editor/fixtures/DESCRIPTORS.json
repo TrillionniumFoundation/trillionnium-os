@@ -1,0 +1,47 @@
+{
+  "v66-scrollable.json": {
+    "body": "Hepta261eV66LFM3后台验收20261113R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。",
+    "body_sha256": "f80fbc57279ce5b909f8001c7f08e11c98f8e91d670b274b672fa1e09da51c84",
+    "classification": "actual captured Hepta accessibility observation; host replay only",
+    "instruction_sha256": "46ebb8f8f527289e557b9a4723ac8f3c7a840ba4c220e675b98287fdd4fc5577",
+    "observation_id": "b387bbcda59a41e28997e9981529fc3d",
+    "original_file": "/workspace/scratch/261e5112510c/v66-notes-review-f842-r1/originals/collection/task/step-01-after.json",
+    "sha256": "66c8ce2cda5e876a7538cd104f0ba46ed53f078a3cd00695421f8805309a6ce8"
+  },
+  "v67-after.json": {
+    "body": "Hepta261eV67R7LFM3后台验收20261114R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。",
+    "body_sha256": "820d8bb8c871560855c356fb91adb7927f4682607052594612c5e9351273bea7",
+    "classification": "actual captured Hepta accessibility observation; host replay only",
+    "instruction_sha256": "e9d9fc666bf9d0e7fc37e6ff1180dabb5fc051fff972667d475963e5911cc813",
+    "observation_id": "4b80db10a5a04feb8065196620c60837",
+    "original_file": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-after.json",
+    "sha256": "4d1af0c7655df3362ee8f00271769726068302880a877816e375dadbebc946c9"
+  },
+  "v67-readiness-2.json": {
+    "body": "Hepta261eV67R7LFM3后台验收20261114R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。",
+    "body_sha256": "820d8bb8c871560855c356fb91adb7927f4682607052594612c5e9351273bea7",
+    "classification": "actual captured Hepta accessibility observation; host replay only",
+    "instruction_sha256": "e9d9fc666bf9d0e7fc37e6ff1180dabb5fc051fff972667d475963e5911cc813",
+    "observation_id": "d0f91aea3bdf4f468a4b373c138ce282",
+    "original_file": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-2.json",
+    "sha256": "4dab1fdcef82b62aa2591b3755ce4b50bedf3abc5b10603b53da4eab3fd0b5d4"
+  },
+  "v67-readiness-3.json": {
+    "body": "Hepta261eV67R7LFM3后台验收20261114R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。",
+    "body_sha256": "820d8bb8c871560855c356fb91adb7927f4682607052594612c5e9351273bea7",
+    "classification": "actual captured Hepta accessibility observation; host replay only",
+    "instruction_sha256": "e9d9fc666bf9d0e7fc37e6ff1180dabb5fc051fff972667d475963e5911cc813",
+    "observation_id": "2d08ea4ee9ec43428f76c29b1874b873",
+    "original_file": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-3.json",
+    "sha256": "e4c50127fad4193b9eb4a214516236557989cbf73d54695ad0e7256b0afe70a6"
+  },
+  "v67-readiness-4.json": {
+    "body": "Hepta261eV67R7LFM3后台验收20261114R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。",
+    "body_sha256": "820d8bb8c871560855c356fb91adb7927f4682607052594612c5e9351273bea7",
+    "classification": "actual captured Hepta accessibility observation; host replay only",
+    "instruction_sha256": "e9d9fc666bf9d0e7fc37e6ff1180dabb5fc051fff972667d475963e5911cc813",
+    "observation_id": "5227d1bfbeac4014bf1b81446e6a87ea",
+    "original_file": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-4.json",
+    "sha256": "60dbb8c22014ee5fb3dabf8b83a36aaa3286da9dd0da5cdc81dbca2918878ce3"
+  }
+}

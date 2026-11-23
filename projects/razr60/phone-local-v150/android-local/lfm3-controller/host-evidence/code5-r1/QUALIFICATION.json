@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.code5-host-qualification.v1",
+  "version_code": 5,
+  "version_name": "0.5.0-local-progress",
+  "all_pass": true,
+  "host_check_count": 23,
+  "repeat_guard_contract_assertions": 22,
+  "grammar_tests": 13,
+  "python_tool_tests": 125,
+  "android_compiled": false,
+  "phone_tested": false,
+  "native_worker_sha256": "c4fc668620756411edf0862aca67edd0c67e8afde6461d17d671169ad26bfbcb",
+  "base_source_manifest_sha256": "0a0f04dbe75282eabf16dd9143f474358ce997c27d38a82e0c115a747d1bf470",
+  "inherited_host_evidence_r3_is_current_code5_evidence": false,
+  "current_host_evidence": "host-evidence/code5-r1",
+  "independent_java_review": "existing key/tree dispatch predicate and update timing preserved; grammar and policy share filtered package set; first changed-open remains allowed; ordered open-home-open preserved",
+  "native_timing_review": "diagnostic-only; generated worker equals code4 after timing-only removal; no inference/lifecycle policy changes"
+}

@@ -1,0 +1,362 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.json.*;
+import org.trillionnium.hepta.webprotocol.*;
+import org.trillionnium.hepta.local.web.WebShoppingGoal;
+
+/** Exact production observation/retry methods; retained original DOM and AX
+ * metadata, with explicitly instrumented clock/service/client/publisher.
+ * Repeating retained frames is a synthetic future sequence, not device evidence. */
+public final class WebInitialUnavailableHost {
+    private boolean retired,failRecord;
+    private final Cancellation cancellation=new Cancellation();
+    private String taskId;
+    private Object goal=null;
+    private final Authorization authorization=new Authorization();
+    private static final class Authorization {final Authority authorization=new Authority();}
+    private static final class Authority {String sha256;}
+    private final Purpose purpose=new Purpose();
+    private final HeptaAccessibilityService service=new HeptaAccessibilityService();
+    private final Background background=new Background();
+    private final Completion completion=new Completion();
+    private final Journal journal=new Journal();
+    private final List<JSONObject> records=new ArrayList<JSONObject>();
+    private Client client;
+    private JSONObject immutableBinding;
+    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt,recordDelay,observationCost;
+    private CityObservationRetry cityObservationRetry;
+    private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    /** Flight-only endpoint: a shopping fixture must never obtain or use a city credential. */
+    private static final class CityObservationRetry {
+        boolean applies(String task,String owner,String authorization,String generation,WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,boolean stable,WebDomStability.Result bracket){throw new AssertionError("shopping cannot use a city retry");}
+        JSONObject evidence(){throw new AssertionError("shopping cannot use a city retry");}
+    }
+    private int loadingDocumentReadRetries;
+    private String loadingDocumentKey,dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
+    private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
+    private FlightProgress flightProgress;
+    private Object shoppingReadCompletion;
+    private final java.util.concurrent.atomic.AtomicBoolean flightNativeEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    private PhoneObservation current,before;
+    private WebEvidenceReceipt currentCapture;
+    private WebTaskDomain domain;
+    private PhoneObservation[] observations;
+    private int observed;
+    interface Observer {PhoneObservation observe()throws Exception;}
+    private static final class Purpose {String sitePolicyId=WebShoppingGoal.SITE_POLICY_ID,ownerSha256;Object shopping=new Object();}
+    private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    private static final class FlightProgress {boolean queryDispatched(){throw new AssertionError("not a flight test");}boolean queryAttempted(){throw new AssertionError("not a flight test");}}
+    private static final class Journal {String bindingSha;}
+    private static final class Background {
+        int checks,failAt;String generation;
+        void requireActive(){if(++checks==failAt)throw new IllegalStateException("instrumented background lease retirement");}
+    }
+    private static final class SystemClock {
+        static long now;static Runnable onSleep;
+        static long elapsedRealtime(){return now;}
+        static void sleep(long duration){now+=duration;if(onSleep!=null)onSleep.run();}
+    }
+    private static final class State {String appTreeSha256;State(String tree){appTreeSha256=tree;}}
+    private static final class WindowMetadata {Integer displayId;WindowMetadata(int id){displayId=id;}}
+    private static final class PhoneObservation {
+        String id,packageName,treeSha256,backgroundGeneration;int windowId,rotation;State state;WindowMetadata windowMetadata;
+        PhoneObservation(JSONObject retained){
+            JSONObject value=retained.getJSONObject("observation");id=value.getString("observation_id");
+            packageName=value.getString("package");treeSha256=value.getString("observation_state_sha256");
+            windowId=value.getInt("window_id");rotation=value.getInt("rotation");state=new State(value.getString("app_tree_sha256"));
+            windowMetadata=new WindowMetadata(value.getJSONObject("window").getInt("display_id"));
+            backgroundGeneration=value.getJSONObject("background_session").getString("generation");
+        }
+    }
+    private static final class WebEvidenceReceipt {
+        final JSONObject original,callbackOnly;final String status,bindingSha,instance,url,domSha;
+        final long epoch;final int displayId,windowId;
+        WebEvidenceReceipt(JSONObject input)throws Exception {
+            JSONObject cb=input.optJSONObject("_host_callback");
+            if(cb!=null){
+                original=null;callbackOnly=new JSONObject(cb.toString());status=cb.getString("status");
+                bindingSha=cb.getString("binding_sha256");instance=cb.getString("webview_instance");epoch=cb.getLong("navigation_epoch");
+                displayId=cb.getInt("actual_display_id");windowId=cb.getInt("actual_window_id");url=null;domSha=null;
+            }else{
+                original=new JSONObject(input.toString());callbackOnly=null;status="captured";
+                bindingSha=WebDomCanonical.sha256(original.getJSONObject("binding"));
+                instance=original.getString("webview_instance");epoch=original.getLong("navigation_epoch");
+                url=original.getString("current_native_url");displayId=original.getInt("display_id");windowId=original.getInt("actual_window_id");
+                domSha=original.getString("dom_sha256");
+            }
+        }
+        String domRaw(){if(original==null)throw new AssertionError("unavailable has no DOM");return original.getString("dom_raw_utf8");}
+        String beforeDomRaw(){if(original==null)throw new AssertionError("unavailable has no before DOM");return original.getString("before_dom_raw_utf8");}
+        JSONObject dom()throws Exception{return WebEvidenceJson.parseDom(domRaw());}
+        JSONObject capture(){if(original==null)throw new AssertionError("unavailable has no capture");return new JSONObject(original.toString());}
+        JSONObject callback(){return callbackOnly==null?new JSONObject().put("request_nonce",original.getString("challenge")).put("reason",JSONObject.NULL):new JSONObject(callbackOnly.toString());}
+        WebDomStability.Result stability()throws Exception{
+            return WebDomStability.verify(beforeDomRaw(),domRaw(),original.getJSONObject("binding").getString("site_policy_id"),original.getJSONObject("dom_stability"));
+        }
+    }
+    private static final class Client {
+        final WebEvidenceReceipt[] values;int calls,attempts;Runnable afterFourth;long captureCost;boolean enforceDeadline=true;final List<Long> deadlines=new ArrayList<Long>();
+        Client(JSONObject...captures)throws Exception{values=new WebEvidenceReceipt[captures.length];for(int i=0;i<captures.length;i++)values[i]=new WebEvidenceReceipt(captures[i]);}
+        WebEvidenceReceipt capture(long deadline){
+            attempts++;deadlines.add(deadline);
+            if(calls>=values.length)throw new AssertionError("capture sequence exhausted or unbounded retry");
+            SystemClock.now+=captureCost;if(enforceDeadline&&SystemClock.now>=deadline)throw new IllegalStateException("instrumented capture deadline");
+            WebEvidenceReceipt reply=values[calls++];if(calls==4&&afterFourth!=null)afterFourth.run();return reply;
+        }
+    }
+    /** This host-only harness instruments native tokens and IPC. Original DOM
+     * stability/geometry checks execute; Android native snapshots and future timing are mocked. */
+    private static final class WebShoppingObservationStability {
+        static boolean supported;static boolean supportsCaptures(JSONObject first,JSONObject last){return supported;}
+        static boolean supportsCaptures(WebEvidenceReceipt first,WebEvidenceReceipt last){return supported;}
+        static final class ReadObservationEligibility {}
+        static ReadObservationEligibility readObservationEligibility(WebEvidenceReceipt first,WebEvidenceReceipt last){
+            return supported?new ReadObservationEligibility():null; // Same host-only supported flag; no native evidence claim.
+        }
+    }
+    private static final class WebTaskDomain {
+        final Object shopping=null;
+        static WebTaskDomain waiting(String task,Purpose purpose,Object authorization,PhoneObservation frame,WebEvidenceReceipt receipt,JSONObject binding){return new WebTaskDomain();}
+        WebTaskDomain withShoppingReadQuote(Object goal,PhoneObservation frame,WebEvidenceReceipt receipt,JSONObject proof){
+            throw new AssertionError("budget-only harness cannot grant a shopping quote");
+        }
+        static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
+                WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
+        String evidence(){return "{}";}
+    }
+    private static final class Completion {int bound;void bindWebDomain(WebTaskDomain value){bound++;}}
+    private static final class HeptaAccessibilityService {
+        int authChecks,authFailAt,nativeProofCalls,typedChanges;boolean provideNative,integrityFailure;final List<Long> retainDeadlines=new ArrayList<Long>();
+        final List<FlightObservationSnapshot> snapshots=new ArrayList<FlightObservationSnapshot>();
+        static final class FlightObservationSnapshot {boolean closed;void close(){if(closed)throw new AssertionError("snapshot double close");closed=true;}}
+        void requireBackgroundObservation(String task,PhoneObservation frame){if(frame==null)throw new IllegalStateException("missing observation");}
+        void requireTaskAuthorization(String task,Object authorization){
+            if(++authChecks==authFailAt)throw new IllegalStateException("instrumented authorization retirement");
+        }
+        FlightObservationSnapshot retainFlightObservation(WebInitialUnavailableHost web,PhoneObservation frame,Cancellation cancel,long deadline){
+            // The shared retain endpoint is now used for shopping read-only proof as well.
+            // Tokens below instrument ownership only; they are not Android native proof.
+            retainDeadlines.add(deadline);if(!provideNative)return null;FlightObservationSnapshot token=new FlightObservationSnapshot();snapshots.add(token);return token;
+        }
+        JSONObject verifyFlightObservationBracket(WebInitialUnavailableHost web,FlightObservationSnapshot source,
+                PhoneObservation frame,WebEvidenceReceipt first,WebEvidenceReceipt last,Cancellation cancel,long deadline){
+            nativeProofCalls++;
+            if(integrityFailure)throw new IllegalStateException("instrumented identity mismatch");
+            if(typedChanges-->0)throw new WebNativeObservationChanged("native target, ancestor or outside recommendation node changed: ","0/1");
+            return new JSONObject();
+        }
+    }
+    private WebTaskDomain applyNavigation(WebTaskDomain value){return value;}
+    private void record(String name,JSONObject value)throws Exception{
+        if(name.startsWith("web-observation-timing-"))return; // Separate diagnostic artifact; does not replace frame/wait evidence.
+        if(failRecord)throw new java.io.IOException("instrumented persistence failure");
+        records.add(new JSONObject(value.toString()));SystemClock.now+=recordDelay;
+    }
+    private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    private volatile WebObservationTiming observationTiming;
+
+    // Caller control only: real Csair parsing has separate unchanged fixture gates.
+    private static final class CsairCalendar {boolean headerOnly;static CsairCalendar read(JSONObject dom){return null;}}
+    private static final class WebFlightDomain {static boolean bookingBodyPending(JSONObject dom){return false;}}
+
+    /* EXACT_PRODUCTION_METHODS */
+
+    static int cases,assertions;static final JSONArray names=new JSONArray();
+    interface Work{void run()throws Exception;}
+    static void check(boolean condition,String why){assertions++;if(!condition)throw new AssertionError(why);}
+    static void test(String name,Work work)throws Exception{SystemClock.now=1000;SystemClock.onSleep=null;WebShoppingObservationStability.supported=false;work.run();cases++;names.put(name);}
+    static void denied(Work work)throws Exception{
+        boolean refused=false;try{work.run();}catch(IllegalArgumentException|IllegalStateException|JSONException|java.io.IOException expected){refused=true;}
+        check(refused,"invalid or incomplete observation cannot publish");
+    }
+    static WebInitialUnavailableHost fixture(JSONObject[] captures,PhoneObservation before,PhoneObservation...after)throws Exception{
+        WebInitialUnavailableHost value=new WebInitialUnavailableHost();value.client=new Client(captures);
+        value.immutableBinding=captures[0].getJSONObject("binding");value.journal.bindingSha=value.client.values[0].bindingSha;
+        value.before=before;value.observations=after;return value;
+    }
+    PhoneObservation run(long deadline)throws Exception{
+        return observe(before,()->{if(observed>=observations.length)throw new AssertionError("unbounded AX observations");SystemClock.now+=observationCost;return observations[observed++];},deadline);
+    }
+    static JSONObject read(Path p)throws Exception{return new JSONObject(new String(Files.readAllBytes(p),StandardCharsets.UTF_8));}
+    static JSONObject changed(JSONObject original,String key){
+        JSONObject copy=new JSONObject(original.toString());
+        if("binding".equals(key))copy.getJSONObject("binding").put("task_id","ffffffffffffffffffffffffffffffff");
+        else {Object value=copy.get(key);copy.put(key,value instanceof Number?((Number)value).longValue()+1:"changed:"+value);}
+        return copy;
+    }
+    static void noPublish(WebInitialUnavailableHost f){check(f.completion.bound==0&&f.current==null&&f.currentCapture==null,"failed wait must not publish a domain");}
+    static JSONObject pending(JSONObject source){return new JSONObject(source.toString()).put("_host_status","unavailable").put("_host_reason","no_main_frame_commit");}
+    static long count(WebInitialUnavailableHost f,String schema){long n=0;for(JSONObject r:f.records)if(schema.equals(r.optString("schema")))n++;return n;}
+    static PhoneObservation[] repeated(PhoneObservation f,int n){PhoneObservation[] rows=new PhoneObservation[n];java.util.Arrays.fill(rows,f);return rows;}
+
+    static JSONObject[] actualCaptures;static JSONObject actualCallback,actualBefore;
+    static String actualTask,actualGeneration,actualOwner,actualPolicy;
+    private static JSONObject copied(JSONObject o){return new JSONObject(o.toString());}
+    private static JSONObject unavailable(String reason,String status){
+        return new JSONObject().put("_host_callback",copied(actualCallback).put("reason",reason).put("status",status));
+    }
+    private static PhoneObservation frame(){return new PhoneObservation(new JSONObject().put("observation",copied(actualBefore)));}
+    private static WebInitialUnavailableHost phase(JSONObject failed)throws Exception{
+        JSONObject a=copied(actualCaptures[3]).put("challenge",String.join("",java.util.Collections.nCopies(64,"a")));
+        JSONObject b=copied(actualCaptures[3]).put("challenge",String.join("",java.util.Collections.nCopies(64,"b")));
+        WebInitialUnavailableHost v=new WebInitialUnavailableHost();
+        v.taskId=actualTask;v.goal=new Object();v.purpose.shopping=null;v.purpose.sitePolicyId=actualPolicy;
+        v.purpose.ownerSha256=actualOwner;v.background.generation=actualGeneration;
+        v.client=new Client(actualCaptures[0],actualCaptures[1],actualCaptures[2],failed,a,b);
+        v.client.captureCost=100;v.observationCost=10;
+        v.immutableBinding=actualCaptures[0].getJSONObject("binding");v.journal.bindingSha=v.client.values[0].bindingSha;
+        v.before=frame();v.observations=new PhoneObservation[]{frame(),frame(),frame(),frame(),frame()};
+        v.service.provideNative=true;return v;
+    }
+    private PhoneObservation exactRun(long deadline)throws Exception{
+        return observe(before,()->{
+            if(observed>=observations.length)throw new AssertionError("unbounded AX observations");
+            if(client.calls==4)for(HeptaAccessibilityService.FlightObservationSnapshot s:service.snapshots)
+                if(!s.closed)throw new AssertionError("old native snapshot retained into fresh AX");
+            SystemClock.now+=observationCost;return observations[observed++];
+        },deadline);
+    }
+    private static int records(WebInitialUnavailableHost v,String schema){
+        int count=0;for(JSONObject r:v.records)if(schema.equals(r.optString("schema")))count++;return count;
+    }
+    private static void positive()throws Exception{
+        WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+        PhoneObservation done=v.exactRun(100000);
+        check(v.client.calls==6,"did not replace unavailable pair with a complete fresh pair");
+        check(v.observed==5&&v.current==done&&v.currentCapture==v.client.values[5],"only the new complete pair is published");
+        check(v.loadingDocumentReadRetries==2&&records(v,"hepta.web-initial-capture-retry.v1")==1,"one existing remaining retry consumed");
+        check(v.loadingDocumentDeadline==v.loadingDocumentStarted+32000,"original phase is not extended");
+        check(v.service.snapshots.size()==3,"three independent retained native snapshots");
+        for(HeptaAccessibilityService.FlightObservationSnapshot s:v.service.snapshots)check(s.closed,"all snapshots released");
+        JSONObject last=v.records.get(v.records.size()-1);
+        check(last.getString("first_capture_request_nonce").equals(v.client.values[4].callback().getString("request_nonce"))
+            &&last.getString("last_capture_request_nonce").equals(v.client.values[5].callback().getString("request_nonce")),
+            "final proof uses both new captures");
+        check(v.client.deadlines.get(4)==v.loadingDocumentDeadline&&v.client.deadlines.get(5)==v.loadingDocumentDeadline,
+            "both new reads retain the original phase deadline");
+    }
+    private static void noExtra(WebInitialUnavailableHost v)throws Exception{
+        v.run(100000);check(v.client.calls==4&&v.currentCapture==null,"ineligible unavailable must not create a fresh pair");
+        check(records(v,"hepta.web-initial-capture-retry.v1")==0,"ineligible case consumed no new retry");
+    }
+    private static String pinned(Path p,String hash)throws Exception{
+        byte[] b=Files.readAllBytes(p);check(WebEvidenceJson.sha(b).equals(hash),"actual input hash differs: "+p.getFileName());
+        return new String(b,StandardCharsets.UTF_8);
+    }
+
+    public static void main(String[] args)throws Exception{
+        check(args.length==4,"actual helper directory, original before frame, new report, mode");
+        Path h=Paths.get(args[0]),out=Paths.get(args[2]);String mode=args[3];
+        String[] files={"f0792e4e6b9849f5a3082674cd397db7fdc7ecf593dc46448d8f333b19624bda",
+            "67d56b4aed674030b2882a9b2ae173a8cbeeb37995024c73a6f646ddc88baedd",
+            "13a15721eb764915ae3c01b8937bbc6e94cd2c3079f24f058f76535d72550f1b",
+            "30f8b54f7f304b07870004036b4aebd80d84dcdbf1894b30a0655e8feeb1c559"};
+        String[] hashes={"bd14627966ad8b7c1f4305b923a3baf3a3432b0ea339012e5aedfd87e5416a28",
+            "b80478b02b0be14f67c657ad0c14f3ae5d8ded05a4b7c212153cd8f7f80125f3",
+            "91151bb8f3cb8decf81559bb5cb90cfb5a3cd1be63d5305b29fa7a58a723926a",
+            "b5a682f75c9401462f0b30222bba1ff16f5f95e064bddb2fe6d85c37cd147dab"};
+        actualCaptures=new JSONObject[4];
+        for(int i=0;i<4;i++)actualCaptures[i]=new JSONObject(pinned(h.resolve("raw-"+files[i]+".json"),hashes[i])).getJSONObject("capture");
+        JSONObject binding=new JSONObject(pinned(h.resolve("BINDING.json"),"94fbdfbd8f85e3f2c9f550e5901695cd42a5a011da4643ee1050eaf33adc59fc"));
+        JSONObject reply=new JSONObject(pinned(h.resolve("reply-faa30d9815174d2bbc3c1783edc6d6238d60e714e1504ca1b928133dff831864.json"),
+            "02f8eebebf0ba4e5d2dffa60bc89047a048d867c533eb453e6051e393f145dcc"));
+        actualCallback=new JSONObject(reply.getString("callback_json_utf8"));
+        actualBefore=new JSONObject(pinned(Paths.get(args[1]),"68a03c26ad463781c17cd3e51181c33b4956e46f98556f10516eeb3410dffb9b"));
+        actualTask=binding.getString("task_id");actualGeneration=binding.getJSONObject("background").getString("generation");
+        actualOwner=binding.getString("owner_sha256");actualPolicy=binding.getString("site_policy_id");
+        check("unavailable".equals(actualCallback.getString("status"))&&"DOM changed across visual callback".equals(actualCallback.getString("reason"))
+            &&actualCallback.getLong("raw_length")==0&&actualCallback.isNull("raw_sha256"),"actual callback is metadata only");
+        test("actual_initial_sequence_requires_complete_fresh_pair",()->positive());
+        if("counterfactual".equals(mode))throw new AssertionError("baseline unexpectedly accepted the new initial retry");
+        test("other_reason_stays_waiting",()->noExtra(phase(unavailable("unrecognized temporary failure","unavailable"))));
+        test("state_changed_does_not_continue_old_phase",()->noExtra(phase(unavailable("DOM changed across visual callback","state_changed"))));
+        test("storage_failure_keeps_original_fatal_rejection",()->{
+            WebInitialUnavailableHost v=phase(unavailable("private evidence storage budget reached","unavailable"));
+            denied(()->v.run(100000));check(v.client.calls==4,"storage failure did not retry");
+            check(records(v,"hepta.web-permanent-capture-failure.v1")==1,"original fatal receipt retained");
+        });
+        test("no_prior_phase_does_not_create_one",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            v.client=new Client(actualCaptures[2],unavailable("DOM changed across visual callback","unavailable"));
+            v.client.captureCost=100;v.observations=new PhoneObservation[]{frame()};
+            v.run(100000);check(v.client.calls==2&&v.loadingDocumentReadRetries==0&&v.loadingDocumentDeadline==0,"first unavailable did not establish a phase");
+        });
+        test("short_original_task_budget_does_not_extend",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            v.run(1700);check(v.client.calls==4&&v.loadingDocumentReadRetries==1&&v.loadingDocumentDeadline==1700,"less than 250ms remaining preserves original pending");
+        });
+
+        test("cancel_before_consumption_refuses",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));v.client.afterFourth=()->v.cancellation.cancelled=true;
+            denied(()->v.run(100000));check(v.client.calls==4&&v.loadingDocumentReadRetries==1,"cancel before new retry");
+        });
+        test("cancel_during_delay_refuses_fresh_read",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            SystemClock.onSleep=()->{if(v.loadingDocumentReadRetries==2)v.cancellation.cancelled=true;};
+            denied(()->v.run(100000));check(v.client.calls==4,"cancel after reservation cannot read");
+        });
+        test("owner_retirement_after_delay_refuses",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));v.service.authFailAt=4;
+            denied(()->v.run(100000));check(v.client.calls==4,"owner authority rechecked");
+        });
+        test("lease_retirement_after_delay_refuses",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));v.background.failAt=4;
+            denied(()->v.run(100000));check(v.client.calls==4,"lease rechecked");
+        });
+        for(String key:new String[]{"binding_sha256","webview_instance","navigation_epoch","actual_display_id","actual_window_id"}){
+            final String field=key;test("changed_"+key+"_refuses",()->{
+                JSONObject cb=copied(actualCallback);Object old=cb.get(field);cb.put(field,old instanceof Number?((Number)old).longValue()+1:"changed:"+old);
+                WebInitialUnavailableHost v=phase(new JSONObject().put("_host_callback",cb));
+                denied(()->v.run(100000));check(v.client.calls==4&&v.loadingDocumentReadRetries==1,"changed identity cannot consume extra read");
+            });
+        }
+        test("second_unavailable_cannot_create_third_retry",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            v.client.values[5]=new WebEvidenceReceipt(unavailable("DOM changed across visual callback","unavailable"));
+            v.run(100000);check(v.client.calls==6&&v.loadingDocumentReadRetries==2&&v.currentCapture==null,"original maximum two retained");
+            check(records(v,"hepta.web-initial-capture-retry.v1")==1,"only one new incomplete-pair recovery");
+        });
+        for(String state:new String[]{"domain","current","progress","query-entered","native-entered"}){
+            final String which=state;test("prior_"+state+"_cannot_borrow_initial_retry",()->{
+                WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+                v.client.afterFourth=()->{
+                    if("domain".equals(which))v.domain=new WebTaskDomain();
+                    if("current".equals(which))v.current=v.before;
+                    if("progress".equals(which))v.flightProgress=new FlightProgress();
+                    if("query-entered".equals(which))v.nativeQueryEntered.set(true);
+                    if("native-entered".equals(which))v.flightNativeEntered.set(true);
+                };noExtra(v);
+            });
+        }
+        for(int retryCount:new int[]{0,2}){
+            final int wrong=retryCount;test("existing_phase_retry_count_"+wrong+"_cannot_borrow_read",()->{
+                WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+                v.client.afterFourth=()->v.loadingDocumentReadRetries=wrong;noExtra(v);
+                check(v.loadingDocumentReadRetries==wrong,"counter was not reset");
+            });
+        }
+        test("changed_fresh_AX_generation_refuses",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            v.client.afterFourth=()->v.observations[2].backgroundGeneration="changed-generation";
+            denied(()->v.run(100000));check(v.client.calls==4&&v.loadingDocumentReadRetries==1,"wrong native lease cannot retry");
+        });
+        test("new_pair_binding_still_uses_original_complete_guards",()->{
+            WebInitialUnavailableHost v=phase(unavailable("DOM changed across visual callback","unavailable"));
+            JSONObject wrong=copied(actualCaptures[3]);wrong.getJSONObject("binding").put("task_id","ffffffffffffffffffffffffffffffff");
+            v.client.values[5]=new WebEvidenceReceipt(wrong);
+            denied(()->v.exactRun(100000));check(v.client.calls==6&&v.currentCapture==null&&v.completion.bound==0,"new pair binding mismatch rejected");
+        });
+        JSONObject result=new JSONObject().put("all_pass",true).put("cases",cases).put("assertions",assertions).put("names",names)
+            .put("phone_operations",false).put("actual_source_methods",true).put("clock_ipc_native_and_future_sequence_synthetic",true)
+            .put("original_DOM_and_unavailable_and_AX_metadata_pinned",true).put("full_receipt_verification_separate",true)
+            .put("final_future_pair_nonce_envelopes_synthetic",true).put("actual_model_executed",false).put("business_verified",false);
+        Files.write(out,result.toString(2).getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
+        System.out.println(result.toString());
+    }
+}

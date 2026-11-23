@@ -1,0 +1,1673 @@
+{
+  "observation_id": "2a10ebe1fa85487388000ee753381716",
+  "package": "ctrip.android.view",
+  "captured_elapsed_ms": 525237357,
+  "capture": {
+    "schema": "hepta.observation-capture.v1",
+    "mode": "pre_encoding_paired_history",
+    "sample_graph_started_elapsed_ms": 525236982,
+    "sample_graph_completed_elapsed_ms": 525237356,
+    "capture_requested_elapsed_ms": 525237357,
+    "screenshot_callback_elapsed_ms": 525237365,
+    "pair_graph_started_elapsed_ms": 525237385,
+    "pair_graph_completed_elapsed_ms": 525237754,
+    "pair_sealed_elapsed_ms": 525237755,
+    "png_encode_started_elapsed_ms": 525237755,
+    "png_encode_completed_elapsed_ms": 525238130,
+    "png_persisted_and_hashed_elapsed_ms": 525238134,
+    "post_persistence_check": "window_identity_geometry_permissions_and_reported_windows",
+    "publication_check_started_elapsed_ms": 525238134,
+    "publication_check_completed_elapsed_ms": 525238278,
+    "published_elapsed_ms": 525238279,
+    "capture_age_at_publication_ms": 922,
+    "pair_graph_event_watermark": 4,
+    "pair_sealed_event_watermark": 4,
+    "unknown_events_at_capture": 0,
+    "publication_check_event_watermark": 4,
+    "post_encoding_whole_graph_rechecked": false,
+    "same_instant_pixels_and_ax_claimed": false,
+    "publication_refreshes_capture_age": false,
+    "fresh_action_validation_required": true,
+    "grants_action_authority": false,
+    "business_completion_verified": false
+  },
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 1351,
+  "screen_sha256": "465188554ec3e2ef62335a8f3eae275b64cd7f5e42242628e260267d8d7dbea8",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 1351,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 261,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "携程旅行",
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "ctrip.android.view"
+    ],
+    "bootstrap_package": "ctrip.android.view",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "cc5b52874b545460c7f19f0233710beb642d6a6aa72eb737eed8eff9faeda06e",
+      "recognition": "complete_literal_native_single_adult_flight.v1",
+      "original_ui_initial_package": "ctrip.android.view",
+      "original_ui_allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "effective_initial_package": "ctrip.android.view",
+      "effective_allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": false,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "profile_target_wire": "ABdoZXB0YS5wcm9maWxlLXRhcmdldC52MQAAAAoAAAAAAAAACgAAAAAAI2FuZHJvaWQub3MudXNlcnR5cGUucHJvZmlsZS5NQU5BR0VEAA9qvwASY3RyaXAuYW5kcm9pZC52aWV3ADxjdHJpcC5hbmRyb2lkLnZpZXcvY3RyaXAuYnVzaW5lc3Muc3BsYXNoLkN0cmlwU3BsYXNoQWN0aXZpdHkAAAAAAAAG8wAAAAEABGJhc2UAQDY2NmNlMWU4MjM0NjgyYzg5MjQ3ZDUxMDljNWNmYTM2NDUxYzZlNjcyMzhlZTM4YTU0NWMyZDg0Yzg4MzYwZmEAAAABAEA4MTU1ZGMwNjQ0ZmVkNTE3ZThlZjZiZWY5NzE4YzM2M2QwZWIzZWIyYzIyYzA2NDU1MDQ0ZDg4MjY4YmRjZjBh",
+    "profile_target_sha256": "9942e17c0f4526996f2d88dc8c52d4c54fe409715814d14e5ebf8d303e6f2e13",
+    "display_scope_mode": "public_own_group_no_credentials_v1",
+    "display_scope_mode_source": "immutable_start_selection",
+    "display_scope_mode_grants_authority": false,
+    "generation": "fec71428-bdda-479f-840f-71e029457d7f",
+    "display_id": 261,
+    "actual_profile_window": {
+      "schema": "hepta.profile-window-ownership.v1",
+      "source": "observed_accessibility_task_id_and_fresh_privileged_leaf",
+      "generation": "fec71428-bdda-479f-840f-71e029457d7f",
+      "target_identity_sha256": "9942e17c0f4526996f2d88dc8c52d4c54fe409715814d14e5ebf8d303e6f2e13",
+      "proof_id": "f2ff39c4-94ea-4472-8a1b-a453c69d8b36",
+      "task_token_id": "64ae7a3a-fecb-477e-a53c-875466efa88c",
+      "display_id": 261,
+      "window_id": 1351,
+      "task_id": 1000015,
+      "parent_task_id": 1532,
+      "user_id": 10,
+      "user_serial": 10,
+      "full_uid": 1010367,
+      "observed_elapsed_ms": 525237261,
+      "expires_elapsed_ms": 525241207,
+      "proof_sha256": "72864bfe66f38e2addc768ec57bffdf078d589887b4a063c52c0fb809cc0fac1",
+      "serialized_token_is_authority": false,
+      "grants_action_authority": false,
+      "accessibility_task_id_source": "android16_a11y_public_parcel_checked_v1"
+    }
+  },
+  "app_tree_sha256": "41f02512c06f4ae9703ade18a5d06245971caee6f6e899d4f1cf8e338bd79e29",
+  "observation_state_sha256": "8c1d1afc0213c82219a85a44bf42e8b5d63946066bf9f8af676ce3426fd63d4a",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 512,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 42,
+    "retained_nodes": 35,
+    "retained_text_utf16": 267,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 79,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        0,
+        1224,
+        2992
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "单程列表页",
+      "view_id": "单程列表页",
+      "node_app_tree_sha256": "5ed1988d13caf825ba2e366c6390773be62e18cdf5c65533463072ef7ad4eab1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        0,
+        150,
+        1059,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.HorizontalScrollView",
+      "node_app_tree_sha256": "1ad94858ca434c9412cce98eb8cf57242020df3dc79ae631725b989e834c0dcc",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "right"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        1059,
+        204,
+        1224,
+        289
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "低价日历, 低价日历箭头",
+      "node_app_tree_sha256": "e7a4846441aae1100c35be28e75d9194c1bc4e1fc6f1790761d8f22a92eee5bc",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        0,
+        30,
+        132,
+        120
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "列表页左上角返回箭头",
+      "view_id": "列表页左上角返回箭头",
+      "node_app_tree_sha256": "609ccb525bf7ddfbd4d4e5aefb7ca6c84297494adc2f23da3754189cc7113471",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/3",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        288,
+        0,
+        936,
+        150
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "list_header_search_box",
+      "view_id": "list_header_search_box",
+      "node_app_tree_sha256": "c6b54b182e0a3428952f99dec0e0f2bdaf848cb7bbf3fdd4d35158ee7ffc0548",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        396,
+        401,
+        828,
+        446
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "正在为您搜索全网低价航班",
+      "node_app_tree_sha256": "8e9631aecd4da6f9a4b9726bf86565b208287d4e6cb448c6c3d22644dad53112",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/5",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        0,
+        150,
+        210,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "当天时间",
+      "view_id": "当天时间",
+      "node_app_tree_sha256": "e8f5843b9bd3b491781998647a8548ac8a0f703de199176e21c8b59383c7e98d",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/0",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        210,
+        150,
+        420,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "后一天时间",
+      "view_id": "后一天时间",
+      "node_app_tree_sha256": "94d913b04a9012f4be9e448b192622c192b9623fe7a77240a16e6b9facd7056f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/1",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        420,
+        150,
+        630,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "星期, 日期, 最低价",
+      "node_app_tree_sha256": "69c4e9c50e3aad17d3b438c778f1d4b6438a816d249f5567b1ea50166a6f7b27",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/2",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        630,
+        150,
+        840,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "星期, 日期, 最低价",
+      "node_app_tree_sha256": "ad32d49d0473a056c95d7e5764918d60928b54738f9b5675b715119e10c85137",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/3",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        840,
+        150,
+        1050,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "星期, 日期, 最低价",
+      "node_app_tree_sha256": "e4baedbcddfc022d3a322949c6207cfa8e1bbb17f207a55f080ac1b662bc64a9",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        1050,
+        150,
+        1059,
+        342
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "星期, 日期, 最低价",
+      "node_app_tree_sha256": "abe49f4dc2ea9d6326604c56a56be1ec37f246a8c2f08c4a2840abe3007e3ba9",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/5",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        1112,
+        204,
+        1172,
+        265
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "",
+      "description": "低价日历",
+      "view_id": "低价日历",
+      "node_app_tree_sha256": "945752bca63a7036429a164a41a6629bb1559aa9c0f49831148550c08d7278d0",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/2\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        1130,
+        265,
+        1154,
+        289
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "",
+      "description": "低价日历箭头",
+      "view_id": "低价日历箭头",
+      "node_app_tree_sha256": "f7b34b777d2133ec9f43da8f923b57385305ea452c02d95a6be98b198da6494a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/2\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        45,
+        43,
+        111,
+        107
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "",
+      "node_app_tree_sha256": "dc655a6f38e22cee3d9881966de3e55e5feff82a2cc2e69b10d1dd37e5c7d3be",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/3\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        441,
+        44,
+        783,
+        107
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "头部信息:北京到上海",
+      "view_id": "头部信息:北京到上海",
+      "node_app_tree_sha256": "ec34ffbf674b545d0726de5d4c6ed034a9cad4bc0cc192eedef8989df71aa42f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        76,
+        168,
+        136,
+        219
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "今天",
+      "description": "当天星期",
+      "view_id": "当天星期",
+      "node_app_tree_sha256": "1e9ab5aa4a4664269094b207da2efcee07d119ce08ae6d03d51839ed66053170",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        46,
+        219,
+        165,
+        285
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "11-20",
+      "description": "当天日期",
+      "view_id": "当天日期",
+      "node_app_tree_sha256": "3fbe09a68318868d0d0baef95294a11f36128edac71fc9c22c7b0b9f193e74c7",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/0\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        14,
+        285,
+        197,
+        324
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "¥450 ",
+      "description": "当天最低价",
+      "view_id": "当天最低价",
+      "node_app_tree_sha256": "8c81b099912ec1a4596546fd2ff3d5990096f2da0544a93a687976504df0e35f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/0\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n19",
+      "bounds": [
+        286,
+        168,
+        346,
+        219
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "明天",
+      "description": "后一天星期",
+      "view_id": "后一天星期",
+      "node_app_tree_sha256": "c001b2b424e4814aca7c921cce0047e5f19c55880e9a2867c9736f437ccf2ae6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/1\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n20",
+      "bounds": [
+        293,
+        219,
+        339,
+        285
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "21",
+      "description": "后一天日期",
+      "view_id": "后一天日期",
+      "node_app_tree_sha256": "920b6ec2ac6b1a32e56c16aaddb23aaeb79ec98ade9c14cefdbc04736d5752e4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/1\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n21",
+      "bounds": [
+        224,
+        285,
+        407,
+        324
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "¥400 ",
+      "description": "后一天最低价",
+      "view_id": "后一天最低价",
+      "node_app_tree_sha256": "dfc91804ce6bc83faf42986455346dd669c10d035d6ac066cd80e8fb48772aa1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/1\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n22",
+      "bounds": [
+        496,
+        168,
+        556,
+        219
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "后天",
+      "description": "星期",
+      "view_id": "星期",
+      "node_app_tree_sha256": "3f9f656cfd600b11027252a51199e0d0ed66aee9bf60f0cb507a344632233623",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/2\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n23",
+      "bounds": [
+        498,
+        219,
+        554,
+        285
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "22",
+      "description": "日期",
+      "view_id": "日期",
+      "node_app_tree_sha256": "caf1435dda8f3760b2185ac66b2b97ec9e2652338b3bf4373439d1923fe318d4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/2\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n24",
+      "bounds": [
+        434,
+        285,
+        617,
+        324
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "¥450 ",
+      "description": "最低价",
+      "view_id": "最低价",
+      "node_app_tree_sha256": "288c39a143d51e7ab8a3e3af9130b25ab0b2d4a4c976aa49c0047858bc6929f5",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/2\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n25",
+      "bounds": [
+        706,
+        168,
+        766,
+        219
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "周一",
+      "description": "星期",
+      "view_id": "星期",
+      "node_app_tree_sha256": "98c4e27a9bda868a27f2fae6d1ada174bf97aa637bead77d12b749e83b5e05c4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/3\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n26",
+      "bounds": [
+        706,
+        219,
+        765,
+        285
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "23",
+      "description": "日期",
+      "view_id": "日期",
+      "node_app_tree_sha256": "05a372f7b909d38fdc959f8ddc94ff3188a0f1ac7315edc5f19093031f4318df",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/3\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n27",
+      "bounds": [
+        644,
+        285,
+        827,
+        324
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "¥350 ",
+      "description": "最低价",
+      "view_id": "最低价",
+      "node_app_tree_sha256": "7b3f5319ca04f1dcd682ffea31405c6f8787efb0029628abf16364e2afecfb8c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/3\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n28",
+      "bounds": [
+        916,
+        168,
+        976,
+        219
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "周二",
+      "description": "星期",
+      "view_id": "星期",
+      "node_app_tree_sha256": "2a81cf940823eadf1ddddc2d1115135623bc135f7d882c83117f96536a3dc993",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n29",
+      "bounds": [
+        915,
+        219,
+        976,
+        285
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "24",
+      "description": "日期",
+      "view_id": "日期",
+      "node_app_tree_sha256": "40a82caf853185d3cb4a587d43e19fc315d250841247ba045747dc1e8f0f965b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n30",
+      "bounds": [
+        854,
+        285,
+        1037,
+        324
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "¥370 ",
+      "description": "最低价",
+      "view_id": "最低价",
+      "node_app_tree_sha256": "e2d27267bc745c7af8b2b489d224f6dad0e74177764508f4fe97b42fe3f1ccb2",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0\/4\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n31",
+      "bounds": [
+        441,
+        44,
+        553,
+        107
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "北京",
+      "description": "列表页头部出发城市",
+      "view_id": "列表页头部出发城市",
+      "node_app_tree_sha256": "e958111537c7673d9ac56e74e0a002f7a9455545ea2931956d69d566098839fd",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n32",
+      "bounds": [
+        553,
+        70,
+        622,
+        82
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "description": "列表页头部单向箭头",
+      "view_id": "列表页头部单向箭头",
+      "node_app_tree_sha256": "602977a9e3d958b9800ef6d19724e083b5b8aa2ce0c4e0b705a05b176f342f74",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4\/0\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n33",
+      "bounds": [
+        622,
+        44,
+        734,
+        107
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "上海",
+      "description": "列表页头部到达城市",
+      "view_id": "列表页头部到达城市",
+      "node_app_tree_sha256": "725d281093bb50e50658b3bc9c7477ed7a9b4eebb4bbac775a334199e84bbeca",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4\/0\/2",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n34",
+      "bounds": [
+        743,
+        56,
+        783,
+        95
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.widget.TextView",
+      "text": "",
+      "node_app_tree_sha256": "b370c2bf4bec5574a8b9c8f8387ab643f6e2d0c902ac70fe19c9180ae6a0deae",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/4\/0\/3",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

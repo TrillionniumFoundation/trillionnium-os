@@ -1,0 +1,32 @@
+package org.trillionnium.hepta.local;
+import android.os.SystemClock;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.JSONObject;
+/** Actual fresh worker/waiter/guard/completion methods. Task lifecycle fields
+ * and unused initial/post-effect branches are explicit host lifecycle ports. */
+final class LocalTaskController {
+    final HeptaAccessibilityService service;volatile boolean running=true,blocked,closed;
+    final AtomicBoolean cancelled=new AtomicBoolean();
+    final Object handleLock=new Object();LocalInference.Handle activeInference;
+    Object activeWebTask;NativeAppSession activeNativeTask;BackgroundSession activeNativeBackground;String currentTaskId;
+    InitialNativeObservation initialNativeObservation;PostEffectNativeObservation postEffectNativeObservation;
+    final List<String> pendingObservationDiagnostics=new ArrayList<String>();int observationDiagnosticErrors;
+    FailedCensusDiagnostic pendingFailedCensusDiagnostic;
+    LocalTaskController(HeptaAccessibilityService s,NativeAppSession n,BackgroundSession b){service=s;activeNativeTask=n;activeNativeBackground=b;currentTaskId=n.taskId;}
+    NativeAppSession.CalendarPermit hostAwait(NativeAppSession.CalendarModelRequest model,File directory)throws Exception{return awaitNativeCalendarPermit(model,directory);}
+    PhoneObservation hostLegacyRaw(File directory,long deadline)throws Exception{return awaitObservationRaw(currentTaskId,directory,activeNativeTask.authorization,deadline);}
+    static NotesCompletionEvidence.Frame hostCompletion(PhoneObservation p){return completionFrame(p);}
+    static final class InitialNativeObservation {NativeAppSession nativeTask;BackgroundSession background;HeptaAccessibilityService.InitialObservationRetryProof retryProof;}
+    static final class PostEffectNativeObservation {NativeAppSession nativeTask;BackgroundSession background;NativeAppSession.PostEffectReadPermit permit;HeptaAccessibilityService.PostEffectObservationRetryProof retryProof;}
+    void requireInitialNativeObservation(InitialNativeObservation p,String task,TaskAuthorization.Gate g,long d){throw new AssertionError("initial retry not supplied");}
+    void requirePostEffectNativeObservation(PostEffectNativeObservation p,String task,TaskAuthorization.Gate g,long d){throw new AssertionError("post-effect retry not supplied");}
+    static final class FailedCensusDiagnostic {FailedCensusDiagnostic(java.util.concurrent.Callable<String> c,JSONObject p){throw new AssertionError("diagnostics absent");}}
+    static final class InitialNativeObservationFailure extends IllegalStateException {private static final long serialVersionUID=1L;InitialNativeObservationFailure(String e,HeptaAccessibilityService.InitialObservationRetryProof p){super(e);}}
+    static final class PostEffectNativeObservationFailure extends IllegalStateException {private static final long serialVersionUID=1L;PostEffectNativeObservationFailure(String e,HeptaAccessibilityService.PostEffectObservationRetryProof p){super(e);}}
+    static final class NativeObservationTransientFailure extends IllegalStateException {private static final long serialVersionUID=1L;NativeObservationTransientFailure(String e,HeptaAccessibilityService.NativeObservationRetryProof p){super(e);}}
+@@ACTUAL_LTC@@
+}

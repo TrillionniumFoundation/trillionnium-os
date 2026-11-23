@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "bytes": 5784,
+      "file": "actual-observation.json",
+      "original_bytes": true,
+      "sha256": "b4f885d60fd2d461cb4cc72dd895cc78ac8c11b62ca7ccece8e213f7aed55038",
+      "source": "/workspace/scratch/261e5112510c/v66-shopping-runtime-review-f842-r1/postterminal/collection/task/native-app-frame-c5ab371e41a6455884ce6e04addd7e97.json"
+    },
+    {
+      "bytes": 6577,
+      "file": "actual-page.json",
+      "original_bytes": true,
+      "sha256": "8ff127ffdb1555e162df37b936b6b066572af6146f53804986ae082bbb9b69b7",
+      "source": "/workspace/scratch/261e5112510c/v66-shopping-runtime-review-f842-r1/postterminal/collection/task/native-app-page-0013.json"
+    },
+    {
+      "bytes": 2054,
+      "file": "actual-binding.json",
+      "original_bytes": true,
+      "sha256": "2a5673b7f827a023e80e5f2a2a3b2f98c2488c1352d6618ced1d65d58c245e44",
+      "source": "/workspace/scratch/261e5112510c/v66-shopping-runtime-review-f842-r1/collection/task/native-app-binding.json"
+    }
+  ],
+  "host_boundary": "Pure detached DTO replay from exact retained JSON. Native adapter/installed identity/lease/model dispatch belong to separate Session/Android validation. Missing JSON scalar fields decode per original PhoneObservation.Node.json emission defaults; the fixture generator must enforce the actual empty childText and selection fields.",
+  "observation_id": "c5ab371e41a6455884ce6e04addd7e97",
+  "owner": "在小米商城查一下小米AX3000T的售价",
+  "schema": "hepta.native-xiaomi-image-modal-fixtures.v1",
+  "semantic_scope": "Exact observed empty-image inset topology; not a general promotional-content classifier, privacy/consent decision, or business result. No screenshot OCR or pixel matching.",
+  "task_id": "6acbbe0c9a4a4b1ca12a91ab6c596768"
+}
