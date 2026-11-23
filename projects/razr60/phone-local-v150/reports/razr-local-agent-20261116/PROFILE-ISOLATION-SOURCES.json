@@ -1,0 +1,186 @@
+{
+  "apk_built": false,
+  "baseline_apk_sha256": "5dfa8eb6942aa1b1ce70fdc3ceffd57ade8571178ce11e85ca86a3570ed144f8",
+  "baseline_head": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "code_modified": false,
+  "hepta_source_inputs": [
+    {
+      "bytes": 52587,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "sha256": "f3eaa5ab438c39cc69653b2ce73da6df740ea0b4833f8076ad44abdadb5d580c"
+    },
+    {
+      "bytes": 17039,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/background/BrokerProtocol.java",
+      "sha256": "34c282a961d7209028c337f4b97401b92711a5c86e07bde9c82c0f9ab372c93e"
+    },
+    {
+      "bytes": 6083,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
+      "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+    },
+    {
+      "bytes": 25279,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
+      "sha256": "c11744cde9daad3723388b44ea3bcc600ca64fe525aba994278e2a62ce168269"
+    },
+    {
+      "bytes": 16508,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java",
+      "sha256": "23e1b6b543374c8d8d267427cde83ac3b8323ab27caef2c68ce218aab6d8c6d6"
+    },
+    {
+      "bytes": 10015,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031"
+    },
+    {
+      "bytes": 7520,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "sha256": "a97ab4c75d5f7838b5c0953b11147b852023c674a53a5d55f984e2653ba85a9a"
+    },
+    {
+      "bytes": 20476,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
+      "sha256": "b13a1337c660da66058c61da8cc6608c6b5f5ab07e703a63061e7f60ab74894a"
+    },
+    {
+      "bytes": 14397,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/NativeAppEvidence.java",
+      "sha256": "ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37"
+    },
+    {
+      "bytes": 4764,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/NativeAppObservation.java",
+      "sha256": "a2d0863b9b30d836f1901ba8304e871de4c68e9b1e7722722241bbd9a36064de"
+    },
+    {
+      "bytes": 64699,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "sha256": "649b6a1f7f364f56dec1074bf9c125bc79f0d382816f7f20a1a88a75aa79ce4a"
+    },
+    {
+      "bytes": 45061,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "sha256": "c1b8dcdf3ac1a2047aebf257d2db6f0ad4f5fb7683bcfb70db699ad7a15e6b0e"
+    },
+    {
+      "bytes": 28994,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "sha256": "5851664ef71af222f565d6031316510439ef49b7fd6185f7837c30812e8a2053"
+    },
+    {
+      "bytes": 271904,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "sha256": "b181815b38be0efe9a3f98178e6dd6ca5e9d36c4e955b81a6a80ba4e73f56e03"
+    },
+    {
+      "bytes": 173212,
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "sha256": "351fba6ac61f182658b1d2622d89825a4f20bc7d866152a855838747790fd64f"
+    }
+  ],
+  "official_aosp_is_not_oem_binary_equivalence": true,
+  "official_excerpt_sha256": "4588126c5077cd3b7aa6f4cb8b74d4847865c8cd565e30d4eb181ee9dbc4381a",
+  "official_source_files_rehashed_before_public_index": true,
+  "official_sources": [
+    {
+      "archived_source_name": "UserVisibilityMediator.java",
+      "bytes": 52811,
+      "git_blob_sha1": "b43ddaa92562c4d1487f6391e84e7af7f5246cc7",
+      "official_raw_url": "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android16-qpr2-release/services/core/java/com/android/server/pm/UserVisibilityMediator.java?format=TEXT",
+      "reviewed_ranges": [
+        [
+          357,
+          435
+        ],
+        [
+          490,
+          501
+        ],
+        [
+          760,
+          785
+        ],
+        [
+          1167,
+          1179
+        ]
+      ],
+      "sha256": "d67e3066bed964b476ffde6c0406713558630fe99d8c64c6a37af918b5ef7636"
+    },
+    {
+      "archived_source_name": "ActivityTaskSupervisor.java",
+      "bytes": 152056,
+      "git_blob_sha1": "ac8b92854e68bc8c8173f04b6c7994cad2a5c712",
+      "official_raw_url": "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android16-qpr2-release/services/core/java/com/android/server/wm/ActivityTaskSupervisor.java?format=TEXT",
+      "reviewed_ranges": [
+        [
+          422,
+          470
+        ],
+        [
+          1293,
+          1389
+        ]
+      ],
+      "sha256": "264137dfc907f6e99c5a4188e13771053a3f4ddc8318bc04c776a2fc91bb7a18"
+    },
+    {
+      "archived_source_name": "ActivityStarter.java",
+      "bytes": 187193,
+      "git_blob_sha1": "21638a31a629b41277315d2195643147ee6984c9",
+      "official_raw_url": "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android16-qpr2-release/services/core/java/com/android/server/wm/ActivityStarter.java?format=TEXT",
+      "reviewed_ranges": [
+        [
+          2383,
+          2395
+        ],
+        [
+          2480,
+          2490
+        ],
+        [
+          3001,
+          3051
+        ]
+      ],
+      "sha256": "c49cc709014096ff5b42c8e3a6db5ce20621b3816717be8b307d56bca34b5790"
+    },
+    {
+      "archived_source_name": "GenericWindowPolicyController.java",
+      "bytes": 21368,
+      "git_blob_sha1": "adadd145d04e0c865a51b0693be090f31354a6a7",
+      "official_raw_url": "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android16-qpr2-release/services/companion/java/com/android/server/companion/virtual/GenericWindowPolicyController.java?format=TEXT",
+      "reviewed_ranges": [
+        [
+          299,
+          347
+        ]
+      ],
+      "sha256": "3134e76230132d3b7e40698a41c5144123315b59938fb57111a454207a2d301e"
+    },
+    {
+      "archived_source_name": "VirtualDeviceImpl.java",
+      "bytes": 81906,
+      "git_blob_sha1": "98e80b7b9a81ba2853bb611ba913f563e32a6e22",
+      "official_raw_url": "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android16-qpr2-release/services/companion/java/com/android/server/companion/virtual/VirtualDeviceImpl.java?format=TEXT",
+      "reviewed_ranges": [
+        [
+          1470,
+          1491
+        ]
+      ],
+      "sha256": "99ca8fa1582f7ceb2d60c796a22b59b84bf3f13aae29370af1b278a69b32b3bb"
+    }
+  ],
+  "phone_contacted": false,
+  "private_report_sha256": "cda616190e11689c345d74dcdabff8ddab0dae163e36610f4171a9bd74ac7cff",
+  "private_source_index_sha256": "833a6703877499aa4fd6751f13a4d77074f9ff56f5d02664195f0476cd7637cd",
+  "private_source_paths_removed": true,
+  "profile_created": false,
+  "raw_phone_originals_or_screenshots_published": false,
+  "report_sha256": "ed65608ceaaf37613fc5616daec3170b7b90f348d5717e6005947493aa4d50b4",
+  "runtime_qualification_performed": false,
+  "schema": "hepta.profile-aware-readonly-source-review.v1"
+}

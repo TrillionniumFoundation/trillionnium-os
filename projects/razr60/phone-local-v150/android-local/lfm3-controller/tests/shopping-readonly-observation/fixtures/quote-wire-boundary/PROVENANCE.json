@@ -1,0 +1,12 @@
+{
+  "actual_native_or_IPC_verified": false,
+  "bytes": 1405,
+  "file": "reply-first.json.gz",
+  "gzip_bytes": 703,
+  "gzip_sha256": "447b1375487da2775a4ef6801587c5c7a4f8b45d0958c59f5a7f945951dfe5ff",
+  "phone_actions": 0,
+  "schema": "hepta.shopping-quote-host-wire-fixture.v1",
+  "sha256": "9fb77c909c56534c07ed8c834a475c0150aa7acfd9aaa1da698b45c45803cf4f",
+  "source": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/reply-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+  "use": "original callback shape and exact DOM content; new times/current-peer wire and complete native/service boundaries are explicitly synthetic"
+}

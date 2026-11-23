@@ -1,0 +1,343 @@
+{
+  "schema": "hepta.sanitized-code16-gemma-summary.v1",
+  "final": true,
+  "strict_counts": {
+    "pass": 7,
+    "fail": 2
+  },
+  "suite_verdict": "fail",
+  "version_code": 16,
+  "model_profile": "gemma4-e4b-qat-q4_0",
+  "model_sha256": "676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee",
+  "apk_sha256": "6f8cfa51abbb388a010ed1c222fd230de94956390dd3fef8870320acd4afbae3",
+  "compute": "npu",
+  "context_tokens": 4096,
+  "threads": 4,
+  "cases": [
+    {
+      "case_id": "core-settings-home-01",
+      "verdict": "pass",
+      "steps": 2,
+      "elapsed_host_seconds": 64.152,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 2,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-settings-apps-01",
+      "verdict": "pass",
+      "steps": 3,
+      "elapsed_host_seconds": 94.302,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 3,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-calculator-keypad-01",
+      "verdict": "fail",
+      "steps": 16,
+      "elapsed_host_seconds": 504.822,
+      "task_status": "failed",
+      "normal_model_completion": false,
+      "model_reported_success": false,
+      "cleanup_known": true,
+      "native_receipts_verified": false,
+      "goal_checks_all_passed": false,
+      "failed_predicates": [
+        "independent_final_ui",
+        "calculator_no_type_shortcut",
+        "calculator_fresh_clear_then_exact_keypad_sequence",
+        "calculator_entered_expression_visible",
+        "calculator_final_result_visible"
+      ],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 16,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-settings-chinese-search-01",
+      "verdict": "pass",
+      "steps": 4,
+      "elapsed_host_seconds": 127.775,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 4,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-search-return-home-01",
+      "verdict": "pass",
+      "steps": 7,
+      "elapsed_host_seconds": 214.839,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 7,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-settings-home-settings-01",
+      "verdict": "fail",
+      "steps": 17,
+      "elapsed_host_seconds": 504.695,
+      "task_status": "failed",
+      "normal_model_completion": false,
+      "model_reported_success": false,
+      "cleanup_known": true,
+      "native_receipts_verified": false,
+      "goal_checks_all_passed": false,
+      "failed_predicates": [
+        "strict_model_bound_goal_visit_order"
+      ],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 17,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "verdict": "pass",
+      "steps": 8,
+      "elapsed_host_seconds": 251.93,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 8,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-settings-scroll-01",
+      "verdict": "pass",
+      "steps": 4,
+      "elapsed_host_seconds": 132.24,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 4,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-find-calculator-01",
+      "verdict": "pass",
+      "steps": 3,
+      "elapsed_host_seconds": 99.064,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "native_runs": 3,
+      "stale_rejections": 0
+    }
+  ],
+  "runtime": {
+    "native_calls": 64,
+    "native_and_app_completed": 62,
+    "noncompleted_calls": [
+      {
+        "case_id": "core-calculator-keypad-01",
+        "app_status": "cancelled",
+        "native_error_present": false
+      },
+      {
+        "case_id": "core-settings-home-settings-01",
+        "app_status": "cancelled",
+        "native_error_present": true
+      }
+    ],
+    "positive_htp_offload_calls": 63,
+    "offloaded_layer_counts": [
+      0,
+      43
+    ],
+    "devices": [
+      "HTP0"
+    ],
+    "full_operator_coverage_proven": false,
+    "utilization_measured": false,
+    "model_bytes_hashed_per_complete_call": 5154941280,
+    "native_total_ms": {
+      "n": 62,
+      "min": 22695.427,
+      "median": 27759.5235,
+      "max": 32994.081,
+      "sum": 1732731.17
+    },
+    "app_model_call_total_ms": {
+      "n": 62,
+      "min": 23674.0,
+      "median": 27888.5,
+      "max": 33125.0,
+      "sum": 1746078.0
+    },
+    "sdk_ttft_ms": {
+      "n": 62,
+      "min": 3333.41,
+      "median": 5657.234,
+      "max": 6165.013,
+      "sum": 334280.749
+    },
+    "phases_ms": {
+      "hash": {
+        "n": 62,
+        "min": 4261.481,
+        "median": 5443.564,
+        "max": 6133.798,
+        "sum": 344745.556
+      },
+      "vocab": {
+        "n": 62,
+        "min": 493.579,
+        "median": 542.5895,
+        "max": 630.705,
+        "sum": 34193.684
+      },
+      "create": {
+        "n": 62,
+        "min": 5707.166,
+        "median": 6420.875,
+        "max": 7262.455,
+        "sum": 398136.141
+      },
+      "template_tokenize": {
+        "n": 62,
+        "min": 130.367,
+        "median": 142.513,
+        "max": 190.711,
+        "sum": 8996.046
+      },
+      "generate": {
+        "n": 62,
+        "min": 11232.537,
+        "median": 14665.365,
+        "max": 20247.9,
+        "sum": 918945.164
+      },
+      "destroy": {
+        "n": 62,
+        "min": 391.741,
+        "median": 435.89549999999997,
+        "max": 482.247,
+        "sum": 27225.997
+      },
+      "deinit": {
+        "n": 62,
+        "min": 0.034,
+        "median": 0.043,
+        "max": 0.076,
+        "sum": 2.695
+      }
+    },
+    "decode_tokens_per_second": {
+      "n": 62,
+      "min": 9.175211382952808,
+      "median": 9.65262750297953,
+      "max": 12.983414615215821,
+      "sum": 611.897118913787
+    },
+    "decode_weighted_tokens_per_second": 9.820076829434814,
+    "prefill_tokens_per_second": {
+      "n": 62,
+      "min": 336.719469858967,
+      "median": 345.1121152428039,
+      "max": 378.8666761132098,
+      "sum": 21562.23407138726
+    },
+    "prefill_weighted_tokens_per_second": 347.4774171778123,
+    "hash_plus_create_fraction_of_completed_native_time": 0.42873453762593766,
+    "kernel_memavailable_before_bytes": {
+      "n": 64,
+      "min": 9328398336,
+      "median": 9537402880.0,
+      "max": 9808707584
+    },
+    "kernel_memavailable_after_bytes": {
+      "n": 64,
+      "min": 6814998528,
+      "median": 9567684608.0,
+      "max": 9816457216
+    },
+    "definitions": {
+      "sdk_ttft": "SDK generate/prefill only; excludes full model SHA, vocabulary and create.",
+      "model_call": "Complete per-step local model process, not full task or Start-button latency.",
+      "throughput": "Completed native and App calls only; cancelled calls separately counted.",
+      "memory": "Kernel MemAvailable snapshots; not process RSS or a continuous peak."
+    }
+  },
+  "telemetry": {
+    "independent_thermal_monitor_bound": false,
+    "temperature_peaks_measured": false,
+    "energy_consumption_measured": false
+  },
+  "network": {
+    "verdict": "completed_and_restored",
+    "offline_precondition_verified_twice": true,
+    "restoration_verified_twice": true,
+    "preferences_restored": true,
+    "default_connectivity_reestablished": true,
+    "sampling_is_not_packet_capture": true,
+    "continuous_whole_device_network_absence_proven": false
+  },
+  "durable_job_terminal_verified": true,
+  "statistics_sha256": "33cc4cfb2d0cb965ed1a453990332c46f0c0c164cff5f3f892584308b153bc16",
+  "source_plan_sha256": "75dfe2741f0e25790404e9b76d80f10845397f11da62fb3efe1b44ee29cceab7",
+  "assertions_sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836",
+  "privacy": "Device IDs, network identifiers, host paths, task/nonce IDs and private UI/model text omitted.",
+  "phone_contacted_by_collector": false,
+  "original_files_modified": false,
+  "unassessed": [
+    "ordinary_Start_entry",
+    "separate_Stop_cancel_lifecycle",
+    "restart_no_replay",
+    "locked_or_screen_off",
+    "vision",
+    "all_installed_apps",
+    "continuous_power_energy_utilization"
+  ]
+}

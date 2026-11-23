@@ -1,0 +1,6 @@
+bin/
+BUILD-RECEIPT.json
+HOST-VALIDATION.json
+probe-host
+results*/
+*.zip

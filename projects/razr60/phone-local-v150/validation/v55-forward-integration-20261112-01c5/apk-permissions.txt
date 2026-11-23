@@ -1,0 +1,2 @@
+package: org.trillionnium.hepta.local
+uses-permission: name='org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE'

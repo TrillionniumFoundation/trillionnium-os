@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.v56.frozen-source.v1",
+  "requested_parents": [
+    "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "b949261f8caaf821c7a4618d0bab09a718238802"
+  ],
+  "source_manifest_sha256": "36e2af3984d6d76b31a6b909dd9753152d0ddbb01d995c3212587c9c4ed236bc",
+  "validation_scope": "unchanged historical v55 evidence; not v56 Android or phone acceptance",
+  "original_scope_guard_failure": {
+    "job_id": "1a1cfd1c5e4-2564-1ac2",
+    "reason": "guard required every path inside component; 21 inherited v55 validation records are outside component"
+  },
+  "phone_operations": false,
+  "steps": [
+    "preflight_pass"
+  ],
+  "historical_validation": [
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/ANDROID-BUILD-RESULT.json",
+      "blob_sha1": "71f92916436f6dbce2a6a74acd4edf1bfb1c895d",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/ANDROID-BUILD.stderr",
+      "blob_sha1": "7889b352b992a9fc331132accf5245ffb8c5e1a9",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/ASSEMBLY-RESULT.json",
+      "blob_sha1": "711cc5efafd6840cc930358798b6360f47c253f9",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/BACKGROUND-LAUNCH-RESULT.json",
+      "blob_sha1": "ea9b557ad0c0d36dbdad8c05a3742d3451e2ce7c",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/BACKGROUND-LAUNCH.stdout",
+      "blob_sha1": "fe8efec68931ac74e5ac2cb2a1c557725ca295e4",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/EVIDENCE-MANIFEST.json",
+      "blob_sha1": "97f93bb1e91600d13807d346ab4ab05ba9b65859",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/HOST-CHECKS.json",
+      "blob_sha1": "e659b23abac0fdc56ce44543ecec600106b6c913",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/HOST-DRIVER.py",
+      "blob_sha1": "03f0b73fe4cf2a9481a366ecd3936d4a509dafd1",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/HOST-INTEGRATION-RESULT.json",
+      "blob_sha1": "779d305ae0296628a85dbc5402605c70a64ee1fb",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/LAUNCH-CALLSITE-NEGATIVE.stderr",
+      "blob_sha1": "35eea3003ba63976e9774b66a43eef0bae67d67d",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/MAC-BUILD-RECEIPT.json",
+      "blob_sha1": "0cb5e156c4d33606c810fce80038e6ebd207a3b2",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/OBSERVER-RESULT.json",
+      "blob_sha1": "504a4af76700dab25821dfc28580ffc2da1015ef",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/OWNED-WORKER-CANCELLATION-RESULT.json",
+      "blob_sha1": "ce6cf28d5be8116298daf1fdfa354c0b6934c459",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/OWNED-WORKER-CANCELLATION.stdout",
+      "blob_sha1": "e934644f23999356d39019bfe135b40b8fca7339",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/PATCH-REPLAY.json",
+      "blob_sha1": "10fa9ad59612c62dcd192afeb8245041a83e65dc",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/README.md",
+      "blob_sha1": "c536214f2d1d98503bfd7c6a6bf4f710278bdc70",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/SOURCE-PRESERVATION.json",
+      "blob_sha1": "a79885b32baa5ea6fecebe9ad3c5d0253782399f",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/STATIC-ACCEPTANCE.json",
+      "blob_sha1": "513b28ad4ad99f33cd84cafccd4d1a6193179ea8",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/apk-badging.txt",
+      "blob_sha1": "916f8b3762213c24a9717c762d027b561a11d93c",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/apk-permissions.txt",
+      "blob_sha1": "62010368cb9d1649ef62d0c58719c82af59f36e0",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/apk-signature.txt",
+      "blob_sha1": "740e2927382b410fecaae6463b9fdfeea526bc79",
+      "unchanged_from": "b949261f8caaf821c7a4618d0bab09a718238802"
+    }
+  ],
+  "pin_relevant_changes": [],
+  "untracked_before_stage": [
+    "projects/razr60/phone-local-v150/android-local/lfm3-controller/docs/INTEGRATED-V56.md"
+  ],
+  "source_closure": {
+    "source_manifest_verified": true,
+    "members": 1434,
+    "phone_qualified": false
+  },
+  "evidence": [
+    {
+      "path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r1/HOST-CHECKS.json",
+      "bytes": 88352,
+      "sha256": "3deb64bc0a53052ed16901eedc0adea96091dd7f8a8b2385020d5a96e408ebed"
+    },
+    {
+      "path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r2/HOST-CHECKS.json",
+      "bytes": 103674,
+      "sha256": "e5b68323da8f321df69f7e359ed58120c2e5a27090c172e086601f4c9a73ea84"
+    },
+    {
+      "path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/RESULT.json",
+      "bytes": 35455,
+      "sha256": "72fe3c87f176a096b2863bb2abc0febac9d1805adedd7a075ee37c37098c2ba1"
+    },
+    {
+      "path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r2/RESULT.json",
+      "bytes": 4876,
+      "sha256": "d05c0d852d887167c067163a0f54ecddfca0ca993fbec10db61801067d4009af"
+    }
+  ],
+  "failed_step": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "stdout": "projects/razr60/phone-local-v150/validation/v55-forward-integration-20261112-01c5/LAUNCH-CALLSITE-NEGATIVE.stderr:5: new blank line at EOF.\n",
+    "stderr": ""
+  },
+  "all_pass": false,
+  "error_type": "RuntimeError",
+  "error": "step failed: git"
+}

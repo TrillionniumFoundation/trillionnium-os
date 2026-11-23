@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.mobimind.app-host-checks.v1",
+  "receipt_and_hash_assertions": 58,
+  "recovery_assertions": 41,
+  "python_fixture_cases": 4,
+  "java_host_target": 8,
+  "android_compile_sdk": 34,
+  "android_compile_exit": 0,
+  "android_source_count": 33,
+  "android_class_count": 108,
+  "mac_job": "1a1bcf26ee0-138b0-535",
+  "ordinary_app_runtime_qualified": false,
+  "apk_built": false,
+  "phone_contacted": false,
+  "agent1_readonly_review": "shared lease/recovery/nonce chain reviewed; no remaining blocker reported"
+}

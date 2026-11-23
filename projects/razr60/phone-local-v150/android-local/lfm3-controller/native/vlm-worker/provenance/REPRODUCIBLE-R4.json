@@ -1,0 +1,10 @@
+{
+  "returncode": 0,
+  "stdout": "{\"worker\": {\"path\": \"/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-22402/worker-ci-rebuild-r4/libhepta_local_vlm_runner.so\", \"bytes\": 147424, \"sha256\": \"33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e\"}, \"strong_undefined_closure_complete\": false, \"new_cpp_runtime_added\": false, \"phone_contacted\": false}\n",
+  "stderr": "",
+  "phone_contacted": false,
+  "identical_worker_bytes": true,
+  "original_sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e",
+  "rebuild_sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e",
+  "bytes": 147424
+}

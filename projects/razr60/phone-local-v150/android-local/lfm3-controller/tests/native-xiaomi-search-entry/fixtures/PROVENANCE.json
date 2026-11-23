@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.native-xiaomi-entry-fixtures.v1",
+  "recorded_observations": [
+    {
+      "name": "loading",
+      "source_path": "/workspace/scratch/22402a688123/r21_work/device/shopping-vlm-tools-maxalloc-r6-01/collection/task/step-01-before.json",
+      "source_sha256": "178b6c9f3f08bc958fca44c6f5f517481b73048a386df930de27c33e8a927690",
+      "source_bytes": 19578,
+      "gzip_sha256": "222efa63bc2359c6e13f1cf106695ade66357e97eb3c59a93da572d4d6ab4a6b",
+      "gzip_bytes": 2816,
+      "fixture_path": "tests/native-xiaomi-search-entry/fixtures/loading.json.gz",
+      "decompressed_bytes_identical": true,
+      "qualification_original": false
+    },
+    {
+      "name": "home",
+      "source_path": "/workspace/scratch/22402a688123/r21_work/device/shopping-vlm-tools-maxalloc-r6-01/collection/task/step-02-before.json",
+      "source_sha256": "0f7758a5af8d2ff79da2ebb8f973980ce3d73e50f6b2ec5db38df3c5a4d5bc9c",
+      "source_bytes": 96726,
+      "gzip_sha256": "97d858f0b31366372ad47d6ed90c5ef4feb621c73a7c23422bacad82d23fba2c",
+      "gzip_bytes": 8656,
+      "fixture_path": "tests/native-xiaomi-search-entry/fixtures/home.json.gz",
+      "decompressed_bytes_identical": true,
+      "qualification_original": false
+    },
+    {
+      "name": "login",
+      "source_path": "/workspace/scratch/22402a688123/r21_work/device/shopping-vlm-tools-maxalloc-r6-01/collection/task/step-03-before.json",
+      "source_sha256": "85eec05bd99fdd7dcbc65b8fc2cdcb4234c1907051860d08afb9936d4d5a165e",
+      "source_bytes": 22468,
+      "gzip_sha256": "895d85f8f4c62472c947cf2758ad8df27c0d7e8f4ed0764e3a3b693631277260",
+      "gzip_bytes": 3281,
+      "fixture_path": "tests/native-xiaomi-search-entry/fixtures/login.json.gz",
+      "decompressed_bytes_identical": true,
+      "qualification_original": false
+    }
+  ],
+  "manual_result": {
+    "source_path": "pocket4:/home/alex/hepta-resume-261e-r2/native-xiaomi-search-entry-r1/RESULT.json",
+    "fixture_path": "tests/native-xiaomi-search-entry/fixtures/manual-search-entry-RESULT.json",
+    "bytes": 2040,
+    "sha256": "275dd04b104cd0a784807658b46ea76038783104a933e50c997cb95852174acf",
+    "bytes_unchanged": true
+  },
+  "old_fixture_provenance_unchanged": true,
+  "original_result_claims_not_extended": true,
+  "host_replay_authority_binding_synthetic": true,
+  "phone_operations": 0,
+  "installed_identity_verified_by_replay": false,
+  "business_completion_verified_by_replay": false
+}

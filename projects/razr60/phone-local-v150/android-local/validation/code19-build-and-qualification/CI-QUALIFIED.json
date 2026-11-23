@@ -1,0 +1,290 @@
+{
+  "schema": "hepta.code19.complete-ci-qualified-artifacts.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "head_sha": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "run_id": 42579979834,
+  "run_attempt": 1,
+  "run_url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42579979834",
+  "producer_job_id": 129036150172,
+  "consumer_job_id": 129038468718,
+  "producer_success": true,
+  "consumer_success": true,
+  "host_all_pass": true,
+  "host_check_count": 47,
+  "host_source_inputs_reverified": 119,
+  "host_checks_sha256": "a7403b0413299825287803643dfdc32525fb294a882479898f639131a3dee12b",
+  "transport": {
+    "schema": "hepta.fixed-runtime-ci-transport.v1",
+    "source_fetch_sha256": "3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c",
+    "official_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+    "fixed_asset_api_url": "https://api.github.com/repos/qualcomm/GenieX/releases/assets/683271197",
+    "archive_bytes": 98545327,
+    "archive_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "core_library_sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "maximum_attempts": 4,
+    "phone_contacted": false,
+    "models_downloaded": false,
+    "source_modified": false,
+    "original_extractor_and_pins_preserved": true,
+    "result": "success",
+    "attempts": [
+      {
+        "attempt": 1,
+        "transport_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+        "result": "http_error",
+        "status": 504
+      },
+      {
+        "attempt": 2,
+        "transport_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+        "result": "http_error",
+        "status": 504
+      },
+      {
+        "attempt": 3,
+        "transport_url": "https://api.github.com/repos/qualcomm/GenieX/releases/assets/683271197",
+        "result": "verified",
+        "bytes": 98545327,
+        "sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f"
+      }
+    ],
+    "selected_transport": "https://api.github.com/repos/qualcomm/GenieX/releases/assets/683271197"
+  },
+  "artifacts": [
+    {
+      "name": "host-and-static",
+      "id": 13656998212,
+      "bytes": 55936,
+      "sha256": "5ceeead6ac3fa198c0022585344655f79852e52d6882eeef4ad9f120ceb436d0",
+      "digest_verified": true,
+      "members": [
+        "hepta-host-checks/ActionDecisionHostTest.stderr",
+        "hepta-host-checks/ActionDecisionHostTest.stdout",
+        "hepta-host-checks/ActionFreshnessHostTest.stderr",
+        "hepta-host-checks/ActionFreshnessHostTest.stdout",
+        "hepta-host-checks/AppCatalogueHostTest.stderr",
+        "hepta-host-checks/AppCatalogueHostTest.stdout",
+        "hepta-host-checks/BudgetHostTest.stderr",
+        "hepta-host-checks/BudgetHostTest.stdout",
+        "hepta-host-checks/CompactSequenceHostTest.stderr",
+        "hepta-host-checks/CompactSequenceHostTest.stdout",
+        "hepta-host-checks/DecisionGrammarHostTest.stderr",
+        "hepta-host-checks/DecisionGrammarHostTest.stdout",
+        "hepta-host-checks/DispatchedActionSequenceHostTest.stderr",
+        "hepta-host-checks/DispatchedActionSequenceHostTest.stdout",
+        "hepta-host-checks/Gemma4ProfileHostTest.stderr",
+        "hepta-host-checks/Gemma4ProfileHostTest.stdout",
+        "hepta-host-checks/HOST-CHECKS.json",
+        "hepta-host-checks/ImeObservationHostTest.stderr",
+        "hepta-host-checks/ImeObservationHostTest.stdout",
+        "hepta-host-checks/LocalPolicyHostTest.stderr",
+        "hepta-host-checks/LocalPolicyHostTest.stdout",
+        "hepta-host-checks/MemoryAvailabilityHostTest.stderr",
+        "hepta-host-checks/MemoryAvailabilityHostTest.stdout",
+        "hepta-host-checks/MobiMindContractHostTest.stderr",
+        "hepta-host-checks/MobiMindContractHostTest.stdout",
+        "hepta-host-checks/MobiMindSessionContractHostTest.stderr",
+        "hepta-host-checks/MobiMindSessionContractHostTest.stdout",
+        "hepta-host-checks/ModelProfileHostTest.stderr",
+        "hepta-host-checks/ModelProfileHostTest.stdout",
+        "hepta-host-checks/ObservationStabilityHostTest.stderr",
+        "hepta-host-checks/ObservationStabilityHostTest.stdout",
+        "hepta-host-checks/ObservedChildTextHostTest.stderr",
+        "hepta-host-checks/ObservedChildTextHostTest.stdout",
+        "hepta-host-checks/ObservedScrollActionsHostTest.stderr",
+        "hepta-host-checks/ObservedScrollActionsHostTest.stdout",
+        "hepta-host-checks/ObservedTargetLabelsHostTest.stderr",
+        "hepta-host-checks/ObservedTargetLabelsHostTest.stdout",
+        "hepta-host-checks/ObservedTextProjectionHostTest.stderr",
+        "hepta-host-checks/ObservedTextProjectionHostTest.stdout",
+        "hepta-host-checks/ObservedWindowMetadataHostTest.stderr",
+        "hepta-host-checks/ObservedWindowMetadataHostTest.stdout",
+        "hepta-host-checks/PersistentActionPolicyHostTest.stderr",
+        "hepta-host-checks/PersistentActionPolicyHostTest.stdout",
+        "hepta-host-checks/RecentActionProjectionHostTest.stderr",
+        "hepta-host-checks/RecentActionProjectionHostTest.stdout",
+        "hepta-host-checks/RepeatActionGuardHostTest.stderr",
+        "hepta-host-checks/RepeatActionGuardHostTest.stdout",
+        "hepta-host-checks/RepeatClickProjectionHostTest.stderr",
+        "hepta-host-checks/RepeatClickProjectionHostTest.stdout",
+        "hepta-host-checks/ScrollGrammarHostTest.stderr",
+        "hepta-host-checks/SessionRecoveryHostTest.stderr",
+        "hepta-host-checks/ScrollGrammarHostTest.stdout",
+        "hepta-host-checks/SessionRecoveryHostTest.stdout",
+        "hepta-host-checks/completion-protocol.stderr",
+        "hepta-host-checks/completion-protocol.stdout",
+        "hepta-host-checks/grammar-recognition.stderr",
+        "hepta-host-checks/grammar-recognition.stdout",
+        "hepta-host-checks/java-compile.stderr",
+        "hepta-host-checks/java-compile.stdout",
+        "hepta-host-checks/mobimind-private-staging.stderr",
+        "hepta-host-checks/mobimind-private-staging.stdout",
+        "hepta-host-checks/model_profile_contract-compile.stderr",
+        "hepta-host-checks/model_profile_contract-compile.stdout",
+        "hepta-host-checks/model_profile_contract.stderr",
+        "hepta-host-checks/model_profile_contract.stdout",
+        "hepta-host-checks/native-adapter-syntax.stderr",
+        "hepta-host-checks/native-adapter-syntax.stdout",
+        "hepta-host-checks/parent_death_contract-compile.stderr",
+        "hepta-host-checks/parent_death_contract-compile.stdout",
+        "hepta-host-checks/parent_death_contract.stderr",
+        "hepta-host-checks/parent_death_contract.stdout",
+        "hepta-host-checks/phase_timing_contract-compile.stderr",
+        "hepta-host-checks/phase_timing_contract-compile.stdout",
+        "hepta-host-checks/phase_timing_contract.stderr",
+        "hepta-host-checks/phase_timing_contract.stdout",
+        "hepta-host-checks/private-prompt-evidence.stderr",
+        "hepta-host-checks/private-prompt-evidence.stdout",
+        "hepta-host-checks/prompt_budget_contract-compile.stderr",
+        "hepta-host-checks/prompt_budget_contract-compile.stdout",
+        "hepta-host-checks/prompt_budget_contract.stderr",
+        "hepta-host-checks/prompt_budget_contract.stdout",
+        "hepta-host-checks/publish_contract-compile.stderr",
+        "hepta-host-checks/publish_contract-compile.stdout",
+        "hepta-host-checks/publish_contract.stderr",
+        "hepta-host-checks/publish_contract.stdout",
+        "hepta-host-checks/python-tools.stderr",
+        "hepta-host-checks/python-tools.stdout",
+        "hepta-host-checks/scroll-grammar-recognition.stderr",
+        "hepta-host-checks/scroll-grammar-recognition.stdout",
+        "hepta-host-checks/sha256-hashlib-differential.stderr",
+        "hepta-host-checks/sha256-hashlib-differential.stdout",
+        "hepta-host-checks/sha256_probe-compile.stderr",
+        "hepta-host-checks/sha256_probe-compile.stdout",
+        "hepta-host-checks/sha256_probe.stderr",
+        "hepta-host-checks/sha256_probe.stdout",
+        "hepta-geniex/dependency-receipt.json",
+        "hepta-geniex-transport.json",
+        "hepta-build/control-v19-static/STATIC-ACCEPTANCE.json",
+        "hepta-build/control-v19-static/accessibility-metadata.txt",
+        "hepta-build/control-v19-static/apk-badging.txt",
+        "hepta-build/control-v19-static/apk-manifest.txt",
+        "hepta-build/control-v19-static/apk-permissions.txt",
+        "hepta-build/control-v19-static/apk-signature.txt",
+        "hepta-build/control-v19-static/mobimind-runner-elf.txt",
+        "hepta-build/control-v19-static/runner-elf.txt",
+        "hepta-build/mac-build-receipt.json",
+        "hepta-build/worker-adapter.json"
+      ]
+    },
+    {
+      "name": "linux-consumer",
+      "id": 13656728960,
+      "bytes": 5796,
+      "sha256": "e4ae39a45ea952dd4a5a28b871545fcd986b24b43ab342980014341a54d8d079",
+      "digest_verified": true,
+      "members": [
+        "hepta-mobimind-consumer-verification.json",
+        "hepta-mobimind-from-macos/NEW-BUILD-RECEIPT.json",
+        "hepta-mobimind-from-macos/CURRENT-CI-SOURCE.json"
+      ]
+    },
+    {
+      "name": "macos-evidence",
+      "id": 13656549079,
+      "bytes": 333158,
+      "sha256": "7e85d6986e1e31e846ac487c612189f45986ab017967f1caeed8c90980262a63",
+      "digest_verified": true,
+      "members": [
+        "hepta-ndk-identity.json",
+        "hepta-mobimind-rebuild/build-mnn.log",
+        "hepta-mobimind-rebuild/build-worker.log",
+        "hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json",
+        "hepta-mobimind-rebuild/cached-mnn-commit.log",
+        "hepta-mobimind-rebuild/checkout-mnn.log",
+        "hepta-mobimind-rebuild/clang-version.log",
+        "hepta-mobimind-rebuild/clean-mnn.log",
+        "hepta-mobimind-rebuild/cmake-version.log",
+        "hepta-mobimind-rebuild/configure-mnn.log",
+        "hepta-mobimind-rebuild/configure-worker.log",
+        "hepta-mobimind-rebuild/clone-mnn.log",
+        "hepta-mobimind-rebuild/hepta-mobimind-probe-elf.log",
+        "hepta-mobimind-rebuild/libMNN.so-elf.log",
+        "hepta-mobimind-rebuild/libc++_shared.so-elf.log",
+        "hepta-mobimind-rebuild/source-qualification.json",
+        "hepta-mobimind-rebuild/three-elf-comparison.json",
+        "hepta-mobimind-rebuild/worker-compile-commands.json",
+        "hepta-mobimind-rebuild/worker-disassembly.log"
+      ]
+    }
+  ],
+  "report_members": {
+    "host-and-static/hepta-host-checks/HOST-CHECKS.json": {
+      "sha256": "a7403b0413299825287803643dfdc32525fb294a882479898f639131a3dee12b",
+      "bytes": 34367,
+      "schema": "hepta.host-checks.v3"
+    },
+    "host-and-static/hepta-geniex/dependency-receipt.json": {
+      "sha256": "b4d05c88b980ccabb7d0e871befca3cc61cde4b6ede84edbe84afe2079087e2f",
+      "bytes": 3037,
+      "schema": "hepta.runtime-dependency.v1"
+    },
+    "host-and-static/hepta-geniex-transport.json": {
+      "sha256": "cbcf12a6e4820c957541f432bf1a59641e1572a7777ee979a8603fb74ec6824f",
+      "bytes": 1571,
+      "schema": "hepta.fixed-runtime-ci-transport.v1"
+    },
+    "host-and-static/hepta-build/control-v19-static/STATIC-ACCEPTANCE.json": {
+      "sha256": "86440ef2d7bb2401920ae200c1fd46fdb289ffe4648ea0ad80a89cf5318f07cb",
+      "bytes": 12833,
+      "schema": "hepta.local-model.static-acceptance.v3"
+    },
+    "host-and-static/hepta-build/mac-build-receipt.json": {
+      "sha256": "56d318ebc6b097cd7ef4d295822adc716b7be7b643d8e129bfcbdc1c93eb132b",
+      "bytes": 17673,
+      "schema": "hepta.local-model.mac-build.v2"
+    },
+    "host-and-static/hepta-build/worker-adapter.json": {
+      "sha256": "fd68e4a9ceb0f4f1a0c1e141be264254bcdd52c155c72f84adebdf1ea9d28f63",
+      "bytes": 1710,
+      "schema": null
+    },
+    "linux-consumer/hepta-mobimind-consumer-verification.json": {
+      "sha256": "9e1d76a9fb6ef97101e6ec147d25224eabc9963db202e7c9a924404072b32e61",
+      "bytes": 1028,
+      "schema": "hepta.ci.mac-runtime-transfer.v2"
+    },
+    "linux-consumer/hepta-mobimind-from-macos/NEW-BUILD-RECEIPT.json": {
+      "sha256": "2611d45ed8bcc062ac707123e064d374a85f5d2accf6e031b21886fe814dfcd2",
+      "bytes": 18107,
+      "schema": "hepta.mobimind.fixed-source-rebuild.v1"
+    },
+    "linux-consumer/hepta-mobimind-from-macos/CURRENT-CI-SOURCE.json": {
+      "sha256": "32034580fe7d9ece63c00f86840a201889f72a0b63f79b6c41c9f9ec1cfc5e41",
+      "bytes": 891,
+      "schema": "hepta.ci.mac-runtime-transfer.v2"
+    },
+    "macos-evidence/hepta-ndk-identity.json": {
+      "sha256": "f97d74170af31a345581d8a605112f0e6e1bd277ef7b1e32c4f57be16e539716",
+      "bytes": 12027,
+      "schema": "hepta.compiler-container-qualification.v1"
+    },
+    "macos-evidence/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json": {
+      "sha256": "2611d45ed8bcc062ac707123e064d374a85f5d2accf6e031b21886fe814dfcd2",
+      "bytes": 18107,
+      "schema": "hepta.mobimind.fixed-source-rebuild.v1"
+    },
+    "macos-evidence/hepta-mobimind-rebuild/source-qualification.json": {
+      "sha256": "6ab828e6c20e4161a808d8349a92288fa716a574ca77f0203c4d61e73e0584fc",
+      "bytes": 859,
+      "schema": null
+    },
+    "macos-evidence/hepta-mobimind-rebuild/three-elf-comparison.json": {
+      "sha256": "a371b2711735f4f5ef9cf9e0f321d270fc67215618f473886f043f19ee57bd54",
+      "bytes": 1144,
+      "schema": null
+    },
+    "macos-evidence/hepta-mobimind-rebuild/worker-compile-commands.json": {
+      "sha256": "7d4825407f094f4153d37c9292d31afc12b71d1d7d67d8818dc73009d27af20b",
+      "bytes": 2572,
+      "schema": null
+    }
+  },
+  "phone_tested_in_ci": false,
+  "ci_ephemeral_signer_is_not_phone_signer": true,
+  "original_two_http504_runs_preserved": [
+    42565206107,
+    42569728212
+  ]
+}

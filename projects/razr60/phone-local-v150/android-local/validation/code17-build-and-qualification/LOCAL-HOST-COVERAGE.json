@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.code17.local-host-coverage.v1",
+  "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
+  "source_head_sha": "c726c48b7f9f9477957a138f5a9c826643d423da",
+  "source_inputs_match": true,
+  "mac_java_contracts_pass": true,
+  "linux_python_contracts_pass": true,
+  "aggregate_all_gates_pass": false,
+  "single_host_full_suite_pass": false,
+  "required_gate_count": 46,
+  "passed_gate_count": 44,
+  "missing_passing_gates": [
+    "native-adapter-syntax",
+    "private-prompt-evidence"
+  ],
+  "known_platform_failures": [
+    {
+      "host": "mac_initial",
+      "name": "python-tools",
+      "exit_code": 1,
+      "elapsed_s": 1.0981511249999993,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b7ac688cfa253ccaa62fbb457376c6bfef9eee9cafe9c6bcfbb26e19746ed6e9"
+    },
+    {
+      "host": "linux_continuation",
+      "name": "native-adapter-syntax",
+      "exit_code": 1,
+      "elapsed_s": 0.13922522286884487,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "861bf3e2d5899b2df1fb24eef270873756d8c188f7c007afb7f7947a71e46c5c"
+    },
+    {
+      "host": "mac_native_continuation",
+      "name": "native-adapter-syntax",
+      "exit_code": 1,
+      "elapsed_s": 0.17940041700000003,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2d7fe7d5035301f3fe9b65365f8708ec9a4b0d25544dd6a0c29fb3727c07d7d1"
+    },
+    {
+      "host": "mac_native_continuation",
+      "name": "private-prompt-evidence",
+      "exit_code": 1,
+      "elapsed_s": 0.06469891700000002,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6bb9a6361e3454fb925a81d08bb92ba0d890430dfe6d9adc7970d89b0cf054ff"
+    }
+  ],
+  "reports": {
+    "mac_initial_sha256": "99ce2540f73173733c7dea6189d1967099bac5b8f35785028a26df4a3c3fd44d",
+    "linux_continuation_sha256": "638be40e52f8f7db5d52240876b1ef5393a68c4945465f013e59ec9a8c950dc8",
+    "mac_native_continuation_sha256": "f521cde60d08aefa89fa1ffbddce6a908d2a52d37ccce4bd305918c9b335f6f9"
+  },
+  "source_modified": false,
+  "phone_contacted": false,
+  "scope": "local host evidence only; current source CI is an independent run",
+  "original_split_report_sha256": "4f947786f5a99d08d20f42fc4149eef98e764c8f61c0cae1dd765e9e13734360",
+  "source_embedded_HOST_CHECKS_json": "preserved Code16 historical file; not the Code17 host result",
+  "failure_context": {
+    "mac_initial/python-tools": "GNU/Android-style host shell inventory fixture returned 42 on macOS; unchanged Linux tools suite passed all 152 tests",
+    "linux_continuation/native-adapter-syntax": "Ubuntu 26 GCC15/glibc feature macros redefine POSIX/XOPEN values under -Werror",
+    "mac_native_continuation/native-adapter-syntax": "Linux-specific linux/fs.h is unavailable in the macOS host SDK",
+    "mac_native_continuation/private-prompt-evidence": "Its unchanged syntax-only Linux worker compile requires linux/fs.h"
+  }
+}

@@ -1,0 +1,571 @@
+{
+  "schema": "hepta.saved-case.native-recommendation-geometry-analysis.v1",
+  "review_date": "2026-11-16",
+  "host_only": true,
+  "phone_commands": 0,
+  "new_tests": 0,
+  "source_modified": false,
+  "case": "strict-natural-price-e99948c0/natural-price-e999-01/run-12ebafcc",
+  "outcome": {
+    "status": "failed",
+    "summary": "visible native recommendation escaped its container",
+    "steps": 0,
+    "model_process_started": false,
+    "goal_independently_verified": false,
+    "cleanup_known": true,
+    "cleanup_exit_gate_passed": true,
+    "web_route_verified": true,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "ordinary_stop_sent": false,
+    "blocked_terminal_observed": false
+  },
+  "artifacts": [
+    {
+      "artifact": "RESULT.json",
+      "sha256": "6ddd514227164634ad5a86b0543512742433ca719458f4e96cbcef72dd25d938",
+      "bytes": 16924
+    },
+    {
+      "artifact": "collection/task/result.json",
+      "sha256": "fa97a885991ebdadbe910726751765a06eec977360e74797fb660a79ff2a379f",
+      "bytes": 22943
+    },
+    {
+      "artifact": "collection/task/web-observation-timing-398e66623ccf4d42bcc418a54bfa03eb.json",
+      "sha256": "a0c21365a7a3e784904c8624ba84e33bfc63d340f3874db446e3514a393f9ca3",
+      "bytes": 7591
+    }
+  ],
+  "timing": {
+    "clock": "Android elapsedRealtime, original trace",
+    "observe_ms": 37881,
+    "first_dom_eligibility": {
+      "duration_ms": 1329,
+      "result": false
+    },
+    "second_dom_eligibility": {
+      "duration_ms": 2731,
+      "result": true
+    },
+    "native_read_ms": 4754,
+    "native_wait_ms": 4754,
+    "native_dom_bracket_ms": 4611,
+    "native_read_and_wait_overlap": true,
+    "do_not_sum_nested_spans": true,
+    "retry_deadline_elapsed_ms": 190204102,
+    "native_failure_elapsed_ms": 190197305,
+    "retry_remaining_at_native_failure_ms": 6797,
+    "deadline_exceeded_at_finish": false,
+    "error_type": "java.lang.IllegalArgumentException",
+    "native_change_diagnostic_present": false,
+    "native_change_structure_present": false,
+    "no_llm_phase_entered": true
+  },
+  "failure": {
+    "source": "WebShoppingObservationStability.compareNative",
+    "source_file_sha256": "1e20cc8428b11f91b1a78b7645728f0311b09275139e40c5399f091be0450ccb",
+    "predicate": "for each visible recommendation row in both complete snapshots: contains(recBox,rowRect) && !overlap(targetBox,rowRect)",
+    "message": "visible native recommendation escaped its container",
+    "private_first_failing_row_path": null,
+    "private_before_row_canonical_sha256": null,
+    "private_after_row_canonical_sha256": null,
+    "exact_failed_conjunct_not_serialized": true,
+    "typed_outside_native_change": false,
+    "structure_diagnostic_scope": "The new failure-only structure is scoped to WebNativeObservationChanged; this existing generic recommendation predicate is outside that scope."
+  },
+  "saved_retained_frames": [
+    {
+      "position": "second_round_before",
+      "artifact": "scope-observation-ae478448a91b4a3faffb74f53e546fd4.json",
+      "sha256": "e1fa4508e8de24a72b42e783451511da0527c8b3c48a0d207842b07328de27ae",
+      "bytes": 448900,
+      "captured_elapsed_ms": 190175927,
+      "visited_nodes": 559,
+      "retained_nodes": 388,
+      "serialized_rows_are_not_complete_private_native_snapshot": true,
+      "observed_collection_omissions": 0,
+      "screen_bounds": [
+        0,
+        0,
+        1224,
+        2992
+      ],
+      "window_id": 673,
+      "target_selection": "retained_unique_search_card_candidate",
+      "target_dom_native_bridge_verified": false,
+      "target": {
+        "id": "n215",
+        "bounds": [
+          0,
+          494,
+          292,
+          918
+        ],
+        "class_name": "android.view.View",
+        "clickable": true,
+        "node_app_tree_sha256": "b7192a376b5de3412428100fb990143721b99f7410b000939274ba4b965ba633",
+        "native_path": "0/2/0/0/0/3/4/1/0"
+      },
+      "recommendation": {
+        "id": "n17",
+        "bounds": [
+          0,
+          1101,
+          1210,
+          1397
+        ],
+        "class_name": "android.view.View",
+        "view_id": "J_recommend_search",
+        "clickable": true,
+        "node_app_tree_sha256": "544387b045550fa3c3bb23fdff18c75296ce9bec47fcbd97e078c51f460d691d",
+        "native_path": "0/2/0/0/0/3/6"
+      },
+      "retained_recommendation_descendants": 40,
+      "retained_containment_violations": 15,
+      "observed_violation_intersects_target_count": 0,
+      "geometry_witnesses": [
+        {
+          "node": {
+            "id": "n334",
+            "bounds": [
+              55,
+              1411,
+              175,
+              1441
+            ],
+            "class_name": "android.view.View",
+            "clickable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "48913b76a7e52c88ea0493018e0c33e6e0d58e16dbca0a6cbf4f0361aa97cbf5",
+            "path": "0/2/0/0/0/3/6/0/5/1/0"
+          },
+          "retainedExternalActionableIntersectionCount": 1,
+          "intersections": [
+            {
+              "id": "n18",
+              "bounds": [
+                0,
+                1397,
+                1210,
+                1445
+              ],
+              "class_name": "android.view.View",
+              "clickable": true,
+              "submit_available": false,
+              "node_app_tree_sha256": "3fe7abb60a6d5b50946c8fab6ff8f7bc52d21ba6fce97ce3a331d3fed165e040",
+              "path": "0/2/0/0/0/3/7"
+            }
+          ]
+        },
+        {
+          "node": {
+            "id": "n335",
+            "bounds": [
+              0,
+              1091,
+              230,
+              1129
+            ],
+            "class_name": "android.widget.TextView",
+            "submit_available": false,
+            "node_app_tree_sha256": "5b5863bc0bb49417273dbaa80ee09b0cb716087e852caf04502d1a49c1f3b488",
+            "path": "0/2/0/0/0/3/6/0/5/2/0"
+          },
+          "retainedExternalActionableIntersectionCount": 1,
+          "intersections": [
+            {
+              "id": "n303",
+              "bounds": [
+                0,
+                1101,
+                230,
+                1377
+              ],
+              "class_name": "android.view.View",
+              "clickable": true,
+              "submit_available": false,
+              "node_app_tree_sha256": "79587d8c40e3dfcb3c7ac2b3f41a4ab7f389006bb156d85a41483ce71643aa70",
+              "path": "0/2/0/0/0/3/6/0/5/0"
+            }
+          ]
+        }
+      ],
+      "ancestor_presence": [
+        {
+          "path": "0",
+          "retained": false
+        },
+        {
+          "path": "0/2",
+          "retained": false
+        },
+        {
+          "path": "0/2/0",
+          "retained": true,
+          "structure": {
+            "id": "n2",
+            "bounds": [
+              0,
+              145,
+              1224,
+              2992
+            ],
+            "class_name": "android.webkit.WebView",
+            "focused": true,
+            "scrollable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "e070201ed386ec7a085f5aaf0dd008e13cdfae7f95f033a8c464ba2df1458bfe",
+            "path": "0/2/0"
+          }
+        },
+        {
+          "path": "0/2/0/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/4",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/4/1",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6",
+          "retained": true,
+          "structure": {
+            "id": "n17",
+            "bounds": [
+              0,
+              1101,
+              1210,
+              1397
+            ],
+            "class_name": "android.view.View",
+            "view_id": "J_recommend_search",
+            "clickable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "544387b045550fa3c3bb23fdff18c75296ce9bec47fcbd97e078c51f460d691d",
+            "path": "0/2/0/0/0/3/6"
+          }
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/5",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/5/1",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/5/2",
+          "retained": false
+        }
+      ],
+      "hash_semantics": "node_app_tree_sha256 is the retained NodeRef hash, not the original private canonical native-row hash"
+    },
+    {
+      "position": "second_round_after",
+      "artifact": "scope-observation-d439c982a2f74017a154cbf1f351fd91.json",
+      "sha256": "60b0fcc404eb536721b21f4d3d49642111cc8706749c01cf4b6f133eeb0f1944",
+      "bytes": 453441,
+      "captured_elapsed_ms": 190183201,
+      "visited_nodes": 559,
+      "retained_nodes": 392,
+      "serialized_rows_are_not_complete_private_native_snapshot": true,
+      "observed_collection_omissions": 0,
+      "screen_bounds": [
+        0,
+        0,
+        1224,
+        2992
+      ],
+      "window_id": 673,
+      "target_selection": "retained_unique_search_card_candidate",
+      "target_dom_native_bridge_verified": false,
+      "target": {
+        "id": "n215",
+        "bounds": [
+          0,
+          494,
+          292,
+          918
+        ],
+        "class_name": "android.view.View",
+        "clickable": true,
+        "node_app_tree_sha256": "b7192a376b5de3412428100fb990143721b99f7410b000939274ba4b965ba633",
+        "native_path": "0/2/0/0/0/3/4/1/0"
+      },
+      "recommendation": {
+        "id": "n17",
+        "bounds": [
+          0,
+          1101,
+          1210,
+          1397
+        ],
+        "class_name": "android.view.View",
+        "view_id": "J_recommend_search",
+        "clickable": true,
+        "node_app_tree_sha256": "66b82f67b731cc3f28b3355312736721653c2a1c5c23111db76a9cf5c7f1362b",
+        "native_path": "0/2/0/0/0/3/6"
+      },
+      "retained_recommendation_descendants": 44,
+      "retained_containment_violations": 19,
+      "observed_violation_intersects_target_count": 0,
+      "geometry_witnesses": [
+        {
+          "node": {
+            "id": "n308",
+            "bounds": [
+              1224,
+              1101,
+              1225,
+              1377
+            ],
+            "class_name": "android.view.View",
+            "clickable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "3d8798325509f7ee34a9718fe5d2948bf33ceb9c438d61750188946a670234c5",
+            "path": "0/2/0/0/0/3/6/0/5/0"
+          },
+          "retainedExternalActionableIntersectionCount": 0,
+          "intersections": []
+        },
+        {
+          "node": {
+            "id": "n335",
+            "bounds": [
+              55,
+              1411,
+              175,
+              1441
+            ],
+            "class_name": "android.view.View",
+            "clickable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "48913b76a7e52c88ea0493018e0c33e6e0d58e16dbca0a6cbf4f0361aa97cbf5",
+            "path": "0/2/0/0/0/3/6/0/0/1/0"
+          },
+          "retainedExternalActionableIntersectionCount": 1,
+          "intersections": [
+            {
+              "id": "n18",
+              "bounds": [
+                0,
+                1397,
+                1210,
+                1445
+              ],
+              "class_name": "android.view.View",
+              "clickable": true,
+              "submit_available": false,
+              "node_app_tree_sha256": "3fe7abb60a6d5b50946c8fab6ff8f7bc52d21ba6fce97ce3a331d3fed165e040",
+              "path": "0/2/0/0/0/3/7"
+            }
+          ]
+        },
+        {
+          "node": {
+            "id": "n336",
+            "bounds": [
+              0,
+              1091,
+              230,
+              1129
+            ],
+            "class_name": "android.widget.TextView",
+            "submit_available": false,
+            "node_app_tree_sha256": "5b5863bc0bb49417273dbaa80ee09b0cb716087e852caf04502d1a49c1f3b488",
+            "path": "0/2/0/0/0/3/6/0/0/2/0"
+          },
+          "retainedExternalActionableIntersectionCount": 1,
+          "intersections": [
+            {
+              "id": "n303",
+              "bounds": [
+                0,
+                1101,
+                230,
+                1377
+              ],
+              "class_name": "android.view.View",
+              "clickable": true,
+              "submit_available": false,
+              "node_app_tree_sha256": "c38be3fecf205839e875075eeaff32a1787f0aff0ea11fdea02d1dfb891770c0",
+              "path": "0/2/0/0/0/3/6/0/0/0"
+            }
+          ]
+        }
+      ],
+      "ancestor_presence": [
+        {
+          "path": "0",
+          "retained": false
+        },
+        {
+          "path": "0/2",
+          "retained": false
+        },
+        {
+          "path": "0/2/0",
+          "retained": true,
+          "structure": {
+            "id": "n2",
+            "bounds": [
+              0,
+              145,
+              1224,
+              2992
+            ],
+            "class_name": "android.webkit.WebView",
+            "focused": true,
+            "scrollable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "e070201ed386ec7a085f5aaf0dd008e13cdfae7f95f033a8c464ba2df1458bfe",
+            "path": "0/2/0"
+          }
+        },
+        {
+          "path": "0/2/0/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/4",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/4/1",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6",
+          "retained": true,
+          "structure": {
+            "id": "n17",
+            "bounds": [
+              0,
+              1101,
+              1210,
+              1397
+            ],
+            "class_name": "android.view.View",
+            "view_id": "J_recommend_search",
+            "clickable": true,
+            "submit_available": false,
+            "node_app_tree_sha256": "66b82f67b731cc3f28b3355312736721653c2a1c5c23111db76a9cf5c7f1362b",
+            "path": "0/2/0/0/0/3/6"
+          }
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/5",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/0",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/0/1",
+          "retained": false
+        },
+        {
+          "path": "0/2/0/0/0/3/6/0/0/2",
+          "retained": false
+        }
+      ],
+      "hash_semantics": "node_app_tree_sha256 is the retained NodeRef hash, not the original private canonical native-row hash"
+    }
+  ],
+  "geometry_interpretation": {
+    "target_and_recommendation_are_distinct_tree_branches": true,
+    "common_native_ancestor_path": "0/2/0/0/0/3",
+    "target_bounds": [
+      0,
+      494,
+      292,
+      918
+    ],
+    "recommendation_bounds": [
+      0,
+      1101,
+      1210,
+      1397
+    ],
+    "saved_containment_violations_do_not_intersect_target": true,
+    "outside_recommendation_clickable_sibling_intersection_observed": true,
+    "outside_sibling": {
+      "native_path": "0/2/0/0/0/3/7",
+      "bounds": [
+        0,
+        1397,
+        1210,
+        1445
+      ],
+      "class_name": "android.view.View",
+      "clickable": true,
+      "node_app_tree_sha256": "3fe7abb60a6d5b50946c8fab6ff8f7bc52d21ba6fce97ce3a331d3fed165e040"
+    },
+    "rectangles_are_geometry_only": true,
+    "occlusion_or_hit_behavior_verified": false,
+    "legitimate_css_overflow_proved": false,
+    "all_private_rows_safe_or_stable_proved": false
+  },
+  "qualification_limits": [
+    "No reclassification of the recorded task failure.",
+    "No complete private snapshot reconstruction from retained nodes.",
+    "A retained row may be a useful witness but cannot identify the first original failing row or its canonical SHA.",
+    "Some intermediate ancestors and non-retained controls are absent.",
+    "No CSS clipping, z-order, event routing, harmless animation, all-page visibility or action-authority conclusion.",
+    "Second eligibility=true alone does not disclose whether the footer-specific branch was used.",
+    "No source, budget, comparator, completion or action guard was changed."
+  ],
+  "strict_downstream": {
+    "service_live_compareNative": true,
+    "quote_fromRead_compareNative": true,
+    "quote_pre_done_supportsCaptures_strict": true,
+    "quote_final_compareObservationBracket_strict": true,
+    "quote_source_sha256": "af4791997c7920c74b3192c1d091aaffaef1fbf2446521b72bede4f80a1cb776",
+    "observation_only_relaxation_is_not_task_completion": true
+  },
+  "primary_references": [
+    {
+      "url": "https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo",
+      "checked": "2026-11-16",
+      "scope": "Screen-coordinate bounds; accessibility parent is not necessarily source viewParent. Does not establish a universal parent-contains-child clipping invariant."
+    },
+    {
+      "url": "https://www.w3.org/TR/css-overflow-3/#overflow-properties",
+      "checked": "2026-11-16",
+      "scope": "CSS overflow:visible permits content outside its box; not proof of the actual page's computed style or hit testing."
+    }
+  ],
+  "contains_page_text": false,
+  "contains_raw_capture": false,
+  "grants_action_capability": false
+}

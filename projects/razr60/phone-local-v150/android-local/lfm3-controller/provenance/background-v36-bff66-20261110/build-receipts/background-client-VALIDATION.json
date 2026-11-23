@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.background-client-host-validation.v1",
+  "status": "passed",
+  "compiler_contract": "Java8 API release",
+  "passed": 45,
+  "failed": 0,
+  "source_inputs": {
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/json/JSONException.java": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/json/FixtureJson.java": "2a6ccd4425c29366cfcb0b147e6d2580118cf68260ba52e22a4b60d63f27d38b",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/json/JSONObject.java": "13cb0bd85ba32f1678fb1da21ffd13ebfa2ca951edb65a88eedd8f2e8a50803f",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/json/JSONArray.java": "ad6d26d77bbe345e88e226d9ce41c33d7fa97e7758ad0e428209dd9746f6fe75",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/system/Os.java": "d2e3580c8479c5a5ac11cf7c7e5c32f0f6b9761a9cd06c98aaecff979581431e",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/system/OsConstants.java": "5bcaf8b3285e9f21b3521db7e624b03f30b77a8b4be5245f6364c6e5641246de",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/system/StructStat.java": "7bda01d378b4343f2afdd150647db95fb5f0f70c0a249c64742780e85e0c6fa5",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/system/ErrnoException.java": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/os/Process.java": "d4c90787159e9ad4b0be102181cda2cee3aee8533ac30253cd2a727b9ff71e0d",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/os/Looper.java": "4482d82f17e7b24ee8d624d1ac443b7b1312a02bd939d17889b9b47e8c2a56e9",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/content/pm/ApplicationInfo.java": "0aea7ad33689355df5adc080a7e10149889028b66c3260278be85f5390f7e44a",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/json/JSONTokener.java": "69c8a4a3fce11e4e2e812a8dce6c72b4e4098e5e8d3811715009a634625a1bef",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/os/SystemClock.java": "86d128b12c0608f70758a211831b675a1f2342072991459b6f2b214d17eabe1f",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/provider/Settings.java": "688d9e5f4aecc5aba08be6c2d7342c711d564218a9203e5b6a172d7f0611d972",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/app/KeyguardManager.java": "27bdcb4712fcbdbb60aa9a854bb985487d1bef3b294cb5ca6b0222229778402e",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/view/Display.java": "30737fb3e4233824f65d3c9c061aa43d9a157e389f868ec216c6a573dc25ea3d",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/hardware/display/DisplayManager.java": "ce9404bd37027fd1fab1ec5bb919403b8a0203fa1588b3f86e72f1ccc4723c75",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/content/Context.java": "d5b1e66ed409f9d52f535cdccfb1238e13b39452f55f299dc3f67c95301f13b8",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/net/Credentials.java": "07468c8afefc67822afabb7bafe4b2e2340258db5bfd9f3311bfe8d67a054f95",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/net/LocalSocketAddress.java": "5e3cccc95957f41618dcda924ae31e67b7f6b428422839949e7c65b025888415",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/android/net/LocalSocket.java": "14e8ed93148eba0b5d8036104f056ec6fde3e807f01aa83cd14ad8f4fced3618",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/trillionnium/hepta/local/HeptaAccessibilityService.java": "f0c53579e08d657e96b0973f8ff6c515071b4045e3c959d459df2b7940ecabe5",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/org/trillionnium/hepta/local/QualificationScopeConfig.java": "6eb34d794de2ca042ab7fd22f9986b3fba74b1a64564762f32e9ec367894ad15",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/source/src/org/trillionnium/hepta/local/BackgroundSession.java": "a149b2b789716f1b7b34bf0347a16116a5e0231b2e747e86c16506aca5214ec2",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/source/src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/source/src/org/trillionnium/hepta/local/QualificationScope.java": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/terminal/LocalInference.java": "e6da66a4becf4d9d64061573fec5d40b882f3a0744a5d24190a3e433ae076cf1",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/host-checks/background-client/fixture/terminal/ControllerFinalizationFixture.java": "807fa98d2a0686d4e254a850756b3f2758b8f3a56f2ed551b04cff0bf8741849",
+    "/home/alex/razr-background-bff66-20261110/v36-r2/source/tests/background-session/BackgroundSessionHostTest.java": "35c2e9e74c4ce33c71617d578342e04928855872aba50346137050866b0a350a"
+  },
+  "source_inputs_unchanged": true,
+  "stages": [
+    {
+      "name": "compile",
+      "exit_code": 0,
+      "elapsed_seconds": 0.6875903120089788
+    },
+    {
+      "name": "client-tests",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09523956099292263
+    }
+  ],
+  "phone_actions": false,
+  "native_inference": false,
+  "root_process_started": false,
+  "android_runtime": false,
+  "fixture": {
+    "schema": "hepta.background-client-host-extraction.v1",
+    "actual_full_classes": [
+      "BackgroundSession",
+      "MobiMindPrivateFiles",
+      "QualificationScope"
+    ],
+    "actual_files_root_sha256": "b75d41e92aac5e54d970c13e451b7499f71fbafe6779de668f849cf022d6e31f",
+    "boundary": "Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions",
+    "source_sha256": {
+      "BackgroundSession.java": "a149b2b789716f1b7b34bf0347a16116a5e0231b2e747e86c16506aca5214ec2",
+      "MobiMindPrivateFiles.java": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22",
+      "QualificationScope.java": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+    },
+    "controller_finalization": {
+      "scope": "Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures",
+      "scope_io_default": "absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness",
+      "controller_sha256": "ac817209260ceff59ec830f1c3d20ab58feb85bb4f75f9f6cb64684d4b85248d",
+      "inference_sha256": "1f4e40a7d74f392c92e7076cc9abc369b59a1f24507addc1b3111c208a0d70b3",
+      "service_sha256": "82d52718ccd5721e0bac29fa7a96dc06e2b3a1ab23ecf29e7d098c323fae0cbc",
+      "extracted_parts": {
+        "stop": {
+          "bytes": 258,
+          "sha256": "e0645b0f510d221c2c8f87555b9c08ab7bf09f9ee0d26a985de2660f70ca18fc"
+        },
+        "close_result": {
+          "bytes": 1936,
+          "sha256": "eead0fe8392af18ccef5287899ff3f64d61c18aaac27c38eeab67edddfa01d1a"
+        },
+        "cleanup_contract": {
+          "bytes": 807,
+          "sha256": "e485716f37eabbd3bcb9699218a91aaf32e21a434ec32e341bcd117958b5f692"
+        },
+        "message_helpers": {
+          "bytes": 327,
+          "sha256": "5927203f08cf8eb302b3e3a816f2ebf377ea9083b9dfdee19a4af14200607a55"
+        }
+      },
+      "generated_files": {
+        "LocalInference.java": "e6da66a4becf4d9d64061573fec5d40b882f3a0744a5d24190a3e433ae076cf1",
+        "ControllerFinalizationFixture.java": "807fa98d2a0686d4e254a850756b3f2758b8f3a56f2ed551b04cff0bf8741849",
+        "HeptaAccessibilityService.java": "a63f256630abecd567c6b1dae03efa4e207bd9db57c72f40b1816f20a08bdf6a"
+      },
+      "not_android_runtime": true,
+      "not_model_inference": true,
+      "not_phone_test": true
+    }
+  }
+}

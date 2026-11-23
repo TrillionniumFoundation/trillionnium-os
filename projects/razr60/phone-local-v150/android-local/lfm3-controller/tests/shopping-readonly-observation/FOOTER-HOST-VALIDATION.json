@@ -1,0 +1,194 @@
+{
+  "component_only": true,
+  "integration": {
+    "APK_built": false,
+    "baseline_head": "47d47aec94bc52d7ef2b848762533d7bf8de3a07",
+    "current_private_phone_fixtures_in_package": false,
+    "files": [
+      {
+        "baseline_sha256": "81a1783c70ccb5c8b2797ea04c813efe828933b6f6a87535e2194540d2c6edeb",
+        "bytes": 56318,
+        "candidate_sha256": "1e20cc8428b11f91b1a78b7645728f0311b09275139e40c5399f091be0450ccb",
+        "file": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java"
+      },
+      {
+        "baseline_sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c",
+        "bytes": 66271,
+        "candidate_sha256": "44289ac2a05ebc09517bc5dec3770377fe4dfa2935d221433b64d5e6085ccc7d",
+        "file": "src/org/trillionnium/hepta/local/WebFlightSession.java"
+      },
+      {
+        "baseline_sha256": "7f0934dd1180cc2f897efffdd93bd7c3ad1a0e0a76eb67269d53c654e7728820",
+        "bytes": 271904,
+        "candidate_sha256": "b181815b38be0efe9a3f98178e6dd6ca5e9d36c4e955b81a6a80ba4e73f56e03",
+        "file": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+      },
+      {
+        "baseline_sha256": null,
+        "bytes": 14650,
+        "candidate_sha256": "09be4a87f062f5b7ec572f7516e8ffafc8ebfa326425a0f86b008f00e623c331",
+        "file": "tests/shopping-readonly-observation/ShoppingFooterObservationHost.java"
+      },
+      {
+        "baseline_sha256": null,
+        "bytes": 3978,
+        "candidate_sha256": "4c4f45e37002dec21f9fddf20e85cd250951d04398a06b1a8fe1c7ff2ae1e972",
+        "file": "tests/shopping-readonly-observation/ShoppingFooterActualReplay.java"
+      },
+      {
+        "baseline_sha256": null,
+        "bytes": 1108,
+        "candidate_sha256": "64602fb0ceabd8c83c559a452e4cb40f98b45de94ca8daa4faca816892789449",
+        "file": "tests/shopping-readonly-observation/ShoppingFooterStrictBaselineHost.java"
+      },
+      {
+        "baseline_sha256": null,
+        "bytes": 15396,
+        "candidate_sha256": "3aa63964c214790c7444b8ebf2659fa53775451eab1016f55f76fc7d9c96ebe9",
+        "file": "tests/shopping-readonly-observation/run_footer_host.py"
+      },
+      {
+        "baseline_sha256": "65f84322d1420df05599c43f30908a9861f3815fc20ad2a1c9ce37db861e8b15",
+        "bytes": 23783,
+        "candidate_sha256": "1d6b5f31ce706e4e0a2ca595519a9f456c5e651332bdc8b0888da06a4cfcdb5f",
+        "file": "tests/web-readiness/WebReadinessHost.template"
+      }
+    ],
+    "phone_actions": 0,
+    "production_patch_sha256": "00a79d0ce2bb43b8cd4b83eb80fd281ac18e64fee07c598b7157c44b3b62f9c5",
+    "production_scope": "natural price-only read observation; strict pre-action and final completion unchanged",
+    "schema": "hepta.footer-observation-integration.v1",
+    "test_patch_sha256": "4ca2587e0c12b276bfe103fa843b9a190e9f63745a1c7b7c9dd1366e25dea0c4"
+  },
+  "protected_source": {
+    "all_equal": true,
+    "items": [
+      {
+        "bytes": 3530,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+        "sha256": "40df8f1a3b90cae968a979dbc50a5d004427535f33ecf5d18429306c15dea8d5",
+        "signature": "static JSONObject compareNative("
+      },
+      {
+        "bytes": 1387,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+        "sha256": "39b506193cf1b9a8395700aa629d2b7f28008dfbebba7b43bb730ec0e4ad71ec",
+        "signature": "static JSONObject compareRetained("
+      },
+      {
+        "bytes": 2676,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+        "sha256": "15224463038b0a66f19338a49a4f63cd1c84c4d83ed069895c5cc642c6c69e38",
+        "signature": "static void requireCompleteObservation("
+      },
+      {
+        "bytes": 6501,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+        "sha256": "f521cadd88ccf9a61636ff7cd905e57ca323b5715193784dfd5257d205774dd1",
+        "signature": "void beforeModelAction("
+      },
+      {
+        "bytes": 1252,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+        "sha256": "5b7f36aba4f260afb2597689628ba9d93768c392511ead51a6d95765c1b9533f",
+        "signature": "WebShoppingQuote.Completion shoppingCompletion("
+      },
+      {
+        "bytes": 21401,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebShoppingQuote.java",
+        "scope": "complete_file",
+        "sha256": "af4791997c7920c74b3192c1d091aaffaef1fbf2446521b72bede4f80a1cb776"
+      },
+      {
+        "bytes": 62928,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "scope": "complete_file",
+        "sha256": "da4afaa5437331e731799718e591dd5e3f62e0f7448dbd1009e234cd8c084772"
+      },
+      {
+        "bytes": 34367,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+        "scope": "complete_file",
+        "sha256": "bfae931eb2d00142b908ea920647c328a3b9ffc873688a821844ad2146cfaf86"
+      },
+      {
+        "bytes": 171352,
+        "exact_equal": true,
+        "file": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+        "scope": "complete_file",
+        "sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c"
+      }
+    ],
+    "schema": "hepta.footer-observation-protected-source.v1"
+  },
+  "qualification": {
+    "APK_built": false,
+    "actual_DOM_plus_synthetic_price_purpose_only_accepted": true,
+    "actual_earlier_HEAD_error": "complete search DOM membership changed",
+    "actual_original_error": "footer visibility scope requires the original price-only observation purpose",
+    "actual_raw_inputs_unchanged": true,
+    "actual_scope_footer_changes": 2,
+    "all_host_gates_pass": true,
+    "baseline_red": {
+      "business_verified": false,
+      "expected_rejection": true,
+      "phone_actions": 0,
+      "reason": "non-recommendation semantic data changed",
+      "schema": "hepta.footer-strict-baseline-red.v1"
+    },
+    "counts": {
+      "existing_observation": 43,
+      "existing_quote": 28,
+      "footer": 49,
+      "footer_assertions": 53,
+      "readiness": 18,
+      "readiness_assertions": 129
+    },
+    "integration_manifest_sha256": "8b17cf79ced0de7691b6124347cc7a1d6e5324deb5f3e8c52cea6a62d6bd96c2",
+    "limits": [
+      "Actual legacy phone task remains failed; no binding or original captured file modified.",
+      "Actual four DOM scope with a synthetic natural-price purpose is structural host evidence only, not actual task success.",
+      "Native and IPC boundaries in default tests are synthetic; no claim of phone timing, completed task or whole-page pixel visibility."
+    ],
+    "natural_price_owner_exact": "查一下小米官网AX3000T的价格",
+    "original_actual_legacy_accepted": false,
+    "original_attempt_rejection": {
+      "file": "actual-replay-01/stderr.txt",
+      "sha256": "d5376fbf446a9045c2f75ef896206bc8b95c62d241edec70f73c04b0c48305e1"
+    },
+    "phone_actions": 0,
+    "production_pins_unchanged_since_review": true,
+    "protected_source": {
+      "file": "PROTECTED-SOURCE.json",
+      "sha256": "8ec7a7d1740857eb575b2c704256bc66e9774c1ddb8b0aef5de3caf3a9579436"
+    },
+    "reports": {
+      "actual": {
+        "file": "actual-replay-02/RESULT.json",
+        "sha256": "0aea7c234a4f7dac83e850d16cbd82822fc601cbcd4890eb0004ebc37ef96e11"
+      },
+      "existing": {
+        "file": "existing-gates-01/RESULT.json",
+        "sha256": "69f17cf60f86b980d4e2ac288ff84bd828071590abeb00351393483a957f1233"
+      },
+      "footer": {
+        "file": "final-gate-03/RESULT.json",
+        "sha256": "db98f2e9f24d279f29e351911c607aef7461c7340ef7bfe6939dc6ee5fb0e618"
+      },
+      "readiness": {
+        "file": "readiness-gate-01/RESULT.json",
+        "sha256": "bb684439d64956940dea308c0724004bf418acb4d43cc21f1f16897b7b9c74e3"
+      }
+    },
+    "schema": "hepta.footer-observation-final-qualification.v1",
+    "strict_pre_done_accepted": false
+  }
+}

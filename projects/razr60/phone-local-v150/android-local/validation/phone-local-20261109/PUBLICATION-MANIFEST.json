@@ -1,0 +1,176 @@
+{
+  "schema": "hepta.public-phone-qualification-bundle.v1",
+  "base_source_commit": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "frozen_app_source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "app_source_members_verified": 866,
+  "phone_qualification_complete": false,
+  "files": [
+    {
+      "path": "code17-build-and-qualification/CI-BINDING-HOST-CHECKS.json",
+      "bytes": 713,
+      "sha256": "e75cdf0bbfddb41ba49e9b269fea1ad9a1f3d7f2b0791d8e199a8f403bd966be"
+    },
+    {
+      "path": "code17-build-and-qualification/CI-HOST-QUALIFICATION.json",
+      "bytes": 5166,
+      "sha256": "573c9225b24d7502c989ca449cefa268faba8301cee0f716350b141b2c918e7e"
+    },
+    {
+      "path": "code17-build-and-qualification/CI-RETRY-QUALIFICATION.json",
+      "bytes": 885,
+      "sha256": "44f29d8739d02dab64ceb4bc46208846c5c79f6128751986d50e7b6afa619ccb"
+    },
+    {
+      "path": "code17-build-and-qualification/LOCAL-HOST-COVERAGE.json",
+      "bytes": 3114,
+      "sha256": "314d1e7f3866e9f8eb5d946aa689eea8d59ee662562dfedf7e36ebab96397a63"
+    },
+    {
+      "path": "code17-build-and-qualification/LOCAL-PREPARATION.json",
+      "bytes": 2416,
+      "sha256": "1543549e66a051d7cb2a266410f7c0cf4f71c6156839544a98e632607343bb36"
+    },
+    {
+      "path": "code17-build-and-qualification/NATIVE-CLOSURE-COMPARISON.json",
+      "bytes": 3691,
+      "sha256": "8c99bc6f20ed3ac01c03fe7d200132ec56a2a6002a2fb02ef94a1dbca283d067"
+    },
+    {
+      "path": "code17-build-and-qualification/README.md",
+      "bytes": 5691,
+      "sha256": "45a10b08aad512df15f14cf016f2c387f1c4fa3dc9abbabf813247394decf785"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/COMPARISON.json",
+      "bytes": 22719,
+      "sha256": "ae9c241b41f69e8aed0c4472ebe4c553e15362ee5d04ca306e6b0277c9034f63"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/GEMMA-SANITIZED-SUMMARY.json",
+      "bytes": 9572,
+      "sha256": "8afbc0b1256f4dbd4a5d192699ede575471567ad653c6edea2cf95cc526d77b9"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/INDEPENDENT-AUDIT.json",
+      "bytes": 6785,
+      "sha256": "bf7a6485ed680778c2a08573399d26f1d3b573531bd3b9fd1e66ca26d78486bd"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/LFM3-SANITIZED-SUMMARY.json",
+      "bytes": 9728,
+      "sha256": "a418c72790d70c3911642b62bf2aaf67563260f49b23da297c29e610bc2638fd"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/RESEARCH-PROVENANCE.json",
+      "bytes": 608,
+      "sha256": "07298f07df81a8208993c04b8709fddb3508a2fa79d266991d0fd1c088150a16"
+    },
+    {
+      "path": "code17-build-and-qualification/phone-regressions/RESEARCH.zh-CN.md",
+      "bytes": 18988,
+      "sha256": "418a5f2b348cc1367f33269bc6caf4591409594f3ad6c7ffe7692b176015dbc1"
+    },
+    {
+      "path": "code18-build-and-qualification/CI-HOST-CHECKS.json",
+      "bytes": 34376,
+      "sha256": "18f7e1b2f5e63e3c7be74d0ff0b0da6d0f4f3276385f0a7541e94e413e2eaf14"
+    },
+    {
+      "path": "code18-build-and-qualification/CI-QUALIFIED.json",
+      "bytes": 13618,
+      "sha256": "6bf7503a518be2853a81e9c21515af415ab1935eceb2e3dbde2fce20a8caddf7"
+    },
+    {
+      "path": "code18-build-and-qualification/CI-RUNTIME-TRANSPORT.json",
+      "bytes": 1211,
+      "sha256": "4a2017bb1ee05a4c0e2fab8dbd81818aed84056dcd62ef8770182bad5015c175"
+    },
+    {
+      "path": "code18-build-and-qualification/LOCAL-PREPARATION.json",
+      "bytes": 2337,
+      "sha256": "118026ee2e57d4794099e8439d68dabefd8f62ee10f40be6b07553b451a8d26f"
+    },
+    {
+      "path": "code18-build-and-qualification/NATIVE-CLOSURE-COMPARISON.json",
+      "bytes": 3080,
+      "sha256": "2b8665f2417df838a17fa0df8747248d47df3a3453053e5d20b8677540a986ae"
+    },
+    {
+      "path": "code18-build-and-qualification/README.md",
+      "bytes": 5940,
+      "sha256": "d6fae671a87e6a5570956e4e671cfa070d5f8af2b2876a38cc4952b29e1564e8"
+    },
+    {
+      "path": "code18-build-and-qualification/phone-regressions/PUBLIC-SUMMARY.json",
+      "bytes": 11650,
+      "sha256": "f1c200d29f94ea5ad775c803f1b92fe01c43349d342e0033aadc0038f5e0fa2e"
+    },
+    {
+      "path": "code18-build-and-qualification/phone-regressions/PUBLIC-SUMMARY.md",
+      "bytes": 5661,
+      "sha256": "15acc5632e5ddd6eb85f21b8bcfd2944dce5b5e959b6d700b5325ad822419807"
+    },
+    {
+      "path": "code19-build-and-qualification/CI-HOST-CHECKS.json",
+      "bytes": 34367,
+      "sha256": "a7403b0413299825287803643dfdc32525fb294a882479898f639131a3dee12b"
+    },
+    {
+      "path": "code19-build-and-qualification/CI-QUALIFIED.json",
+      "bytes": 14002,
+      "sha256": "24285aa8d17930e6e13384dc178c00c2b5f6e50850a40a4c192df3adcfd050a3"
+    },
+    {
+      "path": "code19-build-and-qualification/CI-RUNTIME-TRANSPORT.json",
+      "bytes": 1571,
+      "sha256": "cbcf12a6e4820c957541f432bf1a59641e1572a7777ee979a8603fb74ec6824f"
+    },
+    {
+      "path": "code19-build-and-qualification/FOCUSED-OBSERVATION-CONTRACTS.json",
+      "bytes": 3161,
+      "sha256": "2d830321c82ce0611ead5a5f2485b8b61ce418291d6bfdc6799c045942b557a9"
+    },
+    {
+      "path": "code19-build-and-qualification/LOCAL-PREPARATION.json",
+      "bytes": 3011,
+      "sha256": "18edafccacd62697dfe2be2e7206f19c9b8272242cf000dcc644d5c420be4579"
+    },
+    {
+      "path": "code19-build-and-qualification/NATIVE-CLOSURE-COMPARISON.json",
+      "bytes": 3080,
+      "sha256": "a9913fab298c7f6e1afdfa78845582f5b4b6d90b97b71ff2b6697c188592d6bb"
+    },
+    {
+      "path": "code19-build-and-qualification/README.md",
+      "bytes": 5868,
+      "sha256": "5319248e5e1d2a9ee1d821e023bc636ac12d8508bef8718fbd605bcd8859b2dc"
+    },
+    {
+      "path": "code16-model-comparison/BOLT-SANITIZED-SUMMARY.json",
+      "bytes": 13986,
+      "sha256": "c9dc4ae6656dc2b47bd122b4188f8a14b76668c7637d68b04c06540825bf3622"
+    },
+    {
+      "path": "code16-model-comparison/GEMMA-SANITIZED-SUMMARY.json",
+      "bytes": 10233,
+      "sha256": "d02e9521b37ea4ecff673893a6ed62036cee05dc3f865fde6646442bb620f236"
+    },
+    {
+      "path": "code16-model-comparison/README.md",
+      "bytes": 2195,
+      "sha256": "ca18c89259c3201136ef710a9bd44341a8351aad963066f4926823de59cdd224"
+    },
+    {
+      "path": "phone-local-20261109/PR119-INITIAL-CI.json",
+      "bytes": 28907,
+      "sha256": "17c17c555f80b48919946e0e30274cc4fb1c035b1302cefece4872982fa256ff"
+    },
+    {
+      "path": "phone-local-20261109/README.md",
+      "bytes": 5258,
+      "sha256": "6e2862fb17cdac967d0e0fb0732f39a2011a2cc9c2266fafd5603ab160e62925"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "private_raw_phone_evidence_not_exported": true
+}

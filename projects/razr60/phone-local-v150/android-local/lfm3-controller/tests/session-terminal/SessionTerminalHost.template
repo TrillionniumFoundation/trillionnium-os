@@ -1,0 +1,456 @@
+package org.trillionnium.hepta.local;
+import android.content.Context;
+import android.util.AtomicFile;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONTokener;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.concurrent.*;
+/** Production method bodies; Android IO adapters use real host files, sync and atomic moves. */
+@SuppressWarnings("try")
+public final class SessionTerminalHost {
+    static int assertions;
+    static final List<String> passed=new ArrayList<String>();
+    static final String TASK="0123456789abcdef0123456789abcdef";
+    static final String OWNER=repeat("a",64),AUTH=repeat("b",64),CONTRACT=repeat("c",64);
+    static Path root;
+    interface Checked {void run()throws Exception;}
+    static void require(boolean value,String why){assertions++;if(!value)throw new AssertionError(why);}
+    static void pass(String name){passed.add(name);}
+    static String repeat(String text,int count){StringBuilder b=new StringBuilder();for(int i=0;i<count;i++)b.append(text);return b.toString();}
+    static String sha(byte[] bytes)throws Exception {byte[] h=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder b=new StringBuilder();for(byte v:h)b.append(String.format(Locale.ROOT,"%02x",v&255));return b.toString();}
+    static void rejects(Checked work,String why)throws Exception {boolean refused=false;try{work.run();}catch(Exception expected){refused=true;}require(refused,why);}
+    static byte[] bytes(JSONObject value){return value.toString(2).getBytes(StandardCharsets.UTF_8);}
+    static JSONObject read(Path path)throws Exception{return new JSONObject(new String(Files.readAllBytes(path),StandardCharsets.UTF_8));}
+    static void write(Path path,byte[] bytes)throws Exception {
+        Files.createDirectories(path.getParent());try(FileOutputStream out=new FileOutputStream(path.toFile())){out.write(bytes);out.getFD().sync();}
+        android.system.Os.chmod(path.toString(),0600);
+    }
+    static Map<String,Object> map(JSONObject value)throws Exception {Map<String,Object> out=new LinkedHashMap<String,Object>();Iterator<String> names=value.keys();
+        while(names.hasNext()){String key=names.next();out.put(key,value.get(key));}return out;}
+    static JSONObject reversed(JSONObject value)throws Exception {ArrayList<String> keys=new ArrayList<String>();Iterator<String> it=value.keys();while(it.hasNext())keys.add(it.next());Collections.reverse(keys);
+        JSONObject result=new JSONObject();for(String key:keys){Object v=value.get(key);result.put(key,v instanceof JSONObject?reversed((JSONObject)v):v);}return result;}
+    static JSONObject result(String status,boolean verified,boolean claim,boolean clean)throws Exception {
+        JSONArray evidence=new JSONArray();
+        for(int i=0;i<96;i++)evidence.put(new JSONObject().put("ordinal",i).put("observed_text",repeat("公开测试记录",200)));
+        JSONObject completion=new JSONObject().put("schema","hepta.task-completion.v1").put("kind","native_app")
+                .put("owner_sha256",OWNER).put("contract_sha256",CONTRACT).put("completion_verified",verified)
+                .put("business_verified",verified).put("terminal_binding_and_cleanup_verified",verified)
+                .put("native_app_session",new JSONObject().put("observations",evidence))
+                .put("integer_and_decimal_semantics",new JSONArray().put(1).put(2.50));
+        return new JSONObject().put("task_id",TASK).put("status",status).put("summary","完整终态记录")
+                .put("steps",11).put("model_reported_success",claim).put("completion_verified",verified)
+                .put("goal_independently_verified",verified).put("cleanup_known",clean)
+                .put("expected_scope_sha256",JSONObject.NULL).put("actual_scope_sha256",JSONObject.NULL)
+                .put("task_authorization_sha256",AUTH).put("completion_evidence",completion)
+                .put("external_model",false).put("automatic_replay",false);
+    }
+    static JSONObject oldRunning()throws Exception {
+        return new JSONObject().put("schema","hepta.local-session.v1").put("status","running").put("task_id",TASK)
+                .put("origin","user_button").put("instruction_sha256",OWNER).put("debug_nonce_sha256",JSONObject.NULL)
+                .put("pending",false).put("running",true).put("blocked",false).put("cleanup_known",true)
+                .put("app_uid",android.os.Process.myUid()).put("updated_wall_ms",1L).put("state","旧任务仍在运行")
+                .put("external_model",false).put("automatic_resume",false);
+    }
+    /** Explicit presentation fixture only. Provider truth is tested by the full
+     * actual-controller gate; these cases exercise durable capture and startup. */
+    static JSONObject explainedResult(String code,boolean large)throws Exception {
+        JSONObject value=result("failed",false,false,true);
+        String source="native_xiaomi_login_page".equals(code)?"version_bound_native_provider_terminal":
+                "APP_ALREADY_ON_MAIN_DISPLAY".equals(code)?"owned_background_broker_refusal":"completion_contract";
+        String message="持久化说明测试："+code;
+        JSONObject reason=new JSONObject().put("schema","hepta.task-user-explanation.v1").put("task_id",TASK)
+                .put("owner_sha256",OWNER).put("code",code).put("source",source).put("message",message)
+                .put("changes_task_status",false).put("grants_tool_authority",false).put("business_verified",false)
+                .put("model_summary_preserved",true);
+        value.put("user_explanation",reason).put("display_summary",message+"\n\n任务记录："+value.getString("summary"));
+        if(!large){JSONObject completion=value.getJSONObject("completion_evidence");
+            completion.put("native_app_session",new JSONObject());value.put("completion_evidence",completion);}
+        return value;
+    }
+    static final class Main implements Executor {
+        final ConcurrentLinkedQueue<Runnable> tasks=new ConcurrentLinkedQueue<Runnable>();
+        public void execute(Runnable runnable){tasks.add(runnable);}
+        void removeCallbacks(Runnable runnable){tasks.remove(runnable);}
+        void drain(){Runnable r;while((r=tasks.poll())!=null)r.run();}
+    }
+    static final class LocalTaskController {
+        boolean running;String id,scope;int stops,starts;
+        boolean isRunning(){return running;}String currentTaskId(){return id;}String currentActualScopeSha256(){return scope;}
+        boolean stopIfTask(String expected){if(!running||!Objects.equals(id,expected))return false;running=false;stops++;return true;}
+        static final class TaskResult {
+            String taskId,status,summary,displaySummary,expectedScopeSha256,actualScopeSha256;int steps;File evidenceDirectory;
+            boolean modelReportedSuccess,cleanupKnown,completionVerified;Map<String,Object> completionEvidence;
+            Map<String,Object> userExplanation=Collections.emptyMap();
+        }
+    }
+    static final class HeptaAccessibilityService {
+        static String sha(byte[] bytes){try{return SessionTerminalHost.sha(bytes);}catch(Exception e){throw new AssertionError(e);}}
+        static String message(Exception e){return e.getClass().getSimpleName()+": "+e.getMessage();}
+    }
+    static final class TaskAuthorization {
+        final String sha256;final String owner;TaskAuthorization(String authority,String owner){sha256=authority;this.owner=owner;}
+        Map<String,Object> evidence(){Map<String,Object> map=new LinkedHashMap<String,Object>();map.put("owner_sha256",owner);map.put("authorization_sha256",sha256);return map;}
+    }
+    static final class BackgroundSession {static final class Selection {JSONObject json(){return new JSONObject();}}}
+    static final class Session implements AutoCloseable {
+        static final int SESSION_LIMIT=65536;static final String INTERRUPTION_LATCH="control-session.interrupted.json";
+        final Context context;final Main main=new Main();final ExecutorService io=Executors.newSingleThreadExecutor();
+        final SessionJournalQueue journalQueue=new SessionJournalQueue(io,main);
+        LocalTaskController controller=new LocalTaskController();Runnable pendingStart;
+        String state="idle",log="",taskId,origin,instructionSha,nonceSha,expectedScopeSha,actualScopeSha;
+        TaskAuthorization taskAuthorization;BackgroundSession.Selection backgroundSelection;LocalTaskController.TaskResult lastResult;
+        volatile boolean pending,blocked,recovering;long generation;JSONObject startupRecovery;
+        RecoveryJournalTransaction.Proof acknowledgedSession;int publications;
+        Session(Path files){context=new Context(files.toFile());}
+        boolean isRunning(){return pending||(controller!=null&&controller.running);}
+        boolean isBlocked(){return blocked||journalQueue.pending()||journalQueue.failed();}
+        void publish(){publications++;}
+        static final class LeaseState {final boolean background=false,web=false;}
+        LeaseState readLeaseState(){return new LeaseState();}
+        void flush()throws Exception {final CountDownLatch done=new CountDownLatch(1);io.execute(new Runnable(){public void run(){done.countDown();}});require(done.await(5,TimeUnit.SECONDS),"writer timeout");}
+        public void close()throws Exception {io.shutdown();require(io.awaitTermination(5,TimeUnit.SECONDS),"writer did not close");main.drain();}
+{{SESSION_METHODS}}
+{{LEGACY_METHODS}}
+    }
+    static final class Scenario implements AutoCloseable {
+        final Path files,task,resultPath,sessionPath;final Session session;final JSONObject result;final byte[] before;
+        Scenario(String name,JSONObject result)throws Exception {
+            files=root.resolve(name);Files.createDirectory(files);android.system.Os.chmod(files.toString(),0700);
+            this.result=result;String id=result.getString("task_id");task=files.resolve("control-tasks").resolve(id);
+            Files.createDirectories(task);android.system.Os.chmod(task.getParent().toString(),0700);android.system.Os.chmod(task.toString(),0700);
+            resultPath=task.resolve("result.json");write(resultPath,bytes(result));sessionPath=files.resolve("control-session.json");
+            before=bytes(oldRunning());write(sessionPath,before);session=new Session(files);configure();
+        }
+        void configure()throws Exception {
+            Session s=session;s.taskId=result.getString("task_id");s.origin="user_button";
+            s.instructionSha=result.getJSONObject("completion_evidence").getString("owner_sha256");
+            s.taskAuthorization=new TaskAuthorization(result.getString("task_authorization_sha256"),s.instructionSha);
+            s.controller.id=s.taskId;s.controller.running=false;
+            LocalTaskController.TaskResult r=new LocalTaskController.TaskResult();
+            r.taskId=s.taskId;r.status=result.getString("status");r.summary=result.getString("summary");r.steps=result.getInt("steps");
+            r.modelReportedSuccess=result.getBoolean("model_reported_success");r.cleanupKnown=result.getBoolean("cleanup_known");
+            r.completionVerified=result.getBoolean("completion_verified");r.evidenceDirectory=task.toFile();
+            r.displaySummary=result.has("display_summary")?result.getString("display_summary"):r.summary;
+            if(result.has("user_explanation"))r.userExplanation=map(result.getJSONObject("user_explanation"));
+            r.expectedScopeSha256=result.isNull("expected_scope_sha256")?null:result.getString("expected_scope_sha256");
+            r.actualScopeSha256=result.isNull("actual_scope_sha256")?null:result.getString("actual_scope_sha256");
+            r.completionEvidence=map(result.getJSONObject("completion_evidence"));s.lastResult=r;
+        }
+        void complete()throws Exception {session.receiveFinished(session.lastResult);session.flush();session.main.drain();}
+        JSONObject committed()throws Exception {return read(sessionPath);}
+        void requireFailedUnchanged()throws Exception {
+            require(session.blocked&&session.journalQueue.failed()&&!session.journalQueue.pending(),"failed writer lost barrier");
+            require(Arrays.equals(before,Files.readAllBytes(sessionPath)),"failed reference changed previous session");
+            require(session.log.contains("会话记录保存未确认"),"original failure handling was bypassed");
+            require(session.controller.starts==0,"failure started a task");
+        }
+        public void close()throws Exception {session.close();android.system.Os.reset();android.util.AtomicFile.reset();}
+    }
+
+    public static void main(String[] args)throws Exception {
+        root=Paths.get(args[0]);Files.createDirectory(root);
+        try(final Scenario s=new Scenario("legacy-overflow",result("failed",false,false,true))){
+            final byte[] full=s.session.legacySnapshotSession("failed",true);
+            require(full.length>65536,"synthetic actual-equivalent payload is not oversized");
+            rejects(new Checked(){public void run()throws Exception{s.session.legacyWriteSessionSnapshot(full,s.session.readLeaseState());}},"R13 full embedding unexpectedly passed");
+            require(Arrays.equals(s.before,Files.readAllBytes(s.sessionPath)),"old overlimit write replaced base");
+            require(!Files.exists(Paths.get(s.sessionPath+".new")),"old overlimit write reached AtomicFile");
+            pass("pinned_R13_snapshot_and_writer_reproduce_oversize_refusal_before_atomic_write");
+        }
+        String[] statuses={"failed","partial","model_reported_done","controller_verified_done","cancelled"};
+        for(String status:statuses){
+            boolean verified=status.equals("controller_verified_done"),claim=status.equals("model_reported_done");
+            try(Scenario s=new Scenario("status-"+status,result(status,verified,claim,true))){
+                byte[] original=Files.readAllBytes(s.resultPath);s.complete();JSONObject v=s.committed();
+                require(!s.session.isBlocked(),"valid terminal blocked: "+s.session.log);
+                require(v.getString("status").equals(status)&&v.getBoolean("completion_verified")==verified
+                        &&v.getBoolean("model_reported_success")==claim&&v.getBoolean("goal_independently_verified")==verified,"terminal facts changed");
+                require(Files.size(s.sessionPath)<65536,"session cap not satisfied");
+                require(Arrays.equals(original,Files.readAllBytes(s.resultPath)),"complete task evidence was modified");
+                JSONObject ref=v.getJSONObject("task_result_reference");
+                require(ref.getLong("bytes")==original.length&&ref.getString("sha256").equals(sha(original)),"unbound bytes/digest reference");
+                require(!Files.exists(Paths.get(s.sessionPath+".new"))&&!Files.exists(Paths.get(s.sessionPath+".bak")),"commit sidecar remains");
+                Session restored=new Session(s.files);try{restored.recoverPreviousSession();
+                    require(!restored.blocked&&restored.controller.starts==0,"verified terminal did not recover without replay");
+                }finally{restored.close();}
+                pass("oversize_"+status+"_persists_exact_outcome_and_restarts_without_replay");
+            }
+        }
+        for(String code:new String[]{"native_xiaomi_login_page","APP_ALREADY_ON_MAIN_DISPLAY","goal_verifier_unavailable"}){
+            for(boolean large:new boolean[]{false,true}){
+                try(Scenario s=new Scenario("cold-presentation-"+code+"-"+large,explainedResult(code,large))){
+                    byte[] original=Files.readAllBytes(s.resultPath);s.complete();JSONObject committed=s.committed();
+                    require(committed.getString("state").equals(s.result.getString("summary"))
+                            &&committed.getString("display_summary").equals(s.result.getString("display_summary")),"display persistence changed original summary");
+                    require("failed".equals(committed.getString("status"))&&committed.getBoolean("cleanup_known")
+                            &&!committed.getBoolean("completion_verified"),"display persistence changed terminal facts");
+                    require(SessionTerminalEvidence.referenced(committed)==large,"inline/reference boundary not exercised");
+                    byte[] journal=Files.readAllBytes(s.sessionPath);
+                    // Fresh application session, with no TaskResult and no prior
+                    // controller. All displayed data must come from disk.
+                    Session restored=new Session(s.files);restored.controller=null;
+                    try{restored.recoverPreviousSession();
+                        require(!restored.blocked&&restored.lastResult==null&&restored.controller==null,"cold display recreated task execution state");
+                        require(restored.state.contains("上次任务结果：\n"+s.result.getString("display_summary")),"new session did not restore durable explanation");
+                        require(Arrays.equals(journal,Files.readAllBytes(s.sessionPath))&&Arrays.equals(original,Files.readAllBytes(s.resultPath)),"cold display rewrote original records");
+                    }finally{restored.close();}
+                    pass("fresh_session_restores_"+code+(large?"_from_bound_reference":"_from_inline_terminal")+"_without_result_or_controller");
+                }
+            }
+        }
+        String[] presentationFaults={"schema","task_id","owner_sha256","code","source","message","changes_task_status","grants_tool_authority",
+                "business_verified","model_summary_preserved","display_summary","missing_display","missing_reason"};
+        for(String fault:presentationFaults){
+            try(Scenario s=new Scenario("cold-presentation-mismatch-"+fault,explainedResult("native_xiaomi_login_page",false))){
+                s.complete();JSONObject changed=s.committed();JSONObject reason=changed.getJSONObject("user_explanation");
+                if(fault.equals("display_summary"))changed.put(fault,"unbound replacement");
+                else if(fault.equals("missing_display"))changed.put("display_summary",(Object)null);
+                else if(fault.equals("missing_reason"))changed.put("user_explanation",(Object)null);
+                else{
+                    if(fault.equals("changes_task_status")||fault.equals("grants_tool_authority")||fault.equals("business_verified"))reason.put(fault,true);
+                    else if(fault.equals("model_summary_preserved"))reason.put(fault,false);
+                    else reason.put(fault,"different");
+                    changed.put("user_explanation",reason);
+                }
+                write(s.sessionPath,bytes(changed));Session restored=new Session(s.files);restored.controller=null;
+                try{restored.recoverPreviousSession();
+                    require(!restored.blocked&&restored.lastResult==null&&restored.controller==null,"display mismatch changed startup admission");
+                    require(!restored.state.contains("上次任务结果")&&!restored.state.contains("持久化说明测试"),"mismatched display was trusted");
+                }finally{restored.close();}
+                pass("cold_presentation_"+fault+"_mismatch_is_hidden_without_changing_recovery");
+            }
+        }
+        for(String barrier:new String[]{"new_sidecar","interruption_latch"}){
+            try(Scenario s=new Scenario("cold-presentation-barrier-"+barrier,explainedResult("native_xiaomi_login_page",false))){
+                s.complete();write(barrier.equals("new_sidecar")?Paths.get(s.sessionPath+".new"):
+                        s.files.resolve("control-session.interrupted.json"),new byte[0]);
+                Session restored=new Session(s.files);restored.controller=null;
+                try{restored.recoverPreviousSession();
+                    require(restored.blocked&&restored.lastResult==null&&restored.controller==null,"presentation bypassed startup barrier");
+                    require(!restored.state.contains("持久化说明测试")&&restored.state.contains("暂停新任务"),"old presentation hid current recovery barrier");
+                }finally{restored.close();}
+                pass("cold_"+barrier+"_keeps_current_interruption_state_above_saved_presentation");
+            }
+        }
+        try(Scenario s=new Scenario("partial-component-proof",result("partial",false,true,true))){
+            JSONObject changed=new JSONObject(s.result.toString());changed.getJSONObject("completion_evidence").put("completion_verified",true);
+            // The JSON fixture wraps parsed maps; replace the changed object explicitly.
+            JSONObject completion=changed.getJSONObject("completion_evidence");completion.put("completion_verified",true);s.result.put("completion_evidence",completion);
+            write(s.resultPath,bytes(s.result));s.configure();s.complete();
+            JSONObject v=s.committed();require(!v.getBoolean("completion_verified")&&!v.getBoolean("goal_independently_verified")
+                    &&v.getJSONObject("completion_evidence").getBoolean("completion_verified"),"component proof promoted terminal success");
+            pass("component_proof_and_model_claim_do_not_promote_partial_terminal");
+        }
+        try(Scenario s=new Scenario("cleanup-unknown",result("cancelled",false,false,false))){
+            s.complete();JSONObject v=s.committed();require(s.session.blocked&&!v.getBoolean("cleanup_known"),"unknown cleanup became clean");
+            Session restored=new Session(s.files);try{restored.recoverPreviousSession();require(restored.blocked,"unknown cleanup recovered clean");}finally{restored.close();}
+            pass("unknown_cleanup_remains_blocked_across_real_persist_and_recovery");
+        }
+        try(final Scenario s=new Scenario("captured-state",result("failed",false,false,true))){
+            final CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
+            s.session.io.execute(new Runnable(){public void run(){entered.countDown();try{release.await();}catch(InterruptedException e){Thread.currentThread().interrupt();}}});
+            require(entered.await(3,TimeUnit.SECONDS),"serial writer not held");
+            s.session.receiveFinished(s.session.lastResult);
+            s.session.taskId=repeat("f",32);s.session.instructionSha=repeat("e",64);s.session.taskAuthorization=new TaskAuthorization(repeat("d",64),repeat("e",64));
+            s.session.state="replacement state";s.session.controller.id=s.session.taskId;release.countDown();s.session.flush();s.session.main.drain();
+            JSONObject v=s.committed();require(v.getString("task_id").equals(TASK)&&v.getString("instruction_sha256").equals(OWNER)
+                    &&v.getString("task_authorization_sha256").equals(AUTH)&&v.getString("state").equals("完整终态记录"),"worker borrowed later session identity");
+            pass("queued_terminal_uses_one_captured_task_owner_authority_and_summary_snapshot");
+        }
+        try(Scenario s=new Scenario("key-order",result("failed",false,false,true))){
+            write(s.resultPath,bytes(reversed(s.result)));s.complete();require(!s.session.isBlocked(),"key order affected semantic binding");
+            JSONObject one=new JSONObject().put("a",1).put("b",new JSONArray().put("x").put(false));
+            JSONObject two=new JSONObject().put("b",new JSONArray().put("x").put(false)).put("a",1.0);
+            require(SessionTerminalEvidence.semanticSha(one).equals(SessionTerminalEvidence.semanticSha(two)),"equivalent number spelling/key order differs");
+            require(!SessionTerminalEvidence.semanticSha(one).equals(SessionTerminalEvidence.semanticSha(new JSONObject().put("a","1").put("b",new JSONArray().put("x").put(false)))),"string/number collision");
+            pass("semantic_digest_preserves_types_array_order_and_equivalent_object_number_semantics");
+        }
+        String[] mismatches={"task_id","task_authorization_sha256","status","summary","steps","model_reported_success","completion_verified","cleanup_known","owner_sha256","completion_payload"};
+        for(final String key:mismatches){
+            try(Scenario s=new Scenario("mismatch-"+key,result("failed",false,false,true))){
+                JSONObject changed=new JSONObject(s.result.toString());
+                if(key.equals("owner_sha256")||key.equals("completion_payload")){
+                    JSONObject comp=changed.getJSONObject("completion_evidence");
+                    if(key.equals("owner_sha256"))comp.put(key,repeat("e",64));else comp.put("unexpected_extra","changed");
+                    changed.put("completion_evidence",comp);
+                }else if(key.equals("task_id"))changed.put(key,repeat("e",32));
+                else if(key.equals("task_authorization_sha256"))changed.put(key,repeat("e",64));
+                else if(key.equals("steps"))changed.put(key,12);
+                else if(key.equals("model_reported_success")||key.equals("completion_verified")||key.equals("cleanup_known"))changed.put(key,!changed.getBoolean(key));
+                else changed.put(key,"different");
+                write(s.resultPath,bytes(changed));s.complete();s.requireFailedUnchanged();pass("mismatched_"+key+"_fails_closed_before_session_commit");
+            }
+        }
+        String[] invalid={"missing","symlink","hardlink","mode","trailing-json","wrong-evidence-task"};
+        for(String kind:invalid){
+            try(Scenario s=new Scenario("invalid-"+kind,result("failed",false,false,true))){
+                if(kind.equals("missing"))Files.delete(s.resultPath);
+                else if(kind.equals("symlink")){Path target=s.files.resolve("outside-result.json");Files.move(s.resultPath,target);Files.createSymbolicLink(s.resultPath,target);}
+                else if(kind.equals("hardlink"))Files.createLink(s.files.resolve("second-link.json"),s.resultPath);
+                else if(kind.equals("mode"))android.system.Os.chmod(s.resultPath.toString(),0644);
+                else if(kind.equals("trailing-json"))write(s.resultPath,(s.result.toString()+"{}").getBytes(StandardCharsets.UTF_8));
+                else s.session.lastResult.evidenceDirectory=s.files.resolve("control-tasks/"+repeat("e",32)).toFile();
+                s.complete();s.requireFailedUnchanged();pass("invalid_"+kind+"_cannot_supply_terminal_reference");
+            }
+        }
+
+        for(String stage:new String[]{"file","task_directory","tasks_directory","files_directory"}){
+            try(Scenario s=new Scenario("sync-failure-"+stage,result("failed",false,false,true))){
+                android.system.Os.failFsyncPath=(stage.equals("file")?s.resultPath:stage.equals("task_directory")?s.task:stage.equals("tasks_directory")?s.task.getParent():s.files).toString();
+                s.complete();s.requireFailedUnchanged();pass("actual_host_"+stage+"_sync_failure_retains_journal_barrier");
+            }
+        }
+        try(Scenario s=new Scenario("atomic-publish-failure",result("failed",false,false,true))){
+            android.util.AtomicFile.rejectRename=true;s.complete();s.requireFailedUnchanged();pass("real_session_atomic_publish_failure_preserves_old_record_and_failure_barrier");
+        }
+        try(final Scenario s=new Scenario("changed-after-commit",result("failed",false,false,true))){
+            android.util.AtomicFile.afterCommit=new Runnable(){public void run(){try{
+                JSONObject changed=new JSONObject(s.result.toString());changed.put("summary","changed after binding");write(s.resultPath,bytes(changed));
+            }catch(Exception e){throw new RuntimeException(e);}}};
+            s.complete();require(s.session.blocked&&s.session.journalQueue.failed(),"post-commit change lost failure barrier");
+            byte[] rejected=Files.readAllBytes(s.sessionPath);
+            Session restored=new Session(s.files);try{restored.recoverPreviousSession();require(restored.blocked,"changed reference allowed startup");
+                require(Files.exists(s.files.resolve("control-session.interrupted.json")),"normal recovery latch missing");
+                Path archive=s.files.resolve("session-recovery/control-session.json."+sha(rejected)+".json");
+                require(Arrays.equals(rejected,Files.readAllBytes(archive)),"normal recovery did not preserve exact failed record");
+                require(restored.controller.starts==0,"failed reference replayed task");
+            }finally{restored.close();}
+            pass("result_changed_after_session_commit_is_rejected_and_normally_archived_on_startup");
+        }
+        for(String kind:new String[]{"missing_result","digest_changed","unknown_reference_schema","missing_reference"}){
+            try(Scenario s=new Scenario("restart-"+kind,result("failed",false,false,true))){
+                s.complete();require(!s.session.isBlocked(),"initial commit failed");
+                if(kind.equals("missing_result"))Files.delete(s.resultPath);
+                else if(kind.equals("digest_changed")){JSONObject changed=new JSONObject(s.result.toString());changed.put("extra","changed");write(s.resultPath,bytes(changed));}
+                else{JSONObject v=s.committed();if(kind.equals("unknown_reference_schema")){
+                        JSONObject ref=v.getJSONObject("task_result_reference");ref.put("schema","unknown");v.put("task_result_reference",ref);
+                    }else{JSONObject without=new JSONObject();Iterator<String> names=v.keys();while(names.hasNext()){String key=names.next();if(!key.equals("task_result_reference"))without.put(key,v.get(key));}v=without;}write(s.sessionPath,bytes(v));}
+                Session restored=new Session(s.files);try{restored.recoverPreviousSession();require(restored.blocked&&restored.controller.starts==0,"invalid new reference restored clean");}finally{restored.close();}
+                pass("startup_"+kind+"_uses_existing_interruption_barrier_without_replay");
+            }
+        }
+        try(Scenario s=new Scenario("legacy-clean",result("failed",false,false,true))){
+            JSONObject prior=oldRunning().put("status","failed").put("running",false);
+            write(s.sessionPath,bytes(prior));Session restored=new Session(s.files);
+            try{restored.recoverPreviousSession();require(!restored.blocked&&restored.controller.starts==0,"legacy clean record was not compatible");}finally{restored.close();}
+            pass("existing_legacy_clean_session_remains_compatible_without_new_reference");
+        }
+
+        for(String status:new String[]{"not_started","cancelled_before_start"}){
+            try(Scenario s=new Scenario("pre-start-"+status,result("failed",false,false,true))){
+                s.session.lastResult=null;s.session.taskId=null;Files.delete(s.resultPath);
+                s.session.state="任务尚未启动";s.session.persist(status,true);s.session.flush();s.session.main.drain();
+                JSONObject v=s.committed();require(!s.session.isBlocked()&&v.getString("status").equals(status)
+                        &&!v.has("terminal_evidence_schema")&&!v.has("task_result_reference"),"pre-start failure required task result");
+                pass(status+"_keeps_original_small_inline_format_without_result_reference");
+            }
+        }
+        try(Scenario s=new Scenario("early-failure-no-result",result("failed",false,false,true))){
+            s.session.lastResult.completionEvidence=Collections.emptyMap();s.session.lastResult.evidenceDirectory=null;
+            Files.delete(s.resultPath);s.complete();JSONObject v=s.committed();
+            require(!s.session.isBlocked()&&!v.has("terminal_evidence_schema")&&v.getString("status").equals("failed"),"small early failure gained a new required contract");
+            pass("small_early_failure_without_contract_or_result_retains_original_inline_behavior");
+        }
+        try(Scenario s=new Scenario("platform-display-alias",result("failed",false,false,true))){
+            s.session.lastResult.evidenceDirectory=new File("/data/data/example.test/files/control-tasks/"+TASK);
+            s.complete();require(!s.session.isBlocked(),"legacy Android display path alias rejected");
+            require(s.committed().getJSONObject("task_result_reference").getString("relative_path").equals("control-tasks/"+TASK+"/result.json"),"display path supplied binding authority");
+            pass("legacy_display_path_alias_is_never_opened_and_fixed_relative_reference_is_used");
+        }
+        try(Scenario s=new Scenario("context-parent-alias",result("failed",false,false,true))){
+            Path alias=root.resolve("context-alias");Files.createSymbolicLink(alias,s.files.getParent());
+            Context c=new Context(alias.resolve(s.files.getFileName()).toFile());
+            QualificationScopeConfig.FilesRoot resolved=new QualificationScopeConfig.FilesRoot(c);
+            require(resolved.path.equals(s.files.toFile()),"trusted framework parent alias did not canonicalize");
+            Path directAlias=root.resolve("forbidden-files-alias");Files.createSymbolicLink(directAlias,s.files);
+            final Context aliasedContext=new Context(directAlias.toFile());
+            rejects(new Checked(){public void run()throws Exception{new QualificationScopeConfig.FilesRoot(aliasedContext);}},"files-directory symlink admitted");
+            pass("trusted_context_parent_alias_accepted_but_files_directory_alias_still_refused");
+        }
+        try(Scenario s=new Scenario("fd-repeat",result("failed",false,false,true))){
+            s.complete();JSONObject v=s.committed();SessionTerminalEvidence.verify(v,s.files.toFile(),android.os.Process.myUid());
+            int baseline=android.system.Os.liveDescriptors();long nativeBaseline=descriptorCount();
+            for(int i=0;i<24;i++)SessionTerminalEvidence.verify(v,s.files.toFile(),android.os.Process.myUid());
+            require(android.system.Os.liveDescriptors()==baseline&&descriptorCount()==nativeBaseline,"repeated verify leaked owned descriptors");
+            pass("repeated_bind_and_verify_do_not_grow_real_or_fixture_owned_file_descriptors");
+        }
+        try(Scenario s=new Scenario("fd-close-failure",result("failed",false,false,true))){
+            android.system.Os.failClosePath=s.resultPath.toString();s.complete();
+            if(Boolean.getBoolean("hepta.fixture.nonowning")){
+                s.requireFailedUnchanged();require(s.session.log.contains("injected descriptor close"),"descriptor close error lost");
+                require(android.system.Os.liveDescriptors()==0,"close-error fixture left descriptors");
+                pass("android_nonowning_stream_explicit_descriptor_close_failure_is_not_silenced");
+            }else require(!s.session.isBlocked(),"host owning stream double-closed descriptor");
+        }
+        if(Boolean.getBoolean("hepta.fixture.nonowning")){
+            try(Scenario s=new Scenario("both-close-failures",result("failed",false,false,true))){
+                android.system.Os.failInputClosePath=s.resultPath.toString();android.system.Os.failClosePath=s.resultPath.toString();s.complete();s.requireFailedUnchanged();
+                require(s.session.log.contains("injected input close")&&s.session.log.contains("injected descriptor close")
+                        &&s.session.log.contains("Suppressed"),"close error cause/suppressed chain lost");
+                require(android.system.Os.liveDescriptors()==0,"input close failure prevented owned descriptor close");
+                pass("android_nonowning_input_and_descriptor_close_errors_preserve_first_and_suppressed_causes");
+            }
+        }
+
+        JSONArray actualRecords=new JSONArray();
+        if(args.length==2){
+            JSONArray requests=read(Paths.get(args[1])).getJSONArray("records");
+            for(int i=0;i<requests.length();i++){
+                JSONObject request=requests.getJSONObject(i);byte[] actual=Files.readAllBytes(Paths.get(request.getString("result_path")));
+                JSONObject record=new JSONObject(new String(actual,StandardCharsets.UTF_8)),owner=read(Paths.get(request.getString("owner_path")));
+                try(final Scenario s=new Scenario("sealed-actual-"+i,record)){
+                    require(owner.getString("task_id").equals(record.getString("task_id"))&&record.getString("task_id").equals(request.getString("task_id")),"actual task subject mismatch");
+                    require(owner.getString("instruction_utf8_sha256").equals(record.getJSONObject("completion_evidence").getString("owner_sha256")),"actual owner mismatch");
+                    require(owner.getString("task_authorization_sha256").equals(record.getString("task_authorization_sha256")),"actual authority mismatch");
+                    write(s.resultPath,actual);
+                    final byte[] legacy=s.session.legacySnapshotSession(record.getString("status"),record.getBoolean("cleanup_known"));
+                    boolean oversized=bytes(new JSONObject(new String(legacy,StandardCharsets.UTF_8))
+                            .put("background_lease_unreleased",false).put("web_helper_lease_unreleased",false)).length>65536;
+                    if(oversized)rejects(new Checked(){public void run()throws Exception{s.session.legacyWriteSessionSnapshot(legacy,s.session.readLeaseState());}},"actual legacy writer unexpectedly passed");
+                    else s.session.legacyWriteSessionSnapshot(legacy,s.session.readLeaseState());
+                    s.complete();require(!s.session.isBlocked(),"actual sealed terminal did not persist: "+s.session.log);
+                    JSONObject v=s.committed();require(v.getString("status").equals(record.getString("status"))
+                            &&v.getBoolean("completion_verified")==record.getBoolean("completion_verified")
+                            &&v.getBoolean("model_reported_success")==record.getBoolean("model_reported_success"),"actual outcome changed");
+                    require(v.has("task_result_reference")==oversized,"actual inline/projection choice differs");
+                    if(oversized)require(v.getJSONObject("task_result_reference").getString("sha256").equals(sha(actual)),"actual complete bytes digest differs");
+                    require(Arrays.equals(actual,Files.readAllBytes(s.resultPath)),"actual complete result altered");
+                    actualRecords.put(new JSONObject().put("task_id",record.getString("task_id")).put("status",record.getString("status"))
+                            .put("result_bytes",actual.length).put("result_sha256",sha(actual)).put("legacy_snapshot_bytes",legacy.length)
+                            .put("projection_required",oversized).put("new_session_bytes",Files.size(s.sessionPath))
+                            .put("outcome_preserved",true).put("complete_result_unchanged",true));
+                    pass("sealed_actual_"+record.getString("status")+"_"+i+"_preserves_outcome_and_exact_complete_result");
+                }
+            }
+        }
+        JSONObject output=new JSONObject().put("schema","hepta.session-terminal-host.v1").put("all_pass",true)
+                .put("cases",passed.size()).put("assertions",assertions).put("case_names",new JSONArray(passed))
+                .put("real_host_file_reads_writes_sync_and_atomic_moves",true).put("android_io_and_uid_are_host_adapters",true)
+                .put("ordinary_recovery_method_executed",true).put("owner_acknowledgement_transactions_not_executed",true)
+                .put("android_nonowning_stream_semantics",Boolean.getBoolean("hepta.fixture.nonowning"))
+                .put("actual_private_records",actualRecords).put("phone_operations",0);
+        System.out.println(output.toString());
+    }
+    static long descriptorCount()throws Exception {
+        try(java.util.stream.Stream<Path> values=Files.list(Paths.get("/proc/self/fd"))){return values.count();}
+    }
+}
+class RecoveryJournalTransaction {
+    static final String IDLE_STATUS="acknowledged_new_session_idle",SCOPE="host-test-no-acknowledgement-proof";
+    static final class Acknowledgement {String sessionId,transactionId,ackSha256;}
+    static final class Proof {Acknowledgement acknowledgement;boolean matches(Map<String,Object> fields,int uid){return false;}}
+    static Proof verifyReady(RecoveryJournalStore store,int uid,String transaction,byte[] active)throws IOException {
+        throw new IOException("owner acknowledgement transactions are outside this terminal-journal fixture");
+    }
+}
+class RecoveryJournalStore {
+    RecoveryJournalStore(Context ignored){}
+    List<String> pendingBarriers(){return Collections.emptyList();}
+}
