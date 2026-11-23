@@ -183,6 +183,7 @@ final class PublicProfileBusinessRecoveryClient {
         final Context context;final QualificationScopeConfig.FilesRoot root;final File task;
         final String taskId,ownerSha,origin,taskKey;
         final TreeSet<String> taskFiles;
+        private File otherModelTerminal;
         final TreeMap<String,MobiMindPrivateFiles.Read> reads=new TreeMap<String,MobiMindPrivateFiles.Read>();
         Inputs(Context context,MobiMindPrivateFiles.Read journal)throws Exception{
             this.context=context;root=new QualificationScopeConfig.FilesRoot(context);root.unchanged(context);
@@ -196,9 +197,21 @@ final class PublicProfileBusinessRecoveryClient {
             stableMetadata();
         }
         void readAll()throws Exception{
-            for(String name:taskFiles)read("control-tasks/"+taskId+"/"+name,PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+            for(String name:taskFiles){
+                String path="control-tasks/"+taskId+"/"+name;read(path,PublicProfileBusinessAbsenceRecovery.originalLimit(path));
+            }
             JSONObject result=object(get("control-tasks/"+taskId+"/result.json"));String generation=string(result.getJSONObject("model_session"),"worker_generation");
             if(!generation.matches("[0-9a-f]{32}"))throw new IOException("业务恢复原模型 generation 无效");String prefix="runs/"+generation+"/";
+            boolean text=MobiMindPrivateFiles.exists(new File(root.path,prefix+"app-session-receipt.json"));
+            boolean visual=MobiMindPrivateFiles.exists(new File(root.path,prefix+"vlm-task-terminal.json"));
+            if(text==visual)throw new IOException("业务恢复需要此任务唯一的本地模型退出记录");
+            otherModelTerminal=new File(root.path,prefix+(visual?"app-session-receipt.json":"vlm-task-terminal.json"));
+            if(visual){
+                String terminal=prefix+"vlm-task-terminal.json";read(terminal,PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+                for(String path:PublicProfileBusinessAbsenceRecovery.visualModelPaths(object(get(terminal)),taskId,generation))
+                    read(path,PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+                unchanged(true);return;
+            }
             read(prefix+"app-session-receipt.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);read(prefix+"native-session-result.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
             JSONObject session=object(get(prefix+"app-session-receipt.json"));String nonce=string(session.getJSONObject("worker_generation_cleanup"),"cleanup_nonce");
             if(!nonce.matches("[0-9a-f]{32}"))throw new IOException("业务恢复原模型退出 nonce 无效");
@@ -212,22 +225,23 @@ final class PublicProfileBusinessRecoveryClient {
         void read(String relative,int limit)throws Exception{
             PublicProfileBusinessAbsenceRecovery.requireRelative(relative,taskId);if(reads.containsKey(relative))return;
             File path=new File(root.path,relative);File parent=path.getParentFile();while(!parent.equals(root.path)){existingDirectory(parent);parent=parent.getParentFile();if(parent==null)throw new IOException("业务恢复路径不属于当前私有根");}
-            MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(path,limit,true);descriptor(read);
+            MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(path,limit,true);descriptor(read,relative);
             reads.put(relative,read);long total=0;for(MobiMindPrivateFiles.Read value:reads.values())total+=value.bytes.length;
             if(reads.size()>PublicProfileBusinessAbsenceRecovery.MAX_FILES||total>PublicProfileBusinessAbsenceRecovery.MAX_BUNDLE)throw new IOException("业务恢复完整原件总量超过上限");
         }
         byte[] get(String relative)throws Exception{MobiMindPrivateFiles.Read read=reads.get(relative);if(read==null)throw new IOException("业务恢复完整原件缺失");return read.bytes;}
         Map<String,byte[]> bytes(){Map<String,byte[]> result=new LinkedHashMap<String,byte[]>();for(Map.Entry<String,MobiMindPrivateFiles.Read> e:reads.entrySet())result.put(e.getKey(),e.getValue().bytes);return result;}
-        JSONObject descriptors()throws Exception{JSONObject value=new JSONObject();for(Map.Entry<String,MobiMindPrivateFiles.Read> e:reads.entrySet())value.put(e.getKey(),descriptor(e.getValue()));return value;}
+        JSONObject descriptors()throws Exception{JSONObject value=new JSONObject();for(Map.Entry<String,MobiMindPrivateFiles.Read> e:reads.entrySet())value.put(e.getKey(),descriptor(e.getValue(),e.getKey()));return value;}
         void unchanged(boolean leasePresent)throws Exception{
             stableMetadata();for(Map.Entry<String,MobiMindPrivateFiles.Read> e:reads.entrySet()){
                 if(!leasePresent&&PublicProfileBusinessAbsenceRecovery.JOURNAL.equals(e.getKey()))continue;
-                exact(e.getValue(),PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+                exact(e.getValue(),PublicProfileBusinessAbsenceRecovery.originalLimit(e.getKey()));
             }stableMetadata();
             if(!leasePresent&&MobiMindPrivateFiles.exists(new File(root.path,PublicProfileBusinessAbsenceRecovery.JOURNAL)))throw new IOException("业务恢复已提交后租约再次出现");
         }
         private void stableMetadata()throws Exception{
             root.unchanged(context);if(!taskKey.equals(directoryIdentity(task))||!taskFiles.equals(members(task)))throw new IOException("业务恢复原任务目录集合发生变化");
+            if(otherModelTerminal!=null&&MobiMindPrivateFiles.exists(otherModelTerminal))throw new IOException("业务恢复期间新增了另一种本地模型退出记录");
             for(String name:new String[]{"control-session.json.bak","control-session.json.new"})if(MobiMindPrivateFiles.exists(new File(root.path,name)))throw new IOException("业务恢复遇到未提交会话记录");
             if(!reads.containsKey(PublicProfileBusinessAbsenceRecovery.LATCH)&&MobiMindPrivateFiles.exists(new File(root.path,PublicProfileBusinessAbsenceRecovery.LATCH)))throw new IOException("业务恢复期间新增中断标记");
             if(!new RecoveryJournalStore(context).pendingBarriers().isEmpty())throw new IOException("业务恢复遇到待提交控制确认");
@@ -235,7 +249,20 @@ final class PublicProfileBusinessRecoveryClient {
     }
     private static void requireModelGeneration(Inputs inputs)throws Exception{
         JSONObject result=object(inputs.get("control-tasks/"+inputs.taskId+"/result.json"));String generation=string(result.getJSONObject("model_session"),"worker_generation"),prefix="runs/"+generation+"/";
-        JSONObject session=object(inputs.get(prefix+"app-session-receipt.json")),g=session.getJSONObject("worker_generation_cleanup");String nonce=string(g,"cleanup_nonce");
+        if(inputs.reads.containsKey(prefix+"vlm-task-terminal.json")){
+            JSONArray rounds=object(inputs.get(prefix+"vlm-task-terminal.json")).getJSONArray("requests");
+            for(int i=0;i<rounds.length();i++){
+                JSONObject round=rounds.getJSONObject(i);String worker=string(round,"generation"),workerPrefix="runs/"+worker+"/";
+                JSONObject app=object(inputs.get(workerPrefix+"vlm/"+string(round,"request_id")+"/app-receipt.json"));
+                bindGeneration(inputs,worker,workerPrefix,app,round.getJSONObject("generation_cleanup"));
+            }
+            return;
+        }
+        JSONObject session=object(inputs.get(prefix+"app-session-receipt.json"));
+        bindGeneration(inputs,generation,prefix,session,session.getJSONObject("worker_generation_cleanup"));
+    }
+    private static void bindGeneration(Inputs inputs,String generation,String prefix,JSONObject session,JSONObject g)throws Exception{
+        String nonce=string(g,"cleanup_nonce");
         WorkerGenerationProof.Expected expected=new WorkerGenerationProof.Expected(inputs.taskId,generation,string(g,"scope_token"),string(g,"boot_id"),number(g,"app_uid"),number(g,"app_pid"),number(g,"app_start_ticks"));
         WorkerGenerationProof.Identity identity=WorkerGenerationProof.identity(inputs.get(prefix+"worker-generation.identity"),expected);
         JSONObject nativeReceipt=object(inputs.get(prefix+"generation-cleanup-"+nonce+".json"));
@@ -285,12 +312,12 @@ final class PublicProfileBusinessRecoveryClient {
         MobiMindPrivateFiles.writeNew(new File(dir,"attempt.json"),value.toString(2).getBytes(StandardCharsets.UTF_8));
     }
     private static JSONObject fileRef(MobiMindPrivateFiles.Read value)throws Exception{return new JSONObject().put("file",value.path.getName()).put("bytes",value.bytes.length).put("sha256",sha(value.bytes));}
-    private static JSONObject descriptor(MobiMindPrivateFiles.Read read)throws Exception{return descriptor(read.stat,read.bytes);}
-    private static JSONObject descriptor(StructStat st,byte[] bytes)throws Exception{
+    private static JSONObject descriptor(MobiMindPrivateFiles.Read read,String relative)throws Exception{return descriptor(read.stat,read.bytes,relative);}
+    private static JSONObject descriptor(StructStat st,byte[] bytes,String relative)throws Exception{
         if(st.st_size!=bytes.length)throw new IOException("业务恢复私有原件长度改变");
         JSONObject d=new JSONObject().put("bytes",bytes.length).put("sha256",sha(bytes)).put("device",st.st_dev).put("inode",st.st_ino).put("uid",st.st_uid).put("mode",st.st_mode).put("nlink",st.st_nlink)
                 .put("mtime_seconds",time(st,"st_mtim","tv_sec")).put("mtime_nanos",time(st,"st_mtim","tv_nsec")).put("ctime_seconds",time(st,"st_ctim","tv_sec")).put("ctime_nanos",time(st,"st_ctim","tv_nsec"));
-        PublicProfileBusinessAbsenceRecovery.requireDescriptor(d,android.os.Process.myUid());return d;
+        PublicProfileBusinessAbsenceRecovery.requireDescriptor(d,android.os.Process.myUid(),PublicProfileBusinessAbsenceRecovery.originalLimit(relative));return d;
     }
     private static long time(StructStat st,String field,String part)throws Exception{Object value=StructStat.class.getField(field).get(st),n=value.getClass().getField(part).get(value);if(!(n instanceof Long))throw new IOException("业务恢复私有原件时间不完整");return (Long)n;}
     private static void exact(MobiMindPrivateFiles.Read first,int limit)throws Exception{

@@ -132,14 +132,23 @@ public final class PublicProfileBusinessRecoveryMain {
     /** Descriptor-bound private reads, used only by this newly owned root process. */
     private static final class OriginalReader {
         final PublicProfileBusinessAbsenceRecovery.Manifest manifest;
-        final File root,task;
+        final File root,task,otherModelTerminal;
         final String rootKey,taskKey;
         OriginalReader(Context system,PublicProfileBusinessAbsenceRecovery.Manifest manifest)throws Exception{
             this.manifest=manifest;
             android.content.pm.ApplicationInfo app=system.getPackageManager().getApplicationInfo(PublicProfileBusinessAbsenceRecovery.CONTROLLER,0);
             need(app.uid==manifest.ownerUid&&app.dataDir!=null,"BUSINESS_PRIVATE_ROOT_OWNER");
             root=new File(app.dataDir,"files").getCanonicalFile();rootKey=directory(root);
-            task=new File(root,"control-tasks/"+manifest.taskId);taskKey=directory(task);membership();
+            task=new File(root,"control-tasks/"+manifest.taskId);taskKey=directory(task);
+            File other=null;
+            for(String path:manifest.paths()){
+                if(!path.matches("runs/[0-9a-f]{32}/(app-session-receipt|vlm-task-terminal)\\.json"))continue;
+                need(other==null,"BUSINESS_MODEL_TERMINAL_SET");
+                File terminal=new File(root,path);
+                other=new File(terminal.getParentFile(),terminal.getName().equals("app-session-receipt.json")?
+                        "vlm-task-terminal.json":"app-session-receipt.json");
+            }
+            need(other!=null,"BUSINESS_MODEL_TERMINAL_SET");otherModelTerminal=other;membership();
         }
         Map<String,byte[]> readAll()throws Exception{
             membership();Map<String,byte[]> files=new java.util.LinkedHashMap<String,byte[]>();
@@ -150,7 +159,7 @@ public final class PublicProfileBusinessRecoveryMain {
             String[] names=task.list();need(names!=null&&names.length<=PublicProfileBusinessAbsenceRecovery.MAX_FILES,"BUSINESS_TASK_ENUMERATION");
             java.util.TreeSet<String> actual=new java.util.TreeSet<String>();for(String name:names)need(PublicProfileBusinessAbsenceRecovery.leaf(name)&&actual.add(name),"BUSINESS_TASK_MEMBERSHIP");
             need(actual.equals(manifest.taskFiles()),"BUSINESS_TASK_MEMBERSHIP_CHANGED");
-            absent(new File(root,"control-session.json.bak"));absent(new File(root,"control-session.json.new"));
+            absent(otherModelTerminal);absent(new File(root,"control-session.json.bak"));absent(new File(root,"control-session.json.new"));
             if(!manifest.paths().contains(PublicProfileBusinessAbsenceRecovery.LATCH))absent(new File(root,PublicProfileBusinessAbsenceRecovery.LATCH));
         }
         private String directory(File file)throws Exception{
@@ -164,10 +173,10 @@ public final class PublicProfileBusinessRecoveryMain {
             File parent=file.getParentFile();while(!parent.equals(root)){directory(parent);parent=parent.getParentFile();need(parent!=null,"BUSINESS_PRIVATE_PARENT");}
             JSONObject expected=manifest.descriptor(relative);FileDescriptor fd=Os.open(file.getPath(),OsConstants.O_RDONLY|OsConstants.O_NOFOLLOW|OsConstants.O_CLOEXEC,0);Throwable primary=null;
             try{
-                StructStat first=Os.fstat(fd);need(OsConstants.S_ISREG(first.st_mode)&&first.st_size>=0&&first.st_size<=PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL
+                StructStat first=Os.fstat(fd);need(OsConstants.S_ISREG(first.st_mode)&&first.st_size>=0&&first.st_size<=PublicProfileBusinessAbsenceRecovery.originalLimit(relative)
                         &&first.st_uid==manifest.ownerUid&&(first.st_mode&0777)==0600&&first.st_nlink==1,"BUSINESS_PRIVATE_FILE_OWNER");
                 ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] block=new byte[65536];int n;
-                while((n=Os.read(fd,block,0,block.length))>0){check();need(out.size()+n<=PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL,"BUSINESS_PRIVATE_FILE_BOUND");out.write(block,0,n);}
+                while((n=Os.read(fd,block,0,block.length))>0){check();need(out.size()+n<=PublicProfileBusinessAbsenceRecovery.originalLimit(relative),"BUSINESS_PRIVATE_FILE_BOUND");out.write(block,0,n);}
                 byte[] bytes=out.toByteArray();JSONObject observed=descriptor(first,bytes);
                 need(PublicProfileBusinessAbsenceRecovery.same(expected,observed)&&PublicProfileBusinessAbsenceRecovery.same(observed,descriptor(Os.fstat(fd),bytes))
                         &&PublicProfileBusinessAbsenceRecovery.same(observed,descriptor(Os.lstat(file.getPath()),bytes)),"BUSINESS_PRIVATE_FILE_CHANGED");check();return bytes;
@@ -194,7 +203,14 @@ public final class PublicProfileBusinessRecoveryMain {
     private static void need(boolean b,String code)throws IOException{PublicProfileBusinessAbsenceRecovery.need(b,code);}
     private static final class AndroidProc implements ProfileRecoveryProcesses.Proc {
         final PublicProfileBusinessAbsenceRecovery.Request request;
-        AndroidProc(PublicProfileBusinessAbsenceRecovery.Request request){this.request=request;}
+        final Set<String> modelGenerations=new HashSet<String>();
+        AndroidProc(PublicProfileBusinessAbsenceRecovery.Request request){
+            this.request=request;modelGenerations.add(request.modelGeneration);
+            for(String path:request.manifest.paths()){
+                if(path.matches("runs/[0-9a-f]{32}/worker-generation\\.identity"))
+                    modelGenerations.add(path.substring("runs/".length(),path.lastIndexOf('/')));
+            }
+        }
         public long now(){return SystemClock.elapsedRealtime();}
         public String[] entries()throws Exception{check();String[] rows=new File("/proc").list();
             ProfilePrelaunchRecovery.need(rows!=null,"RECOVERY_PROC_ENUMERATION");return rows;}
@@ -224,7 +240,10 @@ public final class PublicProfileBusinessRecoveryMain {
                 if("cmdline".equals(leaf)&&raw.length>0){
                     String command=java.nio.charset.StandardCharsets.UTF_8.newDecoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
                             .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT).decode(java.nio.ByteBuffer.wrap(raw)).toString();
-                    need(!command.contains(request.modelGeneration)&&!command.contains("libhepta_local_runner.so"),"BUSINESS_MODEL_WORKER_STILL_VISIBLE");
+                    need(!command.contains("libhepta_local_runner.so")&&!command.contains(org.trillionnium.hepta.local.VlmPins.WORKER),
+                            "BUSINESS_MODEL_WORKER_STILL_VISIBLE");
+                    for(String generation:modelGenerations)
+                        need(!command.contains(generation),"BUSINESS_MODEL_WORKER_STILL_VISIBLE");
                 }
                 return raw;
             }catch(Exception|Error failure){primary=failure;throw failure;}
