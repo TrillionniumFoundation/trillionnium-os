@@ -72,7 +72,18 @@ def main():
     inputs += [source/'tests/profile-permission-ui'/name for name in
                ['UiPermissionFixture.java','UiLifecycleFakes.java','ProfilePermissionUiLifecycleHostTest.java']]
     fixture=source/'tests/profile-permission-transient/fixtures/synthetic-activities.txt'
-    pins={str(path):sha(path) for path in inputs+generated+[fixture,Path(__file__).resolve()]}
+    broker=background/'BackgroundDisplayBroker.java'
+    template=source/'tests/profile-permission-ui/LateReadyBrokerHost.template'
+    text=broker.read_text()
+    begin='} else if(config.profileTarget!=null&&"prepare_done".equals(r.operation)) {'
+    end='} else if(config.profileTarget!=null&&"launch".equals(r.operation)) {'
+    if text.count(begin)!=1 or text.count(end)!=1:raise RuntimeError('ambiguous prepare_done branch')
+    body=text.split(begin,1)[1].split(end,1)[0]
+    generated_broker=stubs/'org/trillionnium/hepta/background/LateReadyBrokerHost.java'
+    generated_broker.parent.mkdir(parents=True,exist_ok=True)
+    generated_broker.write_text(template.read_text().replace('@@PREPARE_DONE_BODY@@',body))
+    generated.append(generated_broker)
+    pins={str(path):sha(path) for path in inputs+generated+[fixture,broker,template,Path(__file__).resolve()]}
     result={'schema':'hepta.permission-ui-host.v1','all_pass':False,'base_head':'f7dbe2f1c06e34c992b140d5d88995a8e99c03db','source_head_from_ci':None,
             'java_release_api_check':True,'compiler_contract':'Java 8 API release; no fallback from --release 8',
             'production_ui_session_executed':False,'android_adapters_compiled':False,'phone_contacted':False,'apk_built':False,
@@ -98,6 +109,8 @@ def main():
             +[str(path) for path in inputs+generated])
         output_text=run('ui-lifecycle',[str(java),'-cp',str(classes),'org.trillionnium.hepta.local.ProfilePermissionUiLifecycleHostTest',str(fixture)])
         result['checks']=json.loads(output_text.rstrip().splitlines()[-1])
+        broker_output=run('late-ready-broker',[str(java),'-cp',str(classes),'org.trillionnium.hepta.background.LateReadyBrokerHost',str(fixture)])
+        result['late_ready_broker']=json.loads(broker_output.rstrip().splitlines()[-1])
         result['production_ui_session_executed']=True
         for path,digest in pins.items():
             if sha(Path(path))!=digest:

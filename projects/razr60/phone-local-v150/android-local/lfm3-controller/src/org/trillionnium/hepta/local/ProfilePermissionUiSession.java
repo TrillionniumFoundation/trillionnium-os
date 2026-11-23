@@ -223,13 +223,30 @@ final class ProfilePermissionUiSession {
         private String readyOrPermission()throws Exception{
             for(;;){String state=state();if(!"WAITING".equals(state))return state;waitBriefly();}
         }
+        private String confirmReady()throws Exception{
+            String current=state();
+            if(!"APP_READY".equals(current))return current;
+            authority();String result=background.confirmPermissionPreparation(cancellation,deadline);check();return result;
+        }
+        private void requireComplete()throws Exception{
+            if(!"COMPLETE".equals(confirmReady()))throw new IllegalStateException("后台许可准备再次变化，未确认完成");
+        }
         @Override public void run(){
             try{
                 authority();
                 adapter=new ProfilePermissionAndroidAdapter(owner.service,background,new HeptaAccessibilityService.Cancellation(){
                     public boolean isCancelled(){return Work.this.cancelled();}},deadline,this);
                 String initial=readyOrPermission();
-                if("APP_READY".equals(initial))return;
+                if("APP_READY".equals(initial)){
+                    String confirmation=confirmReady();
+                    if("COMPLETE".equals(confirmation))return;
+                    // One late transition can only re-enter read-only coordination.
+                    // Every permission observation/choice stays in this original Work.
+                    if(!"WAITING".equals(confirmation)&&!"PERMISSION_PENDING".equals(confirmation))
+                        throw new IllegalStateException("unrecognized final preparation state");
+                    initial=readyOrPermission();
+                    if("APP_READY".equals(initial)){requireComplete();return;}
+                }
                 if(!"PERMISSION_PENDING".equals(initial))throw new IllegalStateException("unrecognized permission preparation state");
                 ProfilePermissionInitialization.Snapshot first=observe();
                 ProfilePermissionInitialization.Session session=new ProfilePermissionInitialization.Session(goal,background.ownerSha256,
@@ -259,7 +276,7 @@ final class ProfilePermissionUiSession {
                     waitBriefly();
                 }
                 if(!"APP_READY".equals(after))throw new IllegalStateException("permission request remains or a new request appeared after the single deny attempt");
-                authority();owner.publish(this,published,"后台应用权限准备已结束，继续核对原任务。",false);
+                requireComplete();owner.publish(this,published,"后台应用权限准备已结束，继续核对原任务。",false);
             }catch(Throwable error){
                 failure=error;owner.publish(this,preview,"权限准备未完成："+HeptaAccessibilityService.message(error),false);
             }finally{

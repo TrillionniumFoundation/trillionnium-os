@@ -1,0 +1,91 @@
+package org.trillionnium.hepta.background;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+
+public final class LateReadyBrokerHost {
+    static String fixture;
+    static int checks,cases;
+    static void check(boolean value,String why){++checks;if(!value)throw new AssertionError(why);}
+    interface Checked {void run()throws Exception;}
+    static void test(String name,Checked action)throws Exception{action.run();cases++;System.out.println("PASS "+name);}
+    static final class Request {final long deadline=1900;}
+    final Port profileOwnedTask=new Port();
+    final Request r=new Request();
+    final long expires=1750;
+    boolean profilePreparing=true,profileConfirmationDeferred,active=true;
+    String profilePreparationState="APP_READY",profileConfirmationSample="NOT_READ";
+    int physicalChecks,guardChecks,failPhysical,refreshes;
+    static final class Port {
+        String initial="APP_READY",finalMode="APP_READY";
+        long observedDeadline=-1,confirmedDeadline=-1;int confirms;
+        String initializationState(long d){observedDeadline=d;return initial;}
+        boolean confirmInitializationReady(long d)throws Exception{
+            confirms++;confirmedDeadline=d;
+            if("UNPROVED".equals(finalMode))throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+            if("PERMISSION_PENDING".equals(finalMode)||"WRONG_CALLER".equals(finalMode)){
+                ProfilePermissionTransientHostTest.Adapter a=new ProfilePermissionTransientHostTest.Adapter(fixture);
+                ProfileOwnedTask retained=a.start(true);a.permission=true;a.wrongCaller="WRONG_CALLER".equals(finalMode);
+                return retained.confirmInitializationReady(d);
+            }
+            return "APP_READY".equals(finalMode);
+        }
+    }
+    void requirePermissionPreparing(Request request)throws Exception{
+        if(!active||!profilePreparing)throw new IllegalStateException("scope not preparing");
+    }
+    int permissionPhysicalFence(Request request){return ++physicalChecks;}
+    void requirePermissionPhysicalUnchanged(int n)throws Exception{if(n==failPhysical)throw new IllegalStateException("physical changed");}
+    void guard(Request request,boolean activeNeeded)throws Exception{guardChecks++;if(!active)throw new IllegalStateException("lease retired");}
+    void refreshProfileTaskEvidence(){refreshes++;}
+    void finish()throws Exception{
+@@PREPARE_DONE_BODY@@
+    }
+    void rejected()throws Exception{
+        try{finish();throw new AssertionError("scope incorrectly continued");}
+        catch(ProfileTaskPolicy.Refusal|BrokerProtocol.Refusal|IllegalStateException expected){}
+        check(profilePreparing&&refreshes==0,"refusal changed preparation");
+    }
+    static void all()throws Exception{
+        test("ordinary ready checks original lease, two physical fences and final current guard",()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.finish();
+            check(!h.profilePreparing&&"COMPLETE".equals(h.profilePreparationState),"ready missing");
+            check(h.profileOwnedTask.observedDeadline==h.expires&&h.profileOwnedTask.confirmedDeadline==h.expires,"lost original deadline");
+            check(h.physicalChecks==2&&h.guardChecks==1&&h.refreshes==1,"missing checks");
+        });
+        for(final String value:new String[]{"PERMISSION_PENDING","WAITING"})test("first typed read changes to "+value,()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.profileOwnedTask.initial=value;h.finish();
+            check(h.profilePreparing&&h.profileConfirmationDeferred&&value.equals(h.profilePreparationState),"unexpected transition");
+            check(h.profileOwnedTask.confirms==0&&h.guardChecks==1,"unnecessary confirm or skipped guard");
+        });
+        test("qualified permission on final owned sample defers then stable fresh read completes",()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.profileOwnedTask.finalMode="PERMISSION_PENDING";h.finish();
+            check(h.profilePreparing&&h.profileConfirmationDeferred&&"PERMISSION_PENDING".equals(h.profileConfirmationSample),"actual verified pending not deferred");
+            h.profileOwnedTask.finalMode="APP_READY";h.profilePreparationState="APP_READY";h.finish();
+            check(!h.profilePreparing&&h.profileOwnedTask.confirms==2&&h.physicalChecks==4,"second authenticated sample missing");
+        });
+        for(final String mode:new String[]{"UNPROVED","WRONG_CALLER"})test("unverified final sample remains terminal "+mode,()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.profileOwnedTask.finalMode=mode;h.rejected();
+            check(!h.profileConfirmationDeferred&&"UNAVAILABLE".equals(h.profileConfirmationSample),"unverified cause gained deferral");
+        });
+        test("one deferral per original preparation",()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.profileOwnedTask.initial="WAITING";h.finish();
+            h.refreshes=0;h.profilePreparationState="APP_READY";h.rejected();check(h.profileOwnedTask.confirms==0,"unexpected final sample");
+        });
+        test("deferred sample needs its prior original ready state",()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.profilePreparationState="NOT_STARTED";h.profileOwnedTask.initial="PERMISSION_PENDING";h.rejected();
+        });
+        for(final int index:new int[]{1,2})test("physical fence change refuses throughout "+index,()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.failPhysical=index;h.rejected();
+            check(!h.profileConfirmationDeferred,"physical change authorized deferral");
+        });
+        test("retired capability cannot read",()->{
+            LateReadyBrokerHost h=new LateReadyBrokerHost();h.active=false;h.rejected();check(h.profileOwnedTask.observedDeadline==-1,"retired read");
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        fixture=new String(Files.readAllBytes(Paths.get(args[0])),StandardCharsets.UTF_8);
+        ProfilePermissionTransientHostTest.fixtureShape(fixture);all();
+        System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"all_pass\":true,\"android_adapter_executed\":false,\"phone_contacted\":false}");
+    }
+}

@@ -120,6 +120,8 @@ public final class BackgroundDisplayBroker {
     private volatile ProfileOwnedTask profileOwnedTask;
     private volatile boolean profilePreparing;
     private volatile String profilePreparationState="NOT_STARTED";
+    private boolean profileConfirmationDeferred;
+    private String profileConfirmationSample="NOT_READ";
     private volatile java.util.Map<Integer,String> permissionPhysicalBaseline;
     private volatile java.util.Map<Integer,String> permissionPhysicalAudit;
     private volatile PermissionWindowObservation.PublicInitialization permissionProjectionBaseline,permissionProjectionCurrent;
@@ -458,11 +460,30 @@ public final class BackgroundDisplayBroker {
                 permissionWindowRequest=r.requestId;profilePreparationState="PERMISSION_PENDING";refreshProfileTaskEvidence();
             } else if(config.profileTarget!=null&&"prepare_done".equals(r.operation)) {
                 requirePermissionPreparing(r);
-                if(!"APP_READY".equals(profileOwnedTask.initializationState(Math.min(r.deadline,expires))))
-                    throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+                boolean wasReady="APP_READY".equals(profilePreparationState);
+                profileConfirmationSample="UNAVAILABLE";
+                profileConfirmationSample=profileOwnedTask.initializationState(Math.min(r.deadline,expires));
                 requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));
-                if(!profileOwnedTask.confirmInitializationReady(Math.min(r.deadline,expires)))throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
-                profilePreparing=false;profilePreparationState="COMPLETE";refreshProfileTaskEvidence();
+                if("APP_READY".equals(profileConfirmationSample)){
+                    profileConfirmationSample="UNAVAILABLE";
+                    try{
+                        profileConfirmationSample=profileOwnedTask.confirmInitializationReady(Math.min(r.deadline,expires))
+                                ?"APP_READY":"WAITING";
+                    }catch(ProfileTaskPolicy.Refusal refused){
+                        if(!ProfileOwnedTask.verifiedPermissionDuringConfirmation(refused))throw refused;
+                        profileConfirmationSample="PERMISSION_PENDING";
+                    }
+                }
+                requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));guard(r,true);
+                if("APP_READY".equals(profileConfirmationSample)){
+                    profilePreparing=false;profilePreparationState="COMPLETE";
+                }else{
+                    if(!wasReady||profileConfirmationDeferred||!("WAITING".equals(profileConfirmationSample)
+                            ||"PERMISSION_PENDING".equals(profileConfirmationSample)))
+                        throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+                    profileConfirmationDeferred=true;profilePreparationState=profileConfirmationSample;
+                }
+                refreshProfileTaskEvidence();
             } else if(config.profileTarget!=null&&"launch".equals(r.operation)) {
                 dispatched=launchProfile(r);
             } else if(config.profileTarget!=null&&"window".equals(r.operation)) {
@@ -1775,6 +1796,8 @@ public final class BackgroundDisplayBroker {
             WindowOwnership window=profileWindow;
             if(r!=null&&window!=null&&r.requestId.equals(profileWindowRequest))value.put("window_ownership_wire",window.wire());
             value.put("profile_permission_preparing",profilePreparing).put("profile_permission_preparation_state",profilePreparationState);
+            if("prepare_done".equals(r==null?null:r.operation))
+                value.put("profile_confirmation_sample",profileConfirmationSample).put("profile_confirmation_deferred",profileConfirmationDeferred);
             PermissionWindowObservation permission=permissionWindow;
             if(r!=null&&permission!=null&&r.requestId.equals(permissionWindowRequest))
                 value.put("permission_window_wire",permission.wire());

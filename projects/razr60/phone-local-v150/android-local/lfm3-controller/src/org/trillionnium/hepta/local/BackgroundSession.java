@@ -308,11 +308,21 @@ final class BackgroundSession {
         if(!"prepare_done".equals(op)&&!response.getBoolean("profile_permission_preparing"))throw new IOException("后台权限初始化阶段不一致");
         return response;
     }
-    private void finishPermissionPreparation(HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+    /** A deferred confirmation grants a read under the same preparation, never an input. */
+    String confirmPermissionPreparation(HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
         JSONObject response=permissionRpc("prepare_done",null,-1,-1,cancel,originalDeadline);
-        if(response.getBoolean("profile_permission_preparing")||!"COMPLETE".equals(response.getString("profile_permission_preparation_state")))
+        String state=response.getString("profile_permission_preparation_state");
+        if(!Boolean.FALSE.equals(response.get("dispatched")))throw new IOException("权限确认不是只读回执");
+        if(Boolean.TRUE.equals(response.get("profile_permission_preparing"))){
+            if(Boolean.TRUE.equals(response.get("profile_confirmation_deferred"))
+                    &&state.equals(response.getString("profile_confirmation_sample"))
+                    &&("WAITING".equals(state)||"PERMISSION_PENDING".equals(state)))return state;
+            throw new IOException("未能确认同一后台窗口的权限准备状态");
+        }
+        if(!Boolean.FALSE.equals(response.get("profile_permission_preparing"))||!"COMPLETE".equals(state)
+                ||!"APP_READY".equals(response.getString("profile_confirmation_sample")))
             throw new IOException("普通应用窗口尚未重新通过验证");
-        permissionPreparing=false;synchronized(permissionProofs){permissionProofs.clear();}
+        permissionPreparing=false;synchronized(permissionProofs){permissionProofs.clear();}return state;
     }
     /** Historical read-only RPC provenance, already unregistered/drained; never a live capture or input permission. */
     static final class CalendarWindowProbeReceipt {
@@ -791,9 +801,8 @@ final class BackgroundSession {
             requireControllerUiObservation(launch);
             if(!launch.getBoolean("profile_permission_preparing"))throw new IOException("后台未进入权限初始化阶段");
             permissionPreparing=true;handler.prepare(this,Math.min(originalDeadline,expiresElapsed),cancellation);
-            requirePermissionPreparationActive();
-            if(!"APP_READY".equals(readPreparation(cancellation,originalDeadline)))throw new IOException("权限初始化后未读回普通应用窗口");
-            finishPermissionPreparation(cancellation,originalDeadline);saveJournal();
+            if(permissionPreparing)throw new IOException("权限准备未确认完成");
+            requireActive();saveJournal();
         }
     }
     private void requireControllerUiObservation(JSONObject response)throws Exception{
