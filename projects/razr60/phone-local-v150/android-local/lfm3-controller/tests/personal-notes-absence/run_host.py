@@ -77,6 +77,7 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--java8-syntax-only', action='store_true',
                         help='Draft-only JRE module compiler mode; canonical gate must omit.')
+    parser.add_argument('--lost-launch-originals', type=Path, help='Operator-local source file/hash index for the recorded lost launch response')
     args = parser.parse_args()
     source, output = args.source.resolve(), args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -93,7 +94,7 @@ def main():
     shared_test = source / 'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java'
     pure = [bg / (name + '.java') for name in pure_names] + [shared_test, test / 'PersonalNotesAbsenceHostTest.java']
     display_files, display_census = display_census_fixture(source, output / 'display-fixture')
-    pure += display_files + [test / 'PersonalNotesDisplayCensusHostTest.java']
+    pure += display_files + [test / 'PersonalNotesDisplayCensusHostTest.java',test / 'PersonalNotesLostLaunchHostTest.java']
     jdk = args.java_home.resolve() / 'bin'
     compiler = [str(jdk / 'javac')]
     if args.java8_syntax_only and not (jdk / 'javac').exists():
@@ -119,12 +120,12 @@ def main():
     files = [p for p in files if '/org/json/' not in str(p)]
     replace_once(fixture / 'android/os/Looper.java', 'public static Looper myLooper(){return L;}',
                  'public static boolean worker;public static Looper myLooper(){return worker?null:L;}')
-    (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 12345;}public static int myPid(){return 123;}}\n')
+    (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int uid=12345;public static int myUid(){return uid;}public static int myPid(){return 123;}}\n')
     replace_once(fixture / 'android/content/Context.java', 'a.sourceDir=new java.io.File(files,"fake.apk").getPath();',
-                 'a.sourceDir="/data/app/synthetic/base.apk";')
+                 'a.sourceDir=System.getProperty("hepta.notes.fixture.apk","/data/app/synthetic/base.apk");')
     os_java = fixture / 'android/system/Os.java'
     replace_once(os_java, 'r.st_uid=((Number)a.get("uid")).intValue();',
-                 'r.st_uid=((Number)a.get("uid")).intValue();if(r.st_uid==' + str(os.getuid()) + ')r.st_uid=12345;')
+                 'r.st_uid=((Number)a.get("uid")).intValue();if(r.st_uid==' + str(os.getuid()) + ')r.st_uid=android.os.Process.myUid();')
     replace_once(os_java, 'public static String failFsyncPath;',
                  'public static String failFsyncPath;public static boolean corruptPublicArchiveOnSync;public static Runnable afterPublicCommitSync;')
     replace_once(os_java, 'if(fd.valid())fd.sync();', '''if(fd.valid())fd.sync();
@@ -136,10 +137,10 @@ def main():
 import org.json.*;
 /** Explicit host PM/APK fixture, never actual installed identity. */
 public final class RecoveryControllerIdentity {
- public static boolean changed;
+ public static boolean changed;public static JSONObject recorded;
  public static JSONObject read(android.content.Context context,int uid,long deadline)throws Exception{
   if(android.os.SystemClock.elapsedRealtime()>=deadline)throw new java.io.IOException("synthetic identity deadline");
-  JSONObject result=new PersonalNotesAbsenceHostTest.Fixture().controller;
+  JSONObject result=recorded==null?new PersonalNotesAbsenceHostTest.Fixture().controller:new JSONObject(recorded.toString());
   if(changed)result.put("source_sha256",ProfileIdentity.sha("replacement synthetic APK"));
   return result;
  }
@@ -154,7 +155,7 @@ public final class RecoveryControllerIdentity {
     projected.write_text(raw_client.replace(seam, 'FakePersonalNotesRecoveryProcess.start(command)'))
     files += [bg / 'ProfileRecoveryProcesses.java', shared_test, test / 'FakePersonalNotesRecoveryProcess.java',
               test / 'PersonalNotesRecoveryClientHostTest.java', test / 'PersonalNotesAbsenceHostTest.java',
-              test / 'PersonalNotesPostModelHostTest.java']
+              test / 'PersonalNotesPostModelHostTest.java',test / 'PersonalNotesLostLaunchClientHostTest.java']
     service = local / 'HeptaAccessibilityService.java'
     service_text = service.read_text()
     methods = []
@@ -183,13 +184,19 @@ final class PersonalNotesRecoveryIdleFixture {
                              'org.trillionnium.hepta.local.PersonalNotesRecoveryClientHostTest']),
                  ('post-model', [str(jdk / 'java'), '-cp', str(classes) + os.pathsep + str(args.json_jar.resolve()),
                              'org.trillionnium.hepta.local.PersonalNotesPostModelHostTest'])]
+    if args.lost_launch_originals:
+        original_path=str(args.lost_launch_originals.resolve(strict=True))
+        commands.extend([('recorded-policy',[str(jdk / 'java'),'-cp',str(pure_classes)+os.pathsep+str(args.json_jar.resolve()),
+            'org.trillionnium.hepta.background.PersonalNotesLostLaunchHostTest',original_path]),
+            ('recorded-client',[str(jdk / 'java'),'-cp',str(classes)+os.pathsep+str(args.json_jar.resolve()),
+            'org.trillionnium.hepta.local.PersonalNotesLostLaunchClientHostTest',original_path])])
     sources = list(dict.fromkeys(pure + files + [helper, search_helper, client, service, local / 'LocalTaskSession.java',
                                                bg / 'PublicPersonalNotesAbsenceMain.java']))
     pins = {str(p): sha(p) for p in sources}
     result = {'schema': 'hepta.personal-notes-absence-host-validation.v1', 'all_pass': False,
               'strict_release8': not args.java8_syntax_only, 'stages': [], 'source_inputs': pins,
               'json_jar_sha256': JSON_SHA, 'phone_operations': 0, 'android_runtime': False,
-              'business_success_claimed': False, 'all_task_values_synthetic': True,
+              'business_success_claimed': False, 'all_task_values_synthetic': not bool(args.lost_launch_originals), 'original_index_sha256':sha(args.lost_launch_originals) if args.lost_launch_originals else None,
               'framework_samples_synthetic': True, 'current_installation_pm_fixture_synthetic': True,
               'owned_process_factory_replacements_only': True, 'fixture_derivation': derivation,
               'actual_service_idle_methods_sha256': hashlib.sha256('\n'.join(methods).encode()).hexdigest(),
@@ -205,7 +212,7 @@ final class PersonalNotesRecoveryIdleFixture {
                                  'stdout_sha256': hashlib.sha256(run.stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(run.stderr).hexdigest()})
         if run.returncode:
             break
-        if name in ('policy', 'display-census', 'client', 'post-model'):
+        if name in ('policy', 'display-census', 'client', 'post-model', 'recorded-policy', 'recorded-client'):
             result[name] = json.loads(run.stdout)
     result['inputs_unchanged'] = pins == {str(p): sha(p) for p in sources}
     result['all_pass'] = len(result['stages']) == len(commands) and all(x['exit_code'] == 0 for x in result['stages']) and result['inputs_unchanged']
