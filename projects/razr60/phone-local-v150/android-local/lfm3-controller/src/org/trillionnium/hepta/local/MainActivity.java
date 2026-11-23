@@ -867,13 +867,17 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 new AlertDialog.Builder(this).setTitle("自动目标与模型（最多 6 个应用实例，每个选一项）")
                         .setMultiChoiceItems(labels,checked,(dialog,index,enabled)->{
                             BackgroundAutoTargetPreferences.Entry item=candidates.get(index);
+                            checked[index]=enabled;
                             if(!enabled){chosen.remove(item.identitySha256);return;}
                             chosen.add(item.identitySha256);
                             // Model alternatives share one installed instance and one scheduling slot.
                             for(int other=0;other<candidates.size();other++){
                                 BackgroundAutoTargetPreferences.Entry sibling=candidates.get(other);
-                                if(other!=index&&sibling.instanceKey.equals(item.instanceKey)&&chosen.remove(sibling.identitySha256))
+                                if(other!=index&&sibling.instanceKey.equals(item.instanceKey)&&chosen.remove(sibling.identitySha256)){
+                                    // The dialog adapter consults its initial array again when binding a row.
+                                    checked[other]=false;
                                     ((AlertDialog)dialog).getListView().setItemChecked(other,false);
+                                }
                             }
                         }).setNegativeButton("取消",null).setPositiveButton("保存所选目标与模型",(dialog,which)->{
                             try{
