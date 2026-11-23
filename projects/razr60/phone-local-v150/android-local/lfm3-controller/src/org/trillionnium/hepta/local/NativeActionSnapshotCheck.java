@@ -540,22 +540,8 @@ final class NativeActionSnapshotCheck {
      * page and its one-pixel edge neighbour are recorded as overlapping. They
      * can never contribute to a role proof, a target, or an effect. */
     static boolean rejectedSearchBannerMotion(Snapshot a,Snapshot b,String target){
-        if(!a.nodes.keySet().equals(b.nodes.keySet()))return false;
-        List<Node> found=findId(a,"com.xiaomi.shop:id/bannerViewPager");
-        if(found.size()!=1)return false;
-        Node banner=found.get(0);
-        if(!"androidx.viewpager.widget.ViewPager".equals(banner.cls)||!banner.visible()
-                ||!b(banner.v,"enabled")||!b(banner.v,"scrollable")||!neutralFlags(banner)
-                ||!intersects(banner.bounds,a.node(target).bounds)||banner.children<2
-                ||"0".equals(banner.path))return false;
-        Node holder=a.node(parent(banner.path));
-        if(!"android.widget.FrameLayout".equals(holder.cls)||holder.children!=1||"0".equals(holder.path))return false;
-        Node content=a.node(parent(holder.path));
-        if(!"androidx.recyclerview.widget.RecyclerView".equals(content.cls)
-                ||!"com.xiaomi.shop:id/recyclerView".equals(content.view)||"0".equals(content.path))return false;
-        Node pager=a.node(parent(content.path));
-        if(!"androidx.viewpager.widget.ViewPager".equals(pager.cls)
-                ||!"com.xiaomi.shop.plugin.homepage:id/home_3_vp".equals(pager.view)||!under(target,pager.path))return false;
+        Node banner=searchBanner(a,b,target);
+        if(banner==null)return false;
         int fullA=0,fullB=0,edgeA=0,edgeB=0;boolean changed=false;
         for(Node old:a.nodes.values()){
             Node fresh=b.node(old.path);
@@ -574,6 +560,54 @@ final class NativeActionSnapshotCheck {
         }
         return changed&&fullA==1&&fullB==1&&edgeA+edgeB==1;
     }
+    // Full-width page swaps have equal visible coverage. The typed attempt
+    // classifies only these direct blank children, never the container, the
+    // search target or a coordinate. A partially visible neighbour is excluded.
+    static String fullPageSearchBannerSwap(Snapshot a,Snapshot b,String target,Set<String> validatedHintPaths){
+        Node banner=searchBanner(a,b,target);
+        if(banner==null||!banner.v.equals(b.node(banner.path).v)
+                ||!bannerVisibleCoverageEqual(a,b,banner))return null;
+        for(Node node:a.nodes.values()){
+            if(!under(node.path,banner.path)&&!validatedHintPaths.contains(node.path)
+                    &&!node.v.equals(b.node(node.path).v))return null;
+        }
+        String first=null,second=null;
+        for(int slot=0;slot<banner.children;slot++){
+            String child=banner.path+"/"+slot;
+            Node old=a.node(child),fresh=b.node(child);
+            if(old.visible()){
+                if(first!=null||!old.bounds.equals(banner.bounds))return null;
+                first=child;
+            }
+            if(fresh.visible()){
+                if(second!=null||!fresh.bounds.equals(banner.bounds))return null;
+                second=child;
+            }
+        }
+        return first!=null&&second!=null&&!first.equals(second)?banner.path:null;
+    }
+    private static Node searchBanner(Snapshot a,Snapshot b,String target){
+        if(!a.nodes.keySet().equals(b.nodes.keySet()))return null;
+        List<Node> found=findId(a,"com.xiaomi.shop:id/bannerViewPager");
+        if(found.size()!=1)return null;
+        Node banner=found.get(0);
+        if(!"androidx.viewpager.widget.ViewPager".equals(banner.cls)||!banner.visible()
+                ||!b(banner.v,"enabled")||!b(banner.v,"scrollable")||!neutralFlags(banner)
+                ||!intersects(banner.bounds,a.node(target).bounds)||banner.children<2
+                ||"0".equals(banner.path))return null;
+        Node holder=a.node(parent(banner.path));
+        if(!"android.widget.FrameLayout".equals(holder.cls)||holder.children!=1||"0".equals(holder.path))return null;
+        Node content=a.node(parent(holder.path));
+        if(!"androidx.recyclerview.widget.RecyclerView".equals(content.cls)
+                ||!"com.xiaomi.shop:id/recyclerView".equals(content.view)||"0".equals(content.path))return null;
+        Node pager=a.node(parent(content.path));
+        if(!"androidx.viewpager.widget.ViewPager".equals(pager.cls)
+                ||!"com.xiaomi.shop.plugin.homepage:id/home_3_vp".equals(pager.view)||!under(target,pager.path))return null;
+        if(!holder.v.equals(b.node(holder.path).v)||!content.v.equals(b.node(content.path).v)
+                ||!pager.v.equals(b.node(pager.path).v))return null;
+        return banner;
+    }
+
     // 0 hidden, 1 full page, 2 one-pixel visible edge beside a full page.
     private static int blankBannerSlot(Node n,Node banner){
         if(!b(n.v,"visible"))return hiddenBannerLeaf(n,banner)?0:-1;

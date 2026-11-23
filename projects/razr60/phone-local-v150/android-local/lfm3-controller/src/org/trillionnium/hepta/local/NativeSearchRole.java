@@ -30,7 +30,7 @@ final class NativeSearchRole {
             this.first=first;this.second=second;
         }
     }
-    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean execution){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;
         Map<String,Object> ae=stableEnvelope(a),be=stableEnvelope(b);
@@ -68,12 +68,14 @@ final class NativeSearchRole {
         roleId=NativeAppEvidence.fingerprint(identity);
         Set<String> paths=new TreeSet<String>(a.nodes.keySet());paths.addAll(b.nodes.keySet());
         List<String> changed=new ArrayList<String>();Set<String> regions=new TreeSet<String>();
+        String banner=execution?NativeActionSnapshotCheck.fullPageSearchBannerSwap(a,b,targetPath,hints):null;
         for(String path:paths){
             NativeActionSnapshotCheck.Node old=a.nodes.get(path),fresh=b.nodes.get(path);
             if(old!=null&&fresh!=null&&old.v.equals(fresh.v))continue;
             changed.add(path);
             if(hints.contains(path))continue; // Shared strict hint contract above already recomputed all actual references.
             need(!protectedPaths.contains(path)&&!ancestors.containsKey(path),"protected role changed: "+path);
+            if(banner!=null&&banner.equals(parent(path)))continue;
             String enclosure=parent(path);boolean proved=false;
             while(enclosure!=null){
                 if(enclosure(a,b,enclosure,protectedPaths)){
@@ -92,6 +94,7 @@ final class NativeSearchRole {
         Map<String,Object> classification=new TreeMap<String,Object>();
         for(String path:changed){
             if(hints.contains(path)){classification.put(path,"validated_search_hint");continue;}
+            if(banner!=null&&banner.equals(parent(path))){classification.put(path,"same_full_blank_banner_coverage");continue;}
             String only=null;for(String enclosure:antichain)if(inside(path,enclosure)){need(only==null,"overlapping enclosure classification");only=enclosure;}
             need(only!=null,"unclassified actual difference");classification.put(path,only);
         }
@@ -170,7 +173,12 @@ final class NativeSearchRole {
                 &&!Boolean.TRUE.equals(n.v.get("action_click"))&&Boolean.FALSE.equals(n.v.get("selected"));
     }
 
-    static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b);}
+    static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b,false);}
+    // Obtained only from a model's reserved Attempt. All actual window, role,
+    // original target/ancestor refresh, event and one-use effect checks still run.
+    static NativeSearchRole compareForExecution(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+        return new NativeSearchRole(a,b,true);
+    }
     void requireSameRole(NativeSearchRole current){need(current!=null&&roleId.equals(current.roleId),"new current search role differs from the offered role");}
     Map<String,Object> evidence(){return proof;}
 

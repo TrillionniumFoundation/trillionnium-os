@@ -43,7 +43,7 @@ final class BrokerDateHost {
  final class Owned {
   boolean observeStateUntil(long d){throw unrelated();}String initializationState(long d){throw unrelated();}
   ProfileOwnedTask.PermissionRead permissionForInitialization(int w,int t,long d){throw unrelated();}
-  boolean confirmInitializationReady(long d){throw unrelated();}
+  boolean confirmInitializationReady(long d)throws ProfileTaskPolicy.Refusal{throw unrelated();}
   int reads;Runnable beforeRead;String taskToken="00000000-0000-4000-8000-000000000007";
   WindowOwnership window(int window,int task,long deadline)throws Exception{reads++;if(beforeRead!=null)beforeRead.run();if(SystemClock.elapsedRealtime()>=deadline)throw new BrokerProtocol.Refusal("OWNED_READ_DEADLINE");
    return new WindowOwnership(config.profileTarget,config.generation,displayId,window,task,99,taskToken,
@@ -63,6 +63,7 @@ final class BrokerDateHost {
  static final long CLEANUP_MS=1500;
  BrokerProtocol.Request activeProfileRequest;WindowOwnership profileWindow;String profileWindowRequest;
  Object permissionWindow;String permissionWindowRequest;boolean profilePreparing,serve=true;
+ String profileConfirmationSample;boolean profileConfirmationDeferred;
  String profilePreparationState="NOT_STARTED";int cleanupCalls,cleanupWaits,responseCalls;long cleanupWaitBudget;String cleanupReason;
  byte[] runHandler(byte[] wire,int peerUid)throws Exception{
   BrokerProtocol.Request r=BrokerProtocol.Request.parse(wire);r.authenticate(config,peerUid);return perform(r);
@@ -107,7 +108,8 @@ final class BrokerDateHost {
   static final class Session {Session(Object... a){throw unrelated();}}
   static Object bind(Object... a){throw unrelated();}
  }
- static final class ProfileOwnedTask {static final class PermissionRead {}}
+ static final class ProfileTaskPolicy {static final class Refusal extends Exception {private static final long serialVersionUID=1L;}}
+ static final class ProfileOwnedTask {static final class PermissionRead {} static boolean verifiedPermissionDuringConfirmation(ProfileTaskPolicy.Refusal refused){throw unrelated();}}
  static final class PermissionWindowObservation {static Object fromLive(Object... a){throw unrelated();}}
  static final class BackgroundTaskOrganizer {
   BackgroundTaskOrganizer(Object a,ActivityOptions o,int d,Check before,Check after,Clock c){throw unrelated();}

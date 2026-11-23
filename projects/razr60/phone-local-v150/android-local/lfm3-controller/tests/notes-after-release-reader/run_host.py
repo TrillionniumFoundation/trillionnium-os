@@ -131,7 +131,7 @@ def main():
     files += [source / "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
               original / "NotesTaskInfoReaderHostTest.java", here / "NotesAfterReleaseReaderHostTest.java"]
     broker = background / "BackgroundDisplayBroker.java"
-    tracked = set(files + [broker, fixture, original / "run_host.py", original / "prepare_fixture.py",
+    tracked = set(files + [source / "tests/profile-permission-ready-confirmation/late_ready_history.py", broker, fixture, original / "run_host.py", original / "prepare_fixture.py",
                           original / "README.md", here / "run_host.py", here / "README.md"])
     tools = [jar, jdk / "bin/javac", jdk / "bin/java", jdk / "lib/ct.sym"]
     result = {"schema": "hepta.notes-after-release-reader-gate.v1", "all_pass": False,
@@ -182,7 +182,10 @@ def main():
         old_call = "remaining=publicNotesReader.frame();live=remaining.global;"
         new_call = "remaining=publicNotesReader.frameAfterRelease(custody.releasedRead());live=remaining.global;"
         broker_text = broker.read_text()
-        prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(broker_text)
+        from runpy import run_path
+        history = run_path(str(source/"tests/profile-permission-ready-confirmation/late_ready_history.py"))
+        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](broker_text)
+        prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(r31_text)
         result["reviewed_calendar_broker_inverse"] = calendar_inverse
         if (broker_text.count(new_call) != 1
                 or digest(prior_broker.replace(new_call, old_call, 1).encode()) != BROKER_CTRIP_SHA):

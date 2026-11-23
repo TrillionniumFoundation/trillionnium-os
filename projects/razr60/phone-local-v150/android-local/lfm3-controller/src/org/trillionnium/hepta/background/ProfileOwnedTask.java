@@ -135,10 +135,16 @@ public final class ProfileOwnedTask {
                 current=observeTreeSample(true,pinned);
             }
         }catch(VerifiedPermissionPending pending){
-            throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+            platform.guard();actual(true);need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+            ProfileTaskPolicy.Refusal refused=new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+            refused.initCause(pending);throw refused;
         }
         platform.guard();actual(true);need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
         return current!=null;
+    }
+    /** Only an actual complete retained-task permission observation carries this private cause. */
+    public static boolean verifiedPermissionDuringConfirmation(ProfileTaskPolicy.Refusal refused){
+        return refused!=null&&refused.getCause() instanceof VerifiedPermissionPending;
     }
     /** Read-only state coordination inside the caller's original request deadline.
      * A verified permission top is only a reason to read again, never a business

@@ -65,9 +65,11 @@ public final class PublicProfileBusinessClientHostTest {
             for(Map.Entry<String,byte[]> e:originals.entrySet()){Path p=dir.resolve(e.getKey());mkdir(p.getParent());MobiMindPrivateFiles.writeNew(p.toFile(),e.getValue());}
             journal=dir.resolve(PublicProfileBusinessAbsenceRecovery.JOURNAL);task=dir.resolve("control-tasks").resolve(taskId);result=task.resolve("result.json");
             mkdir(dir.resolve("session-recovery"));control=Files.readAllBytes(dir.resolve(PublicProfileBusinessAbsenceRecovery.CONTROL));membership=members(task);
-            JSONObject ref=object(control).getJSONObject("task_result_reference");
-            android.system.Os.resultPath=result.toString();android.system.Os.resultHostInode=((Number)Files.getAttribute(result,"unix:ino")).longValue();
-            android.system.Os.resultOriginalInode=ref.getLong("file_inode");android.system.Os.resultOriginalDevice=ref.getLong("file_device");
+            JSONObject ref=object(control).optJSONObject("task_result_reference");
+            if(ref!=null){
+                android.system.Os.resultPath=result.toString();android.system.Os.resultHostInode=((Number)Files.getAttribute(result,"unix:ino")).longValue();
+                android.system.Os.resultOriginalInode=ref.getLong("file_inode");android.system.Os.resultOriginalDevice=ref.getLong("file_device");
+            }
             FakeBusinessRecoveryProcess.root=dir;SystemClock.now=old.getLong("expires_elapsed_ms")+3000;
         }
         void mkdir(Path p)throws Exception{if(p.equals(dir))return;mkdir(p.getParent());MobiMindPrivateFiles.directory(p.toFile(),false);}
@@ -90,8 +92,25 @@ public final class PublicProfileBusinessClientHostTest {
     static void replaceSameBytes(Path p)throws Exception{Path next=p.resolveSibling(p.getFileName()+".host-replacement");MobiMindPrivateFiles.writeNew(next.toFile(),Files.readAllBytes(p));Files.move(next,p,StandardCopyOption.REPLACE_EXISTING);}
     static Runnable operation(Work w){return ()->{try{w.run();}catch(Exception e){throw new RuntimeException(e);}};}
     public static void main(String[] args)throws Exception{
-        if(args.length!=2)throw new IllegalArgumentException("external path map and new report required");
+        boolean visual=args.length==3&&"--visual".equals(args[2]);
+        if(args.length!=2&&!visual)throw new IllegalArgumentException("external path map, new report and optional --visual required");
         originals=PublicProfileBusinessRecoveryHostTest.loadExternalOriginals(Paths.get(args[0]));
+        test("competing_terminal_appears_during_owned_checker",()->{try(Env e=new Env()){
+            String generation=object(Files.readAllBytes(e.result)).getJSONObject("model_session").getString("worker_generation");
+            Path other=e.dir.resolve("runs").resolve(generation).resolve(visual?"app-session-receipt.json":"vlm-task-terminal.json");
+            FakeBusinessRecoveryProcess.afterReply=operation(()->MobiMindPrivateFiles.writeNew(other.toFile(),new byte[]{123,125}));
+            reject(e::recover);need(Files.exists(e.journal)&&FakeBusinessRecoveryProcess.calls==1&&e.commits()==0);e.unchanged();
+        }});
+        if(visual){
+            test("visual_originals_checker_durable_receipt_and_one_lease_retirement",()->{try(Env e=new Env()){
+                need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
+                BackgroundSession.Cleanup cleanup=e.recover();need(cleanup.known&&cleanup.businessRecovery!=null);
+                need(!Files.exists(e.journal)&&e.commits()==1&&FakeBusinessRecoveryProcess.calls==1&&LocalSocket.connections==0);
+                need(cleanup.evidence.getInt("model_requests")==1&&cleanup.evidence.getInt("business_steps")>0);
+                need(!cleanup.evidence.getBoolean("rewrites_original_task_result")&&!cleanup.evidence.getBoolean("automatic_resume"));
+                e.session.acceptReconciliation(cleanup);need(e.session.released());reject(()->e.session.acceptReconciliation(cleanup));e.unchanged();
+            }});
+        }else{
         test("actual_complete_originals_durable_receipt_only_lease_retired",()->{try(Env e=new Env()){
             need(originals.size()==132&&e.membership.size()==105&&Files.size(e.result)==547419);need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
             BackgroundSession.Cleanup c=e.recover();need(c.known&&c.businessRecovery!=null&&c.publicProfileRecovery==null&&c.prelaunchRecovery==null);
@@ -136,6 +155,7 @@ public final class PublicProfileBusinessClientHostTest {
         test("unlink_failure_preserves_receipt_and_lease",()->{try(Env e=new Env()){android.system.Os.failUnlink=true;reject(e::recover);need(Files.exists(e.journal)&&e.commits()==1&&!e.session.released());e.unchanged();}});
         test("old_opaque_receipt_cannot_release_replacement_lease",()->{try(Env e=new Env()){BackgroundSession.Cleanup c=e.recover();MobiMindPrivateFiles.writeNew(e.journal.toFile(),originals.get(PublicProfileBusinessAbsenceRecovery.JOURNAL));reject(()->e.session.acceptReconciliation(c));need(!e.session.released());e.unchanged();}});
         test("original_zero_step_entry_still_rejects_positive_business",()->{try(Env e=new Env()){reject(()->BackgroundSession.reconcile(e.context,()->{}));need(Files.exists(e.journal)&&FakeBusinessRecoveryProcess.calls==0);e.unchanged();}});
+        }
         JSONObject report=new JSONObject().put("schema","hepta.business-client-host-cases.v1").put("status","PASS").put("cases",cases).put("assertions",assertions).put("case_names",names)
             .put("actual_complete_client_and_background_session",true).put("opaque_receipt_created_only_by_actual_client",true)
             .put("root_transport_pm_android_stat_clock_synthetic",true).put("phone_operations",0);
