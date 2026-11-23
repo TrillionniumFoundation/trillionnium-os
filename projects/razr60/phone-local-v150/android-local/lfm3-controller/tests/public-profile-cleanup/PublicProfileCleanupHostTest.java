@@ -150,10 +150,66 @@ public final class PublicProfileCleanupHostTest {
             cases.add("actual_a4_terminal_projection_accepted_without_rewriting_failure");
         }
     }
+    static final class OriginalChild extends Process {
+        final ByteArrayOutputStream input=new ByteArrayOutputStream();
+        final PipedOutputStream writer=new PipedOutputStream();
+        final PipedInputStream output=new PipedInputStream(writer);
+        int channels;
+        OriginalChild()throws IOException{}
+        public OutputStream getOutputStream(){channels++;return input;}
+        public InputStream getInputStream(){return output;}
+        public InputStream getErrorStream(){return new ByteArrayInputStream(new byte[0]);}
+        public int waitFor(){throw new AssertionError("not a process control test");}
+        public int exitValue(){throw new IllegalThreadStateException();}
+        public void destroy(){throw new AssertionError("owner received destroy");}
+    }
+    static Object recorded(Object recorder,String name,Class<?>[] types,Object...args)throws Exception{
+        Method method=recorder.getClass().getDeclaredMethod(name,types);method.setAccessible(true);return method.invoke(recorder,args);
+    }
+    static void checkRetainedAcknowledgement(String which)throws Exception{
+        try(Env e=new Env()){
+            OriginalChild child=new OriginalChild();field(e.session,"brokerProcess",child);
+            field(e.session,"retired",true);field(e.session,"profileLaunchAttempted",true);
+            field(e.session,"state","CLEANUP_UNKNOWN");field(e.session,"displayId",7);
+            JSONObject close=new JSONObject().put("operation","close").put("profile_custody_retained",true);
+            field(e.session,"lastResponse",close);
+            JSONObject term=new JSONObject().put("schema","hepta.background-broker-terminal.v1").put("state","CLEANUP_UNKNOWN").put("reason","client_close")
+                    .put("generation",e.session.generation).put("display_id",7).put("display_scope_sha256",e.scope.sha256)
+                    .put("profile_custody_retained",true).put("release_confirmed",false);
+            if("different scope".equals(which))term.put("display_scope_sha256",HASH);
+            if("reused id".equals(which))term.put("display_id",8);
+            if("historic release".equals(which))term.put("release_confirmed",true);
+            if("wrong close".equals(which))close.put("operation","launch");
+            String line=term+"\n";byte[] frozen=(line+("partial".equals(which)?"":line)).getBytes(StandardCharsets.UTF_8);
+            Class<?> type=Class.forName("org.trillionnium.hepta.local.BackgroundSession$BrokerOutput");
+            Constructor<?> ctor=type.getDeclaredConstructor(Process.class,File.class,String.class,String.class,String.class);ctor.setAccessible(true);
+            Object recorder=ctor.newInstance(child,e.directory.toFile(),TASK,e.session.generation,"original");
+            field(e.session,"brokerOutput",recorder);Thread reader=new Thread((Runnable)recorder);reader.start();
+            try{
+                child.writer.write(frozen);child.writer.flush();long limit=System.nanoTime()+2000000000L;
+                while(((JSONObject)recorded(recorder,"evidence",new Class<?>[0])).getLong("observed_bytes")!=frozen.length){
+                    if(System.nanoTime()>limit)throw new AssertionError("original output did not arrive");Thread.sleep(2);
+                }
+                invoke(e.session,"acknowledgeRetainedSnapshot",new Class<?>[]{boolean.class},false);
+                need(child.input.size()==0);
+                recorded(recorder,"persist",new Class<?>[]{String.class},"session_close_snapshot");
+                invoke(e.session,"acknowledgeRetainedSnapshot",new Class<?>[]{boolean.class},"already released".equals(which));
+                boolean expected="genuine pair".equals(which);
+                need(expected?Arrays.equals(child.input.toByteArray(),PublicOwnGroupPolicy.retainedSnapshotAcknowledgement(e.scope)):child.input.size()==0);
+                if(expected){
+                    invoke(e.session,"acknowledgeRetainedSnapshot",new Class<?>[]{boolean.class},false);need(child.channels==1);
+                    child.writer.write("later independent readback\n".getBytes(StandardCharsets.UTF_8));child.writer.flush();
+                }
+            }finally{child.writer.close();reader.join(2000);}
+            need(!reader.isAlive()&&Arrays.equals(frozen,Files.readAllBytes(e.directory.resolve("background-broker-"+e.session.generation+".bin"))));
+        }
+    }
     public static void main(String[] args)throws Exception{
         boolean legacy=args.length>2&&"legacy".equals(args[2]);
         if(legacy){actual(Paths.get(args[1]),true);}
         else{
+            for(String condition:new String[]{"genuine pair","different scope","reused id","historic release","wrong close","partial","already released"})
+                test("one-way snapshot acknowledgement "+condition,()->checkRetainedAcknowledgement(condition));
             test("public_failed_operation_terminal_cleanup_is_valid",()->{try(Env e=new Env()){
                 JSONObject response=e.response(),proof=e.checked(response);need(proof.getBoolean("cleanup_known"));
                 need(!response.getBoolean("ok"));need("PROFILE_ROOT_FOREIGN_ACTIVITY".equals(response.getString("terminal_reason")));

@@ -183,6 +183,12 @@ public final class PublicOwnGroupPolicy {
                 &&credentials.currentUserId==other.credentials.currentUserId
                 &&credentials.target.userId==other.credentials.target.userId;}
     }
+    /** Fixed framing for the original child stdin. It confirms an immutable capture only.
+     * The broker independently verifies its own real Binder objects and full task census. */
+    public static byte[] retainedSnapshotAcknowledgement(Scope scope){
+        return ("HPTA-RETAINED-CLOSE-V1\u0000"+scope.taskId+"\u0000"+scope.generation+"\u0000"+scope.sha256+"\u0000")
+                .getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+    }
     public static final class AppDisplay {
         public final int id,flags;public final String name;public final long begin,end;
         public AppDisplay(int id,String name,int flags,boolean valid,long begin,long end){

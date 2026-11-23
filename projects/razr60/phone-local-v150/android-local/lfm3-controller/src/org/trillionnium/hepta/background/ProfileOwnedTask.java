@@ -59,6 +59,7 @@ public final class ProfileOwnedTask {
     private String leafTokenId;
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
     private boolean identityUnknown,foreignTasks,cleanupKnown,liveAbsent,recentsAbsent;
+    private boolean retainedReleaseChecked,rootDeleteAttempted;
     private String recentsBeforeSha,recentsAfterSha;
     public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display)throws Exception{
         this(platform,target,generation,requestId,display,null);
@@ -298,6 +299,7 @@ public final class ProfileOwnedTask {
                         requireRoot(currentRoots.get(0),false);
                         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
                         if(publicHistory!=null)requireRecentEmpty(readRecents());
+                        rootDeleteAttempted=true;
                         need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
@@ -337,6 +339,54 @@ public final class ProfileOwnedTask {
         cleanupKnown=liveAbsent&&recentsAbsent&&(!dispatchMarked||leaf!=null);
         return cleanupKnown;
     }
+    /** Owned by this broker only; the callback has no task launch, remove or input operation. */
+    interface RetiredDisplay {
+        void requireState(boolean beforeRelease)throws Exception;
+        void awaitAbsent()throws Exception;
+        void releaseOriginalHandle()throws Exception;
+    }
+    synchronized void closeRetainedEmptyDisplay(long deadline,RetiredDisplay displayHandle)throws Exception{
+        need(!retainedReleaseChecked&&publicHistory!=null&&retiring&&identityUnknown&&!foreignTasks
+                &&root!=null&&leaf!=null&&startAccepted&&dispatchMarked&&!rootDeleteAttempted,
+                "PROFILE_RETAINED_EMPTY_NOT_ELIGIBLE");
+        retainedReleaseChecked=true;
+        List<List<?>> protectedFacts=retainedEmptySample(true,deadline,displayHandle);
+        platform.pause();
+        need(retainedEmptySample(true,deadline,displayHandle).equals(protectedFacts),"PROFILE_RETAINED_LIVE_CHANGED");
+        need(platform.now()<deadline,"PROFILE_RETAINED_READ_DEADLINE");
+        // No task removal is replayed. The sole authorized effect is the release of this
+        // broker's original, verified destroy-content VD after its own empty root was reread.
+        displayHandle.releaseOriginalHandle();
+        displayHandle.awaitAbsent();
+        for(int sample=0;sample<2;sample++){
+            platform.pause();
+            need(retainedEmptySample(false,deadline,displayHandle).equals(protectedFacts),"PROFILE_RETAINED_POST_CHANGED");
+        }
+        liveAbsent=true;recentsAbsent=true;cleanupKnown=true;identityUnknown=false;
+    }
+    private List<List<?>> retainedEmptySample(boolean before,long deadline,RetiredDisplay displayHandle)throws Exception{
+        need(platform.now()<deadline,"PROFILE_RETAINED_READ_DEADLINE");
+        actual(false);ProfileTaskPolicy.Snapshot all=platform.snapshot();
+        all.requireDedicatedEmpty(target);
+        need(!all.allIds.contains(leaf.id),"PROFILE_RETAINED_LEAF_LIVE");
+        ProfileTaskPolicy.Recents recents=readRecents();requireRecentEmpty(recents);
+        Set<Integer> recent=recentIds(recents);
+        need(!recent.contains(root.id)&&!recent.contains(leaf.id),"PROFILE_RETAINED_TASK_IN_RECENTS");
+        if(before){
+            List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
+            all.requireOnlyOwned(target,display,root.id,-1);
+            need(roots.size()==1,"PROFILE_RETAINED_ROOT_NOT_UNIQUE");
+            requireRoot(roots.get(0),false);
+            need(checked(platform.children(root.token)).isEmpty(),"PROFILE_RETAINED_ROOT_HAS_CHILD");
+        }else{
+            need(!all.allIds.contains(root.id),"PROFILE_RETAINED_ROOT_LIVE");
+            for(ProfileTaskPolicy.Root row:all.roots)need(row.display!=display,"PROFILE_RETAINED_DISPLAY_TASK");
+        }
+        displayHandle.requireState(before);
+        need(platform.now()<deadline,"PROFILE_RETAINED_READ_DEADLINE");
+        return all.excludingRoot(root.id);
+    }
+    synchronized boolean retainedAbsenceVerified(){return retainedReleaseChecked&&cleanupKnown()&&liveAbsent&&recentsAbsent;}
     public synchronized boolean cleanupKnown(){return cleanupKnown&&!identityUnknown&&!foreignTasks;}
     public synchronized boolean started(){return dispatchMarked;}
     public synchronized Map<String,Object> personalAudit(){return personalAudit;}

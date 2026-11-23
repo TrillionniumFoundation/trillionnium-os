@@ -94,7 +94,8 @@ public final class PublicProfileBusinessClientHostTest {
     public static void main(String[] args)throws Exception{
         boolean visual=args.length==3&&"--visual".equals(args[2]);
         boolean retained=args.length==3&&"--retained-before-model".equals(args[2]);
-        if(args.length!=2&&!visual&&!retained)throw new IllegalArgumentException("external path map, new report and optional --visual required");
+        boolean incomplete=args.length==3&&"--incomplete-client-close".equals(args[2]);
+        if(args.length!=2&&!visual&&!retained&&!incomplete)throw new IllegalArgumentException("external path map, new report and optional --visual required");
         originals=PublicProfileBusinessRecoveryHostTest.loadExternalOriginals(Paths.get(args[0]));
         test("competing_terminal_appears_during_owned_checker",()->{try(Env e=new Env()){
             String generation=object(Files.readAllBytes(e.result)).getJSONObject("model_session").getString("worker_generation");
@@ -129,6 +130,16 @@ public final class PublicProfileBusinessClientHostTest {
                 String generation=object(Files.readAllBytes(e.result)).getJSONObject("model_session").getString("worker_generation");
                 FakeBusinessRecoveryProcess.afterReply=operation(()->MobiMindPrivateFiles.writeNew(e.dir.resolve("runs/"+generation+"/native-session-result.json").toFile(),new byte[]{123,125}));
                 reject(e::recover);need(Files.exists(e.journal)&&e.commits()==0);e.unchanged();
+            }});
+        }else if(incomplete){
+            test("actual_failed_model_with_sealed_release_checks_current_root_and_archives",()->{try(Env e=new Env()){
+                JSONObject old=object(Files.readAllBytes(e.result));
+                need(e.membership.size()==94&&e.taskId.equals("5780cdd59ead4b799ef38025ea9bb176")&&"failure".equals(old.getString("model_done_status")));
+                need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
+                BackgroundSession.Cleanup c=e.recover();need(c.known&&e.commits()==1&&!Files.exists(e.journal)&&FakeBusinessRecoveryProcess.calls==1&&LocalSocket.connections==0);
+                JSONObject proof=c.businessRecovery.proof();need(proof.getBoolean("historical_broker_release_observed")&&proof.getBoolean("historical_model_exit_verified")
+                        &&proof.getInt("business_steps")==7&&proof.getInt("model_requests")==7&&!proof.getBoolean("rewrites_business_outcome"));
+                e.session.acceptReconciliation(c);need(e.session.released());reject(()->e.session.acceptReconciliation(c));e.unchanged();
             }});
         }else if(visual){
             test("visual_originals_checker_durable_receipt_and_one_lease_retirement",()->{try(Env e=new Env()){

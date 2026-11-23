@@ -179,6 +179,16 @@ final class PublicOwnGroupFramework {
         return new PublicOwnGroupScreenLease.Snapshot(id,5,owned.flags,owned.ownerUid,owned.groupId,main,cover,
                 members,field(target,"state"),owned.name,owned.uniqueId,owned.ownerPackage,true);
     }
+    synchronized void requireRetiredDestroyHandle(int id,String name)throws Exception{
+        need(frozenIdentityMatches(id,name),"PUBLIC_RETAINED_DISPLAY_IDENTITY");
+        PublicOwnGroupPolicy.DisplayState current=display(id,name);
+        need(first.display.uniqueId.equals(current.uniqueId)&&first.display.groupId==current.groupId
+                &&current.ownerUid==0&&first.display.ownerPackage.equals(current.ownerPackage)
+                &&current.flags==first.display.flags&&current.removeMode==1&&current.destroyConstant==1
+                &&current.groupId!=current.physical0GroupId&&current.groupId!=current.physical1GroupId,
+                "PUBLIC_RETAINED_DISPLAY_IDENTITY");
+        freeze(physicalIdentities());
+    }
     synchronized boolean hasFrozenIdentity(){return first!=null;}
     /** Frozen, actual framework facts only. During shutdown the broker separately checks
      * its exact create-returned VD object. A new DisplayInfo query is deliberately not

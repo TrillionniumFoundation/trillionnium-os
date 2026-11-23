@@ -28,6 +28,7 @@ final class PublicOwnGroupSurfaceRetirement {
         requested=true;began=now;phase="REQUESTED_UNVERIFIED";return true;
     }
     synchronized boolean retired(){return requested;}
+    synchronized boolean originalDetachCompleted(){return requested&&finished&&apiReturned&&!timedOut&&failure.isEmpty();}
     synchronized long deadlineElapsed(){return began+DEADLINE_MS;}
     private synchronized boolean claim(boolean late){
         if(!requested||apiAttempted||(late?lateWorkerClaimed:workerClaimed))return false;

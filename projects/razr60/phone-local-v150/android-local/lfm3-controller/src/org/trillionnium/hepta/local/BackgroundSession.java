@@ -1310,12 +1310,34 @@ final class BackgroundSession {
             try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
             brokerOutput.persist("session_close_snapshot");
+            acknowledgeRetainedSnapshot(known);
         }
         cleanupConfirmed=known;
         try{JSONObject record=evidence().put("cleanup_known",known).put("cleanup_error",error==null?JSONObject.NULL:error);
             if(profileCleanupEvidence!=null)record.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
             return new Cleanup(known,record);}
         catch(Exception impossible){throw new IllegalStateException(impossible);}
+    }
+    /** The still-live original child may inspect its retired, empty display only after this
+     * writer has frozen the original UNKNOWN capture. The acknowledgement cannot admit an action. */
+    private boolean retainedCaptureAcknowledged;
+    private void acknowledgeRetainedSnapshot(boolean known){
+        if(retainedCaptureAcknowledged||known||brokerExitObserved||brokerProcess==null||publicOwnGroupScope==null||profileTarget()==null
+                ||!retired||!profileLaunchAttempted||!"CLEANUP_UNKNOWN".equals(state)||lastResponse==null
+                ||!Boolean.TRUE.equals(lastResponse.opt("profile_custody_retained"))
+                ||!"close".equals(lastResponse.opt("operation")))return;
+        try{
+            JSONObject original=brokerOutput.evidence();
+            if(!Boolean.TRUE.equals(original.opt("persisted"))||!Boolean.FALSE.equals(original.opt("eof_seen"))
+                    ||!Boolean.FALSE.equals(original.opt("overflow"))||!Boolean.FALSE.equals(original.opt("read_failed"))
+                    ||!"session_close_snapshot".equals(original.opt("capture_reason"))
+                    ||!brokerOutput.retainedClosePair(displayId,publicOwnGroupScope.sha256))return;
+            retainedCaptureAcknowledged=true;
+            try(java.io.OutputStream originalChild=brokerProcess.getOutputStream()){
+                originalChild.write(PublicOwnGroupPolicy.retainedSnapshotAcknowledgement(publicOwnGroupScope));
+                originalChild.flush();
+            }
+        }catch(Exception unavailable){/* Original unknown remains authoritative if the channel is unavailable. */}
     }
     private void ensureProfileCleanup(JSONObject response)throws Exception{
         if(profileTarget()==null)return;
@@ -1529,6 +1551,19 @@ final class BackgroundSession {
                 catch(Exception impossible){throw new IllegalStateException(impossible);}
             }
             captured=value;
+        }
+        synchronized boolean retainedClosePair(int id,String scope)throws Exception{
+            if(captured==null)return false;
+            byte[] raw=MobiMindPrivateFiles.read(new File(directory,name+".bin"),LIMIT,true).bytes;
+            int half=raw.length/2;
+            if(half<2||raw.length!=2*half||raw[half-1]!='\n'||raw[raw.length-1]!='\n'
+                    ||!HeptaAccessibilityService.sha(raw).equals(captured.getString("stored_sha256")))return false;
+            for(int i=0;i<half;i++)if(raw[i]!=raw[i+half]||i<half-1&&(raw[i]=='\n'||raw[i]=='\r'))return false;
+            JSONObject t=new JSONObject(new String(raw,0,half-1,StandardCharsets.UTF_8));
+            return "hepta.background-broker-terminal.v1".equals(t.opt("schema"))&&"CLEANUP_UNKNOWN".equals(t.opt("state"))
+                    &&"client_close".equals(t.opt("reason"))&&generation.equals(t.opt("generation"))
+                    &&id==t.getInt("display_id")&&scope.equals(t.opt("display_scope_sha256"))
+                    &&Boolean.TRUE.equals(t.opt("profile_custody_retained"))&&Boolean.FALSE.equals(t.opt("release_confirmed"));
         }
         synchronized JSONObject evidence()throws Exception{
             return captured==null?snapshot(bytes.toByteArray()).put("persisted",false):new JSONObject(captured.toString());

@@ -4941,7 +4941,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Only a typed unavailable descendant may restart an incomplete C read.
      * readGraph has already closed its partial Graph and recycled its queue.
      * Every sample is a new complete graph; no partial node may become C.
-     * The original event interval and reserved eight-second deadline never move.
+     * The original event interval and reserved navigation deadline never move.
      * Eight total reads also bound the ledger and a rapidly failing sampler;
      * this defensive count does not grant more time or another action. */
     private Graph readNativeSearchCurrentGraph(SearchActionWork work){
@@ -5042,7 +5042,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             work.attempt.claim(SystemClock.elapsedRealtime());work.requireFinalEvents();
             work.marker(work.state.enterEffect(work.cancel.isCancelled(),work.currentLease()));work.check();work.requireFinalEvents();
             work.requireFinalProfile();work.requireFinalEvents();work.effectWatermark=work.events.mark();work.requireFinalEvents();
-            work.requireFinalProfileClock();work.platformCallInvoked=true;
+            work.requireFinalProfileClock();work.attempt.requireFreshFinalCensus(SystemClock.elapsedRealtime());work.platformCallInvoked=true;
             boolean accepted=original.node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             work.marker(work.state.effectReturned(Boolean.valueOf(accepted)));
             // The single platform return is ready for the original worker drain and authority check.

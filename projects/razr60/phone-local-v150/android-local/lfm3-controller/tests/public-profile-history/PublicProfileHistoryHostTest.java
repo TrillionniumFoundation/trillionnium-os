@@ -1,5 +1,6 @@
 package org.trillionnium.hepta.background;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -69,6 +70,44 @@ public final class PublicProfileHistoryHostTest {
         public void pause(){delegate.pause();}
         ProfileOwnedTask prepare()throws Exception{ProfileOwnedTask p=new ProfileOwnedTask(this,TARGET,ProfileBrokerHostTest.GEN,ProfileBrokerHostTest.REQUEST,7,baseline());p.prepare();return p;}
         ProfileOwnedTask active()throws Exception{ProfileOwnedTask p=prepare();p.beforeDispatch();delegate.launch();p.accepted(0);yes(p.observe(),"actual coordinator failed to own new leaf");return p;}
+    }
+    private static final class Retained {
+        final Platform platform=new Platform();
+        final ProfileOwnedTask task;
+        final ProfileDisplayCustody custody=new ProfileDisplayCustody();
+        int releases,before,after;
+        String mutation="";
+        Retained() throws Exception {
+            task=platform.active();custody.beforeCreate();custody.unresolved();
+            try{task.retire(platform.now());throw new AssertionError("expected original incomplete retirement");}
+            catch(ProfileTaskPolicy.Refusal expected){yes(!task.cleanupKnown(),"original unknown missing");}
+        }
+        void run()throws Exception{
+            task.closeRetainedEmptyDisplay(platform.now()+1000,new ProfileOwnedTask.RetiredDisplay(){
+                public void requireState(boolean prior)throws Exception{
+                    if(prior){
+                        before++;
+                        if(before==1){
+                            if("new_child".equals(mutation))platform.delegate.app=true;
+                            if("root_token_changes".equals(mutation))platform.delegate.rootToken=new Object();
+                            if("wrong_display".equals(mutation))throw new IOException("changed VD identity");
+                            if("new_recent".equals(mutation))platform.delegate.recentsApp=true;
+                            if("source_changes".equals(mutation))platform.delegate.actual=ProfileBrokerHostTest.target(10,1010369);
+                            if("physical_changed".equals(mutation))platform.delegate.personalClosed=true;
+                            if("late".equals(mutation))platform.delegate.now+=1300;
+                        }
+                    }else{
+                        after++;
+                        if("display_held".equals(mutation))throw new IOException("still present");
+                        if("late_foreign".equals(mutation))platform.delegate.foreign=true;
+                        if("late_history".equals(mutation))platform.raw=change(platform.raw,"cc00009","cc00008");
+                    }
+                }
+                public void awaitAbsent(){}
+                public void releaseOriginalHandle(){releases++;if(!"root_held".equals(mutation))platform.delegate.root=false;}
+            });
+            custody.retainedObservedAbsent(task);
+        }
     }
     public static void main(String[] args)throws Exception{
         if(args.length!=1)throw new IllegalArgumentException("archived recents fixture directory required");
@@ -140,6 +179,31 @@ public final class PublicProfileHistoryHostTest {
         pass("actual_coordinator_late_history_change_blocks_root_delete",()->{
             Platform f=new Platform();ProfileOwnedTask p=f.active();f.corruptOnRemove=true;try{p.retire(2400);}catch(Exception refused){yes(refused.getMessage()!=null,"missing refusal");}
             yes(!p.cleanupKnown(),"late change claimed cleaned");yes(f.delegate.mutations.equals(Arrays.asList("create","bind","remove_leaf")),"deleted root after history changed");
+        });
+        pass("retained_released_empty_original_without_replay",()->{
+            Retained x=new Retained();List<String> prior=new java.util.ArrayList<String>(x.platform.delegate.mutations);
+            x.run();yes(x.releases==1&&x.before==2&&x.after==2&&prior.equals(x.platform.delegate.mutations),
+                    "expected one display release, two new samples at each end and no task calls");
+            yes(x.custody.known()&&!x.custody.retain()&&!x.custody.mayRelease()&&x.task.retainedAbsenceVerified(),"missing retained final proof");
+            try{x.run();throw new AssertionError("replayed release");}catch(Exception expected){yes(x.releases==1,"second release");}
+        });
+        for(String condition:new String[]{"new_child","root_token_changes","wrong_display","new_recent","source_changes","physical_changed","late",
+                "root_held","display_held","late_foreign","late_history"}){
+            pass("retained_quarantined_"+condition,()->{
+                Retained x=new Retained();x.mutation=condition;
+                try{x.run();throw new AssertionError("bad sample accepted");}catch(Exception refused){
+                    yes(x.custody.retain()&&!x.task.retainedAbsenceVerified(),"failed original released");
+                }
+                int effects=x.releases;
+                yes(effects==(condition.equals("root_held")||condition.equals("display_held")||condition.startsWith("late_")?1:0),"unexpected effect");
+                try{x.run();throw new AssertionError("second check");}catch(Exception refused){yes(x.releases==effects,"replayed input");}
+            });
+        }
+        pass("original_ambiguous_root_delete_never_replayed",()->{
+            Platform f=new Platform();ProfileOwnedTask t=f.active();f.delegate.deleteThrows=true;
+            try{t.retire(2400);throw new AssertionError("original failure");}catch(Exception refused){yes(!t.cleanupKnown(),"unknown claimed");}
+            try{t.closeRetainedEmptyDisplay(2600,null);throw new AssertionError("replay");}
+            catch(ProfileTaskPolicy.Refusal correct){yes("PROFILE_RETAINED_EMPTY_NOT_ELIGIBLE".equals(correct.code),"wrong replay rejection");}
         });
         System.out.println(new JSONObject().put("schema","hepta.public-profile-history-cases.v1").put("passed",true)
                 .put("cases",CASES.length()).put("assertions",assertions).put("case_names",CASES)
