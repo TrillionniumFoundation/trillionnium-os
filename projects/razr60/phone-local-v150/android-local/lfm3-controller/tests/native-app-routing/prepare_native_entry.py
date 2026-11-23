@@ -78,9 +78,15 @@ def calendar_actual_session_ports(source, output, service):
     # This gate retains the original refusing search Session, which never
     # references the new final-census producer. Do not import its unused port.
     search_boundary = output / "NativeSearchSession.java"
-    require(sha(search_boundary.read_bytes()) ==
+    original_search = search_boundary.read_bytes()
+    require(sha(original_search) ==
             "4ee12102d54c43142700a515938506ee6e46314ec4cecc1da0df121a1119801c",
             "exact original routing search boundary required")
+    existing = b"        void requireUnclaimedRevalidated(long now){throw unavailable();}\n"
+    retirement = b"        void requireUnclaimedForRetirement(long now){throw unavailable();}\n"
+    require(original_search.count(existing) == 1 and retirement not in original_search,
+            "one refusing Attempt boundary required")
+    search_boundary.write_bytes(original_search.replace(existing, existing + retirement))
     unused_proof = part(types, "    static final class NativeSearchFinalCensusResampleProof {",
                         "    public static final class CalendarFreshObservation {")
     require(sha(unused_proof.encode()) ==
@@ -119,7 +125,8 @@ def calendar_actual_session_ports(source, output, service):
         "refusing_runtime_port": metadata(runtime_adapter, runtime_adapter.read_bytes()),
         "original_helper_exact_inverse": True,
         "unused_final_census_port_excluded_sha256": sha(unused_proof.encode()),
-        "original_routing_search_boundary": metadata(search_boundary, search_boundary.read_bytes()),
+        "original_routing_search_boundary": metadata(search_boundary, original_search),
+        "current_routing_search_boundary": metadata(search_boundary, search_boundary.read_bytes()),
         "real_controller_preserved": True, "all_new_authority_endpoints_always_refuse": True,
         "calendar_model_or_effect_executed": False,
     }
