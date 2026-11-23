@@ -20,6 +20,11 @@ import org.json.JSONObject;
 /** The currently installed recovery code, explicitly separate from the historical broker. */
 public final class RecoveryControllerIdentity {
     private RecoveryControllerIdentity(){}
+    public static String firmwareFingerprintSha256()throws Exception{
+        String fingerprint=android.os.Build.FINGERPRINT;
+        need(android.os.Build.VERSION.SDK_INT==36&&fingerprint!=null&&!fingerprint.isEmpty()&&!"unknown".equals(fingerprint),"RETAINED_FIRMWARE_IDENTITY");
+        return ProfileIdentity.sha(fingerprint);
+    }
     public static JSONObject read(Context context,int uid,long deadline)throws Exception{
         need(android.os.Build.VERSION.SDK_INT==36&&uid>=10000&&uid<90000,"PUBLIC_RECOVERY_CONTROLLER_PLATFORM");
         PackageManager pm=context.getPackageManager();

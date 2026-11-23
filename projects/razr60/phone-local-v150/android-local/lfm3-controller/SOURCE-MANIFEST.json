@@ -3,64 +3,33 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "r39_native_search_planning",
-  "complete_source_files": 2502,
+  "candidate_status": "retained_profile_current_absence_candidate",
+  "complete_source_files": 2503,
   "current_successor_delta": {
-    "baseline": "79b7449dec8a29f7a71c80d91adca29f10d021b1",
-    "integrated_topics": [
-      {
-        "head": "d7ec60c895f8aae841abc673ba55b618532d3831",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-          "src/org/trillionnium/hepta/local/LocalTaskController.java",
-          "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-          "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-          "tests/native-search-planning/NativeSearchPlanningContractHostTest.java",
-          "tests/native-search-producer/ProgressHomeCases.fragment",
-          "tests/native-search-producer/SamplingExhaustionCases.fragment",
-          "tests/native-search-producer/SearchProducerHost.template",
-          "tests/native-search-producer/r38-planning-captures.json",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "6a2110553d7085f70911818e4793a7931b1033d67dcebb5b801439b1c3352edc"
-      },
-      {
-        "head": "030fcbaa32bb30b22a26e802c5d757949c069d83",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
-          "src/org/trillionnium/hepta/background/ProfileTarget.java",
-          "tests/native-read-identity/NativeReadIdentityHostTest.java",
-          "tests/native-read-identity/run_host.py",
-          "tests/native-xiaomi-product/run_host.py"
-        ],
-        "source_manifest_sha256": "057603038640730f341285e645ff4853d26e998d973863286b10af2d0d817804"
-      }
-    ],
+    "baseline": "3df0a18dace8dbe3f5cd53d71aad258b907f7be3",
     "original_case_assertions_preserved": true,
-    "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
-      "src/org/trillionnium/hepta/background/ProfileTarget.java",
+      "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/background/PublicProfileBusinessRecoveryMain.java",
+      "src/org/trillionnium/hepta/background/RecoveryControllerIdentity.java",
+      "src/org/trillionnium/hepta/local/BackgroundSession.java",
       "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java"
+      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java"
     ],
     "test_changed_paths": [
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "tests/native-read-identity/NativeReadIdentityHostTest.java",
-      "tests/native-read-identity/run_host.py",
-      "tests/native-search-planning/NativeSearchPlanningContractHostTest.java",
-      "tests/native-search-producer/ProgressHomeCases.fragment",
-      "tests/native-search-producer/SamplingExhaustionCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/r38-planning-captures.json",
-      "tests/native-xiaomi-product/run_host.py",
-      "tools/run_host_checks.py"
+      "tests/background-session/prepare_fixture.py",
+      "tests/public-profile-business-client/PublicProfileBusinessClientHostTest.java",
+      "tests/public-profile-business-client/run_host.py",
+      "tests/public-profile-business-lifecycle/run_host.py",
+      "tests/public-profile-business-recovery/PublicProfileBusinessRecoveryHostTest.java",
+      "tests/public-profile-business-recovery/PublicProfileRetainedBeforeModelHostTest.java",
+      "tests/public-profile-business-recovery/run_host.py",
+      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "2479bafe5499c2119c51be7b29072766503c54706d2f3a5a7f2a0c0963947734"
+    "previous_manifest_sha256": "86959306b56f97d7441098894ba375a155f8698b5003e3bef5e020cb10d5be61"
   },
   "files": [
     {
@@ -6444,14 +6413,14 @@
       "sha256": "60f901b4a6d863f2e712d49aaa166859c4a2437fbf46a2562e16413acb3a65c4"
     },
     {
-      "bytes": 81951,
+      "bytes": 93485,
       "path": "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
-      "sha256": "1b82fe0d81a8f92cdc4f15e3790f0e74c98bfd03fc530b3a2016156c72e97536"
+      "sha256": "85a2ea8626af413bd530b1badb3219d11b8b3ec1234827003d5aa3abd2ff9919"
     },
     {
-      "bytes": 23868,
+      "bytes": 24876,
       "path": "src/org/trillionnium/hepta/background/PublicProfileBusinessRecoveryMain.java",
-      "sha256": "2bd869d5c7801eb9ed77710aa69a04e8bda9a7b8ac1d14eeeed750fa1307b463"
+      "sha256": "17a0f78fb40c42ae76963d44677a9c850c7ffed3e27a917fdf41dd16775c69d2"
     },
     {
       "bytes": 25855,
@@ -6464,9 +6433,9 @@
       "sha256": "f6cd54a6a16240402049016a6b84128eaca3ffadb0d4e3df7fa2ee6ef98a1ab4"
     },
     {
-      "bytes": 5475,
+      "bytes": 5813,
       "path": "src/org/trillionnium/hepta/background/RecoveryControllerIdentity.java",
-      "sha256": "e8281aee0b8ce26328958780cb1561c0d4a345f61061d665f21680a152d36fb6"
+      "sha256": "117ee8588c76b45cb1b92aec6f709d609bbf4a0177697a1c453e4f293df71be9"
     },
     {
       "bytes": 16482,
@@ -6519,9 +6488,9 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 147729,
+      "bytes": 148412,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "5208ea3a32f280c79f2f72e88b0b8bd6ce977b913a4b3173c7c79a9f62887576"
+      "sha256": "b7fe9060c8555ffe8917cfec871a9d6c45a8a0ecaf94a92064fe220c3853cbf4"
     },
     {
       "bytes": 10735,
@@ -6594,9 +6563,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 620751,
+      "bytes": 620759,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "ec8710b436bbe442729da76ee74c4f30eef165ed3aa13720f89c06e9a0017338"
+      "sha256": "a22e3beae792cc4d5da9e3c718714e0a98c11ebaf67b2e79bb62c8647b56d5a2"
     },
     {
       "bytes": 711,
@@ -6954,9 +6923,9 @@
       "sha256": "664dd069a8ed49416bde3e430ea47d149bb55cea2ae3c0d776237a1cd839802b"
     },
     {
-      "bytes": 34857,
+      "bytes": 36632,
       "path": "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-      "sha256": "fa3a48a900548535d439d9ea4009ab77cfdb14555887cd33185eeee6561eeb4d"
+      "sha256": "6f5dbcc280689ade7a92582ced264e2a372c9f3e4cdba62c7522d797c9c5f164"
     },
     {
       "bytes": 18666,
@@ -7699,9 +7668,9 @@
       "sha256": "96c863832ec6a3b0bceff84fd71fcfcbb041c849c40e4da7e70691a24643ff3f"
     },
     {
-      "bytes": 23516,
+      "bytes": 23664,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "49131da397fe160a06e45bde69de7f7a1e281242c4acf062a7805b57f995635c"
+      "sha256": "f7d69ffbc2e83c78e1dc65ccbbdc5af20255864ca21e8546e92ef650c13d1bc3"
     },
     {
       "bytes": 3034,
@@ -10714,14 +10683,14 @@
       "sha256": "fb6591e7a57ae6b2cfe6e80325333f0ec6b02d180bab87135d3908f046cf5427"
     },
     {
-      "bytes": 19595,
+      "bytes": 21513,
       "path": "tests/public-profile-business-client/PublicProfileBusinessClientHostTest.java",
-      "sha256": "91e91806ae41c7c57c14ea5cdf1d57f4a92bd893b5bf6fdc95e6160ef2283d54"
+      "sha256": "99e606e685f787515aeb2d9914460f1c0c15ce11b7d1f98dfad5e0aa617c58e4"
     },
     {
-      "bytes": 11196,
+      "bytes": 11491,
       "path": "tests/public-profile-business-client/run_host.py",
-      "sha256": "465d6009654989abbb6a61dacd6e9a7b265f2298c6e2b9e960e6de3d01129573"
+      "sha256": "f1c2724efc776d5d81fcfa46474352306566f31b413b778a81594ce7f1e08a95"
     },
     {
       "bytes": 20449,
@@ -10729,14 +10698,14 @@
       "sha256": "b8d6f276317881f4cc9f9ddae53f71bac6ab57e8118b5d34572b5bac0b97a5f6"
     },
     {
-      "bytes": 18409,
+      "bytes": 18417,
       "path": "tests/public-profile-business-lifecycle/run_host.py",
-      "sha256": "4218004adc147d84842630f40a10f13fa418ed6e51473f0386ece599d3a76424"
+      "sha256": "3453600157a8a8357368a495291e27e8d942038ba2e3a3d95524f12deff4d17c"
     },
     {
-      "bytes": 28286,
+      "bytes": 28504,
       "path": "tests/public-profile-business-recovery/PublicProfileBusinessRecoveryHostTest.java",
-      "sha256": "7301e8ca8c45bb8e5e1d9a202dff66ac0933b5ffc6c2fcef1888d67643990479"
+      "sha256": "ed965c552eb7523c6d7f94856638e1ac2280290137550a3f634c027d9c5c048b"
     },
     {
       "bytes": 5664,
@@ -10744,9 +10713,14 @@
       "sha256": "e6f20077b74e693212a3f056ea4f3c71a75f4d77ef88d3a716d0d65d1ff0107f"
     },
     {
-      "bytes": 7602,
+      "bytes": 4281,
+      "path": "tests/public-profile-business-recovery/PublicProfileRetainedBeforeModelHostTest.java",
+      "sha256": "916438ec43326b97e82953848734cf9273c104c6de8933ee7f936cf986c989ad"
+    },
+    {
+      "bytes": 7874,
       "path": "tests/public-profile-business-recovery/run_host.py",
-      "sha256": "2995490a0c3861d13959b95d7dcea10626c75758a55f2981c31bf1879601acc2"
+      "sha256": "5bc09aa01fd0a9b8b9260cc3516c1654939bcaa3eae0e9247321bdf47ad008c2"
     },
     {
       "bytes": 22279,
@@ -11034,9 +11008,9 @@
       "sha256": "ae5e4e1d99275442ecec64f63658d180af540ee73ddee6aa360d8bb9e22c1d62"
     },
     {
-      "bytes": 7469,
+      "bytes": 7536,
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "9266b76964837ddcc623c384d8ef8afa5370375e340464ccf112faeaa20e8b96"
+      "sha256": "6ef2563403161fbaca98971a25bb5199374574f072ce5ddd66d484d8c33f889a"
     },
     {
       "bytes": 445,
@@ -12570,9 +12544,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "6334414bdd8ec78825e653db6d24f1ab6be3058f",
+    "previous_component_git_tree_sha1": "5e96b952ba2ae4a1295063d21600a348e8552e91",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "2479bafe5499c2119c51be7b29072766503c54706d2f3a5a7f2a0c0963947734"
+    "previous_manifest_sha256": "86959306b56f97d7441098894ba375a155f8698b5003e3bef5e020cb10d5be61"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12581,12 +12555,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "5b3b2e63effe1af85d432d1c8d9c81d9e39f0f0dc5f4d6d31625f7db570ced47",
+  "production_input_map_sha256": "7b6c7fbed1b9b0edefc4048473f9c8089651a8a076b2a5aa7e53cd8f3c1dfca1",
   "schema": "hepta.local-source.v3",
-  "scope": "Use an explicit read-only observation budget with recorded ownership and window identity for a changing Xiaomi home screen. Preserve the original current-action rechecks and eight-second action deadline. Verify byte-identical owner and installation identities with less allocation in each graph budget check.",
-  "source_parent_head": "79b7449dec8a29f7a71c80d91adca29f10d021b1",
-  "source_parent_manifest_sha256": "2479bafe5499c2119c51be7b29072766503c54706d2f3a5a7f2a0c0963947734",
-  "source_snapshot_predecessor_manifest_sha256": "2479bafe5499c2119c51be7b29072766503c54706d2f3a5a7f2a0c0963947734",
+  "scope": "Reconcile a retained work-profile lease after a failed pre-model close using fresh Android absence samples and the original private files. Preserve the historical unknown result.",
+  "source_parent_head": "3df0a18dace8dbe3f5cd53d71aad258b907f7be3",
+  "source_parent_manifest_sha256": "86959306b56f97d7441098894ba375a155f8698b5003e3bef5e020cb10d5be61",
+  "source_snapshot_predecessor_manifest_sha256": "86959306b56f97d7441098894ba375a155f8698b5003e3bef5e020cb10d5be61",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

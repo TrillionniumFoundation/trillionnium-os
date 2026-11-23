@@ -93,7 +93,8 @@ public final class PublicProfileBusinessClientHostTest {
     static Runnable operation(Work w){return ()->{try{w.run();}catch(Exception e){throw new RuntimeException(e);}};}
     public static void main(String[] args)throws Exception{
         boolean visual=args.length==3&&"--visual".equals(args[2]);
-        if(args.length!=2&&!visual)throw new IllegalArgumentException("external path map, new report and optional --visual required");
+        boolean retained=args.length==3&&"--retained-before-model".equals(args[2]);
+        if(args.length!=2&&!visual&&!retained)throw new IllegalArgumentException("external path map, new report and optional --visual required");
         originals=PublicProfileBusinessRecoveryHostTest.loadExternalOriginals(Paths.get(args[0]));
         test("competing_terminal_appears_during_owned_checker",()->{try(Env e=new Env()){
             String generation=object(Files.readAllBytes(e.result)).getJSONObject("model_session").getString("worker_generation");
@@ -112,7 +113,24 @@ public final class PublicProfileBusinessClientHostTest {
                 need(Files.exists(e.journal)&&e.commits()==0&&FakeBusinessRecoveryProcess.calls==1);e.unchanged();
             }});
         }
-        if(visual){
+        if(retained){
+            test("original_pre_model_custody_remains_unknown_after_current_absence_commit",()->{try(Env e=new Env()){
+                field(e.session,"brokerExitObserved",false);field(e.session,"brokerExitCode",null);
+                need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
+                need(!e.session.publicProfileRecoveryEligible()&&e.session.publicProfileBusinessRecoveryEligible());
+                BackgroundSession.Cleanup c=e.recover();need(c.known&&c.businessRecovery!=null&&!Files.exists(e.journal)&&e.commits()==1);
+                JSONObject proof=c.businessRecovery.proof();need(!proof.getBoolean("historical_broker_release_observed")&&!proof.getBoolean("historical_model_exit_verified"));
+                need(proof.getBoolean("business_dispatch_absent_in_original_receipts")&&proof.getBoolean("current_absence_verified")
+                        &&proof.getInt("model_requests")==0&&proof.getInt("business_steps")==0&&!c.evidence.getBoolean("broker_released"));
+                need(FakeBusinessRecoveryProcess.calls==1&&LocalSocket.connections==0);
+                e.session.acceptReconciliation(c);need(e.session.released());reject(()->e.session.acceptReconciliation(c));e.unchanged();
+            }});
+            test("new_model_directory_sibling_blocks_pre_model_receipt",()->{try(Env e=new Env()){
+                String generation=object(Files.readAllBytes(e.result)).getJSONObject("model_session").getString("worker_generation");
+                FakeBusinessRecoveryProcess.afterReply=operation(()->MobiMindPrivateFiles.writeNew(e.dir.resolve("runs/"+generation+"/native-session-result.json").toFile(),new byte[]{123,125}));
+                reject(e::recover);need(Files.exists(e.journal)&&e.commits()==0);e.unchanged();
+            }});
+        }else if(visual){
             test("visual_originals_checker_durable_receipt_and_one_lease_retirement",()->{try(Env e=new Env()){
                 need(PublicProfileBusinessRecoveryClient.hasBusinessOrigin(e.context));
                 BackgroundSession.Cleanup cleanup=e.recover();need(cleanup.known&&cleanup.businessRecovery!=null);

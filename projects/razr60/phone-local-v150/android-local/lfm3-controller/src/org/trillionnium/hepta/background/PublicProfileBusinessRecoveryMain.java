@@ -71,10 +71,10 @@ public final class PublicProfileBusinessRecoveryMain {
                     .put("finished_elapsed_ms",SystemClock.elapsedRealtime()).put("deadline_elapsed_ms",request.deadline)
                     .put("current_controller",controller).put("before",before).put("after",after)
                     .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true)
-                    .put("business_dispatch_absent_in_original_receipts",false)
+                    .put("business_dispatch_absent_in_original_receipts",request.retainedBeforeFirstModel)
                     .put("foreign_dormant_history_preserved",true)
                     .put("cleanup_known",true).put("automatic_resume",false).put("broker_release_response",false);
-            proof.put("historical_broker_release_observed",true).put("historical_model_exit_verified",true).put("business_steps",request.steps)
+            proof.put("historical_broker_release_observed",!request.retainedBeforeFirstModel).put("historical_model_exit_verified",!request.retainedBeforeFirstModel).put("business_steps",request.steps)
                     .put("model_requests",request.modelRequests).put("model_generation",request.modelGeneration)
                     .put("recorded_owned_identity",request.recordedOwnedIdentity()).put("rewrites_business_outcome",false).put("acknowledges_control_session",false);
             PublicProfileBusinessAbsenceRecovery.validate(proof,request,SystemClock.elapsedRealtime(),boot);
@@ -93,11 +93,13 @@ public final class PublicProfileBusinessRecoveryMain {
         Map<Integer,String> physical=PublicOwnGroupPhysicalReader.read(wm,dm,r.target.profile.userId,()->r.deadline);
         if(!first)processes=processes(proc,r);
         need(SystemClock.elapsedRealtime()<r.deadline,"PUBLIC_RECOVERY_SAMPLE_DEADLINE");
-        return new JSONObject().put("started_elapsed_ms",begin).put("finished_elapsed_ms",SystemClock.elapsedRealtime())
+        JSONObject sample=new JSONObject().put("started_elapsed_ms",begin).put("finished_elapsed_ms",SystemClock.elapsedRealtime())
                 .put("process",processes).put("live",liveEvidence(live,r))
                 .put("recents",new JSONObject(recents.evidence()))
                 .put("displays",displays).put("physical",new JSONObject().put("0",physical.get(0)).put("1",physical.get(1)))
                 .put("target_sha256",installation.target.sha256);
+        if(r.retainedBeforeFirstModel)sample.put("firmware_fingerprint_sha256",RecoveryControllerIdentity.firmwareFingerprintSha256());
+        return sample;
     }
     private static JSONObject processes(AndroidProc proc,PublicProfileBusinessAbsenceRecovery.Request r)throws Exception{
         return ProfileRecoveryProcesses.captureBusiness(proc,android.os.Process.myPid(),r.ownerUid,r.generation,r.started,r.deadline).put("model_worker_absent",true);
@@ -132,7 +134,8 @@ public final class PublicProfileBusinessRecoveryMain {
     /** Descriptor-bound private reads, used only by this newly owned root process. */
     private static final class OriginalReader {
         final PublicProfileBusinessAbsenceRecovery.Manifest manifest;
-        final File root,task,otherModelTerminal;
+        final File root,task,otherModelTerminal,neverStartedDirectory;
+        final String neverStartedDirectoryKey;
         final String rootKey,taskKey;
         OriginalReader(Context system,PublicProfileBusinessAbsenceRecovery.Manifest manifest)throws Exception{
             this.manifest=manifest;
@@ -148,7 +151,10 @@ public final class PublicProfileBusinessRecoveryMain {
                 other=new File(terminal.getParentFile(),terminal.getName().equals("app-session-receipt.json")?
                         "vlm-task-terminal.json":"app-session-receipt.json");
             }
-            need(other!=null,"BUSINESS_MODEL_TERMINAL_SET");otherModelTerminal=other;membership();
+            need(other!=null,"BUSINESS_MODEL_TERMINAL_SET");otherModelTerminal=other;
+            int modelPaths=0;for(String path:manifest.paths())if(path.startsWith("runs/"))modelPaths++;
+            neverStartedDirectory=modelPaths==1&&"vlm-task-terminal.json".equals(other.getName())?other.getParentFile():null;
+            neverStartedDirectoryKey=neverStartedDirectory==null?null:directory(neverStartedDirectory);membership();
         }
         Map<String,byte[]> readAll()throws Exception{
             membership();Map<String,byte[]> files=new java.util.LinkedHashMap<String,byte[]>();
@@ -159,6 +165,11 @@ public final class PublicProfileBusinessRecoveryMain {
             String[] names=task.list();need(names!=null&&names.length<=PublicProfileBusinessAbsenceRecovery.MAX_FILES,"BUSINESS_TASK_ENUMERATION");
             java.util.TreeSet<String> actual=new java.util.TreeSet<String>();for(String name:names)need(PublicProfileBusinessAbsenceRecovery.leaf(name)&&actual.add(name),"BUSINESS_TASK_MEMBERSHIP");
             need(actual.equals(manifest.taskFiles()),"BUSINESS_TASK_MEMBERSHIP_CHANGED");
+            if(neverStartedDirectory!=null){
+                String[] leaves=neverStartedDirectory.list();
+                need(neverStartedDirectoryKey.equals(directory(neverStartedDirectory))&&leaves!=null
+                        &&leaves.length==1&&"app-session-receipt.json".equals(leaves[0]),"BEFORE_MODEL_GENERATION_MEMBERSHIP");
+            }
             absent(otherModelTerminal);absent(new File(root,"control-session.json.bak"));absent(new File(root,"control-session.json.new"));
             if(!manifest.paths().contains(PublicProfileBusinessAbsenceRecovery.LATCH))absent(new File(root,PublicProfileBusinessAbsenceRecovery.LATCH));
         }
