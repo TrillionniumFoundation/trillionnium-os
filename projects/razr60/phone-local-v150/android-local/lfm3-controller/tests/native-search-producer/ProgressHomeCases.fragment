@@ -5,7 +5,65 @@
             f.values.nodes.put((String)v.get("path"),v);
         }
     }
+    static void r38ReadPreparationCases()throws Exception{
+        byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.progressHome")).resolveSibling("r38-planning-captures.json"));
+        check("edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49".equals(sha(bytes)),"actual R38 saved complete frames and failure watermarks");
+        JSONObject records=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
+        JSONObject load=records.getJSONObject("loading"),history=records.getJSONObject("boundary"),warm=records.getJSONObject("warm");
+        JSONObject a=load.getJSONObject("frames").getJSONObject("first"),b=load.getJSONObject("frames").getJSONObject("second");
+        one("r38_actual_loading_history_and_warm_read_budget",()->{
+            NativeActionSnapshotCheck.Snapshot shell=fullSwapSnapshot(a.getJSONObject("census")),home=fullSwapSnapshot(b.getJSONObject("census"));
+            check(shell.nodes.size()==14&&home.nodes.size()==73&&Integer.valueOf(2195).equals(shell.env.get("window_id")),"two complete original frames");
+            check(Boolean.TRUE.equals(NativeSearchRole.loadingToSearch(shell,home).get("fresh_full_pair_required")),"original shell to stable search role, read only");
+            NativeSearchPlanning.EventMark start=NativeSearchPlanning.EventMark.read(a.getJSONObject("before_watermark").toMap());
+            NativeSearchPlanning.EventMark end=NativeSearchPlanning.EventMark.read(load.getJSONObject("failure_watermark").toMap());
+            check(start.boundary==3&&start.unknown==0&&end.content==30&&end.contentOnlySince(start),"all three boundary events precede first complete read");
+            JSONObject frame=history.getJSONObject("frames").getJSONObject("first");
+            NativeSearchPlanning.EventMark old=NativeSearchPlanning.EventMark.read(frame.getJSONObject("before_watermark").toMap());
+            NativeSearchPlanning.EventMark later=NativeSearchPlanning.EventMark.read(frame.getJSONObject("after_watermark").toMap());
+            check(later.boundary-old.boundary==17&&!later.contentOnlySince(old),"actual new boundary during capture prevents reuse of that interval");
+            check(!warm.getBoolean("complete_pair_available")&&"planning_second_graph".equals(warm.getString("failure_phase")),"warm stale read has no complete pair");
+            long startWarm=warm.getLong("request_started_elapsed_ms"),endWarm=warm.getLong("failed_elapsed_ms");
+            check(endWarm-startWarm==10028&&warm.getLong("sampling_deadline_elapsed_ms")<endWarm,"original sampling expired in second full graph");
+            long cap=NativeSearchPlanning.initialReadDeadline(startWarm,startWarm+174000);
+            check(cap==startWarm+30000&&NativeSearchPlanning.samplingDeadline(startWarm,cap)==startWarm+28000,"same initial read remains eligible");
+            check(NativeSearchPlanning.initialReadDeadline(startWarm,startWarm+5000)==startWarm+5000,"existing task/chain bound prevails");
+            check(NativeSearchPlanning.initialReadDeadline(Long.MAX_VALUE-1,Long.MAX_VALUE)==Long.MAX_VALUE,"elapsed cutoff cannot wrap");
+        });
+        one("r38_preexisting_boundaries_allow_only_fresh_two_reads_and_late_ready_home",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest first=f.startPlanning(null,30000);
+                for(int n=0;n<3;n++)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                f.graphHook=()->recordedHomeSample(f,(f.graphReads==1?a:b).getJSONObject("census"));
+                observationIo.one();s.main.one();observationIo.one();s.main.one();
+                check(first.workerDrained&&!first.published&&f.retryProof!=null&&f.graphReads==2&&f.planning==null&&f.effects==0,
+                        "actual loading pair cannot plan; only a new read may start: "+f.error);
+                NativeSearchRequest fresh=f.startPlanning(f.retryProof,30000);
+                f.graphHook=()->{
+                    if(f.graphReads==3)SystemClock.now=fresh.started+14000;
+                    recordedHomeSample(f,b.getJSONObject("census"));
+                };
+                observationIo.one();s.main.one();
+                check(f.planning!=null&&f.graphReads==4&&f.effects==0&&fresh!=first,"two independently read home frames with no effect: "+f.error);
+                check(f.planning.timing.aReadStarted>=fresh.started&&f.planning.timing.bReadCompleted>fresh.started+14000
+                        &&fresh.deadline-fresh.started==30000,"new actual pair acquired after previous ceiling");
+            }
+        });
+        one("r38_during_first_read_boundary_cannot_issue_loading_retry",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest first=f.startPlanning(null,30000);
+                f.graphHook=()->{
+                    if(f.graphReads==1)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                    if(f.graphReads>2)f.cancelled=true;
+                    recordedHomeSample(f,(f.graphReads==1?a:b).getJSONObject("census"));
+                };
+                observationIo.one();s.main.one();
+                check(first.loadingRetryClassification==null&&f.retryProof==null&&f.planning==null&&f.effects==0,"new boundary during A disqualifies the real pair");
+            }
+        });
+    }
     static void progressHomeCases()throws Exception{
+        r38ReadPreparationCases();
         byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.progressHome")));
         check("ebb895f5647bc01f712e81b2f699761efb349817c622036fdee58acbf1311090".equals(sha(bytes)),"recorded two complete planner censuses");
         JSONObject source=new JSONObject(new String(bytes,StandardCharsets.UTF_8));

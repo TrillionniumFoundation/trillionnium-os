@@ -260,8 +260,9 @@ public final class HeptaAccessibilityService {
         }
         Cancellation cancel(){return ()->cancelled;}
         NativeSearchRequest startPlanning(){return startPlanning(null);}
-        NativeSearchRequest startPlanning(NativeSearchReadRetryProof retry){
-            observeNativeSearchPlanning(lease,directory,base.search,cancel(),SystemClock.now+12000,new NativeSearchSession.ObservationCallback(){
+        NativeSearchRequest startPlanning(NativeSearchReadRetryProof retry){return startPlanning(retry,12000);}
+        NativeSearchRequest startPlanning(NativeSearchReadRetryProof retry,long limit){
+            observeNativeSearchPlanning(lease,directory,base.search,cancel(),SystemClock.now+limit,new NativeSearchSession.ObservationCallback(){
                 public void onPlanning(NativeSearchPlanning value){callbackCount++;planning=value;}public void onError(String value){callbackCount++;pendingAtError=observationReadWorkPending();error=value;}
                 public void onLoadingReadRetryAvailable(String value,NativeSearchReadRetryProof proof){callbackCount++;retryProof=proof;retryDetail=value;}
             },retry);main.one();return activeNativeSearchObservation;
