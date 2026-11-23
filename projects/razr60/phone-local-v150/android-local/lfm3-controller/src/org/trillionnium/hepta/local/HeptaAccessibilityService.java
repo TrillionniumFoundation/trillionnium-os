@@ -5172,7 +5172,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         JSONObject value=new JSONObject(work.state.evidence());
         if(work.diagnosticFreshness!=null)try{value.put("freshness_diagnostic",new JSONObject(work.diagnosticFreshness));}
         catch(Exception unavailable){/* Preserve the original execution receipt. */}
-        if(work.queryCensusRetry!=null)try{value.put("query_census_retry",new JSONObject(work.queryCensusRetry));}
+        if(work.queryCensusRetry!=null)try{
+            String key=NativeActionSnapshotCheck.YEAR.equals(work.queryCensusRetry.get("purpose"))
+                    ?"departure_year_census_retry":"query_census_retry";
+            value.put(key,new JSONObject(work.queryCensusRetry));
+        }
         catch(Exception unavailable){/* This read diagnostic cannot authorize an effect. */}
         if(work.nativeActionRejection!=null)try{value.put("native_action_rejection_census",new JSONObject(work.nativeActionRejection));}
         catch(Exception unavailable){/* Preserve the original refusal and execution lifecycle. */}
@@ -5427,7 +5431,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         actionCheck(work);return proof;
     }
-    /** This budget belongs to one complete read inside a single original query Attempt. */
+    /** This budget belongs to one complete read inside the original Ctrip form action. */
     private final class QueryGraphBudget implements GraphBudget {
         final ActionWork work;String currentPath;
         QueryGraphBudget(ActionWork work){this.work=work;}
@@ -5436,8 +5440,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public long deadline(){return work.state.deadlineElapsed;}
     }
     private Graph readNativeActionGraph(String task,PhoneObservation frame,ActionDecision action,ActionWork work,boolean finalCheck)throws Exception{
+        boolean year=work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.YEAR.equals(work.nativeGuard.purpose);
         if(work==null||work.nativeGuard==null||frame.capture==null||!frame.capture.formHistory()
-                ||!NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)||!NativeCtripFlightPage.supported(work.nativeGuard.goal))
+                ||(!year&&!NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose))||!NativeCtripFlightPage.supported(work.nativeGuard.goal))
             return readGraph(work==null?null:work.budget(),work==null?currentBackground():work.background);
         requireNativeActionGuard(task,frame,action,work);
         final QueryGraphBudget budget=new QueryGraphBudget(work);
@@ -5453,7 +5458,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
             Map<String,Object> audit=new java.util.LinkedHashMap<String,Object>();
             work.queryCensusRetry=audit;
-            audit.put("schema","hepta.ctrip-query-census-retry.v1");audit.put("failed_stage",stage);
+            audit.put("schema",year?"hepta.ctrip-departure-year-census-retry.v1":"hepta.ctrip-query-census-retry.v1");
+            audit.put("purpose",work.nativeGuard.purpose);audit.put("failed_stage",stage);
             audit.put("failed_native_path",budget.currentPath);audit.put("reread_started",false);audit.put("reread_complete",false);
             audit.put("reused_partial_census",false);audit.put("action_replayed",false);
             actionCheck(work);requireNativeActionGuard(task,frame,action,work);work.nativeGuard.verifyInstalled();actionCheck(work);

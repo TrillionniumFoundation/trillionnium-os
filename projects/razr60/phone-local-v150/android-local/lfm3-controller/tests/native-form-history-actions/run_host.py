@@ -25,7 +25,8 @@ def main():
     service=source/'src/org/trillionnium/hepta/local/HeptaAccessibilityService.java'
     extractor=source/'tests/observation-diagnostics/run_host.py'
     template=own/'NativeFormHistoryActionHost.template'
-    inputs=[service,extractor,Path(__file__).resolve(),template]
+    year_fixture=own/'86b343-departure-year-refusals.json'
+    inputs=[service,extractor,Path(__file__).resolve(),template,year_fixture]
     tools=[jdk/'bin/javac',jdk/'bin/java',jdk/'lib/modules',jdk/'lib/ct.sym']
     before=[meta(p) for p in inputs];tool_before=[meta(p) for p in tools]
     out.mkdir(parents=True,mode=0o700)
@@ -63,9 +64,25 @@ def main():
                  'recorded historical refusal with unknown descendant required')
         counts=[row['phase_names'].count('graph_read') for row in rows];need(counts==[2,1,2],'recorded three failing graph stages changed')
         report['recorded_refusals']=meta(fixture)
+        need(sha(year_fixture.read_bytes())=='ee385d37512221fa85363aa87702265ec409d3fb74c836b27b233ad21a70c975','recorded 86b343 projection changed')
+        year_rows=json.loads(year_fixture.read_text())['operations']
+        year_args=[]
+        for row in year_rows:
+            need(row['purpose']=='inspect_departure_year' and row['capture_kind']=='native_ax_form_history'
+                 and row['model_proposal']=='click' and row['node_id']=='n33' and row['view_id']=='ctrip.android.view:id/tv_depart_date'
+                 and row['target_position']['path']=='0/0/2/5' and row['protected_subtrees']==['0/0/2']
+                 and row['guard_state']==0 and row['worker_drained'] and row['stale']
+                 and not row['dispatched'] and not row['accepted'] and not row['effect_entered']
+                 and row['original_failure_path'] is None,'recorded typed year operation, selected target and unknown failing descendant required')
+            phases=row['phase_names'];last=len(phases)-1-phases[::-1].index('graph_read')
+            start=row['offsets_ms'][last];duration=row['offsets_ms'][phases.index('worker_drained')]-start
+            year_args.append((phases.count('graph_read'),start,duration,row['deadline_offset_ms']))
+        need([v[0] for v in year_args]==[2,1,1] and all(0<v[2]<v[3]-v[1] for v in year_args),'recorded year stages and timing')
+        report['recorded_year_refusals']=meta(year_fixture)
+        report['year_scenario_offsets']=year_args
         classes=out/'classes';classes.mkdir()
         commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all','-Werror','-d',classes,generated,tool_port]),
-          ('cases',[jdk/'bin/java','-cp',classes,'org.trillionnium.hepta.local.NativeFormHistoryActionHost',out/'CASES.json',','.join(str(n) for n in counts)])]
+          ('cases',[jdk/'bin/java','-cp',classes,'org.trillionnium.hepta.local.NativeFormHistoryActionHost',out/'CASES.json',','.join(str(n) for n in counts),','.join('/'.join(map(str,row)) for row in year_args)])]
         for name,argv in commands:
             start=time.monotonic_ns()
             with (out/(name+'.stdout')).open('xb') as stdout,(out/(name+'.stderr')).open('xb') as stderr:
@@ -74,7 +91,7 @@ def main():
                 'stdout':meta(out/(name+'.stdout')),'stderr':meta(out/(name+'.stderr'))})
             need(r.returncode==0,'actual '+name+' failed')
         cases=json.loads((out/'CASES.json').read_text(encoding='utf-8'))
-        need(cases['all_pass'] is True and cases['cases']==30 and len(set(cases['case_names']))==30,'expected all control-flow cases')
+        need(cases['all_pass'] is True and cases['cases']==44 and len(set(cases['case_names']))==44,'expected all control-flow cases')
         need(cases['real_comparator_executed'] is False and cases['real_guard_executed'] is False and cases['effects_are_instrumented_ports'] is True,'explicit test boundary')
         report.update(cases=cases,cases_file=meta(out/'CASES.json'),all_pass=True)
     except Exception as error:report['error']={'type':type(error).__name__,'message':str(error)}

@@ -36,7 +36,7 @@ final class NativeFormHistoryActionHost {
     interface Cancellation {boolean isCancelled();}
     static final class BackgroundSession {}
     static final class NativeActionSnapshotCheck {
-        static final String YEAR="flight.inspect_year",QUERY="flight.query";
+        static final String YEAR="inspect_departure_year",QUERY="query_observed_form";
     }
     final class Guard {
         final String purpose;boolean claimed;int requireClaimedCalls;boolean goal=true;
@@ -195,10 +195,10 @@ final class NativeFormHistoryActionHost {
             });
         }
         for(String fault:new String[]{"another_descendant","late","untyped","no_path","cancel","foreign_lease","installation",
-                "already_entered","protected_change","new_date","ordinary_pixels","wrong_route","year","repeated_in_final"}){
+                "already_entered","protected_change","new_date","ordinary_pixels","wrong_route","other_purpose","repeated_in_final"}){
             one("bound_query_reread_refuses_"+fault,()->{
                 SystemClock.time=1000;NativeFormHistoryActionHost h=new NativeFormHistoryActionHost();ActionWork w=h.new ActionWork();
-                w.nativeGuard=h.new Guard("year".equals(fault)?NativeActionSnapshotCheck.YEAR:NativeActionSnapshotCheck.QUERY);
+                w.nativeGuard=h.new Guard("other_purpose".equals(fault)?"select_calendar_day":NativeActionSnapshotCheck.QUERY);
                 ActionDecision action=new ActionDecision("click");h.queryReplay=true;h.injectedFailures=1;h.readMs=50;
                 if("another_descendant".equals(fault))h.injectedFailures=2;
                 if("late".equals(fault))w.state.deadlineElapsed=1100;
@@ -222,6 +222,58 @@ final class NativeFormHistoryActionHost {
                 }
                 yes(h.effects==0&&h.effectEntries==0&&!w.nativeGuard.claimed,"no claim or effect");
                 if("another_descendant".equals(fault))yes("0/0/7/2".equals(w.queryCensusRetry.get("later_failed_native_path")),"second distinct failed child preserved");
+            });
+        }
+        SystemClock.time=1000;
+    }
+    static void runYearCases(String encoded)throws Exception{
+        String[] rows=encoded.split(",");
+        for(int index=0;index<rows.length;index++){
+            String[] fields=rows[index].split("/");
+            final int ordinal=Integer.parseInt(fields[0]),start=Integer.parseInt(fields[1]);
+            final int duration=Integer.parseInt(fields[2]),deadline=Integer.parseInt(fields[3]);
+            one("86b343_recorded_inspect_departure_year_step_"+(index+2),()->{
+                NativeFormHistoryActionHost h=new NativeFormHistoryActionHost();ActionWork w=h.new ActionWork();
+                SystemClock.time=1000L+start-(ordinal-1L)*duration;
+                w.state.deadlineElapsed=1000L+deadline;
+                h.firstFailureOrdinal=ordinal;h.injectedFailures=1;h.readMs=duration;h.queryReplay=true;
+                ActionDecision action=new ActionDecision("click");action.nodeId="n33";
+                yes(h.validate("task",h.current,action,null,()->false,w)==null,"complete validation failed before the dated target");
+                h.actualClickBranch(action,w);
+                yes(h.effects==1&&h.effectEntries==1&&h.returned==1,"one original model click after full validation and claim");
+                yes(h.reads==3&&h.closedReads==2&&h.compares==2,"both completed census samples compared and released");
+                yes(w.state.deadlineElapsed==1000L+deadline&&SystemClock.time<w.state.deadlineElapsed,"original elapsed deadline retained");
+                yes(w.queryCensusRetry!=null&&NativeActionSnapshotCheck.YEAR.equals(w.queryCensusRetry.get("purpose")),"typed year receipt");
+                yes("hepta.ctrip-departure-year-census-retry.v1".equals(w.queryCensusRetry.get("schema")),"year receipt distinct from query");
+                yes((ordinal==2?"final_census":"validation_census").equals(w.queryCensusRetry.get("failed_stage")),"actual failing traversal stage");
+                yes(("0/0/7/"+ordinal).equals(w.queryCensusRetry.get("failed_native_path")),"injected child path persisted");
+                yes(Boolean.TRUE.equals(w.queryCensusRetry.get("reread_complete"))&&Boolean.FALSE.equals(w.queryCensusRetry.get("reused_partial_census"))
+                        &&Boolean.FALSE.equals(w.queryCensusRetry.get("action_replayed")),"one fresh complete read before original effect");
+            });
+        }
+        for(String fault:new String[]{"two_missing","no_path","untyped","deadline","profile","retired","already_entered",
+                "changed_form","wrong_route","ordinary_pixels","repeat_after_validation"}){
+            one("departure_year_refuses_"+fault,()->{
+                NativeFormHistoryActionHost h=new NativeFormHistoryActionHost();ActionWork w=h.new ActionWork();
+                SystemClock.time=1000;h.readMs=100;h.queryReplay=true;h.injectedFailures="two_missing".equals(fault)?2:1;
+                if("no_path".equals(fault))h.unidentified=true;
+                if("untyped".equals(fault))h.untyped=true;
+                if("deadline".equals(fault))w.state.deadlineElapsed=1200;
+                if("profile".equals(fault))h.installed=false;
+                if("retired".equals(fault))h.retired=true;
+                if("already_entered".equals(fault))w.state.entered=true;
+                if("changed_form".equals(fault))h.compareReject=true;
+                if("wrong_route".equals(fault))w.nativeGuard.goal=false;
+                if("ordinary_pixels".equals(fault))h.current.capture=new Capture(false);
+                ActionDecision action=new ActionDecision("click");action.nodeId="n33";
+                String refusal=h.validate("task",h.current,action,null,()->false,w);
+                if("repeat_after_validation".equals(fault)){
+                    yes(refusal==null&&h.reads==2,"first complete recovery consumed");
+                    h.firstFailureOrdinal=3;h.injectedFailures=1;
+                    try{h.actualClickBranch(action,w);throw new AssertionError("second reread denied");}
+                    catch(StaleObservation seen){yes("final_census".equals(w.queryCensusRetry.get("later_failed_stage"))&&h.reads==3,"no second replacement");}
+                }else yes(refusal!=null,"no authority when the pending year read fails");
+                yes(h.effects==0&&h.effectEntries==0&&!w.nativeGuard.claimed,"no effect or claim");
             });
         }
         SystemClock.time=1000;
@@ -303,7 +355,7 @@ final class NativeFormHistoryActionHost {
     static String quoted(String value){return "\""+value.replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n").replace("\r","\\r")+"\"";}
     public static void main(String[] args)throws Exception{
         String failure=null;
-        try{runCases();runQueryCases(args[1]);}catch(Throwable error){failure=error.getClass().getSimpleName()+": "+error.getMessage();}
+        try{runCases();runQueryCases(args[1]);runYearCases(args[2]);}catch(Throwable error){failure=error.getClass().getSimpleName()+": "+error.getMessage();}
         StringBuilder names=new StringBuilder("[");for(String name:cases){if(names.length()>1)names.append(',');names.append(quoted(name));}names.append(']');
         String json="{\"schema\":\"hepta.native-form-history-action-control-flow.v1\",\"all_pass\":"+(failure==null)+",\"cases\":"+cases.size()+",\"assertions\":"+assertions+",\"case_names\":"+names
                 +",\"failure\":"+(failure==null?"null":quoted(failure))+",\"android_execution\":false,\"phone_execution\":false,\"business_completion_verified\":false,\"real_comparator_executed\":false,\"real_guard_executed\":false,\"effects_are_instrumented_ports\":true}\n";
