@@ -1,0 +1,10 @@
+{
+  "native_resources_model_grammar_unchanged_from_code8": true,
+  "source_host_checks": 32,
+  "child_label_assertions": 130,
+  "persistent_policy_assertions": 73,
+  "phone_contacted": false,
+  "android_compiled": false,
+  "compatibility_driver_sha256": "8ace4acac2309653e7159dfd62d7bc479a1b0f0b6956ebedb5673cb51a788268",
+  "policy_scope": "Explicit visible persistent destructive labels rejected; bare Clear/Delete remains unclassified; actual editability required for input focus exemption."
+}

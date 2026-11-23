@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): false
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Hepta Local Debug, O=Local Development, C=CN
+Signer #1 certificate SHA-256 digest: 202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5
+Signer #1 certificate SHA-1 digest: 12f227a57f382b9e76aa502974345ac83d5f4867
+Signer #1 certificate MD5 digest: 71bb96ec5401cfa5f7bc40b88aebe2e3
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 0b24a73944cc9d9de4a234298ab0731471c3fe8be4809be0f9dc5dc7180ebb7d
+Signer #1 public key SHA-1 digest: f7099b40f6737044d3eb94cf98b288ae54e3139b
+Signer #1 public key MD5 digest: 24d1cb746b1b7a5f2d0523f05a90430b

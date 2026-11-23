@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.independent-core-source.v2",
+  "publication_revision": 2,
+  "app_source_unchanged": true,
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 45,
+      "sha256": "3497170f06bd1f4ccd8c2d5ed466d0e6265d58b3326e8aab1dccf5091aa883f9"
+    },
+    {
+      "path": "BUILD-PROVENANCE.json",
+      "bytes": 2019,
+      "sha256": "24d5db12ca150c22f8dc2879a6d8056c592d74bee936087bb950b54337fdabca"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6913,
+      "sha256": "43bd1cc4b673029c525b35f0ec6f85a08e2d9d00f512c5216a2d342e5b5bee59"
+    },
+    {
+      "path": "candidate-code4-minicpm5-npu4096.json",
+      "bytes": 342,
+      "sha256": "353d570c13646ba86ee37935a7f53edd36fad7823bcadb6fc20f5da5690cdb2f"
+    },
+    {
+      "path": "candidate-code4-minicpm5-npu8192.json",
+      "bytes": 342,
+      "sha256": "5d1be83cc0a25f490f51b0a49cbcee457bb715f38f158401568ee051f7c959a1"
+    },
+    {
+      "path": "core_assertions.py",
+      "bytes": 17901,
+      "sha256": "b3a547b7c8d0a76a016afd42346ba6c99bd21f2684a0aa5a944b55d53f05ee0a"
+    },
+    {
+      "path": "core_phone_suite.py",
+      "bytes": 17929,
+      "sha256": "fe606fe2bf14f63c58d264a18f71a537de19b5ae78f0cd4a3d2e0d1129a37a93"
+    },
+    {
+      "path": "test_core_assertions.py",
+      "bytes": 13816,
+      "sha256": "e21d7d63acbcee224e355a1d167520ecca7f8cf3a6c1b45ac091cf273eecba76"
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+package org.trillionnium.hepta.local;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Host ports: views, service/session state, process inventory, and positive asset admission.
+ * Exact production owner buttons/app idle methods/service controller factory are inserted below.
+ * The complete production LocalModelSettings, Engine, transaction, router and text adapter run.
+ * This fake VLM reserves the REAL Engine TaskExternalLease but never loads a model or spawns.
+ */
+final class LocalProbeApplication extends Context {
+    static boolean permissionBlocked;
+    LocalModelEngine model;
+    LocalModelSettings modelSettings;
+    final LocalTaskSession tasks=new LocalTaskSession();
+    final Diagnostic visualDiagnostic=new Diagnostic(),uiVenusDiagnostic=new Diagnostic();
+    Object recoveryBarrier,controlRecoveryAttempt;
+    boolean controlRecoveryCallbackFailed;
+    LocalProbeApplication(File path){super(path);}
+    void initializeSessions(){}
+    LocalTaskSession taskSession(){return tasks;}
+    boolean permissionPreparationBlocksWork(){return permissionBlocked;}
+    static boolean permissionPreparationBlocks(Context context){return permissionBlocked;}
+    static void requirePermissionPreparationIdle(Context context){
+        if(permissionBlocked)throw new IllegalStateException("host permission boundary is busy");
+    }
+    {{app_can_change}}
+    {{app_require_idle}}
+    {{app_main_thread}}
+    {{app_diagnostics}}
+}
+final class Diagnostic {
+    boolean busy,blocked;
+    boolean isBusy(){return busy;}
+    boolean isBlocked(){return blocked;}
+}
+final class LocalTaskSession {
+    boolean running,blocked,recovering,background;
+    int journalChecks;
+    boolean isRunning(){return running;}
+    boolean isBlocked(){return blocked;}
+    boolean isRecovering(){return recovering;}
+    boolean hasBackgroundLease(){return background;}
+    void requireModelSettingsJournalIdle(){
+        journalChecks++;
+        if(running||blocked||recovering||background)throw new IllegalStateException("host journal boundary is not idle");
+    }
+}
+final class HeptaAccessibilityService extends Context {
+    static HeptaAccessibilityService live;
+    final LocalProbeApplication app;
+    LocalTaskController ownedController;
+    Object lease,activeObservation;
+    final Object activeNativeSearchObservation=null;
+    boolean capturePending,readPending,actionPending,cancelPending;
+    CloseBoundary taskBackground,taskWeb;
+    HeptaAccessibilityService(LocalProbeApplication app){super(app.getFilesDir());this.app=app;live=this;}
+    @Override public Context getApplicationContext(){return app;}
+    static HeptaAccessibilityService connected(){return live;}
+    static String message(Throwable value){return String.valueOf(value.getMessage());}
+    boolean observationReadWorkPending(){return readPending;}
+    boolean actionWorkPending(){return actionPending;}
+    boolean nativeCancellationWorkPending(){return cancelPending;}
+    {{service_injected_controller}}
+    {{service_engine_controller}}
+    {{service_settings_idle}}
+}
+final class CloseBoundary {
+    boolean closed=true;
+    boolean released(){return closed;}
+}
+final class LocalTaskController {
+    final LocalInference inference;
+    boolean running;
+    String taskId;
+    LocalTaskController(HeptaAccessibilityService service,LocalInference inference){this.inference=inference;}
+    boolean isRunning(){return running;}
+    void begin(String id){running=true;taskId=id;inference.beginTask(id);}
+    LocalInference.TaskCleanup finish(){
+        LocalInference.TaskCleanup proof=inference.endTask(taskId);
+        if(proof.cleanupKnown)running=false;
+        return proof;
+    }
+}
+/** Model-loading boundary only. It owns the complete real shared-engine visual task lease. */
+final class VlmInferenceAdapter implements LocalInference {
+    static VlmInferenceAdapter last;
+    static int constructed;
+    static boolean throwAfterBegin;
+    final LocalModelEngine engine;
+    final LocalRuntimeConfig config;
+    LocalModelEngine.TaskExternalLease lease;
+    boolean known=true,foreignProof,cancelled;
+    CurrentFrame observed;
+    VlmInferenceAdapter(Context context,LocalModelEngine engine){
+        this.engine=engine;this.config=engine.configuration();last=this;constructed++;
+        if(!config.profile.visual()||!"npu".equals(config.compute)||config.contextTokens!=8192||config.threads!=4)
+            throw new IllegalArgumentException("host VLM port requires the real pinned visual config");
+    }
+    @Override public LocalRuntimeConfig configuration(){return config;}
+    @Override public boolean acceptsObservedImage(){return true;}
+    @Override public boolean modelOutputDispatchAllowed(){return !config.visualObservationOnly;}
+    @Override public long requestCompletionGraceMillis(){return VlmPins.COMPLETION_GRACE_MILLIS;}
+    @Override public void beginTask(String task){
+        lease=engine.reserveTaskExternal(task);
+        if(throwAfterBegin)throw new IllegalStateException("host partial visual begin failure after actual reservation");
+    }
+    @Override public void cancelTask(){cancelled=true;if(lease!=null)lease.cancel();}
+    @Override public TaskCleanup endTask(String expected){
+        TaskCleanup.requireTaskId(expected);
+        if(lease==null)return TaskCleanup.noWorker(expected);
+        if(!expected.equals(lease.taskId))throw new IllegalStateException("foreign actual lease");
+        if(foreignProof)return new TaskCleanup(true,false,false,null,lease.generation(),"ffffffffffffffffffffffffffffffff",true,null);
+        TaskCleanup proof=new TaskCleanup(known,false,false,null,lease.generation(),lease.taskId,true,null);
+        if(known){lease.endRequests();lease.releaseAfterTerminalPublication(true);lease=null;}
+        return proof;
+    }
+    @Override public Handle generate(String p,String s,File image,DecisionGrammar grammar,int n,long t,Callback cb){
+        throw new AssertionError("host visual port cannot run file-only inference");
+    }
+    @Override public Handle generateObserved(String p,String s,CurrentFrame frame,DecisionGrammar grammar,int n,long t,Callback cb){
+        if(lease==null||frame==null||!lease.taskId.equals(frame.taskId))throw new IllegalArgumentException("host visual frame binding");
+        observed=frame;return ()->cancelled=true;
+    }
+}
+final class RecoveryQuiescence {
+    static final class Sample {}
+    static void confirm(List<Sample> samples,int uid,int pid){
+        if(samples.isEmpty()||uid<10000||pid<=1)throw new IllegalStateException("host inventory boundary malformed");
+    }
+}
+final class RecoveryProcessInventory {
+    static List<RecoveryQuiescence.Sample> awaitInitial(Context context){
+        List<RecoveryQuiescence.Sample> out=new ArrayList<RecoveryQuiescence.Sample>();out.add(capture(context));return out;
+    }
+    static RecoveryQuiescence.Sample capture(Context context){return new RecoveryQuiescence.Sample();}
+}
+final class PositiveAssetBoundaryEngine extends LocalModelEngine {
+    int verifications;
+    LocalRuntimeConfig selected;
+    boolean reject;
+    PositiveAssetBoundaryEngine(Context context){super(context);}
+    @Override ModelFileVerifier verifySettingsModel(SettingsReservation lease,LocalRuntimeConfig target)throws Exception{
+        lease.requireOwned();verifications++;selected=target;
+        RuntimeConfigTransaction.requireSupported(target);
+        if(reject)throw new IOException("explicit host asset-admission refusal");
+        return new ModelFileVerifier();
+    }
+}
+final class TextLabel {
+    String text="";
+    void setText(String value){text=value;}
+}
+final class AlertDialog {
+    interface Click {void clicked(Object dialog,int which);}
+    static Builder last;
+    static final class Builder {
+        String[] labels;
+        int checked;
+        Click single,positive;
+        Builder(Object owner){}
+        Builder setTitle(String value){return this;}
+        Builder setMessage(String value){return this;}
+        Builder setSingleChoiceItems(String[] items,int current,Click click){
+            labels=items.clone();checked=current;single=click;return this;
+        }
+        Builder setNegativeButton(String text,Click click){return this;}
+        Builder setPositiveButton(String text,Click click){positive=click;return this;}
+        void show(){last=this;}
+        void choose(int index){single.clicked(this,index);checked=index;}
+        void confirm(){positive.clicked(this,-1);}
+    }
+}
+final class OwnerButtons {
+    final LocalProbeApplication app;
+    final LocalModelEngine engine;
+    final LocalModelSettings modelSettings;
+    final TextLabel localModelSettingsState=new TextLabel();
+    boolean profileCatalogueLoading;
+    int refreshes;
+    OwnerButtons(LocalProbeApplication app){
+        this.app=app;engine=app.model;modelSettings=app.modelSettings;
+    }
+    Context getApplication(){return app;}
+    void refresh(){refreshes++;}
+    void choose(){chooseLocalModelFromOwnerButton();}
+    void restore(){restoreLocalModelFromOwnerButton();}
+    {{ui_choose}}
+    {{ui_restore}}
+}

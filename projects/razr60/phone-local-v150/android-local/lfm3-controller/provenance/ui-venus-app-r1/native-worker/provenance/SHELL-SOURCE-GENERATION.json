@@ -1,0 +1,128 @@
+{
+  "schema": "hepta.ui-venus.vlm-source-draft.v1",
+  "app_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
+  "base_members_verified": 851,
+  "upstream_worker_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+  "worker_source_sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78",
+  "wrapper_source_sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab",
+  "files": [
+    {
+      "path": "native/official-mobile.h",
+      "bytes": 3630,
+      "sha256": "9fa089893f13a1ed809227b38d79bc6600f518a1521aa0cefb30cafff6075c0b"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "bytes": 2899,
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 3228,
+      "sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "native/vendor/llama/PIN.json",
+      "bytes": 1406,
+      "sha256": "c475b19715dcc77af1e444f6dbf190dc7b564f4e8487ae4cfe20e8be12307986"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/venus-runtime.inc",
+      "bytes": 14589,
+      "sha256": "c08cc9ec60a1e3abb5e5e4305cfb8340544537f49374a8c59418a02690df7000"
+    },
+    {
+      "path": "native/worker-venus.c",
+      "bytes": 31575,
+      "sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78"
+    }
+  ],
+  "model": {
+    "name": "UI-Venus-2-9B-Q4_K_M.gguf",
+    "bytes": 5910782752,
+    "sha256": "f2a8533b4adf7dc92d0731c39bd910438d229593f2e524b8f6e0e0e83fd1ec8d"
+  },
+  "mmproj": {
+    "name": "mmproj-UI-Venus-2-9B-f16.gguf",
+    "bytes": 918165664,
+    "sha256": "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2"
+  },
+  "sdk_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "llama_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "same_directory_bootstrap_bytes_unchanged": true,
+  "parent_guard_bytes_unchanged": true,
+  "no_sdk_binary_changes": true,
+  "original_app_source_changed": false,
+  "mode": "vlm",
+  "context_tokens": 8192,
+  "max_tokens": 1024,
+  "deadline_ms": 300000,
+  "enable_thinking": true,
+  "shell_uid": 2000,
+  "full_multimodal_token_admission_proven": false,
+  "no_context_shift_proven": false,
+  "actions_dispatched": false,
+  "phone_contacted": false,
+  "compiled": false,
+  "ordinary_app_qualified": false
+}
