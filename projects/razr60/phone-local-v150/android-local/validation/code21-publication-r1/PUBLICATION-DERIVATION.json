@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.code21.publication-source-derivative.v1",
+  "private_original_source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+  "retained_device_apk_sha256": "c95378452e2754261825bbbdaa18115a52e11924851c4c59867f2af738fc960f",
+  "public_source_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+  "public_source_is_retained_device_build_source": false,
+  "source_members": 1096,
+  "changed_members": [
+    {
+      "path": "UI-VENUS-APP-PROBE.md",
+      "original_bytes": 11233,
+      "original_sha256": "e4df80e46eeaa4f68599f5024030dfab7a68d88496a37fb31ed39e27a5a6e536",
+      "public_bytes": 11797,
+      "public_sha256": "140ec917c9b468c63940d78278e6a8dc9e78ee604c0fb11c7db2da538d822711"
+    },
+    {
+      "path": "native/ui-venus-runtime-pins.json",
+      "original_bytes": 2184,
+      "original_sha256": "c3ec1a636c39ef2908239f948694faa36b20f75c141749edd2302ffa985a3793",
+      "public_bytes": 2184,
+      "public_sha256": "77b0ed0108a63809a774bdeb0a9fa545a1fe4fb861b39d7f4fe291ddbfa03437"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "original_bytes": 7678,
+      "original_sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748",
+      "public_bytes": 7678,
+      "public_sha256": "87842f36e1ff9577235c3855a3e04be139af4c942eb3e1b452f966a8db923776"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "original_bytes": 3027,
+      "original_sha256": "9b893e4f222a3a5701d64dc5266dd89428797e5d8e079ee877cddcd3ad6f62e1",
+      "public_bytes": 3517,
+      "public_sha256": "e39860c4d0b20620cf4a4ce10b58183d143f32288cab5b228495aea9f69fe2bc"
+    }
+  ],
+  "compiled_java_and_native_code_bytes_unchanged": true,
+  "all_original_runtime_worker_bytes_and_pins_unchanged": true,
+  "historical_original_manifest_and_build_receipts_preserved": true,
+  "current_manifest_and_runtime_source_manifest_pin_rebound": true,
+  "private_identifier_cleartext_absent": true,
+  "guard_equivalence_contract_cases": 1251,
+  "guard_positive_cases": 425,
+  "guard_negative_cases": 826,
+  "guard_contract_all_passed": true,
+  "hash_collision_assumption": "SHA-256 collision resistance; test corpus is finite",
+  "complete_source_membership_verified": true,
+  "public_source_android_compiled": false,
+  "public_source_ci_verified": false,
+  "phone_contacted": false
+}

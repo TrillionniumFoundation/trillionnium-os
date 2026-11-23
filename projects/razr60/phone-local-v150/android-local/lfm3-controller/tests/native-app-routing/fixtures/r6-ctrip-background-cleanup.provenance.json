@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.background-refusal-fixture.v1",
+  "source_task_id": "02ac68749e384cd193a0e390ac582651",
+  "source_head": "a1056ef078de6956fd09ab618b8182a90954a46f",
+  "source_path": "flight-vlm-tools-maxalloc-r6-01/collection/task/background-cleanup.json",
+  "bytes": 8593,
+  "sha256": "88d86ade77248e6f7aa0f16d18ae59da292655996591d10b9f5b149973c71626",
+  "changed_from_original": false,
+  "phone_operations_by_test": 0,
+  "replay_scope": "Only terminal explanation; reconstruct the real BackgroundSession.evidence outer Long/parsed response Integer boundary. No broker launch, task cleanup or model inference."
+}

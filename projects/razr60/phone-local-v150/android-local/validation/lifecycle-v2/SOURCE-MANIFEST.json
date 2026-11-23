@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.independent-validation-source.v1",
+  "revision": "lifecycle-r2",
+  "files": [
+    {
+      "path": "phone_lifecycle.py",
+      "bytes": 53130,
+      "sha256": "fe3aa3a38192f47de99dab6dae220e27d484a0c5c50099a3c05a4d11521d3639"
+    },
+    {
+      "path": "lifecycle_guards.py",
+      "bytes": 16809,
+      "sha256": "8ebe571dfd53f775f059016bc1998e2cffd4b443a0b440886f6a750d0196a8de"
+    },
+    {
+      "path": "test_lifecycle_guards.py",
+      "bytes": 12143,
+      "sha256": "c3af9a415d1d14aa7e1b7660b96a7b2323e10d10098a8492cc77c4d65cdbb4a4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12116,
+      "sha256": "e3fcd241fc2ccf86407b359e9b49a3a02ea83636829fbd4c9fdc16d5e5c62e64"
+    }
+  ],
+  "phone_contacted": false
+}

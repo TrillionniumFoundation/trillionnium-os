@@ -1,0 +1,138 @@
+--- a/ctrip/src/outer_session.py
++++ b/ctrip/src/outer_session.py
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ import json, os, re, shlex, stat, subprocess, time
+ PROFILE = 'hepta.public-own-group-display-unlocked-insecure.probe.v1'
+-DEX_SHA = '8aea85beba850b5aa6002403b81881287df05141c391c619d3c6b29c10ff0fce'
++DEX_SHA = '02173012cd6c8825966a4a103848d4a33f4888c0ecf89e864fb8bb0bdf584ee2'
+ p = None
+ 
+ 
+@@ -75,7 +75,7 @@
+     p.need(type(group) is int and group > 0
+            and all(type(value.get(k)) is int and value[k] >= 0 and value[k] != group
+                    for k in ('physical_main_group_id', 'physical_cover_group_id')),
+-           'public display is not in an independent group')
++           'public display group is not separated from physical displays')
+     p.need(isinstance(value.get('display_unique_id'),str) and value['display_unique_id'], 'display unique ID missing')
+     if state is not None:
+         expected=state['bound_display_readback']
+@@ -85,11 +85,18 @@
+ 
+ def screen_power_valid(value, state):
+     expected=state['bound_display_readback']
++    # The pinned helper validates a complete typed census, including disabled
++    # displays. This is its actual virtual-group membership, not ownership of
++    # those peers. Peers may join or leave without replacing our power token.
++    members=value.get('group_members') if isinstance(value,dict) else None
++    p.need(isinstance(members,list) and 0<len(members)<=4096
++           and all(type(member) is int and member>1 for member in members)
++           and len(set(members))==len(members) and state['display_id'] in members,
++           'actual virtual display group membership unavailable')
+     p.need(isinstance(value,dict) and value.get('schema')=='hepta.owned-display-screen-power-lease.v1'
+            and type(value.get('display_id')) is int and value['display_id']==state['display_id']>1
+            and type(value.get('display_group_id')) is int and value['display_group_id']==state['display_group_id']
+            and value.get('display_unique_id')==expected['display_unique_id']
+-           and value.get('group_members')==[state['display_id']]
+            and type(value.get('wake_lock_level')) is int and value['wake_lock_level']==10
+            and value.get('wake_lock_tag')=='HeptaOuterDisplay:'+state['generation']+':'+str(state['display_id'])
+            and value.get('wake_lock_held') is True and value.get('display_state')==2
+--- a/ctrip/src/reference/physical_power.py
++++ b/ctrip/src/reference/physical_power.py
+@@ -180,10 +180,22 @@
+         return None
+     group_id = display["group_id"]
+     physical_groups = {snapshot["displays"][x]["group_id"] for x in (0, 1)}
+-    require(group_id not in physical_groups, "TARGET_PHYSICAL_GROUP")
+-    require(snapshot["members"][group_id] == [owned_display_id], "TARGET_GROUP_NOT_SINGLETON")
+-    require(display["type"] == "VIRTUAL", "TARGET_NOT_VIRTUAL")
+-    return {"display": dict(display), "group_members": [owned_display_id],
++    require(type(group_id) is int and group_id > 0 and group_id not in physical_groups,
++            "TARGET_PHYSICAL_GROUP")
++    members = snapshot["members"][group_id]
++    require(isinstance(members, list) and 0 < len(members) <= 4096
++            and all(type(member) is int and member > 1 for member in members)
++            and len(set(members)) == len(members) and owned_display_id in members,
++            "TARGET_GROUP_MEMBERS_INVALID")
++    # parse_snapshot supplies the full DMS census, including disabled displays.
++    # Every peer sharing the power group must be virtual. Its presence grants
++    # no input, display cleanup, or task authority to the caller.
++    require(all(member in snapshot["displays"]
++                and snapshot["displays"][member]["display_id"] == member
++                and snapshot["displays"][member]["group_id"] == group_id
++                and snapshot["displays"][member]["type"] == "VIRTUAL"
++                for member in members), "TARGET_GROUP_NOT_VIRTUAL")
++    return {"display": dict(display), "group_members": list(members),
+             "power": dict(snapshot["groups"][group_id])}
+ 
+ 
+--- a/personal/src/outer_session.py
++++ b/personal/src/outer_session.py
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ import json, os, re, shlex, stat, subprocess, time
+ PROFILE = 'hepta.public-own-group-display-unlocked-insecure.probe.v1'
+-DEX_SHA = '8aea85beba850b5aa6002403b81881287df05141c391c619d3c6b29c10ff0fce'
++DEX_SHA = '02173012cd6c8825966a4a103848d4a33f4888c0ecf89e864fb8bb0bdf584ee2'
+ p = None
+ 
+ 
+@@ -75,7 +75,7 @@
+     p.need(type(group) is int and group > 0
+            and all(type(value.get(k)) is int and value[k] >= 0 and value[k] != group
+                    for k in ('physical_main_group_id', 'physical_cover_group_id')),
+-           'public display is not in an independent group')
++           'public display group is not separated from physical displays')
+     p.need(isinstance(value.get('display_unique_id'),str) and value['display_unique_id'], 'display unique ID missing')
+     if state is not None:
+         expected=state['bound_display_readback']
+@@ -85,11 +85,18 @@
+ 
+ def screen_power_valid(value, state):
+     expected=state['bound_display_readback']
++    # The pinned helper validates a complete typed census, including disabled
++    # displays. This is its actual virtual-group membership, not ownership of
++    # those peers. Peers may join or leave without replacing our power token.
++    members=value.get('group_members') if isinstance(value,dict) else None
++    p.need(isinstance(members,list) and 0<len(members)<=4096
++           and all(type(member) is int and member>1 for member in members)
++           and len(set(members))==len(members) and state['display_id'] in members,
++           'actual virtual display group membership unavailable')
+     p.need(isinstance(value,dict) and value.get('schema')=='hepta.owned-display-screen-power-lease.v1'
+            and type(value.get('display_id')) is int and value['display_id']==state['display_id']>1
+            and type(value.get('display_group_id')) is int and value['display_group_id']==state['display_group_id']
+            and value.get('display_unique_id')==expected['display_unique_id']
+-           and value.get('group_members')==[state['display_id']]
+            and type(value.get('wake_lock_level')) is int and value['wake_lock_level']==10
+            and value.get('wake_lock_tag')=='HeptaOuterDisplay:'+state['generation']+':'+str(state['display_id'])
+            and value.get('wake_lock_held') is True and value.get('display_state')==2
+--- a/personal/src/reference/physical_power.py
++++ b/personal/src/reference/physical_power.py
+@@ -180,10 +180,22 @@
+         return None
+     group_id = display["group_id"]
+     physical_groups = {snapshot["displays"][x]["group_id"] for x in (0, 1)}
+-    require(group_id not in physical_groups, "TARGET_PHYSICAL_GROUP")
+-    require(snapshot["members"][group_id] == [owned_display_id], "TARGET_GROUP_NOT_SINGLETON")
+-    require(display["type"] == "VIRTUAL", "TARGET_NOT_VIRTUAL")
+-    return {"display": dict(display), "group_members": [owned_display_id],
++    require(type(group_id) is int and group_id > 0 and group_id not in physical_groups,
++            "TARGET_PHYSICAL_GROUP")
++    members = snapshot["members"][group_id]
++    require(isinstance(members, list) and 0 < len(members) <= 4096
++            and all(type(member) is int and member > 1 for member in members)
++            and len(set(members)) == len(members) and owned_display_id in members,
++            "TARGET_GROUP_MEMBERS_INVALID")
++    # parse_snapshot supplies the full DMS census, including disabled displays.
++    # Every peer sharing the power group must be virtual. Its presence grants
++    # no input, display cleanup, or task authority to the caller.
++    require(all(member in snapshot["displays"]
++                and snapshot["displays"][member]["display_id"] == member
++                and snapshot["displays"][member]["group_id"] == group_id
++                and snapshot["displays"][member]["type"] == "VIRTUAL"
++                for member in members), "TARGET_GROUP_NOT_VIRTUAL")
++    return {"display": dict(display), "group_members": list(members),
+             "power": dict(snapshot["groups"][group_id])}
+ 
+ 

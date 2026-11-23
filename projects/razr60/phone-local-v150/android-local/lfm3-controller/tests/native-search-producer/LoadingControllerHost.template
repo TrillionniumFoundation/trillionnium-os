@@ -1,0 +1,25 @@
+package org.trillionnium.hepta.local;
+import android.os.SystemClock;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.*;
+/** Actual LTC initial-search methods with only unrelated state/UI ports.
+ * Real Session, service, latch, private record writer and worker queues are used. */
+final class NativeSearchLoadingControllerHost {
+    final HeptaAccessibilityService service;
+    final Object handleLock=new Object();final AtomicBoolean cancelled=new AtomicBoolean();
+    Object activeInference,activeWebTask;String currentTaskId;
+    NativeSearchSession activeNativeSearch;NativeAppSession activeNativeTask;BackgroundSession activeNativeBackground;
+    final List<String> emitted=new ArrayList<String>();
+    NativeSearchLoadingControllerHost(HeptaAccessibilityService service){this.service=service;}
+    void bind(NativeSearchSession session){activeNativeSearch=session;activeNativeTask=session.nativeTask;
+        activeNativeBackground=session.background;currentTaskId=session.taskId;}
+    void emit(String value){emitted.add(value);}
+    NativeSearchPlanning run(File directory)throws Exception{
+        return awaitNativeSearchPlanning(currentTaskId,directory,activeNativeSearch,activeNativeSearch.taskDeadlineElapsed);
+    }
+    {{actual_controller_methods}}
+}

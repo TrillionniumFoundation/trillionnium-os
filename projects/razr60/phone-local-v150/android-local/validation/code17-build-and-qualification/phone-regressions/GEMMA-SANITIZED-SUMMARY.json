@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.code17-sanitized-model-result.v1",
+  "final": true,
+  "candidate": {
+    "version_code": 17,
+    "model_profile": "gemma4-e4b-qat-q4_0",
+    "model_sha256": "676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee",
+    "apk_sha256": "ba93a021c8e16e20dd0fea0814ccdcfcb273acf967377307dc6c0a613e07fb0b",
+    "compute": "npu",
+    "context_tokens": 4096,
+    "threads": 4
+  },
+  "counts": {
+    "fail": 2,
+    "pass": 2
+  },
+  "cases": [
+    {
+      "case_id": "core-calculator-keypad-01",
+      "verdict": "fail",
+      "steps": 16,
+      "elapsed_host_seconds": 500.716157135088,
+      "task_status": "failed",
+      "cleanup_known": true,
+      "cleanup_unknown": false,
+      "launch_attempt_count": 1,
+      "native_receipts_verified": false,
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "failed_predicates": [
+        "independent_final_ui",
+        "calculator_no_type_shortcut",
+        "calculator_fresh_clear_then_exact_keypad_sequence",
+        "calculator_entered_expression_visible",
+        "calculator_final_result_visible"
+      ],
+      "native_runs": 16,
+      "model_reported_success": false
+    },
+    {
+      "case_id": "core-settings-home-settings-01",
+      "verdict": "fail",
+      "steps": 17,
+      "elapsed_host_seconds": 501.1175170391798,
+      "task_status": "failed",
+      "cleanup_known": true,
+      "cleanup_unknown": false,
+      "launch_attempt_count": 1,
+      "native_receipts_verified": true,
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "failed_predicates": [
+        "strict_model_bound_goal_visit_order"
+      ],
+      "native_runs": 16,
+      "model_reported_success": false
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "verdict": "pass",
+      "steps": 5,
+      "elapsed_host_seconds": 165.75912220589817,
+      "task_status": "model_reported_done",
+      "cleanup_known": true,
+      "cleanup_unknown": false,
+      "launch_attempt_count": 1,
+      "native_receipts_verified": true,
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "failed_predicates": [],
+      "native_runs": 5,
+      "model_reported_success": true
+    },
+    {
+      "case_id": "core-find-calculator-01",
+      "verdict": "pass",
+      "steps": 3,
+      "elapsed_host_seconds": 101.52127808798105,
+      "task_status": "model_reported_done",
+      "cleanup_known": true,
+      "cleanup_unknown": false,
+      "launch_attempt_count": 1,
+      "native_receipts_verified": true,
+      "assertions_recomputed_equal": true,
+      "strict_verdict_recomputed_equal": true,
+      "failed_predicates": [],
+      "native_runs": 3,
+      "model_reported_success": true
+    }
+  ],
+  "runtime": {
+    "run_count": 40,
+    "completed_native_and_app": 39,
+    "positive_accelerator_offload_runs": 40,
+    "full_operator_coverage_proven": false,
+    "native_elapsed_ms": {
+      "n": 39,
+      "min": 24033.456,
+      "median": 28650.528,
+      "max": 32184.779,
+      "sum": 1105604.898
+    },
+    "app_elapsed_ms": {
+      "n": 39,
+      "min": 25491.0,
+      "median": 28804.0,
+      "max": 32293.0,
+      "sum": 1116019.0
+    },
+    "sdk_ttft_ms": {
+      "n": 39,
+      "min": 4868.889,
+      "median": 5624.911,
+      "max": 6348.213,
+      "sum": 219560.707
+    },
+    "prefill_tokens_per_second": {
+      "n": 39,
+      "min": 337.85196725253815,
+      "median": 346.3733640512611,
+      "max": 378.1489551293191,
+      "sum": 13611.78351814899
+    },
+    "decode_tokens_per_second": {
+      "n": 39,
+      "min": 9.421589182459009,
+      "median": 9.643203990053289,
+      "max": 12.46804178777551,
+      "sum": 385.589311232178
+    },
+    "phases_ms": {
+      "hash": {
+        "n": 39,
+        "min": 4325.65,
+        "median": 5432.913,
+        "max": 6023.437,
+        "sum": 215191.50699999998
+      },
+      "vocab": {
+        "n": 39,
+        "min": 512.715,
+        "median": 547.47,
+        "max": 601.9,
+        "sum": 21487.4
+      },
+      "create": {
+        "n": 39,
+        "min": 5982.095,
+        "median": 6544.275,
+        "max": 7431.599,
+        "sum": 256397.881
+      },
+      "template_tokenize": {
+        "n": 39,
+        "min": 128.592,
+        "median": 142.164,
+        "max": 157.996,
+        "sum": 5606.37
+      },
+      "generate": {
+        "n": 39,
+        "min": 12292.931,
+        "median": 15404.754,
+        "max": 19399.027,
+        "sum": 589365.909
+      },
+      "destroy": {
+        "n": 39,
+        "min": 405.828,
+        "median": 437.079,
+        "max": 482.592,
+        "sum": 17252.096
+      },
+      "deinit": {
+        "n": 39,
+        "min": 0.036,
+        "median": 0.043,
+        "max": 0.081,
+        "sum": 1.754
+      }
+    },
+    "prefill_weighted_tokens_per_second": 348.77498759964567,
+    "decode_weighted_tokens_per_second": 9.819372122465586,
+    "full_model_hash_per_completed_run": true,
+    "layer_counts": [
+      43
+    ],
+    "devices": [
+      "HTP0"
+    ],
+    "hash_plus_create_fraction_of_completed_native_time": 0.42654422828000166
+  },
+  "telemetry": {
+    "samples": 89,
+    "during_suite_samples": 85,
+    "temperature_groups": {
+      "battery": {
+        "n": 85,
+        "min": 27.0,
+        "median": 29.0,
+        "max": 30.0,
+        "sum": 2432.0,
+        "max_sensor_status": 0
+      },
+      "NSP": {
+        "n": 595,
+        "min": 33.8,
+        "median": 48.0,
+        "max": 60.3,
+        "sum": 29439.9,
+        "max_sensor_status": 0
+      },
+      "CPU": {
+        "n": 680,
+        "min": 35.3,
+        "median": 50.7,
+        "max": 66.1,
+        "sum": 34801.1,
+        "max_sensor_status": 0
+      },
+      "GPU": {
+        "n": 680,
+        "min": 34.6,
+        "median": 48.4,
+        "max": 58.8,
+        "sum": 32705.2,
+        "max_sensor_status": 0
+      },
+      "skin": {
+        "n": 85,
+        "min": 30.766,
+        "median": 39.613,
+        "max": 41.051,
+        "sum": 3301.814,
+        "max_sensor_status": 3
+      }
+    },
+    "mem_available_kib": {
+      "n": 85,
+      "min": 2031232.0,
+      "median": 5743064.0,
+      "max": 9614076.0,
+      "sum": 451732700.0
+    },
+    "sum_same_uid_rss_kib": {
+      "n": 85,
+      "min": 123396.0,
+      "median": 1169944.0,
+      "max": 3239000.0,
+      "sum": 148061492.0
+    },
+    "app_rss_kib": {
+      "n": 85,
+      "min": 122404.0,
+      "median": 156584.0,
+      "max": 193476.0,
+      "sum": 13440360.0
+    },
+    "other_same_uid_process_rss_kib": {
+      "n": 85,
+      "min": 896.0,
+      "median": 1013456.0,
+      "max": 3055324.0,
+      "sum": 134621132.0
+    },
+    "global_thermal_status_max": 3,
+    "first_wall_ms": 1794203027161,
+    "last_wall_ms": 1794204347159,
+    "telemetry_collected": true,
+    "errors": [],
+    "sample_sha256": "b9ffcfded527b371627245fa0e7b3e14129195137d61d208702920a8796f979f",
+    "coverage": "15 second samples bracket the suite; statistics use samples within suite start/end only.",
+    "rss_limits": "RSS includes mapped/shared pages and is not total NPU memory; summed process RSS may double count shared pages.",
+    "energy_consumption_measured": false,
+    "utilization_measured": false,
+    "temperature_throttling_or_power_inferred": false,
+    "case_model_windows": {
+      "core-calculator-keypad-01": {
+        "model_window_wall_ms": [
+          1794203065760,
+          1794203544675
+        ],
+        "samples": 32
+      },
+      "core-settings-home-settings-01": {
+        "model_window_wall_ms": [
+          1794203567181,
+          1794204043398
+        ],
+        "samples": 31
+      },
+      "core-cross-app-01": {
+        "model_window_wall_ms": [
+          1794204068885,
+          1794204222445
+        ],
+        "samples": 10
+      },
+      "core-find-calculator-01": {
+        "model_window_wall_ms": [
+          1794204235482,
+          1794204324927
+        ],
+        "samples": 6
+      }
+    }
+  },
+  "network": {
+    "verdict": "completed_and_restored",
+    "offline_precondition_verified_twice": true,
+    "restoration_verified_twice": true,
+    "preferences_restored": true,
+    "default_connectivity_restored": true,
+    "sampled_conditions_are_not_packet_capture": true
+  },
+  "statistics_sha256": "2d2b46fc6a5183d4674c95e30de8f67d3b0591029923efd5784fa07a56461d95",
+  "plan_sha256": "f15c3a1632fe330ed03278abc0efcdc6860c87efc09c6856b1d80bb055728df7",
+  "original_assertions_sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836",
+  "privacy": "Device/task/nonce IDs, host paths, private UI and raw model text omitted.",
+  "limits": [
+    "Private debug nonce entry; ordinary user Start button and lifecycle are separate tests.",
+    "SDK TTFT measures generate/prefill; excludes per-run hash/model create and is not user-to-first-action latency.",
+    "HTP layers/model buffers establish positive accelerator offload, not 100% operators or utilization.",
+    "No screenshot is sent to the tested text model; these tasks use accessibility observations.",
+    "Current HAL temperatures and same-UID RSS are sampled every 15 seconds; no utilization, total NPU memory, energy, or continuous peaks are claimed.",
+    "App before/after MemAvailable values are snapshots, not process RSS or continuous peak memory.",
+    "Each immutable run retains its actual context and source; unmatched context, prompts, initial and thermal states do not establish an identical-workload model ranking.",
+    "Offline Wi-Fi/mobile-data/default-network conditions were sampled through the run, not continuously packet-captured."
+  ]
+}

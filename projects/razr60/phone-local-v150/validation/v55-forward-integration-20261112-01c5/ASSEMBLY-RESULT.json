@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.v55-original-signer-assembly.v1",
+  "scope": "host_only_assembly",
+  "phone_operations": false,
+  "installed": false,
+  "signed": true,
+  "business_qualified": false,
+  "current_phone_identity_observed": false,
+  "all_pass": true,
+  "started_unix_ms": 1794465221646,
+  "steps": [
+    {
+      "name": "source-before",
+      "exit_code": 0,
+      "elapsed_s": 0.46519805199932307,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "assemble",
+      "exit_code": 0,
+      "elapsed_s": 7.993995201017242,
+      "stdout_sha256": "126dffa0e474e2196d878c0185a2ade0006c3d4563b2aff4fc64d9b302bd3e1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-after",
+      "exit_code": 0,
+      "elapsed_s": 0.31706649099942297,
+      "stdout_sha256": "4251a2e3d1f74e4abae535756da93ddae713a37a4e9291c56e4e66c163a11e25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "published_repository_commit": "5bb4c8d0143c1d4870801e15231ac2a6b2d51c14",
+  "component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+  "retained_signer_evidence": {
+    "signer_proof_sha256": "97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe",
+    "v53_signature_sha256": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+    "v53_static_receipt_sha256": "a947d5b186c69a6fc8f69f92a277739ac7193cc20055388a0b4e2a5c71e5ba21",
+    "v53_apk_sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e",
+    "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+    "not_a_fresh_phone_read": true
+  },
+  "original_signing_key_reused": true,
+  "retained_v53_certificate_match": true,
+  "live_installed_signer_match_proven": false,
+  "apk": "/home/alex/hepta-v55-01c5-20261112/out/hepta-local-0.55.0.apk",
+  "apk_bytes": 20944723,
+  "apk_sha256": "774e41c6a4f328c89c8ef3aed1901e3b456a377919a33587f05c074c2a88c3fd",
+  "version_code": 55,
+  "version_name": "0.55.0-local-unified-web-observation",
+  "permissions": [
+    "org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE"
+  ],
+  "final_signed_dex_readback_verified": true,
+  "final_signed_dex_sha256": "bd89d731a3c3f1360c0f59f321e39154cf8fc221b7de54b605486b3c2007d269",
+  "source_inputs": 201,
+  "build_receipt_sha256": "c0345e6bb9997baa0d73490d4f06ef175a3ac74c77c5ef94a1c68d42198d7402",
+  "source_manifest_sha256": "1caa51fbbbced802cdea93be8395433a29839743fd16b1c2204ba9bf3f1d711d",
+  "static_receipt_sha256": "b4138a7be609ffcefbe19f5e0302038620e101bc3f783e4d293fd0a97cdf29e8",
+  "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "identity_asset_sha256": "ed3ca79d4970fdd501c195d5d842f60c1311183c539c73cdda24dab5a3ebed61",
+  "all_packaged_runtime_libraries_bound_to_independent_pins": true,
+  "finished_unix_ms": 1794465230679
+}

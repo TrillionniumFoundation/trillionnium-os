@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.rooted-patch-replay.v1",
+  "checks": [
+    {
+      "base": "v53-pinned",
+      "patch": "hepta-v55-from-v53.patch",
+      "patch_sha256": "64825180f81af137a861b8182fd2d0c252557a8b83ce00c75a1b9561cae7ce71",
+      "full_root_tree": "2c3402849a8fb55cf89f4033723e67609ed19f7f",
+      "applied_component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+      "exact_target_tree": true
+    },
+    {
+      "base": "0f1d211",
+      "patch": "hepta-v55-from-pr145.patch",
+      "patch_sha256": "5dade923e13643e6e0ed401fb9a2153471ba7643bc46083d78e0f46c5dc9e881",
+      "full_root_tree": "2c3402849a8fb55cf89f4033723e67609ed19f7f",
+      "applied_component_tree": "baa8fc181f3fe28063bb1e7bbc8e836c745c7eec",
+      "exact_target_tree": true
+    }
+  ],
+  "source_worktree_mutated": false
+}

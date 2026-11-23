@@ -1,0 +1,240 @@
+package org.trillionnium.hepta.local;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/** Exact production Session methods and Controller catch/continue block.
+ * IPC, current authority, page recognition, clock, model and platform effects
+ * below are explicit synthetic IO. This is not phone or model qualification. */
+public final class WebPreDispatchHost {
+    static final String TASK=repeat('1',32),RUN=repeat('2',32),GEN="lease",INSTANCE="instance",BIND=repeat('3',64);
+    static int cases,assertions;
+    static JSONArray names=new JSONArray();
+    interface Work {void run()throws Exception;}
+    interface Change {void run(WebFlightSession s)throws Exception;}
+    static void check(boolean ok,String why){assertions++;if(!ok)throw new AssertionError(why);}
+    static void test(String name,Work body)throws Exception{SystemClock.now=1000;body.run();cases++;names.put(name);}
+    static String repeat(char c,int n){char[] a=new char[n];Arrays.fill(a,c);return new String(a);}
+    static void need(boolean ok,String why){if(!ok)throw new IllegalArgumentException(why);}
+    static final class SystemClock {static long now=1000;static long elapsedRealtime(){return now;}}
+    static final class ActionDecision {
+        String action="click",status="",observationId,packageName="org.trillionnium.hepta.webhelper",nodeId="n38";
+        ActionDecision(String id){observationId=id;}
+    }
+    static final class Window {Integer displayId=5;}
+    static final class PhoneObservation {
+        String id,packageName="org.trillionnium.hepta.webhelper",backgroundGeneration=GEN;
+        int windowId=8;Window windowMetadata=new Window();WebTaskDomain projected;
+        PhoneObservation(String id){this.id=id;}
+    }
+    static final class WebEvidenceReceipt {
+        String status="unavailable",bindingSha=BIND,instance=INSTANCE;long epoch=2;int displayId=5,windowId=8;
+        JSONObject metadata=new JSONObject();
+        WebEvidenceReceipt()throws Exception{metadata.put("reason","DOM changed across visual callback").put("retired",false).put("request_nonce",repeat('4',64));}
+        JSONObject callback()throws Exception{return new JSONObject(metadata.toString());}
+        JSONObject arm()throws Exception{throw new IllegalStateException("synthetic ARM forbidden");}
+    }
+    static final class Client {
+        final List<WebEvidenceReceipt> replies=new ArrayList<WebEvidenceReceipt>();int calls,arms;boolean pending;
+        Exception failure;Work afterCapture;
+        WebEvidenceReceipt capture(long deadline)throws Exception{
+            pending=true;try{calls++;if(afterCapture!=null)afterCapture.run();if(failure!=null)throw failure;
+                need(!replies.isEmpty(),"synthetic capture exhausted");return replies.remove(0);
+            }finally{pending=false;}
+        }
+        WebEvidenceReceipt armObservedLink(WebEvidenceReceipt a,String p,String r,long d)throws Exception{arms++;throw new IllegalStateException("synthetic ARM failure");}
+    }
+    static final class Background {String generation=GEN;boolean active=true;void requireActive(){need(active,"lease retired");}}
+    static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    static final class Journal {String bindingSha=BIND;}
+    static final class HeptaAccessibilityService {
+        boolean authority=true,frameCurrent=true;int checks;Work afterCheck;
+        void requireTaskAuthorization(String task,Object auth)throws Exception{checks++;need(authority,"authority revoked");if(afterCheck!=null)afterCheck.run();}
+        void requireBackgroundObservation(String task,PhoneObservation frame){need(frameCurrent,"background frame changed");}
+        static final class FlightNativeCheck {}
+    }
+    static final class Shopping {
+        Object searchQuote;String observedLinkAnchorPath(ActionDecision a){return "path";}
+    }
+    static final class Flight {String value="ordinary";String purpose(String id){return value;}}
+    static final class WebTaskDomain {
+        String taskId=TASK,observationId,generation=GEN,instance=INSTANCE,pageKey="page";long epoch=2;int displayId=5,windowId=8;
+        Set<String> clickIds=new HashSet<String>(Arrays.asList("n38"));Map<String,String> editValues=new HashMap<String,String>();
+        Shopping shopping;Flight flight;
+        WebTaskDomain(String id){observationId=id;}
+        void requireCurrent(ActionDecision a){need(a!=null&&observationId.equals(a.observationId)&&"org.trillionnium.hepta.webhelper".equals(a.packageName),"old action/foreign package");}
+        static WebTaskDomain observed(String task,Object purpose,Object auth,PhoneObservation f,WebEvidenceReceipt r,JSONObject b){return f.projected;}
+        WebTaskDomain withRecheckedShoppingQuote(Object q,PhoneObservation f,WebEvidenceReceipt r){return this;}
+        WebTaskDomain withObservedLinkArm(JSONObject arm){return this;}
+        Map<String,Object> evidence(){Map<String,Object> m=new HashMap<String,Object>();m.put("dom_sha256",BIND);return m;}
+    }
+    static final class WebFlightProgress {
+        static final String QUERY="query";boolean attempted;int reservations;
+        boolean queryAttempted(){return attempted;}
+        WebFlightProgress reserveQuery(Flight d,ActionDecision a,String r){reservations++;attempted=true;return this;}
+        Map<String,Object> evidence(Flight d){return new HashMap<String,Object>();}
+    }
+    static final class WebFlightNativeStability {
+        static int preparations;
+        static final class Permit {JSONObject domEvidence(){return new JSONObject();}}
+        static Permit prepare(WebTaskDomain d,PhoneObservation f,ActionDecision a,String run,WebEvidenceReceipt c,WebEvidenceReceipt fresh){preparations++;return null;}
+    }
+    static final class WebRegionNativeBridge {
+        static final class Anchor {String id="n38";}
+        Anchor anchor=new Anchor();String anchorDomPath="path";
+        static WebRegionNativeBridge bind(PhoneObservation f,WebEvidenceReceipt r){return new WebRegionNativeBridge();}
+        void requireFrame(PhoneObservation f){}JSONObject evidence(){return new JSONObject();}
+    }
+    static final class ShoppingDispatch {ShoppingDispatch(WebRegionNativeBridge b,String r,String a,JSONObject arm){}}
+    static final class WebFlightSession {
+        String taskId=TASK;Object purpose=new Object(),authorization=new Object();
+        JSONObject immutableBinding=new JSONObject();Journal journal=new Journal();
+        final Background background=new Background();final HeptaAccessibilityService service=new HeptaAccessibilityService();
+        final Cancellation cancellation=new Cancellation();final Client client=new Client();
+        WebTaskDomain domain,dispatchSource;PhoneObservation current;WebEvidenceReceipt currentCapture;
+        String dispatchSourceRun,dispatchSourceAction,dispatchCheckedRun,dispatchCheckedAction;long dispatchCheckedAt;
+        Object cityObservationRetry,shoppingReadCompletion,pendingNavigation;
+        ShoppingDispatch shoppingDispatch;WebFlightNativeStability.Permit flightNativePermit;
+        HeptaAccessibilityService.FlightNativeCheck flightNativeCheck;
+        final AtomicBoolean flightNativeEntered=new AtomicBoolean(),nativeQueryEntered=new AtomicBoolean();
+        final Set<String> flightNativeAttemptedRuns=new HashSet<String>();WebFlightProgress flightProgress;
+        boolean retired;int records;Work recordHook;
+        WebTaskDomain applyNavigation(WebTaskDomain d){return d;}
+        void record(String name,JSONObject value)throws Exception{records++;if(recordHook!=null)recordHook.run();}
+        private static String actionKey(ActionDecision a){return a.action+"\n"+(a.nodeId==null?"":a.nodeId);}
+        /* EXACT_SESSION_METHODS */
+    }
+    static WebFlightSession fixture()throws Exception{
+        WebFlightNativeStability.preparations=0;WebFlightSession s=new WebFlightSession();
+        freshFrame(s,"first");s.currentCapture=captured();return s;
+    }
+    static void freshFrame(WebFlightSession s,String id){PhoneObservation f=new PhoneObservation(id);WebTaskDomain d=new WebTaskDomain(id);f.projected=d;s.current=f;s.domain=d;}
+    static WebEvidenceReceipt captured()throws Exception{WebEvidenceReceipt r=new WebEvidenceReceipt();r.status="captured";return r;}
+    static WebFlightSession.PreDispatchPageChanged rejected(WebFlightSession s)throws Exception{
+        s.client.replies.add(new WebEvidenceReceipt());ActionDecision a=new ActionDecision(s.current.id);
+        try{s.beforeModelAction(a,RUN,2000);}catch(WebFlightSession.PreDispatchPageChanged changed){
+            check(!s.client.pending,"RPC is drained before recovery proof");
+            check(s.dispatchSource==null&&s.dispatchCheckedRun==null&&s.shoppingDispatch==null&&s.flightNativePermit==null,"no dispatch capability survives failed guard");
+            check(s.client.arms==0&&WebFlightNativeStability.preparations==0,"no ARM/native preparation occurred");return changed;
+        }throw new AssertionError("exact unavailable result did not produce typed rejection");
+    }
+    static void genericDenied(WebFlightSession s,WebEvidenceReceipt r)throws Exception{
+        s.client.replies.add(r);boolean refused=false;
+        try{s.beforeModelAction(new ActionDecision(s.current.id),RUN,2000);}
+        catch(WebFlightSession.PreDispatchPageChanged wrong){throw new AssertionError("unqualified failure became recoverable",wrong);}
+        catch(Exception expected){refused=true;}
+        check(refused,"unqualified failure was not rejected");check(s.client.arms==0,"no ARM after refusal");
+    }
+    static void denied(Work w)throws Exception{boolean refused=false;try{w.run();}catch(Exception expected){refused=true;}check(refused,"expected rejection missing");}
+    static final class Controller {
+        WebFlightSession activeWebTask;Object activeNativeTask;String currentTaskId=TASK;
+        boolean cancelled,failRecord,reuseObservationId,replayOldAction;Work afterRecord,afterObserve;
+        int modelCalls,observations,dispatches,outcomes,staleRounds,steps;
+        PhoneObservation observation;JSONArray history=new JSONArray();Object lastTransition;
+        List<JSONObject> rejections=new ArrayList<JSONObject>();List<ActionDecision> actions=new ArrayList<ActionDecision>();
+        Controller(WebFlightSession s){activeWebTask=s;observation=s.current;}
+        void checkActive(long deadline){need(!cancelled,"controller cancelled");need(SystemClock.now<=deadline,"controller deadline");}
+        void record(File f,String name,JSONObject evidence)throws Exception{
+            need(name.endsWith("web-pre-dispatch-rejection.json"),"no executor outcome file on rejected branch");
+            if(failRecord)throw new java.io.IOException("synthetic durable writer failure");
+            rejections.add(new JSONObject(evidence.toString()));if(afterRecord!=null)afterRecord.run();
+        }
+        void emit(String message){}
+        PhoneObservation awaitObservation(String task,File dir,Object authorization,long deadline)throws Exception{
+            checkActive(deadline);activeWebTask.background.requireActive();observations++;
+            freshFrame(activeWebTask,reuseObservationId?observation.id:"fresh-"+observations);
+            if(afterObserve!=null)afterObserve.run();return activeWebTask.current;
+        }
+        Object observedTransition(int step,PhoneObservation old,PhoneObservation now){return now.id;}
+        void run(long deadline)throws Exception{
+            String taskId=TASK;File evidence=new File("synthetic");Object authorization=activeWebTask.authorization;
+            while(steps<6){
+                checkActive(deadline);steps++;final PhoneObservation before=observation;
+                modelCalls++;ActionDecision action=replayOldAction&&!actions.isEmpty()?actions.get(0):new ActionDecision(before.id);
+                actions.add(action);String decisionRunId=String.format(java.util.Locale.ROOT,"%032x",modelCalls);
+                /* EXACT_CONTROLLER_BLOCK */
+                dispatches++;outcomes++;return;
+            }throw new AssertionError("test loop budget unexpectedly reached");
+        }
+    }
+    public static void main(String[] args)throws Exception{
+        if("baseline".equals(args[1])){
+            WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());s.client.replies.add(captured());Controller c=new Controller(s);
+            try{c.run(2000);}catch(Exception expected){}
+            check(c.modelCalls==2&&c.observations==1&&c.dispatches==1,"pre-dispatch recovery did not request a fresh model decision");return;
+        }
+        test("exact unavailable has no surviving action capability",()->{WebFlightSession s=fixture();rejected(s);});
+        for(String reason:new String[]{"DOM changed across visual callback ","dom changed across visual callback","no_main_frame_commit","RPC deadline exhausted","unknown"}){
+            final String value=reason;test("reason is exact: "+reason,()->{WebFlightSession s=fixture();WebEvidenceReceipt r=new WebEvidenceReceipt();r.metadata.put("reason",value);genericDenied(s,r);});
+        }
+        for(String status:new String[]{"state_changed","rejected","unknown"}){
+            final String value=status;test("status is exact: "+status,()->{WebFlightSession s=fixture();WebEvidenceReceipt r=new WebEvidenceReceipt();r.status=value;genericDenied(s,r);});
+        }
+        for(int mode=0;mode<7;mode++){final int m=mode;test("receipt identity boundary "+m,()->{
+            WebFlightSession s=fixture();WebEvidenceReceipt r=new WebEvidenceReceipt();
+            switch(m){case 0:r.bindingSha="other";break;case 1:r.instance="other";break;case 2:r.epoch++;break;case 3:r.displayId=0;break;case 4:r.displayId++;break;case 5:r.windowId++;break;default:r.metadata.put("retired",true);}
+            genericDenied(s,r);
+        });}
+        Change[] guards=new Change[]{
+            s->s.cancellation.cancelled=true,s->s.retired=true,s->s.background.active=false,s->s.background.generation="other",
+            s->s.service.authority=false,s->s.service.frameCurrent=false,s->s.current.id="changed",
+            s->s.current.backgroundGeneration="other",s->s.current.windowMetadata=null,s->s.current.windowMetadata.displayId=null,
+            s->s.current.windowMetadata.displayId=0,s->s.current.windowId++,s->s.domain.taskId="other",
+            s->s.domain.observationId="other",s->SystemClock.now=2000,s->s.dispatchSource=s.domain,
+            s->s.dispatchSourceRun=RUN,s->s.dispatchSourceAction="click\nn38",s->s.dispatchCheckedAction="click\nn38",s->s.dispatchCheckedAt=1,
+            s->s.flightNativeEntered.set(true),s->s.dispatchCheckedRun=RUN,s->s.shoppingDispatch=new ShoppingDispatch(null,null,null,null),
+            s->s.flightNativePermit=new WebFlightNativeStability.Permit(),s->s.flightNativeCheck=new HeptaAccessibilityService.FlightNativeCheck(),
+            s->s.flightNativeAttemptedRuns.add(RUN),s->s.pendingNavigation=new Object(),s->s.nativeQueryEntered.set(true),
+            s->{s.flightProgress=new WebFlightProgress();s.flightProgress.attempted=true;}};
+        for(int i=0;i<guards.length;i++){final int n=i;test("live or effect guard "+i,()->{WebFlightSession s=fixture();guards[n].run(s);genericDenied(s,new WebEvidenceReceipt());});}
+        test("cancellation during capture is not retryable",()->{WebFlightSession s=fixture();s.client.afterCapture=()->s.cancellation.cancelled=true;genericDenied(s,new WebEvidenceReceipt());});
+        test("native entry during capture is not retryable",()->{WebFlightSession s=fixture();s.client.afterCapture=()->s.flightNativeEntered.set(true);genericDenied(s,new WebEvidenceReceipt());});
+        test("domain replacement during capture is not retryable",()->{WebFlightSession s=fixture();s.client.afterCapture=()->s.domain=new WebTaskDomain(s.current.id);genericDenied(s,new WebEvidenceReceipt());});
+        test("client deadline failure is not retryable",()->{WebFlightSession s=fixture();s.client.failure=new java.io.IOException("evidence RPC deadline exceeded");genericDenied(s,new WebEvidenceReceipt());});
+        test("proof is bound to original frame action run deadline and session",()->{
+            WebFlightSession s=fixture();WebFlightSession.PreDispatchPageChanged e=rejected(s);
+            denied(()->e.evidence());denied(()->fixture().claimPreDispatchReobserve(e,e.frame,e.action,e.run,e.deadline));
+            denied(()->s.claimPreDispatchReobserve(e,new PhoneObservation(e.frame.id),e.action,e.run,e.deadline));
+            denied(()->s.claimPreDispatchReobserve(e,e.frame,new ActionDecision(e.frame.id),e.run,e.deadline));
+            denied(()->s.claimPreDispatchReobserve(e,e.frame,e.action,RUN+"0",e.deadline));
+            denied(()->s.claimPreDispatchReobserve(e,e.frame,e.action,e.run,e.deadline+1));
+            s.claimPreDispatchReobserve(e,e.frame,e.action,e.run,e.deadline);JSONObject receipt=e.evidence();
+            check(!receipt.getBoolean("executor_called")&&!receipt.getBoolean("executor_outcome_created")&&!receipt.getBoolean("action_replayed"),"no fabricated execution proof");
+            denied(()->s.claimPreDispatchReobserve(e,e.frame,e.action,e.run,e.deadline));
+        });
+        test("cancellation at claim does not recover",()->{WebFlightSession s=fixture();WebFlightSession.PreDispatchPageChanged e=rejected(s);s.cancellation.cancelled=true;denied(()->s.claimPreDispatchReobserve(e,e.frame,e.action,e.run,e.deadline));});
+        test("fresh observation requires a new model decision",()->{
+            WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());s.client.replies.add(captured());Controller c=new Controller(s);c.run(2000);
+            check(c.modelCalls==2&&c.observations==1&&c.dispatches==1&&c.outcomes==1,"only fresh model choice dispatched");
+            check(c.actions.get(0)!=c.actions.get(1)&&!c.actions.get(0).observationId.equals(c.actions.get(1).observationId),"old action not replayed");
+            check(c.rejections.size()==1&&!c.rejections.get(0).getBoolean("dispatched")&&c.rejections.get(0).getLong("original_task_deadline_elapsed_ms")==2000,"original refusal and deadline preserved");
+        });
+        test("third stale refusal is recorded then stopped",()->{
+            WebFlightSession s=fixture();for(int i=0;i<3;i++)s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);denied(()->c.run(2000));
+            check(c.staleRounds==3&&c.modelCalls==3&&c.observations==2&&c.dispatches==0,"two total rereads only");
+            check(c.rejections.size()==3&&!c.rejections.get(2).getBoolean("reobserve_permitted"),"terminal third refusal recorded");
+        });
+        test("shared stale counter is not reset",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.staleRounds=1;denied(()->c.run(2000));check(c.observations==1&&c.modelCalls==2&&c.dispatches==0,"old stale budget preserved");});
+        test("durable record failure prevents fresh read",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.failRecord=true;denied(()->c.run(2000));check(c.observations==0&&c.dispatches==0,"writer failure is terminal");});
+        test("cancellation after refusal record prevents fresh read",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.afterRecord=()->c.cancelled=true;denied(()->c.run(2000));check(c.rejections.size()==1&&c.observations==0&&c.dispatches==0,"cancellation honored");});
+        test("deadline after refusal record prevents fresh read",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.afterRecord=()->SystemClock.now=2001;denied(()->c.run(2000));check(c.observations==0&&c.dispatches==0,"original deadline honored");});
+        test("replacement controller task cannot claim refusal",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.currentTaskId="other";denied(()->c.run(2000));check(c.observations==0&&c.dispatches==0,"task replacement is terminal");});
+        test("native task overlap cannot claim web refusal",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.activeNativeTask=new Object();denied(()->c.run(2000));check(c.observations==0&&c.dispatches==0,"native overlap terminal");});
+        test("old observation id cannot enter new decision",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.reuseObservationId=true;denied(()->c.run(2000));check(c.modelCalls==1&&c.dispatches==0,"fresh identity required");});
+        test("old model action cannot run after fresh frame",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());s.client.replies.add(captured());Controller c=new Controller(s);c.replayOldAction=true;denied(()->c.run(2000));check(c.modelCalls==2&&c.dispatches==0,"old action rejected by current domain");});
+        test("cancellation after fresh read prevents next model",()->{WebFlightSession s=fixture();s.client.replies.add(new WebEvidenceReceipt());Controller c=new Controller(s);c.afterObserve=()->c.cancelled=true;denied(()->c.run(2000));check(c.modelCalls==1&&c.dispatches==0,"loop rechecks cancellation");});
+        test("unknown capture failure bypasses recovery catch",()->{WebFlightSession s=fixture();WebEvidenceReceipt r=new WebEvidenceReceipt();r.metadata.put("reason","unknown");s.client.replies.add(r);Controller c=new Controller(s);denied(()->c.run(2000));check(c.rejections.isEmpty()&&c.observations==0&&c.dispatches==0,"unknown failure not recovered");});
+        test("captured semantic target change is still fatal",()->{WebFlightSession s=fixture();s.current.projected=new WebTaskDomain(s.current.id);s.current.projected.pageKey="other";genericDenied(s,captured());});
+        test("failure after an ARM attempt is still fatal",()->{WebFlightSession s=fixture();s.domain.shopping=new Shopping();s.client.replies.add(captured());Controller c=new Controller(s);denied(()->c.run(2000));check(s.client.arms==1&&c.rejections.isEmpty()&&c.observations==0&&c.dispatches==0,"post ARM failure cannot retry");});
+        test("wait retains no-page-effect behavior",()->{WebFlightSession s=fixture();ActionDecision a=new ActionDecision(s.current.id);a.action="wait";s.beforeModelAction(a,RUN,2000);check(s.client.calls==0&&s.dispatchSource==s.domain,"existing wait behavior unchanged");});
+        JSONObject out=new JSONObject().put("passed",true).put("cases",cases).put("assertions",assertions).put("names",names)
+                .put("ipc_authority_page_recognition_clock_model_and_platform_mocked",true).put("phone_commands",0);
+        Files.write(Paths.get(args[0]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8));System.out.println(out.toString());
+    }
+}

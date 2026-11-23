@@ -1,0 +1,1 @@
+package org.trillionnium.hepta.webhelper;import org.json.JSONObject;final class ProcessIdentity {JSONObject snapshot()throws Exception{return new JSONObject().put("boot_count",7).put("host_fixture",true);}}
