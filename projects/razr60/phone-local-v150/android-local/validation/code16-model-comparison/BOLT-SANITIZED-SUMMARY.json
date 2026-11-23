@@ -1,0 +1,421 @@
+{
+  "schema": "hepta.sanitized-code16-summary.v1",
+  "final": true,
+  "strict_counts": {
+    "pass": 6,
+    "fail": 3
+  },
+  "suite_verdict": "fail",
+  "version_code": 16,
+  "model_profile": "nemotron-3.5-bolt-e4b-q4_k_m",
+  "model_sha256": "c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612",
+  "apk_sha256": "6f8cfa51abbb388a010ed1c222fd230de94956390dd3fef8870320acd4afbae3",
+  "compute": "npu",
+  "context_tokens": 4096,
+  "threads": 4,
+  "cases": [
+    {
+      "case_id": "core-settings-home-01",
+      "verdict": "pass",
+      "steps": 3,
+      "elapsed_host_seconds": 111.015,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "全部既定谓词、正常完成和原生输出绑定通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 3,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-settings-apps-01",
+      "verdict": "pass",
+      "steps": 3,
+      "elapsed_host_seconds": 112.467,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "全部既定谓词、正常完成和原生输出绑定通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 3,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-calculator-keypad-01",
+      "verdict": "fail",
+      "steps": 14,
+      "elapsed_host_seconds": 506.027,
+      "task_status": "failed",
+      "normal_model_completion": false,
+      "model_reported_success": false,
+      "cleanup_known": true,
+      "native_receipts_verified": false,
+      "goal_checks_all_passed": false,
+      "failed_predicates": [
+        "independent_final_ui",
+        "calculator_fresh_clear_then_exact_keypad_sequence",
+        "calculator_entered_expression_visible",
+        "calculator_final_result_visible"
+      ],
+      "diagnosis": "任务内置截止期限停止；已清除后重复点击数字，未形成要求的按键顺序/表达式/结果；14步中的第14次生成取消。driver timed_out=false表示未到外层540秒，不能抹去App内部超时。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 14,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-settings-chinese-search-01",
+      "verdict": "pass",
+      "steps": 5,
+      "elapsed_host_seconds": 192.138,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "全部既定谓词、中文输入回读和独立最终页面检查通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 5,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-search-return-home-01",
+      "verdict": "pass",
+      "steps": 6,
+      "elapsed_host_seconds": 230.351,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "全部既定谓词、起始搜索页前置条件及模型返回动作通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 6,
+      "stale_rejections": 0
+    },
+    {
+      "case_id": "core-settings-home-settings-01",
+      "verdict": "pass",
+      "steps": 5,
+      "elapsed_host_seconds": 190.806,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "设置→桌面→设置严格模型绑定访问序列及最终页面通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 5,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "verdict": "fail",
+      "steps": 9,
+      "elapsed_host_seconds": 368.329,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": false,
+      "failed_predicates": [
+        "strict_model_bound_goal_visit_order"
+      ],
+      "diagnosis": "第5步已完成设置→计算器→设置；第6步模型继续误打开电话、第8步又回设置，实际设置访问多一次；严格访问顺序失败。全部raw/receipt一致，无证据缺失。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 9,
+      "stale_rejections": 3
+    },
+    {
+      "case_id": "core-settings-scroll-01",
+      "verdict": "pass",
+      "steps": 10,
+      "elapsed_host_seconds": 414.298,
+      "task_status": "model_reported_done",
+      "normal_model_completion": true,
+      "model_reported_success": true,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "至少一次模型向下滚动使实际可见设置内容改变；独立终页及原谓词全部通过。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 10,
+      "stale_rejections": 1
+    },
+    {
+      "case_id": "core-find-calculator-01",
+      "verdict": "fail",
+      "steps": 3,
+      "elapsed_host_seconds": 122.632,
+      "task_status": "partial",
+      "normal_model_completion": false,
+      "model_reported_success": false,
+      "cleanup_known": true,
+      "native_receipts_verified": true,
+      "goal_checks_all_passed": true,
+      "failed_predicates": [],
+      "diagnosis": "find_app→打开返回目标及最终页面/无计算输入谓词全部通过；模型第3步却输出done/status=partial，基础正常完成门槛失败。prompt包含完整两步历史和app_search结果，无历史省略。",
+      "assertions_recomputed_equal": true,
+      "native_runs": 3,
+      "stale_rejections": 0
+    }
+  ],
+  "runtime": {
+    "native_calls": 58,
+    "native_and_app_completed": 57,
+    "noncompleted_calls": [
+      {
+        "case_id": "core-calculator-keypad-01",
+        "app_status": "cancelled",
+        "native_error": null,
+        "app_error": "null"
+      }
+    ],
+    "positive_htp_offload_calls": 58,
+    "offloaded_layer_counts": [
+      43
+    ],
+    "devices": [
+      "HTP0"
+    ],
+    "full_operator_coverage_proven": false,
+    "utilization_measured": false,
+    "model_bytes_hashed_per_complete_call": 6180446208,
+    "native_total_ms": {
+      "n": 57,
+      "min": 29275.366,
+      "median": 34755.395,
+      "max": 48108.021,
+      "sum": 2008533.821
+    },
+    "app_model_call_total_ms": {
+      "n": 57,
+      "min": 29590.0,
+      "median": 34906.0,
+      "max": 48244.0,
+      "sum": 2023225.0
+    },
+    "sdk_ttft_ms": {
+      "n": 57,
+      "min": 3429.9,
+      "median": 5649.034,
+      "max": 7127.06
+    },
+    "phases_ms": {
+      "hash": {
+        "n": 57,
+        "min": 6540.402,
+        "median": 6907.11,
+        "max": 9456.486,
+        "sum": 408212.329
+      },
+      "vocab": {
+        "n": 57,
+        "min": 503.205,
+        "median": 568.611,
+        "max": 766.616,
+        "sum": 32833.894
+      },
+      "create": {
+        "n": 57,
+        "min": 7600.252,
+        "median": 8510.995,
+        "max": 10821.291,
+        "sum": 491397.545
+      },
+      "template_tokenize": {
+        "n": 57,
+        "min": 134.267,
+        "median": 149.201,
+        "max": 321.315,
+        "sum": 8864.076
+      },
+      "generate": {
+        "n": 57,
+        "min": 13300.042,
+        "median": 18239.469,
+        "max": 26835.734,
+        "sum": 1035897.257
+      },
+      "destroy": {
+        "n": 57,
+        "min": 470.854,
+        "median": 531.576,
+        "max": 688.436,
+        "sum": 30789.946
+      },
+      "deinit": {
+        "n": 57,
+        "min": 0.031,
+        "median": 0.042,
+        "max": 0.846,
+        "sum": 3.255
+      }
+    },
+    "decode_tokens_per_second": {
+      "n": 57,
+      "min": 6.126126374482601,
+      "median": 8.47821723439282,
+      "max": 11.920680017976833
+    },
+    "decode_weighted_tokens_per_second": 8.46880775046666,
+    "prefill_tokens_per_second": {
+      "n": 57,
+      "min": 309.20861356878953,
+      "median": 344.3203602512838,
+      "max": 376.13683810857583
+    },
+    "prefill_weighted_tokens_per_second": 342.2654662575719,
+    "definitions": {
+      "host_elapsed": "整项驱动耗时，含任务和观测/收集；不是单次模型延迟。",
+      "native_total": "原生进程内部从校验、加载到推理/销毁的耗时。",
+      "sdk_ttft": "SDK generate内部首token时间，含prefill；不含此前完整模型SHA/词表/create，不能称用户点Start首字时间。",
+      "decode": "SDK报告的生成token数/解码时间；weighted为57个完整call总token/总解码秒。",
+      "phases": "只统计57个native和App都完整结束且计时有效的call；不将取消call填零。",
+      "noncompleted": "取消call单列，不从58次总调用中删除。"
+    },
+    "hash_plus_create_fraction_of_completed_native_time": 0.44789381418138446
+  },
+  "telemetry": {
+    "samples": 129,
+    "all_current_hal_only": true,
+    "cached_values_used": false,
+    "invalid_lines": 0,
+    "covered_from_case": "core-calculator-keypad-01中途",
+    "first_two_cases_covered": false,
+    "temperature_groups": {
+      "cpu": {
+        "min_celsius": 40.7,
+        "max_celsius": 65.7,
+        "max_hal_status": 0
+      },
+      "gpu": {
+        "min_celsius": 41.1,
+        "max_celsius": 58.8,
+        "max_hal_status": 0
+      },
+      "battery": {
+        "min_celsius": 25.0,
+        "max_celsius": 31.0,
+        "max_hal_status": 0
+      },
+      "skin": {
+        "min_celsius": 35.897,
+        "max_celsius": 41.96,
+        "max_hal_status": 3
+      },
+      "nsp": {
+        "min_celsius": 40.7,
+        "max_celsius": 62.6,
+        "max_hal_status": 0
+      }
+    },
+    "mem_available_kib": {
+      "n": 129,
+      "min": 885652.0,
+      "median": 1440484.0,
+      "max": 9782752.0
+    },
+    "minimum_mem_available_gib": 0.8446235656738281,
+    "memory_definition": "全系统/proc/meminfo MemAvailable；不是模型RSS或峰值独占占用。15秒采样不能证明采样间峰值。",
+    "skin_status_interpretation": "记录HAL status=3；没有据此宣称CPU/GPU/NPU吞吐降频或持续占用率。",
+    "usb_power_connected": true,
+    "energy_or_watts_measured": false
+  },
+  "network": {
+    "verdict": "completed_and_restored",
+    "offline_precondition_verified_twice": true,
+    "offline_conditions_observed_through_normal_suite": true,
+    "periodic_snapshot_count": 152,
+    "restoration_verified_twice": true,
+    "preferences_restored": true,
+    "default_connectivity_reestablished": true,
+    "errors": [],
+    "sampling_is_not_packet_capture": true,
+    "continuous_whole_device_network_absence_proven": false
+  },
+  "original_input_pins": {
+    "frozen_plan": {
+      "bytes": 10389,
+      "sha256": "978be7809ed380a5233a9e0c11cb908fdd914a6a2822b9cf1f08ff915e4c2745"
+    },
+    "suite_result": {
+      "bytes": 120864,
+      "sha256": "e99542734c3c7aa28797e9ee85d738441dea85bc9b347a0d76301cce50cc6d75"
+    },
+    "offline_result": {
+      "bytes": 61575,
+      "sha256": "f4f0dc6d4dc306196e971e8cb018fe3a537703b874649cb95403057ca2f11100"
+    },
+    "network_journal": {
+      "bytes": 61339,
+      "sha256": "a1cdf6d5855ae6dd4be80796c69876e5b894b69afbba3a2013b4a151cf992249"
+    },
+    "core_assertions": {
+      "bytes": 24477,
+      "sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836"
+    },
+    "telemetry_config": {
+      "bytes": 406,
+      "sha256": "cbf4cde4158503c0273cf171813f3f93b6126d03d5459c3f81fc0957d90a8867"
+    },
+    "telemetry_completion": {
+      "bytes": 125,
+      "sha256": "7893a9e7584c080fe3991573740eb1e12a24126247368ee0969396b440aaaaa3"
+    },
+    "telemetry_samples": {
+      "bytes": 1624104,
+      "sha256": "ecec5179da66658baa654941890ede1010739723d1433c3812cf700f3414b7e9"
+    },
+    "source_manifest": {
+      "bytes": 159769,
+      "sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f"
+    },
+    "core_driver": {
+      "bytes": 23278,
+      "sha256": "22f1e4643e3076f630749a79c7f2a30beba7171097c5ef8c36bcaa80d83c753c"
+    }
+  },
+  "full_input_manifest": {
+    "file": "source-pins.json",
+    "sha256": "d58e4f30b593435bb9549826f2a8d78a15a626ccf161f0d0ed9db8c650b2f42f",
+    "file_entries": 979,
+    "purpose": "完整逐文件SHA映射保留于该哈希绑定原件；本<=16KiB摘要列关键输入与映射整体SHA，未重写原始输入。"
+  },
+  "complete_statistics": {
+    "file": "statistics.json",
+    "sha256": "a1c1ef28dcd5c40a3b322ac382eb3db90764ea00efadcac9d586d131e032ea77"
+  },
+  "collector": {
+    "file": "collect_stats_r4.py",
+    "sha256": "a5945cb2d299e309d74e30f9013f09bfd229e875f983f6e9df23d4087722a817"
+  },
+  "unassessed": [
+    "普通用户界面点击Start入口",
+    "Stop取消的独立生命周期回归",
+    "进程重启不重放",
+    "锁屏/熄屏操作",
+    "视觉模型或截图理解",
+    "全部已装App覆盖",
+    "持续功耗/能耗/硬件利用率",
+    "跨版本模型公平排名"
+  ],
+  "privacy": "已去除设备序列号、主机/IP/网络标识、完整路径、私有UI内容与用户数据；只保留测试类型、性能和内容哈希。",
+  "phone_contacted_by_collector": false,
+  "original_files_modified": false
+}

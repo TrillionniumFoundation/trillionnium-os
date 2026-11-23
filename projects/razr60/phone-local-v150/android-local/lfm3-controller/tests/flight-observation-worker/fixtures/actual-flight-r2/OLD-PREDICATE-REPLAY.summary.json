@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.actual-flight-r2-predicate-replay.v1",
+  "shared_dom_bracket_error": "mismatch has no compiled stable action-region proof",
+  "phone_operations": 0,
+  "flight_dom_scope_accepted": true,
+  "current57_readonly_fallback_reachable": false,
+  "last_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+  "shared_dom_bracket_accepted": false,
+  "unreachable_reason": "domBracket is null; current57 requires sameCaptureDomain and four equal original raw DOM values before calling its native observation fallback",
+  "last_pair_raw_equal": true,
+  "between_raw_equal": false,
+  "first_dom_sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+  "first_pair_raw_equal": true,
+  "business_verified": false,
+  "full_native_traversal_reconstructed": false,
+  "native_source_presence_assumed": false,
+  "flight_dom_scope": {
+    "schema": "hepta.csair-home-dom-scope.v1",
+    "slider_dom_path": "0/1/1/1/0",
+    "all_other_dom_records_equal": true,
+    "horizontal_translation_css_pixels": -400,
+    "whole_dom_equal": false,
+    "scope": "official_home_booking_with_observed_slider4_horizontal_translation",
+    "coordinates_used_for_input": false,
+    "business_verified": false,
+    "booking_dom_path": "0/1/1/2/0/0",
+    "fully_unoccluded_claimed": false
+  },
+  "flight_dom_changed_record_count": 17,
+  "production_source_before_fix": {
+    "WebFlightSession.java": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+    "WebFlightNativeStability.java": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a"
+  },
+  "diagnostic_boundary": "Original complete DOMs replayed through unchanged pure predicates; fallback unreachable follows the original Session branch. No full native source was reconstructed."
+}

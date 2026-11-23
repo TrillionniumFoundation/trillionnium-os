@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.local-model-settings-visual-case-contract.v1",
+  "case_schema": "hepta.local-model-settings-visual-cases.v1",
+  "cases": 22,
+  "assertions": 169,
+  "names": [
+    "explicit-visual-tools-v3-and-unchanged-default",
+    "visual-observe-extra-fields-and-wrong-shape-reject",
+    "ordinary-save-same-service-text-visual-text-next-task",
+    "ordinary-four-existing-text-choices-remain-exact",
+    "ordinary-restore-text-and-visual-exact-original-bytes",
+    "ordinary-recovery-of-pending-visual-publication",
+    "ordinary-asset-refusal-rolls-back-without-route-change",
+    "ordinary-active-task-and-late-confirmation-cannot-switch",
+    "unknown-visual-cleanup-retains-delegate-and-shared-slot",
+    "foreign-cleanup-proof-cannot-retire-or-relabel-task",
+    "partial-begin-failure-retains-original-adapter-for-cleanup",
+    "runtime-generation-cannot-change-between-selection-and-reservation",
+    "active-runtime-generation-is-frozen-and-drift-fails-closed",
+    "visual-frame-task-identity-and-original-frame-are-preserved",
+    "actual-visual-memory-threshold-and-low-memory-refuse-before-assets",
+    "actual-projector-missing-refuses-before-primary-hash",
+    "actual-projector-short-refuses-before-primary-hash",
+    "actual-projector-symlink-refuses-before-primary-hash",
+    "actual-projector-hardlink-refuses-before-primary-hash",
+    "actual-projector-owner-refuses-before-primary-hash",
+    "actual-complete-primary-content-hash-refuses-sparse-impostor",
+    "projector-hash-helper-validates-full-content-and-independent-pin"
+  ]
+}

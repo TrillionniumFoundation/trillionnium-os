@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.synthetic-neutral-carousel.v1",
+  "synthetic": true,
+  "before_anchor": {
+    "bounds": [
+      40,
+      2400,
+      760,
+      2980
+    ],
+    "class_name": "android.widget.HorizontalScrollView",
+    "scroll_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right"
+    ]
+  },
+  "after_anchor": {
+    "bounds": [
+      40,
+      2400,
+      760,
+      2980
+    ],
+    "class_name": "android.widget.HorizontalScrollView",
+    "scroll_directions": [
+      "forward",
+      "right"
+    ]
+  },
+  "before_header": "推荐 A",
+  "after_header": "推荐 B",
+  "boundary": "Portable hand-authored host fixture. Complete test trees are built by the test harness. No captured device records or business completion."
+}

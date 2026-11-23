@@ -1,0 +1,65 @@
+package org.trillionnium.hepta.local;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
+
+/** Exact production private writer with real host files/streams/fsync.
+ * Android chmod alone is a POSIX host bridge with an explicit failure fixture. */
+final class PrivateCensusFileHost {
+    static final class android {
+        static final class system {
+            static final class Os {
+                static int calls;static boolean fail;static long lengthAtChmod;
+                static void reset(boolean refused){calls=0;fail=refused;lengthAtChmod=-1;}
+                static void chmod(String name,int mode)throws IOException{
+                    calls++;Path path=Paths.get(name);lengthAtChmod=Files.size(path);
+                    if(mode!=0600)throw new IOException("unexpected private mode");
+                    if(fail)throw new IOException("injected host permission refusal");
+                    Files.setPosixFilePermissions(path,PosixFilePermissions.fromString("rw-------"));
+                }
+            }
+        }
+    }
+{{private_census_write}}
+    private static Path directory()throws Exception{
+        Path result=Files.createTempDirectory("hepta-private-census-host-");
+        Files.setPosixFilePermissions(result,PosixFilePermissions.fromString("rwx------"));return result;
+    }
+    private static void remove(Path directory)throws Exception{
+        Files.deleteIfExists(directory.resolve("failed-native-census.json"));Files.delete(directory);
+    }
+    static void run()throws Exception{
+        DiagnosticChecks.run("private_actual_file_writer_sets0600_before_any_raw_byte",()->{
+            Path dir=directory();try{
+                android.system.Os.reset(false);byte[] bytes="{\"private\":\"\u79c1\u6709\"}".getBytes(StandardCharsets.UTF_8);
+                recordPrivateCensus(dir.toFile(),"failed-native-census.json",bytes);Path file=dir.resolve("failed-native-census.json");
+                DiagnosticChecks.check(android.system.Os.calls==1&&android.system.Os.lengthAtChmod==0,"mode fixed before opening stream or writing content");
+                DiagnosticChecks.check(Files.getPosixFilePermissions(file).equals(PosixFilePermissions.fromString("rw-------")),"actual host file mode 0600");
+                DiagnosticChecks.check(Arrays.equals(Files.readAllBytes(file),bytes),"exact private UTF8 bytes and fsync success");
+            }finally{remove(dir);}
+        });
+        DiagnosticChecks.run("private_actual_file_writer_permission_refusal_writes_zero_raw_bytes",()->{
+            Path dir=directory();try{
+                android.system.Os.reset(true);boolean refused=false;
+                try{recordPrivateCensus(dir.toFile(),"failed-native-census.json","MUST_NOT_BE_WRITTEN".getBytes(StandardCharsets.UTF_8));}
+                catch(IOException expected){refused=true;}
+                Path file=dir.resolve("failed-native-census.json");
+                DiagnosticChecks.check(refused&&android.system.Os.calls==1&&Files.exists(file)&&Files.size(file)==0,"create-only empty file remains; no raw write or retry after chmod failure");
+            }finally{remove(dir);}
+        });
+        DiagnosticChecks.run("private_actual_file_writer_preserves_existing_file_without_chmod_or_retry",()->{
+            Path dir=directory();try{
+                Path file=dir.resolve("failed-native-census.json");byte[] original="original fixture evidence".getBytes(StandardCharsets.UTF_8);
+                Files.write(file,original,StandardOpenOption.CREATE_NEW);Files.setPosixFilePermissions(file,PosixFilePermissions.fromString("rw-------"));
+                android.system.Os.reset(false);boolean refused=false;
+                try{recordPrivateCensus(dir.toFile(),"failed-native-census.json","replacement".getBytes(StandardCharsets.UTF_8));}
+                catch(IllegalStateException expected){refused=true;}
+                DiagnosticChecks.check(refused&&android.system.Os.calls==0&&Arrays.equals(Files.readAllBytes(file),original),"existing bytes immutable and no second side effect");
+            }finally{remove(dir);}
+        });
+    }
+}

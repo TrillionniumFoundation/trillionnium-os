@@ -1,0 +1,967 @@
+
+    /** Synthetic collected values only; observer and frozen-window factory execute verbatim. */
+    interface SeedFrozenRead {FrozenObservationWindow read(ObservationRequest request,CaptureIdentity identity);}
+    SeedFrozenRead seedFrozenRead;
+    static ObserverPipelineHost seedFixture(Change change)throws Exception{return seedFixture(change,true);}
+    static ObserverPipelineHost seedFixture(final Change change,final boolean pairEvents)throws Exception{
+        ObserverPipelineHost f=nativeFixture(null);f.taskAuthorization=new Object();f.autoScreenshot=false;
+        f.readHook=(g,n)->{
+            nativeGraph(g);g.digest=n<4?"capture-before":"saved-after";
+            g.nativeActionNodes=Collections.<Object>singletonList("synthetic-complete-census");
+            g.nativeActionWindows=Collections.<String,Object>singletonMap("selected_display",Integer.valueOf(9));
+            g.nativeActionWidth=1080;g.nativeActionHeight=2400;
+            if(n==4)SystemClock.now+=500; // Synthetic PNG/read cost, separate from stability gap.
+            if(pairEvents&&(n==3||n==6))f.noteObservationEvent(9);
+            if(change!=null)change.apply(f,g,n);sealGraph(g);
+        };return f;
+    }
+    static ObservationRequest seedQueued(ObserverPipelineHost f,long taskDeadline)throws Exception{
+        budgetBegin(f,taskDeadline);ObservationRequest r=f.activeObservation;f.awaitSample();
+        SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+        await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"seed second real sample");
+        f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"first capture must be admitted normally");
+        f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"failed capture queued");
+        return r;
+    }
+    static ObservationRequest seedAdmitted(ObserverPipelineHost f)throws Exception{
+        ObservationRequest r=seedQueued(f,30000);f.main.drain();
+        check(r.resampleSeed!=null&&r.nativeSample,"saved graph not retained as first WAIT");
+        check(f.delivered.isEmpty()&&r.captured==null&&f.directory.list().length==0,"seed retained old image/Graph or published");
+        check((r.trace==null||count(r,"SAMPLE_READY")==1)&&f.shots.size()==1,"seed created READY or screenshot");
+        return r;
+    }
+    static void seedNextRead(ObserverPipelineHost f)throws Exception{
+        SystemClock.now+=200;f.main.drain();f.awaitSample();
+    }
+    static void seedNewCapture(ObserverPipelineHost f,ObservationRequest r)throws Exception{
+        TakeScreenshotCallback previous=f.pendingScreenshot;seedNextRead(f);
+        check(f.pendingScreenshot!=previous&&r.resampleSeed==null,"new real read did not create a new capture");
+        f.deliverScreenshot();f.finish();
+        check(f.delivered.size()==1&&f.errors.isEmpty()&&f.reads.get()==7,"new capture and both graph rechecks required");
+        check(f.shots.size()==2&&r.deadline==r.started+12000,"capture/deadline contract changed");
+    }
+    static long seedAdmissions(ObservationRequest r)throws Exception{return report(r).optLong("native_seed_admission_count",0);}
+    static void seedNotAdmitted(ObserverPipelineHost f,ObservationRequest r,String why)throws Exception{
+        check(r.resampleSeed==null&&seedAdmissions(r)==0,why+": seed admitted");
+        check(f.delivered.isEmpty()&&f.directory.list().length==0&&r.captured==null,why+": old capture retained");
+    }
+
+    /** Android values are synthetic; seal, publication refusal, expiry, drain and proof are production code. */
+    static final class SealedReadResult implements ObservationCallback {
+        final List<NativeObservationRetryProof> proofs=new ArrayList<NativeObservationRetryProof>();
+        final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();
+        final List<String> failures=new ArrayList<String>();
+        public void onObservation(PhoneObservation value){check(isMain(),"fresh observation on main");observations.add(value);}
+        public void onError(String error){check(isMain(),"failure on main");failures.add(error);}
+        public void onReadRetryAvailable(String error,NativeObservationRetryProof proof){
+            check(isMain()&&proof!=null,"actual private failure proof on main");failures.add(error);proofs.add(proof);
+        }
+    }
+    static void sealedReadGraph(Graph g,String digest){
+        nativeGraph(g);g.digest=digest;
+        g.nativeActionNodes=Collections.<Object>singletonList("synthetic-complete-census");
+        g.nativeActionWindows=Collections.<String,Object>singletonMap("selected_display",Integer.valueOf(9));
+        g.nativeActionWidth=1080;g.nativeActionHeight=2400;
+    }
+    static final class SealedReadScenario {
+        final ObserverPipelineHost f;final SealedReadResult out=new SealedReadResult();
+        final PhoneObservation prior;final int first;final long taskDeadline;
+        ObservationRequest request;File discarded;String fault;boolean terminalGraph,contentChanges=true;
+        SealedReadScenario()throws Exception{
+            f=seedFixture(null,false);f.autoScreenshot=true;
+            f.readHook=(g,n)->{sealedReadGraph(g,"prior-public-frame");sealGraph(g);};
+            f.seedFrozenRead=(r,i)->i.frozenWindow;twoSamples(f);
+            prior=f.current;first=f.reads.get();taskDeadline=SystemClock.now+30000;
+            check(prior!=null&&f.delivered.size()==1&&first==3,"real initial sealed frame required");
+            check("pre_encoding_paired_history".equals(prior.captureEvidence.get("mode")),"initial real seal path");
+            f.autoScreenshot=false;f.pendingScreenshot=null;
+            f.readHook=(g,n)->{
+                sealedReadGraph(g,terminalGraph&&contentChanges?"after-target-event":"before-target-event");
+                if(n==first+3&&"unsealed".equals(fault))f.noteObservationEvent(9);
+                if(n==first+3&&"incomplete".equals(fault))g.nativeActionNodes=null;
+                if(terminalGraph&&"foreign_window".equals(fault))g.windowId++;
+                sealGraph(g);
+            };
+            f.seedFrozenRead=(r,i)->{
+                if("producer_retry".equals(fault))throw new StaleObservation("synthetic stale observation");
+                if("during_window".equals(fault))f.noteObservationEvent(9);
+                if("foreign_window".equals(fault))return new FrozenObservationWindow(i.frozenWindow.packageName,i.frozenWindow.windowId+1,
+                        i.frozenWindow.displayId,i.frozenWindow.rotation,i.frozenWindow.left,i.frozenWindow.top,
+                        i.frozenWindow.right,i.frozenWindow.bottom,i.frozenWindow.width,i.frozenWindow.height,
+                        i.frozenWindow.metadata,i.frozenWindow.windows,i.frozenWindow.profileWindow);
+                return i.frozenWindow;
+            };
+        }
+        void queued()throws Exception{
+            f.observe(f.lease,f.directory,()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline),out);
+            f.main.drain();request=f.activeObservation;check(request!=null,"ordinary fresh read admitted");f.awaitSample();
+            SystemClock.now+=400;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            await(()->f.pendingScreenshot!=null||(!observationIoBusy.get()&&observationIo.active.get()==0),"second complete sample");
+            f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"new screenshot callback required");
+            f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual screenshot producer finished");
+            for(File path:f.directory.listFiles())if(!path.equals(prior.path))discarded=path;
+        }
+        void rejectCapture()throws Exception{
+            queued();
+            if("unknown".equals(fault))f.noteObservationEvent(-1);
+            else if(!"during_window".equals(fault))f.noteObservationEvent(9);
+            if("authorization".equals(fault))f.taskAuthorization=new Object();
+            if("scope".equals(fault))f.taskBackground=new BackgroundSession(9);
+            f.main.drain();
+            check(out.observations.isEmpty()&&f.current==prior,"unpublished capture never replaces prior frame");
+            check(discarded==null||!discarded.exists(),"unpublished PNG discarded before any proof");
+            check(request.captured==null&&request.deadline==request.started+12000,"capture released without renewing deadline");
+        }
+        void expire()throws Exception{
+            if(request.finished)return;terminalGraph=true;SystemClock.now=request.started+10278;
+            f.main.drain();f.finish();f.finish();
+        }
+        void released(){
+            check(request.finished&&request.captured==null&&!request.shotPending&&f.activeObservation==null,"failed request fully retired");
+            for(Graph g:f.graphs)if(g!=f.currentGraph)check(g.closed,"old graph not retained by read proof");
+            for(Bitmap b:Bitmap.made)if(b!=f.currentBitmap)check(b.recycled,"old bitmap not retained by read proof");
+        }
+        NativeObservationRetryProof proof()throws Exception{
+            rejectCapture();check(request.readCaptureFailures==0&&request.readSealedEventFailures==1,"only typed sealed-event classification");
+            check(discarded!=null&&count(request,"CAPTURE_EVENT_RESET")==1,"real completed PNG rejected by unchanged fence");
+            expire();released();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one failed read, never old observation");
+            Map<String,Object> e=out.proofs.get(0).evidence();
+            check(((Number)e.get("capture_failures")).intValue()==0&&((Number)e.get("sealed_capture_target_event_failures")).intValue()==1,"new cause distinct in immutable proof");
+            check(request.readGraphChanges>0&&Boolean.TRUE.equals(e.get("read_worker_drained"))&&Boolean.TRUE.equals(e.get("failed_request_resources_released")),"original graph-change and actual drain gates");
+            return out.proofs.get(0);
+        }
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.dispose();}
+    }
+    static void sealedEventReadCases()throws Exception{
+        for(final String timing:new String[]{"after_window","during_window"})eventCase("sealed_event_read_"+timing+"_requires_fresh_frame",()->{
+            SealedReadScenario s=new SealedReadScenario();s.fault=timing;NativeObservationRetryProof proof=s.proof();
+            long oldDeadline=s.request.deadline;int before=s.f.reads.get();SealedReadResult next=new SealedReadResult();
+            s.f.readHook=(g,n)->{sealedReadGraph(g,"new-stable-frame");sealGraph(g);};s.f.seedFrozenRead=(r,i)->i.frozenWindow;s.f.autoScreenshot=true;
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),next,proof);
+            s.f.main.drain();ObservationRequest replacement=s.f.activeObservation;s.f.awaitSample();SystemClock.now+=400;s.f.main.drain();s.f.awaitSample();s.f.finish();
+            check(next.observations.size()==1&&next.failures.isEmpty()&&s.f.current!=s.prior&&!s.f.current.id.equals(s.prior.id),"real new observation and pixels required");
+            check(s.f.reads.get()==before+3&&"pre_encoding_paired_history".equals(s.f.current.captureEvidence.get("mode")),"two fresh samples, full pair and actual window recheck");
+            check(s.request.deadline==oldDeadline&&replacement.deadline<=s.taskDeadline&&replacement.deadline==replacement.started+12000,"old request unchanged and original task cap retained");
+            int reads=s.f.reads.get();SealedReadResult reused=new SealedReadResult();
+            s.f.observeAfterTransientFailure(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),reused,proof);s.f.main.drain();
+            check(reused.failures.size()==1&&s.f.reads.get()==reads,"private proof cannot be consumed twice");s.dispose();
+        });
+        for(final String reason:new String[]{"unknown","foreign_window","authorization","scope","unsealed","incomplete","producer_retry"})
+            eventCase("sealed_event_read_rejects_"+reason,()->{
+                SealedReadScenario s=new SealedReadScenario();s.fault=reason;s.rejectCapture();
+                check(s.request.readSealedEventFailures==0,"generic reset cannot supply sealed-event classification");s.expire();
+                if(!"producer_retry".equals(reason))check(s.out.proofs.isEmpty(),"changed or incomplete authority cannot issue new proof");
+                else for(NativeObservationRetryProof proof:s.out.proofs)check(((Number)proof.evidence().get("sealed_capture_target_event_failures")).intValue()==0,"original graph-failure route stays distinct");
+                check(s.out.observations.isEmpty(),"negative capture cannot publish");s.dispose();
+            });
+        for(final int display:new int[]{0,1})eventCase("sealed_event_read_ignores_other_display_"+display,()->{
+            SealedReadScenario s=new SealedReadScenario();s.queued();s.f.noteObservationEvent(display);s.f.main.drain();
+            check(s.out.observations.size()==1&&s.out.proofs.isEmpty()&&s.request.readSealedEventFailures==0,"other display does not spoil owned publication");
+            check(count(s.request,"CAPTURE_EVENT_RESET")==0,"no global event reset");s.dispose();
+        });
+        eventCase("sealed_event_read_still_requires_graph_change",()->{
+            SealedReadScenario s=new SealedReadScenario();s.contentChanges=false;s.rejectCapture();s.expire();
+            check(s.request.readSealedEventFailures==1&&s.request.readGraphChanges==0&&s.out.proofs.isEmpty(),"new reason does not bypass original graph-change predicate");s.dispose();
+        });
+        eventCase("sealed_event_read_waits_for_actual_worker_return",()->{
+            SealedReadScenario s=new SealedReadScenario();s.rejectCapture();Block hold=new Block();s.f.main.afterWorkerPost=hold;
+            s.terminalGraph=true;SystemClock.now=s.request.started+10278;s.f.main.drain();hold.entered();s.f.main.drain();
+            check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&observationIo.active.get()>=2,"busy=false and queued callback are not drain proof");s.released();
+            s.f.main.afterWorkerPost=null;hold.open();s.f.finish();check(s.out.proofs.size()==1,"only actual serial worker return grants read proof");s.dispose();
+        });
+        eventCase("sealed_event_read_request_deadline_stays_hard",()->{
+            SealedReadScenario s=new SealedReadScenario();s.queued();s.f.noteObservationEvent(9);SystemClock.now=s.request.deadline;s.f.main.drain();s.f.finish();
+            check(s.request.finished&&s.out.failures.size()==1&&s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"expired product cannot classify or publish");
+            check(s.request.readSealedEventFailures==0&&s.discarded!=null&&!s.discarded.exists(),"deadline rejection still discards actual PNG");s.dispose();
+        });
+    }
+
+    static void savedGraphSeedCases()throws Exception{
+        eventCase("saved_seed_new_real_read_and_new_pixels_keep_all_checks",()->{
+            ObserverPipelineHost f=seedFixture(null);ObservationRequest r=seedQueued(f,30000);
+            check(f.directory.list().length==1,"failed PNG must exist before callback");
+            File old=f.directory.listFiles()[0];List<Bitmap> prior=new ArrayList<Bitmap>(Bitmap.made);
+            f.main.drain();check(!old.exists()&&r.resampleSeed!=null,"old PNG not closed before admission");
+            for(Bitmap bitmap:prior)check(bitmap.recycled,"old pixel object survived seed");
+            check(seedAdmissions(r)==1&&count(r,"SAMPLE_READY")==1,"seed must be first WAIT");
+            seedNewCapture(f,r);check(!old.equals(f.current.path),"old PNG reused");
+            check(Boolean.TRUE.equals(f.current.captureEvidence.get("post_encoding_whole_graph_rechecked")),"new final graph check absent");f.dispose();
+        });
+        eventCase("saved_seed_8778_9402_shape_keeps_original_budget",()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                long start=x.activeObservation.started;
+                if(n==1)SystemClock.now=start+5900;else if(n==2)SystemClock.now=start+6594;
+                else if(n==3)SystemClock.now=start+7449;else if(n==4)SystemClock.now=start+8777;
+                else if(n==5)SystemClock.now=start+9402;else if(n==6)SystemClock.now=start+10230;
+                else if(n==7)SystemClock.now=start+11585;
+            });
+            AtomicInteger encoded=new AtomicInteger();Bitmap.encodeHook=()->SystemClock.now=f.activeObservation.started+(encoded.incrementAndGet()==1?8298:11105);
+            ObservationRequest r=seedQueued(f,30000);SystemClock.now=r.started+8778;f.main.drain();
+            check(r.resampleSeed!=null&&r.nativeSample,"late seed not admitted");
+            TakeScreenshotCallback previous=f.pendingScreenshot;SystemClock.now=r.started+8978;f.main.drain();f.awaitSample();
+            check(SystemClock.now==r.started+9402&&f.pendingScreenshot!=previous&&r.resampleSeed==null,"new graph not READY9402");
+            f.deliverScreenshot();f.finish();
+            check(f.delivered.size()==1&&SystemClock.now==r.started+11585&&r.deadline==r.started+12000,"original capture budget not honored");
+            check(count(r,"SAMPLE_EXPIRED")==0&&seedAdmissions(r)==1,"unexpected renewed/expired request");f.dispose();
+        });
+        eventCase("saved_seed_ineligible_timing_still_expires",()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                long start=x.activeObservation.started;g.nativeActionNodes=null;
+                if(n==1)SystemClock.now=start+5900;else if(n==2)SystemClock.now=start+6594;
+                else if(n==3)SystemClock.now=start+7449;else if(n==4)SystemClock.now=start+8777;
+                else if(n==5)SystemClock.now=start+9402;else if(n==6)SystemClock.now=start+10243;
+            });
+            ObservationRequest r=seedQueued(f,30000);SystemClock.now=r.started+8778;f.main.drain();seedNotAdmitted(f,r,"no census");
+            SystemClock.now=r.started+8978;f.main.drain();f.awaitSample();
+            check(count(r,"SAMPLE_READY")==1&&f.delivered.isEmpty(),"9402 must be first ordinary sample");
+            SystemClock.now=r.started+9602;f.main.drain();f.awaitSample();f.finish();
+            check(r.finished&&count(r,"SAMPLE_EXPIRED")==1&&f.errors.size()==1&&r.deadline==r.started+12000,"settle expiry changed");f.dispose();
+        });
+
+        for(final String reason:new String[]{"unknown_during_saved","unknown_before_main","target_before_main"})eventCase("saved_seed_completion_watermark_"+reason,()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{if(n==4&&"unknown_during_saved".equals(reason))x.noteObservationEvent(-1);});
+            ObservationRequest r=seedQueued(f,30000);
+            if("unknown_before_main".equals(reason))f.noteObservationEvent(-1);
+            if("target_before_main".equals(reason))f.noteObservationEvent(9);
+            f.main.drain();seedNotAdmitted(f,r,reason);check(count(r,"SAMPLE_READY")==1,"watermark admitted capture");f.dispose();
+        });
+        for(final String reason:new String[]{"unknown_in_gap","unknown_during_read","unknown_before_accept"})eventCase("saved_seed_unknown_cross_sample_"+reason,()->{
+            final Block beforeAccept="unknown_before_accept".equals(reason)?new Block():null;
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);
+                if(n==5&&beforeAccept!=null)beforeAccept.run();
+            });
+            ObservationRequest r=seedAdmitted(f);
+            if("unknown_in_gap".equals(reason))f.noteObservationEvent(-1);
+            // Hold the actual next read until the test main has stopped draining.
+            // Otherwise a fast worker can post and deliver acceptSample during
+            // this same drain, before the intended before-accept event is sent.
+            SystemClock.now+=200;f.main.drain();
+            if(beforeAccept!=null){beforeAccept.entered();beforeAccept.open();}
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            if("unknown_before_accept".equals(reason)){
+                check(r.resampleSeed!=null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"before-accept event must precede sample acceptance");
+                f.noteObservationEvent(-1);
+            }
+            f.main.drain();check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"unknown borrowed seed");
+            check(f.delivered.isEmpty()&&f.directory.list().length==0,"unknown published");f.dispose();
+        });
+        for(final String reason:new String[]{"truncated","stats","census_nodes","census_windows","census_width","visible_ime","unknown_ime","window","rotation","bounds","generation","owner","display"})eventCase("saved_seed_complete_window_"+reason,()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n!=4)return;
+                if("truncated".equals(reason))g.truncated=true;else if("stats".equals(reason))g.collectionStats=null;
+                else if("census_nodes".equals(reason))g.nativeActionNodes=null;
+                else if("census_windows".equals(reason))g.nativeActionWindows=null;
+                else if("census_width".equals(reason))g.nativeActionWidth=0;
+                else if("visible_ime".equals(reason))g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.VISIBLE);
+                else if("unknown_ime".equals(reason))g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.UNKNOWN);
+                else changeIdentity(g,reason);
+            });ObservationRequest r=seedQueued(f,30000);f.main.drain();seedNotAdmitted(f,r,reason);f.dispose();
+        });
+        for(final String reason:new String[]{"goal","web","generic_visual"})eventCase("saved_seed_non_native_scope_"+reason,()->{
+            ObserverPipelineHost f=seedFixture(null);
+            if("web".equals(reason))f.taskWeb=new WebFlightSession();else f.taskBackground.selection.taskTarget.nativeGoal=null;
+            ObservationRequest r=seedQueued(f,30000);f.main.drain();
+            check(r.resampleSeed==null&&f.delivered.isEmpty()&&f.directory.list().length==0,"nonnative seeded");f.dispose();
+        });
+        for(final String reason:new String[]{"missing","stale","incomplete","window","rotation","bounds","digest"})eventCase("saved_seed_next_real_graph_"+reason,()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n!=5)return;
+                if("missing".equals(reason))throw new NoActiveWindow();
+                if("stale".equals(reason))throw new StaleObservation("synthetic stale observation");
+                if("incomplete".equals(reason))g.collectionStats=null;else changeIdentity(g,reason);
+            });ObservationRequest r=seedAdmitted(f);seedNextRead(f);
+            check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"changed next graph borrowed seed");
+            check(f.delivered.isEmpty(),"changed next graph published");f.dispose();
+        });
+
+        for(final String reason:new String[]{"cancel_before_admission","cancel_after_seed","lease","authorization","clock_back","settle_exact","request_exact"})eventCase("saved_seed_authority_clock_"+reason,()->{
+            ObserverPipelineHost f=seedFixture(null);ObservationRequest r=seedQueued(f,30000);
+            if("cancel_after_seed".equals(reason)){f.main.drain();check(r.resampleSeed!=null,"setup");f.cancelled.set(true);SystemClock.now+=200;}
+            else if("cancel_before_admission".equals(reason))f.cancelled.set(true);
+            else if("lease".equals(reason))f.taskBackground=new BackgroundSession(9);
+            else if("authorization".equals(reason))f.taskAuthorization=new Object();
+            else if("clock_back".equals(reason)){
+                // Fake Handler would not dequeue at a rewound clock. Test the real admission method directly.
+                f.main.drain();NativeResampleSeed seed=r.resampleSeed;check(seed!=null,"clock setup");
+                SystemClock.now=r.started-1;f.retryObservation(r,200,seed);
+            }
+            else if("settle_exact".equals(reason))SystemClock.now=r.started+10000;
+            else if("request_exact".equals(reason))SystemClock.now=r.deadline;
+            f.main.drain();f.finish();
+            check(r.resampleSeed==null&&f.delivered.isEmpty()&&f.directory.list().length==0,"retired authority/time seeded");
+            check(r.deadline==r.started+12000,"renewed request");
+            if("settle_exact".equals(reason))check(count(r,"SAMPLE_EXPIRED")==1,"settle became margin");f.dispose();
+        });
+        eventCase("saved_seed_second_capture_change_not_published",()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{if(n==7)g.digest="changes-again";});
+            ObservationRequest r=seedAdmitted(f);TakeScreenshotCallback previous=f.pendingScreenshot;seedNextRead(f);
+            check(previous!=f.pendingScreenshot,"fresh capture absent");f.deliverScreenshot();f.finish();
+            check(f.delivered.isEmpty()&&f.directory.list().length==0&&count(r,"SAVED_GRAPH_CHANGED")==2,"new full check skipped");
+            check(r.deadline==r.started+12000,"second mismatch renewed budget");f.dispose();
+        });
+        eventCase("saved_seed_optional_diagnostic_not_authority",()->{
+            ObserverPipelineHost f=seedFixture(null);f.diagnosticTask=f.lease;f.diagnosticRequests=96;
+            ObservationRequest r=seedAdmitted(f);check(r.trace==null,"trace intentionally absent");seedNewCapture(f,r);f.dispose();
+        });
+        eventCase("saved_seed_identity_only_failure_cannot_supply_full_graph",()->{
+            ObserverPipelineHost f=seedFixture(null,false);
+            f.seedFrozenRead=(r,i)->new FrozenObservationWindow(i.frozenWindow.packageName,i.frozenWindow.windowId+1,
+                    i.frozenWindow.displayId,i.frozenWindow.rotation,i.frozenWindow.left,i.frozenWindow.top,
+                    i.frozenWindow.right,i.frozenWindow.bottom,i.frozenWindow.width,i.frozenWindow.height,
+                    i.frozenWindow.metadata,i.frozenWindow.windows,i.frozenWindow.profileWindow);
+            ObservationRequest r=seedQueued(f,30000);f.main.drain();seedNotAdmitted(f,r,"identity-only");
+            check(f.reads.get()==3&&count(r,"SAVED_GRAPH_CHANGED")==1,"identity-only branch not exercised");f.dispose();
+        });
+    }
+
+    static void savedGraphSeedAdditionalCases()throws Exception{
+        initialNativeReadCases();
+        postEffectReadCases();
+        sealedEventReadCases();
+        retrySavedGraphSeedCases();
+        eventCase("saved_seed_ready_preserves_screenshot_interval_wait",()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{
+                if(n==4)SystemClock.now=x.activeObservation.started+200;
+                if(n==7)x.noteObservationEvent(9);
+            });
+            ObservationRequest r=seedAdmitted(f);TakeScreenshotCallback first=f.pendingScreenshot;seedNextRead(f);
+            check(r.resampleSeed==null&&f.pendingScreenshot==first&&count(r,"SCREENSHOT_INTERVAL_WAIT")==1,"READY bypassed interval or retained seed");
+            check(f.reads.get()==5&&count(r,"SAMPLE_READY")==2,"real next read must READY without capture");
+            seedNextRead(f);check(f.pendingScreenshot!=first&&f.reads.get()==6,"interval must retain fresh-read schedule");
+            f.deliverScreenshot();f.finish();
+            check(f.delivered.size()==1&&f.reads.get()==8&&r.deadline==r.started+12000,"interval skipped capture checks");f.dispose();
+        });
+        eventCase("saved_seed_changed_key_requires_new_two_hundred_ms_pair",()->{
+            ObserverPipelineHost f=seedFixture((x,g,n)->{if(n>=5)g.digest="third-complete-frame";});
+            ObservationRequest r=seedAdmitted(f);seedNextRead(f);
+            check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1,"new key borrowed seed");
+            SystemClock.now+=199;f.sampleObservation(r);f.awaitSample();
+            check(count(r,"SAMPLE_READY")==1&&f.shots.size()==1&&f.delivered.isEmpty(),"new key skipped200ms");f.dispose();
+        });
+        eventCase("saved_seed_diagnostic_maximum_preserves_original_record",()->{
+            ObservationDiagnostics trace=new ObservationDiagnostics(EventChecks.TASK,EventChecks.repeat('1',32),
+                    EventChecks.OWNER,EventChecks.repeat('p',128),EventChecks.GENERATION,9,96,1,Long.MAX_VALUE);
+            String[] phases={"queued","sample_graph","sample_gap","screenshot_callback","screenshot_copy","screenshot_graph",
+                    "png_encode","png_fsync","png_hash","saved_graph","publish","retry_gap"};
+            for(int i=0;i<96;i++){trace.phase(phases[i%phases.length],1000000000000L+i);for(ObservationDiagnostics.Event e:ObservationDiagnostics.Event.values())trace.note(e);}
+            for(int i=0;i<12;i++)trace.graph("sample_graph",EventChecks.OWNER,EventChecks.OWNER,EventChecks.OWNER,EventChecks.OWNER,false,1000000000200L+i);
+            Map<String,Object> original=trace.snapshot(1000000000300L);
+            List<ObservationDiagnostics.NodeStamp> a=new ArrayList<ObservationDiagnostics.NodeStamp>(),b=new ArrayList<ObservationDiagnostics.NodeStamp>();
+            for(int i=0;i<512;i++){
+                StringBuilder path=new StringBuilder("0");for(int depth=0;depth<116;depth++)path.append("/1");path.append("/").append(i);
+                a.add(new ObservationDiagnostics.NodeStamp("n"+i,path.toString(),EventChecks.OWNER,EventChecks.OWNER,0,0,1080,2400));
+                b.add(new ObservationDiagnostics.NodeStamp("n"+i,path.toString(),EventChecks.repeat('b',64),EventChecks.repeat('c',64),1,1,1079,2399));
+            }
+            ObservationDiagnostics.GraphStamp before=new ObservationDiagnostics.GraphStamp(trace.packageName,trace.generation,trace.ownerSha,9,7,
+                    EventChecks.OWNER,EventChecks.OWNER,EventChecks.OWNER,false,a);
+            ObservationDiagnostics.GraphStamp after=new ObservationDiagnostics.GraphStamp(trace.packageName,trace.generation,trace.ownerSha,9,7,
+                    EventChecks.repeat('b',64),EventChecks.repeat('c',64),EventChecks.OWNER,false,b);
+            trace.savedGraphChange(before,after,true,true,true,1000000000400L);trace.seedDecision("admitted",1000000000401L);
+            Map<String,Object> full=trace.snapshot(1000000000402L);
+            int fullPretty=new org.json.JSONObject(full).toString(2).getBytes(StandardCharsets.UTF_8).length;
+            SystemClock.now=1000000000402L;
+            String raw=new DiagnosticSnapshot(trace).call();org.json.JSONObject actual=new org.json.JSONObject(raw);
+            check(raw.getBytes(StandardCharsets.UTF_8).length<=16384&&actual.toString(2).getBytes(StandardCharsets.UTF_8).length<=16384,"diagnostic budget");
+            for(String key:new String[]{"events","last_graphs","last_transitions"})check(new org.json.JSONObject(original).get(key).toString().equals(actual.get(key).toString()),"old diagnostic lost "+key);
+            check(actual.getLong("graph_record_count")==12&&actual.getLong("transition_count")==96,"old counts changed");
+            if(fullPretty>16384)check(!actual.has("last_native_saved_graph_change")&&actual.getBoolean("native_saved_graph_detail_omitted_for_budget"),"optional detail not stripped");
+            else check(actual.getJSONObject("last_native_saved_graph_change").getJSONArray("node_differences").length()==8,"bounded8 differences missing");
+            check(actual.getLong("native_seed_admission_count")==1,"seed decision missing");
+        });
+    }
+
+    static void savedGraphSeedProfileCases()throws Exception{
+        for(final String field:new String[]{"target","generation","display","task","parent","token","user","serial","uid"})
+            for(final String competing:new String[]{"none","unknown","incomplete"})eventCase("saved_seed_foreign_profile_"+field+"_"+competing,()->{
+                ObserverPipelineHost f=seedFixture((x,g,n)->{
+                    g.profileWindow=new WindowOwnership(n==5?field:"same");
+                    if(n==5&&"unknown".equals(competing))x.noteObservationEvent(-1);
+                    if(n==5&&"incomplete".equals(competing))g.collectionStats=null;
+                });f.taskBackground.profile=new ProfileTarget();
+                ObservationRequest r=seedAdmitted(f);seedNextRead(f);
+                check(r.finished&&r.resampleSeed==null&&f.errors.size()==1&&f.delivered.isEmpty(),"foreign profile downgraded to resampling");
+                check(f.shots.size()==1&&f.directory.list().length==0,"foreign profile produced pixels");f.dispose();
+            });
+        for(final String field:new String[]{"authorization","lease"})eventCase("saved_seed_authority_after_admission_"+field,()->{
+            ObserverPipelineHost f=seedFixture(null);ObservationRequest r=seedAdmitted(f);
+            if("authorization".equals(field))f.taskAuthorization=new Object();else f.taskBackground=new BackgroundSession(9);
+            seedNextRead(f);check(r.finished&&r.resampleSeed==null&&f.errors.size()==1&&f.delivered.isEmpty(),"replaced authority survived seed");
+            check(f.shots.size()==1,"replaced authority captured");f.dispose();
+        });
+        eventCase("saved_seed_does_not_infer_worker_return_from_busy_flag",()->{
+            ObserverPipelineHost f=seedFixture(null);
+            budgetBegin(f,30000);ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;
+            f.main.drainUntil(()->f.pendingScreenshot!=null);
+            await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"second seed sample");
+            f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"first screenshot");
+            Block post=new Block();f.main.afterWorkerPost=post;f.deliverScreenshot();post.entered();
+            check(!observationIoBusy.get()&&observationIo.active.get()==1&&f.reads.get()==4,"worker not held after post");
+            f.main.drain();check(r.resampleSeed!=null&&f.delivered.isEmpty(),"seed not first WAIT");
+            SystemClock.now+=200;f.main.drain();check(f.reads.get()==4&&observationIo.active.get()==2,"read ran around blocked worker");
+            check(!report(r).getBoolean("worker_drained_proved_by_this_record"),"seed claimed drain");
+            f.main.afterWorkerPost=null;post.open();f.awaitSample();f.deliverScreenshot();f.finish();
+            check(f.delivered.size()==1&&f.reads.get()==7&&f.errors.isEmpty(),"serial read did not finish");
+            check(r.deadline==r.started+12000,"serial handoff renewed budget");f.dispose();
+        });
+    }
+
+    /** Real issuer/drain pipeline; collected values and clocks are explicit host IO.
+     * 8202/8931/9431/10393/10452 are the retained failure's final read/capture offsets.
+     * Earlier missing/stale ordering is intentionally varied, not asserted as recorded. */
+    static final class InitialReadResult implements ObservationCallback {
+        final List<InitialObservationRetryProof> proofs=new ArrayList<InitialObservationRetryProof>();
+        final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();
+        final List<String> failures=new ArrayList<String>();
+        public void onObservation(PhoneObservation value){check(isMain(),"initial observation on main");observations.add(value);}
+        public void onError(String error){check(isMain(),"initial failure on main");failures.add(error);}
+        public void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){
+            check(isMain()&&proof!=null,"private initial proof on main");failures.add(error);proofs.add(proof);
+        }
+    }
+    static final class InitialReadScenario {
+        final ObserverPipelineHost f;final LocalTaskController controller=new LocalTaskController();
+        final Object nativeTask=new Object();final InitialReadResult out=new InitialReadResult();
+        final long taskDeadline;ObservationRequest request;File discarded;String fault="none",prefix="missing";
+        InitialReadScenario()throws Exception{
+            f=seedFixture(null,false);f.ownedController=controller;taskDeadline=SystemClock.now+480000;
+            f.readHook=(g,n)->{
+                long start=f.activeObservation.started;sealedReadGraph(g,"latest-complete-frame");
+                if(n<=4){
+                    SystemClock.now=start+400L*n;
+                    if(n==1&&"window".equals(prefix)){
+                        g.windowId=6;g.rotation=1;g.bounds.right=1079;
+                        g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1079,2400},"android.widget.FrameLayout",1,9,new int[]{0,0,1079,2400},EventChecks.APP);
+                    }else if(n==1&&"incomplete".equals(prefix))g.collectionStats=null;
+                    else if(n==1&&"stale_after_complete".equals(prefix))g.digest="earlier-owned-content";
+                    else if(n==4)throw new StaleObservation("synthetic stale observation");
+                    else throw new NoActiveWindow();
+                }else SystemClock.now=start+(n==5?8202:n==6?8931:9431);
+                if(n==7&&"no_seal".equals(fault))f.noteObservationEvent(9);
+                if(n==7&&"foreign_pair".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                if(n==1&&"foreign_start".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                if(n==7&&"profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
+                sealGraph(g);
+            };
+            Bitmap.encodeHook=()->SystemClock.now=f.activeObservation.started+("early".equals(fault)?9500:10375);
+            f.hashHook=()->SystemClock.now=f.activeObservation.started+("early".equals(fault)?9800:10393);
+            f.seedFrozenRead=(r,i)->{
+                SystemClock.now=r.started+("early".equals(fault)?9999:"expired".equals(fault)?12000:10452);
+                if("no_window".equals(fault))return null;
+                if("window_stale".equals(fault))throw new StaleObservation("synthetic stale observation");
+                if(!"no_event".equals(fault))f.noteObservationEvent("unknown".equals(fault)?-1:9);
+                return i.frozenWindow;
+            };
+        }
+        void queue()throws Exception{
+            f.observeInitialNative(controller,nativeTask,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline),taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;check(request!=null&&request.taskReadOrdinal==1,"actual first read admission");
+            for(int i=0;i<12&&f.pendingScreenshot==null&&!request.finished;i++){
+                f.awaitSample();if(f.pendingScreenshot!=null||request.finished)break;
+                SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            }
+            check(f.pendingScreenshot!=null,"original stable sampling must reach capture");
+            check(request.initialIdentity==null,"startup samples must not pin the recovery window");
+            f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"initial capture actual worker return");
+            if("no_seal".equals(fault))f.noteObservationEvent(9);
+            if(f.directory.listFiles().length>0)discarded=f.directory.listFiles()[0];
+        }
+        void accept()throws Exception{f.main.drain();f.finish();f.finish();}
+        void released(){
+            check(request.finished&&request.captured==null&&!request.shotPending&&request.resampleSeed==null&&f.activeObservation==null,"initial failed request retired");
+            check(discarded!=null&&!discarded.exists(),"initial rejected PNG removed before proof");
+            for(Graph g:f.graphs)if(g!=f.currentGraph)check(g.closed,"initial proof retained a graph");
+            for(Bitmap b:Bitmap.made)if(b!=f.currentBitmap)check(b.recycled,"initial proof retained pixels");
+        }
+        InitialObservationRetryProof proof()throws Exception{
+            queue();accept();released();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one failed initial read proof");
+            check(f.reads.get()==7&&count(request,"SAMPLE_EXPIRED")==0,"no extra graph scheduled after settle elapsed");
+            check(count(request,"SAMPLE_NO_ROOT")>=2&&count(request,"SAMPLE_STALE_ROOT")==1,"actual startup missing/stale endpoint exercised");
+            check(request.failedAt==request.started+10452&&request.failedAt<request.deadline,"actual retained final-capture timing remains eligible");
+            check(request.readRecoveryRejected,"old stale-action latch remains distinct and unchanged");
+            InitialObservationRetryProof proof=out.proofs.get(0);Map<String,Object> e=proof.evidence();
+            check(((Number)e.get("actual_task_read_ordinal")).intValue()==1&&Boolean.FALSE.equals(e.get("grants_action_authority")),"private first-read evidence only");
+            check(proof.identity.windowId==7&&proof.identity.rotation==0&&proof.identity.right==1080,"latest complete pair is the anchor");
+            return proof;
+        }
+        void fresh(InitialObservationRetryProof proof,InitialReadResult next,String change)throws Exception{
+            Bitmap.encodeHook=null;f.hashHook=null;f.autoScreenshot=true;f.pendingScreenshot=null;
+            f.readHook=(g,n)->{sealedReadGraph(g,"brand-new-pixels-and-graph");if("window".equals(change))g.windowId++;sealGraph(g);};
+            f.seedFrozenRead=(r,i)->i.frozenWindow;
+            f.observeInitialNative(controller,nativeTask,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline),taskDeadline,next,proof);
+            f.main.drain();f.awaitSample();SystemClock.now+=400;f.main.drain();f.awaitSample();f.finish();f.finish();
+        }
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.dispose();}
+    }
+    static void initialNativeReadCases()throws Exception{
+        for(final String prefix:new String[]{"missing","stale_after_complete","window","incomplete"})
+            eventCase("initial_native_latest_pair_after_startup_"+prefix,()->{
+                InitialReadScenario s=new InitialReadScenario();s.prefix=prefix;InitialObservationRetryProof proof=s.proof();
+                int reads=s.f.reads.get();InitialReadResult next=new InitialReadResult();s.fresh(proof,next,"same");
+                check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"one complete fresh replacement succeeds");
+                check(s.f.reads.get()==reads+3&&s.f.taskObservationAdmissions==2,"two new complete samples and full pair required");
+                check(s.request.deadline==s.request.started+12000&&s.f.current!=null,"old request not renewed");
+                check(!s.f.current.id.equals(s.request.requestId)&&s.f.current.capturedElapsedMillis>s.request.failedAt,"fresh observation age and identity");
+                InitialReadResult duplicate=new InitialReadResult();s.f.observeInitialNative(s.controller,s.nativeTask,s.f.lease,s.f.taskAuthorization,
+                        s.f.taskBackground,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),s.taskDeadline,duplicate,proof);s.f.main.drain();
+                check(duplicate.failures.size()==1&&s.f.reads.get()==reads+3&&s.f.taskObservationAdmissions==2,"private proof not reusable");s.dispose();
+            });
+        for(final String prefix:new String[]{"window","incomplete"})eventCase("initial_native_ordinary_success_keeps_startup_"+prefix,()->{
+            InitialReadScenario s=new InitialReadScenario();s.prefix=prefix;s.fault="no_event";s.queue();s.accept();
+            check(s.out.observations.size()==1&&s.out.failures.isEmpty()&&s.out.proofs.isEmpty(),"original successful first read unchanged");
+            check(s.request.initialIdentity==null&&s.f.taskObservationAdmissions==1,"normal first read never needs recovery identity");s.dispose();
+        });
+        for(final String fault:new String[]{"early","expired","unknown","no_window","window_stale","no_seal","foreign_pair","profile"})
+            eventCase("initial_native_recovery_refuses_"+fault,()->{
+                InitialReadScenario s=new InitialReadScenario();s.fault=fault;s.queue();s.accept();
+                check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"unqualified capture grants no initial recovery");
+                check(s.request.deadline==s.request.started+12000,"negative cannot renew request");s.dispose();
+            });
+        for(final String field:new String[]{"authorization","controller","background","cancel"})eventCase("initial_native_scope_before_proof_"+field,()->{
+            InitialReadScenario s=new InitialReadScenario();s.queue();
+            if("authorization".equals(field))s.f.taskAuthorization=new Object();
+            else if("controller".equals(field))s.f.ownedController=new LocalTaskController();
+            else if("background".equals(field))s.f.taskBackground=new BackgroundSession(9);else s.f.cancelled.set(true);
+            s.accept();check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"changed scope/cancel cannot mint proof");s.dispose();
+        });
+        eventCase("initial_native_qualified_proof_does_not_accept_new_window",()->{
+            InitialReadScenario s=new InitialReadScenario();InitialObservationRetryProof proof=s.proof();InitialReadResult next=new InitialReadResult();s.fresh(proof,next,"window");
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1,"replacement must keep actual sealed identity");s.dispose();
+        });
+        eventCase("initial_native_optional_diagnostic_cannot_grant_or_deny",()->{
+            InitialReadScenario s=new InitialReadScenario();s.f.diagnosticTask=s.f.lease;s.f.diagnosticRequests=96;s.queue();s.accept();s.released();
+            check(s.request.trace==null&&s.out.proofs.size()==1&&s.f.taskObservationAdmissions==1,"private ordinal independent of absent diagnostics");s.dispose();
+        });
+        eventCase("initial_native_admission_is_not_reopened_after_prior_read",()->{
+            InitialReadScenario s=new InitialReadScenario();s.fault="no_event";s.queue();s.accept();int count=s.f.reads.get();InitialReadResult again=new InitialReadResult();
+            s.f.observeInitialNative(s.controller,s.nativeTask,s.f.lease,s.f.taskAuthorization,s.f.taskBackground,s.f.directory,()->false,
+                    ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),s.taskDeadline,again,null);s.f.main.drain();
+            check(again.failures.size()==1&&s.f.reads.get()==count&&s.f.taskObservationAdmissions==1,"first admission cannot be called twice");s.dispose();
+        });
+        eventCase("initial_native_waits_for_real_serial_worker_return",()->{
+            InitialReadScenario s=new InitialReadScenario();Block hold=new Block();
+            s.f.observeInitialNative(s.controller,s.nativeTask,s.f.lease,s.f.taskAuthorization,s.f.taskBackground,s.f.directory,
+                    ()->s.f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),s.taskDeadline,s.out,null);
+            s.f.main.drain();s.request=s.f.activeObservation;
+            for(int i=0;i<12&&s.f.pendingScreenshot==null;i++){s.f.awaitSample();if(s.f.pendingScreenshot!=null)break;SystemClock.now+=200;s.f.main.drainUntil(()->s.f.pendingScreenshot!=null);}
+            check(s.f.pendingScreenshot!=null,"initial full pair capture");s.f.main.afterWorkerPost=hold;s.f.deliverScreenshot();hold.entered();
+            s.discarded=s.f.directory.listFiles()[0];s.f.main.drain();
+            check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&observationIo.active.get()>=2,"queued callback is not drain proof");s.released();
+            s.f.main.afterWorkerPost=null;hold.open();s.f.finish();s.f.finish();check(s.out.proofs.size()==1,"proof only after real worker return");s.dispose();
+        });
+        eventCase("initial_native_cancel_during_drain_cannot_issue_proof",()->{
+            InitialReadScenario s=new InitialReadScenario();s.queue();Block hold=new Block();observationIo.execute(hold);hold.entered();s.f.main.drain();
+            check(s.out.proofs.isEmpty(),"drain marker still queued");s.f.cancelled.set(true);hold.open();s.f.finish();s.f.finish();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1,"Stop defeats drained proof");s.dispose();
+        });
+    }
+
+    /**
+     * Synthetic Android graphs/clocks only. Both private proofs below are issued by
+     * the extracted observer after its real rejected capture and serial drain;
+     * replacement admission, saved-graph production, gate, PNG IO and publication
+     * execute the unchanged production methods. The 9095/9970 timings reproduce a
+     * diagnostic shape, not the phone's pixels or a successful phone counterfactual.
+     */
+    static final class RetrySeedResult implements ObservationCallback {
+        final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();
+        final List<String> failures=new ArrayList<String>();
+        int oldProofs,initialProofs;
+        public void onObservation(PhoneObservation value){check(isMain(),"retry seed publication on main");observations.add(value);}
+        public void onError(String error){check(isMain(),"retry seed failure on main");failures.add(error);}
+        public void onReadRetryAvailable(String error,NativeObservationRetryProof proof){oldProofs++;onError(error);}
+        public void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){initialProofs++;onError(error);}
+    }
+    static final class RetrySeedScenario {
+        final boolean initial;final ObserverPipelineHost f;
+        final SealedReadScenario stale;final InitialReadScenario first;
+        final NativeObservationRetryProof staleProof;final InitialObservationRetryProof initialProof;
+        final ObservationRequest failed;final PhoneObservation prior;
+        final long taskDeadline,failedDeadline;final int baseReads,baseShots;
+        final RetrySeedResult out=new RetrySeedResult();
+        ObservationRequest request;File discarded;TakeScreenshotCallback firstCapture;
+        String fault="none";
+        RetrySeedScenario(boolean initial)throws Exception{
+            this.initial=initial;Bitmap.encodeHook=null;
+            if(initial){
+                first=new InitialReadScenario();initialProof=first.proof();stale=null;staleProof=null;
+                f=first.f;failed=first.request;taskDeadline=first.taskDeadline;
+            }else{
+                stale=new SealedReadScenario();staleProof=stale.proof();first=null;initialProof=null;
+                f=stale.f;failed=stale.request;taskDeadline=stale.taskDeadline;
+            }
+            prior=f.current;failedDeadline=failed.deadline;baseReads=f.reads.get();baseShots=f.shots.size();
+            f.autoScreenshot=false;f.pendingScreenshot=null;f.seedFrozenRead=(r,i)->i.frozenWindow;
+            f.readHook=(g,n)->{
+                int k=n-baseReads;ObservationRequest r=f.activeObservation;
+                long[] at={0,5816,6652,7555,9095,9970,10230,11585};
+                if(k<1)throw new AssertionError("replacement read ordinal");
+                // A negative capture may schedule the original final expired
+                // sample; let the real gate reject it, never throw a fake IO error.
+                SystemClock.now=Math.max(SystemClock.now,r.started+at[Math.min(k,at.length-1)]);
+                sealedReadGraph(g,k<4?"capture-before":"saved-A");
+                // The pair remains a complete read but its event fence prevents a
+                // seal. The original whole-graph post-encoding branch must execute.
+                if(k==3||k==6)f.noteObservationEvent(9);
+                if(k==4){
+                    if("unconsumed".equals(fault)){
+                        // Negative corruption only: no positive test fabricates admission.
+                        if(initial)initialProof.consumed.set(false);else staleProof.consumed.set(false);
+                    }else if("rejected".equals(fault)){
+                        if(initial)r.initialIdentityRejected=true;else r.readRecoveryRejected=true;
+                    }else if("saved_window".equals(fault))g.windowId++;
+                    else if("saved_incomplete".equals(fault))g.collectionStats=null;
+                    else if("initial_identity_copy".equals(fault))r.initialIdentity=new NativeReadIdentity(g);
+                }
+                if(k==5){
+                    if("next_window".equals(fault))g.windowId++;
+                    else if("next_owner".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                    else if("next_digest".equals(fault))g.digest="different-whole-tree";
+                    else if("next_unknown".equals(fault))f.noteObservationEvent(-1);
+                }
+                sealGraph(g);
+            };
+            Bitmap.encodeHook=()->SystemClock.now=Math.max(SystemClock.now,f.activeObservation.started+
+                    (f.reads.get()-baseReads==3?8298:11105));
+            f.hashHook=()->SystemClock.now=Math.max(SystemClock.now,f.activeObservation.started+
+                    (f.reads.get()-baseReads==3?8300:11110));
+        }
+        void start()throws Exception{
+            long deadline=ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline);
+            if(initial)f.observeInitialNative(first.controller,first.nativeTask,f.lease,f.taskAuthorization,f.taskBackground,
+                    f.directory,()->f.cancelled.get(),deadline,taskDeadline,out,initialProof);
+            else f.observeAfterTransientFailure(f.lease,f.directory,()->f.cancelled.get(),deadline,out,staleProof);
+            f.main.drain();request=f.activeObservation;
+            check(request!=null&&request!=failed&&!request.requestId.equals(failed.requestId),"actual replacement request admitted");
+            check(initial?initialProof.consumed.get():staleProof.consumed.get(),"real private proof consumed by original admission");
+            check(request.resampleSeed==null&&request.captured==null,"replacement starts without old graph or pixels");
+            check(failed.finished&&failed.captured==null&&failed.resampleSeed==null,"failed request remains retired");
+            f.awaitSample();check(f.reads.get()==baseReads+1,"replacement must read its own first graph");
+        }
+        void queueSaved()throws Exception{
+            start();SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            await(()->f.pendingScreenshot!=null||(!observationIoBusy.get()&&observationIo.active.get()==0),"retry second actual sample");
+            f.main.drainUntil(()->f.pendingScreenshot!=null);firstCapture=f.pendingScreenshot;
+            check(firstCapture!=null&&f.reads.get()==baseReads+2,"two new complete samples before new capture");
+            f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"retry saved graph real producer return");
+            for(File path:f.directory.listFiles())if(prior==null||!path.equals(prior.path))discarded=path;
+            check(discarded!=null&&discarded.isFile()&&f.reads.get()==baseReads+4,"actual PNG and new full saved graph produced");
+            check(SystemClock.now==request.started+9095,"synthetic saved-A completion is9095");
+        }
+        void admit()throws Exception{
+            f.main.drain();
+            check(request.resampleSeed!=null&&request.resampleSeed.belongsTo(request)&&request.nativeSample,"new request's saved graph admitted as WAIT");
+            check(request.resampleSeed.graphCompletedAt==request.started+9095&&seedAdmissions(request)==1,"seed is exact newly completed read metadata");
+            check(!discarded.exists()&&request.captured==null&&f.current==prior,"old PNG/graph discarded before seed admission");
+            check(count(request,"SAMPLE_READY")==1&&f.shots.size()==baseShots+1,"seed itself cannot READY or capture");
+            check(out.observations.isEmpty()&&out.oldProofs==0&&out.initialProofs==0,"seed grants no observation or additional proof");
+            for(Graph g:f.graphs)if(g!=f.currentGraph)check(g.closed,"seed must not retain a Graph");
+            for(Bitmap b:Bitmap.made)if(b!=f.currentBitmap)check(b.recycled,"seed must not retain old pixels");
+        }
+        void nextRead()throws Exception{
+            SystemClock.now=Math.max(SystemClock.now,request.started+9295);f.main.drainUntil(()->f.pendingScreenshot!=firstCapture);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"retry seed next real sample return");
+            f.main.drainUntil(()->f.pendingScreenshot!=firstCapture);
+            check(f.reads.get()==baseReads+5&&SystemClock.now==request.started+9970,"new actual sample completes9970");
+        }
+        void queueNewCapture()throws Exception{
+            nextRead();check(f.pendingScreenshot!=firstCapture&&request.resampleSeed==null,"sampleA9970 requires a new screenshot callback");
+            check(count(request,"SAMPLE_READY")==2,"only fresh full sample may READY");
+            f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"new PNG and final full graph return");
+        }
+        void noPublication(String why)throws Exception{
+            check(out.observations.isEmpty()&&f.current==prior,why+": no new observation");
+            check(out.oldProofs==0&&out.initialProofs==0,why+": no third request proof");
+            check(!discarded.exists(),why+": old PNG retained");
+            check(failed.deadline==failedDeadline&&request.deadline==request.started+12000&&request.deadline<=taskDeadline,why+": deadline changed");
+        }
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.dispose();Bitmap.encodeHook=null;}
+    }
+    static void retrySavedGraphSeedCases()throws Exception{
+        for(final boolean initial:new boolean[]{false,true}){
+            final String route=initial?"initial":"stale_action";
+            eventCase("retry_saved_seed_"+route+"_9095_9970_new_png",()->{
+                RetrySeedScenario s=new RetrySeedScenario(initial);s.queueSaved();s.admit();s.queueNewCapture();s.f.main.drain();
+                check(s.out.observations.size()==1&&s.out.failures.isEmpty()&&s.out.oldProofs==0&&s.out.initialProofs==0,"one genuinely new observer result");
+                PhoneObservation now=s.out.observations.get(0);
+                check(now==s.f.current&&now!=s.prior&&!now.path.equals(s.discarded)&&now.path.isFile(),"new PNG/id required");
+                check(s.f.reads.get()==s.baseReads+7&&s.f.shots.size()==s.baseShots+2,"new pair and whole saved graph not bypassed");
+                check("post_encoding_whole_graph".equals(now.captureEvidence.get("mode"))&&Boolean.TRUE.equals(now.captureEvidence.get("post_encoding_whole_graph_rechecked")),"final whole-tree check retained");
+                check(Boolean.TRUE.equals(now.captureEvidence.get("fresh_action_validation_required"))&&Boolean.FALSE.equals(now.captureEvidence.get("grants_action_authority")),"no stale action authority");
+                check(SystemClock.now==s.request.started+11585&&s.request.deadline==s.request.started+12000&&s.failed.deadline==s.failedDeadline,"original settle/capture and failed request budgets");
+                check(s.request.deadline<=s.taskDeadline&&count(s.request,"SAMPLE_EXPIRED")==0,"original task cap");s.dispose();
+            });
+            eventCase("retry_saved_seed_"+route+"_requires_consumed_nonrejected_proof",()->{
+                for(String fault:new String[]{"unconsumed","rejected"}){
+                    RetrySeedScenario s=new RetrySeedScenario(initial);s.fault=fault;s.queueSaved();s.f.main.drain();
+                    check(s.request.resampleSeed==null&&seedAdmissions(s.request)==0,"proof mutation cannot seed: "+fault);
+                    s.noPublication(fault);s.dispose();
+                }
+            });
+            eventCase("retry_saved_seed_"+route+"_requires_complete_saved_identity",()->{
+                for(String fault:new String[]{"saved_window","saved_incomplete"}){
+                    RetrySeedScenario s=new RetrySeedScenario(initial);s.fault=fault;s.queueSaved();s.f.main.drain();
+                    check(s.request.resampleSeed==null&&seedAdmissions(s.request)==0,"changed/incomplete graph cannot seed: "+fault);
+                    s.noPublication(fault);s.dispose();
+                }
+            });
+            eventCase("retry_saved_seed_"+route+"_main_fences_and_original_cutoffs",()->{
+                for(String fault:new String[]{"unknown","cancel","settle10000","request12000"}){
+                    RetrySeedScenario s=new RetrySeedScenario(initial);s.queueSaved();
+                    if("unknown".equals(fault))s.f.noteObservationEvent(-1);
+                    else if("cancel".equals(fault))s.f.cancelled.set(true);
+                    else SystemClock.now="settle10000".equals(fault)?s.request.started+10000:s.request.deadline;
+                    s.f.main.drain();s.f.finish();
+                    check(s.request.resampleSeed==null&&seedAdmissions(s.request)==0,"main fence/cutoff cannot seed: "+fault);
+                    s.noPublication(fault);
+                    if("settle10000".equals(fault))check(s.request.finished&&count(s.request,"SAMPLE_EXPIRED")==1,"10000 remains settle expiry");
+                    if("request12000".equals(fault))check(s.request.finished,"12000 remains hard request expiry");s.dispose();
+                }
+            });
+            eventCase("retry_saved_seed_"+route+"_next_whole_graph_must_match",()->{
+                for(String fault:new String[]{"next_window","next_owner","next_digest","next_unknown"}){
+                    RetrySeedScenario s=new RetrySeedScenario(initial);s.fault=fault;s.queueSaved();s.admit();s.nextRead();
+                    check(s.request.resampleSeed==null&&s.f.pendingScreenshot==s.firstCapture&&count(s.request,"SAMPLE_READY")==1,"next graph cannot borrow seed: "+fault);
+                    s.noPublication(fault);s.dispose();
+                }
+            });
+        }
+        eventCase("retry_saved_seed_initial_private_owner_and_identity_reference",()->{
+            for(String fault:new String[]{"initial_identity_copy","controller"}){
+                RetrySeedScenario s=new RetrySeedScenario(true);s.fault=fault;s.queueSaved();
+                if("controller".equals(fault))s.f.ownedController=new LocalTaskController();
+                s.f.main.drain();check(s.request.resampleSeed==null&&seedAdmissions(s.request)==0,"initial private owner/reference changed");
+                s.noPublication(fault);s.dispose();
+            }
+        });
+        eventCase("retry_saved_seed_never_uses_failed_request_graph",()->{
+            RetrySeedScenario s=new RetrySeedScenario(false);s.start();Graph old=null;
+            for(Graph g:s.f.graphs)if(g.closed&&g.nativeObservationComplete&&g.readCompletedElapsedMs<s.request.started)old=g;
+            check(old!=null,"actual failed-request graph available only as closed fixture metadata");
+            CaptureIdentity identity=new CaptureIdentity(old,SystemClock.now,s.request.events,0,true);
+            check(s.f.nativeSavedGraphSeed(s.request,identity,old,s.request.events,0)==null,"old failed graph cannot seed replacement");
+            check(s.request.resampleSeed==null&&seedAdmissions(s.request)==0&&s.out.observations.isEmpty(),"old graph grants no evidence");s.dispose();
+        });
+        eventCase("retry_saved_seed_never_crosses_new_request_id",()->{
+            RetrySeedScenario s=new RetrySeedScenario(false);s.queueSaved();s.admit();NativeResampleSeed seed=s.request.resampleSeed;
+            s.f.retire();s.f.finish();s.f.readHook=(g,n)->{sealedReadGraph(g,"another-request");sealGraph(g);};
+            s.f.hashHook=null;Bitmap.encodeHook=null;s.f.pendingScreenshot=null;SealedReadResult separate=new SealedReadResult();
+            s.f.observe(s.f.lease,s.f.directory,()->false,ObservationStabilityGate.requestDeadline(SystemClock.now,s.taskDeadline),separate);
+            s.f.main.drain();ObservationRequest other=s.f.activeObservation;s.f.awaitSample();
+            check(other!=null&&other!=s.request&&!seed.belongsTo(other),"new actual request has distinct lineage");
+            s.f.retryObservation(other,200,seed);
+            check(other.resampleSeed==null&&seedAdmissions(other)==0&&separate.observations.isEmpty(),"copied seed rejected across real requests");s.dispose();
+        });
+        eventCase("retry_saved_seed_new_png_keeps_late_unknown_and_deadline_fence",()->{
+            for(String fault:new String[]{"unknown","deadline"}){
+                RetrySeedScenario s=new RetrySeedScenario(false);s.queueSaved();s.admit();s.queueNewCapture();
+                if("unknown".equals(fault))s.f.noteObservationEvent(-1);else SystemClock.now=s.request.deadline;
+                s.f.main.drain();s.f.finish();s.noPublication(fault);
+                check(s.request.captured==null&&s.request.resampleSeed==null,"rejected fresh PNG/graph not retained");
+                for(File path:s.f.directory.listFiles())check(s.prior!=null&&path.equals(s.prior.path),"late rejected new PNG leaked");s.dispose();
+            }
+        });
+    }
+
+    /** Actual observer producer/serial queue, synthetic Android/Session endpoints.
+     * The 9827/14916 and 8536/14923 timings model retained ec583/d06a
+     * diagnostics and original finished+15000 caps. All Graphs, seals, pixels
+     * and clocks below are synthetic; d06a did not archive a private seal or
+     * event watermarks. This is not a replay of missing phone pixels or a claim
+     * that the replacement read would succeed on that phone. Entered-action
+     * receipt and durable Session issuance are tested in the consumer gate. */
+    static final class PostEffectReadResult implements ObservationCallback {
+        final List<PostEffectObservationRetryProof> proofs=new ArrayList<PostEffectObservationRetryProof>();
+        final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();final List<String> failures=new ArrayList<String>();
+        public void onObservation(PhoneObservation value){check(isMain(),"post-effect observation on main");observations.add(value);}
+        public void onError(String error){check(isMain(),"post-effect failure on main");failures.add(error);}
+        public void onPostEffectReadRetryAvailable(String error,PostEffectObservationRetryProof proof){
+            check(isMain()&&proof!=null,"private post-effect proof on main");failures.add(error);proofs.add(proof);
+        }
+        public void onReadRetryAvailable(String error,NativeObservationRetryProof proof){throw new AssertionError("post-effect cannot borrow unentered read proof");}
+        public void onInitialReadRetryAvailable(String error,InitialObservationRetryProof proof){throw new AssertionError("post-effect cannot borrow initial read proof");}
+    }
+    static final class PostEffectReadScenario {
+        final ObserverPipelineHost f;final LocalTaskController controller=new LocalTaskController();
+        final NativeAppSession nativeTask=new NativeAppSession();final NativeAppSession.PostEffectReadPermit permit;
+        final PostEffectReadResult out=new PostEffectReadResult();final PhoneObservation prior;
+        final long started,transition,discardElapsed;long taskDeadline;final int priorReads;ObservationRequest request;File discarded;
+        String fault="none";boolean startupWindow;final boolean current1090;
+        PostEffectReadScenario()throws Exception{this(false,9827);}
+        PostEffectReadScenario(boolean current1079,long discardElapsed)throws Exception{this(current1079,discardElapsed,false);}
+        PostEffectReadScenario(boolean current1079,long discardElapsed,boolean current1090)throws Exception{
+            this.discardElapsed=discardElapsed;this.current1090=current1090;
+            f=seedFixture(null,false);f.ownedController=controller;f.autoScreenshot=true;
+            f.readHook=(g,n)->{sealedReadGraph(g,"published-home-before-effect");sealGraph(g);};
+            f.seedFrozenRead=(r,i)->i.frozenWindow;twoSamples(f);prior=f.current;priorReads=f.reads.get();
+            check(prior!=null&&f.taskObservationAdmissions==1,"prior actual observer admission required");
+            // Explicit synthetic clock anchored at the recorded request's start.
+            SystemClock.now=current1090?551568497:current1079?537992402:531775479;started=SystemClock.now;taskDeadline=started+480000;
+            transition=started-(current1090?93:current1079?77:84)+15000;
+            permit=new NativeAppSession.PostEffectReadPermit(nativeTask,f.taskAuthorization,f.lease,
+                    f.taskBackground.selection,f.taskBackground.generation,f.taskBackground.displayId(),transition);
+            f.autoScreenshot=false;f.pendingScreenshot=null;
+            f.readHook=(g,n)->{
+                int k=n-priorReads;sealedReadGraph(g,"complete-new-flight-form");g.windowId=8;
+                if(startupWindow&&k==1){SystemClock.now=started+1000;g.windowId=7;g.digest="normal-startup-window";}
+                else {int p=k-(startupWindow?1:0);SystemClock.now=started+(current1090
+                        ?(p==1?7467:p==2?8276:p==3?8901:11000):current1079
+                        ?(p==1?6039:p==2?6874:p==3?7504:10191):(p==1?7431:p==2?8223:p==3?8858:10246));}
+                if(k==1&&"foreign_start".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                if(k==(startupWindow?4:3)&&"unsealed".equals(fault))f.noteObservationEvent(9);
+                if(k==(startupWindow?4:3)&&"incomplete".equals(fault))g.nativeActionNodes=null;
+                if(k==(startupWindow?4:3)&&"foreign_pair".equals(fault))g.windowId++;
+                if(k==(startupWindow?4:3)&&"profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
+                sealGraph(g);
+            };
+            Bitmap.encodeHook=()->SystemClock.now=started+(current1090?8901:current1079?7505:9600);
+            f.hashHook=()->SystemClock.now=started+(current1090?9722:current1079?8349:9700);
+            f.seedFrozenRead=(r,i)->{
+                SystemClock.now=started+("expired".equals(fault)?12000:discardElapsed);
+                if("no_window".equals(fault))return null;
+                if("window_stale".equals(fault))throw new StaleObservation("synthetic stale observation");
+                if(!"no_event".equals(fault))f.noteObservationEvent("unknown".equals(fault)?-1:"main_event".equals(fault)?0:9);
+                return i.frozenWindow;
+            };
+        }
+        void start()throws Exception{
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),current1090?Math.min(started+11999,Math.min(taskDeadline,transition))
+                            :ObservationStabilityGate.requestDeadline(SystemClock.now,Math.min(taskDeadline,transition)),taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;check(request!=null&&request.taskReadOrdinal==2,"actual post-effect read admission");
+            check(request.readBefore==null&&request.readIdentity==null&&request.postEffectIdentity==null,"old home graph must not anchor new page");
+            for(int i=0;i<8&&f.pendingScreenshot==null&&!request.finished;i++){
+                f.awaitSample();if(f.pendingScreenshot!=null||request.finished)break;
+                SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            }
+            check(f.pendingScreenshot!=null,"original stable graph pair must admit capture");
+        }
+        void queue()throws Exception{
+            start();f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"post-effect capture worker returned");
+            if("unsealed".equals(fault)||"incomplete".equals(fault))f.noteObservationEvent(9);
+            for(File file:f.directory.listFiles())if(!file.equals(prior.path))discarded=file;
+        }
+        void accept()throws Exception{f.main.drain();f.finish();f.finish();}
+        void released(){
+            check(request.finished&&request.captured==null&&!request.shotPending&&request.resampleSeed==null&&f.activeObservation==null,"old post-effect request retired");
+            check(discarded!=null&&!discarded.exists()&&f.current==prior,"discarded PNG cannot replace published home");
+            for(Graph graph:f.graphs)if(graph!=f.currentGraph)check(graph.closed,"proof retained old graph");
+            for(Bitmap bitmap:Bitmap.made)if(bitmap!=f.currentBitmap)check(bitmap.recycled,"proof retained old pixels");
+        }
+        PostEffectObservationRetryProof proof()throws Exception{
+            queue();accept();released();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one failed post-effect read proof");
+            check(request.failedAt==started+discardElapsed&&request.deadline==Math.min(started+(current1090?11999:12000),taskDeadline),"actual cut point does not move old terminal/deadline");
+            check(count(request,"SAMPLE_EXPIRED")==0&&f.reads.get()==priorReads+(startupWindow?4:3),"qualified failed capture drains immediately without another sample");
+            PostEffectObservationRetryProof proof=out.proofs.get(0);Map<String,Object> e=proof.evidence();
+            check(proof.identity.windowId==8&&((Number)e.get("original_transition_deadline_elapsed_ms")).longValue()==transition,"latest sealed identity and original transition deadline");
+            check("sealed_pair_target_event_after_window_check".equals(e.get("reason")),"reason describes the current qualified capture, not a remaining-gap heuristic");
+            check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("action_replayed"))
+                    &&Boolean.FALSE.equals(e.get("business_completion_verified"))&&Boolean.TRUE.equals(e.get("read_worker_drained")),"proof is new-read-only");
+            return proof;
+        }
+        void prepareFresh(String change){
+            Bitmap.encodeHook=null;f.hashHook=null;f.autoScreenshot=true;f.pendingScreenshot=null;
+            f.readHook=(g,n)->{sealedReadGraph(g,"new-independent-replacement-content");g.windowId="window".equals(change)?9:8;
+                if("generation".equals(change))g.backgroundGeneration="99999999-2222-3333-4444-555555555555";
+                if("owner".equals(change))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                if("profile".equals(change))g.profileWindow=new WindowOwnership("uid");sealGraph(g);};
+            f.seedFrozenRead=(r,i)->i.frozenWindow;
+        }
+        void submitFresh(PostEffectObservationRetryProof proof,PostEffectReadResult next,long cap){
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,cap),taskDeadline,next,proof);f.main.drain();
+        }
+        void finishFresh()throws Exception{f.awaitSample();SystemClock.now+=400;f.main.drain();f.awaitSample();f.finish();f.finish();}
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.dispose();}
+    }
+    static void postEffectReadCases()throws Exception{
+        for(final boolean startup:new boolean[]{false,true})eventCase("post_effect_9827_latest_seal_new_read_"+(startup?"window_transition":"same_window"),()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.startupWindow=startup;PostEffectObservationRetryProof proof=s.proof();
+            int before=s.f.reads.get();s.prepareFresh("same");PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.transition);
+            ObservationRequest replacement=s.f.activeObservation;check(replacement!=null&&replacement!=s.request,"fresh request identity");s.finishFresh();
+            check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"new complete pair/PNG can publish");
+            check(s.f.reads.get()==before+3&&s.f.taskObservationAdmissions==3,"two fresh samples plus complete pair required");
+            check(replacement.deadline==s.transition&&replacement.deadline-replacement.started==5089
+                    &&s.request.deadline==s.started+12000,"original fifteen-second and old twelve-second budgets retained");
+            check(s.f.current!=s.prior&&s.f.current.capturedElapsedMillis>s.request.failedAt
+                    &&"pre_encoding_paired_history".equals(s.f.current.captureEvidence.get("mode")),"new frame and original sealed publication");
+            int reads=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submitFresh(proof,duplicate,s.transition);
+            check(duplicate.failures.size()==1&&duplicate.observations.isEmpty()&&s.f.reads.get()==reads,"private replacement proof consumed once");s.dispose();
+        });
+        for(final long elapsed:new long[]{8536,9799})eventCase("post_effect_qualified_capture_immediate_new_read_at_"+elapsed,()->{
+            boolean current1079=elapsed==8536;PostEffectReadScenario s=new PostEffectReadScenario(current1079,elapsed);
+            PostEffectObservationRetryProof proof=s.proof();long remaining=current1079?6387:5117;
+            check(s.transition-s.request.failedAt==remaining&&s.request.failedAt-s.started==elapsed,
+                    "recorded clock anchors retain the original fifteen-second remainder");
+            check(s.request.failedAt<s.started+10000-ObservationStabilityGate.SAMPLE_GAP_MS,
+                    "qualified capture does not wait for the old last-gap heuristic");
+            int before=s.f.reads.get();s.prepareFresh("same");PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.transition);
+            ObservationRequest replacement=s.f.activeObservation;
+            check(replacement!=null&&replacement!=s.request&&replacement.started==s.request.failedAt
+                    &&replacement.deadline==s.transition&&replacement.deadline-replacement.started==remaining,
+                    "one fresh request is clipped to the original transition, not twelve renewed seconds");
+            s.finishFresh();check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"independent fresh capture can publish");
+            check(s.f.reads.get()==before+3&&s.f.taskObservationAdmissions==3&&s.permit.admissions.get()==2,
+                    "fresh two samples and paired graph, one replacement and no action repeat");
+            check(s.f.current!=s.prior&&s.f.current.capturedElapsedMillis>s.request.failedAt&&!s.discarded.exists(),
+                    "only a new PNG/frame survives; rejected capture remains discarded");
+            int reads=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submitFresh(proof,duplicate,s.transition);
+            check(duplicate.failures.size()==1&&duplicate.observations.isEmpty()&&s.f.reads.get()==reads,"early replacement proof is still one-use");s.dispose();
+        });
+        for(final String fault:new String[]{"no_event","main_event"})eventCase("post_effect_normal_success_keeps_"+fault,()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.startupWindow=true;s.fault=fault;s.queue();s.accept();
+            check(s.out.observations.size()==1&&s.out.proofs.isEmpty()&&s.out.failures.isEmpty(),"ordinary post-effect first read unchanged");
+            check(s.request.postEffectIdentity==null&&s.f.taskObservationAdmissions==2&&s.permit.admissions.get()==1,"normal result does not use replacement");s.dispose();
+        });
+        for(final String fault:new String[]{"expired","unknown","no_window","window_stale","unsealed","incomplete","foreign_pair","foreign_start","profile"})
+            eventCase("post_effect_capture_refuses_"+fault,()->{
+                PostEffectReadScenario s=new PostEffectReadScenario();s.fault=fault;s.queue();s.accept();
+                check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty()&&s.f.current==s.prior,"unqualified capture grants no replacement");
+                check(s.request.deadline==s.started+12000,"negative cannot renew original deadline");s.dispose();
+            });
+        for(final String field:new String[]{"authorization","controller","background","permit","cancel"})eventCase("post_effect_scope_before_proof_"+field,()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.queue();
+            if("authorization".equals(field))s.f.taskAuthorization=new Object();else if("controller".equals(field))s.f.ownedController=new LocalTaskController();
+            else if("background".equals(field))s.f.taskBackground=new BackgroundSession(9);else if("permit".equals(field))s.permit.valid=false;else s.f.cancelled.set(true);
+            s.accept();check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"scope/cancel cannot mint post-effect proof");s.dispose();
+        });
+        eventCase("post_effect_actual_serial_worker_return_before_proof",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.start();Block hold=new Block();s.f.main.afterWorkerPost=hold;
+            s.f.deliverScreenshot();hold.entered();for(File file:s.f.directory.listFiles())if(!file.equals(s.prior.path))s.discarded=file;
+            s.f.main.drain();check(s.out.proofs.isEmpty()&&s.out.failures.isEmpty()&&observationIo.active.get()>=2,"queued callback is not read drain");
+            check(s.request.postEffectPublicationRecheckAttempted&&!s.request.finished&&s.discarded.exists(),"queued same-request recheck retains only its owned product");
+            s.f.main.afterWorkerPost=null;hold.open();s.f.finish();s.f.finish();check(s.out.proofs.size()==1,"actual serial marker grants proof only after worker return");s.dispose();
+        });
+        eventCase("post_effect_cancel_during_serial_drain",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.queue();Block hold=new Block();observationIo.execute(hold);hold.entered();s.f.main.drain();
+            check(s.out.proofs.isEmpty(),"serial marker remains queued");s.f.cancelled.set(true);hold.open();s.f.finish();s.f.finish();
+            check(s.out.proofs.isEmpty()&&s.out.failures.size()==1,"stop defeats post-effect proof after retirement");s.dispose();
+        });
+        for(final String field:new String[]{"window","generation","owner","profile"})eventCase("post_effect_replacement_identity_"+field,()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();PostEffectObservationRetryProof proof=s.proof();s.prepareFresh(field);
+            PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.transition);s.finishFresh();
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1,"replacement preserves latest private sealed identity");s.dispose();
+        });
+        eventCase("post_effect_replacement_does_not_reset_task_or_transition",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();s.taskDeadline=s.started+11000;PostEffectObservationRetryProof proof=s.proof();
+            s.prepareFresh("same");PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.taskDeadline);
+            ObservationRequest nextRequest=s.f.activeObservation;s.f.awaitSample();SystemClock.now=s.taskDeadline;s.f.main.drain();s.f.finish();
+            check(nextRequest.deadline==s.taskDeadline&&nextRequest.deadline-nextRequest.started==1173
+                    &&next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1,"original short task cutoff still wins");s.dispose();
+        });
+        eventCase("post_effect_new_request_cannot_exceed_original_transition",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();PostEffectObservationRetryProof proof=s.proof();s.prepareFresh("same");int reads=s.f.reads.get();
+            PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.taskDeadline);
+            check(next.failures.size()==1&&s.f.reads.get()==reads&&s.f.taskObservationAdmissions==2,"unclipped new twelve-second budget rejected");s.dispose();
+        });
+        eventCase("post_effect_new_read_failure_cannot_mint_third_read",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();PostEffectObservationRetryProof proof=s.proof();s.prepareFresh("same");
+            s.f.seedFrozenRead=(r,i)->{SystemClock.now=r.deadline-1;s.f.noteObservationEvent(9);return i.frozenWindow;};
+            PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.transition);s.finishFresh();
+            SystemClock.now=s.transition;s.f.main.drain();s.f.finish();
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1
+                    &&s.permit.admissions.get()==2,"replacement late-event cannot issue another proof or observation");s.dispose();
+        });
+    }

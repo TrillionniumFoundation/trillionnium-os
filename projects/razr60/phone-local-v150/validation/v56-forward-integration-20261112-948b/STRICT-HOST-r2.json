@@ -1,0 +1,2517 @@
+{
+  "schema": "hepta.host-checks.v3",
+  "scope": "host_only",
+  "all_pass": true,
+  "android_compiled": false,
+  "phone_tested": false,
+  "native_grammar_model_tested": false,
+  "external_model_used": false,
+  "started_host_wall_ms": 1794487059708,
+  "checks": [
+    {
+      "name": "java-compile",
+      "exit_code": 0,
+      "elapsed_s": 5.895755901990924,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ActionFreshnessHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.0621018850360997,
+      "stdout_sha256": "3113abbad4e9c7c60cc84e78860cba766af52654b938d4eb0b71ecbdf69b896f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "AppCatalogueHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.30712145095458254,
+      "stdout_sha256": "62857df360fcb7fb759ab8a7c532ae591436f3fef488eb8ab629e091f54cf466",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "BudgetHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.03319992299657315,
+      "stdout_sha256": "c52b2c918247cb0c56fc4178a55f568898311305327c23a869a3bd5ece2a09eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "CompactEvidenceHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.0947242159745656,
+      "stdout_sha256": "52c03598a87a71d351fc5822f0bdb3e67d27e191bcd3973e57aa89936c8e63ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "CompactSequenceHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09309556899825111,
+      "stdout_sha256": "b26aa7a205cc049df13231b507dd4592a5099cc32dcaf6043cf3ae90c40b237b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "CompactTaskHistoryHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.06182805198477581,
+      "stdout_sha256": "02a741568c1dc823ba07bc450596689c18bdd4032dea9d5c15a4729e3b5d0cea",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "DiagnosticStartupGateHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09512881800765172,
+      "stdout_sha256": "49925788e8086c0d7590a4102de8d4460c8cbb6a8c81a0403e224fe1aeadc7a0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "DispatchedActionSequenceHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.05473628197796643,
+      "stdout_sha256": "4a10ade96cc9c0b1a399dd5c8227d085d13ff7c97e4f300697e154b67177c6fe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Gemma4ProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.07998849201248959,
+      "stdout_sha256": "39233d7cae167afdb93cd98f7213e3775213e3e216ab9c04d5d296ebea5ec99a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ImeObservationHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.07702566799707711,
+      "stdout_sha256": "1388ed89a212aa21af6683bc9b42f9ccb85235b3a9778f870b6e3cd43f3fce35",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "LastModelDecisionProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.21302583499345928,
+      "stdout_sha256": "5b2f475a41f046c0c26f1305c3d32f0bda911686192867561e67835b42232ca4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Lfm25MoeProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09180713002569973,
+      "stdout_sha256": "6bfe00e3d790f86ca01f104dc43fe4e710b8a98589176aac740200d259993282",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Lfm3ExactTokenHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04979665798600763,
+      "stdout_sha256": "5a214efdf492d068222c3450142e2873c72bdcff9f3407da76d603e19c4bf496",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "LocalPolicyHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.11263739300193265,
+      "stdout_sha256": "a3aa42cfa079d316a62ca665d959b8afc7bc070ec162f29de0eded9ef6edce75",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MemoryAvailabilityHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.1256394490483217,
+      "stdout_sha256": "5b5bb21f651b68576a420f8de7fb4e3e961db1e06694a867f92ed648c18f4860",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MobiMindContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.2638897190336138,
+      "stdout_sha256": "b00f07220bfe2b10ce56e2cbfb1905ee22e8f5691bd6004e1fbe562d87e406d2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MobiMindSessionContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.0632745330221951,
+      "stdout_sha256": "35ebf6a777946372d0db516856aeb68c3f97e744a09124326ca3f7f202bcfa4d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MobileAgentProfilesHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04349437396740541,
+      "stdout_sha256": "37958e9850f0842333e15788b4ab63d9dbf9d571dba6382625be7198abe4e082",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ModelProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.06659367500105873,
+      "stdout_sha256": "54226dfe556384816f22c120034c984b82bbd8be9de728cef8fefc69c90f6ebf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Nanbeige42ProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.08258462400408462,
+      "stdout_sha256": "9ac5fe93c35d3207605585d3b3e5f5726facc81246e8ca72d8c46127b0cfa3e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservationStabilityHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04787334898719564,
+      "stdout_sha256": "1b0bf43ab6828b80e433a81f838d1881d367ea4ee482a4d83b44997aec9e3b42",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedAppLabelsHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.137475882016588,
+      "stdout_sha256": "8b5276b66149fccd549d686d26b88bde72bf89441666d8aaf4d5e658be028cd8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedChildTextHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09555356798227876,
+      "stdout_sha256": "55973ae1ef57215be08beeb92f7499c947432317e60bf66e44dbfbb9b64e4703",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedScrollActionsHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.023330171999987215,
+      "stdout_sha256": "fff81e5f18c42fd58e38c3043ab3a294cf5880c20b6e632b86c2bb88749dc539",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedTargetLabelsHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.1134328999905847,
+      "stdout_sha256": "bb50d43ff8be73d0fae72225b6bfb50e852060f67fbc60f0539c16a7bb94331e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedTextProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.07189135299995542,
+      "stdout_sha256": "cfe80f5205e2b226ccfc87c29cd1eacf6dd8d4b786bb217c07b00e4e323b2e93",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedTransitionProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.080618763982784,
+      "stdout_sha256": "f409f576bb851e8797793865ddf4498ab29ca6b50ea7463701b2867bfd008fd6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedWindowMetadataHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.11897327197948471,
+      "stdout_sha256": "b17ffe70e5a3c444a421acbfc92367b21bff0ff1b53faacc32eca7041adcca1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "PersistentActionPolicyHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.1555432039895095,
+      "stdout_sha256": "5141536252f708cc14b01e355f9cdc345e4722617bffecf00ce6b4936f48e4d9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "PromptActionDomainHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.08530444401549175,
+      "stdout_sha256": "ca539be2f64407a14bf74ad6657b066d41f5f0ab93536f63c0dfa159b5ed1df6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "PromptCapabilityProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.1984049699967727,
+      "stdout_sha256": "1e70ae6441c51c726ebdec2449d0c32cab055df15a2d59d94825bb51867fa9a6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Qwen35ProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.06007942702854052,
+      "stdout_sha256": "e537ec0e6c091a28bc0c723cf42e4e151cee6eef921ccf50e2eef2f0cd85952f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ReadableActionHistoryHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.023653608979657292,
+      "stdout_sha256": "bd25cff69bf81094399c6f56aedb68490d28ab85852ee78ef459093cb062bda5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RecentActionProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.021063628024421632,
+      "stdout_sha256": "4d684e8ab83771bcd5eb3f392a27efc2cd73b5d342300376eafb208087866ccc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RecoveryAcknowledgementHostTest",
+      "exit_code": 0,
+      "elapsed_s": 1.2425843199598603,
+      "stdout_sha256": "3c9caaeeb0c6a4b2c82e3fb59f09379eadd6d0440c15a673e85471f341750887",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RecoveryDispatchHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.054144544003065675,
+      "stdout_sha256": "b87b216b4479ea628d4c93678675c604da6081b0ead3373ab8057db082a2f193",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RecoverySlotHandoffHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.03545144898816943,
+      "stdout_sha256": "a366736a3d68e7402aeaa414a5b4379a4894707e3754d864d836cd368b175eff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RepeatActionGuardHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.14848833304131404,
+      "stdout_sha256": "e8d395211f8bd74419d966fcf45379d11a85e1421ce997a0a5d3e7a1ad2e6664",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RepeatClickProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.10917070996947587,
+      "stdout_sha256": "69f4d6f8a64c350f09d7f210ed7cc726241c295215ce9716d3594eb32bf6d445",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "SameStateNoEffectGuardHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.19257363502401859,
+      "stdout_sha256": "3f9e7af8b280abb618a1a55e153dced5ff72055e02b897184016e9356fb4c5d6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ScrollGrammarHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.2302312629763037,
+      "stdout_sha256": "506ebe0b4fc13873787435c93bcb5db6bb65d9cdb9b60d9baf103ab06b9e1efb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "SessionRecoveryHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.12435328599531204,
+      "stdout_sha256": "2681f34ad5d095c7eb7dece82d0f53d0533e4323f7411251bfe5803acc3a3eeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "TaskAuthorizationDomainHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.12173569301376119,
+      "stdout_sha256": "f91972b34c385c5b94bb6b7da02e1e1fce00e9cf5d404fe59397e101d66fb056",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "UiVenusContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.3831487279967405,
+      "stdout_sha256": "dc2800a77494117c22d9623a537085f71488e12757bc03d41c41f390ab78e0ab",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "UiVenusInputContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.23293629504041746,
+      "stdout_sha256": "a0755ca281533bfa4d5ce5fa3311c6dac0a0a0cef662ef920512e0499e9089ac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "UiVenusProcessContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.24010772799374536,
+      "stdout_sha256": "fdffc2f6b4412be8fd4531c6ebad2a8024b2f49b4ca613f773cfb50fc956ce26",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "UiVenusRequestContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.17336237203562632,
+      "stdout_sha256": "49a8f882d748c130a4a86d29215cabe48d65e96fb49181be6418ba31c31762a4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "UiVenusSessionContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.07365114998538047,
+      "stdout_sha256": "b9c23ced378b0661c9818808c17a7e1de75c0d93f4d60bf12e88cdc3d8c100ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "WarmProcessSessionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 12.229697096976452,
+      "stdout_sha256": "7d70a2221e029cd5539426cedd182a8f9a6108416db5408c430b52e6d854bc9e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ActionDecisionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.14900731795933098,
+      "stdout_sha256": "ad2fbd8e35c1114be45bc029eb51edb89840c946e9567b8bf7d06a0221e6f871",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "DecisionGrammarHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09705664898501709,
+      "stdout_sha256": "464b3c3a42aa1a1cd6f68a1f5354f806f245af705bb74ae57c9a794647a09e0b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "grammar-recognition",
+      "exit_code": 0,
+      "elapsed_s": 0.17629443999612704,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ca9b51280090c074f9949adebaa32d5c9f9b029e869e54e35176fbfd4ab11e7f"
+    },
+    {
+      "name": "app-label-grammar-recognition",
+      "exit_code": 0,
+      "elapsed_s": 0.17693357996176928,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bd5ec9660b887d09e29f50897c5716546b52cc46d81afc2db26b15ad0cde44ef"
+    },
+    {
+      "name": "scroll-grammar-recognition",
+      "exit_code": 0,
+      "elapsed_s": 0.06004243798088282,
+      "stdout_sha256": "b25403ef0feb2b8edaf9073d5414820ef0fe4d7a81974983d06663012ba8e17c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "completion-protocol",
+      "exit_code": 0,
+      "elapsed_s": 0.0534107550047338,
+      "stdout_sha256": "4da7a3cf760b2f930365d91d615792d31657a91c5665cd4a287f314471755ae1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "same-state-no-effect-grammar",
+      "exit_code": 0,
+      "elapsed_s": 0.10392141697229818,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "65f82bd9d58b61d0d2e6e97ca5bd66aa49d9d621abe65aad4347348a6eab1ddb"
+    },
+    {
+      "name": "background-client",
+      "exit_code": 0,
+      "elapsed_s": 3.912016348040197,
+      "stdout_sha256": "95c4f1408552213ce62433d66cb85f94ad18cc9f454e99a8ebc80ab06e190dc6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "background-launch-isolation",
+      "exit_code": 0,
+      "elapsed_s": 1.453978487988934,
+      "stdout_sha256": "9da7f52c2edda0339ad49f84c51b64dce1e4b018b88db3357f9941eab8b92a3a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "qualification-scope",
+      "exit_code": 0,
+      "elapsed_s": 8.263831252988894,
+      "stdout_sha256": "a31906a3ac87e4102d0429716b79543c07c8a983da425e18a7b99b8f2de07bc4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "observation-pipeline",
+      "exit_code": 0,
+      "elapsed_s": 2.0599147049942985,
+      "stdout_sha256": "3c6ab481ad51c252d4cdb461c66cdca91f9360825fc6b2e383822eb57b759ccc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "owner-authorization",
+      "exit_code": 0,
+      "elapsed_s": 8.063131358008832,
+      "stdout_sha256": "a9a28222ba4428860d8087b4103b774b18d0162ff0ecee38d6fc34979522a302",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "owner-grammar",
+      "exit_code": 0,
+      "elapsed_s": 2.447401643032208,
+      "stdout_sha256": "f40ccb2f6c8721192ed046e4347e2a3a79ee4b8979e46d1704e46bc9c0e79e1f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ime-submit",
+      "exit_code": 0,
+      "elapsed_s": 16.517823492002208,
+      "stdout_sha256": "8398e45664204bfc4634e59c9438e29fe93e15d188c02355d57ba2a20a9c401e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fixed-intent-tools",
+      "exit_code": 0,
+      "elapsed_s": 1.232553890964482,
+      "stdout_sha256": "691d524454192597bef69b0433bc83eef643d342c1f69af6b56f1391ad5ec135",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fixed-intent-integration",
+      "exit_code": 0,
+      "elapsed_s": 6.152140984020662,
+      "stdout_sha256": "6e50411f9d0a88921497917a391efdefb4ebd2aaf184c4ef15c19037d148ddb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "background-permission",
+      "exit_code": 0,
+      "elapsed_s": 2.643166578025557,
+      "stdout_sha256": "137180d809d9c5b9565bb964d7de7b879c72a672ed89d32188147900e4a7132c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "background-permission-session",
+      "exit_code": 0,
+      "elapsed_s": 3.529968576040119,
+      "stdout_sha256": "c5f8d638491abe81bc63c4a48d888be200793c9a2771b1bb26bbb5a1f14bf33c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "runtime-config-ui",
+      "exit_code": 0,
+      "elapsed_s": 1.1495757719967514,
+      "stdout_sha256": "a4516e8a415ab2c4513553bd9ba93c3544cf2677e17a51706ffc804d4b372b9f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "background-broker",
+      "exit_code": 0,
+      "elapsed_s": 2.123013139993418,
+      "stdout_sha256": "93b2b8f315c38a819bb4a94ab8945ea3caa98bdffd577accb26755aec3600e12",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python-tools",
+      "exit_code": 0,
+      "elapsed_s": 19.89411296194885,
+      "stdout_sha256": "ebb05de1684a11b9dfc6d550eb6e34918390955e4ac92843631438bf9df412da",
+      "stderr_sha256": "83457e38adf78b4a9832bd897d248a32d314c26d2695d854921fa3295d6bcddf"
+    },
+    {
+      "name": "mobimind-private-staging",
+      "exit_code": 0,
+      "elapsed_s": 0.07891016697976738,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d7a682701ea0353d422c5266fb6c07ab81e41b0a4b496e7073f8873f7da6ed4b"
+    },
+    {
+      "name": "ui-venus-q4_0-provenance",
+      "exit_code": 0,
+      "elapsed_s": 0.0698214850272052,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8d792d81c28f14e81434cb2a175feb8a800363e60faf05e9aa008104cb37a9c2"
+    },
+    {
+      "name": "lfm25_profile_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.21985065197804943,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "lfm25_profile_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.003998819971457124,
+      "stdout_sha256": "54550180a110c7d8492d635eb737feed176edb14fbcc5d6cb733317496504874",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "mobile_agent_profiles_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.16396123101003468,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "mobile_agent_profiles_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.0027371530304662883,
+      "stdout_sha256": "ad0143f3b14e647bc4935782765e3738419467d1db469bacb1d540ceb08ab583",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "model_profile_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.1546576500404626,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "model_profile_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.0024566479842178524,
+      "stdout_sha256": "bc9b99969b373d72ec83464d72b513fd5e74e5715c2b033f64a3f4af366d06a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "nanbeige42_profile_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.11129116202937439,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "nanbeige42_profile_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.002325196983292699,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "parent_death_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.28405622200807557,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "parent_death_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.046241511998232454,
+      "stdout_sha256": "3b78bb55324e37b41ebd8b91ef5928bf8bedc2349cc2f964e827bfe1107af360",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "phase_timing_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.10303270496660843,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "phase_timing_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.0008548609912395477,
+      "stdout_sha256": "f95229894848bdfe84b59efdf63c18ca140edcc526bb84f2dcaa48cc85ed3887",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prompt_budget_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.054173697950318456,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prompt_budget_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.00559669901849702,
+      "stdout_sha256": "6c4810c55d6d7e97b50ca7215cd9b1de00140c4dcb22095ba4a752d82fe2fb66",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "publish_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.17175219702767208,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "publish_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.004251712991390377,
+      "stdout_sha256": "01c5c6781c6c3303246dbe138b3e6f6b7a23baebd4f6756b00f2082f18a6b81f",
+      "stderr_sha256": "0e1ee1829a099dcbcf1a0b85600b0ee89f8a0f672d86c1b2984d2727052cf6ea"
+    },
+    {
+      "name": "qwen35_profile_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.16370582400122657,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "qwen35_profile_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.004341223975643516,
+      "stdout_sha256": "f1e983448402d4ad2fbc66e90b9a4b9f683b40a994ed1e9d7335ca66524e22b3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256_probe-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.3628757270053029,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256_probe",
+      "exit_code": 0,
+      "elapsed_s": 0.2201676790136844,
+      "stdout_sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256-hashlib-differential",
+      "exit_code": 0,
+      "elapsed_s": 5.113520005950704,
+      "stdout_sha256": "7e874f33e133453e8c0d174975d446891f8af6d317663f959ebf5f4b33630c73",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-adapter-syntax",
+      "exit_code": 0,
+      "elapsed_s": 0.07631646801019087,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "private-prompt-evidence",
+      "exit_code": 0,
+      "elapsed_s": 0.5363871359732002,
+      "stdout_sha256": "5ba97844bb2bcaddf2ea123a3e6d760364b43e598c6a144f1fb173c03077de68",
+      "stderr_sha256": "47b7630c4181961731722083771a47078e1a8acc388e66fa7b6f96cce3340d83"
+    },
+    {
+      "name": "task-worker-native-lifecycle",
+      "exit_code": 0,
+      "elapsed_s": 0.9260887739947066,
+      "stdout_sha256": "3fc1f12286f14592034029cccb4b4ae793f2fd75904dc54771f22709d309fb95",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "profile-sampler",
+      "exit_code": 0,
+      "elapsed_s": 2.1904341879999265,
+      "stdout_sha256": "1a210bd9f44179ead6f79e455ede050e05e9930efae350ff3f2c0cf942795c9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "notes-completion-evidence",
+      "exit_code": 0,
+      "elapsed_s": 2.391753311967477,
+      "stdout_sha256": "6d15d5114e4ef3ef7599838c9d7a8b716d0478252f739aedc123b6f0aede4e91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "task-completion",
+      "exit_code": 0,
+      "elapsed_s": 22.187348585983273,
+      "stdout_sha256": "6e50411f9d0a88921497917a391efdefb4ebd2aaf184c4ef15c19037d148ddb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "calculator-completion-pure",
+      "exit_code": 0,
+      "elapsed_s": 9.449114335002378,
+      "stdout_sha256": "bd2c07f5d649eac59c4e14abf74065d9290fc6906b6b4f1bd2f6fde7bc648259",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "observation-collection",
+      "exit_code": 0,
+      "elapsed_s": 8.168995920976158,
+      "stdout_sha256": "ea150f3a98a9f03b69fa593ce138521418f2308a449ab112d081d5804b4ed938",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "notes-owner-intent",
+      "exit_code": 0,
+      "elapsed_s": 4.201320106978528,
+      "stdout_sha256": "8345586aa49326459bdfc568903adea2d0d114b855da9ef4450901130f7be47b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "owned-worker-cancellation",
+      "exit_code": 0,
+      "elapsed_s": 6.995206837018486,
+      "stdout_sha256": "3aa0e1398d3d7d0d6995bc7636246320ae78299d1856afe835dc8d490c54d889",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "background-owned-task-policy",
+      "exit_code": 0,
+      "elapsed_s": 1.3449667409877293,
+      "stdout_sha256": "a702295e026b34be17427f991eaab22586f77c4757566037f31ad8761406554f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "web_fixture_boundary": "Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate",
+  "source_inputs": [
+    {
+      "path": "assemble_pocket4.py",
+      "sha256": "5905861e913097b906262ae1b0deee7f97738bc25b9b7670e8e744710c35b378"
+    },
+    {
+      "path": "build_mac.py",
+      "sha256": "dca1f29ff9978ff3e99e0f9c02055247140bf01f086ac3231f6b63f160da706a"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "sha256": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7"
+    },
+    {
+      "path": "native/model-profile.h",
+      "sha256": "09922c38d2398cc01ea8a0079244f492b2e451c0cf8a6d30566c7d7c0e429112"
+    },
+    {
+      "path": "native/model-runtime.inc",
+      "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "sha256": "bdf0e6b6760a5f53f68446d12f1904e30bf708e74b1741fe010fc3cbd6c68a89"
+    },
+    {
+      "path": "native/prompt-budget.h",
+      "sha256": "47e8587a9762b6018748d3560344024fcbd875da280df93afb57976c5eee8c3e"
+    },
+    {
+      "path": "native/prompt-evidence.inc",
+      "sha256": "cd2f93f7b894eb64fb806e24e0ca214b512c148d3b4f19bed39e9e70196e56b0"
+    },
+    {
+      "path": "native/prompt_evidence_adapter.py",
+      "sha256": "deb988a8d3fd2299cb9441cbb2df7bff120d842ebc323971bf119962cf62a509"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sampler-profile.inc",
+      "sha256": "ded53bf62e861a365a9c41e10bb914efe81844d2d9b2e936fe2b69ee5b211169"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/tests/lfm25_profile_contract.c",
+      "sha256": "5cde7d0dd61e1dc3752ff3d122128a48e7ea3a207be6f2e502e8f0fc58dd8427"
+    },
+    {
+      "path": "native/tests/mobile_agent_profiles_contract.c",
+      "sha256": "16e8bfe0f45883ea05068f1bb1b8f813c89bac7e567afbf8546935641cdf422e"
+    },
+    {
+      "path": "native/tests/model_profile_contract.c",
+      "sha256": "8d37685f165c120da7611ffb377c09e89d7b3c950acfe7ee0186d72652e64e22"
+    },
+    {
+      "path": "native/tests/nanbeige42_profile_contract.c",
+      "sha256": "107a4f842c1dd564efe63c7ca6c914fa292849bfdbd8bdc0b21501cbfd88579c"
+    },
+    {
+      "path": "native/tests/parent_death_contract.c",
+      "sha256": "d3824dcb181d2a8b6a9fd31b174281c3f7dfcf6663c98e3f1a9bb5e2671bf397"
+    },
+    {
+      "path": "native/tests/phase_timing_contract.c",
+      "sha256": "479c5e6e23d6bf86515a39046e07c62bc0cc33a5ffbbe3703f5e92cc91db5527"
+    },
+    {
+      "path": "native/tests/prompt_budget_contract.c",
+      "sha256": "71fe6d15efc4ecda21e47d805625e8463221af6bd63acfef1dedca6d5f6d0bc1"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/tests/qwen35_profile_contract.c",
+      "sha256": "aa112ff49b852004cff9faf76a4f6751d1bdebed248f1287d057ac891bddf6e6"
+    },
+    {
+      "path": "native/tests/sha256_probe.c",
+      "sha256": "4a88ff711def3aa8a9b0697830664e6d42488869be7d128441feb8d194ee9fb2"
+    },
+    {
+      "path": "native/tests/test_profile_sampler.py",
+      "sha256": "0030b33307fea8a6e3e7353623a3f93e57ac28e56eb524d2dcde3052c64f750d"
+    },
+    {
+      "path": "native/tests/test_prompt_evidence.py",
+      "sha256": "e32248746246be65274e8958165ff0a2f9d46f2f5199931e19de25662ede9ff2"
+    },
+    {
+      "path": "native/tests/test_sha256.py",
+      "sha256": "a986747ba4d3eaf520f3c1a95a8a4cbfcd066eb55efcafe7a9509e89992d5d9e"
+    },
+    {
+      "path": "native/tests/test_warm_runtime.py",
+      "sha256": "9f2ba229165bfb3d8984c76de3c8ae2497adf328ce52ab49c28a3a14004b3491"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/warm-protocol.inc",
+      "sha256": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
+    },
+    {
+      "path": "native/warm-state.inc",
+      "sha256": "dca5621913e137364d041df497683b220ddd6a36a53a8a456521be4335ce2b10"
+    },
+    {
+      "path": "native/warm_runtime_adapter.py",
+      "sha256": "804f891e470313e670cf0b3b45d7c340e8828ab8471de762d98c9a737ff656ad"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "sha256": "f1f773a4a5a6cf2e6df0dae74df6043e25e8a9747e96701f406517f86d069cc1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
+      "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
+      "sha256": "34c282a961d7209028c337f4b97401b92711a5c86e07bde9c82c0f9ab372c93e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentDispatch.java",
+      "sha256": "5a441f84cdda25b3a50901d4bd9abbcc406eb15e4317df083c24cbee733cc7a4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
+      "sha256": "1bbd65135de1178c98191dbd6ba94dd5309904326ec38d05f2102631eb50dc7a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundPermissionPreparation.java",
+      "sha256": "676add9d7d7251560883a243abf59ab5e4c18cd0fa4c6813048fbaec13e2dd80"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundPermissionSession.java",
+      "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorCompletionEvidence.java",
+      "sha256": "7fb6f7c09888479b2be16900555cc6b097ffcc96d7363a32c1df84156abe2433"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorGoalContract.java",
+      "sha256": "3a910c59b997c9baf48009e81b56aaf5bd2bf060ce7d11e5d122fc67843ef24f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorTaskInputGuard.java",
+      "sha256": "41b770b785cb15d67c2fb83e68ed373e3ff0b87ef64ea6b857e89dbb067837f4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+      "sha256": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "sha256": "e4aa0a5e36c3676b0b2ee9912f5aaaa036ce7088a83645715800766f762cee14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+      "sha256": "b18c650a866ef7acc65582e5a4c2b4c3d60d71139472ab340abc720618f2719d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+      "sha256": "7a6765c1312e7219d0421cae5441f80c7db9f37623b764397b6c4659546d48d5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+      "sha256": "431f820a07cc4dbd6309bb74b17cff659334df21be8a6bdee71994133c90d43b"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+      "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "sha256": "a631cfef0d02237960788631cdf25024c65179adde901f838d3337fb2a02f35c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/FixedIntentAttemptGuard.java",
+      "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "sha256": "d5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LastModelDecisionProjection.java",
+      "sha256": "e2d7cd763683831ced97fcd9bc5e08c2d134e4543dd55c079e5451265d60d0ae"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+      "sha256": "1f4e40a7d74f392c92e7076cc9abc369b59a1f24507addc1b3111c208a0d70b3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "sha256": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "sha256": "5f727d8ebab4f326ada821600a4d01e69ac7fdaeb551abfc19a623ee96399441"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "sha256": "c7639c1e0dbc3f476a280f16c3c8c835f78ea03bba254266de12b000e7fdd641"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "4d2a74bc49a8f12faeea50aed8cc006b5e0f0d4c5259a6b5494e6fb7dac714d0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "sha256": "5bcc0da0a5cb73fa85062a450055eb3a9a9d31a467abf949e5d9335eb0d0e3f7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
+      "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "sha256": "a34a3216b36b77f8c3c7c0adaec66f3624afb217697b655e49f194809d85d3be"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "sha256": "331460f5826d184feda6ba827efdc402cfa72646dee10303ba602b16468a4207"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "sha256": "8ef4facf78773e58b479552ed8c47403847c18eb7970089e043f34c6ff620ef3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+      "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+      "sha256": "0995cd9a7f5897d2dab5827a432eaa13cc7d8d6363ffda415baa6d566d80d80d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
+      "sha256": "4b8250ae93625489ba86a3d00a4f51953ce080af4f76a03a67713d8c2c2b3a73"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+      "sha256": "6fa92103e2984452a0ea16f1fb87187b0bea66c58e87a54f81399284ad5fff50"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTransitionProjection.java",
+      "sha256": "a1f0cb19c3d461dadff7675819cdd551dcdb4e42a5a053417388aa52608010c3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java",
+      "sha256": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+      "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "sha256": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateUiVenusProbe.java",
+      "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+      "sha256": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/QualificationScope.java",
+      "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
+      "sha256": "17aeae9941cf4023d4447a5b7449b2f739f05d2b2d952d2cb49a74179f9d1024"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
+      "sha256": "100b8c9b036e9b2032f2a05ba0fffddaf50507d9752619d01c28858f6729d678"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryDispatch.java",
+      "sha256": "e04794c7a6bba50bc58e583b7e21338e422e6c318ebe20e1a790c6e3b14f8d0c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalStore.java",
+      "sha256": "cac25c2f6a849142a4075b12beb341bf3a2283d0810235d2f67dfdeaa918086d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+      "sha256": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryProcessInventory.java",
+      "sha256": "96459be86bd517cca66727e0e0768b1ada90122684163d7b6717db1dae7236c1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+      "sha256": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoverySlotHandoff.java",
+      "sha256": "00c139dfa65af34ad5a9de1446064f193aabe2f5a7512b11da1723afcb0cf9a5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+      "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
+      "sha256": "c4de5fc3d60876eeeba8f11801e47d99965e943962d0e203d8404268dd7ddeb1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "sha256": "f9c79691e3f0e1cb0a2c5f3d7fd8828e3fc8556eef213b9e17ea3e3831546e40"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SubmitAttemptGuard.java",
+      "sha256": "a6fd24ca70899afb80e00a8b13132d71348240ed0c193739861333ddc7a01c71"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "sha256": "68052883f8fa072cf772b587690e94606970579ce74430bcff27fc8e39c246d2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
+      "sha256": "422a4d98c86c81aca08820f44929beaa9855d4bac3c1b5a6ffd09c72ca904128"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+      "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "sha256": "d5694b4c034d3a7147f2469f411ee6157a4f847e54ce56b50483fd29a4fd2216"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+      "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusProcessContract.java",
+      "sha256": "96d7dbcb44b48801dd4751f516675847ad31861c8c63924ab26d969d5a55799f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusRequestContract.java",
+      "sha256": "2d508be473bd713bffaf041d31c9de666c2d50d5c0e611e4746ba43915969fdf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusSessionContract.java",
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WarmProcessSession.java",
+      "sha256": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceClient.java",
+      "sha256": "a414489c3852c0a69f7d9b8ed3d52a190f7bbf999671315d5835b39f4dcfabfa"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJournal.java",
+      "sha256": "2cc638a5326e934e3394ee82a7fb091b24b8f975c0f1729112b05aea1d7142d4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+      "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "sha256": "06665e3b63fd72852a1369729f8b006b281ec7c5604768ede59a794832f295f9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+      "sha256": "35fa95ec4b78c36aab6c46f09190a8c1633443a9c0a4737b217b9088b6f2a4b1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "sha256": "05d675db442aeb2195a7df087ef2005db2153047a051385fdfc6b73fc6cc3fa0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
+      "sha256": "de5d613401ac52d7e0cab40633e2a75ac69359e97b6caac341ecd209b471ffcc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "sha256": "39dfab09bd0ddbc4c57904089f07ac12ffb454fe0a0fa03adfa60d3d8ab0988c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "sha256": "f3564aa43c040f02b42b6cb1dbc3b23be7bb847579fea6218f1f625fe5d3c487"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+      "sha256": "dc0193f0d41ffeddb8bc31b3ca925ffec81cfb458a994941f751bd61b668bc3f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "sha256": "106fd6dbb66582991c522c306891458587514133867a458a96f6a7e06aa8a0f4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "1e08a7af60dbab6ce1ff53095e2039696d1de886b0fef3434b44a9f40122f02c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "sha256": "c3b5ddc20d2f4e01f7cc80df5be04af318c18cbc6cc1b3a43cdcc68710cc1f35"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "sha256": "704f3de1bea1e0471d5daeb5cfc8255fd30b002c20eafc49c21fef2eb5ecc7a4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    {
+      "path": "tests/ActionFreshnessHostTest.java",
+      "sha256": "23bcebbe8857aa7ef9ae7eebba4b98bccf8e1f1cb339dd813ab4149735d6845d"
+    },
+    {
+      "path": "tests/AppCatalogueHostTest.java",
+      "sha256": "34793a57edb9587cdc98c9963bac545e4dc43b92be509771ebb68d3af382386e"
+    },
+    {
+      "path": "tests/BudgetHostTest.java",
+      "sha256": "ac830f4c6b3264326bf1393ee962e964f9853e81b36da674bf2723a7119e9317"
+    },
+    {
+      "path": "tests/CompactEvidenceHostTest.java",
+      "sha256": "063f093177da6fe427818a4a247ebb866519a0b968ab152f16a9efdf42a82d7c"
+    },
+    {
+      "path": "tests/CompactSequenceHostTest.java",
+      "sha256": "0983579f04dec42f37e257aa940e3cb3f3e117b77b6973dab429a3456b3b472b"
+    },
+    {
+      "path": "tests/CompactTaskHistoryHostTest.java",
+      "sha256": "83c73d923fabf5c77c2ed027cbf9ff9875c9f2fb314c25276d7f99758fab925a"
+    },
+    {
+      "path": "tests/DiagnosticStartupGateHostTest.java",
+      "sha256": "5f9a001a7f9f9e305c1eb801fef9ad4f5516b936901391c1c6bd6f3ea7b26ff8"
+    },
+    {
+      "path": "tests/DispatchedActionSequenceHostTest.java",
+      "sha256": "2e079e310a7d659058efa44b7916c8fad13ac0e89322ea399db883a8bf195c2e"
+    },
+    {
+      "path": "tests/Gemma4ProfileHostTest.java",
+      "sha256": "b0eed227ceeebaede974ff2cf56ade8ba91d8463cd9257e13a5b78a983e3e0b1"
+    },
+    {
+      "path": "tests/ImeObservationHostTest.java",
+      "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
+    },
+    {
+      "path": "tests/LastModelDecisionProjectionHostTest.java",
+      "sha256": "86d7fdf28627b5eb7e0d032d2b395763f7fafdda2faed111e91f32ece4a02317"
+    },
+    {
+      "path": "tests/Lfm25MoeProfileHostTest.java",
+      "sha256": "7686a04d009c62483707f202e9d8d4ca2a594d5373dd156e888aec17d4e3420c"
+    },
+    {
+      "path": "tests/Lfm3ExactTokenHostTest.java",
+      "sha256": "8f555004bcf995cbe8415f1f40e588042704c7ad74095859539cb56b7fdc4676"
+    },
+    {
+      "path": "tests/LocalPolicyHostTest.java",
+      "sha256": "b05d1b82215ec82420e851d9e9940e9f45b7c76808437dafbfd4705f1bcb641e"
+    },
+    {
+      "path": "tests/MemoryAvailabilityHostTest.java",
+      "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
+    },
+    {
+      "path": "tests/MobiMindContractHostTest.java",
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "tests/MobiMindSessionContractHostTest.java",
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "tests/MobileAgentProfilesHostTest.java",
+      "sha256": "34195d82c4fe1ae2357b764fc76c5b7fe99b0f08befe1b3c82992e4e4cbc911a"
+    },
+    {
+      "path": "tests/ModelProfileHostTest.java",
+      "sha256": "b549fd5fdedd4ced18daff1d26069f8f145273435a2c8f5f9b457746672a23f6"
+    },
+    {
+      "path": "tests/Nanbeige42ProfileHostTest.java",
+      "sha256": "97482f715d03465736fee47f8f1b996c12bf3e8213e3cf44a5626beb2dec610f"
+    },
+    {
+      "path": "tests/ObservationStabilityHostTest.java",
+      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+    },
+    {
+      "path": "tests/ObservedAppLabelsHostTest.java",
+      "sha256": "70f34e0add026d03e6f8f33265f908a0a4dfeef24b775d43321a8ca42132daa2"
+    },
+    {
+      "path": "tests/ObservedChildTextHostTest.java",
+      "sha256": "26744b5406a1f59ffcd7cfbd5c0d96d2666d093b8685a1976995406e815a142d"
+    },
+    {
+      "path": "tests/ObservedScrollActionsHostTest.java",
+      "sha256": "4895b044a61be75552ab9abf44f414562342cfcda937e4074d2e31c58fd5c891"
+    },
+    {
+      "path": "tests/ObservedTargetLabelsHostTest.java",
+      "sha256": "ed3f87d01fa5d889c78da37de1e35a4828fd70b073f01885d28674a06a421ddb"
+    },
+    {
+      "path": "tests/ObservedTextProjectionHostTest.java",
+      "sha256": "b6b42ad38122f7d3be2eeae0c786b656ca000858e24de9b563c204699cbf0b1e"
+    },
+    {
+      "path": "tests/ObservedTransitionProjectionHostTest.java",
+      "sha256": "d65692eeb0033b98c69dd40bf95f8cf6225fc41db496aad9aab9aeb860906f37"
+    },
+    {
+      "path": "tests/ObservedWindowMetadataHostTest.java",
+      "sha256": "1cdfa93910fb613f59859ad4ef0eb7c1902d395297b61e8c9553a46c15604d43"
+    },
+    {
+      "path": "tests/PersistentActionPolicyHostTest.java",
+      "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
+    },
+    {
+      "path": "tests/PromptActionDomainHostTest.java",
+      "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
+    },
+    {
+      "path": "tests/PromptCapabilityProjectionHostTest.java",
+      "sha256": "34aabe9f396787efcea8a403a7787f48b8440d35d153bf31332d638d19c203ef"
+    },
+    {
+      "path": "tests/Qwen35ProfileHostTest.java",
+      "sha256": "8ca8f62f1e95ae0847527fcaf2c3c6c5b0b222539a9e30f158cca5f974a738fd"
+    },
+    {
+      "path": "tests/ReadableActionHistoryHostTest.java",
+      "sha256": "cdebb165be2b8201fb15df2d32434b8244fd95fe21e674a39ca3bf5b0d0952aa"
+    },
+    {
+      "path": "tests/RecentActionProjectionHostTest.java",
+      "sha256": "a3fa7e95184c7629c3fc95d930a5c657d86377f04abbbf1c4e328a5f782a6857"
+    },
+    {
+      "path": "tests/RecoveryAcknowledgementHostTest.java",
+      "sha256": "512dab16b9406dc5e7a0896518ce5e94cfa3834c3fb1d61f9ac98c5fbbc96c83"
+    },
+    {
+      "path": "tests/RecoveryDispatchHostTest.java",
+      "sha256": "435b0f99eeafbc56481a6d1758492209cc63992c78eb0bb9bd710b47ee3f7333"
+    },
+    {
+      "path": "tests/RecoverySlotHandoffHostTest.java",
+      "sha256": "400b028fef921d05aa640a325d3c3f5cd63939c3af4aec47a75f615e5345877e"
+    },
+    {
+      "path": "tests/RepeatActionGuardHostTest.java",
+      "sha256": "67ac06e819c145a12a12e5fb8a8ed7de53b4cff14a5d9dccafdd802270a93e0c"
+    },
+    {
+      "path": "tests/RepeatClickProjectionHostTest.java",
+      "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
+    },
+    {
+      "path": "tests/SameStateNoEffectGuardHostTest.java",
+      "sha256": "d5b583e35e4fe28a79da07d655a6d4eae14aab1af86f34c788b5e8a19d60470c"
+    },
+    {
+      "path": "tests/ScrollGrammarHostTest.java",
+      "sha256": "2b97d3d1b0f467bca96607cb207dad0328c9bd7178c76b21de29f2b011391df6"
+    },
+    {
+      "path": "tests/SessionRecoveryHostTest.java",
+      "sha256": "a94ead82a808e19d22dc12115e93e97cef89ca494ded709abfc597f0815697af"
+    },
+    {
+      "path": "tests/TaskAuthorizationDomainHostTest.java",
+      "sha256": "fb868cee66da6108553fc2329366b35a379fa9381a27ca279bb82e5ea0814ec3"
+    },
+    {
+      "path": "tests/UiVenusContractHostTest.java",
+      "sha256": "7e652343e4905a6137876131714428db0d1995a7f76aa8f1b8172d7abe30af00"
+    },
+    {
+      "path": "tests/UiVenusInputContractHostTest.java",
+      "sha256": "0d603ed12c228574640f52c3fdf25854831e91072bbc3370080dbf372b3d1f82"
+    },
+    {
+      "path": "tests/UiVenusProcessContractHostTest.java",
+      "sha256": "40350a82e03f3a19afab6a107949280b8330725647837b1b649c2fd4d4c3683b"
+    },
+    {
+      "path": "tests/UiVenusRequestContractHostTest.java",
+      "sha256": "ff773d205a101ac955628c021e2238bcf21b0ff6da1091223d06e199e46c23d1"
+    },
+    {
+      "path": "tests/UiVenusSessionContractHostTest.java",
+      "sha256": "9a2ce13ae09eda784c127f3a7c8348d2ac4176a9a537a85862e0d083419c231c"
+    },
+    {
+      "path": "tests/WarmProcessSessionHostTest.java",
+      "sha256": "307c3aea15fcf79550b858219cf10a39943e57ec18a105124554922dac1be5cd"
+    },
+    {
+      "path": "tests/action-grammar/DecisionGrammarHostTest.java",
+      "sha256": "7e4d08d30f437587d84515359cf9faed5808db24fad98d76331d451b3e92865e"
+    },
+    {
+      "path": "tests/action-grammar/gbnf_recognizer.py",
+      "sha256": "a9317c9eb2e7461e9b4656a8541791e7f13ca9b60e9c0296d2d4ac94970ab1c3"
+    },
+    {
+      "path": "tests/action-grammar/test_app_label_grammar.py",
+      "sha256": "7b08cc03343bff4434db8b47e90631a21e36046d1e25220ae469ec75574646da"
+    },
+    {
+      "path": "tests/action-grammar/test_completion_protocol.py",
+      "sha256": "f350684c3cafd934f75e78790ec122a3522a85cd1b863b8e61a2617d1a7f86ea"
+    },
+    {
+      "path": "tests/action-grammar/test_decision_grammar.py",
+      "sha256": "22a6011d4c7b0c403076790cd2c56d4b275eeacce4e95839ff182fc7598569eb"
+    },
+    {
+      "path": "tests/action-grammar/test_same_state_no_effect_grammar.py",
+      "sha256": "36d19d167dd251fa42b4330e0fb85bf18cc3969e8f2a4014c51aa9b4f0f8e35d"
+    },
+    {
+      "path": "tests/action-grammar/test_scroll_grammar.py",
+      "sha256": "38aaec7ba80caa5ef5a296ec37d8ab96830d6dd8bb1d5fa5bbd3ea5d3bcc3755"
+    },
+    {
+      "path": "tests/action-parser/ActionDecisionHostTest.java",
+      "sha256": "7c29a1b329c4c5363267692e84608936a082a6b7c4603ade764f213961e0c519"
+    },
+    {
+      "path": "tests/action-parser/run_host_tests.py",
+      "sha256": "b6904d0213c8f9b6599f9241a5a9222d8106e5984308e472ed9d28f12cb9436d"
+    },
+    {
+      "path": "tests/app-label/AppLabelControllerHostTest.java",
+      "sha256": "a8ff9333321283bd9774eed5736bec6bd17bf1c578571a36437a18c5ad5fdcb6"
+    },
+    {
+      "path": "tests/app-label/prepare_fixture.py",
+      "sha256": "dc68e3be877385cdae79493a5af018753207e8c2ed0ac1b5a72f6aa12e0863cb"
+    },
+    {
+      "path": "tests/background-broker/BrokerProtocolHostTest.java",
+      "sha256": "a78199b1744c56d69478c00f6753b6e551dbbb618977fcf16bc07ffaccf9a565"
+    },
+    {
+      "path": "tests/background-broker/BrokerTaskSnapshotHostTest.java",
+      "sha256": "cface15a05531c3f068351281d0733de5fd84e9e81edf51e5d5ca8a710be2c56"
+    },
+    {
+      "path": "tests/background-broker/run_host_checks.py",
+      "sha256": "c3dfbd5b8e647628d59987a295b6a60127b4049628e3e919b8e89ea9d47794b5"
+    },
+    {
+      "path": "tests/background-launch-isolation/BackgroundLaunchIsolationHostTest.java",
+      "sha256": "b26f2a710df71ccd994b2a00e5dc16a4ff9b89cfc785f01ab3ba5196415e71ff"
+    },
+    {
+      "path": "tests/background-launch-isolation/run_host_tests.py",
+      "sha256": "8fef24cdd68924a3c3088adf1e2112ed1e2f3bbef7fd6053cbbd1c6a9495676a"
+    },
+    {
+      "path": "tests/background-owned-task/BackgroundOwnedTaskPolicyHostTest.java",
+      "sha256": "a49ccb434acbb83ad860534298e074d051349b14d0bc4f21d289f5ae54b0caa1"
+    },
+    {
+      "path": "tests/background-owned-task/run_host_tests.py",
+      "sha256": "77c37607c72f385ae0100e6f422c091f95ea7936a235afbc6b3264e7ee01dec0"
+    },
+    {
+      "path": "tests/background-permission/BackgroundPermissionPreparationHostTest.java",
+      "sha256": "4502dcb15b2c6e25f051687354ab3f2acbef8e44827de6bb0d9779db8e7270a3"
+    },
+    {
+      "path": "tests/background-permission/BackgroundPermissionSessionHostTest.java",
+      "sha256": "c722a01190da4c632e2c98ebc3417a76a44dd4c336b360d3507cb019e1e21ee9"
+    },
+    {
+      "path": "tests/background-permission/prepare_session_fixture.py",
+      "sha256": "d9bb8c33aa4c9167e6adb8789156470fb33abdfeaf04823e27c26a5ac944d4d0"
+    },
+    {
+      "path": "tests/background-permission/run_host_tests.py",
+      "sha256": "6760b0870a761334c9dd8ca79f757bfa96c0abd45fea700866453e9d23a40e3c"
+    },
+    {
+      "path": "tests/background-permission/run_session_tests.py",
+      "sha256": "19342c87ed194d786de7c9c4fc467c154ba042753ec2202ad3580d4dfb4d359e"
+    },
+    {
+      "path": "tests/background-session/BackgroundSessionHostTest.java",
+      "sha256": "9d413de77f5cab551a401cda83894e7d1d8f7f074bb5d946187a131c10eb17d6"
+    },
+    {
+      "path": "tests/background-session/BackgroundTaskTargetHostTest.java",
+      "sha256": "7506f5479c1af59b05919976a9ffca1ba1f62cd5458dd9ec6884a7819bdf2fc3"
+    },
+    {
+      "path": "tests/background-session/prepare_fixture.py",
+      "sha256": "625939694ca0363a6b969efc2e66cce87943f74ea668e4514cb138357e398951"
+    },
+    {
+      "path": "tests/background-session/run_host_tests.py",
+      "sha256": "7318253ed195ef71699f010d6185d2f131cd12a7abc020c67d10a1e383a3fd62"
+    },
+    {
+      "path": "tests/background-session/run_target_host_tests.py",
+      "sha256": "b62aa7b46dfca858315f7d1cc5947748dc0cdffebcbc0896a3665ed463ff4ce2"
+    },
+    {
+      "path": "tests/calculator-completion/CalculatorCompletionHostTest.java",
+      "sha256": "93a06f0ed525b97584e811d30744998d11f22fffafb6496aa5427e1f28ee582d"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/MANIFEST.json",
+      "sha256": "52429839dc0061e955a6baa0fce7e1e0213442dab0ed4706ec9c4bee8c795e8c"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/foreground-nanbeige-step05-after.json",
+      "sha256": "df1978596e1d84e77b488a21459f1d7ef96636027ec0968b5ff14ae2fe9ff21c"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/foreground-qwen35-step01-before.json",
+      "sha256": "e43e983ecf8c2144e2aae2593264938b208882d9539f4503a5094af15038a052"
+    },
+    {
+      "path": "tests/calculator-completion/run_host_tests.py",
+      "sha256": "13d3d0d36e18bc194c41b667fa7d686a0ac36b3e281fb9414b6d0f5c25b674ff"
+    },
+    {
+      "path": "tests/calculator-input/CalculatorInputGuardHostTest.java",
+      "sha256": "ad0af5d7fcd2af3a115ce7feeb35296fa1b0dc27d0250b683584c208c0042680"
+    },
+    {
+      "path": "tests/calculator-input/FailedActionObservationHostTest.java",
+      "sha256": "327dd99130c583594b88bb2cdca5be1bf62f223859706907cc803fcb50be80a8"
+    },
+    {
+      "path": "tests/calculator-input/fixtures/v47-background-type-failure.json",
+      "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
+    },
+    {
+      "path": "tests/completion/TaskCompletionGateHostTest.java",
+      "sha256": "01782d73c23f935f438ec0fc6805740384dfe64f711097ccc51cb939ebc14d1c"
+    },
+    {
+      "path": "tests/completion/fixtures/RESULT.json",
+      "sha256": "1fddf3c7cae42bf27acc36ef73e2425432deb037a25b44b5682faccac70d93a4"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-01-after.json",
+      "sha256": "b8bef9319b298ac8c70dae0dd46d1e1e845712e0166e0f8cb9baf870b6e6fc9d"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-02-after.json",
+      "sha256": "9f0d410acdee804e5611d6d68dcc948df2ba0852eb85a8ca533ba46f0d5fc013"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-03-after.json",
+      "sha256": "9701f8e6de02f3b65e4c5e7dc68bc252532f7976b18df901961a588d183fbd0b"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-04-after.json",
+      "sha256": "cd969e06025ae0a7d7ae5e76c22b7b3f7265808a79afb67c17f9af7d3755dba9"
+    },
+    {
+      "path": "tests/completion/fixtures/final-current-notes.xml",
+      "sha256": "8dab056051467bf29fd37f42a0793450cd631d7ac965c49a2c83d435d34249f2"
+    },
+    {
+      "path": "tests/completion/run_host_tests.py",
+      "sha256": "096cb510efb16e24b26a002e43c3ebce265c7b37388a464740f77c0c4e969e42"
+    },
+    {
+      "path": "tests/completion/test_notes_completion.py",
+      "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
+    },
+    {
+      "path": "tests/exact-admission/ObservationHintsHostTest.java",
+      "sha256": "692227e199d6963fd68a3f185a000331d7901838e3f699aa8c160f9b5d4f57ab"
+    },
+    {
+      "path": "tests/exact-admission/PromptAdmissionHostTest.java",
+      "sha256": "0f8171c9986511e07f2584aafedf5650126ba4c557661de71b4f96b075b39096"
+    },
+    {
+      "path": "tests/exact-admission/TextOnlyClickHostTest.java",
+      "sha256": "022406616cf2531c188676e0e882d98b4ca7133ec2db432d53d2e3248c0c3060"
+    },
+    {
+      "path": "tests/exact-admission/android/graphics/Rect.java",
+      "sha256": "2a3e1369304813cf1d0232c5246859da9ff1efa8624c3609e495323f3305e103"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONArray.java",
+      "sha256": "981b41f6a1661b5c7096807f2926dbb51ad196b575c9e092fd287c8a9b97c74b"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONException.java",
+      "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONObject.java",
+      "sha256": "0a7ff2fb1a45108bed1c9cf5a4c3f8dd83036ca65343cf650648914460a8f656"
+    },
+    {
+      "path": "tests/exact-admission/prepare_fixture.py",
+      "sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52"
+    },
+    {
+      "path": "tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java",
+      "sha256": "fb38bef1b3622619fb46bc60f50a6befb803656ef251d167d0fe66e591fd0543"
+    },
+    {
+      "path": "tests/fixed-intent-tools/FixedIntentToolsHostTest.java",
+      "sha256": "45edbe91478a9c3e6d63a4a6e0dd6d39594def7c22418929e6e5f1f2b6e697fa"
+    },
+    {
+      "path": "tests/fixed-intent-tools/run_host_tests.py",
+      "sha256": "c7751b86220f26428df0703f21c7a49e2091d092a0f3fcea9ff99f341ca099cb"
+    },
+    {
+      "path": "tests/fixed-intent-tools/run_integration_tests.py",
+      "sha256": "0cf98eae825da8435c145ebdccd6d264d021821b2ec0e26e4facb7cd0205e6bb"
+    },
+    {
+      "path": "tests/fixed-intent-tools/test_fixed_grammar.py",
+      "sha256": "ab1238f424d554fb752124bf7be67a74078f7e88c2501a15571113a449dfbe55"
+    },
+    {
+      "path": "tests/ime-submit/ImeSubmitHostTest.java",
+      "sha256": "af2ebe05e2164e6ff10f7c8b7321581ea42a867aa8f61b146fa1180d56a45af0"
+    },
+    {
+      "path": "tests/ime-submit/ImeSubmitWiringHostTest.java",
+      "sha256": "0a54bae97a3a09a41ac25fedb24104e73de7de847b0ec200aced3f2cc78ae360"
+    },
+    {
+      "path": "tests/ime-submit/run_host_tests.py",
+      "sha256": "c03a95d2a6708d1646d71a321230f7db42c6155a11acd2bc78ad133a34f3dbe4"
+    },
+    {
+      "path": "tests/ime-submit/test_submit_grammar.py",
+      "sha256": "9dd37cf8768688d3d1d1299d6d16acf6d896f7e697160eb716cb9c59fe339fdf"
+    },
+    {
+      "path": "tests/nanbeige42/run_host_profile_checks.py",
+      "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
+    },
+    {
+      "path": "tests/notes-create-workflow/NotesCreateWorkflowHostTest.java",
+      "sha256": "34e8505202329a9e599f262e228a3bf52836e1cc491d4e1ea18b97327f39969b"
+    },
+    {
+      "path": "tests/notes-create-workflow/fixtures/v50-background-parent-create-partial.json",
+      "sha256": "6ed45e19b8a6f62746c9b7feb79eeba1293f468d17fdc57d46c9b92259da57b6"
+    },
+    {
+      "path": "tests/notes-editor-phase/NotesEditorPhaseHostTest.java",
+      "sha256": "8805c539d58b8c12f601787652c5f556f8f2564efd664e7325f00c868d3ad07a"
+    },
+    {
+      "path": "tests/notes-editor-phase/fixtures/v48-editor-click-trace.json",
+      "sha256": "24d3361fb5f5e30f999dc9781636484211d81db2d16f5626430bc8573bcbe70b"
+    },
+    {
+      "path": "tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
+      "sha256": "617eb96a0273bd391c45d442d4e4ec50c6cd9eb4f1039b93d015fd814e6ad44e"
+    },
+    {
+      "path": "tests/notes-owner-intent/run_host_tests.py",
+      "sha256": "e28b3ea291eeb8198768a94e3c4ae03fb7cce37dd9b800246eeca5dfb2362303"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesListProvenanceHostTest.java",
+      "sha256": "4bb6e1c6e79fbb9e2214521c15ad45be16e1e6b4310825650fdd7e074c954101"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesRecoveryHostTest.java",
+      "sha256": "fe1df24f678fee13da4f424b378b80c9cb7d9a1ea767bbad8ff262f66a2286a7"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesTaskPhaseHostTest.java",
+      "sha256": "765bdb4358dc7ef385cbd8a9191ca9ea596a77a58f89c1feb4f464fbfb1dfd87"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesTaskScopeHostTest.java",
+      "sha256": "5d679a9954680584eadda0ab4a8e240f1719f9bb600c4fe077061b37a882555a"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/manual-notes-list.xml",
+      "sha256": "56b5f62e246a9945c1c4c0e9eea1273eb44152014d3d272cd8769776185cb7db"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v45-notes-trace.json",
+      "sha256": "963f320837ff09709ce10416bcd974d61a94b33d79bcf18b72ae6635becf5696"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v46-notes-recovery-trace.json",
+      "sha256": "c253146ad4556d8448df87905f0529846b9fa80b489bdf59c94840afb137ad01"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v47-notes-scope-trace.json",
+      "sha256": "160346f0506ccac079efc1b86c5f1ec957a7d01cbfa24a83e365ae5787cf5669"
+    },
+    {
+      "path": "tests/notes-task-phase/test_phase_grammar.py",
+      "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
+    },
+    {
+      "path": "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
+      "sha256": "99ebbfb3af5b8c635b18184bdcfd7c3f5354fccbb64d5cbd71690ebf09a5bf26"
+    },
+    {
+      "path": "tests/observation-collection/ObservationCollectionHostTest.java",
+      "sha256": "8d0450b8fde745a573b76d66c2eba06b27599cccd5c44bf7236596dc1e7db551"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00785-final-current-browser-dump.json",
+      "sha256": "c39ececfcb3bd6bdcbae88ed34f7813b85a58ec9f31cf9c722eb88cba41e2acf"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00786-final-current-browser-read.json",
+      "sha256": "f7055593a9fb4e791f3b51fd6c2a7f0402081123133ae44b3bebef69aaf8a07e"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00787-final-current-browser-focus.json",
+      "sha256": "f1c4596d08696c98316cfc46cda89ae5a842f30aa3a3a58cddb0ba73de085b13"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00790-final-screen.json",
+      "sha256": "ec8c6e7f420912afe1b4d95acdd91b17278c007b11dd2afdbefbb47152cb30fe"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/SOURCE.json",
+      "sha256": "25bd9f521eda75e010eebc4f464746291347c5bfb59673b71af613cb2f1c0a03"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/final-current-browser.xml",
+      "sha256": "019d38ed44e7c0fa118bb9e596703053c594427d46a8b04e74409d9cf880c598"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/step-02-before.json",
+      "sha256": "eaa8c759ee468336814c60859ec2455d63ee7ea14fc916b0ae9bda2155e6b31a"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/step-05-before.json",
+      "sha256": "6d7c4c01baa90ac73036aa9736b2d1b5c26529a38dfb3cf6f4502cfd9727fab6"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/v49-readGraph.txt",
+      "sha256": "1e71cdf254fb2613173d215a2271cbaf34bf1773b75ae9a3b832039ffbada6bb"
+    },
+    {
+      "path": "tests/observation-collection/run_host_tests.py",
+      "sha256": "ed5b0f826ec44c06e2f477b7c6f8a36fd661af174632974e0e1a9dfee75912eb"
+    },
+    {
+      "path": "tests/observation-pipeline/ObserverPipelineHost.template",
+      "sha256": "e0915c5bb401591b1e9ccbde3554373483839ddd57babbc336f066f8e2bf31f6"
+    },
+    {
+      "path": "tests/observation-pipeline/run_host_tests.py",
+      "sha256": "6d8c89def31cb3f606657d8ad135ab700b2b4f1782129820a237da12ef2f87b7"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java",
+      "sha256": "2e7036faa69a6310d416c6beca3eae4dfaf403965fde2246557daa09c6a5b2b7"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/OwnedWorkerCancellationHostTest.java",
+      "sha256": "513bddfc4bca54e0124652cb136061fdabacc77f51fbfeac926554dafdc6e06f"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/native_cancellation_contract.py",
+      "sha256": "05204cfbef20c3ca231281e242bfab83ac76c566e089970bcfa38329cf18b424"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/run_host_tests.py",
+      "sha256": "8829049e8e2ac71dc03873df4dc5619e93cd13ccf4dd19c0370fe7982ed39583"
+    },
+    {
+      "path": "tests/owner-authorization/OwnerAuthorizationWiringHostTest.java",
+      "sha256": "030aa28b00b4eb46ac261ee56aed9ad21f1709cafcb9d89e1e3f39b5c02d13d2"
+    },
+    {
+      "path": "tests/owner-authorization/run_host_tests.py",
+      "sha256": "5abc2c55e7f4cc507fdfb8f86aacf32da43469bf1348fbec9dbe9b31adb9126c"
+    },
+    {
+      "path": "tests/owner-grammar/OwnerGrammarHostTest.java",
+      "sha256": "7d85fcbf85888bdaa54831aa72fea33f8a2948c91b4c29cd77391fbdb575af8c"
+    },
+    {
+      "path": "tests/owner-grammar/run_host_tests.py",
+      "sha256": "0d3ebcfeb3e9628765028d87679915e2b1180703a5268830feeb7da8afc163e2"
+    },
+    {
+      "path": "tests/owner-grammar/test_owner_grammar.py",
+      "sha256": "3890710fd3859fb9d8a76280d3ce023c446185f62c350a6e9ab9c7e5be7c92f7"
+    },
+    {
+      "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
+      "sha256": "ef89c919dd78336479c694bd9b5db01bc8a61b2f43d85dbbe509f31ab624a9f7"
+    },
+    {
+      "path": "tests/qualification-scope/BackgroundObservationFixture.template",
+      "sha256": "f98d496cd550b79fbfe315c04e79cccb19fa8d18d3ac6677d199664931fb8ad0"
+    },
+    {
+      "path": "tests/qualification-scope/QualificationScopeHostTest.java",
+      "sha256": "26d1357f1b1d78ff868ce7a47f080eb3a34e1a9765f36fec041c53dca3be5737"
+    },
+    {
+      "path": "tests/qualification-scope/ServiceFixture.template",
+      "sha256": "81822790951c13560c5153ab50ff730131adc0373decb4a286bc91cf616735cb"
+    },
+    {
+      "path": "tests/qualification-scope/SessionFixture.template",
+      "sha256": "9fff6bced790fa404b81053e48aba02daf7a6fc2ce0515a0bfef5e50617ef15b"
+    },
+    {
+      "path": "tests/qualification-scope/UiFixture.template",
+      "sha256": "939b1fb8ed93b772ee77cda50a0848d991cb6a27a26ed1339c8b732ad945e5c3"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/app/Activity.java",
+      "sha256": "3078cddd818699488bb30a0da62a9190372a2862694893ac6265fb711b43face"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/ComponentName.java",
+      "sha256": "9260a59ec2cf461b461090d25f603bdd836d737d3c1cb999ec779c2a7605af66"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/Context.java",
+      "sha256": "9566fdf96b9d71c0f51f215aae97b2bbcc8ab9979430192b0fb2ece484d12c31"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/Intent.java",
+      "sha256": "f9fa230debe434e655bd15f043548376db7782d55000d282466767e1621aa1fe"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ActivityInfo.java",
+      "sha256": "e389e3dd9949478bbe4fa340ae32279b5a939af93f2e7e209f7933c0c38a87cc"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ApplicationInfo.java",
+      "sha256": "0aea7ad33689355df5adc080a7e10149889028b66c3260278be85f5390f7e44a"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/PackageInfo.java",
+      "sha256": "4206abab1110623c41271bed6e6eae04ff1ea800977f2d649f890d26550333f7"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/PackageManager.java",
+      "sha256": "f68315f3805165e71e456eb870ae21318edee695d743e6a369be84aaa7d17a65"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ResolveInfo.java",
+      "sha256": "29f512b9e365852b2f45c1b8be6b46dead33e7f02da8807d5082a6a4914a9fe7"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/res/AssetManager.java",
+      "sha256": "8b89b0d554e0b59f5fbdd8c179b836642f97ea50829dcfc34113e84439662909"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/graphics/Rect.java",
+      "sha256": "6d3a2cbd8addc45df561f48779486fd31a3f3ef10a3d7ae22b686783e06bb6be"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Bundle.java",
+      "sha256": "b2991bd300de208fda2eea0d3e271a4eb349aa803cba475a1a7907a932d10673"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Handler.java",
+      "sha256": "236f0b1729f0a0e819bd1d58d4f5324813da20bc66d13a849d92ca63a9c8157c"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Looper.java",
+      "sha256": "4482d82f17e7b24ee8d624d1ac443b7b1312a02bd939d17889b9b47e8c2a56e9"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Process.java",
+      "sha256": "d4c90787159e9ad4b0be102181cda2cee3aee8533ac30253cd2a727b9ff71e0d"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/SystemClock.java",
+      "sha256": "0599b8e9b6b7672fdfd3b142f191dcdbcc8b45f5ba5abe45115258ccf86c0f82"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/ErrnoException.java",
+      "sha256": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/Os.java",
+      "sha256": "b46599dd8a55cd626150d6618dec11af2129c6800b6ebc9df6d9239bc8c4b389"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/OsConstants.java",
+      "sha256": "5bcaf8b3285e9f21b3521db7e624b03f30b77a8b4be5245f6364c6e5641246de"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/StructStat.java",
+      "sha256": "7bda01d378b4343f2afdd150647db95fb5f0f70c0a249c64742780e85e0c6fa5"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/util/AtomicFile.java",
+      "sha256": "518b9081da78cc0a64921cc7eb719fa6e2316cf1979dea31a20ca78a6deb90b1"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/Display.java",
+      "sha256": "797c98ecd9819d6815d4e4bc36c8f15a6a0717f2af00b14f5d126d20f7374dfc"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityNodeInfo.java",
+      "sha256": "dc4980df4cbd400cfabd34f2860fd9d474f60fa19a5ed4d9dd519b39a510a8f4"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityWindowInfo.java",
+      "sha256": "ae2a2aef58c1b7a3473f340f6834d3c0b79f5c9c611e8d3c99d4b6a6b7c233ef"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/inputmethod/InputMethodManager.java",
+      "sha256": "71af0b48e066b63e32f1d1fc3664cc129f2c48e6fba05765500cdd6e08c6aaa9"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/FixtureJson.java",
+      "sha256": "2a6ccd4425c29366cfcb0b147e6d2580118cf68260ba52e22a4b60d63f27d38b"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONArray.java",
+      "sha256": "ad6d26d77bbe345e88e226d9ce41c33d7fa97e7758ad0e428209dd9746f6fe75"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONException.java",
+      "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONObject.java",
+      "sha256": "11f5ec289e22cd69b740cdd1725a4f6170749571ce5fede476e64b57af026e5f"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
+      "sha256": "2af68a1504533147dde2433ac957f7a1352a058e998c68c352deff54c687a710"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "sha256": "79f117b06dbeef4baef7e5ad1c6f8d5d3fb9e8743f196b73770741508ebeda38"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "sha256": "c166191abe27bb2fbb7f17468a1d0b0aba692033ac6d9e150bb244287f171b6c"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "sha256": "a50e1bf377d1ae6016db5ad4aa81ef813c8f43d6779b35edfd06514642ee58ea"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+      "sha256": "fbb0487305b2c3161beb10307f7ee3f4ed6455ab56064154e3205234e5fddcbb"
+    },
+    {
+      "path": "tests/qualification-scope/prepare_fixture.py",
+      "sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60"
+    },
+    {
+      "path": "tests/qualification-scope/run_host_tests.py",
+      "sha256": "73211a5a2608003bcf8f47425d373fb8badd669421943ee5bc1074a8485326a0"
+    },
+    {
+      "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
+      "sha256": "0b2e13aeeb195c4fc3147402c4fa24ac8d41da8194b870ca04c897e30b630114"
+    },
+    {
+      "path": "tests/recovery-application/android/app/Application.java",
+      "sha256": "f5e2d48bc826ae0aef0675eebcde96c5600de4439825e7e1e9bd2006e9290bc4"
+    },
+    {
+      "path": "tests/recovery-application/android/content/Context.java",
+      "sha256": "16a2485cbb8d6de305df02a30a51a6ba542a4c3d4c1ac47715ec30f538f1ec86"
+    },
+    {
+      "path": "tests/recovery-application/android/content/pm/ApplicationInfo.java",
+      "sha256": "351132873a0dfff522a95d378044ffa2695dadaed30088e7f6c8ab5fb1d92ec3"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Handler.java",
+      "sha256": "99d3e879572a34c6e6ffddfea2f0aff6baaf0be674b44ab21321c3270651d50d"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Looper.java",
+      "sha256": "0490a5dfa058c9a9a38628953d387ee9cc6b82f8bb3a0904cb1ed0932db6c305"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Process.java",
+      "sha256": "0afcc3ee62acb6c15f6fc789d541d4dabdd1fe65aeff775faed938afc68bf58c"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/BackgroundPermissionSession.java",
+      "sha256": "596fcb5aafc3c2befd90938d5c99e85054d12d92bc87b43aed0b3b7e00f4c8e7"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "f34639f44ff58922c0c294ea300faee5bfcf990c507b85783f76e398d57acf90"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "sha256": "6082cc71141649d2ccb4372b857791e2fcd011250305fbcdc299597208951daa"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "sha256": "3f205fae6da0308829ec3a6edf51fd7cbb10a9b9d41a76004182e7fce22bdf06"
+    },
+    {
+      "path": "tests/recovery-application/prepare_engine_fixture.py",
+      "sha256": "ba2b685fe6cab059fdf46b54ef7a45f8ac507544f2ae13153d69c1ab57d40a02"
+    },
+    {
+      "path": "tests/recovery-application/run_host_tests.py",
+      "sha256": "b1f220734077bc60e5467cc7a66a04ab7ace036977785ac78f8cd4dbc0978ed5"
+    },
+    {
+      "path": "tests/recovery-inventory/RecoveryInventoryHostTest.java",
+      "sha256": "30afe0066c62a72791ea9a52e929a44276858ef70033270581d65e0835a5794a"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/Context.java",
+      "sha256": "93a9d3726ff4f1f8cc9a510e27c27538e3e4caefd4f79c39882718fa994cba90"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/pm/ApplicationInfo.java",
+      "sha256": "52e318906b8d5de43270cb05edd537117ad39140bec86538ad93a67cdc5de6ed"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Looper.java",
+      "sha256": "874485cc8a937d8a587e5a5e159e35ee8179a78ee2c997c118947e403b51a46f"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Process.java",
+      "sha256": "e5a338c146ecd6afdc2578ca53530e862ec4ca1260e8a6b39b164618cb665d87"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/SystemClock.java",
+      "sha256": "930c17587c70ccf674dae45df00afeabd88344a25868244a129964b1fcff3ece"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/ErrnoException.java",
+      "sha256": "a854ff92ceaf29a827d5cec326ebb1899c2dac6c7c3248715995c9b1c78158a2"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/Os.java",
+      "sha256": "3268611e327926c84dedc4a9db6ce98b03c77644c9a99710bdc05d8702ba243d"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/OsConstants.java",
+      "sha256": "18352a11a86156e7e01fade6335bf564c2823ce60c4cb22fa8dc035b9d6a9d29"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/StructStat.java",
+      "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
+    },
+    {
+      "path": "tests/runtime-config-ui/RefreshFixture.template",
+      "sha256": "13a7f296d930d63d59640cff94febdd809680c6e9045f18cf3ea31eebbd7a6bd"
+    },
+    {
+      "path": "tests/runtime-config-ui/run_host_tests.py",
+      "sha256": "ee9defb40c4341fac07bc3de612979272dcb27780e0f75fcd2b92b46a8f4dc39"
+    },
+    {
+      "path": "tests/test_ui_venus_q4_0_runtime.py",
+      "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
+    },
+    {
+      "path": "tests/text-only-click/fixtures/v43-note-step05-before.json",
+      "sha256": "a9e83eb50aabfd71ec967ba74b98ebe60176002700380e68b81775cccc076d75"
+    },
+    {
+      "path": "tests/text-only-click/test_grammar.py",
+      "sha256": "5258ddda9f690fa3528930d127eaaf07bc8c18be83164bab4884b9b5a66b135c"
+    },
+    {
+      "path": "tests/warm-finalization/WarmFinalizationHostTest.java",
+      "sha256": "42d37b5677c469db401aacf2ca21f93e512f2cb67ac8f68cd3abffc2c36071e7"
+    },
+    {
+      "path": "tests/warm-finalization/prepare_fixture.py",
+      "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+    },
+    {
+      "path": "tests/web-flight/CsairCalendarHostTest.java",
+      "sha256": "8036a21854b736f781fe41b87e3a45a7a34f45eecf1d85ca078530c51ff9cfee"
+    },
+    {
+      "path": "tests/web-flight/CsairCityPickerHostTest.java",
+      "sha256": "fd36b0f202ad4e2dc9486949e8ed0f75be0d4689852ce4d61ecb840035399323"
+    },
+    {
+      "path": "tests/web-flight/CsairFlightFormHostTest.java",
+      "sha256": "e41938b6e4774d0123c9c743126a96166ddae8490e339f7e62905b7d14db4da0"
+    },
+    {
+      "path": "tests/web-flight/WebCalendarNativeHostTest.java",
+      "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
+    },
+    {
+      "path": "tests/web-flight/WebFlightEvidenceHostTest.java",
+      "sha256": "cb6f785dec795a0d820c4b325dd3caedb958a03001bf9ff8031c89b3cfdde1b7"
+    },
+    {
+      "path": "tests/web-flight/WebFlightQueryHostTest.java",
+      "sha256": "31917261ab88435247c5247f90c964f83f8003ff5e3b19d00635bb35e3238b5b"
+    },
+    {
+      "path": "tests/web-flight/WebNaturalOwnerHostTest.java",
+      "sha256": "c511f6f89b5b98f06166734f879cfd307793a8eb83bdef3caa8751c73594211b"
+    },
+    {
+      "path": "tests/web-flight/WebTaskCompositionHostTest.java",
+      "sha256": "20cced373201cabd5b5255393ca48b9c7f537f774b812d2b5db2d6f9604899d7"
+    },
+    {
+      "path": "tests/web-flight/WebUnstartedRetirementHostTest.java",
+      "sha256": "fb12aa3d1d67f098eab14ce75b25dfb10b27c33e86f2e6a5d449bf7c0856c938"
+    },
+    {
+      "path": "tests/web-flight/legacy-boundary/WebFlightDomain.java",
+      "sha256": "a0cc6b669a82baeb87aac5602f3ea5cce140e489a437c1961614a975107c9f9d"
+    },
+    {
+      "path": "tests/web-flight/run_query_host_tests.py",
+      "sha256": "d70d5e2a06eda5a2142906d908662a5cf2a7329289588157031eed84e5e0df46"
+    },
+    {
+      "path": "tools/build_identity.py",
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6"
+    },
+    {
+      "path": "tools/create_debug_task.py",
+      "sha256": "db959a4382b4b4fc67504a9201311f0ea4a38a1c45dfcf093d68ed5a5b7583f2"
+    },
+    {
+      "path": "tools/fetch_pinned_runtime.py",
+      "sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664"
+    },
+    {
+      "path": "tools/model_profiles.py",
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
+    },
+    {
+      "path": "tools/phone_acceptance.py",
+      "sha256": "673a017689bff6d8a1972f6d3e64ff20803c0f00926265e2d0abc2cbe80371b9"
+    },
+    {
+      "path": "tools/phone_inventory.py",
+      "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
+    },
+    {
+      "path": "tools/phone_suite.py",
+      "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
+    },
+    {
+      "path": "tools/run_host_checks.py",
+      "sha256": "1231b8b879facaba5b998d255cd039da0a8415334dbcdda2e9e5aecf0557ceab"
+    },
+    {
+      "path": "tools/test_app_label_binding.py",
+      "sha256": "9d9d2a87ee830ed0e7bb363f647f30219b6fb4911620026ff4b83b6f1080c6bf"
+    },
+    {
+      "path": "tools/test_app_label_controller.py",
+      "sha256": "44ce4102fd07bf4c38029cece5ca618a19c5d760a8e7c6620c66d4da3d52dd9c"
+    },
+    {
+      "path": "tools/test_build_identity.py",
+      "sha256": "508129733cb4b218e22da9e46990d1b3490233d968b158d6d5cc250f3bc54590"
+    },
+    {
+      "path": "tools/test_exact_admission.py",
+      "sha256": "9623c0115d1fff495310490b5d38b655512045910860cefed29aa03cc4be7248"
+    },
+    {
+      "path": "tools/test_fixed_intent_binding.py",
+      "sha256": "b73ac38ef25cdc9643c4fc3107834d350f58fb1322b4377315fb5796b25f5e7e"
+    },
+    {
+      "path": "tools/test_fixed_response_retry.py",
+      "sha256": "e9e1b2800c4397fc05922a47984b256b140d5a113567dab1788c3b4d5524f48f"
+    },
+    {
+      "path": "tools/test_ime_submit_binding.py",
+      "sha256": "a119c06221221c87d3233740cb7314dc3714bd9d072a1fb2a0173ee342bbcb8f"
+    },
+    {
+      "path": "tools/test_labeled_target_binding.py",
+      "sha256": "6a8dcb8745c610e1e1325e325fc25a918f29140096a12bb9def2f09d9e46762b"
+    },
+    {
+      "path": "tools/test_lfm25_profile.py",
+      "sha256": "954930b1d0db2a73b3b65c194150b2769e8d929207cda76a1405d6d1af51f617"
+    },
+    {
+      "path": "tools/test_mobile_agent_profiles.py",
+      "sha256": "ee7785b4083f016cffd21471fa8e1782d01f5cda5476115b7761ef3731caa796"
+    },
+    {
+      "path": "tools/test_model_profiles.py",
+      "sha256": "b1971623964802bd714007f46d85414e263206e5c22462e49b9f69fa68e56885"
+    },
+    {
+      "path": "tools/test_nanbeige42_profile.py",
+      "sha256": "1595732ce20ab5c5522f0dd987a52cfe93263b7460bbabb7a02f2fc7856c3afe"
+    },
+    {
+      "path": "tools/test_phone_acceptance.py",
+      "sha256": "366e32660aa47203384363d948617f576f2f912fe6a3a2d1fab0e32a90587871"
+    },
+    {
+      "path": "tools/test_phone_inventory.py",
+      "sha256": "b2846df4eb51933fe116d9a920ff4c19e92e746c52e6124040e1b6ad03cad4a4"
+    },
+    {
+      "path": "tools/test_phone_suite.py",
+      "sha256": "50acdd9b4c6ca3acc8bc347f5b0fbf280bf806862739f892046d01694b5d79f1"
+    },
+    {
+      "path": "tools/test_profile_registry_consumers.py",
+      "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
+    },
+    {
+      "path": "tools/test_qualification_scope_build.py",
+      "sha256": "b1deb1c85964b525632ece5d63e5cc952cbaa7a7a6e99f2c8ae6b4dfb1d0c93a"
+    },
+    {
+      "path": "tools/test_qwen35_profile.py",
+      "sha256": "397155470dc312309c1c66e209f3c8b9b3185381085fdf8f1446e9b0bb9e6d10"
+    },
+    {
+      "path": "tools/test_recovery_application.py",
+      "sha256": "a9f77b19b9d23d43333b9a0d4ce7f527bde47cb2bd79b67938a91d995d219481"
+    },
+    {
+      "path": "tools/test_recovery_inventory.py",
+      "sha256": "478b244b6cd0be175f5ed57ecd7d737d4181a0d5803c3105f3dd682987b75ae0"
+    },
+    {
+      "path": "tools/test_verify_mobimind_runtime.py",
+      "sha256": "57911fd63315474ea13d295246d56d9e06a793979ee6b04084900d6debcfa7be"
+    },
+    {
+      "path": "tools/test_verify_runtime.py",
+      "sha256": "70b32dcb6b4a900e715b4aa0e01610b9e308bee0a7a3f2cafb8f8deb334880dd"
+    },
+    {
+      "path": "tools/test_verify_source.py",
+      "sha256": "6070ec98bb1cd6f1bc23abfbd7e68a393348e9de23bac97b8cf8773690717e86"
+    },
+    {
+      "path": "tools/test_verify_ui_venus_runtime.py",
+      "sha256": "fabd3465edc295837415e56b13e654b86fe0919711ea7ca4006ecab989ef7622"
+    },
+    {
+      "path": "tools/test_warm_collection.py",
+      "sha256": "4d97a5c80829c0b3cc18111380b5248d20bfa85d36cc0f9280499121e0f2fc4a"
+    },
+    {
+      "path": "tools/test_warm_finalization.py",
+      "sha256": "759e5f00721512169d0cbeb71f692d77b4b5cceaa8f5fb82fdd6042f04e8e966"
+    },
+    {
+      "path": "tools/test_warm_receipts.py",
+      "sha256": "88c806e8d65e7350c44e21551c661472861af565d420c99a8896c087c2f7a124"
+    },
+    {
+      "path": "tools/test_warm_suite.py",
+      "sha256": "515842f2b2129d2e99726425f0c0a5e3c1d723b9b1ea673fe1e9585a2b3bd8c7"
+    },
+    {
+      "path": "tools/verify_mobimind_runtime.py",
+      "sha256": "a35cba2df6a4b4441d97d732ae1f9c10cf68d995329d52036ba93703b2b789db"
+    },
+    {
+      "path": "tools/verify_runtime.py",
+      "sha256": "61fb290e21d1b83b619a2d2d8e851defc1534a286d97d2d265b4d76b30ef1c69"
+    },
+    {
+      "path": "tools/verify_source.py",
+      "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
+    },
+    {
+      "path": "tools/verify_ui_venus_runtime.py",
+      "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
+    },
+    {
+      "path": "tools/warm_receipts.py",
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    }
+  ],
+  "web_fixture_compiler_copy": {
+    "source_path": "tests/web-flight/legacy-boundary/WebFlightDomain.java",
+    "compiler_path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r2/WebTaskDomain.java",
+    "bytes": 1202,
+    "sha256": "a0cc6b669a82baeb87aac5602f3ea5cce140e489a437c1961614a975107c9f9d",
+    "byte_identical": true
+  },
+  "native_adapter": {
+    "upstream_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+    "adapted_sha256": "77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0",
+    "publication": "renameat2(RENAME_NOREPLACE)",
+    "no_overwrite": true,
+    "fallback_overwriting_rename": false,
+    "errno_diagnostics": [
+      "write_all",
+      "file_fsync",
+      "renameat2_noreplace",
+      "directory_fsync"
+    ],
+    "runtime": "llama_cpp",
+    "mode": "llm",
+    "compute_modes": [
+      "npu",
+      "gpu"
+    ],
+    "context_sizes": [
+      4096,
+      8192
+    ],
+    "prompt_guard": "all pinned profiles including LFM3: exact same input_ids + output + reserve256",
+    "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "model_verification": "native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata",
+    "sha256_dispatch": "runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback",
+    "model_digest_cache": false,
+    "full_model_read_every_one_shot_request": true,
+    "warm_cancellation_policy": {
+      "eligible_syscalls_restart": true,
+      "sigpipe_ignored_only_in_warm_process": true,
+      "control_epipe_does_not_skip_sdk_cleanup": true,
+      "sdk_or_phone_healthy_cancellation_verified": false
+    },
+    "task_worker_mode": {
+      "schema": "hepta.geniex-task-request.result.v1",
+      "hash_scope": "one_full_read_per_owned_generation",
+      "reuse_scope": "one_task",
+      "reset_every_request": true,
+      "one_shot_contract_unchanged": true
+    },
+    "private_prompt_evidence": "create-only formatted bytes and actual direct input IDs; same private request directory",
+    "new_profile_exact_token_count": true,
+    "no_context_truncation": true,
+    "phase_timing_schema": "hepta.native-phase-timing.v1",
+    "phase_timing_clock": "CLOCK_MONOTONIC",
+    "phase_timing_stages": [
+      "hash",
+      "vocab",
+      "create",
+      "template_tokenize",
+      "generate",
+      "destroy",
+      "deinit"
+    ],
+    "phase_timing_diagnostic_only": true,
+    "controller_grammar": "optional fixed-schema per-observation GBNF; same private request directory and native SHA binding",
+    "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+  },
+  "finished_host_wall_ms": 1794487230671
+}

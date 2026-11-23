@@ -1,0 +1,618 @@
+{
+  "schema": "hepta.retained-local-model-latency-audit.v1",
+  "date_utc": "2026-11-10",
+  "scope": {
+    "host": "pocket4",
+    "read_only": true,
+    "device_contact": false,
+    "new_benchmarks": false,
+    "source_repo_modified": false
+  },
+  "nanbeige": {
+    "root": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/",
+    "task_id": "fd5c0d6303d649c49c53b6ca68a5a2e4",
+    "worker_generation": "2eea9157974f4b0990a9a14e7fdb63f6",
+    "worker_pid": 15316,
+    "model_profile": "nanbeige4.2-3b-q4_k_m",
+    "model_sha256": "b92d2e35c9876b0c4bc671996360204f4149d0546c23d5954d5eb3b106c81f24",
+    "build_identity_sha256": "f707fca4bfa5f553c718cdbf21449fc05da9c5fa6e94b7c4c40c514ee626b71b",
+    "context_tokens": 4096,
+    "threads": 4,
+    "sampler_requested_all_six_requests": {
+      "temperature": 0,
+      "top_p": 1,
+      "top_k": 1,
+      "repetition_penalty": 1,
+      "seed": 42
+    },
+    "rows": [
+      {
+        "step": 1,
+        "id": "bcb7a1caa14245f8827034a40678a97e",
+        "prompt": 2260,
+        "ctx_total": 2772,
+        "input_bytes": 6791,
+        "generated": 86,
+        "pp_ms": 10118.08,
+        "decode_ms": 11951.145,
+        "decode_tps": 7.195963231974845,
+        "total_ms": 27435.169,
+        "deadline": false,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 1,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 2305.773
+          },
+          "vocab": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 161.826
+          },
+          "create": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 2852.591
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 20.11
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 22071.245
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      },
+      {
+        "step": 2,
+        "id": "751e961be2d44a1da5388e38942307ae",
+        "prompt": 2870,
+        "ctx_total": 3382,
+        "input_bytes": 8496,
+        "generated": 132,
+        "pp_ms": 13405.523,
+        "decode_ms": 19603.41,
+        "decode_tps": 6.733522382075363,
+        "total_ms": 33060.37,
+        "deadline": false,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 2,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "vocab": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "create": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 24.238
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 33011.114
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      },
+      {
+        "step": 3,
+        "id": "9ceb356034e044d6b91dedae92de2aa0",
+        "prompt": 3075,
+        "ctx_total": 3587,
+        "input_bytes": 9262,
+        "generated": 137,
+        "pp_ms": 14770.81,
+        "decode_ms": 21311.989,
+        "decode_tps": 6.4283066212168185,
+        "total_ms": 36140.623,
+        "deadline": false,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 3,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "vocab": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "create": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 26.66
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 36085.031
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      },
+      {
+        "step": 4,
+        "id": "a9c86a9d1d224829b83a8b2cedeb82c5",
+        "prompt": 3196,
+        "ctx_total": 3708,
+        "input_bytes": 9632,
+        "generated": 129,
+        "pp_ms": 17285.516,
+        "decode_ms": 28937.786,
+        "decode_tps": 4.4578393108581285,
+        "total_ms": 46275.807,
+        "deadline": false,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 4,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "vocab": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "create": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 22.557
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 46225.544
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      },
+      {
+        "step": 5,
+        "id": "eedc6d4c66dc4b03be0af9b84dd553e0",
+        "prompt": 3313,
+        "ctx_total": 3825,
+        "input_bytes": 10002,
+        "generated": 134,
+        "pp_ms": 18155.058,
+        "decode_ms": 30391.651,
+        "decode_tps": 4.409105645494547,
+        "total_ms": 48599.761,
+        "deadline": false,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 5,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "vocab": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "create": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 23.766
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 48549.065
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      },
+      {
+        "step": 6,
+        "id": "dd2f4d8ad4af4e7e99464dc436dc0d2d",
+        "prompt": 3434,
+        "ctx_total": 3946,
+        "input_bytes": 10372,
+        "generated": 159,
+        "pp_ms": 18652.629,
+        "decode_ms": 36369.243,
+        "decode_tps": 4.37182594094686,
+        "total_ms": 55080.08,
+        "deadline": true,
+        "hash_count": 1,
+        "create_count": 1,
+        "init_count": 1,
+        "reset_count": 6,
+        "thinking": false,
+        "fallback": false,
+        "phases": {
+          "hash": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "vocab": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "create": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "template_tokenize": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 27.17
+          },
+          "generate": {
+            "started": true,
+            "ended": true,
+            "clock_valid": true,
+            "elapsed_ms": 55024.225
+          },
+          "destroy": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          },
+          "deinit": {
+            "started": false,
+            "ended": false,
+            "clock_valid": false,
+            "elapsed_ms": null
+          }
+        }
+      }
+    ],
+    "session": {
+      "requests_received": 6,
+      "requests_completed": 5,
+      "model_hash_count": 1,
+      "sdk_init_count": 1,
+      "model_create_count": 1,
+      "model_reset_count": 6,
+      "last_request_status": 124,
+      "destroy_rc": 0,
+      "deinit_rc": 0
+    }
+  },
+  "conclusion": {
+    "immediate_timeout": "Step 6 spent 18.652629 s in prefill plus 36.369243 s decoding 159 tokens, exceeding the native 55 s request deadline. It stopped before JSON completion, not at the 256-token cap.",
+    "semantic_failure": "The owner asked to open Settings, enter Apps, and stay. Step 1 opened Settings and step 2 entered Apps. Steps 3, 4 and 5 waited 1000, 1000 and 1500 ms although the model said the target page was already satisfied. Step 6 proposed clicking App management, leaving the requested page, and timed out mid-JSON.",
+    "repeated_prefill": "All six stderr prefix-match entries had past_prompt_tokens size=0 and match_len=0. Warm worker reuses weights/SDK but geniex_llm_reset runs before every request, forcing full prefill.",
+    "not_repeated_weight_reload": "The single worker has one full model hash, one SDK init and one model create. Steps 2-6 hash/vocab/create phase timers are not started.",
+    "context_not_overflow": "Step 6 exact prompt=3434, generation allowance=256 and reserve=256, total=3946 <4096. Native admission passed.",
+    "template_cost": "Template/tokenize duration is 20.110-27.170 ms across the six requests; it does not explain the 55 s deadline.",
+    "deceleration": "Decode fell from 7.20 t/s (step 1) / 6.43 t/s (step 3) to 4.46 t/s (step 4) and 4.37 t/s (step 6). This is observed; a thermal cause is unproven."
+  },
+  "hardware": {
+    "resolved_device": "HTP0",
+    "offloaded_layers": "45/45",
+    "npu_version": "v79",
+    "htp_hardware": {
+      "threads": 6,
+      "hvx": 6,
+      "hmx": 1,
+      "vtcm_mib": 8
+    },
+    "buffers_mib": {
+      "HTP0_model": 2492.31,
+      "CPU_model": 273.8,
+      "HTP0_KV": 704,
+      "HTP0_compute": 831.03,
+      "CPU_compute": 56.04,
+      "CPU_output": 0.63
+    },
+    "KV": {
+      "cells": 4096,
+      "layers": 44,
+      "K": "f16",
+      "V": "f16"
+    },
+    "execution_limits": "Positive tensor-offload evidence, not proof that all operators or sampling execute on NPU. CPU buffers and host grammar work must not be misreported as automatic CPU-model fallback.",
+    "automatic_cpu_fallback": false,
+    "full_operator_coverage_proven": false,
+    "thermal_frequency_measurements_available": false,
+    "memory_step6": {
+      "kernel_memavailable_before_bytes": 4529496064,
+      "memtotal_bytes": 15913943040,
+      "android_low_memory": false,
+      "already_reserved": true
+    }
+  },
+  "template_audit": {
+    "formatted_prompt_really_starts": "system\\n",
+    "evidence_layer_does_not_strip_tokens": true,
+    "GGUF": {
+      "tokenizer_model": "llama/SPM",
+      "bos_id": 166100,
+      "bos_text": "<|im_start|>",
+      "add_bos_token": true
+    },
+    "tokenizer": "model-runtime.inc calls llama_tokenize(vocabulary,prompt,bytes,...,true,true) twice and passes the resulting input IDs directly to the SDK.",
+    "pinned_tokenizer_behavior": "llama.cpp 19cce691 src/llama-vocab.cpp, SPM branch: if(add_special && add_bos), output.push_back(special_bos_id). Adding an explicit opener to this text with existing flags would introduce two BOS tokens.",
+    "ids_limitation": "Retained host run directory includes the input-ID hash/length in prompt-evidence but did not include formatted-input-ids.le32 in the collected file list. First token is established by pinned tokenizer behavior plus actual GGUF metadata, not a direct first-ID read.",
+    "think_state": "enable_thinking=false; formatted assistant suffix contains a closed <think>...</think> block.",
+    "upstream_1621": "Only CLI/server Go thinkfsm output callback replay for a prompt ending in an unclosed <think>; does not fix SDK input or affect this closed-thinking prompt.",
+    "patch_created": false
+  },
+  "orvena_same_v34_ordinary": {
+    "root": "/home/alex/orvena-v34-qualification-e59-r1/npu-r1/ordinary-run-r1/",
+    "model_profile": "orvena-4b-q4_k_m",
+    "context_tokens": 8192,
+    "build_identity_sha256": "f707fca4bfa5f553c718cdbf21449fc05da9c5fa6e94b7c4c40c514ee626b71b",
+    "sampler_requested_all_three_requests": {
+      "temperature": 0.699999988079071,
+      "top_p": 0.800000011920929,
+      "top_k": 40,
+      "repetition_penalty": 1,
+      "seed": 42,
+      "min_p": 0.05000000074505806,
+      "presence_penalty": 0,
+      "frequency_penalty": 0
+    },
+    "sampler_source_comparison": "Matches current controller/native/sampler-profile.inc. The historical Orvena sampler was not temperature=0/top_k=1; that is the Nanbeige profile. Different model profiles do not form a common-sampler comparison.",
+    "native_result_sha256_by_request": {
+      "838a6d7e1cc54ad49784b0d9d4e4c686": "cc6c97cbbfd50407d5220f306ac0bb20ed1d63567c7ff31c44979acb7628e1f5",
+      "7f60a8a6480848d5a40c58e71ac79d7f": "a06d276ef8d2dcc370b9abf62bcb11844346175d0bbb5ea55f81b5bea09fcf58",
+      "009d98108883401fb4066daa50327d32": "02653ffd97b0c0014c53374e882a4e05e33074e71a4e4c0653ba335e93fdb5fa"
+    },
+    "rows": [
+      {
+        "step": 1,
+        "id": "838a6d7e1cc54ad49784b0d9d4e4c686",
+        "context": 8192,
+        "prompt": 2075,
+        "generated": 91,
+        "pp_ms": 5426.099,
+        "decode_ms": 6694.537,
+        "tps": 13.593173060362503
+      },
+      {
+        "step": 2,
+        "id": "7f60a8a6480848d5a40c58e71ac79d7f",
+        "context": 8192,
+        "prompt": 2651,
+        "generated": 99,
+        "pp_ms": 6793.896,
+        "decode_ms": 7680.314,
+        "tps": 12.890097982973092
+      },
+      {
+        "step": 3,
+        "id": "009d98108883401fb4066daa50327d32",
+        "context": 8192,
+        "prompt": 2840,
+        "generated": 108,
+        "pp_ms": 7297.698,
+        "decode_ms": 8356.982,
+        "tps": 12.923325669482116
+      }
+    ],
+    "request_elapsed_ms": [
+      19271.093,
+      14525.947,
+      15698.787
+    ],
+    "actions": [
+      "open Settings",
+      "click Apps",
+      "done success"
+    ],
+    "task_status": "model_reported_done",
+    "goal_independently_verified_in_task_result": false,
+    "comparison_limit": "Same APK/build and same system prompt hash; model/context/sampler/config and time differ. This is retained task evidence, not a controlled thermal benchmark or universal model ranking."
+  },
+  "recommendations": [
+    "Do not add a BOS string, remove tokenizer add_special, or upgrade the runtime for #1621.",
+    "Do not remove per-request reset blindly: upstream #1624 fixes prefix rollback failures. Any prefix reuse experiment must preserve reset fallback, token-state correctness, and request bindings.",
+    "Extending 55 s cannot repair the demonstrated wait loop or wrong next action.",
+    "For this turn, preserve local model configuration while the parent implements the background execution chain; no new prompt/runtime patch is justified by the template audit."
+  ],
+  "evidence": [
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/eedc6d4c66dc4b03be0af9b84dd553e0/native-result.json",
+      "bytes": 4868,
+      "sha256": "24ddc6c2403d7e69c85220857c5f45c2ab8a4dd6e336adec34ea6ea71396858a"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/751e961be2d44a1da5388e38942307ae/native-result.json",
+      "bytes": 4868,
+      "sha256": "0bb6443e94bacce6ca65ecc77cb846f7de1d0fe4cdfa954d3546a3673b18799c"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/9ceb356034e044d6b91dedae92de2aa0/native-result.json",
+      "bytes": 4867,
+      "sha256": "9bcd87aa975e072c80e1646a78764d1de969a17759fb1eff95efb71bcbbfd406"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/dd2f4d8ad4af4e7e99464dc436dc0d2d/native-result.json",
+      "bytes": 4880,
+      "sha256": "03e45d2984c6b878e92009035d56b962e216476be43f26b3bffee921cc6ca898"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/bcb7a1caa14245f8827034a40678a97e/native-result.json",
+      "bytes": 4861,
+      "sha256": "51387ab79d9a9dcefdffdf8b938123f880a921d04dd219ca73461d90890351fb"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/a9c86a9d1d224829b83a8b2cedeb82c5/native-result.json",
+      "bytes": 4868,
+      "sha256": "b9f1436ac9c2854ced547d1ac3dedff3dde6b4eef19256da89ca2c105e5bc685"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/2eea9157974f4b0990a9a14e7fdb63f6/native-session-result.json",
+      "bytes": 531,
+      "sha256": "31203e1f171c74b192e93a419aacf83b7b95a879699029ecec42df9c3c0fec89"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/task/result.json",
+      "bytes": 2150,
+      "sha256": "9e5abec73ee14b52fa21a0736c1852c493120793f8082cb20ab1e2a55b827c16"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/2eea9157974f4b0990a9a14e7fdb63f6/stderr.log",
+      "bytes": 66796,
+      "sha256": "89a57dbe1cade797f1c931f79b5e094bda055e29b4f66331aa79251bd139be8a"
+    },
+    {
+      "path": "/home/alex/nanbeige-v34-qualification-e59-r1/npu4096-r1/ordinary-run-r1/runs/dd2f4d8ad4af4e7e99464dc436dc0d2d/formatted-prompt.txt",
+      "bytes": 10372,
+      "sha256": "859d5306b3103ca8c4c0b7e8234a033fbeaad57aeba9beda54ac06c5ff4d90e7"
+    }
+  ],
+  "source_files": [
+    "/workspace/scratch/bff66f548dca/controller/native/model-runtime.inc",
+    "/workspace/scratch/bff66f548dca/controller/native/worker-upstream.c",
+    "/workspace/scratch/bff66f548dca/controller/native/generate_adapter.py",
+    "/workspace/scratch/bff66f548dca/controller/native/prompt-evidence.inc",
+    "/workspace/scratch/bff66f548dca/controller/native/warm_runtime_adapter.py"
+  ],
+  "official_sources": [
+    "https://raw.githubusercontent.com/ggml-org/llama.cpp/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/llama-vocab.cpp",
+    "https://github.com/qualcomm/GenieX/pull/1621/files",
+    "https://github.com/qualcomm/GenieX/pull/1624"
+  ]
+}
+

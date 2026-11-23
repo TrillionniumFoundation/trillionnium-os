@@ -1,0 +1,105 @@
+{
+  "checked_date_utc": "2026-11-09",
+  "checked_through_utc": "2026-11-09 08:52:35 UTC",
+  "release": {
+    "url": "https://api.github.com/repos/google-ai-edge/LiteRT-LM/releases/tags/v0.19.1",
+    "tag": "v0.19.1",
+    "published_at": "2026-11-05T21:57:29Z",
+    "commit": "7a03724cece417f1724c923b3d527b4319730841",
+    "tag_api": "https://api.github.com/repos/google-ai-edge/LiteRT-LM/git/ref/tags/v0.19.1",
+    "api_version": "1.0.0"
+  },
+  "sample": {
+    "url": "https://api.github.com/repos/google-ai-edge/litert-samples/branches/main",
+    "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+    "litert_lm_dependency": "0.11.0-rc1",
+    "qairt_default": "2.44.0.260225",
+    "htp_architecture": 79
+  },
+  "hf_api_verified": false,
+  "hf_api_limitation": "Research web tool returned inaccessible/internal error; conclusions are sourced to official webpages and immutable commit diffs, not a claimed live HF API response.",
+  "model_contents_downloaded": false,
+  "inference_executed": false,
+  "android_runtime_compiled": false,
+  "phone_contacted": false,
+  "official_model_evidence": [
+    {
+      "kind": "current_tree_webpage",
+      "repository": "litert-community/gemma-4-E4B-it-litert-lm",
+      "observed_head": "71064b01bd5e2bfd9a5f9dd52df86ae4800138c1",
+      "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/tree/main"
+    },
+    {
+      "kind": "current_tree_webpage",
+      "repository": "litert-community/gemma-4-E2B-it-litert-lm",
+      "observed_head": "3d48132a00cf76de57d926de30f5c5c5ed9b8c0d",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/tree/main"
+    },
+    {
+      "kind": "raw_lfs_pointer_webpage",
+      "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/raw/main/gemma-4-E4B-it-gpu.litertlm",
+      "model_bytes": 2969059328,
+      "model_sha256_declared": "4912bb5a9c30993c51a7711f763212077458529312175df0573a78323a2bb7ff",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "file_pointer_webpage",
+      "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/blob/main/gemma-4-E4B-it.litertlm",
+      "display_size": "3.66 GB",
+      "model_bytes": null,
+      "model_sha256_declared": "0b2a8980ce155fd97673d8e820b4d29d9c7d99b8fa6806f425d969b145bd52e0",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "immutable_commit_diff_webpage",
+      "date_from_commit_history": "2026-04-29",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/84b6978eff6e4eea02825bc2ee4ea48579f13109",
+      "effect": "replace_sm8750_pointer",
+      "model_bytes": 3016294400,
+      "model_sha256_declared": "41dd675fbe735b6029012b5576a5716bac614fd8156de0128db4c9dff3cebd4e",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "immutable_commit_diff_webpage",
+      "date_from_commit_history": "2026-10-19",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/f06ffc3bd3aa7d1dce244a5db08d42d3a2d81827",
+      "effect": "upload_sm8750_pointer",
+      "model_bytes": 2724793461,
+      "model_sha256_declared": "248e732911222c173d6c7d7086258990fc009f23a6144fb8abcf43dd111c7a1b",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "immutable_commit_diff_webpage",
+      "date_from_commit_history": "2026-10-19",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/21c646194210256750db12cfa1e4fdf22bd3ddf1",
+      "effect": "delete_sm8750_pointer",
+      "model_bytes": 2724793461,
+      "model_sha256_declared": "248e732911222c173d6c7d7086258990fc009f23a6144fb8abcf43dd111c7a1b",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "file_pointer_webpage",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/blob/main/gemma-4-E2B-it_NPU_Uncompiled.litertlm",
+      "display_size": "2.61 GB",
+      "model_bytes": null,
+      "model_sha256_declared": "b4f86de05f54bda24e8633ef20375b81b3fcc5dace7c6ac9f4269644267ca4aa",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "model_card_webpage",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/blob/main/README.md",
+      "specific_artifact": "gemma-4-E2B-it_Qualcomm_QCS8275.litertlm",
+      "model_bytes": 2722352245,
+      "model_sha256_declared": "794339191f0e1dc8353b7f84fb205af5e62870ed5647a315eddbf7a9a9c90f06",
+      "target": "QCS8275/HTP-v75/Linux",
+      "qairt": "2.50.0.260828",
+      "runtime_example": "native-v0.18.0-e",
+      "content_downloaded_and_rehashed": false
+    },
+    {
+      "kind": "model_card_webpage",
+      "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/raw/main/README.md",
+      "note": "MTP text and baseline metadata refer to base .litertlm, not proven properties of -gpu artifact"
+    }
+  ]
+}

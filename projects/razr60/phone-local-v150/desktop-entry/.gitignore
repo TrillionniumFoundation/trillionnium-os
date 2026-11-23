@@ -1,0 +1,7 @@
+out-*/
+*.apk
+*.idsig
+*.jks
+*.p12
+*.keystore
+*password*

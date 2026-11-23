@@ -1,0 +1,7 @@
+{
+  "parent_commit": "c8a1f0f9d2b3de3d75758a661ca5efc85a582e4f",
+  "parent_source_sha256": "a18389449b2c737233004dfab8bcbd70d5e079752b6c414e0435967d82ac20f5",
+  "source_path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+  "fixture_sha256": "21ae6cdc9266bafeff85e232c2c71db47726bb3902bdc323b5968486a365b802",
+  "phone_records_included": false
+}

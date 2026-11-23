@@ -1,0 +1,31 @@
+{
+  "libraries": [
+    {
+      "name": "hepta-mobimind-probe",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "expected_bytes": 2186768,
+      "expected_sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "exact_original_bytes": true
+    },
+    {
+      "name": "libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "expected_bytes": 6408488,
+      "expected_sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "exact_original_bytes": true
+    },
+    {
+      "name": "libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "expected_bytes": 9236352,
+      "expected_sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "exact_original_bytes": true
+    }
+  ],
+  "all_exact_original_bytes": true,
+  "new_runtime_candidate": false,
+  "runtime_content_identity_sha256": "c8d99e8a2399663d8fa1d24c272fafd704d45befd619a0edf042f838aeabfdc6"
+}

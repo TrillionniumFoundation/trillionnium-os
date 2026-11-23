@@ -1,0 +1,27 @@
+[
+  {
+    "path": "/workspace/scratch/22402a688123/razr_source_work/app-label-fix/candidate/native/owned-generation.inc",
+    "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d",
+    "bytes": 36870
+  },
+  {
+    "path": "/workspace/scratch/22402a688123/razr_source_work/app-label-fix/candidate/native/sha256-dispatch.h",
+    "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a",
+    "bytes": 7208
+  },
+  {
+    "path": "/workspace/scratch/22402a688123/razr_source_work/app-label-fix/candidate/native/parent-death-guard.h",
+    "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92",
+    "bytes": 2096
+  },
+  {
+    "path": "/workspace/scratch/22402a688123/razr_source_work/app-label-fix/candidate/native/publish-appuid.inc",
+    "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3",
+    "bytes": 1006
+  },
+  {
+    "path": "/workspace/scratch/22402a688123/razr_source_work/app-label-fix/candidate/native/worker-upstream.c",
+    "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+    "bytes": 30066
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.actual-xiaomi-search-hint-width-fixtures.v1",
+  "task_id": "3ace4d9e4b8d4b829568cb2215e00e80",
+  "source_head": "ebb383fcb4c8355d67039d818e35b8076dd00e21",
+  "apk_sha256": "0ef1be0d0db8bbbf6e6c0af862717b0b67b271016221fd6c5f1b21eccf805bef",
+  "original_files": [
+    {
+      "path": "fixtures/xiaomi-search-hint-width-r18/step-01-action.json",
+      "bytes": 210350,
+      "sha256": "2f189b831adbf1c43c313646138b3d7830f185bfbdd159225a595671c4362f90",
+      "original": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-xiaomi-evidence-r1/raw/task/files/control-tasks/3ace4d9e4b8d4b829568cb2215e00e80/step-01-action.json"
+    },
+    {
+      "path": "fixtures/xiaomi-search-hint-width-r18/step-02-action.json",
+      "bytes": 210292,
+      "sha256": "5f7c0c72963ac9153bd9f635318bb26d8c062862dad60cd63bd485a604f738dc",
+      "original": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-xiaomi-evidence-r1/raw/task/files/control-tasks/3ace4d9e4b8d4b829568cb2215e00e80/step-02-action.json"
+    },
+    {
+      "path": "fixtures/xiaomi-search-hint-width-r18/step-03-action.json",
+      "bytes": 210470,
+      "sha256": "2aa2286d6aa1f8e5204c8c8c71e336b43f4c867dd9707cfc2be61778f7be0228",
+      "original": "/home/alex/hepta-razr-resume-20261119-f7839a4a-r1/r18-successor-business-evidence-r1/ebb383-xiaomi-evidence-r1/raw/task/files/control-tasks/3ace4d9e4b8d4b829568cb2215e00e80/step-03-action.json"
+    }
+  ],
+  "actual_source_bytes_modified": false,
+  "census_pairs": 3,
+  "phone_operations": 0,
+  "negative_fixtures_synthetic": true,
+  "business_verified": false
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "hepta.local-runtime.v3",
+  "model_profile": "lfm3-vl-2b-qad-q4_0",
+  "compute": "npu",
+  "context_tokens": 8192,
+  "threads": 4,
+  "visual_mode": "observe"
+}

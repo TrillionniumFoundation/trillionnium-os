@@ -1,0 +1,264 @@
+
+    /** Real observer methods, read catches, serial executor and private proof.
+     * Graph/node/window/pixel values and the Session IO permit are explicit host ports.
+     * The separate unchanged Controller gate runs the actual Session and durable intent. */
+    static final class SamplingChild {boolean available;boolean refresh(){return available;}}
+    private static void actualSamplingChildGuard(BackgroundSession background,SamplingChild node,SamplingChild root){
+{{actual_descendant_guard}}
+    }
+    static final class SamplingScenario {
+        final ObserverPipelineHost f;final LocalTaskController controller;
+        final NativeAppSession nativeTask=new NativeAppSession();final NativeAppSession.PostEffectReadPermit permit;
+        final PostEffectReadResult out=new PostEffectReadResult();final PhoneObservation prior;
+        final long started,taskDeadline,transition;final int first;final boolean screenshotFailure;
+        ObservationRequest request;String fault="none";final int terminalOrdinal;
+        SamplingScenario(boolean screenshotFailure)throws Exception{this(null,screenshotFailure);}
+        SamplingScenario(ObserverPipelineHost existing,boolean screenshotFailure)throws Exception{
+            this.screenshotFailure=screenshotFailure;terminalOrdinal=screenshotFailure?5:3;
+            if(existing==null){
+                f=seedFixture(null,false);controller=new LocalTaskController();f.ownedController=controller;f.autoScreenshot=true;
+                f.readHook=(g,n)->{sealedReadGraph(g,"published-home");sealGraph(g);};f.seedFrozenRead=(r,i)->i.frozenWindow;
+                twoSamples(f);check(f.current!=null&&f.taskObservationAdmissions==1,"actual first publication before entered-action read");
+                SystemClock.now+=1000;
+            }else{f=existing;controller=f.ownedController;SystemClock.now+=100;}
+            prior=f.current;first=f.reads.get();started=SystemClock.now;taskDeadline=started+480000;transition=started+14900;
+            permit=new NativeAppSession.PostEffectReadPermit(nativeTask,f.taskAuthorization,f.lease,
+                    f.taskBackground.selection,f.taskBackground.generation,f.taskBackground.displayId(),transition);
+            f.autoScreenshot=screenshotFailure;f.pendingScreenshot=null;Bitmap.encodeHook=null;f.hashHook=null;
+            f.seedFrozenRead=(r,i)->i.frozenWindow;
+            f.readHook=(g,n)->{
+                int k=n-first;
+                boolean earlyInvalid="early_incomplete_event".equals(fault)||"early_truncated_event".equals(fault);
+                int terminal=terminalOrdinal+(earlyInvalid?1:0);
+                if(screenshotFailure){SystemClock.now=started+(k==1?1000:k==2?1400:k==3?1900:k==4?9700:10600);}
+                else SystemClock.now=started+(k==1?100:earlyInvalid?(k==2?9000:k==3?9700:10600):k==2?9700:10600);
+                boolean child=screenshotFailure?k==3:k==1;
+                if(child){
+                    if("no_root".equals(fault))throw new NoActiveWindow();
+                    if("untyped".equals(fault))throw new StaleObservation("untyped host read failure");
+                    if(!"no_child_failure".equals(fault)){
+                        SamplingChild root=new SamplingChild(),node=new SamplingChild();
+                        actualSamplingChildGuard(f.taskBackground,node,root);
+                        throw new AssertionError("actual refresh guard did not throw");
+                    }
+                }
+                sealedReadGraph(g,screenshotFailure&&k<3?"captured-old-form":child?"first-changing-form":"complete-new-form");
+                g.windowId=8;
+                if(earlyInvalid&&k==2){
+                    if("early_incomplete_event".equals(fault))g.collectionStats=null;else g.truncated=true;
+                    f.noteObservationEvent(9);
+                }
+                if(k==terminal){
+                    if("different_key".equals(fault))g.digest="different-whole-graph";
+                    if("different_window".equals(fault))g.windowId=9;
+                    if("foreign_owner".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                    if("foreign_profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
+                    if("unknown".equals(fault))f.noteObservationEvent(-1);
+                    if("incomplete".equals(fault))g.collectionStats=null;
+                    if("truncated".equals(fault))g.truncated=true;
+                    if("overlap".equals(fault))g.readStartedElapsedMs=started+9600;
+                    if("expired".equals(fault))SystemClock.now=started+12000;
+                }
+                sealGraph(g);
+            };
+        }
+        void start(){
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(started,Math.min(taskDeadline,transition)),taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;check(request!=null,"actual first post-effect request admitted");
+        }
+        void drive(java.util.function.BooleanSupplier stop)throws Exception{
+            for(int i=0;i<30&&!stop.getAsBoolean();i++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"real sampler/capture worker return");
+                f.main.drainUntil(stop);
+                if(!stop.getAsBoolean()&&!f.main.hasReady()&&observationIo.active.get()==0)SystemClock.now+=200;
+            }
+            check(stop.getAsBoolean(),"bounded host drive reached actual observation boundary");
+        }
+        void beforeTerminal()throws Exception{
+            if(request==null)start();
+            drive(()->request.finished||request.postEffectSamplingAt==started+9700);
+            check(!request.finished&&request.postEffectSamplingAt==started+9700,"first final complete frame recorded by actual sampler");
+        }
+        void retire()throws Exception{if(request==null)start();drive(()->request.finished);}
+        void deliver()throws Exception{
+            for(int i=0;i<8&&out.failures.isEmpty();i++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual serial marker return");f.main.drain();
+            }
+            check(out.failures.size()==1,"exactly one terminal callback");
+        }
+        void released(){
+            check(request.finished&&request.captured==null&&!request.shotPending&&f.activeObservation==null,"old request resources retired");
+            check(f.current==prior&&out.observations.isEmpty(),"failed observation never publishes old pixels");
+            for(Graph graph:f.graphs)if(graph!=f.currentGraph)check(graph.closed,"no failed/current sample Graph retained");
+            for(Bitmap bitmap:Bitmap.made)if(bitmap!=f.currentBitmap)check(bitmap.recycled,"no failed pixels retained");
+            check(request.readWorksStarted==request.readWorksFinished,"all actual read work finally blocks completed");
+        }
+        PostEffectObservationRetryProof proof()throws Exception{
+            retire();deliver();released();check(out.proofs.size()==1,"real exhaustion producer issued one private proof");
+            PostEffectObservationRetryProof proof=out.proofs.get(0);Map<String,Object> e=proof.evidence();
+            check("settle_expired_after_typed_child_unavailable".equals(e.get("reason")),"new typed reason preserved");
+            check(count(request,screenshotFailure?"SCREENSHOT_GRAPH_STALE":"SAMPLE_STALE_ROOT")==1
+                    &&request.postEffectSamplingTypedChildFailures==1,"actual read catch supplies typed cause");
+            check(count(request,"SAMPLE_EXPIRED")==1&&request.failedAt==started+10600
+                    &&request.deadline==started+12000&&proof.transitionDeadline==transition,"original settle/capture/task/transition deadlines retained");
+            check(request.postEffectIdentityRejected==screenshotFailure&&!request.postEffectSamplingRejected,
+                    "old identity latch is preserved, never cleared for new path");
+            check(proof.samplingHandoff==f.pendingPostEffectSampling&&proof.identity.windowId==8,
+                    "actual latest complete identity and live private handoff");
+            check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("action_replayed"))
+                    &&Boolean.FALSE.equals(e.get("business_completion_verified")),"read-only proof grants no effect/business success");
+            return proof;
+        }
+        void prepareFresh(String fault){
+            f.autoScreenshot=true;f.pendingScreenshot=null;Bitmap.encodeHook=null;f.hashHook=null;
+            f.readHook=(g,n)->{
+                sealedReadGraph(g,"new-request-new-complete-graph");g.windowId="window".equals(fault)?9:8;
+                if("generation".equals(fault))g.backgroundGeneration="99999999-2222-3333-4444-555555555555";
+                if("profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
+                sealGraph(g);
+            };f.seedFrozenRead=(r,i)->i.frozenWindow;
+        }
+        ObservationRequest submit(PostEffectObservationRetryProof proof,PostEffectReadResult next){
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,Math.min(taskDeadline,transition)),taskDeadline,next,proof);
+            f.main.drain();return f.activeObservation;
+        }
+        void finishFresh(PostEffectReadResult next)throws Exception{
+            for(int i=0;i<16&&next.observations.isEmpty()&&next.failures.isEmpty();i++){
+                f.finish();if(next.observations.isEmpty()&&next.failures.isEmpty()){SystemClock.now+=400;f.main.drain();}
+            }
+        }
+        void dispose()throws Exception{f.main.afterWorkerPost=null;f.discardPostEffectSamplingForTask(f.lease);f.dispose();}
+    }
+    static void postEffectSamplingCases()throws Exception{
+        for(final boolean screenshot:new boolean[]{false,true})eventCase("post_sampling_actual_"+(screenshot?"screenshot":"sample")+"_child_to_fresh_capture",()->{
+            SamplingScenario s=new SamplingScenario(screenshot);PostEffectObservationRetryProof proof=s.proof();int reads=s.f.reads.get();
+            s.prepareFresh("none");PostEffectReadResult next=new PostEffectReadResult();ObservationRequest replacement=s.submit(proof,next);
+            check(replacement!=null&&replacement!=s.request&&replacement.readBefore==null&&replacement.readIdentity==null,
+                    "new actual request starts without the failed graph or prior home");
+            check(s.f.pendingPostEffectSampling==null&&proof.consumed.get()&&s.permit.admitted(true),"same-lock handoff and once admissions consumed");
+            check(replacement.deadline==s.transition&&replacement.deadline<s.request.deadline+12000,"replacement uses only original transition remainder");
+            s.finishFresh(next);check(next.observations.size()==1&&next.failures.isEmpty()&&s.f.current!=s.prior,
+                    "new independent graph pair/PNG/window checks publish new observation");
+            check(s.f.reads.get()==reads+3&&s.f.current.path.exists(),"two new samples plus new screenshot full graph required");
+            int completed=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submit(proof,duplicate);
+            check(duplicate.failures.size()==1&&s.f.reads.get()==completed,"same proof never submits a third read");s.dispose();
+        });
+        for(final String fault:new String[]{"untyped","no_root","no_child_failure","different_key","different_window",
+                "foreign_owner","foreign_profile","unknown","incomplete","truncated","overlap","expired",
+                "early_incomplete_event","early_truncated_event"})
+            eventCase("post_sampling_rejects_"+fault,()->{
+                SamplingScenario s=new SamplingScenario(false);s.fault=fault;s.retire();s.deliver();s.released();
+                check(s.out.proofs.isEmpty()&&s.f.pendingPostEffectSampling==null,"unqualified failure cannot register/readmit");
+                if(fault.startsWith("early_"))check(s.request.postEffectSamplingRejected
+                        &&count(s.request,"SAMPLE_EVENT_RESET")==1&&count(s.request,"SAMPLE_ERROR")==0
+                        &&count(s.request,"SAMPLE_EXPIRED")==1&&s.f.reads.get()==s.first+4
+                        &&s.request.postEffectSamplingAt==s.started+9700,
+                        "real graph latch survives exact event-reset close/null and two later full samples, without IO error");
+                s.dispose();
+            });
+        eventCase("post_sampling_actual_worker_return_precedes_proof",()->{
+            SamplingScenario s=new SamplingScenario(false);s.beforeTerminal();Block held=new Block();s.f.main.afterWorkerPost=held;
+            SystemClock.now+=200;s.f.main.drain();held.entered();s.f.main.drainUntil(()->s.request.finished);
+            check(s.request.finished&&s.f.pendingPostEffectSampling!=null&&s.out.proofs.isEmpty()&&observationIo.active.get()>=2,
+                    "read finally/callback and busy false do not imply serial worker return");s.released();
+            s.f.main.afterWorkerPost=null;held.open();s.deliver();check(s.out.proofs.size()==1,"real queued marker drains before proof");s.dispose();
+        });
+        for(final int display:new int[]{9,-1})eventCase("post_sampling_event_during_drain_"+display,()->{
+            SamplingScenario s=new SamplingScenario(false);s.beforeTerminal();Block held=new Block();s.f.main.afterWorkerPost=held;
+            SystemClock.now+=200;s.f.main.drain();held.entered();s.f.main.drainUntil(()->s.request.finished);
+            long oldEvents=s.request.events;s.f.noteObservationEvent(display);
+            check(s.request.events==oldEvents&&s.f.pendingPostEffectSampling==null,"finished old counter is not used as continuous event proof");
+            s.f.main.afterWorkerPost=null;held.open();s.deliver();check(s.out.proofs.isEmpty(),"gap event invalidates before proof");s.dispose();
+        });
+        for(final int display:new int[]{9,-1,0,1})eventCase("post_sampling_event_after_callback_"+display,()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();s.f.noteObservationEvent(display);
+            s.prepareFresh("none");PostEffectReadResult next=new PostEffectReadResult();int before=s.f.reads.get();ObservationRequest replacement=s.submit(proof,next);
+            if(display==9||display<0)check(replacement==null&&next.failures.size()==1&&s.f.reads.get()==before,"target/unknown gap event blocks new read");
+            else {check(replacement!=null,"unrelated physical display does not change owned pending event stream");s.finishFresh(next);check(next.observations.size()==1,"independent display read remains possible");}
+            s.dispose();
+        });
+        for(final String change:new String[]{"cancel","authorization","expired","clock_back"})eventCase("post_sampling_admission_rechecks_"+change,()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();s.prepareFresh("none");
+            if("cancel".equals(change))s.f.cancelled.set(true);
+            else if("authorization".equals(change))s.f.taskAuthorization=new Object();
+            else if("expired".equals(change))SystemClock.now=s.request.deadline;
+            else SystemClock.now=s.started+10599;
+            PostEffectReadResult next=new PostEffectReadResult();int before=s.f.reads.get();s.submit(proof,next);
+            check(next.failures.size()==1&&s.f.reads.get()==before&&s.f.pendingPostEffectSampling==null,"latest cancel/owner/time rejection cleans same pending without a read");s.dispose();
+        });
+        eventCase("post_sampling_undelivered_main_callback_closes_pending",()->{
+            SamplingScenario s=new SamplingScenario(false);s.beforeTerminal();Block held=new Block();s.f.main.afterWorkerPost=held;
+            SystemClock.now+=200;s.f.main.drain();held.entered();s.f.main.drainUntil(()->s.request.finished);
+            s.f.main.rejectWorkerPosts=true;s.f.main.afterWorkerPost=null;held.open();
+            await(()->observationIo.active.get()==0,"marker observes rejected main callback");s.f.main.rejectWorkerPosts=false;
+            check(s.out.proofs.isEmpty()&&s.f.pendingPostEffectSampling==null,"undelivered proof has no live pending");s.dispose();
+        });
+        eventCase("post_sampling_rejected_serial_marker_closes_pending",()->{
+            SamplingScenario s=new SamplingScenario(false);s.beforeTerminal();Block held=new Block();s.f.main.afterWorkerPost=held;
+            SystemClock.now+=200;s.f.main.drain();held.entered();
+            observationIo.reject=true;s.f.main.drainUntil(()->s.request.finished);observationIo.reject=false;
+            s.f.main.afterWorkerPost=null;held.open();await(()->observationIo.active.get()==0,"rejected marker leaves only original read to return");
+            check(s.request.finished&&s.out.failures.size()==1&&s.out.proofs.isEmpty()&&s.f.pendingPostEffectSampling==null,
+                    "failed serial marker admission produces no read eligibility");s.dispose();
+        });
+        eventCase("post_sampling_unused_proof_expires_without_new_read",()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();int reads=s.f.reads.get();
+            SystemClock.now=s.request.deadline;s.f.main.drain();
+            check(s.f.pendingPostEffectSampling==null&&s.f.reads.get()==reads&&!proof.consumed.get(),"no submission or budget renewal when consumer aborts before admission");s.dispose();
+        });
+        eventCase("post_sampling_old_expiry_and_callback_cannot_clear_new_pending",()->{
+            SamplingScenario a=new SamplingScenario(false);PostEffectObservationRetryProof old=a.proof();Runnable oldExpiry=null;
+            for(Handler.Job job:a.f.main.jobs)if(job.when==a.request.deadline)oldExpiry=job.task;
+            check(oldExpiry!=null,"actual expiry runnable retained by explicit queue port");a.f.noteObservationEvent(9);
+            SamplingScenario b=new SamplingScenario(a.f,false);PostEffectObservationRetryProof next=b.proof();
+            PostEffectSamplingRetry pending=b.f.pendingPostEffectSampling;oldExpiry.run();b.f.failObservation(a.request,"late old failure");
+            b.f.discardPostEffectSamplingSubmission(old);
+            check(b.f.pendingPostEffectSampling==pending&&next.samplingHandoff==pending&&!pending.closed,
+                    "old expiry/failure/submission callbacks cannot clear a different pending instance");b.dispose();
+        });
+        for(final String change:new String[]{"window","generation","profile"})eventCase("post_sampling_new_request_rechecks_"+change,()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();s.prepareFresh(change);
+            PostEffectReadResult next=new PostEffectReadResult();s.submit(proof,next);s.finishFresh(next);
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1&&s.f.current==s.prior,
+                    "new full graph identity mismatch cannot publish or issue another proof");s.dispose();
+        });
+        eventCase("post_sampling_second_exhaustion_never_issues_third_read",()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();s.prepareFresh("none");
+            s.f.readHook=(g,n)->{sealedReadGraph(g,"still-changing-"+n);g.windowId=8;SystemClock.now+=700;sealGraph(g);};
+            PostEffectReadResult next=new PostEffectReadResult();ObservationRequest replacement=s.submit(proof,next);s.finishFresh(next);
+            check(replacement.finished&&next.failures.size()==1&&next.proofs.isEmpty()&&next.observations.isEmpty(),"second settle/deadline failure is terminal");
+            check(replacement.deadline==s.transition&&s.permit.admissions.get()==2&&s.f.pendingPostEffectSampling==null,
+                    "second request cannot reset the original transition or mint a third admission");s.dispose();
+        });
+        for(final String fault:new String[]{"png","final_graph","final_event"})eventCase("post_sampling_fresh_capture_refuses_"+fault,()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();s.prepareFresh("none");
+            int before=s.f.reads.get();s.f.autoScreenshot=false;
+            if("png".equals(fault))Bitmap.streamHook=output->{throw new IllegalStateException("explicit PNG output port failure");};
+            if("final_graph".equals(fault))s.f.readHook=(g,n)->{
+                sealedReadGraph(g,n==before+3?"changed-full-paired-graph":"new-request-new-complete-graph");g.windowId=8;sealGraph(g);
+            };
+            PostEffectReadResult next=new PostEffectReadResult();ObservationRequest replacement=s.submit(proof,next);
+            s.f.awaitSample();SystemClock.now+=400;s.f.main.drainUntil(()->s.f.pendingScreenshot!=null);
+            await(()->s.f.pendingScreenshot!=null||(!observationIoBusy.get()&&observationIo.active.get()==0),"new capture sampling callback");
+            s.f.main.drainUntil(()->s.f.pendingScreenshot!=null);check(s.f.pendingScreenshot!=null,"fresh capture admitted by real new sample pair");
+            s.f.deliverScreenshot();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"fresh complete capture worker return");
+            if("final_event".equals(fault))s.f.noteObservationEvent(9);
+            s.f.main.drain();
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&s.f.current==s.prior&&replacement.captured==null,
+                    "PNG/final whole-graph/final event failure does not publish failed pixels or another proof");
+            for(File file:s.f.directory.listFiles())check(file.equals(s.prior.path),"failed new PNG removed before any successor publication");
+            if("final_event".equals(fault))check(count(replacement,"CAPTURE_EVENT_RESET")>0,"new request receives event after pending tracker handoff");
+            Bitmap.streamHook=null;s.f.cancelled.set(true);SystemClock.now+=200;s.f.main.drain();s.f.finish();
+            check(next.observations.isEmpty()&&next.proofs.isEmpty(),"cancelled failed capture has no third request");s.dispose();
+        });
+        eventCase("post_sampling_proof_holds_no_graph_bitmap_request",()->{
+            SamplingScenario s=new SamplingScenario(false);PostEffectObservationRetryProof proof=s.proof();
+            for(Object value:new Object[]{proof,proof.samplingHandoff})for(java.lang.reflect.Field field:value.getClass().getDeclaredFields()){
+                field.setAccessible(true);Object held=field.get(value);
+                check(!(held instanceof Graph)&&!(held instanceof Bitmap)&&!(held instanceof PhoneObservation)&&!(held instanceof ObservationRequest),
+                        "private proof/handoff cannot retain graph, pixels, prior frame or failed request");
+            }s.dispose();
+        });
+    }
