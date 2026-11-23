@@ -337,6 +337,71 @@
                         "one normal model decision, one dispatch, one new ordinary AX frame");
             }
         });
+        one("92dc_original_release_and_non_dispatch_observation_not_a_live_callback",()->{
+            JSONObject original=new JSONObject(new String(Files.readAllBytes(Paths.get(System.getProperty("hepta.test.retiredNoInput"))),StandardCharsets.UTF_8));
+            JSONObject state=original.getJSONObject("execution"),initial=original.getJSONObject("reservation");
+            check("15fd05f384c4d8538f433555102a331c6913ee235a045ac23b23818432517362".equals(original.getJSONObject("original_sha256").getString("result.json"))
+                    &&"8299710bb89047a9790926075609e4e79678bb3f0bd44c1fe47a85ba5aa354f7".equals(original.getJSONObject("original_sha256").getString("background-cleanup.json"))
+                    &&state.getLong("worker_drained_elapsed_ms")-state.getLong("deadline_elapsed_ms")==11
+                    &&"RELEASED".equals(original.getString("broker_state"))&&!initial.getBoolean("claimed")
+                    &&!state.getBoolean("effect_entered")&&!state.getBoolean("effect_returned")&&!state.getBoolean("complete_phase_coverage")
+                    &&!original.getBoolean("late_callback_payload_exported"),"recorded R36 bounds and original reservation only");
+            check(!NativeSearchNoEffectControllerHost.replayUndispatched(state,state,initial),
+                    "a terminal snapshot and initial reservation alone never substitute for the original worker and callback");
+        });
+        for(int kind=0;kind<2;kind++){final int scenario=kind;
+        one("92dc_expired_before_claim_actual_LTC_"+kind,()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);
+                f.graphHook=()->{
+                    SearchActionWork work=s.activeSearchAction;if(work==null)return;
+                    f.graphHook=null;
+                    SystemClock.now=work.attempt.deadlineElapsed;
+                    s.retireActionWork(s.lease,"deadline");SystemClock.now+=11L;
+                };
+                File receipt=new File(f.directory,"native-search-retired-without-input.json");
+                if(scenario==1)Files.write(receipt.toPath(),new byte[]{9,2},StandardOpenOption.CREATE_NEW);
+                Throwable failure=pumpController(controller,f);
+                check(failure!=null&&f.effects==0&&controller.modelCalls==1&&controller.oldAxCalls==0&&!actionSlot.pending(),
+                        "original model only, zero effects, no successor, no work left: "+failure);
+                if(scenario==1){
+                    check("CleanupUnknown".equals(failure.getClass().getSimpleName())&&Arrays.equals(Files.readAllBytes(receipt.toPath()),new byte[]{9,2}),
+                            "create-only conflict remains blocked and retains prior record");return;
+                }
+                check("Stopped".equals(failure.getClass().getSimpleName()),"drained original undispatched attempt stops: "+failure);
+                JSONObject result=new JSONObject(new String(Files.readAllBytes(receipt.toPath()),StandardCharsets.UTF_8));
+                JSONObject callback=result.getJSONObject("callback_execution"),current=result.getJSONObject("execution");
+                JSONObject worker=callback.getJSONObject("native_search_execution"),live=result.getJSONObject("attempt_at_disposal");
+                check(!worker.getBoolean("platform_call_invoked")&&!live.getBoolean("claimed")&&!result.getBoolean("callback_dispatched")
+                        &&!result.getBoolean("accepted_for_continuation")&&!result.getBoolean("automatic_redispatch")
+                        &&!result.getBoolean("navigation_verified")&&!new File(f.directory,"step-01-action.json").exists(),
+                        "separate worker and controller evidence, no ordinary action receipt or navigation");
+                for(String key:new String[]{"schema","action","platform_call_invoked","planning_receipt_sha256","attempt"}){
+                    JSONObject bad=new JSONObject(callback.toString());bad.getJSONObject("native_search_execution").remove(key);
+                    check(!NativeSearchNoEffectControllerHost.replayUndispatched(bad,current,live),"missing worker "+key);
+                }
+                for(String key:new String[]{"task_id","model_run_id","authorization_sha256","role_id","planning_receipt_sha256","started_elapsed_ms",
+                        "deadline_elapsed_ms","state","claimed"}){
+                    JSONObject bad=new JSONObject(live.toString());bad.remove(key);
+                    check(!NativeSearchNoEffectControllerHost.replayUndispatched(callback,current,bad),"missing independent attempt "+key);
+                }
+                for(String key:new String[]{"operation_id","schema","task_id","model_run_id","authorization_sha256","observation_id","background_generation",
+                        "window_id","display_id","deadline_elapsed_ms","queued_elapsed_ms","retired","retirement_reason","effect_entered","effect_returned",
+                        "worker_drained","worker_drained_elapsed_ms","callback_published","callback_authority_current"}){
+                    JSONObject bad=new JSONObject(current.toString());bad.remove(key);
+                    check(!NativeSearchNoEffectControllerHost.replayUndispatched(callback,bad,live),"missing service "+key);
+                }
+                for(boolean api:new boolean[]{true,false}){
+                    JSONObject bad=new JSONObject(current.toString());bad.put("api_accepted",api);
+                    check(!NativeSearchNoEffectControllerHost.replayUndispatched(callback,bad,live),"any platform outcome is incompatible");
+                }
+                JSONObject claimed=new JSONObject(live.toString());claimed.put("claimed",true);
+                JSONObject forged=new JSONObject(callback.toString());forged.getJSONObject("native_search_execution").getJSONObject("attempt").put("claimed",true);
+                check(!NativeSearchNoEffectControllerHost.replayUndispatched(forged,current,claimed),"even two matching claimed attempts remain ambiguous");
+                check(NativeSearchNoEffectControllerHost.replayUndispatched(callback,current,live),"original exact positive");
+            }
+        });}
         one("99c24_recorded_issued_and_physical_drain_bound_without_inventing_callback",()->{
             JSONObject original=new JSONObject(new String(Files.readAllBytes(Paths.get(System.getProperty("hepta.test.retiredSearch"))),StandardCharsets.UTF_8));
             JSONObject state=original.getJSONObject("execution"),binding=original.getJSONObject("binding");

@@ -71,8 +71,15 @@ final class NativeSearchNoEffectControllerHost {
         record(directory,"host-old-failed-action.json",receipt);
         return HeptaAccessibilityService.sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8));
     }
+    static boolean replayUndispatched(JSONObject callback,JSONObject current,JSONObject live){
+        return retiredSearchDrain(callback,current,false,callback.getString("task_id"),callback.getString("model_run_id"),
+                callback.getString("observation_id"),callback.getString("authorization_sha256"),callback.getString("background_generation"),
+                callback.getInt("display_id"),callback.getInt("window_id"),callback.getLong("queued_elapsed_ms"),callback.getLong("deadline_elapsed_ms"),
+                callback.getLong("deadline_elapsed_ms"),callback.getLong("worker_drained_elapsed_ms")+1)
+                &&unclaimedSearchAtDisposal(callback,live.optString("planning_receipt_sha256"),live.toMap());
+    }
     static boolean replayRetired(JSONObject callback,JSONObject state,JSONObject binding,long start,long at){
-        return retiredSearchDrain(callback,state,binding.getString("task"),binding.getString("run"),
+        return retiredSearchDrain(callback,state,true,binding.getString("task"),binding.getString("run"),
                 binding.getString("observation"),binding.getString("authorization"),binding.getString("generation"),
                 binding.getInt("display"),binding.getInt("window"),binding.getLong("queued"),binding.getLong("deadline"),start,at);
     }

@@ -136,7 +136,7 @@ def main():
   '    private static final class NativeSearchNoEffectReplanRequired extends IllegalStateException {',
   '    private NativeSearchPlanning awaitNativeSearchPlanningAfterNoEffect(',
   '    private PhoneObservation runNativeSearchPrelude(',
-  '    private NativeSearchActionReply awaitNativeOpenSearch(', '    private static boolean retiredSearchDrain(',
+  '    private NativeSearchActionReply awaitNativeOpenSearch(', '    private static boolean retiredSearchDrain(', '    private static boolean unclaimedSearchAtDisposal(',
   '    private static final class ModelAnswer {',
   '    private static final class CleanupUnknown extends Exception {']
  successor_parts={key:body(controller_raw,key) for key in successor_signatures}
@@ -191,7 +191,7 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
