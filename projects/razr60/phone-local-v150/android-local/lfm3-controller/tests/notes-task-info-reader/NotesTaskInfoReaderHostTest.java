@@ -259,6 +259,62 @@ public final class NotesTaskInfoReaderHostTest {
                 .put("case_names",new ArrayList<String>(names.subList(startNames,names.size())))
                 .put("framework_and_binder_fixtures_synthetic",true).put("phone_operations",0);
     }
+    static PublicPersonalNotesCustody bootstrap(boolean accepted)throws Exception{
+        Env initial=new Env();initial.empty();PublicPersonalNotesCustody.Frame baseline=initial.frame();
+        PublicPersonalNotesCustody c=new PublicPersonalNotesCustody("11111111-1111-4111-8111-111111111111",
+                String.join("",Collections.nCopies(64,"a")),10382,baseline.global,
+                PublicOwnGroupPhysicalFence.inspectRecents(PublicPhysicalAuditHostTest.recents(false)));
+        c.beforeCreate();c.bindDisplay(205);c.markLaunch();
+        if(accepted)c.acceptedOrdinaryLaunch(COMP,SystemClock.now);
+        return c;
+    }
+    static void appearing(boolean middle,Runnable next){
+        final int restoreAt=e.allReads+3;final Object first=e.task(0),own=e.task(1);e.list(0).remove(first);if(!middle)e.list(1).remove(own);
+        e.onBeforeRead=()->{if(e.allReads==restoreAt){e.list(0).add(first);if(!middle)e.list(1).add(own);if(next!=null)next.run();}};
+    }
+    static JSONObject bootstrapCases()throws Exception{
+        int startCases=cases,startChecks=checks,startNames=names.size();
+        for(final boolean middle:new boolean[]{false,true})test("accepted first ordinary launch reads new root with middle "+middle,()->{
+            PublicPersonalNotesCustody c=bootstrap(true);appearing(middle,null);PublicPersonalNotesCustody.Frame frame=e.reader.frame(c);
+            yes(frame.roots.size()==1&&frame.roots.get(0).task.id==1464&&e.rootReads==2&&e.allReads==4);
+            yes(frame.roots.get(0).task.token==e.task(1).token.asBinder());
+            c.observe(frame,frame.end);yes(!c.claimFirstRootRead(frame.roots.get(0).task,205,10382,frame.end));
+        });
+        test("unaccepted launch records all three observed root sets",()->{
+            PublicPersonalNotesCustody c=bootstrap(false);appearing(true,null);PublicPersonalNotesReader.FailureAudit audit=new PublicPersonalNotesReader.FailureAudit();
+            try{e.reader.frame(c);throw new AssertionError("unaccepted launch admitted");}
+            catch(IOException failure){audit.runtime(failure,SystemClock.now);}
+            JSONObject row=new JSONObject(audit.evidence()).getJSONObject("first_runtime_failure").getJSONObject("actual_root_read_failure");
+            yes(row.getString("stage").equals("bootstrap_unavailable")&&row.getJSONArray("before_all_roots").length()==0);
+            yes(row.getJSONArray("owned_display_roots").getJSONObject(0).getInt("task_id")==1464&&row.getJSONArray("after_all_roots").length()==1);
+            yes(!row.getBoolean("diagnostics_grant_authority")&&e.rootReads==1);
+        });
+        test("cleanup never spends runtime first-root permission",()->{bootstrap(true);appearing(true,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.frame());yes(e.rootReads==1);});
+        test("second launch cannot qualify as bootstrap",()->{PublicPersonalNotesCustody c=bootstrap(true);c.markLaunch();c.acceptedOrdinaryLaunch(COMP,SystemClock.now);appearing(true,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("known task never gets first-root resampling",()->{PublicPersonalNotesCustody c=bootstrap(true);PublicPersonalNotesCustody.Frame f=e.frame();c.observe(f,f.end);appearing(true,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("unexpected accepted component cannot bind a new root",()->{PublicPersonalNotesCustody c=bootstrap(false);c.acceptedOrdinaryLaunch(PKG+"/"+PKG+".editor.Other",SystemClock.now);appearing(true,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("empty then foreign cookie refuses",()->{PublicPersonalNotesCustody c=bootstrap(true);change(e.task(2),"cookie");appearing(false,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("different positive token inside the first triple refuses",()->{PublicPersonalNotesCustody c=bootstrap(true);change(e.task(1),"token");appearing(true,null);refuses("NOTES_ROOT_TASKINFO_CHANGED",()->e.reader.frame(c));});
+        for(final String field:new String[]{"token","uid","user","component","cookie","parent","display"})
+            test("fresh complete bootstrap triple still refuses changed "+field,()->{
+                PublicPersonalNotesCustody c=bootstrap(true);appearing(true,()->{for(int phase=0;phase<3;phase++)change(e.task(phase),field);});
+                refuses(null,()->e.reader.frame(c));yes(e.rootReads==2);
+            });
+        test("competing root in middle refuses before retry",()->{PublicPersonalNotesCustody c=bootstrap(true);appearing(true,null);
+            TaskInfo added=e.row(captured.getJSONObject("owned_display_roots").getJSONArray("rows").getJSONObject(0),false);added.taskId=2022;e.list(1).add(added);
+            refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));yes(e.rootReads==1);});
+        test("positive root cannot disappear from the middle",()->{PublicPersonalNotesCustody c=bootstrap(true);e.list(1).clear();refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("target cannot appear on a physical display",()->{PublicPersonalNotesCustody c=bootstrap(true);
+            ActivityTaskManager.RootTaskInfo added=(ActivityTaskManager.RootTaskInfo)e.row(captured.getJSONObject("after_all_roots").getJSONArray("rows").getJSONObject(e.list(2).indexOf(e.root(2))),true);
+            added.taskId=2022;added.displayId=0;added.childTaskIds=new int[]{2022};e.list(2).add(added);appearing(true,null);
+            refuses("NOTES_BOOTSTRAP_GLOBAL_CONFLICT",()->e.reader.frame(c));yes(e.rootReads==1);});
+        test("retired custody rejects already observed bootstrap candidate",()->{PublicPersonalNotesCustody c=bootstrap(true);appearing(true,c::retireAdmission);refuses("NOTES_BOOTSTRAP_RETIRED",()->e.reader.frame(c));});
+        test("unexpired caller still honors original short bootstrap window",()->{PublicPersonalNotesCustody c=bootstrap(true);SystemClock.now+=1501;appearing(true,null);refuses("NOTES_ROOT_CENSUS_CHANGED",()->e.reader.frame(c));});
+        test("original task deadline still wins during the resample",()->{PublicPersonalNotesCustody c=bootstrap(true);appearing(true,()->SystemClock.now=e.deadline);refuses("NOTES_BOOTSTRAP_RETIRED",()->e.reader.frame(c));});
+        return new JSONObject().put("cases",cases-startCases).put("assertions",checks-startChecks)
+                .put("case_names",new ArrayList<String>(names.subList(startNames,names.size())))
+                .put("framework_and_binder_fixtures_synthetic",true).put("phone_operations",0);
+    }
     static JSONObject stabilityCases()throws Exception{
         int startCases=cases,startChecks=checks,startNames=names.size();
         for(final String field:new String[]{"visibility","activities","editor-top","empty-activities"})
@@ -411,10 +467,11 @@ public final class NotesTaskInfoReaderHostTest {
         int originalCases=cases,originalChecks=checks;List<String> originalNames=new ArrayList<String>(names);
         JSONObject emptyActivity=emptyActivityCases();
         JSONObject stability=stabilityCases();
+        JSONObject bootstrap=bootstrapCases();
         JSONObject result=new JSONObject().put("schema","hepta.notes-task-info-reader-host.v2").put("all_pass",true)
                 .put("cases",originalCases).put("assertions",originalChecks).put("case_names",originalNames)
                 .put("empty_activity",emptyActivity)
-                .put("taskinfo_stability",stability)
+                .put("taskinfo_stability",stability).put("first_root_bootstrap",bootstrap)
                 .put("input_mode",args[1]).put("input_sha256",digest(raw)).put("archived_capture_replayed",actualCapture)
                 .put("actual_capture_sha256",actualCapture?RAW_SHA:JSONObject.NULL).put("reference_capture_sha256",RAW_SHA)
                 .put("input_values_rehydrated",true).put("synthetic_binder_tokens",true).put("framework_and_clock_fixtures_synthetic",true)

@@ -43,6 +43,31 @@ final class PublicPersonalNotesReader {
             evidence=Collections.unmodifiableMap(row);
         }
     }
+    private static final class CensusChanged extends IOException {
+        private static final long serialVersionUID=1L;
+        final Map<String,Object> evidence;
+        CensusChanged(String code,String stage,int attempt,int display,Map<Integer,BackgroundOwnedSingleTask.Task> previous,
+                Map<Integer,BackgroundOwnedSingleTask.Task> first,
+                Map<Integer,BackgroundOwnedSingleTask.Task> middle,Map<Integer,BackgroundOwnedSingleTask.Task> last){
+            super(code);
+            Map<String,Object> value=new LinkedHashMap<String,Object>();
+            value.put("schema","hepta.notes-root-census-refusal.v1");value.put("stage",stage);
+            value.put("reason",code);value.put("sample_attempt",attempt);value.put("expected_display_id",display);
+            value.put("previously_pinned_ids",previous==null?JSONObject.NULL:new ArrayList<Integer>(previous.keySet()));
+            value.put("before_all_roots",rows(first));value.put("owned_display_roots",rows(middle));value.put("after_all_roots",rows(last));
+            value.put("diagnostics_grant_authority",false);evidence=Collections.unmodifiableMap(value);
+        }
+        private static List<Map<String,Object>> rows(Map<Integer,BackgroundOwnedSingleTask.Task> tasks){
+            List<Map<String,Object>> result=new ArrayList<Map<String,Object>>();
+            for(BackgroundOwnedSingleTask.Task t:tasks.values()){
+                Map<String,Object> row=new LinkedHashMap<String,Object>();
+                row.put("task_id",t.id);row.put("user_id",t.user);row.put("display_id",t.display);row.put("effective_uid",t.uid);
+                row.put("token_identity_in_reader",System.identityHashCode(t.token));row.put("launch_cookie_count",t.cookies.size());
+                result.add(Collections.unmodifiableMap(row));
+            }
+            return Collections.unmodifiableList(result);
+        }
+    }
     /** A complete valid target row may change its activity state while Android
      * completes a launch. Only this typed, identity-preserving change is sampled
      * again; it never authorizes a second Intent or a partial/inconsistent frame. */
@@ -78,7 +103,8 @@ final class PublicPersonalNotesReader {
         private static Map<String,Object> failure(Throwable error,String phase,long now){
             Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("phase",phase);out.put("observed_elapsed_ms",now);
             out.put("exception_class",error.getClass().getName());out.put("reason",nullable(error.getMessage()));
-            out.put("actual_root_read_failure",error instanceof TaskInfoReadFailure?((TaskInfoReadFailure)error).evidence:JSONObject.NULL);
+            out.put("actual_root_read_failure",error instanceof TaskInfoReadFailure?((TaskInfoReadFailure)error).evidence:
+                    error instanceof CensusChanged?((CensusChanged)error).evidence:JSONObject.NULL);
             return Collections.unmodifiableMap(out);
         }
     }
@@ -108,13 +134,15 @@ final class PublicPersonalNotesReader {
         ApplicationInfo current=context.getPackageManager().getApplicationInfo(PublicPersonalNotesCustody.PACKAGE,0);
         need(current!=null&&current.uid==uid&&current.enabled&&sourceDir.equals(current.sourceDir),"NOTES_INSTALLATION_CHANGED");
     }
-    synchronized PublicPersonalNotesCustody.Frame frame()throws Exception{
+    synchronized PublicPersonalNotesCustody.Frame frame()throws Exception{return frame(null);}
+    synchronized PublicPersonalNotesCustody.Frame frame(PublicPersonalNotesCustody custody)throws Exception{
         long begin=SystemClock.elapsedRealtime();check();
         // Ordinary Intent-created Notes roots are not organizer-created containers.
         // Android 16 getChildTasks() returns null for such tasks; null is not an
         // empty-child proof. Use two complete independent ATM leaf censuses around
         // the real organizer root TaskInfo query, without ever calling children().
         Map<Integer,BackgroundOwnedSingleTask.Task> identities=null;
+        BackgroundOwnedSingleTask.Task firstRoot=null;
         for(int attempt=1;attempt<=MAX_TASKINFO_SAMPLES;attempt++){
             check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
             BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
@@ -122,9 +150,31 @@ final class PublicPersonalNotesReader {
             BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
             Map<Integer,BackgroundOwnedSingleTask.Task> first=index(before.displayRoots,"before_all_roots");
             Map<Integer,BackgroundOwnedSingleTask.Task> middle=index(actual,"owned_display_roots"),last=index(after.displayRoots,"after_all_roots");
-            need(first.keySet().equals(middle.keySet())&&middle.keySet().equals(last.keySet()),"NOTES_ROOT_CENSUS_CHANGED");
+            if(!first.keySet().equals(middle.keySet())||!middle.keySet().equals(last.keySet())){
+                // Discard one complete bootstrap triple only for empty -> one new root.
+                if(custody==null||attempt!=1||!first.isEmpty()||last.size()!=1
+                        ||(!middle.isEmpty()&&!middle.keySet().equals(last.keySet())))
+                    throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","within_sample",attempt,display,identities,first,middle,last);
+                BackgroundOwnedSingleTask.Task candidate=last.values().iterator().next();
+                try{requireBootstrapCensus(before.global,candidate,false);requireBootstrapCensus(after.global,candidate,true);}
+                catch(IOException conflict){
+                    throw new CensusChanged(conflict.getMessage(),"bootstrap_global_census",attempt,display,identities,first,middle,last);
+                }
+                if(!middle.isEmpty())sameIdentity(middle.get(candidate.id),candidate,"bootstrap_first_token",attempt);
+                if(!custody.claimFirstRootRead(candidate,display,uid,SystemClock.elapsedRealtime()))
+                    throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","bootstrap_unavailable",attempt,display,identities,first,middle,last);
+                identities=last;firstRoot=candidate;
+                check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                Thread.sleep(20);continue;
+            }
             if(identities==null)identities=first;
-            need(identities.keySet().equals(first.keySet()),"NOTES_ROOT_CENSUS_CHANGED");
+            if(!identities.keySet().equals(first.keySet()))
+                throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","between_samples",attempt,display,identities,first,middle,last);
+            if(firstRoot!=null){
+                need(custody.firstRootReadActive(firstRoot,display,uid,SystemClock.elapsedRealtime()),"NOTES_BOOTSTRAP_RETIRED");
+                requireBootstrapCensus(before.global,first.get(firstRoot.id),true);
+                requireBootstrapCensus(after.global,last.get(firstRoot.id),true);
+            }
             // Keep the first complete census's Binder identity through every
             // resample. A later coherent token/UID/cookie replacement is still
             // forbidden, even when the prior mismatch was only visibility.
@@ -142,6 +192,7 @@ final class PublicPersonalNotesReader {
                     nodes.add(new PublicPersonalNotesCustody.Node(task,Collections.<PublicPersonalNotesCustody.Node>emptyList()));
                 }
                 check();
+                if(firstRoot!=null)need(custody.firstRootReadActive(firstRoot,display,uid,SystemClock.elapsedRealtime()),"NOTES_BOOTSTRAP_RETIRED");
                 return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
             }catch(ActivityStateChanged changed){
                 if(attempt==MAX_TASKINFO_SAMPLES)throw changed;
@@ -150,6 +201,20 @@ final class PublicPersonalNotesReader {
             }
         }
         throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
+    }
+    private void requireBootstrapCensus(ProfileTaskPolicy.Snapshot census,BackgroundOwnedSingleTask.Task task,boolean present)throws Exception{
+        need(census!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
+        int roots=0,leaves=0;
+        for(ProfileTaskPolicy.Root root:census.roots){
+            if(root.display==display){roots++;need(present&&root.id==task.id,"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");}
+            else need(root.id!=task.id&&!inPackage(root.base)&&!inPackage(root.top),"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");
+        }
+        for(ProfileTaskPolicy.Leaf leaf:census.leaves.values()){
+            if(leaf.display==display){leaves++;need(present&&leaf.id==task.id&&leaf.parent==task.id,"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");}
+            else need(leaf.id!=task.id&&leaf.parent!=task.id&&!inPackage(leaf.name),"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");
+        }
+        need(roots==(present?1:0)&&leaves==roots,"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");
+        if(present)requireSoleLeaf(census,task);
     }
     /** Post-release sampling keeps the actual custody snapshot. Missing display
      * organizer calls are never made, and no failed/partial read becomes absence.

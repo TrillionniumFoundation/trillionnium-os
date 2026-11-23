@@ -131,7 +131,7 @@ def main():
     files += [source / "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
               original / "NotesTaskInfoReaderHostTest.java", here / "NotesAfterReleaseReaderHostTest.java"]
     broker = background / "BackgroundDisplayBroker.java"
-    tracked = set(files + [source / "tests/profile-permission-ready-confirmation/late_ready_history.py", broker, fixture, original / "run_host.py", original / "prepare_fixture.py",
+    tracked = set(files + [source/"tests/notes-task-info-reader/first_root_history.py",source / "tests/profile-permission-ready-confirmation/late_ready_history.py", broker, fixture, original / "run_host.py", original / "prepare_fixture.py",
                           original / "README.md", here / "run_host.py", here / "README.md"])
     tools = [jar, jdk / "bin/javac", jdk / "bin/java", jdk / "lib/ct.sym"]
     result = {"schema": "hepta.notes-after-release-reader-gate.v1", "all_pass": False,
@@ -165,15 +165,19 @@ def main():
             raise RuntimeError("Pinned JSON dependency differs")
         if fixture.stat().st_size != 18714 or sha(fixture) != SYNTHETIC_SHA:
             raise RuntimeError("Synthetic derived fixture changed")
+        from runpy import run_path
+        restore=run_path(str(source/"tests/notes-task-info-reader/first_root_history.py"))["predecessor"]
         for relative, expected in RETAINED_INPUTS.items():
-            if sha(source / relative) != expected:
+            file=source/relative
+            recorded=digest(restore(file.name,file.read_text()).encode()) if file.name=="NotesTaskInfoReaderHostTest.java" else sha(file)
+            if recorded != expected:
                 raise RuntimeError("Retained fixture or organizer changed: " + relative)
         result["retained_inputs_unchanged"] = dict(RETAINED_INPUTS)
-        reader = (background / "PublicPersonalNotesReader.java").read_text()
+        reader = restore("PublicPersonalNotesReader.java",(background / "PublicPersonalNotesReader.java").read_text())
         projected_reader = remove_addition(reader,
                 "    /** Post-release sampling keeps the actual custody snapshot.",
                 "    private Map<Integer,BackgroundOwnedSingleTask.Task> index(")
-        custody = (background / "PublicPersonalNotesCustody.java").read_text()
+        custody = restore("PublicPersonalNotesCustody.java",(background / "PublicPersonalNotesCustody.java").read_text())
         projected_custody = remove_addition(custody,
                 "    /** A private-constructor snapshot of actual released custody, never a wire",
                 "    synchronized boolean needsActualTasks(")
@@ -200,7 +204,7 @@ def main():
             raise RuntimeError("Release/display/custody guard order changed")
         if broker_text.count(".frameAfterRelease(") != 1:
             raise RuntimeError("After-release reader gained another broker call")
-        legacy_runner = (original / "run_host.py").read_text()
+        legacy_runner = restore("run_host.py",(original / "run_host.py").read_text())
         if (legacy_runner.count(READER_NEW_SHA) != 1
                 or digest(legacy_runner.replace(READER_NEW_SHA, READER_OLD_SHA, 1).encode()) != LEGACY_RUNNER_SHA):
             raise RuntimeError("Original reader gate changed beyond the exact new-reader pin")
