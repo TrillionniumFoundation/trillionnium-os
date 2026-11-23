@@ -20,6 +20,7 @@ def put(p,j):
 def main():
     ap=argparse.ArgumentParser()
     for name in ('source','output','java-home','json-jar'):ap.add_argument('--'+name,type=Path,required=True)
+    ap.add_argument('--actual-failure-terminal',type=Path,help='Optional original 8a2c broker terminal for byte-exact projection verification')
     ap.add_argument('--actual-census',type=Path,help='Explicit external archived replay; default is the bundled synthetic derived fixture')
     a=ap.parse_args();s=a.source.resolve(strict=True);out=a.output.absolute();jdk=a.java_home.resolve(strict=True);jar=a.json_jar.resolve(strict=True)
     own=Path(__file__).resolve().parent
@@ -37,10 +38,27 @@ def main():
     files=[bg/(n+'.java') for n in production]+[s/'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',own/'NotesTaskInfoReaderHostTest.java']+stubs
     private_names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory']
     private_files=[bg/(n+'.java') for n in private_names]+[s/'tests/profile-broker/ProfileBrokerHostTest.java']
-    tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
+    failure_case=own/'8a2c-first-failure.json'
+    retained=json.loads(failure_case.read_text())
+    need(retained['broker_sha256']=='836ebb841a80d531b6be62bdb2fcc1ac6f4ddccb8a7e14eb60c7eb28a2e3c73d'
+         and retained['broker_bytes']==4333 and retained['failure_reason']=='NOTES_ROOT_CENSUS_CHANGED'
+         and retained['actual_root_read_failure'] is None and retained['absence_reads']==2 and retained['cleanup_known'] is True
+         and retained['later_owned_tasks']==[{'task_id':1825,'user_id':0,'display_id':502,'actual_effective_uid':10382,
+             'parent_id':-1,'serialized_token_grants_authority':False}], 'historical sample is unclassified; later cleanup is a different read')
+    tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,failure_case,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
+    if a.actual_failure_terminal is not None:
+        terminal=a.actual_failure_terminal.resolve(strict=True)
+        original=raw(terminal)
+        need(len(original)==retained['broker_bytes'] and hashlib.sha256(original).hexdigest()==retained['broker_sha256'], 'exact 8a2c original required')
+        broker=json.loads(original);failure=broker['personal_notes_task_info_diagnostics']['first_runtime_failure'];cleanup=broker['personal_notes_cleanup']
+        later=[{key:task[key] for key in retained['later_owned_tasks'][0]} for task in cleanup['actual_observed_tasks']]
+        need(failure['reason']==retained['failure_reason'] and failure['actual_root_read_failure'] is None
+             and later==retained['later_owned_tasks'] and all(cleanup[key]==retained[key] for key in ('absence_reads','cleanup_known','launch_dispatched')),
+             'actual first failure and independent later cleanup must match the minimized record')
+        tracked.append(terminal)
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='eb966bf1cb76822b6c694aa11d6f772158448abc3396f86152ec97ba28ab390c','approved reader differs')
+    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)
@@ -52,6 +70,7 @@ def main():
         ('compile-original-private',[jdk/'bin/javac',*flags,'-cp',jar,'-d',pc,*private_files]),
         ('original-private-cases',[jdk/'bin/java','-ea','-cp',str(pc)+os.pathsep+str(jar),'org.trillionnium.hepta.background.ProfileBrokerHostTest'])]
     report={'schema':'hepta.notes-task-info-reader-gate.v2','all_pass':False,'phone_operations':0,'android_runtime':False,'hardware_qualification_claimed':False,'framework_and_binder_fixtures_synthetic':True,'input_fixture':pin(capture),'input_mode':input_mode,'archived_capture_replayed':actual_capture,'reference_capture_sha256':CAPTURE_SHA,'inputs_before':before,'stages':[]}
+    report['first_root_historical_failure']={'original_replayed':a.actual_failure_terminal is not None,'census_shape_recorded':False,'retained':retained}
     try:
         for name,argv in commands:
             t=time.monotonic();argv=list(map(str,argv))
@@ -70,6 +89,8 @@ def main():
                      and extra.get('framework_and_binder_fixtures_synthetic') is True
                      and type(extra.get('phone_operations')) is int and extra['phone_operations']==0,
                      'exact empty-activity and diagnostic cases required')
+                first=cases['first_root_bootstrap']
+                need(first['cases']==22 and len(set(first['case_names']))==22 and first['assertions']==116 and first['phone_operations']==0, 'all first-root resample cases required')
                 stable=cases.get('taskinfo_stability',{})
                 need(stable.get('schema')=='hepta.notes-taskinfo-stability-host.v1' and stable.get('all_pass') is True
                      and stable.get('cases')==12 and stable.get('assertions')==60

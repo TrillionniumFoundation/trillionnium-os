@@ -467,6 +467,11 @@ final class NativeCalendarDateIntent {
                 or notes_empty.get("framework_and_binder_fixtures_synthetic") is not True
                 or type(notes_empty.get("phone_operations")) is not int or notes_empty["phone_operations"]!=0):
             raise RuntimeError("Notes empty-activity and actual-field diagnostic cases differ")
+        first_root=notes_cases.get("first_root_bootstrap",{})
+        if (first_root.get("cases")!=22 or first_root.get("assertions")!=116
+                or len(set(first_root.get("case_names",[])))!=22 or first_root.get("phone_operations")!=0
+                or first_root.get("framework_and_binder_fixtures_synthetic") is not True):
+            raise RuntimeError("Complete bound first-root read and refusal cases required")
         notes_stability=notes_cases.get("taskinfo_stability",{})
         if (notes_stability.get("schema")!="hepta.notes-taskinfo-stability-host.v1" or notes_stability.get("all_pass") is not True
                 or type(notes_stability.get("cases")) is not int or notes_stability["cases"]!=12

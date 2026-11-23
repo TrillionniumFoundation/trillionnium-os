@@ -52,6 +52,10 @@ final class PublicPersonalNotesCustody {
     private int display=-1,absenceReads,pendingReads;
     private boolean attempted,launched,retiring,releasePrepared,releaseAttempted,releaseReturned,unknown,known,physicalHistoryChanged,hiddenHistoryChanged,presentationChanged;
     private long lastObservation=-1,lastAbsence=-1;
+    private int launchCount;
+    private String bootstrapComponent;
+    private boolean bootstrapReadUsed;
+    private long bootstrapUntil;
     private String finalRecentsSha="",failure="",releaseHistory="",releaseRecentsSha="";
 
     PublicPersonalNotesCustody(String generation,String scopeSha,int uid,ProfileTaskPolicy.Snapshot initial,
@@ -90,7 +94,24 @@ final class PublicPersonalNotesCustody {
     }
     synchronized void beforeCreate(){need(!attempted&&!unknown&&!retiring,"NOTES_CREATE_ALREADY_ATTEMPTED");attempted=true;}
     synchronized void bindDisplay(int value){need(attempted&&!unknown&&value>1&&(display<0||display==value),"NOTES_DISPLAY_BINDING_INVALID");display=value;}
-    synchronized void markLaunch(){need(attempted&&display>1&&!unknown&&!retiring&&!releasePrepared,"NOTES_LAUNCH_CUSTODY_RETIRED");launched=true;}
+    synchronized void markLaunch(){need(attempted&&display>1&&!unknown&&!retiring&&!releasePrepared,"NOTES_LAUNCH_CUSTODY_RETIRED");launched=true;launchCount++;bootstrapComponent=null;}
+    /** Called only after the ordinary single Intent returned a framework success. */
+    synchronized void acceptedOrdinaryLaunch(String component,long now){
+        if(bootstrapComponent==null&&launchCount==1&&launched&&!retiring&&!unknown&&observed.isEmpty()&&pkg(component)){
+            bootstrapComponent=component;bootstrapUntil=now+1500;
+        }
+    }
+    synchronized boolean firstRootReadActive(BackgroundOwnedSingleTask.Task task,int actualDisplay,int actualUid,long now){
+        return !retiring&&!releasePrepared&&!unknown&&launchCount==1&&launched&&observed.isEmpty()
+                &&actualDisplay==display&&actualUid==uid&&now<=bootstrapUntil&&bootstrapComponent!=null
+                &&task!=null&&task.display==display&&task.user==0&&task.uid==uid&&task.topUid==uid
+                &&task.activities>0&&task.token!=null&&task.cookies.isEmpty()&&!initialIds.contains(task.id)
+                &&bootstrapComponent.equals(task.intentComponent)&&bootstrapComponent.equals(task.real);
+    }
+    synchronized boolean claimFirstRootRead(BackgroundOwnedSingleTask.Task task,int actualDisplay,int actualUid,long now){
+        if(bootstrapReadUsed||!firstRootReadActive(task,actualDisplay,actualUid,now))return false;
+        bootstrapReadUsed=true;return true;
+    }
     synchronized void observe(Frame frame,long now){
         if(retiring)return; // A late monitor read cannot reopen or overwrite retirement.
         try{observeChecked(frame,now);}catch(RuntimeException error){unresolved(error.getMessage());throw error;}
