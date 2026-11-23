@@ -38,7 +38,9 @@ def main():
     try:
         spec=importlib.util.spec_from_file_location('history_actual_extractor',extractor);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         raw=service.read_text(encoding='utf-8')
-        methods={'validate':module.body(raw,'    private String validate('),
+        methods={'query_budget':module.body(raw,'    private final class QueryGraphBudget implements GraphBudget {'),
+                 'query_read':module.body(raw,'    private Graph readNativeActionGraph('),
+                 'validate':module.body(raw,'    private String validate('),
                  'click_branch':module.body(raw,'            if("click".equals(action.action)){')}
         text=template.read_text(encoding='utf-8')
         for key,value in methods.items():
@@ -51,9 +53,19 @@ def main():
         tool_port=out/'generated/org/trillionnium/hepta/background/FixedIntentTools.java'
         write(tool_port,'package org.trillionnium.hepta.background; public final class FixedIntentTools { private FixedIntentTools(){} public static boolean isTool(String action){ if("click".equals(action)||"back".equals(action)||"wait".equals(action)||"done".equals(action))return false; throw new AssertionError("FixedIntentTools protocol outside this control-flow gate"); } }\n')
         report['instrumented_tool_classifier_port']={'source':meta(tool_port),'boundary':'Only four tested non-tool action labels return false; every other action throws. No FixedIntentTools route is qualified.'}
+        fixture=own/'d1e685-query-refusals.json';rows=json.loads(fixture.read_bytes())['operations']
+        need(hashlib.sha256(fixture.read_bytes()).hexdigest()=='919429962fb09dfb9cb4925db28c920600030e683a034309d993224f00cd2572','recorded d1e685 operation receipt projection changed')
+        for row in rows:
+            need(row['purpose']=='query_observed_form' and row['capture_kind']=='native_ax_form_history'
+                 and row['model_proposal']=='click' and row['view_id']=='ctrip.android.view:id/bt_submit_inquire'
+                 and row['guard_state']==0 and row['stale'] and row['worker_drained'] and not row['accepted']
+                 and not row['dispatched'] and not row['effect_entered'] and row['original_failure_path'] is None,
+                 'recorded historical refusal with unknown descendant required')
+        counts=[row['phase_names'].count('graph_read') for row in rows];need(counts==[2,1,2],'recorded three failing graph stages changed')
+        report['recorded_refusals']=meta(fixture)
         classes=out/'classes';classes.mkdir()
         commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all','-Werror','-d',classes,generated,tool_port]),
-          ('cases',[jdk/'bin/java','-cp',classes,'org.trillionnium.hepta.local.NativeFormHistoryActionHost',out/'CASES.json'])]
+          ('cases',[jdk/'bin/java','-cp',classes,'org.trillionnium.hepta.local.NativeFormHistoryActionHost',out/'CASES.json',','.join(str(n) for n in counts)])]
         for name,argv in commands:
             start=time.monotonic_ns()
             with (out/(name+'.stdout')).open('xb') as stdout,(out/(name+'.stderr')).open('xb') as stderr:
@@ -62,7 +74,7 @@ def main():
                 'stdout':meta(out/(name+'.stdout')),'stderr':meta(out/(name+'.stderr'))})
             need(r.returncode==0,'actual '+name+' failed')
         cases=json.loads((out/'CASES.json').read_text(encoding='utf-8'))
-        need(cases['all_pass'] is True and cases['cases']==13 and len(set(cases['case_names']))==13,'all 13 distinct control-flow cases required')
+        need(cases['all_pass'] is True and cases['cases']==30 and len(set(cases['case_names']))==30,'expected all control-flow cases')
         need(cases['real_comparator_executed'] is False and cases['real_guard_executed'] is False and cases['effects_are_instrumented_ports'] is True,'explicit test boundary')
         report.update(cases=cases,cases_file=meta(out/'CASES.json'),all_pass=True)
     except Exception as error:report['error']={'type':type(error).__name__,'message':str(error)}

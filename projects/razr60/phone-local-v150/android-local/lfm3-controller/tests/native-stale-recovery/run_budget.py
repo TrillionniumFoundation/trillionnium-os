@@ -40,10 +40,20 @@ assert sha((src/'LocalTaskSession.java').read_bytes()) in {
 # terminal method digests and all maximum-census/projection/IO checks remain.
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
-if sha(native_snapshot_raw)=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412':
+if sha(native_snapshot_proof)=='4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b':
+    # The two approved complete-census Xiaomi banner checks are additive.
+    # Strip their exact bytes only on the proof copy; javac still uses the full source.
+    start=b'    /** Identify one ambiguous blank home banner for a new read only.'
+    end=b'    private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){'
+    assert native_snapshot_proof.count(start)==native_snapshot_proof.count(end)==1
+    lo=native_snapshot_proof.index(start);hi=native_snapshot_proof.index(end,lo)
+    assert sha(native_snapshot_proof[lo:hi])=='42a35e21bfcd8e6e20412916848cf784c35cffc7b3d3b28c5077109905f83cb2'
+    native_snapshot_proof=native_snapshot_proof[:lo]+native_snapshot_proof[hi:]
+    assert sha(native_snapshot_proof)=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412'
+if sha(native_snapshot_proof)=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412':
     # Only the two reviewed typed-history diagnostic changes are reversed in a
     # proof copy. Current source still enters javac and every original case.
-    proof=native_snapshot_raw.decode('utf-8')
+    proof=native_snapshot_proof.decode('utf-8')
     inverse=[
         ('need(capture.nativeText()&&sha(capture.receiptSha256)&&originalScreen==null,',
          'need(ObservationCaptureEvidence.NATIVE_AX.equals(capture.kind)&&sha(capture.receiptSha256)&&originalScreen==null,'),

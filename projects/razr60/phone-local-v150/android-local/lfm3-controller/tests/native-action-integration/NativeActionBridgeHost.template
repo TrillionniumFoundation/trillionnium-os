@@ -139,7 +139,7 @@ final class NativeActionBridgeHost {
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String message){this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.message=message;}
     }
     static final class StaleObservation extends IllegalStateException {
-        private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}
+        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable=false;StaleObservation(String message){super(message);}
     }
     static final class WebFlightSession {
         WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision a,PhoneObservation p){throw new AssertionError("legacy Web is not native guard");}
