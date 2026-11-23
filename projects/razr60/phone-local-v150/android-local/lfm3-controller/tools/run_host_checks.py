@@ -78,6 +78,7 @@ def main():
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         paths.add(ROOT/"tests/native-auto-target/fixtures/legacy-ctrip-gui.json")
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",

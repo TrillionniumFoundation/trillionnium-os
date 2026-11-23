@@ -3,130 +3,26 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "r33_native_business_and_instance_model_choice",
-  "complete_source_files": 2482,
+  "candidate_status": "xiaomi_retired_search_real_drain_candidate",
+  "complete_source_files": 2483,
   "current_successor_delta": {
-    "baseline": "256ec9c86fa29036644d7341e398a18236abf1e6",
-    "integrated_topics": [
-      {
-        "head": "8a01d543162c742660c884ffa65b781b757758f2",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-          "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-          "tests/native-app-routing/prepare_native_entry.py",
-          "tests/native-observation-screenshot-seed/ScreenshotGraphSeedCases.fragment",
-          "tests/native-observation-screenshot-seed/run_host.py",
-          "tests/native-xiaomi-product/run_host.py",
-          "tests/public-profile-business-client/FakeBusinessRecoveryProcess.java",
-          "tests/public-profile-business-client/PublicProfileBusinessClientHostTest.java"
-        ],
-        "source_manifest_sha256": "8092b6db2e1cb53c4a985b03f1e97cfc5ce6a4640f3a7e434d595e8be343d754"
-      },
-      {
-        "head": "300e2287428975ae7c6f0d98fa23f3eb15ddeecb",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-          "src/org/trillionnium/hepta/background/PublicProfileBusinessRecoveryMain.java",
-          "tests/profile-recovery-census/BusinessRecoveryCensusHostTest.java",
-          "tests/profile-recovery-census/run_host.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "30568644a40c513501b0ae4628c9669f584e481005861887c5e94fc6bfd9eb23"
-      },
-      {
-        "head": "f6404a2362bf1a301cff23c7568658c643aff033",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "tests/native-action-integration/BridgeCases.fragment",
-          "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
-          "tests/native-ctrip-form-observation/run_observer_host.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "2b959a45b0f9fdeff2b4c2e0d4d9fedc40c02a1338217251e02e87181fd018b2"
-      },
-      {
-        "head": "19ba30be0ca2272258b8326539f40bf54f175881",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/BackgroundAutoTargetPreferences.java",
-          "src/org/trillionnium/hepta/local/MainActivity.java",
-          "tests/native-auto-target/AutomaticTargetHostTest.java",
-          "tests/native-auto-target/fixtures/legacy-ctrip-gui.json",
-          "tests/native-auto-target/host_ports.py",
-          "tests/native-auto-target/run_host.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "523291300b631ddc574593a32d948648519996eb954df44e42fe6b93d03d307a"
-      },
-      {
-        "head": "f759bf454eefd9ccf50df498a6b316382eb96332",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-          "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-          "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-          "tests/native-search-producer/FullPageSwapCases.fragment",
-          "tests/native-search-producer/dcc738-planning-censuses.json"
-        ],
-        "source_manifest_sha256": "9fbb10893113a895ffe7c10dd20b635664c8c0fb560492ae9b5e4458dd2a10cc"
-      },
-      {
-        "head": "545019eca07d9c1180f710a16f26785aadccce93",
-        "reviewed_paths": [
-          "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-          "tests/native-search-producer/LoadingRetryCases.fragment",
-          "tests/native-search-producer/ProgressHomeCases.fragment",
-          "tests/native-search-producer/SearchProducerHost.template",
-          "tests/native-search-producer/dcc738-progress-censuses.json",
-          "tests/native-search-producer/run_producer.py",
-          "tools/run_host_checks.py"
-        ],
-        "source_manifest_sha256": "fdf948c27e991325fb2eed53738868fe79998449ede55f056a84276d3d20a110"
-      }
-    ],
+    "baseline": "6d56940e7984f6c26a938fcde093cde54d5c89fe",
     "original_case_assertions_preserved": true,
-    "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "src/org/trillionnium/hepta/background/PublicProfileBusinessRecoveryMain.java",
-      "src/org/trillionnium/hepta/local/BackgroundAutoTargetPreferences.java",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/MainActivity.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-      "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java"
+      "src/org/trillionnium/hepta/local/LocalTaskController.java"
     ],
     "test_changed_paths": [
-      "tests/native-action-integration/BridgeCases.fragment",
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "tests/native-auto-target/fixtures/legacy-ctrip-gui.json",
-      "tests/native-auto-target/host_ports.py",
-      "tests/native-auto-target/run_host.py",
-      "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-observation-screenshot-seed/ScreenshotGraphSeedCases.fragment",
-      "tests/native-observation-screenshot-seed/run_host.py",
-      "tests/native-search-producer/FullPageSwapCases.fragment",
-      "tests/native-search-producer/LoadingRetryCases.fragment",
-      "tests/native-search-producer/ProgressHomeCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/dcc738-planning-censuses.json",
-      "tests/native-search-producer/dcc738-progress-censuses.json",
       "tests/native-search-producer/run_producer.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/profile-recovery-census/BusinessRecoveryCensusHostTest.java",
-      "tests/profile-recovery-census/run_host.py",
-      "tests/public-profile-business-client/FakeBusinessRecoveryProcess.java",
-      "tests/public-profile-business-client/PublicProfileBusinessClientHostTest.java",
-      "tools/run_host_checks.py"
+      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
+      "tests/native-search-producer/NoEffectControllerHost.template",
+      "tests/native-search-producer/99c24-retired-search.json",
+      "tools/run_host_checks.py",
+      "tests/warm-finalization/prepare_fixture.py"
     ]
   },
   "current_test_dependency_repairs": {
-    "changed_paths": [
-      "tests/native-ctrip-form-observation/run_observer_host.py"
-    ],
-    "previous_manifest_sha256": "96bbabb34a97ce825bea07750a2642124bf7c2d481619649fd5710db01cdce9c"
+    "changed_paths": [],
+    "previous_manifest_sha256": "199808d0b0fb306825598d6f831dcd50f0c837ffd4abb23a28661ab365cd332d"
   },
   "files": [
     {
@@ -6715,9 +6611,9 @@
       "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
-      "bytes": 271660,
+      "bytes": 276405,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "de0570b8a09ef3fb71c22a5bd025219256091a0c125e7502be0d650f0e515436"
+      "sha256": "18e2fc2b70f59355b5f7f5daf01ef7643fa52020635cd974bde93f93b3f2dba1"
     },
     {
       "bytes": 59396,
@@ -9300,6 +9196,11 @@
       "sha256": "443f25ee1ff14efa857a8e588b4e7f4b4f82a1978cc5acaebbfdd53cbc21f328"
     },
     {
+      "bytes": 2830,
+      "path": "tests/native-search-producer/99c24-retired-search.json",
+      "sha256": "d47cbf9c36918fd0fa412c2659a05cb2b7d4d3a1374240aa3aeb43a8ce5d6ed2"
+    },
+    {
       "bytes": 11452,
       "path": "tests/native-search-producer/FullPageSwapCases.fragment",
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
@@ -9315,14 +9216,14 @@
       "sha256": "ac25b236a5aacc1a29af0e8c410b3f818a7d9cfd446f4fde998e09140dfb4085"
     },
     {
-      "bytes": 5368,
+      "bytes": 5834,
       "path": "tests/native-search-producer/NoEffectControllerHost.template",
-      "sha256": "968caeb26eff822522c2c5f3087df7455d72ef5692c604c347ffc7733fdd96f9"
+      "sha256": "6bce013d2a4c65f3cf427943e4147101fbf43d8b383acfa48acc1293b46642a3"
     },
     {
-      "bytes": 46184,
+      "bytes": 50955,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "9f93e45d7565ffd42d024c2cc4e11a1646df2a2144104c66a8a67692c4a7c8d7"
+      "sha256": "63a946a2e135af8eb3ef50c8aa69f73d790d8d77bc42a0002bb92bed57e0c6a6"
     },
     {
       "bytes": 71670,
@@ -9355,9 +9256,9 @@
       "sha256": "ebb895f5647bc01f712e81b2f699761efb349817c622036fdee58acbf1311090"
     },
     {
-      "bytes": 18793,
+      "bytes": 18954,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "136ec5a150929e7a0020fab027e7f3848eecd52761697948880fe9a70be5f664"
+      "sha256": "fb7ae7616c737a95e000706a57749098b436801889235ab25073dc1d1e890135"
     },
     {
       "bytes": 29903,
@@ -11625,9 +11526,9 @@
       "sha256": "87b747a2f5301761d53df4b3b8630455a0f4a47783765f1a9a17669b478a935e"
     },
     {
-      "bytes": 10253,
+      "bytes": 10457,
       "path": "tests/warm-finalization/prepare_fixture.py",
-      "sha256": "5fefecd90c2abaa2f35291478ca90a07d701ae7aad5a0a17f6e04b90c88a703a"
+      "sha256": "e07d51236e008d945c2731303ad2b62fde6556d8b3543f5bf7572e75c64e63a1"
     },
     {
       "bytes": 18537,
@@ -12325,9 +12226,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 65276,
+      "bytes": 65357,
       "path": "tools/run_host_checks.py",
-      "sha256": "cd7adbd28a069b3650b4444c33a73c1a2128460ecb704f19f774560f726bf744"
+      "sha256": "0b9b39696c67de7ef6baad453569929725da31fd51a2d7a03e8ed4a984953bd3"
     },
     {
       "bytes": 13873,
@@ -12536,9 +12437,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "80974f2342539c5f160e1aa674134ccc00db8fb2",
+    "previous_component_git_tree_sha1": "84eb3f4170106ea70efa34c7f4f9c764f1772df3",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "96bbabb34a97ce825bea07750a2642124bf7c2d481619649fd5710db01cdce9c"
+    "previous_manifest_sha256": "199808d0b0fb306825598d6f831dcd50f0c837ffd4abb23a28661ab365cd332d"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12547,12 +12448,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "88db56e0f345b4e4da55d61961e2148150288f524e3734687f5285d915375c1f",
+  "production_input_map_sha256": "60513bfa5edeaeb2f842b9d95edaf9cb0a3c83d362d314a5cf058de4e1217189",
   "schema": "hepta.local-source.v3",
-  "scope": "Retain verified R32 business recovery, qualify Ctrip full first-form proof and post-effect read budget, offer both certified Ctrip work-profile models, and recognize complete scoped Xiaomi loading and in-flight home evidence.",
-  "source_parent_head": "256ec9c86fa29036644d7341e398a18236abf1e6",
-  "source_parent_manifest_sha256": "96bbabb34a97ce825bea07750a2642124bf7c2d481619649fd5710db01cdce9c",
-  "source_snapshot_predecessor_manifest_sha256": "96bbabb34a97ce825bea07750a2642124bf7c2d481619649fd5710db01cdce9c",
+  "scope": "End an expired native search navigation only after a separately bounded original disposal callback and actual worker drain; no late continuation or replay.",
+  "source_parent_head": "6d56940e7984f6c26a938fcde093cde54d5c89fe",
+  "source_parent_manifest_sha256": "199808d0b0fb306825598d6f831dcd50f0c837ffd4abb23a28661ab365cd332d",
+  "source_snapshot_predecessor_manifest_sha256": "199808d0b0fb306825598d6f831dcd50f0c837ffd4abb23a28661ab365cd332d",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
