@@ -138,6 +138,7 @@ import org.json.*;
 /** Explicit host PM/APK fixture, never actual installed identity. */
 public final class RecoveryControllerIdentity {
  public static boolean changed;public static JSONObject recorded;
+ public static String firmwareFingerprintSha256(){throw new AssertionError("Notes recovery cannot request retained work-profile firmware evidence");}
  public static JSONObject read(android.content.Context context,int uid,long deadline)throws Exception{
   if(android.os.SystemClock.elapsedRealtime()>=deadline)throw new java.io.IOException("synthetic identity deadline");
   JSONObject result=recorded==null?new PersonalNotesAbsenceHostTest.Fixture().controller:new JSONObject(recorded.toString());

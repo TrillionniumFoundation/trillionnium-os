@@ -323,7 +323,7 @@ public final class PublicProfileBusinessRecoveryHostTest {
         proofReject("reused_owned_task_id_rejects","PUBLIC_POSTLAUNCH_OWNED_ID_REUSED",p->p.getJSONObject("after").getJSONObject("live").getJSONArray("all_task_ids").put(0,ORIGINAL.request().ownedLeafTaskId));
         proofReject("current_controller_mismatch_rejects","BUSINESS_PROOF_BINDING",p->p.getJSONObject("current_controller").put("source_sha256",OTHER));
         proofReject("absence_proof_cannot_acknowledge_or_rewrite_business","BUSINESS_EXPECTED_FALSE_acknowledges_control_session",p->p.put("acknowledges_control_session",true));
-        proofReject("absence_proof_cannot_claim_zero_business_dispatch","BUSINESS_EXPECTED_FALSE_business_dispatch_absent_in_original_receipts",p->p.put("business_dispatch_absent_in_original_receipts",true));
+        proofReject("absence_proof_cannot_claim_zero_business_dispatch","BUSINESS_HISTORICAL_STATUS",p->p.put("business_dispatch_absent_in_original_receipts",true));
         JSONObject result=new JSONObject().put("status","PASS").put("cases",CASES.length()).put("assertions",assertions).put("case_names",CASES)
             .put("actual_original_count",inputs.size()).put("actual_task_file_count",105).put("actual_steps",7).put("actual_model_requests",7)
             .put("actual_full_result_bytes",inputs.get(ORIGINAL.resultPath).length)
