@@ -17,7 +17,9 @@
       "tests/native-search-producer/NoEffectControllerHost.template",
       "tests/native-search-producer/99c24-retired-search.json",
       "tools/run_host_checks.py",
-      "tests/warm-finalization/prepare_fixture.py"
+      "tests/warm-finalization/prepare_fixture.py",
+      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "tests/qualification-scope/fixtures/org/json/JSONObject.java"
     ]
   },
   "current_test_dependency_repairs": {
@@ -8641,9 +8643,9 @@
       "sha256": "ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889"
     },
     {
-      "bytes": 1000,
+      "bytes": 1058,
       "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "sha256": "07fe58b8fdcc40a5e3d3972fc84b17e537de802af4bd6709737878fea971d68d"
+      "sha256": "9b2aadad2b29cd5016731a789bd3fb4ae85db33c0883eb42b46bb5f1bf3a4ce1"
     },
     {
       "bytes": 3642,
@@ -10891,9 +10893,9 @@
       "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
     },
     {
-      "bytes": 5349,
+      "bytes": 5629,
       "path": "tests/qualification-scope/fixtures/org/json/JSONObject.java",
-      "sha256": "41ce962c326f038348a8c9eaf0123218a5ad20a1bc788525fa72e580fde058e4"
+      "sha256": "bb04b448575266f42c45d5ef46315996a17b7308f73cbce32e95d70aa7b32ae5"
     },
     {
       "bytes": 336,
