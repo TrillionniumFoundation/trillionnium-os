@@ -60,7 +60,7 @@ final class NativeSearchSession {
         e.put("profile_user_serial",task.installed.profileTarget.profile.serial);e.put("profile_full_uid",task.installed.profileTarget.fullUid);
         binding=NativeAppEvidence.immutableMap(e);task.bindSearchPlanning(this);requireLive(started);
     }
-    static boolean eligible(NativeAppSession task){return task!=null&&NativeAppGoal.PRODUCT_PRICE.equals(task.goal.kind)
+    static boolean eligible(NativeAppSession task){return task!=null&&task.goal.readsXiaomiProduct()
             &&NativeAppGoal.XIAOMI_PACKAGE.equals(task.goal.packageName)&&NativeAppGoal.PRODUCT_MODEL.equalsIgnoreCase(task.goal.productModel)
             &&task.installed.profileTarget!=null;}
     synchronized void requireLive(long now){

@@ -334,7 +334,7 @@ public final class TaskAuthorization {
             require(target!=null&&target.nativeGoal==goal&&target.explicitSelection&&!target.webHelper()
                     &&BackgroundTaskTarget.NATIVE_APP.equals(target.route)&&target.effectivePackages.size()==1
                     &&NativeAppGoal.XIAOMI_PACKAGE.equals(target.packageName)&&target.effectivePackages.contains(target.packageName)
-                    &&goal!=null&&NativeAppGoal.PRODUCT_PRICE.equals(goal.kind)&&NativeAppGoal.PRODUCT_MODEL.equalsIgnoreCase(goal.productModel)
+                    &&goal!=null&&goal.readsXiaomiProduct()&&NativeAppGoal.PRODUCT_MODEL.equalsIgnoreCase(goal.productModel)
                     &&goal.ownerSha256.equals(authorization.instructionSha256),"native.open_search requires the same explicit immutable read-only Xiaomi goal");
             target.requireOwner(authorization.immutableOwner());
             require(goal.toolCeiling.contains("click")&&new Frame(this).allows("click"),"native.open_search cannot bypass a click deny or method prerequisite");

@@ -191,6 +191,11 @@ def generate(source,output,h):
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
+        if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
+            # Recognizes an additional Xiaomi owner. The actual Ctrip goal and all
+            # the form-observer bodies and original cases compile and run below.
+            protected_files[name]=actual
+            continue
         if name in r32_provider_pins and actual==r32_provider_pins[name]:
             protected_files[name]=actual
             continue

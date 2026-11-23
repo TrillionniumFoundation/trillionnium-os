@@ -107,6 +107,33 @@ public final class LocalTaskController implements AutoCloseable {
                     &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))){
                 code="native_xiaomi_login_page";
                 message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
+            }else if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&"product_detail_quote".equals(phase)
+                    &&provider.containsKey("order_preview_price_review")){
+                java.util.Map<?,?> review=map(provider.get("order_preview_price_review")),quote=map(review.get("detail_quote"));
+                java.util.Map<?,?> displayed=map(provider.get("current_displayed_quote")),bound=map(quote.get("frame"));
+                java.util.Map<?,?> goal=map(map(completion.get("contract")).get("native_app_goal"));
+                java.util.Map<?,?> terms=map(goal.get("order_preview")),progress=map(session.get("progress"));
+                Object amount=quote.get("amount_decimal"),cap=terms.get("budget_ceiling_yuan"),variant=terms.get("requested_variant");
+                if(!"hepta.native-xiaomi-order-price-review.v1".equals(review.get("schema"))
+                        ||!NativeAppGoal.PRODUCT_ORDER_PREVIEW.equals(goal.get("kind"))||!owner.equals(goal.get("owner_sha256"))
+                        ||!"AX3000T".equals(goal.get("product_model"))||!goal.get("product_model").equals(review.get("model"))
+                        ||!task.equals(review.get("task_id"))||!owner.equals(review.get("owner_sha256"))
+                        ||!sameSha(review.get("execution_target_sha256"),source.get("execution_target_sha256"),session.get("execution_target_sha256"))
+                        ||!sameSha(review.get("authorization_sha256"),source.get("task_authorization_sha256"),session.get("authorization_sha256"))
+                        ||!source.equals(bound)||!frame.observationId.equals(review.get("observation_id"))
+                        ||!sameSha(review.get("phone_observation_record_sha256"),source.get("phone_observation_record_sha256"),bound.get("phone_observation_record_sha256"))
+                        ||!terms.equals(review.get("owner_order_preview"))||!number(terms.get("quantity"),1)
+                        ||!yes(terms,"stop_at_order_confirmation")||!Boolean.FALSE.equals(terms.get("order_submission_authorized"))
+                        ||!Boolean.FALSE.equals(terms.get("payment_authorized"))||!yes(progress,"product_query_observed","product_detail_navigation_observed")
+                        ||!"detail_display".equals(quote.get("quote_kind"))||!"Xiaomi路由器AX3000T".equals(quote.get("model_raw"))
+                        ||!"CNY".equals(quote.get("currency"))||!(amount instanceof String)||!amount.equals(displayed.get("amount_decimal"))
+                        ||!((String)amount).matches("[1-9][0-9]{0,6}(?:\\.[0-9]{1,2})?")
+                        ||!(cap instanceof String)||!((String)cap).matches("[1-9][0-9]{0,5}(?:\\.[0-9]{1,2})?")
+                        ||(variant!=null&&!"白色".equals(variant)&&!"标准版".equals(variant))
+                        ||!Boolean.FALSE.equals(review.get("checkout_total_verified"))||!Boolean.FALSE.equals(review.get("confirmation_page_reached"))
+                        ||!Boolean.FALSE.equals(review.get("order_submitted"))||!Boolean.FALSE.equals(review.get("payment_dispatched")))return java.util.Collections.emptyMap();
+                code="native_xiaomi_order_preview_price_only";
+                message=NativeAppGoal.OrderPreview.describe((String)amount,(String)cap,(String)variant);
             }else if(NativeAppGoal.CTRIP_PACKAGE.equals(frame.packageName)
                     &&NativeCtripFlightPage.FIRST_LAUNCH_PRIVACY.equals(phase)
                     &&yes(provider,"observed_first_launch_privacy","initialization_required")
