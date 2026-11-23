@@ -321,6 +321,22 @@
                 completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));check(s.taskObservationAdmissions==3,"ordinary post-navigation gate remains usable after all three admissions");
             }
         });
+        one("accepted_navigation_settles_only_before_fresh_read_after_action_slot_and_attempt_close",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);final long[] clocks={-1L,-1L};
+                f.effectHook=()->{clocks[0]=s.activeSearchAction.attempt.deadlineElapsed;SystemClock.now=clocks[0]-294;};
+                controller.beforeFreshAx=()->{
+                    clocks[1]=SystemClock.now;
+                    check(!actionSlot.pending()&&s.activeSearchAction==null&&f.base.search.navigationEffectRecorded(),
+                            "fresh read owns no action slot and follows actual recorded and once-claimed platform navigation");
+                    check(clocks[1]>=clocks[0]+56,"350ms navigation interval finishes on the read side of the old action cutoff");
+                };
+                Throwable failure=pumpController(controller,f);if(failure!=null)throw new AssertionError("ordinary search controller failed",failure);
+                check(f.effects==1&&controller.modelCalls==1&&controller.oldAxCalls==1&&clocks[1]>=clocks[0]+56,
+                        "one normal model decision, one dispatch, one new ordinary AX frame");
+            }
+        });
         one("successor_actual_LTC_two_models_failed_receipt_new_intent_once",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
             try(Fixture f=s.new Fixture(controller)){

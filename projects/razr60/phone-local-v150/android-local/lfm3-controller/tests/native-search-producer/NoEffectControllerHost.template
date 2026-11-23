@@ -56,8 +56,10 @@ final class NativeSearchNoEffectControllerHost {
         modelRuns.add(run);modelObservations.add(grammar.observationId);SystemClock.now+=syntheticModelDelay;
         return new ModelAnswer(text,run);
     }
+    Runnable beforeFreshAx;
     private PhoneObservation awaitObservation(String id,File directory,TaskAuthorization.Gate auth,long deadline)throws Exception{
         if(!service.legacyObservationAllowedForHost(id))throw new AssertionError("actual legacy observation admission remains closed");
+        if(beforeFreshAx!=null)beforeFreshAx.run();
         oldAxCalls++;SystemClock.now+=40;NativeAppEvidence.Frame frame=fixture.base.inputFrame(SystemClock.now,true);
         activeNativeTask.observed(frame);return new PhoneObservation(frame);
     }

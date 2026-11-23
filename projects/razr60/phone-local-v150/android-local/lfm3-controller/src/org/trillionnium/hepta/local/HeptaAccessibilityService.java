@@ -5035,9 +5035,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             work.requireFinalProfileClock();work.platformCallInvoked=true;
             boolean accepted=original.node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             work.marker(work.state.effectReturned(Boolean.valueOf(accepted)));
-            // Preserve the existing navigation settle interval inside the original eight-second budget.
-            long until=Math.min(work.state.deadlineElapsed,SystemClock.elapsedRealtime()+350);work.phase("settle");
-            while(SystemClock.elapsedRealtime()<until){work.check();SystemClock.sleep(Math.min(50,Math.max(1,until-SystemClock.elapsedRealtime())));}
+            // The single platform return is ready for the original worker drain and authority check.
+            // Navigation is verified only by a separately owned, fresh AX observation.
             work.check();return new ActionOutcome(accepted,true,false,accepted?"搜索导航已接受；输入框与业务结果仍需新观察":"搜索导航未被接受；不重复派发");
         }finally{if(fresh!=null)fresh.close();}
     }
