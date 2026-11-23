@@ -122,6 +122,8 @@ public final class TaskCompletionGate {
     private boolean workflowProofConsumed,workflowCompletionAccepted;
     private String workflowVerifiedObservationId;
     private Map<String,Object> workflowEvidence;
+    private List<String> preCreateRows=Collections.emptyList();
+    private int preCreateWindow=-1;
     private WebTaskDomain webDomain;
     private NativeAppSession nativeSession;
     // Completion is a historical, read-only result, not a retained action domain.
@@ -470,6 +472,7 @@ public final class TaskCompletionGate {
             launchProved=true;Map<String,Object> p=proof("model_bound_notes_launch",step,run,before,after);
             p.put("attempt_id",fixed.get("attempt_id"));p.put("payload_sha256",contract.bodySha256);proofs.add(p);
             parentCreateStep=step;parentCreateRun=run;parentCreateAttempt=(String)fixed.get("attempt_id");
+            preCreateRows=NotesCompletionEvidence.orderedSummaryDigests(before);preCreateWindow=before.windowId;
             parentCreateBefore=before.observationId;parentCreateAfter=after.observationId;parentCreateActionOrdinal=actionOrdinal;parentCreateAfterSourceSha=webFrameSha(after);
         }else if(editorObserved&&!listObserved&&("back".equals(action.action)||"click".equals(action.action))
                 &&NotesCompletionEvidence.NOTES.equals(action.packageName)&&beforeBody.matched&&afterList.matched){
@@ -535,6 +538,33 @@ public final class TaskCompletionGate {
         p.put("new_effects_dispatched",0);p.put("grants_from_client_cache_reset",false);
         p.put("workflow_initial_observation_id",ready.frame.observationId);proofs.add(p);
         return workflowGrant;
+    }
+    boolean notesOpaqueEditor(NotesCompletionEvidence.Frame frame){
+        return launchProved&&!identityInvalid&&sameDomain(frame)&&NotesCompletionEvidence.opaqueEditor(frame,installed);
+    }
+    synchronized NotesCreateWorkflow.Grant notesOpaqueEditorWorkflow(int step,String run,ActionDecision parent,
+            List<NotesCreateWorkflow.Observation> reads,TaskAuthorization.Frame frame,long started,long finished){
+        if(!notesCreateWorkflowRequested(frame)||workflowGrant!=null||reads==null||reads.size()!=NOTES_EDITOR_MAX_OBSERVATIONS
+                ||parent==null||parent.toolChildOrigin!=null||!"notes.create".equals(parent.action)||step!=parentCreateStep
+                ||!Objects.equals(run,parentCreateRun)||!Objects.equals(parent.observationId,parentCreateBefore)
+                ||!contract.body.equals(parent.text)||parentCreateActionOrdinal!=actionOrdinal||!launchProved||editorObserved
+                ||identityInvalid||priorVisibleBodyCollision||preCreateRows.size()<3||preCreateRows.contains(contract.bodySha256)
+                ||started<0||finished<started||finished-started>NOTES_EDITOR_READINESS_MS)return null;
+        NotesCreateWorkflow.Observation first=reads.get(0),last=reads.get(reads.size()-1);
+        if(first==null||!parentCreateAfter.equals(first.frame.observationId)||preCreateWindow==first.frame.windowId
+                ||!parentCreateAfterSourceSha.equals(webFrameSha(first.frame)))return null;
+        java.util.Set<String> ids=new java.util.HashSet<String>();
+        for(NotesCreateWorkflow.Observation next:reads){
+            if(next==null||!domainShape(next.frame)||!sameDomain(next.frame)||!first.stableWith(next)
+                    ||!ids.add(next.frame.observationId)||!NotesCompletionEvidence.opaqueEditor(next.frame,installed))return null;
+        }
+        NotesCreateWorkflow.Grant grant=new NotesCreateWorkflow.Grant(taskId,step,run,parentCreateBefore,parentCreateAfter,
+                last.frame.observationId,parentCreateAttempt,contract,authorization,installed,displayId,generation);
+        grant.bindOpaqueStart(last,preCreateRows,preCreateWindow,ids);workflowGrant=grant;
+        Map<String,Object> ev=proof("created_opaque_editor_single_exit",step,run,first.frame,last.frame);
+        ev.put("prior_list_window_id",preCreateWindow);ev.put("prior_visible_rows",preCreateRows.size());
+        ev.put("source_editor_body_verified",false);ev.put("preexisting_visible_match",false);ev.put("distinct_reads",reads.size());
+        proofs.add(ev);return grant;
     }
     /** Consumes a real in-process child chain separately from model-click proof.
      * Serialized workflow_verified/model text can never call this path. */
@@ -609,6 +639,10 @@ public final class TaskCompletionGate {
     public static final class NotesPhase {
         public final boolean domainValid,launchProved,editorObserved,listObserved,reopened,currentBody;
         public final String currentListItem;
+        private NotesCreateWorkflow.Grant opaqueChild;
+        boolean opaqueExit(NotesCompletionEvidence.Frame f){return opaqueChild!=null&&opaqueChild.opaqueExitPhase(f);}
+        boolean opaqueReopen(NotesCompletionEvidence.Frame f){return opaqueChild!=null&&opaqueChild.opaqueReopenPhase(f);}
+        boolean ownsOpaqueChild(ActionDecision action){return opaqueChild!=null&&opaqueChild.ownsChild(action);}
         private NotesPhase(boolean valid,boolean launch,boolean editor,boolean list,boolean reopened,
                            boolean currentBody,String item){
             domainValid=valid;launchProved=launch;editorObserved=editor;listObserved=list;
@@ -625,8 +659,10 @@ public final class TaskCompletionGate {
     public NotesPhase notesPhase(NotesCompletionEvidence.Frame current){
         boolean valid=NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null&&sameDomain(current);
         NotesCompletionEvidence.ListEvidence list=valid?NotesCompletionEvidence.list(current,contract.body):null;
-        return new NotesPhase(valid,launchProved,editorObserved,listObserved,reopened,
+        NotesPhase phase=new NotesPhase(valid,launchProved,editorObserved,listObserved,reopened,
                 valid&&body(current).matched,list!=null&&list.matched?list.item.nodeId:null);
+        if(valid&&workflowGrant!=null&&workflowGrant.opaque())phase.opaqueChild=workflowGrant;
+        return phase;
     }
     public Map<String,Object> prompt(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",contract.kind);

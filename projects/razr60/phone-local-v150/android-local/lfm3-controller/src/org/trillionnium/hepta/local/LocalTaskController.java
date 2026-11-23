@@ -832,6 +832,9 @@ public final class LocalTaskController implements AutoCloseable {
                                     authorization.frame(),notesReadiness.started,notesReadiness.finished)
                             :completion.notesCreateWorkflow(steps,decisionRunId,action,workflowObservation(observation),authorization.frame()):null;
                 if(notesReadiness!=null&&workflowGrant==null)
+                    workflowGrant=completion.notesOpaqueEditorWorkflow(steps,decisionRunId,action,notesReadiness.reads,
+                            authorization.frame(),notesReadiness.started,notesReadiness.finished);
+                if(notesReadiness!=null&&workflowGrant==null)
                     throw new IllegalStateException("本次正文后续就绪证据未能绑定原始新建操作，停止自动导航");
                 if(workflowGrant!=null){
                     emit("本次新建笔记正在按已授权工具流程保存并重新打开…");
@@ -840,6 +843,12 @@ public final class LocalTaskController implements AutoCloseable {
                             notesPhase,calculatorInput,completionInstalled,workflowGrant,observation,deadline);
                     observation=workflow.observation;
                     if(workflow.error!=null)throw workflow.error;
+                    if(workflowGrant.opaque()&&!workflow.verified){
+                        finalStatus=workflowGrant.savedToNewRow()?"partial":"failed";
+                        summary=workflowGrant.savedToNewRow()?"已在返回后的笔记列表首项核对本次新增正文。未能核实重新打开后的完整内容。"
+                                :"已打开本次笔记编辑器，未能在返回后的列表核实新增正文。";
+                        break;
+                    }
                     // History keeps named scalar facts; the complete typed workflow stays in its receipt.
                     row.put("tool_workflow_id",workflowGrant.workflowId)
                             .put("tool_workflow_actor_kind","tool_workflow").put("tool_workflow_model_issued",false)
@@ -1205,6 +1214,7 @@ public final class LocalTaskController implements AutoCloseable {
             PhoneObservation initial,long taskDeadline,NotesCreateWorkflow.Grant reopenGrant,NotesCreateWorkflow.ChildCall reopenChild){
         final boolean reopened=reopenChild!=null;
         long started=SystemClock.elapsedRealtime(),deadline=Math.min(taskDeadline,started+TaskCompletionGate.NOTES_EDITOR_READINESS_MS);
+        boolean allOpaque=true;
         PhoneObservation current=initial;Exception failure=null;boolean bodyReady=false;
         java.util.List<NotesCreateWorkflow.Observation> reads=new java.util.ArrayList<NotesCreateWorkflow.Observation>();
         java.util.Set<String> seen=new java.util.HashSet<String>();JSONArray samples=new JSONArray();JSONObject reset=null;
@@ -1240,6 +1250,8 @@ public final class LocalTaskController implements AutoCloseable {
                 sample.put("validation_accepted",domainValid).put("current_body_matched",currentBody).put("domain_valid",domainValid);
                 if(!domainValid)throw new IllegalStateException("Notes create or installed observation identity is unproved");
                 if(currentBody){bodyReady=true;break;}
+                allOpaque&=completion.notesOpaqueEditor(read.frame);
+                sample.put("opaque_editor_without_body",allOpaque);
                 if(count+1>=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)break;
                 if(count==0){
                     // clearCache is a public read-side client operation. Its return
@@ -1248,13 +1260,17 @@ public final class LocalTaskController implements AutoCloseable {
                     checkActive(deadline);installed.verify(service);
                 }
                 long pauseUntil=Math.min(deadline,SystemClock.elapsedRealtime()+200);
+                // A WebView can publish its editable child after its toolbar and editor root.
+                // Use the same four reads and 15s deadline, leaving time for the final full traversal.
+                if(allOpaque&&count>=1)pauseUntil=Math.min(deadline,Math.max(pauseUntil,started+(count==1?4000:9000)));
                 while(SystemClock.elapsedRealtime()<pauseUntil){
                     checkActive(deadline);Thread.sleep(Math.min(50,Math.max(1,pauseUntil-SystemClock.elapsedRealtime())));
                 }
                 checkActive(deadline);current=awaitObservationRaw(task,directory,auth,deadline);
             }
             checkActive(deadline);installed.verify(service);
-            if(!bodyReady)throw new IllegalStateException("本次笔记正文尚未取得完整无障碍证据，有限读取已结束；没有重发新建或借用旧正文");
+            if(!bodyReady&&((reopened&&!reopenGrant.opaque())||!allOpaque||reads.size()!=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS))
+                throw new IllegalStateException("本次笔记正文尚未取得完整无障碍证据，有限读取已结束；没有重发新建或借用旧正文");
         }catch(Exception error){failure=error;}
         long finished=SystemClock.elapsedRealtime();
         try{
@@ -1268,7 +1284,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("max_observations",TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)
                     .put("max_elapsed_ms",TaskCompletionGate.NOTES_EDITOR_READINESS_MS).put("started_elapsed_ms",started)
                     .put("finished_elapsed_ms",finished).put("elapsed_ms",finished-started)
-                    .put("body_verified",bodyReady&&failure==null).put("samples",samples)
+                    .put("body_verified",bodyReady&&failure==null).put("complete_opaque_editor_reads",!bodyReady&&allOpaque&&reads.size()==TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS).put("samples",samples)
                     .put("client_cache_reset",reset==null?JSONObject.NULL:reset)
                     .put("error",failure==null?JSONObject.NULL:HeptaAccessibilityService.message(failure))
                     .put("model_requests",0).put("app_actions",0).put("automatic_create_retry",false)

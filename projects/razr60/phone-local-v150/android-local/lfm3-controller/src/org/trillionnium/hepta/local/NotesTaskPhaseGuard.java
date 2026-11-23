@@ -37,6 +37,8 @@ public final class NotesTaskPhaseGuard {
             phase="observation_required";
             if(facts!=null&&facts.domainValid){
                 if(!facts.launchProved){phase="create_required";create=true;}
+                else if(facts.opaqueExit(frame))phase="leave_opaque_created_editor_once";
+                else if(facts.opaqueReopen(frame)&&facts.currentListItem!=null){phase="reopen_newly_inserted_item";item=facts.currentListItem;}
                 else if(!facts.editorObserved)phase="await_created_editor";
                 else if(facts.reopened&&facts.currentBody)phase="verify_reopened_editor";
                 else if(facts.listObserved&&facts.currentListItem!=null){phase="reopen_saved_item";item=facts.currentListItem;}
@@ -80,9 +82,9 @@ public final class NotesTaskPhaseGuard {
         public Set<String> toolMask(){
             if("await_created_editor".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
                     java.util.Arrays.asList("wait","done")));
-            if("leave_created_editor".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
+            if("leave_created_editor".equals(phase)||"leave_opaque_created_editor_once".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
                     java.util.Arrays.asList("back","wait","done")));
-            return "reopen_saved_item".equals(phase)?Collections.unmodifiableSet(new TreeSet<String>(
+            return ("reopen_saved_item".equals(phase)||"reopen_newly_inserted_item".equals(phase))?Collections.unmodifiableSet(new TreeSet<String>(
                     java.util.Arrays.asList("click","wait","done"))):null;
         }
         public Set<String> openPackages(Set<String> supplied){
@@ -97,7 +99,7 @@ public final class NotesTaskPhaseGuard {
         public Set<String> clicks(Set<String> supplied){
             Set<String> out=new TreeSet<String>(supplied);
             if(!owner.supported())return out;
-            if("reopen_saved_item".equals(phase))out.retainAll(Collections.singleton(listItem));else out.clear();
+            if("reopen_saved_item".equals(phase)||"reopen_newly_inserted_item".equals(phase))out.retainAll(Collections.singleton(listItem));else out.clear();
             return out;
         }
         /** This literal-body contract supplies its entire text once through
@@ -185,6 +187,9 @@ public final class NotesTaskPhaseGuard {
         public void requireAction(ActionDecision action){
             require(action!=null&&projection.observationId.equals(action.observationId),"action belongs to another observation");
             require(toolMask==null||toolMask.contains(action.action),"tool absent from verified current-phase domain");
+            if(("leave_opaque_created_editor_once".equals(projection.phase)&&"back".equals(action.action))
+                    ||("reopen_newly_inserted_item".equals(projection.phase)&&"click".equals(action.action)))
+                require(projection.currentFacts.ownsOpaqueChild(action),"opaque editor requires the original one-use tool child");
             if("click".equals(action.action))require(action.nodeId!=null&&clickIds.contains(action.nodeId),"click absent from current permitted domain");
             if("type".equals(action.action))require(action.nodeId!=null&&editIds.contains(action.nodeId),"type absent from current permitted domain");
             if("submit".equals(action.action))require(action.nodeId!=null&&submitIds.contains(action.nodeId),"submit absent from current permitted domain");
