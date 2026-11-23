@@ -77,6 +77,7 @@ def main():
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
+        paths.add(ROOT/"tests/native-form-history-actions/d1e685-query-refusals.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
@@ -580,6 +581,8 @@ final class NativeCalendarDateIntent {
             raise RuntimeError("Foreground concurrency compile/run stages incomplete")
         report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
+        run("native-form-history-actions",[sys.executable,"-B",ROOT/"tests/native-form-history-actions/run_host.py",
+            "--source",ROOT,"--output",out/"native-form-history-actions","--java-home",java_home])
         run("ctrip-startup-promotion",[sys.executable,"-B",ROOT/"tests/native-ctrip-promotion/run_host.py",
             "--out",out/"ctrip-startup-promotion","--java-home",java_home,"--json-jar",json_jar])
         run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",

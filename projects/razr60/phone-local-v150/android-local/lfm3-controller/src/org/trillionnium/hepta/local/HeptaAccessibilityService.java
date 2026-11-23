@@ -5100,6 +5100,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String diagnosticFreshness;
         final NativeAppSession.ActionGuard nativeGuard;
         boolean nativeActionRevalidated;String nativeActionProof,nativeActionRejection;
+        Map<String,Object> queryCensusRetry;
         WindowOwnership profileDispatchProof;
         ActionWork(String task,PhoneObservation expected,String run,QualificationScopeConfig.Bound scope,
                 TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,WebRegionNativeBridge nativeRegion,long queued,long deadline){
@@ -5150,6 +5151,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         JSONObject value=new JSONObject(work.state.evidence());
         if(work.diagnosticFreshness!=null)try{value.put("freshness_diagnostic",new JSONObject(work.diagnosticFreshness));}
         catch(Exception unavailable){/* Preserve the original execution receipt. */}
+        if(work.queryCensusRetry!=null)try{value.put("query_census_retry",new JSONObject(work.queryCensusRetry));}
+        catch(Exception unavailable){/* This read diagnostic cannot authorize an effect. */}
         if(work.nativeActionRejection!=null)try{value.put("native_action_rejection_census",new JSONObject(work.nativeActionRejection));}
         catch(Exception unavailable){/* Preserve the original refusal and execution lifecycle. */}
         if(work.nativeActionProof!=null)try{value.put("native_action_revalidation",new JSONObject(work.nativeActionProof));}
@@ -5391,6 +5394,52 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         actionCheck(work);return proof;
     }
+    /** This budget belongs to one complete read inside a single original query Attempt. */
+    private final class QueryGraphBudget implements GraphBudget {
+        final ActionWork work;String currentPath;
+        QueryGraphBudget(ActionWork work){this.work=work;}
+        public void check(){work.check();}
+        public Cancellation cancellation(){return work.cancel;}
+        public long deadline(){return work.state.deadlineElapsed;}
+    }
+    private Graph readNativeActionGraph(String task,PhoneObservation frame,ActionDecision action,ActionWork work,boolean finalCheck)throws Exception{
+        if(work==null||work.nativeGuard==null||frame.capture==null||!frame.capture.formHistory()
+                ||!NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)||!NativeCtripFlightPage.supported(work.nativeGuard.goal))
+            return readGraph(work==null?null:work.budget(),work==null?currentBackground():work.background);
+        requireNativeActionGuard(task,frame,action,work);
+        final QueryGraphBudget budget=new QueryGraphBudget(work);
+        final String stage=finalCheck?"final_census":"validation_census";
+        final long started=SystemClock.elapsedRealtime();
+        try{return readGraph(budget,work.background);}
+        catch(StaleObservation missing){
+            if(!missing.backgroundChildUnavailable||budget.currentPath==null)throw missing;
+            if(work.queryCensusRetry!=null){
+                work.queryCensusRetry.put("later_failed_stage",stage);
+                work.queryCensusRetry.put("later_failed_native_path",budget.currentPath);
+                throw missing;
+            }
+            Map<String,Object> audit=new java.util.LinkedHashMap<String,Object>();
+            work.queryCensusRetry=audit;
+            audit.put("schema","hepta.ctrip-query-census-retry.v1");audit.put("failed_stage",stage);
+            audit.put("failed_native_path",budget.currentPath);audit.put("reread_started",false);audit.put("reread_complete",false);
+            audit.put("reused_partial_census",false);audit.put("action_replayed",false);
+            actionCheck(work);requireNativeActionGuard(task,frame,action,work);work.nativeGuard.verifyInstalled();actionCheck(work);
+            long now=SystemClock.elapsedRealtime();
+            // Never renew the Attempt or start when even the last incomplete traversal's duration cannot fit.
+            if(now<started||work.state.effectEntered()||now>=work.state.deadlineElapsed
+                    ||work.state.deadlineElapsed-now<=now-started)throw missing;
+            budget.currentPath=null;audit.put("reread_started",true);
+            try{
+                Graph full=readGraph(budget,work.background);
+                audit.put("reread_complete",true);return full;
+            }catch(StaleObservation again){
+                if(again.backgroundChildUnavailable&&budget.currentPath!=null){
+                    audit.put("later_failed_stage",stage);audit.put("later_failed_native_path",budget.currentPath);
+                }
+                throw again;
+            }
+        }
+    }
     /** The final whole-census comparison includes every protected form field,
      * not just the clicked control. Later live checks cover the original target
      * and its actual parent/child chain; they do not claim an atomic UI. */
@@ -5399,7 +5448,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         guard.verifyInstalled();actionCheck(work);
         Graph fresh=null;
         try{
-            actionPhase(work,"graph_read");fresh=readGraph(work.budget(),work.background);
+            actionPhase(work,"graph_read");fresh=readNativeActionGraph(task,frame,action,work,true);
             Map<String,Object> proof=compareNativeAction(task,frame,action,fresh,work);
             Map<String,Object> windowsBefore=readNativeActionWindows(fresh,work.budget());
             if(!fresh.nativeActionWindows.equals(windowsBefore))throw new StaleObservation("完整复核后原生窗口集合变化");
@@ -5488,7 +5537,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         Graph now=null;
         try{
             actionPhase(work,"graph_read");
-            now=readGraph(work==null?null:work.budget(),work==null?currentBackground():work.background);
+            now=readNativeActionGraph(taskId,expected,action,work,false);
             if(!graph.sameWindow(now))return "stale:目标窗口已变化";
             if(ActionPolicy.requiresStableTree(action)){
                 WebFlightSession web=taskWeb;
@@ -6404,6 +6453,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 try{
                     // selectedRoot refreshed the root before graph metadata was read.
                     // Descendants may still be cached; never publish an old body as a new frame.
+                    if(budget instanceof QueryGraphBudget)((QueryGraphBudget)budget).currentPath=nativePath;
                     if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察",true);
                     checkReadBudget(budget);Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
                     // Preserve at most94 owner units plus the exact40-LF provider
