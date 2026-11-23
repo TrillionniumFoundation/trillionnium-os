@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.first-token-checkpoint-host-validation.v1",
+  "base_commit": "5ad80a92344f4426984c156fa8f179708139b1a9",
+  "production_files": {
+    "native/generate_adapter.py": "a37721f6304c7cbec2694f2642ddeba207cd1dc731b12b5fbea890af12831e5b",
+    "native/first-token-checkpoint.h": "89922ad7ee4a4a38605133e2c65cd7565963403cd2081a129fa002a951f66e1f"
+  },
+  "test_file_sha256": "0c24d547660fa84a68f309657f6a8b76eaa0d06c763f1181288065449b0eaeda",
+  "patch_sha256": "da5f9e20945dd7c2550da7531afd463df656ef2abd9bb4ad86db84a075e4580e",
+  "phone_operations": 0,
+  "phone_decode_stop_verified": false,
+  "checks": [
+    {
+      "name": "red",
+      "exit_code": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d287a848e44829327eefc1069158ec30244ef3ccfd9c30567aaa4899b26a4d16"
+    },
+    {
+      "name": "green",
+      "exit_code": 0,
+      "stdout_sha256": "f703fc2fe9ac318352533bde6c9be05f1383a3507566879828a42b4f67b52816",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "existing_warm_runtime",
+      "exit_code": 0,
+      "stdout_sha256": "3fc1f12286f14592034029cccb4b4ae793f2fd75904dc54771f22709d309fb95",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "green-final-callback-return-boundaries",
+      "exit_code": 0,
+      "stdout_sha256": "4b8ec57506a24876ddc73eb5739744aa52f25ed36998b510223e9029ac619362",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "red-final-same-test-source",
+      "exit_code": 1,
+      "expected_failure": "missing first-token checkpoint while generate is still in flight",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "889817c03cadfdbe5c704491aa0f0231353a99e5e93133dd3aec56c64140a944"
+    }
+  ]
+}

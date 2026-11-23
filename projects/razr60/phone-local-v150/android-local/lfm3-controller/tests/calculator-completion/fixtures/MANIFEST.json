@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.calculator-legacy-fixtures.v1",
+  "source": "verbatim_authorized_historical_host_observations",
+  "source_bytes_modified": false,
+  "missing_input_or_node_source_hashes_filled": false,
+  "current_phone_or_background_pass": false,
+  "files": [
+    {
+      "path": "foreground-nanbeige-step05-after.json",
+      "bytes": 8336,
+      "sha256": "df1978596e1d84e77b488a21459f1d7ef96636027ec0968b5ff14ae2fe9ff21c",
+      "original_host_path": "/home/alex/hepta-local-6cc233-20261110-r1/foreground-nanbeige-resume-r1/evidence/task/step-05-after.json"
+    },
+    {
+      "path": "foreground-qwen35-step01-before.json",
+      "bytes": 8312,
+      "sha256": "e43e983ecf8c2144e2aae2593264938b208882d9539f4503a5094af15038a052",
+      "original_host_path": "/home/alex/hepta-local-6cc233-20261110-r1/foreground-qwen35-4b-npu8192-fresh-r1/evidence/task/step-01-before.json"
+    }
+  ]
+}

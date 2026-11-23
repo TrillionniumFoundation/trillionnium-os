@@ -1,0 +1,3401 @@
+{
+  "observation_id": "b9e96950c288429796c410b7b20b3e54",
+  "package": "com.xiaomi.shop",
+  "captured_elapsed_ms": 542330353,
+  "capture": {
+    "schema": "hepta.observation-capture.v1",
+    "mode": "pre_encoding_paired_history",
+    "sample_graph_started_elapsed_ms": 542330034,
+    "sample_graph_completed_elapsed_ms": 542330352,
+    "capture_requested_elapsed_ms": 542330353,
+    "screenshot_callback_elapsed_ms": 542330359,
+    "pair_graph_started_elapsed_ms": 542330377,
+    "pair_graph_completed_elapsed_ms": 542330616,
+    "pair_sealed_elapsed_ms": 542330617,
+    "png_encode_started_elapsed_ms": 542330617,
+    "png_encode_completed_elapsed_ms": 542331328,
+    "png_persisted_and_hashed_elapsed_ms": 542331336,
+    "post_persistence_check": "window_identity_geometry_permissions_and_reported_windows",
+    "publication_check_started_elapsed_ms": 542331336,
+    "publication_check_completed_elapsed_ms": 542331373,
+    "published_elapsed_ms": 542331374,
+    "capture_age_at_publication_ms": 1021,
+    "pair_graph_event_watermark": 9,
+    "pair_sealed_event_watermark": 9,
+    "unknown_events_at_capture": 0,
+    "publication_check_event_watermark": 9,
+    "post_encoding_whole_graph_rechecked": false,
+    "same_instant_pixels_and_ax_claimed": false,
+    "publication_refreshes_capture_age": false,
+    "fresh_action_validation_required": true,
+    "grants_action_authority": false,
+    "business_completion_verified": false
+  },
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 1442,
+  "screen_sha256": "2e69f220056a8298d79ba555f935baccbcae71ed56bf58e340c6976d2948b622",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 1442,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 289,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "小米商城",
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "com.xiaomi.shop"
+    ],
+    "bootstrap_package": "com.xiaomi.shop",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "95b10c3c3113710d1db44cd2927db077cea52c9fa9ac3cc275ad964c347cf882",
+      "recognition": "complete_literal_native_ax3000t_price.v1",
+      "original_ui_initial_package": "com.xiaomi.shop",
+      "original_ui_allowed_packages": [
+        "com.xiaomi.shop"
+      ],
+      "effective_initial_package": "com.xiaomi.shop",
+      "effective_allowed_packages": [
+        "com.xiaomi.shop"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": false,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "display_scope_mode": "public_own_group_personal_no_credentials_v1",
+    "display_scope_mode_source": "immutable_start_selection",
+    "display_scope_mode_grants_authority": false,
+    "generation": "6c4e7309-2d43-4a47-b999-3bd4140b712c",
+    "display_id": 289
+  },
+  "app_tree_sha256": "eb3e83d430ecd5706f4fc878b4e9e86f72f22e4e539ed9626ceb80ed50f39e9f",
+  "observation_state_sha256": "abadc335744534ee4afc5851a3a682bac4d53804692835dde4c901732779195f",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 512,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 183,
+    "retained_nodes": 67,
+    "retained_text_utf16": 428,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 258,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        81,
+        328,
+        367,
+        421
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "搜索",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "2d092e3e67ec2b1c6a6ccff024bed5541307db65b513e28ab6fc09485830afd0",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "44ce7ae909bbb28bbbe3cbbba8d617b71217869d62741b4c104dc123a6ef603d",
+          "node_signature": "09518d34f694c69600de3b870559c31d1b721fdb2d74d8defc075f5bc0cc4294",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "68918f8112f1400cc617cf939e848c072155993859a7a2196065d10c478ee9ea",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        162,
+        130,
+        1074,
+        334
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.EditText",
+      "node_app_tree_sha256": "74cccca84e9ecc2ee0b7623cace649f2d2489fc4d3554b806edfa181a2a1cfc6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/1",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        162,
+        152,
+        1108,
+        237
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "Type-C快充数据线",
+      "node_app_tree_sha256": "cb09b1de82698d24393332502cb4c4df19474ba7af95ceb5cf1c6b1d803dba05",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        958,
+        333,
+        1142,
+        421
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "搜索",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "ce66dadde321336a3fb196169a317a2c0102421a8e213623dd9d00822c87b64e",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "44ce7ae909bbb28bbbe3cbbba8d617b71217869d62741b4c104dc123a6ef603d",
+          "node_signature": "3aa0e6c2b3ba6cc4092e5f55b7149ea680a032ab307ed5c2b0dc87515133f920",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "42c0245b89f249fb76949e577159a22b979e5493a394d33a418ac3847228fedc",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/4",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        68,
+        154,
+        150,
+        236
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "11694aafaaa24993a565699c543110961ee3e6a32d329b0d903276851b39452b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/5",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        0,
+        450,
+        1224,
+        2992
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.ScrollView",
+      "node_app_tree_sha256": "f76b98bd768b4b13e28d318b876d94cb1ff1ef9a5f9a454cc96d8d01de9cf874",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "down"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        167,
+        347,
+        257,
+        401
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "搜索",
+      "node_app_tree_sha256": "fe9992c570e3e6e81f59f92377804404cdf077d842aa55613058866a7dc326f1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        999,
+        347,
+        1101,
+        408
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "搜索",
+      "node_app_tree_sha256": "e364d30021aac7011c7c27acc545e3d51fb5acecaf296dc3e412cc6ac99b4702",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        54,
+        518,
+        234,
+        572
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "搜索历史",
+      "node_app_tree_sha256": "21c805de082f760a84fda05e76abe3bf4b8f807e6b5e601c86b4b563eb2f0f8f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/0",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        54,
+        613,
+        573,
+        701
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "xiaomi路由器ax3000t",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "7877c19997dc928c77a09029072afc28c69bb21cc41389609a857297767ae588",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "39309445dd1b04c55757b191a72598cfc822bebf7beaa9ffc10d6aba4ed99dd0",
+          "node_signature": "ade07d705b7577bb7e60116138bb09dcf0eec849ca06dcb0122e28dc9badc79e",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "563132caa66f60cee0ae20ebf0248c51330ca35d2539473b65a61e615b45ddc3",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/1",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        54,
+        775,
+        234,
+        829
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "猜你想搜",
+      "node_app_tree_sha256": "a3d2b1179b63f66a9297ff4c0c3930ad1e3146b12eb37b7cbdc75d0bb4743e52",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/2",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        1115,
+        769,
+        1180,
+        834
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "aedb95e54dce697e2c4e3bd94e7a9db83ffd7d26aca51f1101769073f31f6be4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/3",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        54,
+        875,
+        271,
+        963
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "充电线",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "e25da750d5f8f58ebb58d963fe54fe02c69e8f9a8e4408822c83370304b106b4",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "453d81117d6cb5e7d6cb232787169c99c4db4c134450df7e0f35e80320f1cb61",
+          "node_signature": "9d54d964d0e74a9dd3f85c4b9c05473f0e691f23e5606391e06867938d030ede",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "e1639648d5cd5f9b186b874589a19ee313237a911dcbae6d7c2fea541606d3f6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/4",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        298,
+        875,
+        470,
+        963
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "眼镜",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "cc8136b838c4efbd02ca16284504aecaab180064c083c43f44739fa470df77a1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "e4919ea342ea18093e3ce5e9508414ff1c23243c2cf7c94688fdbf254364a351",
+          "node_signature": "b34145d8f21e408bf53b47db7c635f5842479029de36ce54c3c0d550cb06ce69",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "b0018ebd47af95198c6999d0228e005eb7b2b53a08117570e90287cadf29889b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/5",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        497,
+        875,
+        669,
+        963
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "家电",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "266ce0edbf4eda3c2e5dff55557eab28f48b82ccba35f292cdfe556cb770ccca",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "7997d86f3cfe561b1635d21dddf0636aba990c9e05d8135ed979f6f9734e7642",
+          "node_signature": "c467dea2784fed369928f6a37ad64a57a58f03a34a44eeec640a83f228d96053",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "3b9eabcd30912cae40bc624f6f15266b2155100f2ca59c4bbd92b7bafb261d93",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/6",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        696,
+        875,
+        913,
+        963
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "笔记本",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "41390c8d779855549b7fc08a54eec5464869924989f60f99c3ea13603fa400ce",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "155c2f5d0a3b2394667537e07af87c23eb43241a6e66f7a24e4c284774d73ebf",
+          "node_signature": "1b97ab34f41340ccca149bc6164bca0930550c277c23c832c5e3fdd654e98e3e",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "70449bad980c69f17f84a101743ad5d97e35911af68749886abb39dd16306e0a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/7",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        940,
+        875,
+        1112,
+        963
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "平板",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "6c6f059154b0d015c657f66c91ba7851c06644052909818fe8c3fd6d6a436fbe",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "2e48db143a3c274063d03507ee8edd905d32f516636306e4308201653719f948",
+          "node_signature": "d97735820a068db472ffae23fe17b10a61d3f2f70a5a7d2dbd696388cf7fd285",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "37dc5d3869ac8e00278929f286322863dc0444144ebd8a8a85412b5f9e619a17",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/8",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        54,
+        990,
+        226,
+        1078
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "穿戴",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "ccd500f0dfeafb1958ba5662ed122d07fd56460c3adc1f0fa94dd0f658cc89ce",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "ee245af1eeaf5ebe5d549491e58dec01e98157c0ce79a1dd75c3ca1aa10f9516",
+          "node_signature": "9d5a554a891d16865028a3e29651a7f09cf168ec884c0998188e302391d703be",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "7e7f722f544df9da4195840b235d97d83e4b6da74177bc4b584f30ded856c423",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/9",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        253,
+        990,
+        425,
+        1078
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "电视",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "ad1564cc2823ce2a154a9513335ec66704926317934764e5f4a03a422ae839d2",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "23777e3e3a73ff79d21196812af1193ff4620abd3417c299fda5de07ac6d4e8c",
+          "node_signature": "ba7b18c0ace8b07b485a2c2d8f213c07b56d5063fc50460617dfcce27685bbdb",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "ab2821939750030335900362f6e79bd3e2aabbbda3bde2ae10e7e880559e6c01",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/10",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n19",
+      "bounds": [
+        452,
+        990,
+        624,
+        1078
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "冰箱",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "aa9184858fab32a3271eddd8d171047504ebbe928763aca1aa3743fdad1ffedb",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "f8781a5f97ced96e1bba74608c3c9566a315c613d6ba92fe6022cb79e842c4d0",
+          "node_signature": "d3b221eaa5682fd295791b388fb34ff6f60e07fba6aa899682e7e6222f1f6aec",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "47a34e456c9f1765e82dbc1bd271f0527e0c5f60a9ceddf64f8027db7ddde832",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/11",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n20",
+      "bounds": [
+        651,
+        990,
+        868,
+        1078
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "净水器",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "1ca36e78dc928c97ade04afc57fc53102a22fd045044d251cb5ddd0e2a4668f0",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "4d0313f9efd1372b6650e2d1304b65bb8748f37ca45fc96009ef01d8f03f3ae3",
+          "node_signature": "264f0ac48c8709a49b760e380fafbd9c30e84d6c479a899a0814a49a911480e2",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "cc7ef06bdd2a2af615e1d8ffb0f434ffdd726dbb6878d97e240185c7aba8f054",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/12",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n21",
+      "bounds": [
+        54,
+        1105,
+        316,
+        1111
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "node_app_tree_sha256": "ff2f877907fb2e9d16ae912648a36cbcae466cb327883b7f849754543c336767",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/13",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n22",
+      "bounds": [
+        34,
+        1179,
+        1190,
+        1519
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.HorizontalScrollView",
+      "node_app_tree_sha256": "c9e7fb4523024f72502d3dc1c7486f28d58215c83e31afe30b9751547eca3b2c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/14",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "backward",
+        "left"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n23",
+      "bounds": [
+        41,
+        1536,
+        1183,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.HorizontalScrollView",
+      "node_app_tree_sha256": "5ac653c8fd45085d63988caa9ae508b25dcc986c9111787871104069a51bd67a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "right"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n24",
+      "bounds": [
+        41,
+        1682,
+        1183,
+        2992
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.HorizontalScrollView",
+      "node_app_tree_sha256": "6a094eb81f64fe10c730af31471a9943847077c95a71f561cc7dd716926977f2",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16",
+        "parent_class": "android.widget.ScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "right"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n25",
+      "bounds": [
+        95,
+        630,
+        532,
+        684
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "xiaomi路由器ax3000t",
+      "node_app_tree_sha256": "b50e3b508481902d14fb73237679f5481245942847e5776499d2da98561e9cd1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/1\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n26",
+      "bounds": [
+        95,
+        892,
+        230,
+        946
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "充电线",
+      "node_app_tree_sha256": "e596e1cb932a9419ad3ebf00144ef5b7d099e66e8f46235496121070bbd578b7",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n27",
+      "bounds": [
+        339,
+        892,
+        429,
+        946
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "眼镜",
+      "node_app_tree_sha256": "8f4db235ed1d9ce35ab5a5d92a4441aaeab3254aa483eafeded48fd000e4f6a1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/5\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n28",
+      "bounds": [
+        538,
+        892,
+        628,
+        946
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "家电",
+      "node_app_tree_sha256": "a657a22e3ff013453563da34cda29298565dab0d4adf2b331be3c9742d4ff92a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/6\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n29",
+      "bounds": [
+        737,
+        892,
+        872,
+        946
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "笔记本",
+      "node_app_tree_sha256": "07b6ed91e63333fc95f9210b31a210e71abefcc41a970b0600b2cda612233be0",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/7\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n30",
+      "bounds": [
+        981,
+        892,
+        1071,
+        946
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "平板",
+      "node_app_tree_sha256": "d3cba3e014b3ddceb955c688b6217f7434f86f7e1cd3245240476e57eba56d1e",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/8\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n31",
+      "bounds": [
+        95,
+        1007,
+        185,
+        1061
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "穿戴",
+      "node_app_tree_sha256": "150d4acf6cd1f8b742f76f48497c1ecb6c090d600c12bd4c95001d28a9d9a175",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/9\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n32",
+      "bounds": [
+        294,
+        1007,
+        384,
+        1061
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "电视",
+      "node_app_tree_sha256": "a6fff043eab701ae1c0ebaaf012d7838edf7b9873ca906b26b4fba39d00acd08",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/10\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n33",
+      "bounds": [
+        493,
+        1007,
+        583,
+        1061
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "冰箱",
+      "node_app_tree_sha256": "9df8ce270b3865a7a5075c9fad1750c26a16ffa6ed99714b40bb633f079cdbc3",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/11\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n34",
+      "bounds": [
+        692,
+        1007,
+        827,
+        1061
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "净水器",
+      "node_app_tree_sha256": "8173cfdbeb6124f6e2d1e40f6aa91a8fb2f8cef01443922eb1d51ac5c22459dc",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/12\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n35",
+      "bounds": [
+        55,
+        1536,
+        310,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "小米热销",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "35693954766942514681b216198fff3c7647a4a581161e1c5ea83253ff3489b1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "a564c04d97bc5a98ef8b202555cf9e0e6acb7e6a72c5047496015b4c06a46a7f",
+          "node_signature": "e048760ad4440a3de5017ddb35af30caf57b3505e3dc95739db38dcb05ffed02",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "48a90f3c3cdee630409b1a48fa299ad2ab8536e442e0018090446202a9d8fa82",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/0",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n36",
+      "bounds": [
+        310,
+        1536,
+        565,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "新客热榜",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "60328b92788de882df0e1543e6ffd23ed332173f48f3d7dd271195770fc269c1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "5d351fb5fb22908e298ba404339c81cc2aef2d96fe53e91766c914a61e0ff90b",
+          "node_signature": "53e8e6aefbbe024a375988edfb657e8b15b5949ef27be74bab632b90179ad03f",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "a0ad0f8a2d6017b33e1fd25eccccf76c66c23633e8dc2721332b6fd4fea0a0b6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/1",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n37",
+      "bounds": [
+        565,
+        1536,
+        820,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "手机数码",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "557b0c0f1fd20f300244a2f99dfa605d7657e7710daa8bb23aa52870be03931b",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "4cd913988ef16959f002934c8bbda1aaa004dbaa29f69d2c71006bff50a81d5a",
+          "node_signature": "d54786b0f6aa96fef33bf0b09f749fe654982dc204f1a852f6b58440982e5683",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "ae175632542ea53f23368ea68bbdecdae8234b3c8b522eddcd2434edc7cfc085",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/2",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n38",
+      "bounds": [
+        820,
+        1536,
+        1075,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "品质家电",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "57ab2ac4e885fdd2d70b332e52c532a3dcc60f2190a95334ac8273a19d4fa37c",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "9d3ef20b2b45f253cf9f79370ac6ee1aa1e65bfbdead0374efd0d603a5714974",
+          "node_signature": "067d8009959417aa0dbb9667e2668f88f17e63f654997c76b0e65d9ccef923d1",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "a2b19a05e7bcc16d6ad3c2eb2c6184a234f0c2db0ac9d3464f6c6c0fcc8182d6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/3",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n39",
+      "bounds": [
+        1075,
+        1536,
+        1183,
+        1682
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "运动健康",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "a515ce3b28862a731390bfaca3705e38a3273f71c9fb1ce0b976bbeab1be3a4e",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "7d01fc326dc09911bddfe284a0129c0cccf4a2fbc1c67cc01da5b35be5a08b21",
+          "node_signature": "e6149e5f26f596c1aafbaa1a86087dffab6580713a6196ccecc7e61c062a8c2c",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "9d09248a202cdf341da38eb83f793a4c20a27f57df0d3fce186a4bbc3ce3ea4b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/4",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n40",
+      "bounds": [
+        41,
+        1709,
+        1183,
+        1865
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "Xiaomi 18 9.9元预约福袋　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "b166791e27e32e4c617089ab4fa4fd1cf9d10624dbbefec5efac035330a1321f",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "e2a29847dbd6e8fbac4b925f280fccbc1bcfbb2744276ef1da5a85eab22dd977",
+          "node_signature": "b04381cf315effa41cc35fd46c23c413ecdafd348a76798db5bb5dabe370760f",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "e470687710cff9f793c73ae01895451623b6f6c187fc9596f45f1921713a7bb8",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/0",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n41",
+      "bounds": [
+        41,
+        1865,
+        1183,
+        2021
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "REDMI K100　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "3303a148c4a43aef24aa427a33da156e7c65c696301400c3839f46d817be4906",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "a013122940ed6dbe94f26723e33872a54295fc0527e5c398bf94f342038105be",
+          "node_signature": "b01c8092c32204d1e9416e01ef81762f84f66e0273394aa43509467795852bb1",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "4c1b00471f38f550109d16c121767cb0fea13d3373bb4b324dab608014678843",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/1",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n42",
+      "bounds": [
+        41,
+        2021,
+        1183,
+        2177
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "小米智能摄像机　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "8a671bf6334ffcad1183377c2ec9b92f32e0ef57291b2b556e080e27e4528a93",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "064ba9530bece279fbaf4a54befa96eb28675edeb0d56789c506928f5aa75c4e",
+          "node_signature": "ee71da41440c49c1fa67d9b7df31991995dd9124ee055f05cdf7ce506741dbb4",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "c588a78a97316545ac74bbe69eebb48b6213ca7b0f843d9960efb843ae97391d",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/2",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n43",
+      "bounds": [
+        41,
+        2177,
+        1183,
+        2333
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "child_text": "4 · REDMI Book 2027 系列　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "412ca8699de40502433b82f9d0dd220d413dd55d547fcaaafd42eda21bd30d9b",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+          "node_signature": "0cce64a5f5c95ae9709bab71cd9d9562e6593f14a3b6632323abeb1a7e8dc433",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "8d8ae98caaa756dbf81ae4b96e61a75d2bcad32c6c50096bc8d1e2af63a3b403",
+          "node_signature": "3a846654c32afc17c9a93128d8cec1415e7ecef4567724b5247827a96ae41acb",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "cae991aa8fcf91841159f9235c0da211cd98bf215f9ae20a4ce9d11c2d7f0ae3",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/3",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n44",
+      "bounds": [
+        41,
+        2333,
+        1183,
+        2489
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "child_text": "5 · 新品耳夹REDMI Clip Neo　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "fd5be2f24d99f1b93bb6095e8a7854eeb0482dc94f31b41fe9b700e3749d64b0",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+          "node_signature": "1e252b706c940a6f0bf970dc170f14fcd842b66c72799ba28290930cc318674a",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "d0475989aa797a78ae0b74553b2e3d9d4916ac85b2f46338e41b07c9f040acd5",
+          "node_signature": "4e319680a34cd639ad8be82494f0dc5b26e40f78f5d789e3865fa2e5a03b20cc",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "e60393b306e14da496757edf6b5f6dc3bb74d70247b9c2e26d54f23ced13e7f7",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/4",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n45",
+      "bounds": [
+        41,
+        2489,
+        1183,
+        2645
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "child_text": "6 · Xiaomi 18 Pro 系列　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "f914904788e1f48e336434ab3ada048f98e29b89d69a1e55b70752eaceef4684",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683",
+          "node_signature": "d0a1d372e44c6c80fc137f78664fce1a73893bee17cafeaf00cedd21ce512648",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "c95f38151daf92d8bc742ff0e5ffb3c581d93bde7a726ec468eeadfabc369722",
+          "node_signature": "30f5099baaddea07cd17b62b273e42a15609c5696e8b1d5fd969592c0f27e78e",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "b027ddd9e275c929e063acd3a9784aa87d358097b04fa65168325cc14ea1362b",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/5",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n46",
+      "bounds": [
+        41,
+        2645,
+        1183,
+        2801
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "child_text": "7 · REDMI K100 Pro系列",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "feb8c05ad529ebe33153cfe59f277c71e990e5954b6ca60eae1caed7300606ff",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+          "node_signature": "f0bd481792c00da977e2b2645ec6f68491bd563060196ecdb46c290bf75e213b",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "4de50d29c51b2b98223d733b2dda7f97da06904f4c9ccf440818051862dd754d",
+          "node_signature": "bd4a475a40e54dc6c827ef0557c0dc1018461446cea35343bbe1998b6c5f0afd",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "0cb7fbe966f853fdaacca934cf3ccdbe9d343f8f14c2cfd363daee41c848bc35",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/6",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n47",
+      "bounds": [
+        41,
+        2801,
+        1183,
+        2957
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "child_text": "8 · 小米智能门锁 5 Max系列　0",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "de9f7765bf897beb66a6767bf778b1597790a6d7e8895b65b22c38d7e07ec1da",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3",
+          "node_signature": "2ede6f6d95c2a2f6539d5700d934e9c2a739640f90d2f7409c467d765ae8c823",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "186ca4498ba48dda7519fe0df0f46b7fb3fd82dd2ca3e4364a44b1473d11b7ad",
+          "node_signature": "c0e0ddf0b5d25b31ceb93a437cabc8614d10f76c166d03cdb907d311a2f5b097",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "2ae7ec2398d46b62d2cdb41de6bace535c5a8f4d4d42ef4f1b52a80077ca244e",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/7",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n48",
+      "bounds": [
+        41,
+        2957,
+        1183,
+        2992
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 2,
+      "node_app_tree_sha256": "6d96f1830f52a82304196c1a45d273f54ec0c4f88f376d79160ad5e909557be4",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/8",
+        "parent_class": "android.widget.HorizontalScrollView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n49",
+      "bounds": [
+        55,
+        1587,
+        259,
+        1648
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "小米热销",
+      "node_app_tree_sha256": "91e68714d8e75848e1f3231d0c5c7616874406b97d7422c540dac36166c93e20",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n50",
+      "bounds": [
+        310,
+        1587,
+        514,
+        1648
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "新客热榜",
+      "node_app_tree_sha256": "dbdfd0141cf01d52d786ce579fc8a2341926f8959d8d5d1a62f392d37c9e9f79",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/1\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n51",
+      "bounds": [
+        565,
+        1587,
+        769,
+        1648
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "手机数码",
+      "node_app_tree_sha256": "6404532c3e41c63fc16d9456e84871062fa8142d75ddc3281c2583bdf11eba10",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/2\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n52",
+      "bounds": [
+        820,
+        1587,
+        1024,
+        1648
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "品质家电",
+      "node_app_tree_sha256": "d5b7a411a0cb3c0acd7a443a21f4142e8db5946666babeae2aa36d62974b7d8a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/3\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n53",
+      "bounds": [
+        1075,
+        1587,
+        1183,
+        1648
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "运动健康",
+      "node_app_tree_sha256": "c8d7e2d9bb521bdb275c866423bf063b222732e44d484e4e161781f24211806e",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/15\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n54",
+      "bounds": [
+        298,
+        1758,
+        1149,
+        1816
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "Xiaomi 18 9.9元预约福袋　0",
+      "node_app_tree_sha256": "ba0627f0d9a8ba8b8ddc3d6660b224c318dbb1cccdbd5b0f3e3aba25ec18a0af",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/0\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n55",
+      "bounds": [
+        298,
+        1914,
+        1149,
+        1972
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "REDMI K100　0",
+      "node_app_tree_sha256": "749ee375900ee375da9223f36ff827a2a2fffb80211bcd6d308e6fdf1e6fd37f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/1\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n56",
+      "bounds": [
+        298,
+        2070,
+        1149,
+        2128
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "小米智能摄像机　0",
+      "node_app_tree_sha256": "8fe0f4fd80b0ec857394b88b137d3a79848ee175133d67230be9c01076620b66",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/2\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n57",
+      "bounds": [
+        100,
+        2235,
+        119,
+        2276
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "4",
+      "node_app_tree_sha256": "46046f0c20400362cb82d4f9819226e62c10d4af2332dbcb6efd408b59fe7197",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/3\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n58",
+      "bounds": [
+        298,
+        2226,
+        1149,
+        2284
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "REDMI Book 2027 系列　0",
+      "node_app_tree_sha256": "bea8bc4057dbf1a6d2a8408067c29f39505ff09525f0d67a04abfbd807ee907c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/3\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n59",
+      "bounds": [
+        100,
+        2391,
+        118,
+        2432
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "5",
+      "node_app_tree_sha256": "44541efaa851c71cbfa35cde13410dcb280d61ab7e9475e128a28da7d269b6f5",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/4\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n60",
+      "bounds": [
+        298,
+        2382,
+        1149,
+        2440
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "新品耳夹REDMI Clip Neo　0",
+      "node_app_tree_sha256": "2be7efa463be803f60b78b7fb7779e17eea613d4015f40c61a6b7a00acba33c6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/4\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n61",
+      "bounds": [
+        100,
+        2547,
+        118,
+        2588
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "6",
+      "node_app_tree_sha256": "f4dd20cc295b1c15469c0bf5050ca387828716022631a5f59cd34a64563910b7",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/5\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n62",
+      "bounds": [
+        298,
+        2538,
+        1149,
+        2596
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "Xiaomi 18 Pro 系列　0",
+      "node_app_tree_sha256": "e27e31647dc7aa1553bd7bb0f9e03d287773b4521d8c3a915ecf39559258b4c1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/5\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n63",
+      "bounds": [
+        100,
+        2703,
+        118,
+        2744
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "7",
+      "node_app_tree_sha256": "6c5c7f393694e869af13cbad68f5f86452411ef5663e8223194dfd5ec7bc3db1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/6\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n64",
+      "bounds": [
+        298,
+        2694,
+        1149,
+        2752
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "REDMI K100 Pro系列",
+      "node_app_tree_sha256": "25c1312d1278c852ea76be4dbf66e6dc0640f570a3dccffbf7974302de47e517",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/6\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n65",
+      "bounds": [
+        100,
+        2859,
+        118,
+        2900
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "8",
+      "node_app_tree_sha256": "8b792bee4b4e922c6e7e5441077c8c9afdc34f95586e6f1de11f12ec6ca703e5",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/7\/0",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n66",
+      "bounds": [
+        298,
+        2850,
+        1149,
+        2908
+      ],
+      "package": "com.xiaomi.shop",
+      "class_name": "android.widget.TextView",
+      "text": "小米智能门锁 5 Max系列　0",
+      "node_app_tree_sha256": "eff9520dd520c46c1b3b6e0b883517ad36f7a230ac5f3aeb1a92772f3ccfd37c",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/6\/16\/7\/1",
+        "parent_class": "android.view.ViewGroup",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

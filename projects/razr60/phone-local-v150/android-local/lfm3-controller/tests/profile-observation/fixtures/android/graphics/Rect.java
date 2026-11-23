@@ -1,0 +1,3 @@
+package android.graphics;
+public final class Rect {public int left,top,right,bottom;public Rect(){}public Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}
+ public boolean isEmpty(){return right<=left||bottom<=top;}public boolean equals(Object o){if(!(o instanceof Rect))return false;Rect x=(Rect)o;return left==x.left&&top==x.top&&right==x.right&&bottom==x.bottom;}public int hashCode(){return left+31*top+997*right+7919*bottom;}}

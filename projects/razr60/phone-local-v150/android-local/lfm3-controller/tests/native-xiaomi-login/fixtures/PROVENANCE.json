@@ -1,0 +1,41 @@
+{
+  "device_observation_claimed": false,
+  "files": [
+    {
+      "bytes": 14441,
+      "file": "synthetic-observation.json",
+      "sha256": "a5712621250eaec58dd1720eba57336eef039b6194775c6e10f452b241b24777"
+    },
+    {
+      "bytes": 1640,
+      "file": "synthetic-page.json",
+      "sha256": "2dbe3e377f29e855c5549b33837e63c17c078861685ccd16e33d15f7a513a9e9"
+    },
+    {
+      "bytes": 929,
+      "file": "synthetic-binding.json",
+      "sha256": "b72c93c91f3b480826378c126fcca948e9dd3f2ea0639f6ff6b0254e64bc0c93"
+    }
+  ],
+  "fixture_kind": "synthetic_portable_host_fixture",
+  "hash_semantics": "Node/tree/state/screen/completion identifiers are deterministic domain-separated synthetic values, not device signatures or qualification claims. Observation record hash binds the exact portable JSON bytes; owner hash binds the public example instruction. Session tests rebind actual production authorization and completion frames through explicit host fixtures.",
+  "observation_id": "10418d9e69c27340cb37c9353c35cd1d",
+  "owner": "在小米商城查一下小米AX3000T的售价",
+  "owner_sha256": "8d76e0c231b30a3c18fd4c57967ba8546e6d8d9fe0a6132086c24536a540b421",
+  "phone_receipts_included": false,
+  "private_identity_and_source_paths_published": false,
+  "public_browsing_requires_login_verified": false,
+  "public_ui_shape": "Complete native Xiaomi account login form; all non-return account and agreement controls are excluded from action authority.",
+  "schema": "hepta.native-xiaomi-login-portable-fixtures.v1",
+  "screenshot_included": false,
+  "synthetic_identity": {
+    "captured_elapsed_ms": 1000,
+    "display_id": 7,
+    "generation": "00000000-0000-4000-8000-000000000071",
+    "screen_height": 1600,
+    "screen_width": 720,
+    "uid": 12345,
+    "window_id": 71
+  },
+  "task_id": "a8ca325db309e7e8c7738d32527da815"
+}

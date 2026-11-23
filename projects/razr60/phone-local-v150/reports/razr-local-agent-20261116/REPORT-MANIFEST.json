@@ -1,0 +1,177 @@
+{
+  "actual_tasks": 27,
+  "all_requested_capabilities_qualified": false,
+  "apk_sha256": "bc683d4a3685883a3a7c1be623e947a7cf04978f150c26e7deeec88f442cba5d",
+  "application_source_changed_by_report": false,
+  "consistency_checks": 504,
+  "failed_goals": 18,
+  "files": [
+    {
+      "bytes": 6047,
+      "path": "BACKGROUND-ROUTING-AUDIT.json",
+      "sha256": "74a9bed027ba67992fdd5de023cef9a950bcaffcd4462069f23d2735dd772ee3"
+    },
+    {
+      "bytes": 87027,
+      "path": "BC683D-FLIGHT-AUDIT.json",
+      "sha256": "1e83cc26dcf2298d4a2c18aa75e1db2f71b38ee68bc65a79acde1f1da374f7b9"
+    },
+    {
+      "bytes": 6569,
+      "path": "BC683D-FLIGHT-CONTEXT.public.json",
+      "sha256": "541c8b1c07143a666635202a137026e93c7a18af7888ca2dc2173ebb6ceb8487"
+    },
+    {
+      "bytes": 2200,
+      "path": "BC683D-INSTALL-AUDIT.json",
+      "sha256": "6a1a56b68843f38e99d8655e0d84bd79920967adf73967a9716bdbb2dee4f73c"
+    },
+    {
+      "bytes": 5876,
+      "path": "BC683D-LFM3-DEFAULT-RESTORE-AUDIT.json",
+      "sha256": "e0d9f1623af26a661c93fd015f7a959904b7c09a22f628fa0aa18f751ee61d70"
+    },
+    {
+      "bytes": 5437,
+      "path": "BUILD-AND-HOST-VALIDATION-6e0129.json",
+      "sha256": "fcc76e1796428536562c30329036c6c28d5e645b77a20e7336a71ca61a8d84b4"
+    },
+    {
+      "bytes": 5894,
+      "path": "BUILD-AND-HOST-VALIDATION-cfacefe.json",
+      "sha256": "102971236343edea2e645ab43363e106f589fff1f408ae996b8ebd9c098735c0"
+    },
+    {
+      "bytes": 6049,
+      "path": "BUILD-AND-HOST-VALIDATION-f2f1b8.json",
+      "sha256": "db789fa6431712cdb83ddd63ebe0896b333cc080ccedb1cf7b363ca63e07cd01"
+    },
+    {
+      "bytes": 13100,
+      "path": "BUILD-AND-HOST-VALIDATION.json",
+      "sha256": "1a7a4ea2dceee4a1885d4638bd45209800e1b4dc54140356d3048d444a9eda5f"
+    },
+    {
+      "bytes": 30561,
+      "path": "E999-FLIGHT-AUDIT.json",
+      "sha256": "de872b79c9531ae79cab62e7f9d73b01221759e83b94707fae0d1d7c27094fff"
+    },
+    {
+      "bytes": 13147,
+      "path": "E999-FLIGHT-LOADING-DIAGNOSIS.public.json",
+      "sha256": "f1b8d4380c5902d0c1ee0a2e7b6fa3bbd81ea10f0b45291b139078df3f47a78d"
+    },
+    {
+      "bytes": 23048,
+      "path": "E999-NATURAL-PRICE-AUDIT.json",
+      "sha256": "4fd4cbebf01af8ba00bf4c99827b187f9d16ad0069d4dc8244bede937b25f90a"
+    },
+    {
+      "bytes": 29730,
+      "path": "E999-NOTES-AUDIT.json",
+      "sha256": "dea08c0ee0ea2365d05e02642067a78f0a50c60140a2fd9a803590e37370da67"
+    },
+    {
+      "bytes": 106278,
+      "path": "FF0A-FLIGHT-AUDIT-v2.json",
+      "sha256": "a8f658e879bc578066bd1f574bcdf5592de91b900f1bad91217613797e063d25"
+    },
+    {
+      "bytes": 5881,
+      "path": "FF0A-LFM3-TO-8B-SETUP-AUDIT.json",
+      "sha256": "74173e15b5cfbc088e83e06047d9a1ac6854bbea88af1f3bc289cb1e621db6ee"
+    },
+    {
+      "bytes": 5743,
+      "path": "FF0A-LFM8B-CONTEXT-DIAGNOSIS.public.json",
+      "sha256": "7abe1ef5249e79f5f1057454d937cc8cbba02556429fcbad3776d4231bb2623a"
+    },
+    {
+      "bytes": 29646,
+      "path": "FF0A-LFM8B-FLIGHT-AUDIT.json",
+      "sha256": "03af909decfe28a9432c4304453f24d8620ea516bb2d82aead9433c12c615cdd"
+    },
+    {
+      "bytes": 1800,
+      "path": "FF0A-WARM-WORKER-LIFECYCLE.json",
+      "sha256": "f4a54db243a21c5fe1cf8e91b1866264b796793bbc22f887d9df71b40c5b8e1a"
+    },
+    {
+      "bytes": 7750,
+      "path": "HISTORICAL-CAPABILITY-SCOPE-c662.json",
+      "sha256": "e509c0c6054fe7b7209e400998e152d29df5525a0051c90732de34b67a9331a1"
+    },
+    {
+      "bytes": 4455,
+      "path": "LFM8B-FLIGHT-FAILURE.zh-CN.md",
+      "sha256": "ff559a6186bd7a004aec5744bf140f5437c542974f8ce79caad2c3d0143ef8b9"
+    },
+    {
+      "bytes": 6874,
+      "path": "MOE-35B-STANDALONE.md",
+      "sha256": "72029bccb14fb00c98e4b5c97546c06f12c17fd37426a25b84c7bc4799580635"
+    },
+    {
+      "bytes": 12268,
+      "path": "NATURAL-PRICE-5DFA-DIAGNOSIS.public.json",
+      "sha256": "316fea3f4c63501df6aaac6c060f607eb3eea39288b70cec92e98093fb439e5e"
+    },
+    {
+      "bytes": 17791,
+      "path": "NATURAL-PRICE-E999-GEOMETRY.public.json",
+      "sha256": "ebd1b176a020f6d6e434211713dd74f9644e2bd0965a745acd26e02266efb100"
+    },
+    {
+      "bytes": 8843,
+      "path": "NPU-MODEL-RESEARCH-SOURCES.json",
+      "sha256": "b1dc78daef420d70313d10b1e1687a423d85af0116c85f0c3a5ffdcd8af5a012"
+    },
+    {
+      "bytes": 16830,
+      "path": "NPU-MODEL-RESEARCH.zh-CN.md",
+      "sha256": "b75d1507ce80c58397abc6a2d1c6f034be592750546b949496882ec634fd74b3"
+    },
+    {
+      "bytes": 913501,
+      "path": "PHONE-VALIDATION.json",
+      "sha256": "d0901231a9e0d85e6b3963727825e2b019a2df16d2b6b0bf5cb826cd4c1c17d7"
+    },
+    {
+      "bytes": 6794,
+      "path": "PRICE-GEOMETRY-ENGINEERING-BOUNDARY.zh-CN.md",
+      "sha256": "c9b78943845bc99a7d58fe3cb1f9ca78c253abe5520e92d6f98eb0f4c6a7772b"
+    },
+    {
+      "bytes": 14660,
+      "path": "PROFILE-ISOLATION-PLAN.zh-CN.md",
+      "sha256": "ed65608ceaaf37613fc5616daec3170b7b90f348d5717e6005947493aa4d50b4"
+    },
+    {
+      "bytes": 7926,
+      "path": "PROFILE-ISOLATION-SOURCES.json",
+      "sha256": "26db1016a19e53cb619d3c81c38e609003b56469808564a4d1a4b7a0516913f0"
+    },
+    {
+      "bytes": 29002,
+      "path": "README.zh-CN.md",
+      "sha256": "d3688123fa10f755a69142dd201c4c596f0fbcda19fa3bbf9e326944113df218"
+    },
+    {
+      "bytes": 5174,
+      "path": "STOP-GPU-VALIDATION.json",
+      "sha256": "4332f47850f646c5b9b3bc49d78549f31e2d6c76732b6ac532b181325fff8f7d"
+    }
+  ],
+  "historical_snapshots_unchanged": true,
+  "npu_wording_change_only": {
+    "new_sha256": "b75d1507ce80c58397abc6a2d1c6f034be592750546b949496882ec634fd74b3",
+    "original_sha256": "ea4ac492dfe5430001023ccdb531f48af18de810acec5edb79a398e7028d2878",
+    "purpose": "Limit the model recommendation to the ordinary App tool path actually verified."
+  },
+  "repository_published": false,
+  "schema": "hepta.public-validation-report-bundle.v1",
+  "source_head": "f2f1b8710f4b33dcf2ae5f7512d9ee4472215f6e",
+  "verified_flight_goals": 0,
+  "verified_notes_goals": 9,
+  "verified_total_goals": 9
+}

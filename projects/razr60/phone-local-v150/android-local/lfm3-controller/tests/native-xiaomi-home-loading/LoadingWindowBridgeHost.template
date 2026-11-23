@@ -1,0 +1,184 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/** The production scope/background method bodies are inserted verbatim.
+ * Android roots, window reads, leases and worker clock are explicit host IO.
+ * This tests classification through the real outer catch, not phone dispatch. */
+final class LoadingWindowBridgeHost {
+    private static final String PACKAGE="com.xiaomi.shop";
+    private static final List<String> names=new ArrayList<String>();
+    private static int assertions;
+    private interface Test {void run()throws Exception;}
+    private static void check(boolean value,String reason){assertions++;if(!value)throw new AssertionError(reason);}
+    private static void one(String name,Test test)throws Exception{check(!names.contains(name),"unique case");test.run();names.add(name);}
+    private static final class Display {static final int DEFAULT_DISPLAY=0;}
+    private static final class Rect {boolean isEmpty(){return false;}}
+    private static final class GraphBudget {}
+    private static final class AccessibilityWindowInfo {
+        static final int TYPE_APPLICATION=1;int id=138,display=20,type=1;boolean active=true;
+        int getId(){return id;}int getDisplayId(){return display;}int getType(){return type;}
+        boolean isActive(){return active;}void recycle(){}
+    }
+    private static final class AccessibilityNodeInfo {
+        int windowId=138;String pkg=PACKAGE,signature="original";boolean visible=true,enabled=true,refreshed=true;
+        AccessibilityWindowInfo window=new AccessibilityWindowInfo();
+        int getWindowId(){return windowId;}String getPackageName(){return pkg;}
+        AccessibilityWindowInfo getWindow(){return window;}boolean isVisibleToUser(){return visible;}
+        boolean isEnabled(){return enabled;}boolean refresh(){return refreshed;}
+        void getBoundsInScreen(Rect bounds){}void recycle(){}
+    }
+    private static final class BackgroundSession {
+        int display=20;boolean active=true;
+        final Object profileTarget=null; // This legacy window fixture has no profile selection.
+        int displayId(){return display;}
+        boolean allows(String pkg){return PACKAGE.equals(pkg);}
+        void requireActive(){if(!active)throw new IllegalStateException("retired background lease");}
+    }
+    private static final class PhoneObservation {int windowId=138,display=20;String packageName=PACKAGE;final Object profileWindow=null;}
+    private static final class ActionDecision {String action="wait",packageName=PACKAGE,nodeId;}
+    private static final class NodeRef {AccessibilityNodeInfo node;String signature="original";}
+    private static final class Graph {final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();}
+    private static final class ActionWork {
+        boolean stopped;long now=1000,deadline=9000;
+        void check(){if(stopped||now>=deadline)throw new IllegalStateException(stopped?"stopped":"action deadline");}
+        void phase(String name){check();}GraphBudget budget(){check();return null;}
+    }
+    private static final class QualificationScope {
+        static final class Violation extends IllegalArgumentException {
+            private static final long serialVersionUID=1L;Violation(String text){super(text);}
+        }
+        static void require(boolean value,String text){if(!value)throw new Violation(text);}
+        static final class Window {
+            final String packageName;final int windowId;
+            Window(String pkg,int id,int type,int display,boolean active,boolean visible){packageName=pkg;windowId=id;}
+        }
+    }
+    private static final class QualificationScopeConfig {
+        static final class Gate {int checks;void check(String operation,String pkg,QualificationScope.Window window,String nodePkg,Integer nodeWindow,boolean required){checks++;}}
+        static final class Bound {
+            Object config;final Gate gate=new Gate();boolean refused,unchanged=true;
+            void verifyUnchanged(){if(!unchanged||refused)throw new QualificationScope.Violation("scope changed");}
+            void refuse(String reason){refused=true;}
+        }
+    }
+    private final BackgroundSession background=new BackgroundSession();
+    private final QualificationScopeConfig.Bound scope=new QualificationScopeConfig.Bound();
+    private final PhoneObservation expected=new PhoneObservation();
+    private final ActionDecision action=new ActionDecision();
+    private final ActionWork work=new ActionWork();
+    private final Graph graph=new Graph();
+    private AccessibilityNodeInfo root=new AccessibilityNodeInfo();
+    private Runnable afterRootRead;
+    private boolean ownBackground=true,ownScope=true;
+    private int effects;
+    private QualificationScopeConfig.Bound scopeFor(String task){return scope;}
+    private BackgroundSession backgroundFor(String task){return background;}
+    private boolean ownsScope(String task,QualificationScopeConfig.Bound value){return ownScope&&value==scope;}
+    private boolean ownsBackground(String task,BackgroundSession value){return ownBackground&&value==background;}
+    private AccessibilityNodeInfo getRootInActiveWindow(){throw new AssertionError("background flow must not read main display");}
+    private AccessibilityNodeInfo selectedRoot(BackgroundSession value,GraphBudget budget){value.requireActive();if(afterRootRead!=null)afterRootRead.run();return root;}
+    private void requireBackgroundObservation(String task,PhoneObservation observation){
+        background.requireActive();
+        if(observation==null||observation.display!=background.display||!background.allows(observation.packageName))
+            throw new IllegalStateException("host immutable observation binding differs");
+    }
+    private Graph graphForAction(ActionWork value){value.check();return graph;}
+    private static String string(Object value){return value==null?"":value.toString();}
+    private static String message(Exception error){return error.getMessage();}
+    private static Object observedChildText(AccessibilityNodeInfo node,boolean background,GraphBudget budget){return null;}
+    private static String nodeSignature(AccessibilityNodeInfo node,Object text){return node.signature;}
+    // Profile task lookup is a separate Android adapter, outside these user0 cases.
+    private static void requireActualProfileTask(BackgroundSession value,PhoneObservation frame,AccessibilityWindowInfo window){
+        if(value.profileTarget!=null||frame.profileWindow!=null)
+            throw new AssertionError("legacy window fixture cannot admit a profile task");
+    }
+    // This legacy user0 window fixture has no private SEARCH guard or full native census.
+    // It cannot defer the original strict target signature comparison.
+    private boolean deferNativeSearchEntrySignature(String task,PhoneObservation frame,
+            ActionDecision action,AccessibilityNodeInfo node,ActionWork work){
+        return false;
+    }
+    // ACTUAL_METHODS
+    private void nextWindow(){root.windowId=139;root.window.id=139;}
+    private void guardThenHostEffect(AccessibilityNodeInfo node,boolean required){
+        scopeBeforeDispatch("host-task",scope,expected,action,node,required,work);effects++;
+    }
+    private void expectStale()throws Exception {
+        try{guardThenHostEffect(null,false);throw new AssertionError("changed window dispatched");}
+        catch(StaleObservation expectedFailure){check(expectedFailure.getMessage().startsWith("stale:"),"original stale classifier");}
+        check(!scope.refused,"outer catch must not poison scope on freshness failure");check(effects==0,"stale proposal has no effect");
+        check(scope.gate.checks==0,"stale returns before successful scope gate");
+    }
+    private void expectTerminal()throws Exception {
+        boolean failed=false;
+        try{guardThenHostEffect(null,false);}catch(StaleObservation bad){throw new AssertionError("identity/retirement became recoverable stale",bad);}
+        catch(IllegalArgumentException|IllegalStateException expectedFailure){failed=true;}
+        check(failed,"unsafe window rejected");check(effects==0,"rejected proposal has no effect");
+    }
+    public static void main(String[] args)throws Exception {
+        boolean legacy=args.length>1&&"legacy".equals(args[1]);
+        if(legacy){
+            one("legacy_same_package_window_generation_poisoned_scope",()->{
+                LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.expectTerminal();
+                check(h.scope.refused,"old real outer catch permanently refused scope");
+            });
+        }else{
+            one("same_owned_app_window_generation_is_stale_through_actual_scope_catch",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.expectStale();});
+            one("stale_old_proposal_not_replayed_fresh_observation_can_pass_same_scope",()->{
+                LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.expectStale();
+                h.expected.windowId=139;h.guardThenHostEffect(null,false);check(h.effects==1&&!h.scope.refused,"fresh host observation only; old proposal had zero effect");
+            });
+            one("unchanged_owned_window_still_reaches_original_scope_gate",()->{
+                LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.guardThenHostEffect(null,false);check(h.scope.gate.checks==1&&h.effects==1,"original admitted path retained");
+            });
+            one("missing_root_remains_terminal",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.root=null;h.expectTerminal();});
+            one("missing_window_remains_terminal",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.root.window=null;h.expectTerminal();});
+            one("foreign_package_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.pkg="com.foreign.app";h.expectTerminal();});
+            one("unknown_package_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.pkg=null;h.expectTerminal();});
+            one("main_display_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.window.display=0;h.expectTerminal();});
+            one("main_display_lease_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.background.display=0;h.expected.display=0;h.root.window.display=0;h.expectTerminal();});
+            one("foreign_display_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.window.display=21;h.expectTerminal();});
+            one("non_application_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.window.type=3;h.expectTerminal();});
+            one("unknown_window_id_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.root.windowId=-1;h.root.window.id=-1;h.expectTerminal();});
+            one("root_window_identity_disagreement_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.window.id=140;h.expectTerminal();});
+            one("invisible_window_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.root.visible=false;h.expectTerminal();});
+            one("retired_background_lease_never_becomes_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.background.active=false;h.expectTerminal();});
+            one("background_lease_retirement_during_read_beats_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.afterRootRead=()->h.background.active=false;h.expectTerminal();});
+            one("background_lease_replacement_during_read_beats_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.afterRootRead=()->h.ownBackground=false;h.expectTerminal();});
+            one("stop_before_scope_read_beats_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.work.stopped=true;h.expectTerminal();});
+            one("stop_during_window_read_beats_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.afterRootRead=()->h.work.stopped=true;h.expectTerminal();});
+            one("action_deadline_during_window_read_beats_stale",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.afterRootRead=()->h.work.now=h.work.deadline;h.expectTerminal();});
+            one("scope_identity_change_stays_terminal",()->{LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();h.scope.unchanged=false;h.expectTerminal();});
+            one("home_and_coordinate_and_foreign_action_remain_terminal",()->{
+                for(String type:new String[]{"home","click","foreign"}){LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.nextWindow();
+                    if("foreign".equals(type))h.action.packageName="com.foreign.app";else h.action.action=type;h.expectTerminal();}
+            });
+            one("same_window_requires_original_node_reference",()->{
+                LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.action.action="click";h.action.nodeId="n1";
+                boolean failed=false;try{h.guardThenHostEffect(new AccessibilityNodeInfo(),true);}catch(QualificationScope.Violation expectedFailure){failed=true;}
+                check(failed&&h.scope.refused&&h.effects==0,"same window never bypasses original NodeRef");
+            });
+            one("same_window_foreign_node_stays_terminal",()->{
+                LoadingWindowBridgeHost h=new LoadingWindowBridgeHost();h.action.action="click";h.action.nodeId="n1";
+                AccessibilityNodeInfo node=new AccessibilityNodeInfo();node.pkg="com.foreign.app";NodeRef ref=new NodeRef();ref.node=node;h.graph.refs.put("n1",ref);
+                boolean failed=false;try{h.guardThenHostEffect(node,true);}catch(QualificationScope.Violation expectedFailure){failed=true;}
+                check(failed&&h.scope.refused&&h.effects==0,"same window original node-window permission preserved");
+            });
+        }
+        JSONObject out=new JSONObject().put("schema","hepta.native-loading-window-bridge-host.v1").put("all_pass",true)
+                .put("cases",names.size()).put("assertions",assertions).put("case_names",new JSONArray(names))
+                .put("phone_operations",0).put("android_execution",false).put("business_completion_verified",false)
+                .put("boundary","Verbatim real scope/background bodies; explicit synthetic Android endpoints, worker state, clock and immutable observation precheck; host effect counter is not Android dispatch.");
+        Files.write(Paths.get(args[0]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);System.out.println(out.toString());
+    }
+}

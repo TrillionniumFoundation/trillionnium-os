@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.ui-venus.app-native-host-transfer.v1",
+  "package_sha256": "be18db69c84c860b4bf039f4d774012bfa218cf490c9e6dc92a3ce6219f28e78",
+  "worker": {
+    "name": "libhepta_ui_venus_runner.so",
+    "bytes": 58144,
+    "sha256": "0e89b471555aba001ad762accc2a1a2016c3bc3f48b39dadfdab427fcf309285",
+    "elf_machine": "AArch64",
+    "elf_type": "DYN-PIE",
+    "dt_needed": [
+      "libgeniex.so",
+      "libllama.so",
+      "libdl.so",
+      "libm.so",
+      "libc.so"
+    ],
+    "runpath": [
+      "$ORIGIN"
+    ]
+  },
+  "build_receipt_sha256": "da1a09791952e535bbd4bcf73b0da414c44b94b53f002338a4701e0a722060aa",
+  "phone_contacted": false,
+  "apk_built": false
+}

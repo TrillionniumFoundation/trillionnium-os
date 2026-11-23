@@ -1,0 +1,52 @@
+package org.trillionnium.hepta.local;
+import java.util.Map;
+/** Exact production eligibility, all new construction/authority/IO is unavailable. */
+final class NativeSearchSession {
+    interface ObservationCallback {void onPlanning(NativeSearchPlanning value);void onError(String detail);default void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){throw unavailable();}}
+    interface ActionCallback {void onResult(HeptaAccessibilityService.ActionOutcome value);default void onNoEffectReplanAvailable(HeptaAccessibilityService.ActionOutcome value,HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof){throw unavailable();}}
+    final Object controller=null;
+    final NativeAppSession nativeTask=null;
+    final BackgroundSession background=null;
+    final TaskAuthorization.Gate authorization=null;
+    final BackgroundTaskTarget.SelectionBinding selection=null;
+    final NativeAppGoal goal=null;
+    final String taskId=null;
+    static final long CHAIN_LIMIT_MS=174000L;
+    final long startedElapsed=0,taskDeadlineElapsed=0,chainDeadlineElapsed=0;
+    NativeSearchSession(Object controller,NativeAppSession task,BackgroundSession background,long started,long deadline)throws Exception{throw unavailable();}
+{{actual_eligible}}
+    void requireLive(long now){throw unavailable();}
+    void requireBeforeFirstPlanning(long now){throw unavailable();}
+    Offer offer(NativeSearchPlanning planning,long now){throw unavailable();}
+    void acceptNoEffectForReplan(Attempt attempt,HeptaAccessibilityService.ActionOutcome outcome,String receipt,HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now)throws Exception{throw unavailable();}
+    void requireFreshPlanningAfterNoEffect(HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now){throw unavailable();}
+    Offer offerAfterNoEffect(NativeSearchPlanning planning,HeptaAccessibilityService.NativeSearchNoEffectReplanProof proof,long now){throw unavailable();}
+    void requireModelPlanning(DecisionGrammar grammar,long now){throw unavailable();}
+    boolean freshOfferFor(Attempt original,Offer current){throw unavailable();}
+    void retire(){throw unavailable();}
+    boolean navigationEffectRecorded(){throw unavailable();}
+    void navigationObserved(NativeAppEvidence.Frame frame)throws Exception{throw unavailable();}
+    void acceptOutcome(Attempt attempt,HeptaAccessibilityService.ActionOutcome outcome,String receipt,long now)throws Exception{throw unavailable();}
+    static final class Offer {
+        final NativeSearchSession session=null;
+        final NativeSearchPlanning planning=null;
+        private Offer(){throw unavailable();}
+        void requireForGrammar(TaskAuthorization.Frame frame){throw unavailable();}
+        DecisionGrammar grammar(){throw unavailable();}
+        Map<String,Object> promptEvidence(){throw unavailable();}
+        Attempt reserve(NativeSearchDecision decision,String run,long issued,long deadline){throw unavailable();}
+    }
+    static final class Attempt {
+        final NativeSearchSession session=null;
+        final Offer offer=null;
+        final String modelRunId=null;
+        final long startedElapsed=0,deadlineElapsed=0;
+        private Attempt(){throw unavailable();}
+        void requireUnclaimedRevalidated(long now){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    private static UnsupportedOperationException unavailable(){
+        return new UnsupportedOperationException("No typed search Session in old Controller fixtures");
+    }
+}
