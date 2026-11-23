@@ -222,7 +222,7 @@ final class NativeSearchSession {
             need(startedElapsed<=c&&c<=d&&d<=now,"current actual C/D clocks precede the Attempt");
             synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"live unused C/D comparison required");}
             final NativeSearchRole proof;
-            try{proof=NativeSearchRole.compare(current,latest);}
+            try{proof=NativeSearchRole.compareForExecution(current,latest);}
             catch(NativeSearchRole.RejectedBannerMotion refused){
                 offer.planning.role.requireSameRole(NativeSearchRole.compare(latest,latest));
                 synchronized(this){

@@ -75,6 +75,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/profile-permission-transient/fixtures").rglob("*") if p.is_file())
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
+        paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
+        paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
                              "tests/vlm-contract/fixtures"):
@@ -543,6 +545,8 @@ final class NativeCalendarDateIntent {
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
             "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+        run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
+            "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
