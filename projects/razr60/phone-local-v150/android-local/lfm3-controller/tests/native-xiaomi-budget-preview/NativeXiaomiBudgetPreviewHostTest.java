@@ -45,14 +45,22 @@ public final class NativeXiaomiBudgetPreviewHostTest {
             return env.session.verifyProfileWindow(96,1234,()->false,SystemClock.now+4000);
         }
         void observe(String name)throws Exception{
-            NativeXmlFixture.Snapshot raw=NativeXmlFixture.read(fixtures.resolve(name+".xml"));SystemClock.now+=100;
+            NativeXmlFixture.Snapshot raw=NativeXmlFixture.read(fixtures.resolve(name+".xml"));
+            observeNodes(raw.nodes,raw.rootBounds,raw.sourceSha256,1224,2992);
+        }
+        void observeLogin()throws Exception{
+            NativeAppEvidence.Frame login=SyntheticXiaomiNativeLoginFixture.frame();
+            observeNodes(login.nodes,new int[]{login.left,login.top,login.right,login.bottom},login.sourceRecordSha,login.width,login.height);
+        }
+        void observeNodes(List<NativeAppEvidence.Node> nodes,int[] b,String sourceSha,int width,int height)throws Exception{
+            SystemClock.now+=100;
             String obs=id();List<NotesCompletionEvidence.Node> rows=new ArrayList<NotesCompletionEvidence.Node>();
-            for(NativeAppEvidence.Node n:raw.nodes)rows.add(new NotesCompletionEvidence.Node(n.id,n.packageName,n.text,n.label,n.viewId,null,
+            for(NativeAppEvidence.Node n:nodes)rows.add(new NotesCompletionEvidence.Node(n.id,n.packageName,n.text,n.label,n.viewId,null,
                     new int[]{n.left,n.top,n.right,n.bottom},n.editable,n.clickable,n.scrollable,n.enabled,n.password,ObservedChildText.notApplicable(),n.signature));
             retained=new NotesCompletionEvidence.Frame(obs,MI,96,env.session.displayId(),env.session.generation,1,true,false,rows);
-            int[] b=raw.rootBounds;frame=new NativeAppEvidence.Frame(task.taskId,task.goal.ownerSha256,task.target.targetSha256,auth.authorization.sha256,
-                    selection,obs,MI,env.session.generation,sha("host AX "+raw.sourceSha256),sha("host state "+obs),sha("unopened render"),raw.sourceSha256,
-                    TaskCompletionGate.webFrameSha(retained),env.session.displayId(),96,0,1224,2992,b[0],b[1],b[2],b[3],SystemClock.now,false,true,raw.nodes,1,true,window());
+            frame=new NativeAppEvidence.Frame(task.taskId,task.goal.ownerSha256,task.target.targetSha256,auth.authorization.sha256,
+                    selection,obs,MI,env.session.generation,sha("host AX "+sourceSha),sha("host state "+obs),sha("unopened render"),sourceSha,
+                    TaskCompletionGate.webFrameSha(retained),env.session.displayId(),96,0,width,height,b[0],b[1],b[2],b[3],SystemClock.now,false,true,nodes,1,true,window());
             SystemClock.now+=150;task.observed(frame);completion.observed(retained);
         }
         ActionDecision proposed(String action,String status,String node)throws Exception{
@@ -69,13 +77,24 @@ public final class NativeXiaomiBudgetPreviewHostTest {
             task.beforeModelAction(++step,a,run,++SystemClock.now);task.modelActionOutcome(a,run,true,true,false,sha("explicit host accepted "+run),++SystemClock.now);
         }
         void detail()throws Exception{observe("suggestions");issue("submit_exact_suggestion");observe("results");issue("open_exact_product");observe("detail");}
-        Map<String,Object> end()throws Exception{
+        Map<String,Object> terminalEvidence()throws Exception{
             task.retire();TaskCompletionGate.Check t=completion.terminalNativeCheck(task,retained,auth.frame(),step,null,false,true,true,true,true,false,true,true,
                     Integer.valueOf(0),true,task.taskId,id(),sha("synthetic worker exit"));
             check(!t.verified,"order preparation goal never verified by a display price");
-            return LocalTaskController.OutcomeExplanation.create(task.taskId,task.goal.ownerSha256,"partial",true,false,retained,t.evidence,null);
+            return new LinkedHashMap<String,Object>(t.evidence);
+        }
+        Map<String,Object> explain(Map<String,Object> facts){
+            return LocalTaskController.OutcomeExplanation.create(task.taskId,task.goal.ownerSha256,"partial",true,false,retained,facts,null);
+        }
+        Map<String,Object> end()throws Exception{
+            return explain(terminalEvidence());
         }
         public void close()throws IOException{env.close();}
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> editableChild(Map<String,Object> record,String key){
+        Map<String,Object> value=new LinkedHashMap<String,Object>((Map<String,Object>)record.get(key));
+        record.put(key,value);return value;
     }
     public static void main(String[] args)throws Exception{
         fixtures=Paths.get(args[0]);NativeProfileIdentityHostTest.workspace=Paths.get(args[1]);Files.createDirectories(NativeProfileIdentityHostTest.workspace);
@@ -107,6 +126,57 @@ public final class NativeXiaomiBudgetPreviewHostTest {
             h.observe("detail");check(!h.task.domain().incompleteOrderPreview&&!h.task.domain().resultReady,"old or directly opened detail cannot qualify");
             check(h.end().isEmpty(),"no owner quote without original query and model navigation");
         }});
+        for(String owner:new String[]{AUDIT,"在小米商城查询AX3000T价格"}){
+            final boolean preview=owner.equals(AUDIT);
+            one(preview?"managed_login_shows_budget_blocker":"managed_login_shows_price_blocker",()->{
+                try(Harness h=new Harness(owner)){
+                    h.observeLogin();
+                    check(NativeXiaomiProductPage.LOGIN.equals(h.task.domain().phase),"the current observed page must be the account form");
+                    Map<String,Object> reason=h.end();String shown=String.valueOf(reason.get("message"));
+                    check("native_xiaomi_login_page".equals(reason.get("code"))&&shown.contains("小米商城显示了账号登录页"),"explain the actual current page");
+                    check(shown.contains("工作资料中的小米商城")&&shown.contains("商品售价"),"identify the bound profile and missing displayed price");
+                    check(preview==shown.contains("无法核对预算")&&preview==shown.contains("结算总额"),"only an order-preview goal mentions budget and checkout");
+                    check(Boolean.FALSE.equals(reason.get("business_verified"))&&Boolean.FALSE.equals(reason.get("grants_tool_authority")),"no login or checkout authority");
+                }
+            });
+        }
+        one("login_then_home_explanation_requires_original_navigation",()->{
+            try(Harness h=new Harness(AUDIT)){
+                h.observeLogin();
+                Map<String,Object> before=h.frame.evidence(),page=NativeXiaomiProductPage.inspect(h.task.goal,h.frame).evidence();
+                h.issue(NativeXiaomiProductPage.LOGIN_EXIT);h.observe("home");
+                String destination=h.task.domain().phase;
+                check("home_search".equals(destination),"the original model-issued return led to the recognized home search page");
+                Map<String,Object> after=h.frame.evidence(),facts=h.terminalEvidence();
+                Map<String,Object> session=editableChild(facts,"native_app_session"),domain=editableChild(session,"current_domain");
+                Map<String,Object> provider=editableChild(domain,"provider"),progress=editableChild(session,"progress");
+                // Supply the typed-navigation publication from the parallel provider change. The actual
+                // native session above supplied the login-exit attempt, its return transition, and the final frame.
+                Map<String,Object> login=new LinkedHashMap<String,Object>();
+                login.put("schema","hepta.native-search-login-observed.v1");login.put("phase",NativeXiaomiProductPage.LOGIN);
+                login.put("task_id",h.task.taskId);login.put("owner_sha256",h.task.goal.ownerSha256);
+                login.put("execution_target_sha256",before.get("execution_target_sha256"));login.put("authorization_sha256",before.get("task_authorization_sha256"));
+                login.put("fresh_frame",before);login.put("provider",page);login.put("query_or_price_verified",false);login.put("fresh_search_contract_observed",false);
+                List<Object> transitions=new ArrayList<Object>();transitions.add(login);
+                for(Object entry:(List<?>)progress.get("transitions")){
+                    Map<?,?> original=(Map<?,?>)entry;
+                    Map<Object,Object> row=new LinkedHashMap<Object,Object>(original);
+                    if(after.equals(row.get("after"))&&Boolean.TRUE.equals(row.get("navigation_only")))
+                        row.put("actual_return_destination",destination);
+                    transitions.add(row);
+                }
+                progress.put("transitions",transitions);progress.put("typed_search_login_observed",login);
+                domain.put("phase",NativeXiaomiProductPage.LOGIN_BLOCKED);domain.put("missing",Collections.singletonList("native_login_returned_to_home_after_wide_search"));
+                provider.put("returned_to_home_after_wide_search",true);provider.put("actual_return_destination","home_search");
+                provider.put("observed_login_page",false);provider.put("credentials_or_agreement_actions_available",false);
+                Map<String,Object> answer=h.explain(facts);
+                check("native_xiaomi_search_returned_home_after_login".equals(answer.get("code"))
+                        &&String.valueOf(answer.get("message")).contains("返回后显示商城首页"),"show the historical login and actual home separately");
+                check(after.get("observation_id").equals(answer.get("observation_id")),"final observation is the home page");
+                login.put("task_id",id());check(h.explain(facts).isEmpty(),"reject an earlier login from another task");login.put("task_id",h.task.taskId);
+                progress.put("transitions",Collections.singletonList(login));check(h.explain(facts).isEmpty(),"a login page alone cannot prove the return home");
+            }
+        });
         boolean pass=true;for(Map<String,Object> r:results)pass&=Boolean.TRUE.equals(r.get("passed"));
         Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("all_pass",pass);out.put("cases",results.size());out.put("assertions",assertions);out.put("results",results);
         Files.write(Paths.get(args[2]),(new JSONObject(out).toString(2)+"\n").getBytes(StandardCharsets.UTF_8));

@@ -36,7 +36,11 @@ def main():
             raise RuntimeError("original JSON library required")
         case = source/"tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java"
         xml = source/"tests/native-app-fixtures/NativeXmlFixture.java"
-        paths, provenance = closure.prepare(source,out/"closure",(case,xml))
+        login = load(source/"tests/native-xiaomi-login/run_host.py","preview_login_fixture")
+        utility = load(source/"tests/native-xiaomi-home-loading/run_host.py","preview_login_fixture_io")
+        portable = out/"login-fixture"
+        login.fixture(source,portable,utility)
+        paths, provenance = closure.prepare(source,out/"closure",(case,xml,portable/"SyntheticXiaomiNativeLoginFixture.java"))
         actual = source/"src/org/trillionnium/hepta/local/LocalTaskController.java"
         port = next(p for p in paths if p.name=="LocalTaskController.java")
         body = query.java_block(actual.read_bytes(),"static final class OutcomeExplanation")
@@ -66,7 +70,7 @@ def main():
             (out/(name+".stdout")).write_bytes(process.stdout);(out/(name+".stderr")).write_bytes(process.stderr)
             if process.returncode:raise RuntimeError(name+" failed")
         cases=json.loads((out/"CASES.json").read_bytes())
-        if not cases["all_pass"] or cases["cases"]!=5 or not all(digest(Path(p))==v for p,v in pins.items()):
+        if not cases["all_pass"] or cases["cases"]!=8 or not all(digest(Path(p))==v for p,v in pins.items()):
             raise RuntimeError("case count, judgment or source binding differs")
         result.update(all_pass=True,cases=cases["cases"],assertions=cases["assertions"],source_sha256=pins)
     except Exception as e:

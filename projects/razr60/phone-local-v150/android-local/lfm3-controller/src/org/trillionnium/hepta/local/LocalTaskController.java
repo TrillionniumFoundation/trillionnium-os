@@ -103,10 +103,30 @@ public final class LocalTaskController implements AutoCloseable {
                     ||!TaskCompletionGate.webFrameSha(frame).equals(source.get("completion_frame_sha256")))
                 return java.util.Collections.emptyMap();
             String phase=String.valueOf(domain.get("phase")),code,message;
-            if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&yes(provider,"observed_login_page")
-                    &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))){
-                code="native_xiaomi_login_page";
-                message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
+            boolean currentXiaomiLogin=NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&yes(provider,"observed_login_page")
+                    &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase));
+            boolean returnedFromXiaomiLogin=NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)
+                    &&NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase)
+                    &&yes(provider,"returned_to_home_after_wide_search")&&"home_search".equals(provider.get("actual_return_destination"))
+                    &&Boolean.FALSE.equals(provider.get("observed_login_page"))&&Boolean.FALSE.equals(provider.get("credentials_or_agreement_actions_available"))
+                    &&java.util.Collections.singletonList("native_login_returned_to_home_after_wide_search").equals(domain.get("missing"))
+                    &&boundXiaomiLoginHistory(task,owner,frame,source,session);
+            if(currentXiaomiLogin||returnedFromXiaomiLogin){
+                code=currentXiaomiLogin?"native_xiaomi_login_page":"native_xiaomi_search_returned_home_after_login";
+                java.util.Map<?,?> goal=map(map(completion.get("contract")).get("native_app_goal"));
+                boolean preview=owner.equals(goal.get("owner_sha256"))&&frame.packageName.equals(goal.get("package_name"))
+                        &&NativeAppGoal.PRODUCT_ORDER_PREVIEW.equals(goal.get("kind"));
+                String missing=preview?"当前页面没有商品售价和结算总额，无法核对预算。":"当前页面没有显示商品售价。";
+                java.util.Map<?,?> target=map(session.get("profile_target")),profile=map(target.get("profile"));
+                java.util.Map<?,?> window=map(source.get("actual_profile_window"));
+                Object identity=target.get("target_identity_sha256");
+                boolean workProfile=frame.packageName.equals(target.get("package"))
+                        &&"android.os.usertype.profile.MANAGED".equals(profile.get("user_type"))
+                        &&identity instanceof String&&((String)identity).matches("[0-9a-f]{64}")&&identity.equals(window.get("target_identity_sha256"))
+                        &&sameNumber(profile.get("user_id"),window.get("user_id"))&&sameNumber(profile.get("user_serial"),window.get("user_serial"));
+                String location=workProfile?"本次使用的工作资料中的小米商城":"本次选中的小米商城";
+                String page=currentXiaomiLogin?"小米商城显示了账号登录页。":"在小米商城打开搜索时出现了账号登录页，返回后显示商城首页。";
+                message=page+missing+"如要继续，可在"+location+"完成登录后重新运行任务。";
             }else if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&"product_detail_quote".equals(phase)
                     &&provider.containsKey("order_preview_price_review")){
                 java.util.Map<?,?> review=map(provider.get("order_preview_price_review")),quote=map(review.get("detail_quote"));
@@ -172,6 +192,38 @@ public final class LocalTaskController implements AutoCloseable {
             out.put("observation_id",frame.observationId);out.put("completion_frame_sha256",source.get("completion_frame_sha256"));
             out.put("package",frame.packageName);out.put("phase",phase);out.put("display_id",frame.displayId);
             out.put("background_generation",frame.backgroundGeneration);return out;
+        }
+        private static boolean boundXiaomiLoginHistory(String task,String owner,NotesCompletionEvidence.Frame frame,
+                java.util.Map<?,?> source,java.util.Map<?,?> session){
+            java.util.Map<?,?> progress=map(session.get("progress")),login=map(progress.get("typed_search_login_observed"));
+            java.util.Map<?,?> earlier=map(login.get("fresh_frame")),page=map(login.get("provider"));
+            return "hepta.native-search-login-observed.v1".equals(login.get("schema"))&&NativeXiaomiProductPage.LOGIN.equals(login.get("phase"))
+                    &&task.equals(login.get("task_id"))&&task.equals(earlier.get("task_id"))
+                    &&owner.equals(login.get("owner_sha256"))&&owner.equals(earlier.get("owner_sha256"))
+                    &&sameSha(source.get("execution_target_sha256"),login.get("execution_target_sha256"),earlier.get("execution_target_sha256"))
+                    &&sameSha(source.get("task_authorization_sha256"),login.get("authorization_sha256"),earlier.get("task_authorization_sha256"))
+                    &&frame.packageName.equals(earlier.get("package"))&&frame.backgroundGeneration.equals(earlier.get("background_generation"))
+                    &&number(earlier.get("display_id"),frame.displayId)&&!frame.observationId.equals(earlier.get("observation_id"))
+                    &&NativeXiaomiProductPage.LOGIN.equals(page.get("phase"))&&earlier.equals(page.get("frame"))
+                    &&Boolean.FALSE.equals(login.get("query_or_price_verified"))&&Boolean.FALSE.equals(login.get("fresh_search_contract_observed"))
+                    &&yes(progress,"product_login_exit_reserved")&&Boolean.FALSE.equals(progress.get("typed_search_navigation_observed"))
+                    &&Boolean.FALSE.equals(progress.get("product_query_observed"))&&observedXiaomiReturn(progress,login,source);
+        }
+        private static boolean observedXiaomiReturn(java.util.Map<?,?> progress,java.util.Map<?,?> login,java.util.Map<?,?> current){
+            Object sequence=progress.get("transitions");
+            if(!(sequence instanceof java.util.List<?>))return false;
+            boolean sawLogin=false;
+            for(Object item:(java.util.List<?>)sequence){
+                if(login.equals(item)){sawLogin=true;continue;}
+                java.util.Map<?,?> transition=map(item),attempt=map(transition.get("attempt")),after=map(transition.get("after"));
+                if(sawLogin&&NativeXiaomiProductPage.LOGIN_EXIT.equals(attempt.get("purpose"))
+                        &&"home_search".equals(transition.get("actual_return_destination"))&&yes(transition,"navigation_only")
+                        &&Boolean.FALSE.equals(transition.get("query_or_result_proof_created"))
+                        &&current.get("task_id").equals(after.get("task_id"))&&current.get("owner_sha256").equals(after.get("owner_sha256"))
+                        &&current.get("package").equals(after.get("package"))&&current.get("background_generation").equals(after.get("background_generation"))
+                        &&sameNumber(after.get("window_id"),current.get("window_id"))&&sameNumber(after.get("display_id"),current.get("display_id")))return true;
+            }
+            return false;
         }
         private static boolean originalCalendarMinimum(java.util.Map<?,?> progress,java.util.Map<?,?> minimum){
             Object transitions=progress.get("transitions");
