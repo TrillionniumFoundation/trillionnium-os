@@ -621,7 +621,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("task_id",taskId).put("started_elapsed_ms",search.startedElapsed)
                         .put("original_task_deadline_elapsed_ms",search.taskDeadlineElapsed)
                         .put("chain_deadline_elapsed_ms",search.chainDeadlineElapsed).put("maximum_chain_ms",NativeSearchSession.CHAIN_LIMIT_MS)
-                        .put("model_limit_ms",MODEL_TIMEOUT_MS).put("action_limit_ms",8000).put("read_limit_ms",12000)
+                        .put("model_limit_ms",MODEL_TIMEOUT_MS).put("action_limit_ms",8000).put("read_limit_ms",NativeSearchPlanning.INITIAL_READ_LIMIT_MS).put("post_effect_read_limit_ms",12000)
                         .put("maximum_post_D_successors",1).put("deadline_fixed_before_first_planning",true));
                 NativeSearchPlanning planning=awaitNativeSearchPlanning(taskId,evidence,search,deadline);
                 NativeSearchSession.Offer offer=search.offer(planning,SystemClock.elapsedRealtime());
@@ -1615,7 +1615,7 @@ public final class LocalTaskController implements AutoCloseable {
             long deadline,final HeptaAccessibilityService.NativeSearchReadRetryProof retry,
             final HeptaAccessibilityService.NativeSearchSamplingExhaustionProof sampling)throws Exception{
         requireInitialSearchPlanningRead(id,session,deadline);service.verifyBackgroundRemote(id);checkActive(session.chainDeadlineElapsed);
-        final long requestDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),session.chainDeadlineElapsed);
+        final long requestDeadline=NativeSearchPlanning.initialReadDeadline(SystemClock.elapsedRealtime(),session.chainDeadlineElapsed);
         final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<NativeSearchPlanning> value=new AtomicReference<NativeSearchPlanning>();
         final AtomicReference<String> error=new AtomicReference<String>();final AtomicBoolean abandoned=new AtomicBoolean(),delivered=new AtomicBoolean();
         final AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof> retryAvailable=new AtomicReference<HeptaAccessibilityService.NativeSearchReadRetryProof>();

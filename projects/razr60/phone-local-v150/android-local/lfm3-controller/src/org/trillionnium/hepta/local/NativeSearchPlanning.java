@@ -31,6 +31,18 @@ final class NativeSearchPlanning {
     final Map<String,Object> publication;
     final long publishedElapsed;
 
+    static final long INITIAL_READ_LIMIT_MS=30000;
+    static long initialReadDeadline(long started,long chainDeadline){
+        need(started>=0&&chainDeadline>=0,"original elapsed planning deadlines required");
+        long end=started>Long.MAX_VALUE-INITIAL_READ_LIMIT_MS?Long.MAX_VALUE:started+INITIAL_READ_LIMIT_MS;
+        return Math.min(chainDeadline,end);
+    }
+    static long samplingDeadline(long started,long deadline){
+        // A shorter caller still owns its original read window. Reserve the last
+        // two seconds of the longer preparation window for persistence/publication.
+        if(deadline-started>12000)return deadline-2000;
+        return deadline-started>10000?started+10000:deadline;
+    }
     static final class Timing {
         final long requestStarted,requestDeadline,aReadStarted,aReadCompleted,aCensusCaptured,
                 bReadStarted,bReadCompleted,bCensusCaptured,sealedElapsed;
@@ -40,11 +52,11 @@ final class NativeSearchPlanning {
         }
         Timing(long requestStarted,long requestDeadline,long aReadStarted,long aReadCompleted,long aCensusCaptured,
                 long bReadStarted,long bReadCompleted,long bCensusCaptured,long sealedElapsed,boolean completingInFlightPair){
-            need(requestStarted>=0&&requestDeadline>requestStarted&&requestDeadline-requestStarted<=12000,"original 12s request bound");
+            need(requestStarted>=0&&requestDeadline>requestStarted&&requestDeadline-requestStarted<=INITIAL_READ_LIMIT_MS,"bounded original native planning request");
             need(requestStarted<=aReadStarted&&aReadStarted<=aCensusCaptured&&aCensusCaptured<=aReadCompleted
                     &&aReadCompleted<=bReadStarted&&bReadStarted<=bCensusCaptured&&bCensusCaptured<=bReadCompleted
                     &&bReadCompleted<=sealedElapsed&&sealedElapsed<requestDeadline,"actual read/census/seal clock order");
-            need((bReadCompleted-requestStarted<10000||(completingInFlightPair&&bReadStarted-requestStarted<10000))
+            need((bReadCompleted<samplingDeadline(requestStarted,requestDeadline)||(completingInFlightPair&&bReadStarted<samplingDeadline(requestStarted,requestDeadline)))
                     &&bCensusCaptured-aCensusCaptured>=200,"both reads must start within the settle window and remain separated");
             this.requestStarted=requestStarted;this.requestDeadline=requestDeadline;this.aReadStarted=aReadStarted;
             this.aReadCompleted=aReadCompleted;this.aCensusCaptured=aCensusCaptured;this.bReadStarted=bReadStarted;
@@ -69,6 +81,10 @@ final class NativeSearchPlanning {
         boolean monotonicSince(EventMark old){return old!=null&&events>=old.events&&unknown>=old.unknown
                 &&content>=old.content&&boundary>=old.boundary&&unknown-old.unknown<=events-old.events
                 &&content-old.content<=events-old.events&&boundary-old.boundary<=events-old.events-(content-old.content);}
+        boolean contentOnlySince(EventMark before){
+            return monotonicSince(before)&&unknown==before.unknown&&boundary==before.boundary
+                    &&events-before.events==content-before.content;
+        }
         Map<String,Object> evidence(){Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("events",events);e.put("unknown",unknown);
             e.put("content",content);e.put("boundary",boundary);e.put("untyped",events-content-boundary);return NativeAppEvidence.immutableMap(e);}
         static EventMark read(Map<String,Object> e){need(e.keySet().equals(NativeActionSnapshotCheck.keys("events,unknown,content,boundary,untyped")),"exact actual event fields");
@@ -252,11 +268,10 @@ final class NativeSearchPlanning {
                 &&equalValue(e.getValue(),a.env.get(e.getKey()))&&equalValue(e.getValue(),b.env.get(e.getKey())),"census Session binding differs: "+e.getKey());
         need(number(a.env,"captured_elapsed_ms")==timing.aCensusCaptured&&number(b.env,"captured_elapsed_ms")==timing.bCensusCaptured,"census time was refreshed");
         EventMark before=context.aBefore,after=context.sealed;
-        boolean contentOnly=after.unknown==before.unknown&&after.boundary==before.boundary
-                &&after.events-before.events==after.content-before.content;
+        boolean contentOnly=after.contentOnlySince(before);
         NativeSearchRole role=icon?NativeSearchRole.iconPair(a,b,contentOnly):
                 contentOnly?NativeSearchRole.compareForPlanning(a,b):NativeSearchRole.compare(a,b);
-        if(timing.bReadCompleted-timing.requestStarted>=10000)
+        if(timing.bReadCompleted>=samplingDeadline(timing.requestStarted,timing.requestDeadline))
             need(contentOnly&&role.fullPageSwap,"only a fully classified in-flight banner pair can use the publication margin");
         return role;
     }

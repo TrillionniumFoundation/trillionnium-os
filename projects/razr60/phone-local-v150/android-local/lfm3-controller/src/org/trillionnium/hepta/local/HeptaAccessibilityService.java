@@ -2766,7 +2766,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private boolean nativeSearchSamplingEligible(NativeSearchRequest request,long now){
         if(!request.callback.acceptsSamplingReadRetry()||request.samplingExhaustion==null||request.samplingExhaustion.request!=request
-                ||request.samplingExhaustion.observedElapsed<request.started+10000
+                ||request.samplingExhaustion.observedElapsed<request.samplingDeadline
                 ||request.samplingExhaustion.observedElapsed>=request.deadline
                 ||request.samplingSubmission!=null||request.retrySubmission!=null||request.replanSubmission!=null
                 ||request.samplingTrackingClosed||request.samplingDisqualified!=null||request.samplingAnchor==null
@@ -2843,8 +2843,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void throwNativeSearchSamplingExhausted(NativeSearchRequest request,String fence){
         requireNativeSearchRead(request);
         long now=SystemClock.elapsedRealtime();
-        if(now<request.started||now-request.started<10000||now>=request.deadline)throw new ObservationAbandoned();
-        if("complete_pair".equals(fence))request.lastSampleRejection="规划双读超过原10秒采样界限";
+        if(now<request.started||now<request.samplingDeadline||now>=request.deadline)throw new ObservationAbandoned();
+        if("complete_pair".equals(fence))request.lastSampleRejection="规划双读超过原"+((request.samplingDeadline-request.started)/1000)+"秒采样界限";
         throw new NativeSearchSamplingExhausted(request,now,fence);
     }
 
@@ -2869,7 +2869,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||issuer.nativeSearchRetryPending!=failed)
                 throw new IllegalStateException("initial planning read recovery task or one-use binding changed");
             NativeSearchPlanning.EventMark events=failed.events.mark();
-            if(events.unknown!=0||events.boundary!=0||events.events!=events.content||!events.monotonicSince(failed.failureWatermark))
+            if(!events.contentOnlySince(failed.loadingPairStarted)||!events.monotonicSince(failed.failureWatermark))
                 throw new IllegalStateException("initial planning recovery encountered unknown or ownership-boundary events");
         }
         private void requireIdentity(NativeActionSnapshotCheck.Snapshot snapshot){
@@ -2884,6 +2884,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             out.put("failed_request_started_elapsed_ms",failed.started);out.put("failed_request_deadline_elapsed_ms",failed.deadline);
             out.put("failed_request_terminal_elapsed_ms",failed.failureElapsed);out.put("read_queue_drain_observed_elapsed_ms",drainedAt);
             out.put("failed_request_terminal_status","failed");out.put("reason",classification);
+            out.put("first_complete_read_start_watermark",failed.loadingPairStarted.evidence());
             out.put("failed_request_diagnostic_leaf",failed.id+"-failed-native-search-planning.json");
             out.put("diagnostic_disposition",failed.diagnosticDisposition);out.put("failure_watermark",failed.failureWatermark.evidence());
             out.put("read_worker_drained",true);out.put("original_read_ordinal",1);out.put("successor_read_ordinal",2);
@@ -2999,7 +3000,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private static final class NativeSearchRequest {
         final NativeSearchSession session;final QualificationScopeConfig.Bound scope;final String taskId,id;
         final File directory;final Cancellation cancel;final NativeSearchSession.ObservationCallback callback;
-        final long started,deadline;final SearchEvents events;
+        final long started,deadline,samplingDeadline;final SearchEvents events;
         final java.util.concurrent.atomic.AtomicBoolean callbackDelivered=new java.util.concurrent.atomic.AtomicBoolean();
         NativeSearchReadRetryProof retrySubmission;
         NativeSearchNoEffectReplanProof replanSubmission;
@@ -3012,6 +3013,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         volatile boolean samplingTrackingClosed,samplingRecoveryPending,samplingDrainUncertain;
         volatile NativeSearchPlanning publishedPlanning;
         volatile Map<String,Object> loadingRetryClassification,loadingRetryIdentity;
+        volatile NativeSearchPlanning.EventMark loadingPairStarted;
         volatile boolean retryDrainPending,retryDrainUncertain;
         volatile boolean finished,workerDrained,published,admitted;volatile String phase="queued";
         volatile File path;
@@ -3025,6 +3027,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){
             this.taskId=taskId;this.directory=directory;this.session=session;this.scope=scope;this.cancel=cancel;
             this.deadline=deadline;this.callback=callback;started=SystemClock.elapsedRealtime();
+            samplingDeadline=NativeSearchPlanning.samplingDeadline(started,deadline);
             id=UUID.randomUUID().toString().replace("-","");events=new SearchEvents(session.background.displayId(),session.goal.packageName);
         }
     }
@@ -3082,7 +3085,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         ||observationReadWorkPending()||actionWorkPending()||nativeCancellationWorkPending()
                         ||cancel.isCancelled()||locked(session.background)||now<request.started||now>=deadline
                         ||deadline>session.chainDeadlineElapsed
-                        ||deadline>ObservationStabilityGate.requestDeadline(request.started,session.chainDeadlineElapsed))
+                        ||deadline>(replan==null?NativeSearchPlanning.initialReadDeadline(request.started,session.chainDeadlineElapsed)
+                            :ObservationStabilityGate.requestDeadline(request.started,session.chainDeadlineElapsed)))
                     throw new IllegalStateException("native planning request admission is no longer current");
                 if(replan==null){
                     if(proof!=null&&sampling!=null)throw new IllegalStateException("initial recovery proof kinds are exclusive");
@@ -3205,7 +3209,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||actionWorkPending()||nativeCancellationWorkPending()||request.failureElapsed<request.started
                 ||now<request.failureElapsed||now>=request.deadline||now>=request.session.taskDeadlineElapsed)return false;
         NativeSearchPlanning.EventMark events=request.events.mark();
-        if(events.unknown!=0||events.boundary!=0||events.events!=events.content
+        if(!events.contentOnlySince(request.loadingPairStarted)
                 ||request.failureWatermark==null||!events.monotonicSince(request.failureWatermark))return false;
         try{request.session.requireBeforeFirstPlanning(now);return true;}catch(RuntimeException unavailable){return false;}
     }
@@ -3275,7 +3279,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema","hepta.failed-native-search-planning.v1");
             out.put("task_id",request.taskId);out.put("request_id",request.id);out.put("session_binding",request.session.binding());
             out.put("request_started_elapsed_ms",request.started);out.put("request_deadline_elapsed_ms",request.deadline);
-            out.put("sampling_deadline_elapsed_ms",Math.min(request.deadline,request.started+10000));
+            out.put("sampling_deadline_elapsed_ms",request.samplingDeadline);
             out.put("failed_elapsed_ms",request.failureElapsed);out.put("failure_phase",request.failurePhase);
             out.put("diagnostic_writer_kind",request.workerDrained?"post_read_diagnostic_worker":"original_read_worker");
             out.put("read_worker_drained_before_write",request.workerDrained);
@@ -3331,7 +3335,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void waitNativeSearchSample(NativeSearchRequest request,long until){
         while(SystemClock.elapsedRealtime()<until){requireNativeSearchRead(request);
-            if(SystemClock.elapsedRealtime()>=Math.min(request.deadline,request.started+10000))
+            if(SystemClock.elapsedRealtime()>=request.samplingDeadline)
                 throwNativeSearchSamplingExhausted(request,"sample_wait");
             SystemClock.sleep(Math.min(50,Math.max(1,until-SystemClock.elapsedRealtime())));
         }
@@ -3361,15 +3365,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NativeSearchSample first=null,second=null;byte[] encoded=null;String last="complete home search role not yet available";
             while(encoded==null){
                 requireNativeSearchRead(request);
-                if(SystemClock.elapsedRealtime()>=Math.min(request.deadline,request.started+10000))
+                if(SystemClock.elapsedRealtime()>=request.samplingDeadline)
                     throwNativeSearchSamplingExhausted(request,"sample_loop");
                 try{
                     request.phase="planning_first_graph";first=readNativeSearchSample(request);
                     waitNativeSearchSample(request,first.captured+200);
                     request.phase="planning_second_graph";second=readNativeSearchSample(request);
                     request.lastCompletePair=new NativeSearchPair(first,second);
-                    boolean completingInFlightPair=second.readCompleted-request.started>=10000;
-                    if(completingInFlightPair&&second.readStarted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
+                    boolean completingInFlightPair=second.readCompleted>=request.samplingDeadline;
+                    if(completingInFlightPair&&second.readStarted>=request.samplingDeadline)throwNativeSearchSamplingExhausted(request,"complete_pair");
                     NativeSearchPlanning.Timing timing=new NativeSearchPlanning.Timing(request.started,request.deadline,
                             first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime(),completingInFlightPair);
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
@@ -3379,12 +3383,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     catch(IllegalArgumentException unavailable){
                         if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
-                        request.loadingRetryClassification=null;request.loadingRetryIdentity=null;
+                        request.loadingRetryClassification=null;request.loadingRetryIdentity=null;request.loadingPairStarted=null;
                         if(request.retrySubmission==null&&request.samplingSubmission==null){
                             try{
                                 Map<String,Object> classification=NativeSearchRole.loadingToSearch(first.snapshot,second.snapshot);
                                 NativeSearchPlanning.EventMark events=request.events.mark();
-                                if(events.unknown==0&&events.boundary==0&&events.events==events.content){
+                                if(first.before.unknown==0&&first.before.events==first.before.content+first.before.boundary
+                                        &&events.contentOnlySince(first.before)){
+                                    request.loadingPairStarted=first.before;
                                     Map<String,Object> identity=new java.util.TreeMap<String,Object>(NativeSearchRole.stableEnvelope(second.snapshot));
                                     identity.remove("origin_observation_id");request.loadingRetryIdentity=NativeAppEvidence.immutableMap(identity);
                                     request.loadingRetryClassification=classification;

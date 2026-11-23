@@ -78,6 +78,7 @@ def main():
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/r38-planning-captures.json")
         paths.add(ROOT/"tests/native-form-history-actions/d1e685-query-refusals.json")
         paths.add(ROOT/"tests/native-form-history-actions/86b343-departure-year-refusals.json")
         paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")

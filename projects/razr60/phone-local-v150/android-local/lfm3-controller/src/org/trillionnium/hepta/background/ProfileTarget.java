@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -73,7 +74,7 @@ public final class ProfileTarget {
             ProfileIdentity.need(t.wire().equals(wire),"PROFILE_TARGET_WIRE_NONCANONICAL");return t;
         }catch(java.io.IOException invalid){throw new IllegalArgumentException("PROFILE_TARGET_WIRE_TRUNCATED",invalid);}
     }
-    public boolean same(ProfileTarget other){return other!=null&&sha256.equals(other.sha256)&&wire().equals(other.wire());}
+    public boolean same(ProfileTarget other){return other!=null&&sha256.equals(other.sha256)&&Arrays.equals(canonical,other.canonical);}
     public Map<String,Object> evidence(){
         Map<String,Object> v=new LinkedHashMap<String,Object>();v.put("schema",SCHEMA);v.put("profile",profile.evidence());v.put("full_uid",fullUid);
         v.put("package",packageName);v.put("component",component);v.put("version_code",versionCode);v.put("apk_hashes",apkHashes);

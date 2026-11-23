@@ -3,6 +3,8 @@ import java.util.Map;
 import org.json.JSONObject;
 /** Type-only old Controller compile boundary; never planning, publication or authority. */
 final class NativeSearchPlanning {
+    static final long INITIAL_READ_LIMIT_MS=30000;
+    static long initialReadDeadline(long started,long chainDeadline){throw unavailable();}
     final String id=null,packageName=null,receiptSha256=null;
     final Timing timing=null;
     static final class Timing {

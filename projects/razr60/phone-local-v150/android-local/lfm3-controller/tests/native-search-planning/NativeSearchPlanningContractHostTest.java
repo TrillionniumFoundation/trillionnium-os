@@ -73,7 +73,7 @@ final class NativeSearchPlanningContractHostTest {
             NativeActionSnapshotCheck.Snapshot changed=NativeSearchPlanning.readSnapshot(NativeSearchPlanning.map(b));
             t.rejects(()->NativeSearchPlanning.encode(good.id,good.first,changed,good.binding,good.timing,good.context));
         });
-        t.test("original_twelve_second_request_bound_retained",()->t.rejects(()->new NativeSearchPlanning.Timing(0,12001,10,30,20,220,240,230,250)));
+        t.test("original_thirty_second_request_bound_retained",()->t.rejects(()->new NativeSearchPlanning.Timing(0,30001,10,30,20,220,240,230,250)));
         t.test("original_ten_second_settle_bound_retained",()->t.rejects(()->new NativeSearchPlanning.Timing(0,12000,10,30,20,9990,10000,9995,10001)));
         t.test("separated_complete_samples_retained",()->t.rejects(()->new NativeSearchPlanning.Timing(0,12000,10,30,20,40,60,50,70)));
         t.test("persistence_cannot_precede_seal_or_extend_request",()->{
