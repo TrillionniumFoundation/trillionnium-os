@@ -130,6 +130,12 @@ public final class HeptaAccessibilityService extends android.content.Context {
         try{return taskBackground.selection.json();}
         catch(Exception failure){throw new IllegalStateException("synthetic observation cannot encode actual Selection",failure);}
     }
+    // This non-native gate has no authority to retry a native census.
+    private Graph readNativeActionGraph(String task, PhoneObservation frame, ActionDecision action,
+            ActionWork work, boolean finalCheck) {
+        if (work != null && work.nativeGuard != null) throw new AssertionError("native action outside legacy scope fixture");
+        return readGraph(work == null ? null : work.budget(), work == null ? currentBackground() : work.background);
+    }
     private Graph readGraph(){
         if(root==null)throw new IllegalStateException("no root");
         Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.displayId=root.window.display;g.backgroundGeneration=taskBackground==null?null:taskBackground.generation;g.backgroundSelectionRaw=taskBackground==null?null:backgroundSelectionJson().toString();g.backgroundOwnerSha=taskBackground==null?null:taskBackground.ownerSha256;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;

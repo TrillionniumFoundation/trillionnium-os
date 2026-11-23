@@ -17,7 +17,9 @@
       "tests/native-form-history-actions/d1e685-query-refusals.json",
       "tests/native-action-integration/run_host.py",
       "tests/native-action-integration/NativeActionBridgeHost.template",
-      "tools/run_host_checks.py"
+      "tools/run_host_checks.py",
+      "tests/qualification-scope/ServiceFixture.template",
+      "tests/qualification-scope/BackgroundObservationFixture.template"
     ]
   },
   "current_test_dependency_repairs": {
@@ -10676,9 +10678,9 @@
       "sha256": "ee86680748f3d3ad1ddcfc26568cc17e4fc8644e128f4bcd901eb019b66304ff"
     },
     {
-      "bytes": 3978,
+      "bytes": 4290,
       "path": "tests/qualification-scope/BackgroundObservationFixture.template",
-      "sha256": "8b022b85242ec23faad902f31b55d8f5b1dabde7e1f6391921c0f25a8e47b17a"
+      "sha256": "5cb72f812f65b444eae7efd3b930fe5ce8657ff32c6d33aee04d8e0bb2cb0db5"
     },
     {
       "bytes": 54266,
@@ -10686,9 +10688,9 @@
       "sha256": "7d6ffbdfa5d3d70f6fd82b26a07a3a4a28cc331c86da328acd67e12ed9d9252c"
     },
     {
-      "bytes": 16058,
+      "bytes": 16529,
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "sha256": "85a7b7e453cdf76d006dc322f61134ca7da51dcaaa336b1893a174420a962b1d"
+      "sha256": "0f8a9d13cf88b9cffd3f12eef6953b19bf5f991a38c2060231725710be259e7b"
     },
     {
       "bytes": 2158,

@@ -16,6 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 /** Exact production root selection, graph traversal and identities; Android IO is explicit fake input. */
 final class BackgroundObservationFixture {
+    // Legacy observation reads have no action owner and cannot create a native query budget.
+    private abstract static class QueryGraphBudget implements GraphBudget {
+        String currentPath;
+        private QueryGraphBudget() { throw new AssertionError("no query attempt in observation fixture"); }
+    }
     BackgroundSession background;
     // This legacy IO fixture has no bound Web lease; actual Web paths have their own gate.
     private final WebFlightSession taskWeb=null;
