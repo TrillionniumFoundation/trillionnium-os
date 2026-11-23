@@ -1,0 +1,106 @@
+{
+  "actual_component_gates": [
+    {
+      "assertions": 68,
+      "baseline_compiles_and_expected_counterfactual_red": true,
+      "cases": 25,
+      "clock_ipc_native_and_future_sequence_synthetic": true,
+      "name": "initial_unavailable_session",
+      "original_receipt_sha256": "5f1c0693dd0b7149b4820995c41b5c65619ff8eb049f206fd22068704ffb8868",
+      "passed": true,
+      "source_after_sha256": "789433dc2254f7661b5318ceb85b8715418335eeb291ee0ca9984a6799207445",
+      "source_before_sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286"
+    },
+    {
+      "actual_metadata_receipt_verified_by_production": true,
+      "baseline_expected_pending_hint_failures": 2,
+      "candidate_behavior_failures": 0,
+      "desired_behavior_checks_per_side": 5,
+      "host_json_map_null_compatibility": {
+        "generated_sha256": "35b749ff0bbdb3d65b03388833060b4b0af1ba8a57b474a9e29b83a5f2bad44b",
+        "scope": "Only JSONObject(Map) null entries are retained to match Android; original evidence and production files stay byte-identical.",
+        "upstream_source_sha256": "e7ff98437abfc67e18765f4e810247ce9a908328b39dfe999d61a8eb17dca49c",
+        "upstream_url": "https://github.com/stleary/JSON-java/blob/20240303/src/main/java/org/json/JSONObject.java"
+      },
+      "invariant_assertions_per_side": 49,
+      "name": "pending_hint_precedence_and_actual_metadata_receipt",
+      "native_frame_and_other_stage_envelopes_synthetic": true,
+      "only_two_next_goal_values_differ": true,
+      "original_receipt_sha256": "91c52b4e521a13b984cc173a66dcba56746e166c9529de8d8c990cf63ed5c6d9",
+      "passed": true,
+      "source_after_sha256": "1b1a27d8c4bb410b92827a85621904e2db2fdc8287730d01c0a5af3d5e7826b5",
+      "source_before_sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01",
+      "stages_per_side": 22
+    }
+  ],
+  "all_requested_capabilities_qualified": false,
+  "apk": {
+    "bytes": 21387181,
+    "sha256": "bc683d4a3685883a3a7c1be623e947a7cf04978f150c26e7deeec88f442cba5d",
+    "version_code": 69,
+    "version_name": "0.69.0-native-background-runtime"
+  },
+  "artifact_sha256": {
+    "FINAL-INTEGRATION.json": "6c63b54de5c40df4b50e1c3a93c0bbec36fd8f639565e50ef30f50a33c8251f5",
+    "FROZEN-SOURCE.json": "848782ce95957fe8d63ad99109c90315a23a7d7a08a5badeaedd29298e6c2d78",
+    "MAC-BUILD-RESULT.json": "483e73bb56deaf07ab41a02200f5d6efb640c20a10462e48c7ee5c81ad67c4d8",
+    "PRODUCTION-CHANGES.patch": "a2ec2c0482fa5f6dcd8000189fc346f6fa68b112dba656c6dd4a0628d77c8c80",
+    "PUBLICATION.json": "efcd7db3c68ddd092998ec9e44f90d000b8df9485b450b1cf3a26fa8405fa21a",
+    "assembly/ASSEMBLY-RESULT.json": "34d5edc87ea080418dfa788eead465221a05f5ccf4e009ff81b165ee4d12fe71",
+    "assembly/apk-signature.txt": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+    "assembly/out/control-v69-static/STATIC-ACCEPTANCE.json": "11c035f92a5588069079cdf8f113536c1a1c2b4904c3e79c04a810f5df2da861"
+  },
+  "behavior": {
+    "action_replay_added": false,
+    "controller_manifest_changed": false,
+    "fresh_complete_pair_required": true,
+    "maximum_extra_reads": 2,
+    "model_profiles_changed": false,
+    "native_sources_changed": false,
+    "old_pair_rejected": true,
+    "original_phase_and_task_deadlines_unchanged": true,
+    "permission_and_completion_checks_changed": false,
+    "prior_phase_required": true
+  },
+  "binary_android_manifest_byte_identical_to_prior_apk": true,
+  "build_and_signing_pass": true,
+  "build_identity_sha256": "00148e3fd13e41f489865eb65c661fd26694d2713a6a26c319daaf51f8e46ae8",
+  "changed_production_files": 2,
+  "controller_has_internet_permission": false,
+  "draft_pr": 155,
+  "exact_gate_inputs_reverified_at_integration": true,
+  "integration_reran_gates": false,
+  "limits": [
+    "Only an already-started initial flight phase with one remaining bounded read may discard the exact known unavailable reply and obtain a fresh complete pair.",
+    "Original task and phase deadlines, maximum read count, identities, authorization, cancellation and lease checks remain.",
+    "The wait instruction uses the final phase so submitted and pending-selection history keeps its original priority.",
+    "Host JSON Map-null behavior is explicitly adapted to match Android; original callback/binding and production code are not rewritten by the gate.",
+    "The first two host attempts exposed dependency and test-overload problems, not the target baseline regression; the final exact baseline red is separately recorded.",
+    "No unrelated Notes, shopping, model benchmark, native Stop or GPU gates were repeated for this revision.",
+    "Host assertions, compilation, native identity and NPU placement are not successful business task counts."
+  ],
+  "native_libraries_byte_identical_to_prior_apk": 18,
+  "parent": "6e0129647f2f7b49a97c45ca57768f6aea3b3979",
+  "phone_outcomes_reported_here": false,
+  "prior_apk_sha256": "ff0a1b713336575dcf6406d57cbc7b1df6f782a41a4daa8950e32c6c95537f77",
+  "production_changes": [
+    {
+      "after_sha256": "1b1a27d8c4bb410b92827a85621904e2db2fdc8287730d01c0a5af3d5e7826b5",
+      "before_sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01",
+      "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java"
+    },
+    {
+      "after_sha256": "789433dc2254f7661b5318ceb85b8715418335eeb291ee0ca9984a6799207445",
+      "before_sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286",
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java"
+    }
+  ],
+  "production_compile_inputs": 316,
+  "schema": "hepta.pending-capture-build-and-host-validation.public.v1",
+  "signature_scheme_v3_verified": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "source_head": "f2f1b8710f4b33dcf2ae5f7512d9ee4472215f6e",
+  "source_manifest_members": 2047,
+  "source_manifest_sha256": "754f88b5bc60ed82557192314e74f8ed28526e031fc7f40d6f195350330d57d0",
+  "source_tree": "ec055f5358e6573b732504a7df9cd5c6edad1e05"
+}

@@ -1,0 +1,1 @@
+package android.system;public final class ErrnoException extends Exception {private static final long serialVersionUID=1L;public final int errno;public ErrnoException(String name,int errno){super(name+":"+errno);this.errno=errno;}}

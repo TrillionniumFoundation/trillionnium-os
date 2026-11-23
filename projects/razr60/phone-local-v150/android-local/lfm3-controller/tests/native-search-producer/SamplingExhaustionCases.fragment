@@ -1,0 +1,356 @@
+    /** Actual extracted producer/consumer recovery over synthetic Android/clock/queue ports.
+     * No constructor, serialized JSON or host value can mint a sampling proof. */
+    static void samplingBadGeometry(Fixture f){
+        Map<String,Object> parent=f.values.nodes.get("0/2");
+        parent.put("visible",false);parent.put("bounds",Arrays.asList(1228,600,1224,900));
+        f.values.nodes.get("0/2/0").put("visible",true);
+    }
+    static void samplingNormal(Fixture f){
+        f.values=f.base.census(SystemClock.now);
+        for(NodeData node:f.nodes.values())node.refresh=true;
+    }
+    static void samplingExhaustion(Fixture f,boolean repeatOnSuccessor){
+        HeptaAccessibilityService s=f.base.controller instanceof NativeSearchLoadingControllerHost
+                ?((NativeSearchLoadingControllerHost)f.base.controller).service:HeptaAccessibilityService.live;
+        f.refreshGraphChildren=true;Map<String,Integer> localReads=new HashMap<String,Integer>();
+        f.graphHook=()->{
+            NativeSearchRequest request=s.activeNativeSearchObservation;
+            if(request==null){samplingNormal(f);return;}
+            if(!repeatOnSuccessor&&(request.samplingSubmission!=null||request.retrySubmission!=null)){
+                samplingNormal(f);return;
+            }
+            int n=localReads.containsKey(request.id)?localReads.get(request.id)+1:1;localReads.put(request.id,n);
+            if(n==1)samplingNormal(f);
+            else if(n==2){samplingNormal(f);samplingBadGeometry(f);successorEvent(s,3);}
+            else{
+                // Actual extracted refresh(false) branch fails this partial graph.
+                // The next local wait crosses this request’s original sampling cutoff.
+                SystemClock.now=request.samplingDeadline-10;f.nodes.get("0/2/0").refresh=false;
+            }
+        };
+    }
+    static final class SamplingRun implements AutoCloseable {
+        final HeptaAccessibilityService service;final Fixture fixture;
+        NativeSearchRequest old,fresh;NativeSearchSamplingExhaustionProof proof;Runnable callbackHook;
+        SamplingRun(HeptaAccessibilityService s,Fixture f){service=s;fixture=f;}
+        NativeSearchSession.ObservationCallback callback(final boolean accepts){
+            return new NativeSearchSession.ObservationCallback(){
+                public boolean acceptsSamplingReadRetry(){return accepts;}
+                public void onPlanning(NativeSearchPlanning value){fixture.planning=value;fixture.callbackCount++;}
+                public void onError(String value){fixture.error=value;fixture.pendingAtError=observationIoBusy.get();fixture.callbackCount++;}
+                public void onSamplingReadRetryAvailable(String detail,NativeSearchSamplingExhaustionProof value){
+                    proof=value;fixture.callbackCount++;if(callbackHook!=null)callbackHook.run();
+                }
+            };
+        }
+        void start(boolean accepts){
+            service.observeNativeSearchPlanning(service.lease,fixture.directory,fixture.base.search,fixture.cancel(),
+                    SystemClock.now+12000,callback(accepts));service.main.one();old=service.activeNativeSearchObservation;
+            check(old!=null&&old.admitted,"actual first request admitted");
+            for(int i=0;i<7;i++)successorEvent(service,1);
+        }
+        void original()throws Exception{
+            samplingExhaustion(fixture,false);start(true);observationIo.one();
+            check(old.samplingExhaustion!=null&&old.workerDrained&&!observationIoBusy.get(),"actual typed local fence and original physical drain");
+            check(old.samplingAnchor!=null&&old.samplingAnchor.baseline.boundary==7,"earliest actual full-source pair owns the historical nonzero baseline");
+            check(old.lastCompletePair==null&&old.samplingDiagnosticSha!=null,"diagnostic owns bytes after original immutable pair released");
+            check(proof==null&&!old.callbackDelivered.get(),"worker alone cannot issue proof or callback");
+            for(NodeData node:fixture.nodes.values())check(node.obtained==node.recycled,"all failed graph references actually recycled");
+        }
+        void ready()throws Exception{
+            original();service.main.one();
+            check(proof==null&&observationIoBusy.get()&&old.samplingRecoveryPending,"proof waits on actual serial queue marker");
+            observationIo.one();check(proof==null&&!observationIoBusy.get(),"worker marker is not main-thread authority");
+            service.main.one();check(proof!=null&&fixture.error==null&&!proof.closed,"private actual proof issued: "+fixture.error);
+        }
+        NativeSearchRequest submit(){
+            fixture.error=null;fixture.planning=null;
+            service.observeNativeSearchPlanningAfterSamplingExhaustion(service.lease,fixture.directory,fixture.base.search,
+                    fixture.cancel(),Math.min(SystemClock.now+12000,fixture.base.search.chainDeadlineElapsed),callback(true),proof);
+            service.main.one();fresh=service.activeNativeSearchObservation;return fresh;
+        }
+        NativeSearchPlanning publish(){
+            check(submit()!=null,"actual new request admitted: "+fixture.error);observationIo.one();service.main.one();
+            check(fixture.planning!=null,"actual fresh complete planning published: "+fixture.error);return fixture.planning;
+        }
+        public void close(){if(proof!=null)proof.close();if(service.nativeSearchSamplingTracked!=null)service.closeNativeSearchSampling(service.nativeSearchSamplingTracked);}
+    }
+    static void samplingTimers(HeptaAccessibilityService service){
+        List<Runnable> queued=new ArrayList<Runnable>(service.main.delayed);service.main.delayed.clear();
+        for(Runnable runnable:queued)runnable.run();
+    }
+    static void samplingDrainDiagnostic(HeptaAccessibilityService service){
+        int count=0;
+        while((observationIo.hasJobs()||service.main.hasJobs())&&count++<12){
+            if(observationIo.hasJobs())observationIo.one();
+            if(service.main.hasJobs())service.main.one();
+        }
+        check(!observationIo.hasJobs()&&!service.main.hasJobs()&&!observationIoBusy.get(),"actual queued diagnostic/marker drained");
+    }
+    static Throwable samplingController(NativeSearchLoadingControllerHost controller,Fixture fixture)throws Exception{
+        java.util.concurrent.atomic.AtomicReference<Throwable> failure=new java.util.concurrent.atomic.AtomicReference<Throwable>();
+        Thread thread=new Thread(()->{try{controller.run(fixture.directory);}catch(Throwable e){failure.set(e);}},"actual-sampling-controller");
+        thread.start();long until=System.nanoTime()+10000000000L;
+        while(thread.isAlive()&&System.nanoTime()<until){
+            boolean work=false;if(controller.service.main.hasJobs()){controller.service.main.one();work=true;}
+            if(observationIo.hasJobs()){observationIo.one();work=true;}if(!work)Thread.yield();
+        }
+        if(thread.isAlive()){controller.cancelled.set(true);thread.interrupt();thread.join(1000);throw new AssertionError("actual sampling controller did not drain");}
+        thread.join();return failure.get();
+    }
+    static void samplingCases(String[] args)throws Exception{
+        one("sampling_actual_opaque_drained_history_new_pair_new_CD_single_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                long originalChain=f.base.search.chainDeadlineElapsed,originalTask=f.base.search.taskDeadlineElapsed;r.ready();
+                JSONObject diagnostic=f.diagnostic(),anchor=diagnostic.getJSONObject("sampling_exhaustion").getJSONObject("historical_owner_anchor");
+                check(anchor.getBoolean("historical_only")&&!anchor.getBoolean("pair_accepted_for_planning")&&!anchor.getBoolean("current_profile_authority"),"bad complete pair is identity history only");
+                check(anchor.getJSONObject("baseline_watermark").getLong("boundary")==7,"preexisting boundaries are preserved, never called zero");
+                long expires=anchor.getJSONObject("source_context").getJSONObject("second_window_facts").getJSONObject("profile_window").getLong("expires_elapsed_ms");
+                check(expires<diagnostic.getLong("failed_elapsed_ms"),"old profile proof is expired at mint and cannot be current authority");
+                JSONObject pair=diagnostic.getJSONObject("last_complete_pair");
+                NativeActionSnapshotCheck.Snapshot a=NativeSearchPlanning.readSnapshot(NativeSearchPlanning.map(pair.getJSONObject("first").getJSONObject("census")));
+                NativeActionSnapshotCheck.Snapshot b=NativeSearchPlanning.readSnapshot(NativeSearchPlanning.map(pair.getJSONObject("second").getJSONObject("census")));
+                rejected(()->NativeSearchRole.compare(a,b));
+                for(java.lang.reflect.Constructor<?> ctor:NativeSearchSamplingExhaustionProof.class.getDeclaredConstructors())
+                    if(!ctor.isSynthetic())check(java.lang.reflect.Modifier.isPrivate(ctor.getModifiers()),"actual non-synthetic proof constructor private");
+                for(java.lang.reflect.Field field:NativeSearchSamplingExhaustionProof.class.getDeclaredFields())
+                    check(!field.getType().getSimpleName().equals("Graph")&&!field.getType().getSimpleName().equals("NodeRef"),"proof stores no graph/node capability");
+                NativeSearchPlanning published=r.publish();
+                check(r.fresh!=r.old&&!r.fresh.id.equals(r.old.id)&&r.fresh.started>=r.proof.drainedAt,"separate new request, never old B reuse");
+                check(r.old.finished&&!r.old.published&&r.old.deadline==r.old.started+12000&&r.proof.consumed.get(),"old failure and deadline stay terminal");
+                check(published.first!=a&&published.timing.requestStarted==r.fresh.started&&published.timing.bReadCompleted-r.fresh.started<10000,"fresh complete samples and original sampling cap");
+                check(f.graphReads==5&&f.effects==0&&s.current==null&&s.currentGraph==null,"two fresh reads after actual failed partial, no generic frame/effect");
+                check(s.nativeSearchSamplingTracked==null&&r.proof.closed,"publication closes historical tracker");
+                check(f.base.search.chainDeadlineElapsed==originalChain&&f.base.search.taskDeadlineElapsed==originalTask,"chain/task deadlines never reset");
+                NativeSearchSession.Offer offer=f.base.search.offer(published,SystemClock.now);SystemClock.now+=20;
+                NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+                f.action(attempt);check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==7,"real new C/D still required for only effect");
+                check(attempt.deadlineElapsed-attempt.startedElapsed==8000&&s.taskObservationAdmissions==2,"eight-second action and unique initial ordinal2 retained");
+                f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(s.nativeSearchAllowsLegacyObservation(s.lease),"only actual accepted effect unlocks subsequent native observation");
+            }
+        });
+        one("sampling_actual_LTC_durable_old_failure_new_intent_one_model_and_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);samplingExhaustion(f,false);Throwable failure=pumpController(controller,f);
+                check(failure==null,"actual controller sampling branch: "+failure);
+                check(controller.modelCalls==1&&controller.modelRuns.size()==1&&controller.completedSteps==1&&f.effects==1,"one new synthetic model endpoint and actual gated effect, no replay");
+                JSONObject intent=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"native-search-initial-sampling-retry-01.json").toPath()),StandardCharsets.UTF_8));
+                check(intent.getBoolean("first_model_request_not_submitted")&&!intent.getBoolean("old_pair_accepted")&&!intent.getBoolean("current_profile_authority"),"controller durable intent binds only failed read");
+                check(!intent.getBoolean("old_request_renewed")&&!intent.getBoolean("action_replayed")&&intent.getInt("new_read_ordinal")==2,"same one initial successor slot");
+                check(f.graphReads==7&&s.nativeSearchSamplingTracked==null&&s.taskObservationAdmissions==2,"actual new A/B, C/D and tracker release");
+                f.diagnostic();
+            }
+        });
+        one("sampling_legacy_callback_defaults_to_immediate_error_without_recovery_queue",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                samplingExhaustion(f,false);r.start(false);observationIo.one();s.main.one();
+                check(r.old.samplingExhaustion!=null&&r.proof==null&&f.error!=null&&!observationIo.hasJobs(),"unsupported callback retains direct old failure");
+                check(s.nativeSearchSamplingTracked==null&&s.taskObservationAdmissions==1&&f.effects==0,"no marker, successor, model or effect");
+            }
+        });
+        for(int variant=0;variant<3;variant++){final int mode=variant;
+            one("sampling_optin_does_not_qualify_"+new String[]{"same_text_generic","cancelled_read","original_twelve_second_expiry"}[mode],()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                    r.start(true);
+                    f.graphHook=()->{
+                        if(mode==0)throw new IllegalStateException("original native planning sampling deadline reached; no planning was produced");
+                        if(mode==1)f.cancelled=true;
+                        else SystemClock.now=r.old.deadline;
+                    };
+                    observationIo.one();s.main.one();
+                    check(r.old.samplingExhaustion==null&&r.proof==null&&f.error!=null,"actual local typed cause required");
+                    check(s.nativeSearchSamplingTracked==null&&f.effects==0,"rejected opt-in has no retained tracker or effect");
+                }
+            });
+        }
+        one("sampling_optin_without_complete_identity_pair_cannot_mint",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.start(true);f.refreshGraphChildren=true;f.nodes.get("0/2/0").refresh=false;
+                f.graphHook=()->SystemClock.now=r.old.started+9990;observationIo.one();s.main.one();
+                check(r.old.samplingExhaustion!=null&&r.old.samplingAnchor==null&&r.proof==null&&f.error!=null,"typed timeout alone is not historical identity");
+                check(s.nativeSearchSamplingTracked==null&&f.effects==0,"no anchor grants no recovery");
+            }
+        });
+        for(int gap=0;gap<6;gap++)for(int kind=0;kind<3;kind++){final int stage=gap,event=kind;
+            one("sampling_continuous_"+new String[]{"unknown","boundary","untyped"}[kind]+"_gap_"+gap,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                    r.original();if(stage==0)successorEvent(s,event);s.main.one();
+                    if(observationIo.hasJobs()){if(stage==1)successorEvent(s,event);observationIo.one();}
+                    if(s.main.hasJobs()){if(stage==2)successorEvent(s,event);s.main.one();}
+                    if(r.proof!=null){
+                        if(stage==3)successorEvent(s,event);
+                        if(stage==4){Runnable previous=f.graphHook;final boolean[] injected={false};f.graphHook=()->{
+                            previous.run();if(s.activeNativeSearchObservation!=null&&s.activeNativeSearchObservation.samplingSubmission!=null&&!injected[0]){
+                                injected[0]=true;successorEvent(s,event);
+                            }
+                        };}
+                        if(stage==5)SystemClock.beforeRead=()->{
+                            if(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","finishNativeSearchObservation")
+                                    &&successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService$NativeSearchSamplingExhaustionProof","requireSuccessor")){
+                                SystemClock.beforeRead=null;successorEvent(s,event);
+                            }
+                        };
+                        r.submit();samplingDrainDiagnostic(s);
+                    }
+                    check(f.planning==null&&f.error!=null&&f.effects==0,"bad event cannot cross gap "+stage);
+                    check(s.nativeSearchSamplingTracked==null&&(r.proof==null||r.proof.closed),"refused history is released");
+                    check(s.taskObservationAdmissions<=2,"no automatic third request");
+                }
+            });
+        }
+        one("sampling_typed_content_across_handoffs_keeps_nonzero_historical_baseline",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.original();successorEvent(s,3);s.main.one();successorEvent(s,3);observationIo.one();successorEvent(s,3);s.main.one();
+                check(r.proof!=null,"content-only change permits inspection, not action");successorEvent(s,3);r.publish();
+                check(r.old.events.mark().boundary==7&&r.old.events.mark().content>1&&f.effects==0,"actual baseline retained throughout content changes");
+            }
+        });
+        for(int point=0;point<2;point++){final int stage=point;
+            one("sampling_accepted_"+new String[]{"serial_marker","main_delivery"}[point]+"_late_to_old_deadline_closes",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                    r.original();s.main.one();if(stage==1)observationIo.one();
+                    SystemClock.now=r.old.deadline;samplingTimers(s);
+                    check(s.nativeSearchSamplingTracked==null&&r.old.samplingTrackingClosed,"original deadline retires undelivered recovery");
+                    if(stage==0)check(observationIoBusy.get(),"expiry never invents drain of accepted marker");
+                    samplingDrainDiagnostic(s);
+                    check(r.proof==null&&f.error!=null&&f.callbackCount==1&&f.effects==0,"late marker/main cannot revive old request");
+                }
+            });
+        }
+        one("sampling_unused_delivered_proof_expires_without_new_read_or_second_callback",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();int reads=f.graphReads,callbacks=f.callbackCount;SystemClock.now=r.old.deadline;samplingTimers(s);
+                check(s.nativeSearchSamplingTracked==null&&r.proof.closed&&f.graphReads==reads&&f.callbackCount==callbacks,"unused proof expiry only closes bookkeeping");
+                rejected(()->r.proof.requireOriginal(s,s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        one("sampling_callback_exception_closes_tracker_without_automatic_repost",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.original();r.callbackHook=()->{throw new IllegalStateException("synthetic callback unavailable");};s.main.one();observationIo.one();s.main.one();
+                check(r.proof!=null&&r.proof.closed&&s.nativeSearchSamplingTracked==null,"throwing consumer cannot retain proof");
+                check(!observationIo.hasJobs()&&f.effects==0&&f.callbackCount==1,"callback exception does not repost read/callback");
+            }
+        });
+        for(int kind=0;kind<3;kind++){final int mode=kind;
+            one("sampling_"+new String[]{"diagnostic_write","marker_rejection","marker_uncertain"}[kind]+"_failure_never_mints",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                    if(mode==0){
+                        samplingExhaustion(f,false);r.start(true);android.system.Os.beforeWrite=()->{throw new IllegalStateException("synthetic diagnostic unavailable");};
+                        observationIo.one();s.main.one();
+                    }else{
+                        r.original();if(mode==1)observationIo.reject=true;else observationIo.uncertain=true;s.main.one();
+                        if(mode==2){check(observationIoBusy.get(),"uncertain queue return is not drain");observationIo.one();s.main.one();}
+                    }
+                    check(r.proof==null&&f.error!=null&&s.nativeSearchSamplingTracked==null&&f.effects==0,"failed durable/queue evidence cannot grant inspection");
+                    check(!observationIoBusy.get(),"only actual marker/producer exit clears capacity");
+                }
+            });
+        }
+        one("sampling_admission_resamples_clock_inside_real_event_lock",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();int reads=f.graphReads;final boolean[] hit={false};
+                SystemClock.beforeRead=()->{
+                    if(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService$NativeSearchSamplingExhaustionProof","admit")){
+                        check(Thread.holdsLock(s.nativeSearchEventLock),"actual admission clock sampled under handoff lock");
+                        SystemClock.beforeRead=null;hit[0]=true;SystemClock.now=r.old.deadline;
+                    }
+                };
+                r.submit();check(hit[0]&&!r.proof.consumed.get()&&f.error!=null&&f.graphReads==reads,"cached earlier clock cannot consume expired proof");
+                check(s.nativeSearchSamplingTracked==null&&r.proof.closed,"failed locked admission closes tracker");
+            }
+        });
+        one("sampling_admitted_before_old_deadline_uses_only_new_request_clock_afterwards",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();long oldDeadline=r.old.deadline,chain=f.base.search.chainDeadlineElapsed;SystemClock.now=oldDeadline-1;r.publish();
+                check(r.fresh.started==oldDeadline-1&&f.planning.publishedElapsed>oldDeadline,"one independently admitted read can finish after old request has expired");
+                check(r.old.deadline==oldDeadline&&r.fresh.deadline<=r.fresh.started+12000&&f.base.search.chainDeadlineElapsed==chain,"neither original request nor chain was extended");
+            }
+        });
+        one("sampling_proof_is_one_use_and_rejects_other_task_directory_gate_and_controller",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();NativeSearchSamplingExhaustionProof p=r.proof;
+                rejected(()->p.requireOriginal(new Object(),s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,new Object(),f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,"different",f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,s.lease,new File(f.directory.getPath()),f.base.search.taskDeadlineElapsed));
+                TaskAuthorization.Gate oldGate=s.taskAuthorization;s.taskAuthorization=f.base.authority.bind(s.lease);
+                rejected(()->p.requireOriginal(s,s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));s.taskAuthorization=oldGate;
+                r.publish();int reads=f.graphReads;r.submit();
+                check(f.error!=null&&f.graphReads==reads&&s.taskObservationAdmissions==2&&s.nativeSearchSamplingTracked==null,"consumed/closed proof cannot create third read");
+            }
+        });
+        one("sampling_new_profile_proof_must_be_fresh_despite_old_identity_match",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();f.profileLifetime=0;r.submit();samplingDrainDiagnostic(s);
+                check(f.planning==null&&f.error!=null&&f.effects==0&&s.nativeSearchSamplingTracked==null,"expired/new missing profile authority cannot be supplied by historical proof");
+            }
+        });
+        one("sampling_later_complete_owner_mismatch_is_latched_and_never_rebaselined",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                f.refreshGraphChildren=true;r.start(true);final NativeSearchSamplingAnchor[] earliest={null};
+                f.graphHook=()->{
+                    if(f.graphReads<=2){samplingNormal(f);if(f.graphReads==2)samplingBadGeometry(f);}
+                    else if(f.graphReads<=4){
+                        // A separately complete, owned window has a real different ID
+                        // in both the graph and every raw node. Its normal -> changed
+                        // geometry pair still fails the real Role comparison.
+                        if(f.graphReads==3)earliest[0]=r.old.samplingAnchor;
+                        f.actualWindow=97;samplingNormal(f);if(f.graphReads==4)samplingBadGeometry(f);
+                        for(Map<String,Object> node:f.values.nodes.values())node.put("window_id",97);
+                    }else{
+                        f.actualWindow=96;samplingNormal(f);SystemClock.now=r.old.started+9990;f.nodes.get("0/2/0").refresh=false;
+                    }
+                };
+                observationIo.one();s.main.one();
+                check(r.old.samplingExhaustion!=null&&r.old.samplingAnchor!=null&&r.old.samplingDisqualified!=null,"later observed owner mismatch permanently disqualifies: typed="+(r.old.samplingExhaustion!=null)+", anchor="+(r.old.samplingAnchor!=null)+", disqualified="+r.old.samplingDisqualified+", reads="+f.graphReads+", error="+f.error+", last="+r.old.lastSampleRejection);
+                check(r.old.samplingAnchor==earliest[0]&&r.old.samplingAnchor.baseline.boundary==7&&f.graphReads==5
+                        &&r.proof==null&&f.error!=null&&s.nativeSearchSamplingTracked==null,"earliest anchor never replaced to erase mismatch");
+            }
+        });
+        one("sampling_second_failed_full_pair_cannot_create_third_initial_read",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                r.ready();samplingExhaustion(f,true);r.submit();samplingDrainDiagnostic(s);
+                check(f.planning==null&&f.error!=null&&s.taskObservationAdmissions==2&&r.proof.consumed.get(),"second geometry rejection remains failed, not a fresh recovery");
+                check(s.nativeSearchSamplingTracked==null&&f.effects==0&&!observationIo.hasJobs(),"no third read, model or effect");
+                check(f.directory.listFiles((d,n)->n.endsWith("-failed-native-search-planning.json")).length==2,"both failed request diagnostics retained separately");
+            }
+        });
+        one("sampling_loading_and_sampling_recovery_share_the_same_initial_ordinal2",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture();SamplingRun r=new SamplingRun(s,f)){
+                loadingRetryReady(s,f);NativeSearchReadRetryProof loading=f.retryProof;
+                samplingExhaustion(f,true);
+                s.observeNativeSearchPlanning(s.lease,f.directory,f.base.search,f.cancel(),SystemClock.now+12000,r.callback(true),loading);
+                s.main.one();NativeSearchRequest second=s.activeNativeSearchObservation;observationIo.one();s.main.one();
+                check(second.retrySubmission==loading&&second.samplingExhaustion!=null&&r.proof==null&&f.error!=null,"loading successor cannot consume another sampling slot");
+                check(s.taskObservationAdmissions==2&&s.nativeSearchSamplingTracked==null&&f.effects==0,"same shared slot and no effects");
+            }
+        });
+        for(int variant=0;variant<3;variant++){final int mode=variant;
+            one("sampling_actual_LTC_"+new String[]{"late_callback_timeout","cancel_during_intent_write","intent_write_failure"}[variant]+"_closes_proof",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchLoadingControllerHost controller=new NativeSearchLoadingControllerHost(s);
+                try(Fixture f=s.new Fixture(controller)){
+                    controller.bind(f.base.search);samplingExhaustion(f,false);final boolean[] hit={false};
+                    if(mode==0)SystemClock.beforeRead=()->{
+                        NativeSearchRequest old=s.nativeSearchSamplingTracked;
+                        if(old!=null&&old.samplingIssued!=null&&successorStack("org.trillionnium.hepta.local.NativeSearchLoadingControllerHost","awaitNativeSearchPlanningOnce")){
+                            SystemClock.beforeRead=null;hit[0]=true;SystemClock.now=old.deadline;
+                        }
+                    };
+                    else android.system.Os.beforeChmod=path->{
+                        if(path.endsWith("/native-search-initial-sampling-retry-01.json")){
+                            // Actual LTC record uses FileOutputStream+FD.sync, then
+                            // Os.chmod. Its final IO endpoint is explicit host IO.
+                            hit[0]=true;if(mode==1)controller.cancelled.set(true);else throw new IllegalStateException("synthetic controller record chmod failure");
+                        }
+                    };
+                    Throwable failure=samplingController(controller,f);
+                    check(hit[0]&&failure!=null,"actual controller rejection path exercised");
+                    check(s.nativeSearchSamplingTracked==null&&f.graphReads==3&&s.taskObservationAdmissions==1&&f.effects==0,
+                            "actual timeout/cancel/record failure closes proof before new read: tracker="+(s.nativeSearchSamplingTracked!=null)
+                            +", reads="+f.graphReads+", admissions="+s.taskObservationAdmissions+", effects="+f.effects);
+                }
+            });
+        }
+    }

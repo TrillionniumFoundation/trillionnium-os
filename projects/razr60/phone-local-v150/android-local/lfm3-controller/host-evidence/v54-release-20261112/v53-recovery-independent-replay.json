@@ -1,0 +1,584 @@
+{
+  "actual_native_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+  "actual_native_worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+  "all_scoped_checks_passed": true,
+  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+  "checks": {
+    "actual_native_parent_and_typed_save_list_reopen": true,
+    "actual_numeric_owned_display_policy": true,
+    "background_only_scope_has_no_main_user_actions": true,
+    "last_two_system_samples_release": true,
+    "native_original_collection_and_le32_replayed": true,
+    "new_recovery_worker_and_normal_exit_zero": true,
+    "original_final_owned_display_png": true,
+    "original_tree_and_runtime_sources_unchanged": true,
+    "system_samples_recomputed_from_raw_commands": true
+  },
+  "current_device_state_observed": false,
+  "display_id": 20,
+  "final_png_sha256": "ba864db9de40022b91afd35938824a51f85814f5f9884305a572144b195a8982",
+  "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+  "main_checks": {},
+  "main_missing": [],
+  "main_user_coexistence_applicable": false,
+  "native_input_ids": {
+    "all_actual_input_ids_verified": true,
+    "retokenization_claimed": false,
+    "runs": [
+      {
+        "bytes": 16412,
+        "count": 4103,
+        "run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "sha256": "b704e726bfafce77792a89f6ebc19516d645e90f202106c8a26fe6dc859bd017"
+      }
+    ],
+    "sidecar_sha256": "beee731fb65ed8f1f95abcd6b28e3ad87f9e4e7c3c1b274601af4ae2fc0441f6"
+  },
+  "native_original_record_count": 4,
+  "normal_session_cleanup": [
+    {
+      "binding_valid": true,
+      "exit_code": 0,
+      "files": [
+        {
+          "bytes": 2105,
+          "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/app-session-receipt.json",
+          "sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28"
+        },
+        {
+          "bytes": 678,
+          "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/native-session-result.json",
+          "sha256": "244c20b8ac15466da82330efe628167a513547b15f76611f1576bcdea0583739"
+        },
+        {
+          "bytes": 0,
+          "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 45889,
+          "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stderr.log",
+          "sha256": "65e997343d0f96453ca2f2d77ce5b9af2e1f8d5e24b5c535999a0e08277bc1d4"
+        }
+      ],
+      "model_create_count": 1,
+      "model_reset_count": 1,
+      "process_exit_observed": true,
+      "requests_received": 1,
+      "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f"
+    }
+  ],
+  "original_collector_changed": false,
+  "original_operation_lock": {
+    "acquired": true,
+    "boundary": "participating host processes only; already submitted commands cannot be revoked",
+    "continuity_checks": 204,
+    "continuity_verified": true,
+    "cooperative_advisory_only": true,
+    "created": false,
+    "held_device": 66306,
+    "held_inode": 58890228,
+    "last_check": "execute_exit",
+    "nonblocking": true,
+    "owner_uid": 1000,
+    "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+    "reacquisition_attempted": false,
+    "released": true,
+    "schema": "hepta.cooperative-operation-lock.v1",
+    "truncated": false
+  },
+  "original_qualified": false,
+  "original_result_sha256": "274323579331a407ddc697b2101bda360240713427be24eb727649071eccfbce",
+  "original_tree_files": 687,
+  "phone_actions": 0,
+  "qualified": false,
+  "root_visual_review_required": true,
+  "sample_count": 18,
+  "schema": "hepta.v53-recovery-independent-replay.v1",
+  "scope": "This background-only recovery: native raw-byte/IDs/owned workflow and sampled system release replay. Main-user Settings coexistence was not exercised. Root visual review remains independent; no new device observation.",
+  "source_context": {
+    "build_receipt_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+    "business_verified": false,
+    "controller_source_sha256": "a41bb18ea9b3b217e0b27268bf20035d416ab460436edba1cc629c7ad29256e2",
+    "grants_tool_authority": false,
+    "installed_identity": {
+      "apks": [
+        {
+          "path": "/data/app/~~wERt4qHNJbnNZ27czp0djQ==/org.trillionnium.hepta.local-1e49NK2Aaa9G7LTCNNITYg==/base.apk",
+          "sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e"
+        }
+      ],
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481
+    },
+    "schema": "hepta.v53-fixed-prompt-source-binding.v1",
+    "source_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+    "source_inventory_sha256": "f880e49f504d05d32eb3ba76127b14f30ee5434ca745b9929815deabc4bbf92f",
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352"
+  },
+  "source_pins": {
+    "background_notes_plan.py": "28837006b601bb288fb6f9a1fb95a554be052a53c2ae1efc541db8e09473ff7e",
+    "controller_idle_evidence.py": "377e67268d359162b1924d1a355f1eb6b3dae894d6e14b139663964b9836371f",
+    "controller_workflow_evidence.py": "952bf3cea944c54e220d6dd8134625522ee10d3aa486b9514007f32f3e61cf80",
+    "fixed_intent_v6_acceptance.py": "42e7db7a50bc7c7d24b5c9380427050bf6127b0395c674326932645b30e5464b",
+    "live_inflight_window.py": "a8855f358ac61684fc435defe7450602ddd8b926d0dd48b72b31b0c370b53973",
+    "main_user_inflight.py": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d",
+    "moto_note_body_evidence_v51.py": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+    "prepare_background_notes_v53_r1.py": "3779eb4fc02dfd5aa5468e2ed4209631bab00fe9079950a5c875bfe96462f4f3",
+    "run_background_notes_v53_r1.py": "0d1aa533221550cbc3b1568fd58f815c138fdaab6863281e71767629d492cfa4"
+  },
+  "system_original_command_refs": [
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00020-displays.json",
+      "metadata_sha256": "b6c234ec2dc57a42d18b7c2dd05247ff0f25d9342fc7305ec8d3f6773d66916b",
+      "stdout_sha256": "85eb8c40960f70ec88bd46aada867ec34a979bb451f2195749d0f9201235a3d6"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00021-window-displays.json",
+      "metadata_sha256": "59175c435ca47b5d6c112c2dfd22c88e7e406f3696307d71c7972ba483e04b42",
+      "stdout_sha256": "65513ae5feb772a98c8724748c39ef44457f44ac270be8c7c5fc926f4ed1b92a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00022-input-dispatcher.json",
+      "metadata_sha256": "e345fd427d3b5e498e2c71276e50219bf9ba860cf3f54d23628674073cfffbb8",
+      "stdout_sha256": "5a16b3f19bac224c3cbde8ad334e1a6a1ba4edf926ada9cf394d6ffc2cb05f0f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00023-activity-displays.json",
+      "metadata_sha256": "563f49ae2bac4146efbff376b036de99e330336cf7d19b1624bc6c2f01cda187",
+      "stdout_sha256": "3264668a62e0c553a6c3c1e54ca8246e917c1843871f51618264dfaac2847b52"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00024-process-uid.json",
+      "metadata_sha256": "87be475c74b153e7c30cf76ab9dfdaac0b89e00458807532fba447e42f147a48",
+      "stdout_sha256": "2234c65afcafa335f34dc950794417875c532b667e38bac313ec824d20197aef"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00032-displays.json",
+      "metadata_sha256": "f28b89760a00e7ea7d53466b633848b91439653783a0e1c8e52a6139a46bec48",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00033-window-displays.json",
+      "metadata_sha256": "4a49c9603e64016ef85c44bd601e423acfb422f00e2355e5114deb0b06ca9149",
+      "stdout_sha256": "00a769262a9309815ecd1bee2ddfba3397caeed7dca78f4f559d751b107e8994"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00034-input-dispatcher.json",
+      "metadata_sha256": "7b0c897b1289349ba4e99f3fdeb5409fe2c5ef13885587470205e1c97080d5ae",
+      "stdout_sha256": "46ef1c45b979c0caef6c1011ea51d2920653af1bd6adbea3b05534803e0e58b6"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00035-activity-displays.json",
+      "metadata_sha256": "70828fdd765fc17f7e6def8be6e00a341c9a0cd5ab107b865e74e31d988fc457",
+      "stdout_sha256": "bdab2e30e15bbcf7b2a03b811520e1c4097eb1af46a444fe51cba55fcf967337"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00036-process-uid.json",
+      "metadata_sha256": "93cc6f0450e7aa1b92738bf56135b2ceb9ddf069cf10a33f9a7b9d6e88d073c3",
+      "stdout_sha256": "20174975138a538c77b1a96b71f133374f34bb55baa0af3c8758c1e76c7f3e7e"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00038-displays.json",
+      "metadata_sha256": "4ff67ca52ac538ec84dad4199e88b6f547045b79abe117758fa0f4a32080418a",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00039-window-displays.json",
+      "metadata_sha256": "5091b646b4d2ba873376b35003f862438d7c4a9126e445e2d14871eb69520552",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00040-input-dispatcher.json",
+      "metadata_sha256": "34903a04b037de8246e17d5fde50ba31473956978bfec8998f890c8d242746b7",
+      "stdout_sha256": "daacfea676cc1ef0f70d223b3c3436c68bc8194609a6bdd305139019a2a74feb"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00041-activity-displays.json",
+      "metadata_sha256": "f07878c60f9c60086d5bf6227222d927cc85e88838ebd7c2c8653bd65c833515",
+      "stdout_sha256": "cae6bff03491b14e5f289d2ceaae9dfd2cd014f07d93375be85da33161a2efe6"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00042-process-uid.json",
+      "metadata_sha256": "904c43a156fb54b89a0d3813f40f0f26b86b8bdcec35c5b844b46fc3032caccb",
+      "stdout_sha256": "1a514808db3a1c895f2de340e2a18595ff56a1114e4fa84d8b1aba2651d78604"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00044-displays.json",
+      "metadata_sha256": "5384a14abd5b261af92a9411e4d8c3f66405c4e6249f4f6d50048c0b5ac790b2",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00045-window-displays.json",
+      "metadata_sha256": "f01434d1804088612e79916a48aed0a30da317ea936866ff882e298701648c6c",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00046-input-dispatcher.json",
+      "metadata_sha256": "30575b1bb646b29f463afa50aabceaf2100832daf47deabcc843cbda7fe33e2d",
+      "stdout_sha256": "b92b0537ef80591919714ce3ae8926d4bc7c8e51258e86c4b73d65fa6bfa678c"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00047-activity-displays.json",
+      "metadata_sha256": "8144abfcf61ae6e75e24a37c5c73174726eb4d8c4159676190d078a51b4168c8",
+      "stdout_sha256": "b6444c96a5d8e35dab85e1da71041d2270143fdd5159325125f35735741265e9"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00048-process-uid.json",
+      "metadata_sha256": "404635619b97b423165802dd94e529c9bb131ddd00353132fefd3e7e063354b0",
+      "stdout_sha256": "58142c171f3b72793b07e231bc24af9691638d3d3aadf3aeb719a14985e46077"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00050-displays.json",
+      "metadata_sha256": "0a46c8902ef2e613b6d4947f406a6587c628c7f9fc65be55328dde9c4357a626",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00051-window-displays.json",
+      "metadata_sha256": "00a58501113521c90eb7803b10ba28105db4ad7cfa182eee4c2fdc6d32ce2a7a",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00052-input-dispatcher.json",
+      "metadata_sha256": "19e0a04c0207cfba4b7368a51985b76131ce7806fece80a8a0168f15435f5bf2",
+      "stdout_sha256": "b7d018f914d2d62ad5c888b1fc2875ab56f8386381cc54fc8e145ecdb89ca04c"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00053-activity-displays.json",
+      "metadata_sha256": "c6c311ea27f3c18b4742719a1396c0f6cca0167833e98401f8d27b5c317ba19a",
+      "stdout_sha256": "289ef87f7a212391dc55ddbd1c4b5097e14ddde7858ce9574eaf40df7efd8388"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00054-process-uid.json",
+      "metadata_sha256": "98740789a0ff06ba9fa8dc6deb3318dd221e397311b89da4c11b454363b25cfa",
+      "stdout_sha256": "b28dc3f974a77a752c861c3b8147f66ccbb280a6cca55e717ee703365862589d"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00056-displays.json",
+      "metadata_sha256": "64f65b79576bfd380dbdb8fa671720b6aa26343cd4b7043af6d5c07df8fc8796",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00057-window-displays.json",
+      "metadata_sha256": "04c3d43ebf9e8fd56a8e09c624af46ad4219646e82182ba5f797ff6679d29eee",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00058-input-dispatcher.json",
+      "metadata_sha256": "6d23e6e7093a9464d0f1794a7e2d592af39c0628326c592b06e1784caeb5e73b",
+      "stdout_sha256": "6d40fb586a9c99e8ee38071546b259d0192db266e96953d0a33cc92daa016d95"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00059-activity-displays.json",
+      "metadata_sha256": "ed2c6658c5fe27e822ba78bd74a98c9994ddf3d076c942c56adf3b49b5c0ff5a",
+      "stdout_sha256": "0b8b02c796023fc600586f3f7fd8c1f0b8d269ad7b0a7c3deed762f5aea7a021"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00060-process-uid.json",
+      "metadata_sha256": "e2a0c1c32857a9fc849aac936daf59313e7a47b7b2673475c53409001a2d044b",
+      "stdout_sha256": "6ba423f39c0e39d32757d74b6d75c2b5966325c5703dece7332cbf370abbabc9"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00062-displays.json",
+      "metadata_sha256": "6e81a55e358945d279ae06d3ac920ac1ffaf7d8d7616fd290f35eaff7b93fc8d",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00063-window-displays.json",
+      "metadata_sha256": "b1230f3c66cde73d1423cd958b1101fc340175b63b6cd943b62315a7da768ff9",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00064-input-dispatcher.json",
+      "metadata_sha256": "364d806b2cd85301100418a6bf8e3334a3d466ad8fe7c7bf4b9a76efc717ea44",
+      "stdout_sha256": "e3f472f0e95df953f17a6e9834a87e6b29fb40461883a327d33831eaec5f9d49"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00065-activity-displays.json",
+      "metadata_sha256": "043d7c16b02d0b548af79c67cd5a51ec9812e41e4aed1913756d33c1a04f7836",
+      "stdout_sha256": "6da0ce9a7695c612603b1a3b1c3ef6e24ec202b5b6d0088ba39a302bcabac3d5"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00066-process-uid.json",
+      "metadata_sha256": "0c807b082ce6ed96ec475aff0bfa641d61c5d69d7c872d4a0de1b77fc8c16e93",
+      "stdout_sha256": "f56b9217fd5c1a4a13c3734fd476ada9bcbd5c3d43dd0562de535e5167507263"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00068-displays.json",
+      "metadata_sha256": "23418181e504fb7592d80694fbe33d402555806c01f11679a79fda484e3923b5",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00069-window-displays.json",
+      "metadata_sha256": "5bfd11f1c5237340954addd1c508504b109e9e272524999db08f05dc08e5e860",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00070-input-dispatcher.json",
+      "metadata_sha256": "e04080846f28279dd35716761fc994b5dc20589900a3397a5be44614e5e6c014",
+      "stdout_sha256": "b4ca534d8023853bcf06dbd1e0505e04dc1576aeaa70934e149c09203ec29ec8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00071-activity-displays.json",
+      "metadata_sha256": "5122dfe2b28e9113aa4e5bc50f46bb3364377e16ec311905bee2f8500ec9125f",
+      "stdout_sha256": "f8cd7b589a2f9d096874b726f5dcc3a41798e2b61cba096353bec2f60c3d5576"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00072-process-uid.json",
+      "metadata_sha256": "4b1bac6d0874e81225cfe544ed96b234770b98c91780db1c56d2d828b79a9e36",
+      "stdout_sha256": "f073fb271d61c6f1185ec422dcae2af1cb59b2d3fc10228f51d92fbd8c0b0632"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00074-displays.json",
+      "metadata_sha256": "91244d382ca825329c90cf09fb1b6f10ea797203955aa1515ba8dc033a45a902",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00075-window-displays.json",
+      "metadata_sha256": "9ac54dc22257301c334165878055335f5867709089a333413fe39630dcd7fb3e",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00076-input-dispatcher.json",
+      "metadata_sha256": "a329bd8d0fb3cbc02e3fe6fbdc76a63e71d93133922caf8b313653b04c1b96b5",
+      "stdout_sha256": "a568274f3abac8dbb40b4b73e8e7e2c7a05d26c58f1bbacfff08bb8c42dd6952"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00077-activity-displays.json",
+      "metadata_sha256": "1a22948392b0265cad51fd46eb10f43282c50cca89cae1bcb32a35bb2fd5a2d7",
+      "stdout_sha256": "f1e73cef93f05898f6388a200ac4503806702b226f0ef9527c49fba006549e47"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00078-process-uid.json",
+      "metadata_sha256": "eda582da6a95f08a97c054d8278c2689972f9f70f638f9d4ce292c82d00e9bd6",
+      "stdout_sha256": "be06f68a1ae701b0e67a6c5bb686f42720e324fdad59475f227ab8f0d1ebf319"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00080-displays.json",
+      "metadata_sha256": "d9fe5656b38b32c501387ae7408f5f803ca40e56c1b934649258e7b1a16e20f7",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00081-window-displays.json",
+      "metadata_sha256": "fadc9b35bb8c38b7a06bf619f51024c8480bb4913b69b493a173e1bfc0b51d4c",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00082-input-dispatcher.json",
+      "metadata_sha256": "68abcaa75c818334bca814dfb8534d5811a6658d17e32bb60a39122ffeb7fc57",
+      "stdout_sha256": "a66868ceed9930a25ef254b3550b9b7e7132e9ffa0cc4c03606a31e7f5323678"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00083-activity-displays.json",
+      "metadata_sha256": "a62049b2d530c78944ebdd66335bf24d4d26c5cb521b231a5030fd91a7ce99f7",
+      "stdout_sha256": "0e7bbc68e3a5e153900c2b750e3f7bb273c018a32010830b34dfa2ca292d2e19"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00084-process-uid.json",
+      "metadata_sha256": "3f137367421c10f218157546ab462d7e94c64757604db9925d93e8f08ceca7bb",
+      "stdout_sha256": "dca3b352999f139c38eaed90f27da80e4cb2314c70a07ca6ef771e84aedec181"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00086-displays.json",
+      "metadata_sha256": "2e7b5d130ba3f79914ab2781cf7a00dc64177064de84ba5d7e480dceb4aa44d7",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00087-window-displays.json",
+      "metadata_sha256": "4360c0213b7a636f138e3d55ddf031cbbddd21da69435deba33234be352e647e",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00088-input-dispatcher.json",
+      "metadata_sha256": "4b9b0f78a841efd082b4cdc1efa79a99cc5164944409b6d4f5be23b0b8292fbb",
+      "stdout_sha256": "26262bdc3ca64f0c4315384eb243f393d174a32089b320b2baf497556c6dbbf3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00089-activity-displays.json",
+      "metadata_sha256": "d7db825e41016db34ebff89a6336dbd558c3fe5e062ef92c7d414b7ca67a84a3",
+      "stdout_sha256": "44d726c1be3435801ed2a0ea93672818984b7a2bcfd4f1df0c0832abe2285df8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00090-process-uid.json",
+      "metadata_sha256": "69eef206a1d4770f7e8fe2b7c347aff6bb4ac029a2ddb3a83b5fc4e646417db4",
+      "stdout_sha256": "839bc308e3f262135004a18e7872f8be6935d8023028f6ee2cd744c6d267f315"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00092-displays.json",
+      "metadata_sha256": "9c603d6a00e1b7963178eec9c519a41cb7bd57de5fdaca119822bf19e57b9d03",
+      "stdout_sha256": "04ab4e83c6a118673c211b3864bcf21d8c867dbde5fc6f4aac12d099a595be38"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00093-window-displays.json",
+      "metadata_sha256": "44001a052dc9a3b9d0c862b7b799089b45d30025a306f0d88f3f32a00b50b467",
+      "stdout_sha256": "d34964b041286f31c378199af0ee021ff87f5e939fbdf5e1cb1c2d0e75dce61b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00094-input-dispatcher.json",
+      "metadata_sha256": "9315a5547a426a6533a67845e30be4896407d4ff93d42ff3ef58812997aa4772",
+      "stdout_sha256": "52e320bf9e0560e9c0901b501cffc324a5fcb3601f5b71adb488fe664182df42"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00095-activity-displays.json",
+      "metadata_sha256": "65fbf1198dad6c9505430290454e49a6ab511478da93de4caf16ba114d89c1d4",
+      "stdout_sha256": "6a5dc56c7d9efb0a0c0b391d2dd2f0426351223210b01ce5c020a66d52949042"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00096-process-uid.json",
+      "metadata_sha256": "2ba2b27e95bd4a3522c92f48bd48e5eae18240d4540ad66245196850e6d9572c",
+      "stdout_sha256": "be62fb8499c135e9e376686d010a1f9c85532c8c3fb280fe4d5a7216d515c82b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00098-displays.json",
+      "metadata_sha256": "a2d2c56e36143df383e36c304eddd5695754486aa601a48ad26a76e119c0917b",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00099-window-displays.json",
+      "metadata_sha256": "ae2606475a9159143a55041aa0ddd8ef1c9bf3616551f8a6437f05eabdd6bb3f",
+      "stdout_sha256": "b34eb585070cbce3017f344432d494774fa4dcc75463c8939266a9a03b712cfe"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00100-input-dispatcher.json",
+      "metadata_sha256": "58f612d49afefeafccd5be562b8a7872f60f81abf866782e738956a48dbf8e02",
+      "stdout_sha256": "9a3cf7f7c4a1804422c31a27bea20c828a97978d538cd542c67c6384a3fad829"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00101-activity-displays.json",
+      "metadata_sha256": "93697f3647c8d60ae00a89135ebc13c89925acbd342de378bf878e23f7758ef9",
+      "stdout_sha256": "517e039000493782fbfd90530177012ad67edb3f4ed29f643c3810f07f65c73f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00102-process-uid.json",
+      "metadata_sha256": "7498a75757b2dc7c674c646175fe9d3ffab11caa019aada489e6c080b9f4a778",
+      "stdout_sha256": "fbb2e1bf07489d10a4a378519395e17257b1dfcd7b5e5cf6cf68f3dc08d17800"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00104-displays.json",
+      "metadata_sha256": "507952fa6e16d62fa7bf113c7cdd37b6a26f731799b3beb4d4cae98928b9fe2e",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00105-window-displays.json",
+      "metadata_sha256": "61d99c72552a5cfdb2be6e287d6e33b78d499ec9094a5887763424d075322035",
+      "stdout_sha256": "6a6a16935583ab77d2a2a69025ae80ac4cb663a0b0067b3b2dc29cf3ecd57e7c"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00106-input-dispatcher.json",
+      "metadata_sha256": "d55b7bc1aa115dbfb6f6d2d111096a6e601e4a1c683a4f1cc5fc2e80b12d109b",
+      "stdout_sha256": "140ae8838f8546d001c98799f95e68fad7463acee73f486f2773b22c732e4467"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00107-activity-displays.json",
+      "metadata_sha256": "a7dbff847db6760e53b806b8b4ab966e5f70846cff383f9cb5a4d2e0f6e29b76",
+      "stdout_sha256": "866a62c8f1855a8e5f1b752319195db4434eec89e5f404b2d6090022cc70d0e9"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00108-process-uid.json",
+      "metadata_sha256": "63c69f168769426dfe12b7d2d8db1c7b3c5fcd6abdb172b9d56f52884458a167",
+      "stdout_sha256": "fd976918161e345d0c69b7a564b6c1b77bd707408a616153cd5b42b42d70418b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00110-displays.json",
+      "metadata_sha256": "4b384ee89bd8acb9447c0a36bd856fac88e6466d3da5f5a65b4b96a1a8a8bacb",
+      "stdout_sha256": "35ef9e9f1e13c331fbe35201267deb307f5c36c5b31f9efc7447bb5abc03682a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00111-window-displays.json",
+      "metadata_sha256": "d0e7d1ffe46ac765222f472d44b9b31cc418afd880997c0ff016f43f8473f01e",
+      "stdout_sha256": "d482ef3223b53973caea5fb4b01bd51657378b63f20488a3a58ee4374b2dce08"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00112-input-dispatcher.json",
+      "metadata_sha256": "b64b1b0bf8ac4bbcd77eee14cde206dfe90711a366e7538b9819ac017eef8c44",
+      "stdout_sha256": "0e6848912c0612832a5e083dd5f5d2cf03419489fea74d5dac6e375d1d68ab1f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00113-activity-displays.json",
+      "metadata_sha256": "82c094017f6c0f393daaed3534317e73b616f7ad39c12c3bac1d38adf3fde04f",
+      "stdout_sha256": "26b8a74e2e7e592ede3e2b5e7cb75cddb38ba50fa8d39e0b35497ca6fdb748ea"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00114-process-uid.json",
+      "metadata_sha256": "b9b7cbfbe81e4295f2855041cb14e4b14127ef9ea6004b823d1de31cca1467ef",
+      "stdout_sha256": "9332f312184deab4d12119f33519504d8713a7154c3067a5357e8f3a96a1caa7"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00116-displays.json",
+      "metadata_sha256": "4e96233591626559af2351853a6a0e122c65169f33fa585fcb56395ccba90aba",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00117-window-displays.json",
+      "metadata_sha256": "4704bef22fe2721b186bc843325f25d886762bea7c26c48e2976a94c2612d18c",
+      "stdout_sha256": "f121e478a9d43a70b25fed46df52b6e20e9efc7b97d1716b8ece15cb9ef0c385"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00118-input-dispatcher.json",
+      "metadata_sha256": "df25a99c3be4aa0cccdb1342660950c3ebf606dacb6b6aa82ec0c46ae4098ddd",
+      "stdout_sha256": "fa733b02b38b0320a9ba1a00b473791124b9e76631d417a05488e64ff70d6b75"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00119-activity-displays.json",
+      "metadata_sha256": "6f9caa7b689ea2ca6e30456e1aa6ac7a670f0d7d2c93b187e4a60b3d20a11574",
+      "stdout_sha256": "162bafc26c89244bbc13f8955ef37d8c2b7207226998ef78589247bf8ab4dfca"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00120-process-uid.json",
+      "metadata_sha256": "c5835db8f318eaab1542ec39eba933387b084b4633d2be2f9d73e950e96b78b5",
+      "stdout_sha256": "24b65eac79e0f3e8ba93474644131bc27efd052338c4ac505e93791e2190d68c"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00122-displays.json",
+      "metadata_sha256": "912f44566dd0e99c0d10514afbd28d48c070494e6f56a3624aec0cb3883e3855",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00123-window-displays.json",
+      "metadata_sha256": "98c4ce6fb26b9f5c46a691b54786591d6d9153cadbb9dac2214594c35dc7b363",
+      "stdout_sha256": "f121e478a9d43a70b25fed46df52b6e20e9efc7b97d1716b8ece15cb9ef0c385"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00124-input-dispatcher.json",
+      "metadata_sha256": "71b7dc85d58c9145f02dd0009f8d10731d7ba2c6c212bd8e49b1189a48e1b046",
+      "stdout_sha256": "b95c494a2f517333291f8804d93f23e8d685bbdba3c76186872c1479226a3614"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00125-activity-displays.json",
+      "metadata_sha256": "9cc6da14c1e4732524ea02899db017c9ef404b9e257840e5e323c5d8f0568163",
+      "stdout_sha256": "01b3b5cf8e5fd9da851e75c09a1e92fe16126e566f94a38118d6f53d70407012"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00126-process-uid.json",
+      "metadata_sha256": "db64099c15aafcd1500b4f14648711866fd91cccf7eaf886ac992d68c2129863",
+      "stdout_sha256": "53eb17e7e25cf2704286ef1b724ac133d0bc3a7e4f6568c138f0602a8449d0a3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00127-displays.json",
+      "metadata_sha256": "82d75a3b1d2e2fbdc21ebaa36d8752d9364235b1e22f7ea24803f6d0e4553bc1",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00128-window-displays.json",
+      "metadata_sha256": "66b281e39cb6b9ce221c6089a2a3f10ad614ec966ba56c258640c74b9b2a54e6",
+      "stdout_sha256": "f121e478a9d43a70b25fed46df52b6e20e9efc7b97d1716b8ece15cb9ef0c385"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00129-input-dispatcher.json",
+      "metadata_sha256": "49e1c6c2b9998f956e31e1b46f13ab48b69ad6dc47118f94a0a4d83cd69476a9",
+      "stdout_sha256": "85dfa1d3aa7198d14a75b23b800c7ee8029ba27fb59e2992d1a2561194a4306f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00130-activity-displays.json",
+      "metadata_sha256": "3fae502f7cb71e70dbe4d1430da756bcc641165b1ebc2bbda83986baacb20eb3",
+      "stdout_sha256": "672d4974d43ac90eb76f234792c2619bdda1193f35dc9327461dbbeefb2ed610"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/commands/00131-process-uid.json",
+      "metadata_sha256": "a425060160c3b2604d9f508a45813559188512e90ffc34a7f0c687da937cf13e",
+      "stdout_sha256": "99005168ed2531ad6b59dfe4b36d60b8d505175313e4d55b124cc334fe2f990d"
+    }
+  ],
+  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618"
+}

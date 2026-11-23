@@ -1,0 +1,263 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import org.json.JSONObject;
+
+/** Existing observed-row carriers only. No AccessibilityNodeInfo or live read exists here. */
+final class DiagnosticGraphHost {
+    static final class Rect {int left,top,right,bottom;Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}}
+    static final class Fingerprint {String value="observed";String fingerprintInput(){return value;}}
+    static final class PhoneObservation {
+        static final class CollectionStats {
+            int visited,retained,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean incomplete;
+            boolean truncated(){return incomplete;}
+        }
+        static final class Node {
+            String id,packageName=DiagnosticChecks.APP,nativeTreePath,observedAppTreeSignature=DiagnosticChecks.OWNER,inputTextSha256;
+            String privateText="SENSITIVE_NODE_CONTENT_MUST_NOT_BE_RECORDED";
+            boolean clickable,editable,scrollable,enabled=true,focused,password;
+            Boolean selected=false,checkable=false,checked=false;
+            final Fingerprint scrollActions=new Fingerprint(),imeEnter=new Fingerprint();Rect bounds=new Rect(0,0,100,100);
+            Node(String id,String path){this.id=id;nativeTreePath=path;}
+        }
+    }
+    enum ImeVisibility {HIDDEN,UNKNOWN}
+    static final class State {String appTreeSha256=DiagnosticChecks.OWNER;ImeVisibility imeVisibility=ImeVisibility.HIDDEN;}
+    static final class Window {String value="already observed window";String bindFreshness(String raw){return value+raw;}}
+    static final class Graph {
+        String packageName=DiagnosticChecks.APP,backgroundGeneration=DiagnosticChecks.GENERATION,backgroundOwnerSha=DiagnosticChecks.OWNER,digest=DiagnosticChecks.OWNER;
+        int displayId=9,windowId=71;boolean truncated;State state=new State();Window windowMetadata=new Window();
+        List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();ObservationDiagnostics.GraphStamp diagnosticStamp;
+        boolean nativeObservationComplete;PhoneObservation.CollectionStats collectionStats;
+        int rotation,nativeActionWidth=1080,nativeActionHeight=2400,nativeActionText,nativeActionBytes;
+        Rect bounds=new Rect(0,0,1080,2400);
+        String nativeActionTaskId=DiagnosticChecks.TASK,nativeActionAuthorizationSha=DiagnosticChecks.OWNER,
+            nativeActionSelectionSha=DiagnosticChecks.OWNER,nativeActionTargetSha=DiagnosticChecks.OWNER,nativeActionGoalSha=DiagnosticChecks.OWNER;
+        List<NativeActionSnapshotCheck.Node> nativeActionNodes;Map<String,Object> nativeActionWindows;
+        ProfileIdentity profileWindow;long readStartedElapsedMs=1000,readCompletedElapsedMs=1100;
+    }
+    /** Explicit already-read profile value carrier, not a private WindowOwnership proof. */
+    static final class ProfileIdentity {final Map<String,Object> fields;ProfileIdentity(Map<String,Object> fields){this.fields=fields;}}
+    static final class NativeAppEvidence {
+        static Map<String,Object> profileActionIdentity(ProfileIdentity value){return value.fields;}
+    }
+    /** Never constructed: legacy diagnostic cases have no native action authority. */
+    static final class NativeGuardBoundary {
+        private NativeGuardBoundary(){throw new AssertionError("no native guard in diagnostic legacy cases");}
+        Map<String,Object> evidence(){throw new AssertionError("no native guard evidence in diagnostic legacy cases");}
+    }
+    /** Legacy diagnostic cases cannot construct or serialize a profile proof. */
+    static final class ProfileProofBoundary {
+        private ProfileProofBoundary(){throw new AssertionError("no profile proof in diagnostic legacy cases");}
+        Map<String,Object> evidence(){throw new AssertionError("no profile evidence in diagnostic legacy cases");}
+    }
+    static final class ActionWork {Object background=new Object();String diagnosticFreshness,nativeActionProof,nativeActionRejection;NativeGuardBoundary nativeGuard;ProfileProofBoundary profileDispatchProof;final ActionExecutionState state;
+        Map<String,Object> queryCensusRetry;
+        ActionWork(){state=new ActionExecutionState(DiagnosticChecks.REQUEST,DiagnosticChecks.TASK,"33333333333333333333333333333333","44444444444444444444444444444444",DiagnosticChecks.OWNER,71,9,DiagnosticChecks.GENERATION,1000,9000,()->1000);}}
+    static String sha(byte[] bytes){try{byte[] value=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder out=new StringBuilder();for(byte b:value)out.append(String.format(Locale.ROOT,"%02x",b&255));return out.toString();}catch(java.security.NoSuchAlgorithmException e){throw new AssertionError(e);}}
+{{native_stamp}}
+{{native_census}}
+{{stale_record}}
+{{action_evidence}}
+    static Graph graph(int count){Graph g=new Graph();for(int i=0;i<count;i++)g.rows.add(new PhoneObservation.Node("n"+i,"0/"+i));return g;}
+    static Map<String,Object> node(String path,int children){
+        Map<String,Object> n=new LinkedHashMap<String,Object>();n.put("path",path);n.put("parent_class","0".equals(path)?"":"android.widget.FrameLayout");
+        n.put("package",DiagnosticChecks.APP);n.put("window_id",71);n.put("class","0".equals(path)?"android.widget.FrameLayout":"android.widget.TextView");
+        n.put("view_id",DiagnosticChecks.APP+":id/node"+path.replace('/','_'));n.put("text","PRIVATE_BODY_NOT_FOR_DIAGNOSTIC");
+        n.put("description","PRIVATE_DESCRIPTION_NOT_FOR_DIAGNOSTIC");n.put("label","PRIVATE_LABEL_NOT_FOR_DIAGNOSTIC");
+        n.put("ref_signature_sha256",DiagnosticChecks.OWNER);n.put("input_sha256",null);n.put("bounds",Arrays.asList(0,0,1080,2400));
+        for(String flag:Arrays.asList("visible","enabled","clickable","editable","scrollable","focused","password","selected","checkable","checked","action_click"))
+            n.put(flag,Boolean.valueOf("visible".equals(flag)||"enabled".equals(flag)));
+        n.put("children",children);n.put("scroll_actions","observed_none");n.put("ime_enter","observed_absent");return n;
+    }
+    static Graph fullGraph(int count){
+        Graph g=graph(1);g.nativeObservationComplete=true;g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=count;
+        g.nativeActionWindows=Collections.<String,Object>singletonMap("already_captured",true);g.nativeActionNodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(int i=0;i<count;i++){
+            Map<String,Object> n=node(i==0?"0":"0/"+(i-1),i==0?count-1:0);
+            // Keep the full 1,536-node boundary within the original content cap.
+            if(count>100){n.put("text","");n.put("description","");n.put("label",null);}
+            g.nativeActionNodes.add(new NativeActionSnapshotCheck.Node(n));
+        }
+        return g;
+    }
+    static void change(Graph g,int index,String key,Object value){
+        Map<String,Object> n=new LinkedHashMap<String,Object>(g.nativeActionNodes.get(index).v);n.put(key,value);
+        g.nativeActionNodes.set(index,new NativeActionSnapshotCheck.Node(n));
+    }
+    static ObservationDiagnostics.CensusStamp fullStamp(Graph g){return nativeDiagnosticCensus(g);}
+    static ObservationDiagnostics tracker(){return new ObservationDiagnostics(DiagnosticChecks.TASK,DiagnosticChecks.REQUEST,DiagnosticChecks.OWNER,
+            DiagnosticChecks.APP,DiagnosticChecks.GENERATION,9,1,1000,13000);}
+    static JSONObject delta(ObservationDiagnostics d)throws Exception{
+        return new JSONObject(ObserverPipelineHost.actualSnapshot(d).call()).getJSONObject("last_native_full_graph_change");
+    }
+    static Map<String,Object> profile(int leaf,String token){
+        Map<String,Object> p=new LinkedHashMap<String,Object>();p.put("profile_target_sha256",DiagnosticChecks.OWNER);p.put("profile_user_id",10);
+        p.put("profile_user_serial",19L);p.put("profile_full_uid",1010485);p.put("profile_task_id",leaf);p.put("profile_parent_task_id",400);
+        p.put("profile_task_token_id",token);return p;
+    }
+    static void fullCensusTests()throws Exception{
+        DiagnosticChecks.run("full_census_adapter_uses_all_actual_values_not_retained_rows",()->{
+            Graph g=fullGraph(20);ObservationDiagnostics.CensusStamp stamp=fullStamp(g);
+            DiagnosticChecks.check(stamp!=null&&stamp.nodes.size()==20&&g.rows.size()==1,"complete copied BFS, not retained subset");
+            DiagnosticChecks.check(stamp.identity.get("task_id").equals(DiagnosticChecks.TASK)&&stamp.nodes.get("0/18").equals(g.nativeActionNodes.get(19).v),"actual graph identities and immutable node values");
+            g.nativeActionNodes.clear();DiagnosticChecks.check(stamp.nodes.size()==20,"already copied diagnostic independent of graph list");
+        });
+        DiagnosticChecks.run("full_census_adapter_never_upgrades_partial_unknown_or_missing_evidence",()->{
+            for(int variant=0;variant<16;variant++){Graph g=fullGraph(3);
+                switch(variant){case 0:g.nativeObservationComplete=false;break;case 1:g.truncated=true;break;case 2:g.collectionStats=null;break;
+                    case 3:g.collectionStats.incomplete=true;break;case 4:g.collectionStats.visited++;break;case 5:g.collectionStats.pending=1;break;
+                    case 6:g.collectionStats.nodeBudgetOmissions=1;break;case 7:g.collectionStats.textBudgetOmissions=1;break;case 8:g.collectionStats.childSlotsOmitted=1;break;
+                    case 9:g.nativeActionWindows=null;break;case 10:g.state.imeVisibility=ImeVisibility.UNKNOWN;break;case 11:g.nativeActionNodes=null;break;
+                    case 12:g.nativeActionWidth=0;break;case 13:g.nativeActionText=32769;break;case 14:g.nativeActionBytes=1048577;break;default:g.nativeActionTaskId=null;}
+                DiagnosticChecks.check(fullStamp(g)==null,"unavailable variant "+variant);
+            }
+            DiagnosticChecks.check(fullStamp(null)==null,"absent graph");
+        });
+        DiagnosticChecks.run("full_census_adapter_enforces_complete_paths_and_existing_limits",()->{
+            Graph g=fullGraph(3);g.nativeActionNodes.remove(2);g.collectionStats.visited=2;DiagnosticChecks.check(fullStamp(g)==null,"missing child cannot be full");
+            g=fullGraph(3);g.nativeActionNodes.set(2,g.nativeActionNodes.get(1));DiagnosticChecks.check(fullStamp(g)==null,"duplicate path");
+            g=fullGraph(3);change(g,2,"parent_class","foreign.Parent");DiagnosticChecks.check(fullStamp(g)==null,"actual parent relationship");
+            g=fullGraph(3);change(g,1,"package","foreign.app");DiagnosticChecks.check(fullStamp(g)==null,"foreign node");
+            DiagnosticChecks.check(fullStamp(fullGraph(1536))!=null&&fullStamp(fullGraph(1537))==null,"existing full node cap unchanged");
+        });
+        DiagnosticChecks.run("full_census_difference_keeps_structure_fields_and_redacts_all_content",()->{
+            Graph a=fullGraph(3),b=fullGraph(3);change(b,1,"text","SECOND_PRIVATE_BODY");change(b,1,"description","SECOND_PRIVATE_DESCRIPTION");
+            change(b,1,"label","SECOND_PRIVATE_LABEL");change(b,1,"bounds",Arrays.asList(1,2,1000,2390));change(b,1,"focused",true);
+            change(b,1,"view_id",DiagnosticChecks.APP+":id/changed");ObservationDiagnostics d=tracker();d.fullGraphChange("screenshot_graph",fullStamp(a),fullStamp(b),1200);
+            JSONObject j=delta(d),row=j.getJSONArray("node_differences").getJSONObject(0),before=row.getJSONObject("before"),after=row.getJSONObject("after");
+            DiagnosticChecks.check(j.getBoolean("full_census_compared")&&j.getInt("changed_path_count")==1&&row.getString("native_path").equals("0/0")&&row.getString("parent_path").equals("0"),"actual changed path");
+            DiagnosticChecks.check(after.getString("view_id").endsWith(":id/changed")&&after.getString("class").equals("android.widget.TextView")
+                    &&after.getString("parent_class").equals("android.widget.FrameLayout")&&after.getJSONObject("flags").getBoolean("focused")&&after.getJSONArray("bounds").getInt(0)==1,"interpretable original structure");
+            DiagnosticChecks.check(row.getJSONArray("changed_fields").toString().contains("description")&&row.getJSONArray("changed_fields").toString().contains("view_id"),"named field differences");
+            DiagnosticChecks.check(before.getJSONObject("text").getInt("utf16_length")=="PRIVATE_BODY_NOT_FOR_DIAGNOSTIC".length()
+                    &&after.getJSONObject("text").getString("sha256").equals(sha("SECOND_PRIVATE_BODY".getBytes(StandardCharsets.UTF_8)))
+                    &&!j.toString().contains("PRIVATE")&&!j.getBoolean("node_text_recorded")&&!j.getBoolean("grants_publication")&&!j.getBoolean("grants_action_authority"),"content hashes only and no authority");
+        });
+        DiagnosticChecks.run("full_census_changed_total_exceeds_eight_without_claiming_omitted_detail",()->{
+            Graph a=fullGraph(21),b=fullGraph(21);for(int i=1;i<=20;i++)change(b,i,"focused",true);
+            ObservationDiagnostics d=tracker();d.fullGraphChange("saved_graph",fullStamp(a),fullStamp(b),1200);
+            Map<String,Object> value=d.snapshot(1200);@SuppressWarnings("unchecked") Map<String,Object> row=(Map<String,Object>)value.get("last_native_full_graph_change");
+            DiagnosticChecks.check(((Number)row.get("changed_path_count")).intValue()==20&&((List<?>)row.get("node_differences")).size()==8&&Boolean.TRUE.equals(row.get("node_differences_truncated")),"all changed paths counted, only eight stored");
+            JSONObject trimmed=delta(d);DiagnosticChecks.check(trimmed.getInt("changed_path_count")==20&&trimmed.getInt("retained_detail_count")<=8,"terminal trimming keeps total");
+        });
+        DiagnosticChecks.run("full_census_added_removed_nodes_count_complete_tree_changes",()->{
+            for(boolean add:new boolean[]{true,false}){ObservationDiagnostics d=tracker();Graph a=fullGraph(add?3:4),b=fullGraph(add?4:3);
+                d.fullGraphChange("screenshot_graph",fullStamp(a),fullStamp(b),1200);JSONObject j=delta(d);
+                DiagnosticChecks.check(j.getBoolean("full_census_compared")&&j.getInt("changed_path_count")==2,"root child count plus added/removed path");}
+        });
+        DiagnosticChecks.run("full_census_missing_evidence_and_cross_identity_remain_explicit",()->{
+            ObservationDiagnostics d=tracker();d.fullGraphChange("screenshot_graph",null,fullStamp(fullGraph(3)),1200);
+            DiagnosticChecks.check(delta(d).getString("status").equals("full_census_unavailable")&&!delta(d).getBoolean("full_census_compared"),"not retained-only full claim");
+            for(String key:Arrays.asList("task","owner","generation","display","window","selection","authorization","target","goal")){
+                Graph a=fullGraph(3),b=fullGraph(3);if(key.equals("task"))b.nativeActionTaskId=DiagnosticChecks.repeat('4',32);
+                if(key.equals("owner"))b.backgroundOwnerSha=DiagnosticChecks.repeat('b',64);if(key.equals("generation"))b.backgroundGeneration="99999999-2222-3333-4444-555555555555";
+                if(key.equals("display"))b.displayId=10;if(key.equals("window")){b.windowId=72;for(int i=0;i<3;i++)change(b,i,"window_id",72);}
+                if(key.equals("selection"))b.nativeActionSelectionSha=DiagnosticChecks.repeat('b',64);if(key.equals("authorization"))b.nativeActionAuthorizationSha=DiagnosticChecks.repeat('b',64);
+                if(key.equals("target"))b.nativeActionTargetSha=DiagnosticChecks.repeat('b',64);if(key.equals("goal"))b.nativeActionGoalSha=DiagnosticChecks.repeat('b',64);
+                d=tracker();d.fullGraphChange("saved_graph",fullStamp(a),fullStamp(b),1200);JSONObject j=delta(d);
+                DiagnosticChecks.check(j.getString("status").equals("identity_mismatch")&&!j.getBoolean("full_census_compared")&&!j.has("node_differences"),"no cross-identity tree merge: "+key);
+            }
+        });
+        DiagnosticChecks.run("full_census_profile_leaf_token_uid_and_mode_remain_distinct",()->{
+            for(int mode=0;mode<4;mode++){Graph a=fullGraph(3),b=fullGraph(3);a.profileWindow=new ProfileIdentity(profile(401,"11111111-2222-3333-4444-555555555555"));
+                Map<String,Object> fields=profile(mode==0?402:401,mode==1?"99999999-2222-3333-4444-555555555555":"11111111-2222-3333-4444-555555555555");
+                if(mode==2)fields.put("profile_full_uid",1010486);if(mode!=3)b.profileWindow=new ProfileIdentity(fields);
+                ObservationDiagnostics d=tracker();d.fullGraphChange("saved_graph",fullStamp(a),fullStamp(b),1200);
+                DiagnosticChecks.check(delta(d).getString("status").equals("identity_mismatch")&&!delta(d).getBoolean("full_census_compared"),"profile diagnostic identity "+mode);
+            }
+        });
+        DiagnosticChecks.run("full_census_terminal_snapshot_trims_copy_to_compact_and_pretty_cap",()->{
+            Graph a=fullGraph(10),b=fullGraph(10);for(int i=1;i<10;i++){
+                change(a,i,"view_id",DiagnosticChecks.repeat('v',256));change(b,i,"view_id",DiagnosticChecks.repeat('w',256));
+                change(a,i,"class",DiagnosticChecks.repeat('c',128));change(b,i,"class",DiagnosticChecks.repeat('d',128));}
+            ObservationDiagnostics d=tracker();d.fullGraphChange("screenshot_graph",fullStamp(a),fullStamp(b),1200);d.finish("failed",1300);
+            String raw=ObserverPipelineHost.actualSnapshot(d).call();JSONObject j=new JSONObject(raw),row=j.getJSONObject("last_native_full_graph_change");
+            DiagnosticChecks.check(raw.getBytes(StandardCharsets.UTF_8).length<=16384&&j.toString(2).getBytes(StandardCharsets.UTF_8).length<=16384,"both wire encodings bounded");
+            DiagnosticChecks.check(row.getInt("changed_path_count")==9&&row.getInt("retained_detail_count")<8&&row.getBoolean("node_differences_truncated")&&row.getBoolean("details_omitted_for_budget"),"stage/count survives bounded details");
+            @SuppressWarnings("unchecked") Map<String,Object> original=(Map<String,Object>)d.snapshot(9999).get("last_native_full_graph_change");
+            DiagnosticChecks.check(((List<?>)original.get("node_differences")).size()==8&&Boolean.FALSE.equals(original.get("details_omitted_for_budget")),"only a copy trimmed");
+            d.fullGraphChange("saved_graph",null,null,9999);DiagnosticChecks.check(raw.equals(ObserverPipelineHost.actualSnapshot(d).call()),"terminal record frozen");
+        });
+    }
+    static void runTests()throws Exception{
+        fullCensusTests();
+        DiagnosticChecks.run("actual_observed_row_adapter_records_hashes_not_content",()->{
+            Graph g=graph(3);g.rows.get(1).inputTextSha256=DiagnosticChecks.repeat('b',64);g.diagnosticStamp=nativeDiagnosticStamp(g);
+            DiagnosticChecks.check(g.diagnosticStamp!=null&&g.diagnosticStamp.nodes.size()==3,"actual copy");
+            JSONObject j=new JSONObject(ObservationDiagnostics.difference(g.diagnosticStamp,g.diagnosticStamp,"n1"));
+            DiagnosticChecks.check(!j.toString().contains("SENSITIVE")&&!j.getBoolean("node_text_recorded")&&j.getBoolean("selected_stamp_equal"),"no content or fake difference");
+        });
+        DiagnosticChecks.run("actual_observed_row_adapter_refuses_foreign_or_overbudget_rows",()->{
+            Graph g=graph(1);g.rows.get(0).packageName="foreign.app";DiagnosticChecks.check(nativeDiagnosticStamp(g)==null,"foreign row");
+            DiagnosticChecks.check(nativeDiagnosticStamp(graph(513))==null,"node bound");g=graph(1);g.backgroundGeneration=null;DiagnosticChecks.check(nativeDiagnosticStamp(g)==null,"no lease");
+        });
+        DiagnosticChecks.run("actual_stale_receipt_binds_operation_and_keeps_effect_false",()->{
+            Graph a=graph(2),b=graph(2);b.rows.get(1).observedAppTreeSignature=DiagnosticChecks.repeat('b',64);b.digest=DiagnosticChecks.repeat('c',64);
+            a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");
+            JSONObject j=actionDiagnosticEvidence(w),d=j.getJSONObject("freshness_diagnostic");
+            DiagnosticChecks.check(d.getString("task_id").equals(DiagnosticChecks.TASK)&&d.getString("operation_id").equals(DiagnosticChecks.REQUEST),"operation identity");
+            DiagnosticChecks.check(d.getBoolean("selected_stamp_equal")&&d.getInt("changed_retained_path_count")==1&&!d.getBoolean("observation_state_equal"),"exact selected vs changed other path");
+            DiagnosticChecks.check(!j.getBoolean("effect_entered")&&!j.getBoolean("effect_returned")&&!d.getBoolean("guard_changed")&&!d.getBoolean("grants_action_authority"),"refusal preserved");
+        });
+        DiagnosticChecks.run("actual_stale_receipt_does_not_cross_app_lease_window",()->{
+            for(int variant=0;variant<4;variant++){Graph a=graph(1),b=graph(1);if(variant==0)b.packageName="other.app";if(variant==1)b.backgroundGeneration="99999999-2222-3333-4444-555555555555";if(variant==2)b.windowId++;if(variant==3)b.displayId++;
+                b.rows.get(0).packageName=b.packageName;a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");
+                DiagnosticChecks.check(!actionDiagnosticEvidence(w).has("freshness_diagnostic"),"scope mismatch "+variant);}
+        });
+        DiagnosticChecks.run("bounded_path_difference_keeps_total_and_original_selected_path",()->{
+            Graph a=graph(20),b=graph(20);for(PhoneObservation.Node n:b.rows)n.focused=true;
+            b.rows.get(10).id="n99";b.digest=DiagnosticChecks.repeat('b',64);a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);
+            JSONObject d=new JSONObject(ObservationDiagnostics.difference(a.diagnosticStamp,b.diagnosticStamp,"n10"));
+            DiagnosticChecks.check(d.getString("selected_original_path").equals("0/10")&&d.getBoolean("selected_path_present_after")&&!d.getBoolean("selected_stamp_equal"),"selected path does not rebind to new ID");
+            DiagnosticChecks.check(d.getJSONArray("node_differences").length()==8&&d.getInt("changed_retained_path_count")==20&&d.getBoolean("node_differences_truncated"),"bounded difference");
+            DiagnosticChecks.check(d.toString(2).getBytes(StandardCharsets.UTF_8).length<=16384&&!d.getBoolean("complete_tree_claimed"),"bounded no complete tree claim");
+        });
+
+        DiagnosticChecks.run("sample_retained_hash_delta_is_bounded_and_non_authoritative",()->{
+            Graph a=graph(20),b=graph(20);b.digest=DiagnosticChecks.repeat('b',64);
+            for(PhoneObservation.Node n:b.rows)n.focused=true;
+            ObservationDiagnostics d=tracker();d.sampleGraphChange(nativeDiagnosticStamp(a),1000);
+            d.sampleGraphChange(nativeDiagnosticStamp(b),1100);JSONObject j=new JSONObject(d.snapshot(1100));
+            JSONObject change=j.getJSONObject("last_native_sample_graph_change");
+            DiagnosticChecks.check(change.getString("stage").equals("sample_graph")&&change.getInt("changed_retained_path_count")==20
+                    &&change.getJSONArray("node_differences").length()==8&&change.getBoolean("node_differences_truncated"),"retained path summary bounds");
+            DiagnosticChecks.check(!change.getBoolean("complete_tree_claimed")&&!change.getBoolean("node_text_recorded")
+                    &&!change.getBoolean("sampling_or_action_changed")&&!change.getBoolean("grants_action_authority")
+                    &&!j.toString().contains("SENSITIVE"),"hash-only values cannot authorize or claim a full tree");
+            d.finish("failed",1200);String ended=new JSONObject(d.snapshot(1200)).toString();
+            d.sampleGraphChange(nativeDiagnosticStamp(a),1300);
+            DiagnosticChecks.check(ended.equals(new JSONObject(d.snapshot(1300)).toString()),"terminal sample summary frozen");
+        });
+        DiagnosticChecks.run("sample_delta_reset_missing_and_foreign_identity_do_not_invent_a_pair",()->{
+            for(int mode=0;mode<3;mode++){
+                Graph a=graph(2),b=graph(2);b.digest=DiagnosticChecks.repeat('b',64);b.rows.get(1).focused=true;
+                ObservationDiagnostics d=tracker();d.sampleGraphChange(nativeDiagnosticStamp(a),1000);
+                if(mode==0)d.reset();else if(mode==1)d.missingSample();else b.windowId++;
+                d.sampleGraphChange(nativeDiagnosticStamp(b),1100);
+                DiagnosticChecks.check(!new JSONObject(d.snapshot(1100)).has("last_native_sample_graph_change"),"no unsupported sample pair "+mode);
+            }
+        });
+        DiagnosticChecks.run("sample_and_full_census_details_share_original_pretty_json_budget",()->{
+            Graph a=graph(20),b=graph(20);b.digest=DiagnosticChecks.repeat('b',64);
+            for(PhoneObservation.Node n:b.rows)n.focused=true;
+            ObservationDiagnostics d=tracker();d.sampleGraphChange(nativeDiagnosticStamp(a),1000);d.sampleGraphChange(nativeDiagnosticStamp(b),1100);
+            Graph fullA=fullGraph(10),fullB=fullGraph(10);
+            for(int i=1;i<10;i++){change(fullA,i,"view_id",DiagnosticChecks.repeat('v',256));change(fullB,i,"view_id",DiagnosticChecks.repeat('w',256));
+                change(fullA,i,"class",DiagnosticChecks.repeat('c',128));change(fullB,i,"class",DiagnosticChecks.repeat('d',128));}
+            d.fullGraphChange("screenshot_graph",fullStamp(fullA),fullStamp(fullB),1200);d.finish("failed",1300);
+            String raw=ObserverPipelineHost.actualSnapshot(d).call();JSONObject value=new JSONObject(raw);
+            DiagnosticChecks.check(raw.getBytes(StandardCharsets.UTF_8).length<=16384&&value.toString(2).getBytes(StandardCharsets.UTF_8).length<=16384,
+                    "sample and full detail cannot exceed either original 16KiB wire limit");
+            DiagnosticChecks.check(value.getJSONObject("last_native_full_graph_change").getInt("changed_path_count")==9
+                    &&value.getBoolean("native_sample_graph_detail_omitted_for_budget"),"bounded omission preserves full-census stage/count");
+            DiagnosticChecks.check(d.snapshot(1300).containsKey("last_native_sample_graph_change"),"serialization trims only its copy");
+        });
+        DiagnosticChecks.run("diagnostic_failure_or_absence_keeps_original_action_receipt",()->{
+            Graph a=graph(1),b=graph(1);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");JSONObject before=new JSONObject(w.state.evidence()),after=actionDiagnosticEvidence(w);
+            DiagnosticChecks.check(before.similar(after),"null stamp changed action evidence");w.diagnosticFreshness="not json";DiagnosticChecks.check(before.similar(actionDiagnosticEvidence(w)),"invalid diagnostic changed original evidence");
+        });
+    }
+}

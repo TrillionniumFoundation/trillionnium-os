@@ -1,0 +1,19 @@
+{
+  "absence_reads": 2,
+  "actual_root_read_failure": null,
+  "broker_bytes": 4333,
+  "broker_sha256": "836ebb841a80d531b6be62bdb2fcc1ac6f4ddccb8a7e14eb60c7eb28a2e3c73d",
+  "cleanup_known": true,
+  "failure_reason": "NOTES_ROOT_CENSUS_CHANGED",
+  "later_owned_tasks": [
+    {
+      "actual_effective_uid": 10382,
+      "display_id": 502,
+      "parent_id": -1,
+      "serialized_token_grants_authority": false,
+      "task_id": 1825,
+      "user_id": 0
+    }
+  ],
+  "launch_dispatched": true
+}

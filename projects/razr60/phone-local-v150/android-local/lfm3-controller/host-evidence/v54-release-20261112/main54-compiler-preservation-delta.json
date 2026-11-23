@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.v54-final-test-closure-delta.v1",
+  "original_mac_stage_sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
+  "original_mac_source_inventory_sha256": "2eb66bad5e487129f69c4f18c65f87bbd5e22c2568f163a3ad9fd982da95b1e6",
+  "final_source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+  "final_source_input_payload_sha256": "e195da919e53c6aa36c31f8b0f0a96f23ef67d895f2860b61fb72e73bd29cf6e",
+  "production_changed": false,
+  "original_java_assertions_changed": false,
+  "android_compiler_inputs_changed": false,
+  "files": [
+    {
+      "path": "tests/exact-admission/prepare_fixture.py",
+      "base_bytes": 7783,
+      "base_sha256": "780f801799bdf1a5cbec1b1515cfd1456e96bb691a0d59c0c50f725dcbc66baa",
+      "bytes": 8422,
+      "sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52",
+      "replacements": [
+        {
+          "before": "    files += [package / \"web/WebFlightGoal.java\",package / \"web/WebShoppingGoal.java\",\n              source / \"tests/web-flight/legacy-boundary/WebFlightDomain.java\"]",
+          "after": "    web_fixture_source=source/\"tests/web-flight/legacy-boundary/WebFlightDomain.java\"\n    web_fixture_raw=web_fixture_source.read_bytes()\n    web_fixture_compile=output/\"WebTaskDomain.java\"\n    web_fixture_compile.write_bytes(web_fixture_raw)\n    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:\n        raise RuntimeError(\"Exact Web type-boundary compiler copy required\")\n    files += [package / \"web/WebFlightGoal.java\",package / \"web/WebShoppingGoal.java\",web_fixture_compile]",
+          "count": 1
+        },
+        {
+          "before": "        \"web_fixture_boundary\": \"Type-only WebTaskDomain; every Web capability method throws\",",
+          "after": "        \"web_fixture_boundary\": \"Type-only WebTaskDomain; every Web capability method throws\",\n        \"web_fixture_compiler_copy\": {\"source_path\":str(web_fixture_source.relative_to(source)),\n            \"compiler_path\":str(web_fixture_compile),\"bytes\":len(web_fixture_raw),\n            \"sha256\":hashlib.sha256(web_fixture_raw).hexdigest(),\"byte_identical\":True},",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "tests/notes-owner-intent/run_host_tests.py",
+      "base_bytes": 3943,
+      "base_sha256": "a10caa4df9f9c8493e703358fb15928d47baf0f47b1f418e9ff8e68c4ca33a29",
+      "bytes": 4088,
+      "sha256": "e28b3ea291eeb8198768a94e3c4ae03fb7cce37dd9b800246eeca5dfb2362303",
+      "replacements": [
+        {
+          "before": "    files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')\n",
+          "after": "    files += [source / 'src/org/trillionnium/hepta/local/web' / (name + '.java')\n              for name in ('WebFlightGoal', 'WebShoppingGoal')]\n    files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')\n",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "tests/owner-grammar/run_host_tests.py",
+      "base_bytes": 3435,
+      "base_sha256": "f85a28ca94a25bc03a48b5bdd3c45999aa1619fb99d4c60bdd90cfe1e986a639",
+      "bytes": 3560,
+      "sha256": "0d3ebcfeb3e9628765028d87679915e2b1180703a5268830feeb7da8afc163e2",
+      "replacements": [
+        {
+          "before": "    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]\n",
+          "after": "    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]\n    inputs += [source/'src/org/trillionnium/hepta/local/web'/(name+'.java') for name in ('WebFlightGoal','WebShoppingGoal')]\n",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "tests/qualification-scope/prepare_fixture.py",
+      "base_bytes": 7268,
+      "base_sha256": "bfe2e9bda9f4a4a87d0281223b718f059ba04f159309a800e7c26d8d257095c5",
+      "bytes": 7902,
+      "sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60",
+      "replacements": [
+        {
+          "before": "    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java', source/'tests/web-flight/legacy-boundary/WebFlightDomain.java']",
+          "after": "    web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'\n    web_fixture_raw=web_fixture_source.read_bytes()\n    web_fixture_compile=output/'WebTaskDomain.java'\n    web_fixture_compile.write_bytes(web_fixture_raw)\n    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:\n        raise RuntimeError('Exact Web type-boundary compiler copy required')\n    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']",
+          "count": 1
+        },
+        {
+          "before": "        'phone_operations':False,'native_inference':False}",
+          "after": "        'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),\n            'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),\n            'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},\n        'phone_operations':False,'native_inference':False}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "tools/run_host_checks.py",
+      "base_bytes": 12318,
+      "base_sha256": "b7247fcd7152a081d7454a702f0e5aeca492184bb80bd9e8c3e36a6b79b7db49",
+      "bytes": 13537,
+      "sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a",
+      "replacements": [
+        {
+          "before": "        run(\"java-compile\",compiler+[\"--release\",\"8\",\"-encoding\",\"UTF-8\",\"-Xlint:all\",\"-Werror\",\"-d\",classes,*sources,*tests])",
+          "after": "        web_fixture_source=ROOT/\"tests/web-flight/legacy-boundary/WebFlightDomain.java\"\n        web_fixture_raw=web_fixture_source.read_bytes()\n        web_fixture_compile=out/\"WebTaskDomain.java\"\n        if sources.count(web_fixture_source)!=1 or hashlib.sha256(web_fixture_raw).hexdigest()!=next(\n                r[\"sha256\"] for r in report[\"source_inputs\"] if r[\"path\"]==str(web_fixture_source.relative_to(ROOT))):\n            raise RuntimeError(\"Exact original Web type-boundary source required\")\n        web_fixture_compile.write_bytes(web_fixture_raw)\n        if web_fixture_compile.read_bytes()!=web_fixture_raw:\n            raise RuntimeError(\"Web type-boundary compiler copy changed\")\n        compile_sources=[web_fixture_compile if p==web_fixture_source else p for p in sources]\n        report[\"web_fixture_compiler_copy\"]={\"source_path\":str(web_fixture_source.relative_to(ROOT)),\n            \"compiler_path\":str(web_fixture_compile),\"bytes\":len(web_fixture_raw),\n            \"sha256\":hashlib.sha256(web_fixture_raw).hexdigest(),\"byte_identical\":True}\n        run(\"java-compile\",compiler+[\"--release\",\"8\",\"-encoding\",\"UTF-8\",\"-Xlint:all\",\"-Werror\",\"-d\",classes,*compile_sources,*tests])\n        if web_fixture_compile.read_bytes()!=web_fixture_raw:\n            raise RuntimeError(\"Web type-boundary compiler copy changed during javac\")",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

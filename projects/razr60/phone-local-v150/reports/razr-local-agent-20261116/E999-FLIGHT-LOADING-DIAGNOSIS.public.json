@@ -1,0 +1,383 @@
+{
+  "actions": [
+    {
+      "accepted": true,
+      "action": {
+        "action": "wait",
+        "duration_ms": 1000
+      },
+      "api_accepted": null,
+      "dispatched": false,
+      "effect_entered": false,
+      "effect_returned": false,
+      "evidence": {
+        "bytes": 14040,
+        "role": "step_action",
+        "sha256": "22192b34dc29d16454b292503270b6ab9c8a1527cdd8b32f5418384aca30d8b5"
+      },
+      "model_issued": true,
+      "stale": false,
+      "step": 1,
+      "worker_drained": true,
+      "worker_drained_elapsed_ms": 190431565
+    },
+    {
+      "accepted": true,
+      "action": {
+        "action": "click",
+        "node_id": "n38"
+      },
+      "api_accepted": true,
+      "dispatched": true,
+      "effect_entered": true,
+      "effect_returned": true,
+      "evidence": {
+        "bytes": 16178,
+        "role": "step_action",
+        "sha256": "f907685de651a95b6fb1f0ccf526abaf4d1316fc6e091ae9aa86fdf116d71617"
+      },
+      "model_issued": true,
+      "stale": false,
+      "step": 2,
+      "worker_drained": true,
+      "worker_drained_elapsed_ms": 190448183
+    }
+  ],
+  "actual_apk_sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+  "capture_requests": [
+    {
+      "deadline_elapsed_ms": 190460580,
+      "expected_epoch": 2,
+      "index": 1,
+      "remaining_at_record_ms": 9997,
+      "reply": {
+        "epoch": 4,
+        "evidence": {
+          "bytes": 1225,
+          "role": "capture_reply",
+          "sha256": "2b9a69f8ea5c972ec384583fb7b2ba8bc14c330efcbec0ac6494c55561689708"
+        },
+        "raw_bytes": 0,
+        "reason": "navigation_epoch_changed",
+        "recorded_elapsed_ms": 190450647,
+        "status": "state_changed"
+      },
+      "request": {
+        "bytes": 741,
+        "role": "capture_request",
+        "sha256": "75b76ce085522254c86a1c60fe560e1657f863b0adbf89eb4355768c1eaefe40"
+      },
+      "request_recorded_elapsed_ms": 190450583
+    },
+    {
+      "ack": {
+        "reply": {
+          "bytes": 1298,
+          "role": "ack_reply",
+          "sha256": "620e76e4629a637c517f37adb12fc577c65e4cdef34390b35dfedf46ad28b6b1"
+        },
+        "reply_recorded_elapsed_ms": 190451666,
+        "request": {
+          "bytes": 1928,
+          "role": "ack_request",
+          "sha256": "4140a8c0bd0564b0e118f8e913d51b705acf4194289920fd26e543bb7ef445b2"
+        },
+        "request_recorded_elapsed_ms": 190451566,
+        "status": "capture_acknowledged"
+      },
+      "capture": {
+        "before_dom_sha256": "f2a55d477da9752853a7933093044303d0fe7915b11e903c21703b8650d0d9e5",
+        "before_nodes": 52,
+        "comparison_scope": "full_raw_equality",
+        "dom_sha256": "f2a55d477da9752853a7933093044303d0fe7915b11e903c21703b8650d0d9e5",
+        "ended_elapsed_ms": 190451393,
+        "evidence": {
+          "bytes": 77706,
+          "role": "raw_capture",
+          "sha256": "7dffa93d1f1b836378046a507b4a5adfc4225fc0e227f92b806b16f1e474ab22"
+        },
+        "nodes": 52,
+        "raw_dom_equal": true,
+        "started_elapsed_ms": 190451323,
+        "truncated": false
+      },
+      "deadline_elapsed_ms": 190461268,
+      "expected_epoch": 4,
+      "index": 2,
+      "remaining_at_record_ms": 9997,
+      "reply": {
+        "epoch": 4,
+        "evidence": {
+          "bytes": 1401,
+          "role": "capture_reply",
+          "sha256": "7dad5e5152185e92acc88fff783ec825343f7ce8265e7942397f4cabdd914e7e"
+        },
+        "raw_bytes": 77706,
+        "reason": null,
+        "recorded_elapsed_ms": 190451542,
+        "status": "captured"
+      },
+      "request": {
+        "bytes": 741,
+        "role": "capture_request",
+        "sha256": "bbbfffa39e2ddd7905751f75200c86f8e84f5e46f1e2554d4f7b4b59f14584e5"
+      },
+      "request_recorded_elapsed_ms": 190451271
+    },
+    {
+      "ack": {
+        "reply": {
+          "bytes": 1298,
+          "role": "ack_reply",
+          "sha256": "e802ac4a669994e1192749e053c66b2925e23fe9685f67d2df2a9c879786af19"
+        },
+        "reply_recorded_elapsed_ms": 190455480,
+        "request": {
+          "bytes": 1930,
+          "role": "ack_request",
+          "sha256": "6c89aea801f76f5a6cf6bcfb6267904d5420482c7142b61701cd17fca58742b9"
+        },
+        "request_recorded_elapsed_ms": 190455202,
+        "status": "capture_acknowledged"
+      },
+      "capture": {
+        "before_dom_sha256": "acc46848dc35b0e15260bf265133321faa7f65feb8dec07889c8d994e3abcaae",
+        "before_nodes": 795,
+        "comparison_scope": "full_raw_equality",
+        "dom_sha256": "acc46848dc35b0e15260bf265133321faa7f65feb8dec07889c8d994e3abcaae",
+        "ended_elapsed_ms": 190453503,
+        "evidence": {
+          "bytes": 1084634,
+          "role": "raw_capture",
+          "sha256": "ed7589bf8769df0bef870db4a709290639f210dee5447595c653d67282fb0680"
+        },
+        "nodes": 795,
+        "raw_dom_equal": true,
+        "started_elapsed_ms": 190452809,
+        "truncated": false
+      },
+      "deadline_elapsed_ms": 190462748,
+      "expected_epoch": 4,
+      "index": 3,
+      "remaining_at_record_ms": 9997,
+      "reply": {
+        "epoch": 4,
+        "evidence": {
+          "bytes": 1405,
+          "role": "capture_reply",
+          "sha256": "e97e2599211d47a191a7214bd932ebbaf8edeebcd21e102aeaf1ef01f83e2e73"
+        },
+        "raw_bytes": 1084634,
+        "reason": null,
+        "recorded_elapsed_ms": 190455172,
+        "status": "captured"
+      },
+      "request": {
+        "bytes": 741,
+        "role": "capture_request",
+        "sha256": "f4ddbb98d8635786dce78113c02add3bcf2cc9e9df5310bbc5a22d584334303f"
+      },
+      "request_recorded_elapsed_ms": 190452751
+    },
+    {
+      "ack": {
+        "reply": {
+          "bytes": 1298,
+          "role": "ack_reply",
+          "sha256": "24935abd9e03cb926a98328c7a99ba3b01871371c9bf83b2e027a281d20cee7d"
+        },
+        "reply_recorded_elapsed_ms": 190459595,
+        "request": {
+          "bytes": 1930,
+          "role": "ack_request",
+          "sha256": "8323fe0664e7e3a9a7eec06ab229f076b27988e10249a68a098ca34a129988d4"
+        },
+        "request_recorded_elapsed_ms": 190459317,
+        "status": "capture_acknowledged"
+      },
+      "capture": {
+        "before_dom_sha256": "acc46848dc35b0e15260bf265133321faa7f65feb8dec07889c8d994e3abcaae",
+        "before_nodes": 795,
+        "comparison_scope": "full_raw_equality",
+        "dom_sha256": "acc46848dc35b0e15260bf265133321faa7f65feb8dec07889c8d994e3abcaae",
+        "ended_elapsed_ms": 190457649,
+        "evidence": {
+          "bytes": 1084634,
+          "role": "raw_capture",
+          "sha256": "2c0de52ef00841bca97d4fcc72bf4d5203e56e29a4c5878d865342e2fa41da79"
+        },
+        "nodes": 795,
+        "raw_dom_equal": true,
+        "started_elapsed_ms": 190456966,
+        "truncated": false
+      },
+      "deadline_elapsed_ms": 190461845,
+      "expected_epoch": 4,
+      "index": 4,
+      "remaining_at_record_ms": 4930,
+      "reply": {
+        "epoch": 4,
+        "evidence": {
+          "bytes": 1405,
+          "role": "capture_reply",
+          "sha256": "3118698aa8f1f721a2502f317fa5e2354afd61a3cc1726bbc884f10cc1ffbc12"
+        },
+        "raw_bytes": 1084634,
+        "reason": null,
+        "recorded_elapsed_ms": 190459286,
+        "status": "captured"
+      },
+      "request": {
+        "bytes": 741,
+        "role": "capture_request",
+        "sha256": "dce56b8fd1bee752ccf0f342c2fec6c482eb17bd96b7eb4b2f68104473437434"
+      },
+      "request_recorded_elapsed_ms": 190456915
+    },
+    {
+      "deadline_elapsed_ms": 190461845,
+      "expected_epoch": 4,
+      "index": 5,
+      "remaining_at_record_ms": 1368,
+      "reply": null,
+      "request": {
+        "bytes": 741,
+        "role": "capture_request",
+        "sha256": "94bd7325f8776fa98cc29fce28be288ee7fae40e232795c8397cec82671620e0"
+      },
+      "request_recorded_elapsed_ms": 190460477
+    }
+  ],
+  "case": "strict-flight-e99948c0/runs/web-flight-e999-01/run-bc32b85e",
+  "clock_scope": "All elapsed times above are original device monotonic values; no host/device or cross-clock subtraction is used.",
+  "conclusions": [
+    "The real local model selected the observed booking entry and the executor dispatched it on the background target display.",
+    "The initial post-click document changed from 52 to 795 nodes, so that changing observation bracket was correctly rejected.",
+    "The existing booking-content phase was fixed at 6000 ms. The final capture request had 1368 ms remaining and failed at that deadline.",
+    "Two earlier 795-node DOM hashes match, but this does not supply the missing complete fresh native/DOM observation bracket.",
+    "The client signals completion only after full file-descriptor reading and receipt validation. No verified final reply was recorded; no single transport, helper, network or persistence cause is isolated.",
+    "There were two model requests: wait and booking-entry click. No city selection, calendar selection or public query occurred.",
+    "No typed pre-dispatch recovery marker was recorded. This is neither flight completion nor a controlled comparison of model quality."
+  ],
+  "evidence": [
+    {
+      "bytes": 22141,
+      "role": "task_result",
+      "sha256": "f6dd6e33503081ca32ffc76635fc17098a93895c033a48737185720198d41ead"
+    },
+    {
+      "bytes": 4711,
+      "role": "observation_timing",
+      "sha256": "50e1fdcdd26733e61182dfa7e685a959e3b97cfcd4136da22311c841baed076e"
+    }
+  ],
+  "homepage_model": {
+    "app_elapsed_ms": 10045,
+    "context_tokens": 8192,
+    "device_resolved": "HTP0",
+    "evidence": [
+      {
+        "bytes": 6397,
+        "role": "prompt",
+        "sha256": "a8f5589d427473ba4b6b020a209f2e6f784102c037d53b62195cb543a9abdcdb"
+      },
+      {
+        "bytes": 383,
+        "role": "raw_text",
+        "sha256": "6f9ac4c308f3427b433805a6f740fd00825eca7ed6e115b849d563ee0537ec13"
+      },
+      {
+        "bytes": 1594,
+        "role": "grammar",
+        "sha256": "1de289d8f5b38a4ddbe7b7b2f9fcdbdf663071b4d9f9d3a54994fae1f08c52bc"
+      },
+      {
+        "bytes": 12350,
+        "role": "app_receipt",
+        "sha256": "8a517f2c3d01cea18022277d473bc132e0219abe4f4d1f467f49d56e30c7321c"
+      }
+    ],
+    "fallback_allowed": false,
+    "grammar_binding_valid": true,
+    "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+    "native_result_binding_valid": true
+  },
+  "loading_phase": {
+    "derived_phase_started_elapsed_ms": 190455845,
+    "does_not_extend_task_deadline": true,
+    "evidence": {
+      "bytes": 1242,
+      "role": "loading_phase",
+      "sha256": "cece1bbd2398956a2785e8e227e36cb9068de8d6384c966a2aebe67efee7e3d3"
+    },
+    "fixed_budget_ms": 6000,
+    "fixed_deadline_elapsed_ms": 190461845,
+    "recorded_flags": {
+      "action_replayed": false,
+      "actual_query_awaiting_results": false,
+      "business_verified": false,
+      "deadline_elapsed_ms": 190461845,
+      "first_dom_sha256": "f2a55d477da9752853a7933093044303d0fe7915b11e903c21703b8650d0d9e5",
+      "initial_document_unstable_readonly_bracket": false,
+      "last_dom_sha256": "acc46848dc35b0e15260bf265133321faa7f65feb8dec07889c8d994e3abcaae",
+      "maximum_extra_reobservations": 2,
+      "model_action_dispatched": false,
+      "read_only_retry": 1,
+      "recognized_booking_body_pending": true,
+      "recognized_calendar_body_pending": false,
+      "shopping_unstable_readonly_bracket": false
+    }
+  },
+  "model_action_count": 2,
+  "original_diagnosis_sha256": "751e365c4e8d18e07b3086c7e7b65ca4e1e6c171eedcebd2d8d7f43a3504be5f",
+  "phone_actions_by_this_analysis": 0,
+  "private_originals_unchanged_and_all_referenced_hashes_rechecked": true,
+  "rpc_failures": [
+    {
+      "automatic_retry": false,
+      "evidence": {
+        "bytes": 362,
+        "role": "rpc_failure",
+        "sha256": "1a2761e12a1b0df45d3bae4ec95090bf929d2b747f0852e9225196174b66b5c4"
+      },
+      "method": "captureEvidence",
+      "outcome_known": false,
+      "reason": "evidence RPC deadline exceeded",
+      "recorded_elapsed_ms": 190461846
+    }
+  ],
+  "schema": "hepta.e999-flight-loading-diagnosis.public.v1",
+  "source_changed_by_this_analysis": false,
+  "source_head": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "sources": [
+    {
+      "bytes": 73100,
+      "role": "WebFlightSession.java",
+      "sha256": "ee2b2f8c1a236e6e0297db549381001877c7d00374c412b8078e83d66d919b98"
+    },
+    {
+      "bytes": 22067,
+      "role": "WebEvidenceClient.java",
+      "sha256": "df41e357703ab364fb4261d61500c3e0742a8c9872f4f100d3255617a021b7bb"
+    },
+    {
+      "bytes": 60443,
+      "role": "WebFlightDomain.java",
+      "sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01"
+    }
+  ],
+  "terminal": {
+    "business_verified": false,
+    "cleanup_exit_gate_passed": true,
+    "flight_goal_binding_verified": true,
+    "goal_independently_verified": false,
+    "main_focus_unchanged": true,
+    "query_dispatched": false,
+    "state": "evidence RPC deadline exceeded",
+    "status": "failed",
+    "steps": 2,
+    "web_route_verified": true
+  }
+}

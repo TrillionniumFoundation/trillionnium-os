@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.ui-venus.vlm-android-build.v1",
+  "compile_command": [
+    "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang",
+    "-std=c11",
+    "-O2",
+    "-fPIE",
+    "-pie",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I/Users/qianqi/Documents/Codex/2026-11-09/hepta-ui-venus-vlm-dda84ccf-r1/source/native/vendor",
+    "-I/Users/qianqi/Documents/Codex/2026-11-09/hepta-ui-venus-vlm-dda84ccf-r1/source/native",
+    "/Users/qianqi/Documents/Codex/2026-11-09/hepta-ui-venus-vlm-dda84ccf-r1/source/native/probe-worker.c",
+    "-L/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib",
+    "-L/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp",
+    "-lgeniex",
+    "-lllama",
+    "-ldl",
+    "-lm",
+    "-Wl,-rpath,$ORIGIN",
+    "-Wl,-rpath-link,/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp",
+    "-Wl,-z,max-page-size=16384",
+    "-o",
+    "/Users/qianqi/Documents/Codex/2026-11-09/hepta-ui-venus-vlm-dda84ccf-r1/build/libhepta_ui_venus_vlm_probe.so"
+  ],
+  "actual_ndk_revision": "28.1.13356709",
+  "ndk_directory": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+  "compiler_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android30\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "compiler_sha256": "cf2d40be93fb6051d3a66f5d6bdd24ccbe6595913040460f3607a241d562af76",
+  "source_properties_sha256": "84bef2c605bb263571c299f1eef3307ff58f741710f8cce514cb525b28567f41",
+  "source_generation_sha256": "ffee82c294c5859019ab0229d6df768d4ac17cd9549f8ea97228c51e6301f65f",
+  "worker_source_sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78",
+  "wrapper_source_sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab",
+  "build_helper_sha256": "dd327d49517127fb2d42bd89047bd17e30a336327c6d86e02a8866f8173ec6b7",
+  "sdk_runtime_pins_sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19",
+  "model": {
+    "name": "UI-Venus-2-9B-Q4_K_M.gguf",
+    "bytes": 5910782752,
+    "sha256": "f2a8533b4adf7dc92d0731c39bd910438d229593f2e524b8f6e0e0e83fd1ec8d"
+  },
+  "mmproj": {
+    "name": "mmproj-UI-Venus-2-9B-f16.gguf",
+    "bytes": 918165664,
+    "sha256": "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2"
+  },
+  "context_tokens": 8192,
+  "max_tokens": 1024,
+  "deadline_ms": 300000,
+  "enable_thinking": true,
+  "full_multimodal_token_admission_proven": false,
+  "no_context_shift_proven": false,
+  "required_vlm_imports": [
+    "geniex_vlm_create",
+    "geniex_vlm_get_capabilities",
+    "geniex_vlm_apply_chat_template",
+    "geniex_vlm_generate",
+    "geniex_vlm_destroy"
+  ],
+  "worker": {
+    "name": "libhepta_ui_venus_vlm_probe.so",
+    "bytes": 51360,
+    "sha256": "5d642a7e981a3ba5ee837dea61378342b1b946d9deb6d0487801fd390702b972"
+  },
+  "sdk_libraries": [
+    {
+      "name": "libgeniex.so",
+      "bytes": 19781824,
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/libgeniex.so"
+    },
+    {
+      "name": "libgeniex_plugin_llama_cpp.so",
+      "bytes": 377040,
+      "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libgeniex_plugin.so"
+    },
+    {
+      "name": "libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-base.so"
+    },
+    {
+      "name": "libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-cpu.so"
+    },
+    {
+      "name": "libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-hexagon.so"
+    },
+    {
+      "name": "libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-htp-v79.so"
+    },
+    {
+      "name": "libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml-opencl.so"
+    },
+    {
+      "name": "libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libggml.so"
+    },
+    {
+      "name": "libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libllama-common.so"
+    },
+    {
+      "name": "libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libllama.so"
+    },
+    {
+      "name": "libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libmtmd.so"
+    },
+    {
+      "name": "libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76",
+      "source_path": "/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp/libomp.so"
+    }
+  ],
+  "dt_needed": [
+    "libgeniex.so",
+    "libllama.so",
+    "libdl.so",
+    "libm.so",
+    "libc.so"
+  ],
+  "runpath": [
+    "$ORIGIN"
+  ],
+  "sha2_instruction_owners": {
+    "hepta_sha256_armv8_blocks": 56
+  },
+  "elapsed_seconds": 0.236423,
+  "same_directory_bootstrap_unchanged": true,
+  "android_executed": false,
+  "model_inference_performed": false,
+  "ordinary_app_qualified": false,
+  "dispatcher_connected": false,
+  "phone_contacted": false,
+  "installed_runtime_modified": false
+}

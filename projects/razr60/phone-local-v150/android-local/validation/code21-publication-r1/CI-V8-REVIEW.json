@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.code21.ci-v8-review.v1",
+  "source_private_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+  "source_public_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+  "source_original_workflow_sha256": "015bff2c95340735d74b617f927f72b25f8a13a996321e508f2cd34f73e6f7a0",
+  "all_original_workflow_steps_preserved": true,
+  "original_step_counts": {
+    "mnn-runtime": 10,
+    "source-and-android": 27
+  },
+  "successor_step_counts": {
+    "mnn-runtime": 15,
+    "source-and-android": 30
+  },
+  "original_step_relative_order_preserved": true,
+  "original_actions_permissions_job_settings_and_assertions_preserved": true,
+  "v7_source_files_modified": false,
+  "compiler_qualifier_v8_byte_identical_to_v7": true,
+  "runtime_rebuild_v8_change_scope": "Only complete App source manifest binding",
+  "transfer_verifier_v8_change_scope": "Only complete App manifest and current v8 rebuild-helper bindings",
+  "new_ui_venus_runtime_builder_scope": "Execute the unchanged original builder and require the exact original whole worker bytes. Keep the original receipt historical and bind the distinct actual new receipt to exact HEAD, current run and attempt.",
+  "new_offline_test_methods": 11,
+  "offline_test_exit_code": 0,
+  "offline_test_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "offline_test_stderr_sha256": "065d828174a124c7d0a1c3dd8224daa616f3eeacc63f4e424f31e6b75257fc2f",
+  "actual_ui_venus_ci_rebuild_executed": false,
+  "github_workflow_executed": false,
+  "public_source_android_build_qualified": false,
+  "private_code21_qualification_not_relabelled": true,
+  "phone_contacted": false,
+  "patch_sha256": "7541c94fe198c8a48d0641bdeabe7bacb3b933857bab2023a94131127a142e43",
+  "files": [
+    {
+      "path": "hepta-local-android.yml",
+      "bytes": 18773,
+      "sha256": "52d3cae5096132dd23d1501d10d9dd97efd8a8e5beaad36ff91a97a8fe0c4083"
+    },
+    {
+      "path": "mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py",
+      "bytes": 26033,
+      "sha256": "cf3a6d9251fc37a68a8dc80016def8ea1456b045172ca5480dabc754e057d8b8"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py",
+      "bytes": 9012,
+      "sha256": "840b81cf3796ed85481468a442aec76a05ba3ada5e88234dc8c3ad49f497a040"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/qualify_macos_compiler.py",
+      "bytes": 7493,
+      "sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v1/README.md",
+      "bytes": 1989,
+      "sha256": "fc85c7edc378f5ce129204afbc24ffb177131b7f70d6ded4993dc6175db31477"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v1/rebuild_and_verify.py",
+      "bytes": 14391,
+      "sha256": "88004d863c30d7f45dbede09794cd1c788de33eab0d6118b5f15488e40eb82de"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v1/test_rebuild_and_verify.py",
+      "bytes": 7492,
+      "sha256": "d1237cf4ea33038b9a42eacadb5dcebc6c83873077677c416facb93fd5cd87a0"
+    }
+  ],
+  "predecessor_review_sha256": "4f9dcc56c447b139d9ee958d95191da88e4905b285e2aece4da24256eae77091",
+  "only_change_since_review": "Write actual stdout/stderr bytes unchanged, including zero-byte logs",
+  "actual_empty_output_bytes_preserved": true,
+  "small_patch_sha256": "871877c94aa087c84240ab28dc346258393e6fee6598c405e4ff59ac463fd44f"
+}
