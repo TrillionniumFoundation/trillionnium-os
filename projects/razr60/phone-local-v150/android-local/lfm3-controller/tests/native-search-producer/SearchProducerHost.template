@@ -222,7 +222,13 @@ public final class HeptaAccessibilityService {
         }
         Graph graph(GraphBudget budget,BackgroundSession background){
             checkReadBudget(budget);graphReads++;if(graphHook!=null)graphHook.run();if(rootMissing)throw new NoActiveWindow();syncNodes();
-            if(replaceTargetOnSecond&&graphReads%2==0){NodeData replacement=new NodeData(HeptaAccessibilityService.this,nodes.get("0/0/0").v);NodeData old=nodes.put("0/0/0",replacement);replacement.parent=old.parent;replacement.children.addAll(old.children);replacement.parent.children.set(0,replacement);for(NodeData child:replacement.children)child.parent=replacement;}
+            if(replaceTargetOnSecond&&graphReads%2==0){
+                String path=planning.role.actionPath;NodeData old=nodes.get(path);
+                NodeData replacement=new NodeData(HeptaAccessibilityService.this,old.v);nodes.put(path,replacement);
+                replacement.parent=old.parent;replacement.children.addAll(old.children);
+                replacement.parent.children.set(Integer.parseInt(path.substring(path.lastIndexOf('/')+1)),replacement);
+                for(NodeData child:replacement.children)child.parent=replacement;
+            }
             Graph g=new Graph();Graph graph=g;try{g.readStartedElapsedMs=SystemClock.now;SystemClock.now+=graphDuration/3;checkReadBudget(budget);
             g.packageName=NativeAppGoal.XIAOMI_PACKAGE;g.windowId=actualWindow;g.displayId=7;g.bounds=new Rect(0,0,1224,2992);g.state=new StateCarrier();
             g.backgroundGeneration=background.generation;g.backgroundOwnerSha=background.ownerSha256;g.backgroundBootstrapPackage=background.selection.initialPackage;g.backgroundAllowedPackages=background.selection.allowedPackages;

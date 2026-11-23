@@ -3375,7 +3375,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
                             first.before,first.after,second.before,second.after,request.events.mark());
                     if(!completingInFlightPair)noteNativeSearchSamplingAnchor(request,first,second,timing,context);
-                    try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
+                    try{encoded=NativeSearchPlanning.encodeIcon(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
                         if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
@@ -4600,6 +4600,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
         // Complete immutable values are retained immediately; diagnostic copies are made before drain.
         NativeActionSnapshotCheck.Snapshot currentSnapshot,latestSnapshot;
+        Map<String,Object> targetSignatureRefusal;
         Map<String,Object> roleProof;
         final List<Map<String,Object>> currentReadAttempts=new ArrayList<Map<String,Object>>();
         NativeSearchPlanning.EventMark pairStart,pairCompleted,effectWatermark;
@@ -4901,6 +4902,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("latest_D",work.latestSnapshot==null?null:NativeAppEvidence.immutableMap(NativeSearchPlanning.snapshot(work.latestSnapshot)));
             proof.put("current_C_read_attempts",work.currentReadAttempts);proof.put("current_C_resample_limit",NATIVE_SEARCH_CURRENT_C_READ_LIMIT-1);
             proof.put("original_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
+            if(work.targetSignatureRefusal!=null)proof.put("fresh_signature_refusal",work.targetSignatureRefusal);
             proof.put("role_comparison",work.roleProof);proof.put("pair_start_watermark",work.pairStart==null?null:work.pairStart.evidence());
             proof.put("D_completed_watermark",work.pairCompleted==null?null:work.pairCompleted.evidence());
             proof.put("before_effect_watermark",work.effectWatermark==null?null:work.effectWatermark.evidence());
@@ -4983,9 +4985,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             work.currentGraph=readNativeSearchCurrentGraph(work);
             NativeActionSnapshotCheck.Snapshot current=nativeSearchSnapshot(work.currentGraph,work.session,work.attempt.offer.planning.id,work.attempt.startedElapsed);
             work.currentSnapshot=current;
-            NativeSearchRole currentRole=NativeSearchRole.compare(current,current);work.attempt.offer.planning.role.requireSameRole(currentRole);
-            NodeRef original=nativeSearchNode(work.currentGraph,currentRole.targetPath);
-            if(!NativeAppEvidence.hash(original.signature).equals(current.node(currentRole.targetPath).v.get("ref_signature_sha256")))
+            NativeSearchRole planned=work.attempt.offer.planning.role;
+            NativeSearchRole currentRole=planned.compareCurrent(current,current,false);planned.requireSameRole(currentRole);
+            NodeRef original=nativeSearchNode(work.currentGraph,currentRole.actionPath);
+            if(!NativeAppEvidence.hash(original.signature).equals(current.node(currentRole.actionPath).v.get("ref_signature_sha256")))
                 throw new StaleObservation("new search C reference does not match its complete census");
             work.attempt.verifyInstalled();work.check();work.phase("graph_read");fresh=readGraph(work.budget(),work.session.background);
             work.pairCompleted=work.events.mark();work.latestReadReturnedElapsed=SystemClock.elapsedRealtime();
@@ -4996,7 +4999,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             try{revalidated=work.attempt.revalidate(current,latest,SystemClock.elapsedRealtime());}
             catch(NativeSearchRole.RejectedBannerMotion refused){
                 work.check();
-                NodeRef latestTarget=nativeSearchNode(fresh,currentRole.targetPath);
+                NodeRef latestTarget=nativeSearchNode(fresh,currentRole.actionPath);
                 if(!work.attempt.ownsBannerRefusal(refused)||refused.first!=current||refused.second!=latest
                         ||!original.node.equals(latestTarget.node)||!original.signature.equals(latestTarget.signature))
                     throw new StaleObservation("ambiguous search carousel and changed current target");
@@ -5010,13 +5013,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new StaleObservation(refused.getMessage());
             }
             work.roleProof=revalidated.evidence();work.roleComparedElapsed=SystemClock.elapsedRealtime();
-            NodeRef same=nativeSearchNode(fresh,revalidated.targetPath);
-            if(!original.node.equals(same.node)||!NativeAppEvidence.hash(same.signature).equals(latest.node(revalidated.targetPath).v.get("ref_signature_sha256")))
+            NodeRef same=nativeSearchNode(fresh,revalidated.actionPath);
+            if(!original.node.equals(same.node)||!NativeAppEvidence.hash(same.signature).equals(latest.node(revalidated.actionPath).v.get("ref_signature_sha256")))
                 throw new StaleObservation("new search current C node was replaced before D");
             work.currentNodeIdentityChecked=true;work.requireFirstFinalEvents();
             Map<String,Object> before=readNativeActionWindows(fresh,work.budget());
             if(!fresh.nativeActionWindows.equals(before))throw new StaleObservation("new search complete D window set changed");
-            refreshNativeSearchTargetChain(work,original,revalidated.targetPath,latest,fresh);
+            refreshNativeSearchTargetChain(work,original,revalidated.actionPath,latest,fresh);
             work.ancestorChainChecked=true;work.requireFinalEvents();
             Map<String,Object> after=readNativeActionWindows(fresh,work.budget());
             if(!before.equals(after))throw new StaleObservation("new search final reported windows changed");
@@ -5089,8 +5092,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 Object signature=expected.v.get("ref_signature_sha256");
                 if(signature!=null){
                     ObservedChildText.Result children=observedChildText(cursor,true,work.budget());
-                    if(!signature.equals(NativeAppEvidence.hash(nodeSignature(cursor,children))))
-                        throw new StaleObservation("new search target/ancestor full signature changed after D");
+                    String refreshedSignature=NativeAppEvidence.hash(nodeSignature(cursor,children));
+                    if(!signature.equals(refreshedSignature)){
+                        Map<String,Object> refusal=new LinkedHashMap<String,Object>();refusal.put("path",path);
+                        refusal.put("model_action_target",path.equals(targetPath));refusal.put("expected_full_signature_sha256",signature);
+                        refusal.put("fresh_full_signature_sha256",refreshedSignature);refusal.put("direct_node_fields_equal",true);
+                        refusal.put("bounded_children_status",children.status);refusal.put("bounded_children_truncated",children.truncated);
+                        refusal.put("fresh_bounded_child_text_sha256",NativeAppEvidence.hash(children.text));
+                        if(expected.text.isEmpty()&&expected.desc.isEmpty()&&expected.label!=null)
+                            refusal.put("projected_child_label_changed",!expected.label.equals(ObservedTargetLabels.project(children.text)));
+                        work.targetSignatureRefusal=refusal;
+                        throw new StaleObservation("new search target/ancestor full signature changed after D: "+path);
+                    }
                     if(path.equals(targetPath)){
                         PersistentActionPolicy.Decision policy=PersistentActionPolicy.evaluate(string(cursor.getText()),string(cursor.getContentDescription()),children.text,cursor.isEditable());
                         if(!policy.allowed)throw new IllegalArgumentException(policy.reasonCode+": "+policy.detail);
@@ -5172,7 +5185,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         JSONObject value=new JSONObject(work.state.evidence());
         if(work.diagnosticFreshness!=null)try{value.put("freshness_diagnostic",new JSONObject(work.diagnosticFreshness));}
         catch(Exception unavailable){/* Preserve the original execution receipt. */}
-        if(work.queryCensusRetry!=null)try{value.put("query_census_retry",new JSONObject(work.queryCensusRetry));}
+        if(work.queryCensusRetry!=null)try{
+            String key=NativeActionSnapshotCheck.YEAR.equals(work.queryCensusRetry.get("purpose"))
+                    ?"departure_year_census_retry":"query_census_retry";
+            value.put(key,new JSONObject(work.queryCensusRetry));
+        }
         catch(Exception unavailable){/* This read diagnostic cannot authorize an effect. */}
         if(work.nativeActionRejection!=null)try{value.put("native_action_rejection_census",new JSONObject(work.nativeActionRejection));}
         catch(Exception unavailable){/* Preserve the original refusal and execution lifecycle. */}
@@ -5427,7 +5444,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         actionCheck(work);return proof;
     }
-    /** This budget belongs to one complete read inside a single original query Attempt. */
+    /** This budget belongs to one complete read inside the original Ctrip form action. */
     private final class QueryGraphBudget implements GraphBudget {
         final ActionWork work;String currentPath;
         QueryGraphBudget(ActionWork work){this.work=work;}
@@ -5436,8 +5453,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public long deadline(){return work.state.deadlineElapsed;}
     }
     private Graph readNativeActionGraph(String task,PhoneObservation frame,ActionDecision action,ActionWork work,boolean finalCheck)throws Exception{
+        boolean year=work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.YEAR.equals(work.nativeGuard.purpose);
         if(work==null||work.nativeGuard==null||frame.capture==null||!frame.capture.formHistory()
-                ||!NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)||!NativeCtripFlightPage.supported(work.nativeGuard.goal))
+                ||(!year&&!NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose))||!NativeCtripFlightPage.supported(work.nativeGuard.goal))
             return readGraph(work==null?null:work.budget(),work==null?currentBackground():work.background);
         requireNativeActionGuard(task,frame,action,work);
         final QueryGraphBudget budget=new QueryGraphBudget(work);
@@ -5453,7 +5471,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
             Map<String,Object> audit=new java.util.LinkedHashMap<String,Object>();
             work.queryCensusRetry=audit;
-            audit.put("schema","hepta.ctrip-query-census-retry.v1");audit.put("failed_stage",stage);
+            audit.put("schema",year?"hepta.ctrip-departure-year-census-retry.v1":"hepta.ctrip-query-census-retry.v1");
+            audit.put("purpose",work.nativeGuard.purpose);audit.put("failed_stage",stage);
             audit.put("failed_native_path",budget.currentPath);audit.put("reread_started",false);audit.put("reread_complete",false);
             audit.put("reused_partial_census",false);audit.put("action_replayed",false);
             actionCheck(work);requireNativeActionGuard(task,frame,action,work);work.nativeGuard.verifyInstalled();actionCheck(work);

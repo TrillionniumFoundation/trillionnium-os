@@ -159,16 +159,26 @@ final class NativeSearchSession {
             requireForGrammar(session.authorization.frame());Map<String,Object> e=new LinkedHashMap<String,Object>();
             e.put("schema",NativeSearchDecision.SCHEMA);e.put("capture_kind",NativeSearchPlanning.KIND);e.put("planning_only",true);
             e.put("full_tree_equal",planning.fullTreeEqual);e.put("observation_id",planning.id);e.put("package",planning.packageName);
-            e.put("phase","home_search");e.put("role_id",planning.role.roleId);e.put("role",NativeSearchRole.ROLE);
-            e.put("offered_action",NativeSearchDecision.ACTION);e.put("purpose","打开当前搜索输入框；不选择轮播提示词");
+            e.put("phase","home_search");e.put("role_id",planning.role.roleId);e.put("role",planning.role.modelRole);
+            e.put("offered_action",NativeSearchDecision.ACTION);e.put("purpose",planning.role.iconAction?"点击当前独立、标有「搜索」的图标以打开搜索输入框":"打开当前搜索输入框；不选择轮播提示词");
+            if(planning.role.iconAction){
+                NativeActionSnapshotCheck.Node button=planning.second.node(planning.role.actionPath);
+                Map<String,Object> target=new LinkedHashMap<String,Object>();target.put("path",button.path);
+                target.put("view_id",button.view);target.put("label",button.label);target.put("android_action","ACTION_CLICK");
+                e.put("model_proposed_target",target);
+            }
             e.put("hint_is_owner_query",false);e.put("owner_product_model",session.goal.productModel);
             e.put("query_entered",false);e.put("price_observed",false);e.put("business_complete",false);
             e.put("generic_actions_available",false);e.put("screenshot_observed",false);
             e.put("planning_as_of_B",true);e.put("no_event_neutrality_claim",true);e.put("current_full_tree_claimed",false);
             Map<String,Object> context=new LinkedHashMap<String,Object>();
-            context.put("entry_label",boundedContext(planning.second.node(planning.role.targetPath).label));
-            context.put("hint_description",boundedContext(planning.second.node(planning.role.targetPath+"/0").desc));
-            context.put("term_text",boundedContext(planning.second.node(planning.role.targetPath+"/0/0").text));
+            if(planning.role.iconAction){
+                context.put("search_icon_label",boundedContext(planning.second.node(planning.role.actionPath).label));
+            }else{
+                context.put("entry_label",boundedContext(planning.second.node(planning.role.targetPath).label));
+                context.put("hint_description",boundedContext(planning.second.node(planning.role.targetPath+"/0").desc));
+                context.put("term_text",boundedContext(planning.second.node(planning.role.targetPath+"/0/0").text));
+            }
             context.put("B_census_sha256",planning.second.sha);context.put("B_captured_elapsed_ms",planning.capturedElapsed);
             context.put("hint_is_owner_query",false);context.put("full_B_in_private_receipt",true);
             context.put("model_projection","bounded_actual_search_context_from_B_only");e.put("historical_search_context",context);
@@ -222,9 +232,9 @@ final class NativeSearchSession {
             need(startedElapsed<=c&&c<=d&&d<=now,"current actual C/D clocks precede the Attempt");
             synchronized(this){need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"live unused C/D comparison required");}
             final NativeSearchRole proof;
-            try{proof=NativeSearchRole.compareForExecution(current,latest);}
+            try{proof=offer.planning.role.compareCurrent(current,latest,true);}
             catch(NativeSearchRole.RejectedBannerMotion refused){
-                offer.planning.role.requireSameRole(NativeSearchRole.compare(latest,latest));
+                offer.planning.role.requireSameRole(offer.planning.role.compareCurrent(latest,latest,false));
                 synchronized(this){
                     need(state==0&&!claimed&&revalidation==null&&bannerRefusal==null,"unused original attempt required for refusal");
                     bannerRefusal=refused;

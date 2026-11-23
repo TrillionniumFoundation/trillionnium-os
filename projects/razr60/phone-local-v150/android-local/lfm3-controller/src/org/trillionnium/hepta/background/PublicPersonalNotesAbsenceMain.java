@@ -64,7 +64,7 @@ public final class PublicPersonalNotesAbsenceMain {
                     .put("finished_elapsed_ms",SystemClock.elapsedRealtime()).put("deadline_elapsed_ms",request.deadline)
                     .put("before",before).put("after",after).put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true)
                     .put("foreign_history_preserved",true).put("cleanup_known",true).put("automatic_resume",false)
-                    .put("broker_release_response",false).put("historical_broker_release_observed",false).put("business_success",false).put("rewrites_original_task_result",false);
+                    .put("broker_release_response",false).put("historical_broker_release_observed",request.releasedBeforeModel).put("business_success",false).put("rewrites_original_task_result",false);
             PublicPersonalNotesAbsenceRecovery.validate(proof,request,SystemClock.elapsedRealtime(),boot);
             need(proof.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8).length<=PublicPersonalNotesAbsenceRecovery.MAX_OUTPUT,"NOTES_PROOF_OUTPUT_BOUND");
         }catch(Throwable failed){failure=failed;}

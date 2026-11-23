@@ -479,7 +479,7 @@
         });
         one("original_C_live_target_change_after_D_is_refused",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                NativeSearchSession.Attempt attempt=f.intent();f.graphHook=()->{if(f.graphReads==4){NodeData node=f.nodes.get("0/0/0");node.beforeRefresh=()->node.v.put("selected",true);}};
+                NativeSearchSession.Attempt attempt=f.intent();f.graphHook=()->{if(f.graphReads==4){NodeData node=f.nodes.get(attempt.offer.planning.role.actionPath);node.beforeRefresh=()->node.v.put("selected",true);}};
                 f.action(attempt);noEffect(f,"latest signature and current reference rechecked");
             }
         });
@@ -577,7 +577,7 @@
         one("unavailable_first_C_is_discarded_before_one_fresh_C_D_and_real_Session_handoff",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
-                final NodeData oldTarget=f.nodes.get("0/0/0");final boolean[] discarded={false};
+                final NodeData oldTarget=f.nodes.get(attempt.offer.planning.role.actionPath);final boolean[] discarded={false};
                 f.graphHook=()->{
                     if(f.graphReads==3){f.nodes.get("0/2/0").refresh=false;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}
                     if(f.graphReads==4){for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all partial C references recycled before replacement read");discarded[0]=true;f.nodes.clear();f.syncNodes();}
@@ -656,7 +656,7 @@
         one("two_unavailable_C_reads_are_discarded_before_third_complete_C_D",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
-                final NodeData originalTarget=f.nodes.get("0/0/0");final int[] discarded={0};
+                final NodeData originalTarget=f.nodes.get(attempt.offer.planning.role.actionPath);final int[] discarded={0};
                 f.graphHook=()->{
                     if(f.graphReads==3||f.graphReads==4){
                         if(f.graphReads==4){for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"first partial graph drained before second sample");discarded[0]++;}
@@ -714,6 +714,7 @@
         });}
         loadingRetryCases(args);
         fullPageSwapCases();
+        recordedSearchIconCases();
         successorCases(args);
         samplingCases(args);
         finalCensusRecoveryCases();
