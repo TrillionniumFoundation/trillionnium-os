@@ -18,7 +18,7 @@ final class NativeSearchRole {
     final Map<String,Object> facts,authority;
     final Map<String,Map<String,Object>> ancestors;
     final NativeActionSnapshotCheck.Snapshot first,second;
-    final boolean fullTreeEqual;
+    final boolean fullTreeEqual,fullPageSwap;
     final List<String> changedPaths,enclosures;
     private final Map<String,Object> proof;
 
@@ -30,7 +30,7 @@ final class NativeSearchRole {
             this.first=first;this.second=second;
         }
     }
-    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean execution){
+    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;
         Map<String,Object> ae=stableEnvelope(a),be=stableEnvelope(b);
@@ -68,7 +68,8 @@ final class NativeSearchRole {
         roleId=NativeAppEvidence.fingerprint(identity);
         Set<String> paths=new TreeSet<String>(a.nodes.keySet());paths.addAll(b.nodes.keySet());
         List<String> changed=new ArrayList<String>();Set<String> regions=new TreeSet<String>();
-        String banner=execution?NativeActionSnapshotCheck.fullPageSearchBannerSwap(a,b,targetPath,hints):null;
+        String banner=allowFullPageSwap?NativeActionSnapshotCheck.fullPageSearchBannerSwap(a,b,targetPath,hints):null;
+        fullPageSwap=banner!=null;
         for(String path:paths){
             NativeActionSnapshotCheck.Node old=a.nodes.get(path),fresh=b.nodes.get(path);
             if(old!=null&&fresh!=null&&old.v.equals(fresh.v))continue;
@@ -125,25 +126,31 @@ final class NativeSearchRole {
         Set<String> buttons=new TreeSet<String>(),labels=new TreeSet<String>();
         NativeActionSnapshotCheck.Node root=a.node("0");
         int width=((Number)a.env.get("width")).intValue(),height=((Number)a.env.get("height")).intValue();
+        boolean progressShell=root.children==15&&a.nodes.size()==20;
         need(root.cls.equals("android.widget.FrameLayout")&&root.bounds.equals(Arrays.asList(0,0,width,height))
-                &&root.children==13&&a.nodes.size()==14&&root.parent.isEmpty()&&root.view.isEmpty(),"complete flat home loading shell required");
+                &&(progressShell||root.children==13&&a.nodes.size()==14)&&root.parent.isEmpty()&&root.view.isEmpty(),"complete home loading shell required");
+        if(progressShell)requireProgressHome(a,b,prefix,width,height);
         int pagers=0,tabs=0,messages=0;
         for(NativeActionSnapshotCheck.Node n:a.nodes.values()){
+            boolean pagerScroll=progressShell&&n.path.equals("0/0");
             need(Boolean.TRUE.equals(n.v.get("enabled"))&&!Boolean.TRUE.equals(n.v.get("editable"))
-                    &&!Boolean.TRUE.equals(n.v.get("scrollable"))&&!Boolean.TRUE.equals(n.v.get("focused"))
+                    &&Boolean.valueOf(pagerScroll).equals(n.v.get("scrollable"))&&!Boolean.TRUE.equals(n.v.get("focused"))
                     &&!Boolean.TRUE.equals(n.v.get("password"))&&!Boolean.TRUE.equals(n.v.get("checkable"))
-                    &&!Boolean.TRUE.equals(n.v.get("checked"))&&"hepta.observed-scroll-actions.v1|observed".equals(n.v.get("scroll_actions")),
+                    &&!Boolean.TRUE.equals(n.v.get("checked"))&&(pagerScroll?"hepta.observed-scroll-actions.v1|observed|forward":
+                    "hepta.observed-scroll-actions.v1|observed").equals(n.v.get("scroll_actions")),
                     "loading shell capabilities are not neutral");
             if(n==root){need(n.visible()&&neutralLoadingContainer(n),"loading root must be a visible neutral container");continue;}
-            need("0".equals(parent(n.path))&&n.children==0&&n.parent.equals(root.cls),"complete direct loading child slots required");
+            if(progressShell&&(n.path.equals("0/0/0")||n.path.equals("0/1")||n.path.equals("0/3")||n.path.startsWith("0/2/")))continue;
+            int children=progressShell&&n.path.equals("0/2")?3:pagerScroll?1:0;
+            need("0".equals(parent(n.path))&&n.children==children&&n.parent.equals(root.cls),"complete direct loading child slots required");
             if((prefix+"sliding_layout").equals(n.view)){
-                need(++tabs==1&&n.cls.equals("android.widget.HorizontalScrollView")&&Boolean.FALSE.equals(n.v.get("visible"))
+                need(++tabs==1&&n.cls.equals("android.widget.HorizontalScrollView")&&Boolean.valueOf(progressShell).equals(n.v.get("visible"))
                         &&neutralLoadingContainer(n),"loading tab placeholder differs");continue;
             }
             need(Boolean.TRUE.equals(n.v.get("visible"))&&positive(n.bounds)&&contains(root.bounds,n.bounds),"actual visible loading node bounds");
             if((prefix+"home_3_vp").equals(n.view)){
                 need(++pagers==1&&n.cls.equals("androidx.viewpager.widget.ViewPager")&&n.bounds.equals(root.bounds)
-                        &&neutralLoadingContainer(n),"loading pager is not empty");
+                        &&(pagerScroll||neutralLoadingContainer(n)),"loading pager differs");
             }else if((prefix+"msgLayout").equals(n.view)){
                 need(++messages==1&&n.cls.equals("android.widget.RelativeLayout")&&n.click()&&n.text.isEmpty()
                         &&"消息".equals(n.desc)&&"消息".equals(n.label)&&Boolean.FALSE.equals(n.v.get("selected")),"loading message control differs");
@@ -163,10 +170,56 @@ final class NativeSearchRole {
         need(((Number)b.env.get("captured_elapsed_ms")).longValue()>((Number)a.env.get("captured_elapsed_ms")).longValue(),"actual forward loading transition");
         Map<String,Object> evidence=new LinkedHashMap<String,Object>();
         evidence.put("schema","hepta.native-search-loading-transition.v1");evidence.put("first_census_sha256",a.sha);
-        evidence.put("second_census_sha256",b.sha);evidence.put("first_phase","complete_navigation_only_home");
+        evidence.put("second_census_sha256",b.sha);evidence.put("first_phase",progressShell?"complete_home_with_progress":"complete_navigation_only_home");
         evidence.put("second_phase","complete_supported_search_home");evidence.put("current_role_facts_sha256",NativeAppEvidence.fingerprint(currentRole));
         evidence.put("original_pair_accepted",false);evidence.put("planning_created",false);evidence.put("grants_action_authority",false);
         evidence.put("fresh_full_pair_required",true);return immutable(evidence);
+    }
+    /** Complete fixed app chrome surrounds a single noninteractive loading indicator.
+     * The fully expanded successor must still expose the supported search role. */
+    private static void requireProgressHome(NativeActionSnapshotCheck.Snapshot before,NativeActionSnapshotCheck.Snapshot after,
+            String prefix,int width,int height){
+        NativeActionSnapshotCheck.Node pager=before.node("0/0"),spinner=before.node("0/0/0"),tabs=before.node("0/2");
+        need(pager.view.equals(prefix+"home_3_vp")&&pager.children==1&&pager.text.isEmpty()&&pager.desc.isEmpty()
+                &&"".equals(pager.label)&&Boolean.FALSE.equals(pager.v.get("clickable"))&&Boolean.FALSE.equals(pager.v.get("action_click"))
+                &&Boolean.FALSE.equals(pager.v.get("selected")),"nonclickable full loading pager required");
+        Map<String,Object> oldPager=new TreeMap<String,Object>(pager.v),newPager=new TreeMap<String,Object>(after.node("0/0").v);
+        oldPager.remove("children");newPager.remove("children");
+        need(after.node("0/0").children>1&&oldPager.equals(newPager),"only actual pager content may expand");
+        need(spinner.cls.equals("android.widget.ProgressBar")&&spinner.view.isEmpty()&&spinner.visible()&&spinner.children==0
+                &&spinner.parent.equals(pager.cls)&&neutralLoadingContainer(spinner)&&spinner.v.get("input_sha256")==null
+                &&spinner.v.get("ref_signature_sha256")==null,"one visible inert progress indicator required");
+        int sw=spinner.bounds.get(2)-spinner.bounds.get(0),sh=spinner.bounds.get(3)-spinner.bounds.get(1);
+        need(Math.abs((long)spinner.bounds.get(0)+spinner.bounds.get(2)-width)<=1
+                &&Math.abs((long)spinner.bounds.get(1)+spinner.bounds.get(3)-height)<=1
+                &&Math.abs(sw-sh)<=1&&(long)sw*8<=width&&(long)sh*8<=height,"small centered loading indicator required");
+        for(NativeActionSnapshotCheck.Node n:after.nodes.values())
+            need(!n.visible()||!"android.widget.ProgressBar".equals(n.cls),"visible loading indicator survived on the successor");
+        for(NativeActionSnapshotCheck.Node n:before.nodes.values()){
+            if(inside(n.path,pager.path))continue;
+            need(n.v.equals(after.node(n.path).v),"expanded home chrome changed");
+        }
+        need(tabs.view.equals(prefix+"sliding_layout")&&tabs.visible()&&tabs.bounds.get(3)<=height/4
+                &&tabs.bounds.get(0)<width/2&&tabs.bounds.get(2)>width/2,"visible top app tabs required");
+        NativeActionSnapshotCheck.Node left=before.node("0/1"),right=before.node("0/3");
+        need(left.view.equals(prefix+"leftBtn")&&right.view.equals(prefix+"rightBtn")&&left.cls.equals("android.widget.ImageView")
+                &&right.cls.equals(left.cls)&&left.bounds.get(2)<=tabs.bounds.get(0)&&right.bounds.get(0)>=tabs.bounds.get(2)
+                &&left.bounds.get(1).equals(tabs.bounds.get(1))&&right.bounds.get(1).equals(tabs.bounds.get(1))
+                &&left.bounds.get(3).equals(tabs.bounds.get(3))&&right.bounds.get(3).equals(tabs.bounds.get(3))
+                &&blankLoadingButton(left)&&blankLoadingButton(right),"unchanged bounded native toolbar required");
+        int edge=tabs.bounds.get(0);
+        for(int i=0;i<3;i++){
+            NativeActionSnapshotCheck.Node child=before.node(tabs.path+"/"+i);
+            need(child.cls.equals("android.widget.RelativeLayout")&&child.parent.equals(tabs.cls)&&child.view.isEmpty()
+                    &&child.bounds.get(0)==edge&&contains(tabs.bounds,child.bounds)&&blankLoadingButton(child),
+                    "three distinct unchanged top tab slots required");
+            edge=child.bounds.get(2);
+        }
+        need(edge==tabs.bounds.get(2),"top tab slots do not cover their container");
+    }
+    private static boolean blankLoadingButton(NativeActionSnapshotCheck.Node n){
+        return n.click()&&n.children==0&&n.text.isEmpty()&&n.desc.isEmpty()&&"".equals(n.label)
+                &&Boolean.FALSE.equals(n.v.get("selected"))&&n.v.get("input_sha256")==null;
     }
     private static boolean neutralLoadingContainer(NativeActionSnapshotCheck.Node n){
         return n.text.isEmpty()&&n.desc.isEmpty()&&n.label==null&&!Boolean.TRUE.equals(n.v.get("clickable"))
@@ -174,6 +227,10 @@ final class NativeSearchRole {
     }
 
     static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b,false);}
+    // Historical AX semantics can support model planning. A decision still needs a new C/D pair and a live node.
+    static NativeSearchRole compareForPlanning(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+        return new NativeSearchRole(a,b,true);
+    }
     // Obtained only from a model's reserved Attempt. All actual window, role,
     // original target/ancestor refresh, event and one-use effect checks still run.
     static NativeSearchRole compareForExecution(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){

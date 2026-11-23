@@ -21,7 +21,8 @@ def main():
  common=[bg/(n+'.java') for n in names]
  legacy=a.source_root/'tests/profile-recovery/ProfileRecoveryHostTest.java'
  test=Path(__file__).with_name('ProfileRecoveryCensusHostTest.java')
- files=common+[legacy,test,candidate]+([a.baseline_processes] if a.baseline_processes else [])
+ business=test.with_name('BusinessRecoveryCensusHostTest.java')
+ files=common+[legacy,test,business,candidate]+([a.baseline_processes] if a.baseline_processes else [])
  pins={str(p):sha(p) for p in files}
  result={'schema':'hepta.census-retry-host-validation.v1','all_pass':False,'phone_contacted':False,'android_runtime':False,
   'source_inputs':pins,'stages':[],'framework_proc_boundary':'synthetic; actual production census and original proof validator'}
@@ -34,7 +35,7 @@ def main():
  def compile_sources(label,processes):
   classes=a.output/(label+'-classes');classes.mkdir()
   r=run(label+'-compile',[a.jdk_bin/'javac','--release','8','-Xlint:all,-options','-Werror','-proc:none',
-   '-encoding','UTF-8','-cp',a.json_jar,'-d',classes,*common,processes,legacy,test])
+   '-encoding','UTF-8','-cp',a.json_jar,'-d',classes,*common,processes,legacy,test]+([business] if label=='candidate' else []))
   if r.returncode or r.stderr:raise RuntimeError(label+' compile failed')
   return str(classes)+':'+str(a.json_jar)
  def java(label,cp,klass,*args):
@@ -59,6 +60,10 @@ def main():
   census=json.loads(r.stdout)
   if r.returncode or r.stderr or census['passed'] is not True:raise RuntimeError('Census boundary gate failed')
   result['census']=census
+  r=java('business-census',cp,'BusinessRecoveryCensusHostTest')
+  business=json.loads(r.stdout)
+  if r.returncode or r.stderr or business.get('passed') is not True:raise RuntimeError('Business census cases failed')
+  result['business_census']=business
   r=java('candidate-legacy',cp,'ProfileRecoveryHostTest')
   legacy_result=json.loads(r.stdout)
   if r.returncode or r.stderr or legacy_result['passed'] is not True:raise RuntimeError('Existing identity/proof gate failed')

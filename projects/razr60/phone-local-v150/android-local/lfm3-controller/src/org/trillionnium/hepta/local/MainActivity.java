@@ -843,8 +843,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             try{
                 if(context.getPackageManager().getLaunchIntentForPackage(BackgroundAutoTargetPreferences.NOTES)!=null)
                     candidates.add(BackgroundAutoTargetPreferences.captureNotes(context));
-                for(org.trillionnium.hepta.background.ProfileTarget target:ProfileCatalogueClient.load(context))
-                    candidates.add(BackgroundAutoTargetPreferences.captureProfile(target));
+                for(org.trillionnium.hepta.background.ProfileTarget target:ProfileCatalogueClient.load(context)){
+                    BackgroundAutoTargetPreferences.Entry item=BackgroundAutoTargetPreferences.captureProfile(target);
+                    candidates.add(item);
+                    if(org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.packageName))
+                        candidates.add(item.withModel(ModelProfile.LFM3));
+                }
             }catch(Exception failure){error=HeptaAccessibilityService.message(failure);}
             final String failure=error;
             runOnUiThread(()->{
@@ -860,9 +864,17 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     checked[i]=saved!=null&&saved.identitySha256.equals(item.identitySha256);if(checked[i])chosen.add(item.identitySha256);
                     labels[i]=item.label()+"\n"+item.modelLabel()+" · "+(item.independentProfile()?"工作资料独立后台显示":"个人空间独立后台显示");
                 }
-                new AlertDialog.Builder(this).setTitle("保存自动目标与首选模型（最多 6 个）")
+                new AlertDialog.Builder(this).setTitle("自动目标与模型（最多 6 个应用实例，每个选一项）")
                         .setMultiChoiceItems(labels,checked,(dialog,index,enabled)->{
-                            String id=candidates.get(index).identitySha256;if(enabled)chosen.add(id);else chosen.remove(id);
+                            BackgroundAutoTargetPreferences.Entry item=candidates.get(index);
+                            if(!enabled){chosen.remove(item.identitySha256);return;}
+                            chosen.add(item.identitySha256);
+                            // Model alternatives share one installed instance and one scheduling slot.
+                            for(int other=0;other<candidates.size();other++){
+                                BackgroundAutoTargetPreferences.Entry sibling=candidates.get(other);
+                                if(other!=index&&sibling.instanceKey.equals(item.instanceKey)&&chosen.remove(sibling.identitySha256))
+                                    ((AlertDialog)dialog).getListView().setItemChecked(other,false);
+                            }
                         }).setNegativeButton("取消",null).setPositiveButton("保存所选目标与模型",(dialog,which)->{
                             try{
                                 if(epoch!=automaticUiEpoch||!automaticWorkIdle())throw new IllegalStateException("界面或空闲状态已变化");

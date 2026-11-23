@@ -644,6 +644,7 @@
             c.commit();yes(openAvailable(c),"actual Session durable receipt explicitly records recovery availability");
             yes(java.nio.file.Files.size(directory.resolve("equal/native-app-outcome-01.json"))>0,"actual writer creates and fsyncs the Session outcome");
             NativeAppSession.PostEffectReadPermit permit=c.permit();yes(permit!=null&&permit.transitionDeadline()==c.finished+15000,"same private pending OPEN and unchanged original transition deadline");
+            yes(permit.originalObservationId().equals(c.fixture.frame.observationId),"private read lineage binds the original accepted frame");
             IntegrationChecks.rejects(()->c.permit(),"permit cannot be issued twice");
             permit.admit(false);permit.admit(true);IntegrationChecks.rejects(()->permit.admit(true),"no third observation admission");
             IntegrationChecks.rejects(()->c.service.guard.requireClaimed(),"closed guard cannot enter a second effect");

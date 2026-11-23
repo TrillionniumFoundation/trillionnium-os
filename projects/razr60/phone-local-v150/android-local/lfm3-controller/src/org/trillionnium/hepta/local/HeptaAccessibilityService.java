@@ -1236,7 +1236,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long firstPublicationCheckStartedAt=-1,firstPublicationCheckCompletedAt=-1,firstPublicationCheckEvents=-1;
         int postEffectPublicationRechecks;
         ObservationPairSeal seal;NativeResampleSeed seed;
-        Map<String,Object> formPair; // Complete read-only form comparison; never whole-tree equality.
+        Map<String,Object> formPair,postEncodingFormPair; // Complete read-only comparisons; never whole-tree equality.
         long formPairCompletedEvents=-1; // Frozen immediately after the complete census, before comparison.
         boolean contentPairSealed,postEncodingCompleteNativeRechecked;
         ObservationEventWatermark pairCompletedWatermark,postEncodingStartWatermark,postEncodingCompletedWatermark;
@@ -1245,14 +1245,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         Map<String,Object> captureEvidence(long publishedAt){
             Map<String,Object> e=new java.util.LinkedHashMap<String,Object>();
-            e.put("schema","hepta.observation-capture.v1");e.put("mode",formPair!=null?"pre_encoding_form_pair_history":seal==null?"post_encoding_whole_graph":"pre_encoding_paired_history");
+            e.put("schema","hepta.observation-capture.v1");e.put("mode",postEncodingFormPair!=null?"post_encoding_form_pair_history":formPair!=null?"pre_encoding_form_pair_history":seal==null?"post_encoding_whole_graph":"pre_encoding_paired_history");
             e.put("sample_graph_started_elapsed_ms",identity.graphStartedAt);e.put("sample_graph_completed_elapsed_ms",identity.graphCompletedAt);
             e.put("capture_requested_elapsed_ms",capturedAt);e.put("screenshot_callback_elapsed_ms",callbackAt);
             e.put("pair_graph_started_elapsed_ms",pairStartedAt);e.put("pair_graph_completed_elapsed_ms",pairCompletedAt);
             e.put("pair_sealed_elapsed_ms",seal==null?null:Long.valueOf(seal.sealedAt));
             e.put("png_encode_started_elapsed_ms",encodeStartedAt);e.put("png_encode_completed_elapsed_ms",encodeCompletedAt);
             e.put("png_persisted_and_hashed_elapsed_ms",persistedAt);
-            e.put("post_persistence_check",postEncodingCompleteNativeRechecked?"complete_native_graph_and_window_census":
+            e.put("post_persistence_check",postEncodingFormPair!=null?"complete_classified_native_form_and_window_census":postEncodingCompleteNativeRechecked?"complete_native_graph_and_window_census":
                     seal==null?"whole_observed_graph":"window_identity_geometry_permissions_and_reported_windows");
             e.put("publication_check_started_elapsed_ms",publicationCheckStartedAt);
             e.put("publication_check_completed_elapsed_ms",publicationCheckCompletedAt);e.put("published_elapsed_ms",publishedAt);
@@ -1268,6 +1268,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 e.put("form_pair_comparison",formPair);
                 e.put("form_pair_target_events_at_read_start",pairEvents);
                 e.put("form_pair_target_events_at_census_completion",formPairCompletedEvents);
+                e.put("form_pair_events_after_census_completion_admitted",false);
+            }
+            if(postEncodingFormPair!=null){
+                e.put("post_encoding_form_pair_comparison",postEncodingFormPair);
                 e.put("form_pair_events_after_census_completion_admitted",false);
             }
             e.put("native_content_pair_sealed",contentPairSealed);
@@ -2229,6 +2233,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     request.phase("saved_graph");
                     product.checkedEvents=request.events;product.publicationCheckStartedAt=SystemClock.elapsedRealtime();
                     ObservationEventWatermark persistedEvents=request.eventWatermark();
+                    if(request.postEffectController!=null&&product.formPair!=null&&product.seal!=null
+                            &&persistedEvents.events!=product.seal.events)retry=true;
                     boolean completeContentCheck=product.seal!=null&&product.formPair==null&&identity.nativeRecheck
                             &&persistedEvents.contentEvents>identity.eventWatermark.contentEvents;
                     if(completeContentCheck){
@@ -2244,19 +2250,25 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         boolean equal=!retry&&after!=null&&identity.matches(after)
                                 &&nativeObservationRecheckAllowed(request,after)
                                 &&identity.frozenWindow.matches(frozenObservationWindow(after));
-                        if(!retry&&!equal){
+                        boolean eventsCovered=!retry&&complete.onlyContentSince(persistedEvents)
+                                &&complete.onlyContentSince(identity.eventWatermark)&&complete.events==request.events;
+                        // Pixels already match A and B. A later, complete C may establish a
+                        // historical first form only for the already-entered OPEN's read permit.
+                        if(!equal&&eventsCovered&&request.postEffectController!=null)
+                            product.postEncodingFormPair=nativeCtripFormPair(request,identity,after);
+                        boolean formCovered=product.postEncodingFormPair!=null&&complete.events==request.events;
+                        boolean covered=equal&&eventsCovered;
+                        if(!retry&&!equal&&!formCovered){
                             request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;
                             product.seed=nativeSavedGraphSeed(request,identity,after,complete.events,complete.unknownEvents);
                             recordSavedGraphChange(request,identity,after,product.seed);
                             recordNativeFullGraphChange(request,"saved_graph",request.captured,after);
                         }
-                        boolean covered=equal&&complete.onlyContentSince(persistedEvents)
-                                &&complete.onlyContentSince(identity.eventWatermark)&&complete.events==request.events;
-                        if(!covered)retry=true;
+                        if(!covered&&!formCovered)retry=true;
                         product.postEncodingCompleteNativeRechecked=covered;
                         product.wholeGraphRechecked=covered;product.nativeGraphRechecked=covered;
-                        product.frozenWindowRechecked=covered;
-                        if(covered)product.checkedEvents=complete.events;
+                        product.frozenWindowRechecked=covered||formCovered;
+                        if(covered||formCovered)product.checkedEvents=complete.events;
                     }else if(product.seal!=null){
                         // Content changes since the sealed pair do not rewrite historical facts.
                         // This still reads actual permission/root/window/geometry/census facts.
@@ -2418,7 +2430,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
-            if(request.postEffectRetrySubmission!=null&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)){
+            if((request.postEffectRetrySubmission!=null||request.postEffectController!=null
+                    &&(product.formPair!=null||product.postEncodingFormPair!=null))
+                    &&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)){
                 failObservation(request,"操作后重新读取的窗口或任务身份已变化");return;
             }
             if(request.initialRetrySubmission!=null&&(!initialObservationOwner(request)||request.initialIdentityRejected)){
@@ -2463,6 +2477,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(postEffectEventFailure){
                     request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
                     failPostEffectObservationAfterReadDrain(request,"操作后页面仍在变化，当前截图未发布");return;
+                }
+                // A discarded post-navigation screenshot requires a new pair even when it seeds
+                // the first sample. Starting another Binder read cannot satisfy a sub-gap budget.
+                long remaining=request.deadline-SystemClock.elapsedRealtime();
+                if(request.postEffectController!=null&&remaining<=ObservationStabilityGate.SAMPLE_GAP_MS){
+                    failObservation(request,"操作后的页面仍在变化，本次观察剩余时间不足以重新采样");return;
                 }
                 retryObservation(request,200,seed);return;
             }
@@ -3348,14 +3368,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     waitNativeSearchSample(request,first.captured+200);
                     request.phase="planning_second_graph";second=readNativeSearchSample(request);
                     request.lastCompletePair=new NativeSearchPair(first,second);
-                    if(second.readCompleted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
+                    boolean completingInFlightPair=second.readCompleted-request.started>=10000;
+                    if(completingInFlightPair&&second.readStarted-request.started>=10000)throwNativeSearchSamplingExhausted(request,"complete_pair");
                     NativeSearchPlanning.Timing timing=new NativeSearchPlanning.Timing(request.started,request.deadline,
-                            first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime());
+                            first.readStarted,first.readCompleted,first.captured,second.readStarted,second.readCompleted,second.captured,SystemClock.elapsedRealtime(),completingInFlightPair);
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
                             first.before,first.after,second.before,second.after,request.events.mark());
-                    noteNativeSearchSamplingAnchor(request,first,second,timing,context);
+                    if(!completingInFlightPair)noteNativeSearchSamplingAnchor(request,first,second,timing,context);
                     try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
+                        if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
                         request.loadingRetryClassification=null;request.loadingRetryIdentity=null;
                         if(request.retrySubmission==null&&request.samplingSubmission==null){
@@ -5243,14 +5265,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
      * No ActionGuard/Intent, model action, query history or NodeRef is minted.
      */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){
-        if(request.initialController!=null||request.postEffectController!=null
-                ||request.readBefore==null||request.readBefore!=current||request.readIdentity==null
-                ||request.readRecoveryRejected||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
+        boolean postEffect=request.postEffectController!=null;
+        if(request.initialController!=null||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
                 ||request.background==null||!identity.nativeRecheck||identity.frozenWindow==null
                 ||request.captured==null||after==null||identity.unknownEvents!=0||request.unknownEvents!=0
                 ||!nativeObservationRecheckAllowed(request,request.captured)||!nativeObservationRecheckAllowed(request,after)
-                ||!request.readIdentity.matches(request.captured)||!request.readIdentity.matches(after)
                 ||!identity.frozenWindow.matches(frozenObservationWindow(after)))return null;
+        if(postEffect){
+            if(request.readBefore!=null||request.readIdentity!=null||request.retrySubmission!=null
+                    ||request.postEffectIdentityRejected||!postEffectObservationOwner(request)
+                    ||request.postEffectIdentity!=null&&(!request.postEffectIdentity.matches(request.captured)
+                    ||!request.postEffectIdentity.matches(after)))return null;
+        }else if(request.readBefore==null||request.readBefore!=current||request.readIdentity==null||request.readRecoveryRejected
+                ||!request.readIdentity.matches(request.captured)||!request.readIdentity.matches(after))return null;
         ProfileTarget target=request.background.profileTarget();
         BackgroundTaskTarget task=request.background.selection.taskTarget;
         if(target==null||!NativeCtripFlightPage.PACKAGE.equals(target.packageName)
@@ -5265,8 +5292,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             Map<String,Object> proof=NativeCtripFormObservation.compare(
                     nativeCtripFormSnapshot(request,request.captured,target),nativeCtripFormSnapshot(request,after,target));
+            if(postEffect){
+                Map<String,Object> bound=new java.util.LinkedHashMap<String,Object>(proof);
+                bound.put("entered_open_read_permit",request.postEffectPermit.evidence());
+                proof=java.util.Collections.unmodifiableMap(bound);
+            }
             if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144)return null;
-            requireObservationWork(request);return proof;
+            requireObservationWork(request);
+            return postEffect&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)?null:proof;
         }catch(IllegalArgumentException unclassified){return null;}
     }
     /** Actual ownership and complete raw rows are copied; expected facts never
@@ -5291,7 +5324,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         env.put("target_sha256",graph.nativeActionTargetSha);env.put("authorization_sha256",graph.nativeActionAuthorizationSha);
         env.put("selection_sha256",graph.nativeActionSelectionSha);env.put("installed_set_sha256",target.apkSetSha256);
         env.put("goal_sha256",graph.nativeActionGoalSha);env.put("background_generation",graph.backgroundGeneration);
-        env.put("origin_observation_id",request.readBefore.id);
+        env.put("origin_observation_id",request.postEffectController==null?request.readBefore.id:
+                request.postEffectPermit.originalObservationId());
         env.putAll(NativeAppEvidence.profileActionIdentity(graph.profileWindow));
         env.put("package",graph.packageName);env.put("display_id",graph.displayId);env.put("window_id",graph.windowId);
         env.put("rotation",graph.rotation);env.put("width",graph.nativeActionWidth);env.put("height",graph.nativeActionHeight);

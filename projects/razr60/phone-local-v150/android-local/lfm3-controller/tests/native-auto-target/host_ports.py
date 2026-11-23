@@ -59,7 +59,20 @@ public class PackageManager {public static final int GET_SIGNING_CERTIFICATES=13
 }''',
 'android/app/AlertDialog.java':'''package android.app;public final class AlertDialog {
  public interface Click {void selected(Object dialog,int which);}public interface Multi {void selected(Object dialog,int which,boolean checked);}
- public static final class Builder {public Builder(Activity a){}public Builder setTitle(String s){return this;}public Builder setItems(String[] s,Click c){return this;}public Builder setMultiChoiceItems(String[] s,boolean[] b,Multi m){return this;}public Builder setNegativeButton(String s,Click c){return this;}public Builder setPositiveButton(String s,Click c){return this;}public AlertDialog show(){return new AlertDialog();}}
+ public static volatile AlertDialog shown;
+ public static final class ListPort {final boolean[] checked;ListPort(boolean[] initial){checked=initial.clone();}public void setItemChecked(int index,boolean value){checked[index]=value;}}
+ private String[] labels;private ListPort list;private Multi multi;private Click positive;
+ public ListPort getListView(){return list;}
+ public int row(String app,String model){for(int i=0;i<labels.length;i++)if(labels[i].contains(app)&&labels[i].contains(model))return i;return -1;}
+ public boolean checked(int index){return list.checked[index];}
+ public void tap(int index){boolean next=!checked(index);list.setItemChecked(index,next);multi.selected(this,index,next);}
+ public void save(){positive.selected(this,-1);shown=null;}
+ public void cancel(){shown=null;}
+ public static final class Builder {private final AlertDialog value=new AlertDialog();
+  public Builder(Activity a){}public Builder setTitle(String s){return this;}public Builder setItems(String[] s,Click c){value.labels=s.clone();return this;}
+  public Builder setMultiChoiceItems(String[] s,boolean[] b,Multi m){value.labels=s.clone();value.list=new ListPort(b);value.multi=m;return this;}
+  public Builder setNegativeButton(String s,Click c){return this;}public Builder setPositiveButton(String s,Click c){value.positive=c;return this;}
+  public AlertDialog show(){shown=value;return value;}}
 }''',
 'org/trillionnium/hepta/local/RecoveryProcessInventory.java':'''package org.trillionnium.hepta.local;final class RecoveryProcessInventory {static boolean fail;private static long clock;static java.util.List<RecoveryQuiescence.Sample> awaitInitial(LocalProbeApplication app){return new java.util.ArrayList<RecoveryQuiescence.Sample>(java.util.Arrays.asList(capture(app),capture(app),capture(app)));}static RecoveryQuiescence.Sample capture(LocalProbeApplication app){if(fail)throw new IllegalStateException("inventory unavailable port");return new RecoveryQuiescence.Sample(android.os.Process.myUid(),android.os.Process.myPid(),321,clock+=1000,0,true);}}''',
 'org/trillionnium/hepta/local/LocalTaskSession.java':'''package org.trillionnium.hepta.local;
@@ -130,6 +143,7 @@ final class MainActivity extends Activity implements LocalModelSettings.Listener
  private String selectedBackgroundPackage(){return manual==null?null:manual.initial;}private org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){return manual==null?null:manual.profileTarget;}
  private boolean selectedIndependentProfileDisplay(){return manualProfile;}private boolean selectedIndependentPersonalDisplay(){return manualPersonal;}
  private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){return null;}
+ void openTargetPicker(){installAutomaticTargetListeners();pickAutomaticTargets.listener.accept(pickAutomaticTargets);}
  boolean start(){return beginTask(taskInput.getText(),"user_button",null);}boolean startForeign(){return beginTask(taskInput.getText(),"other",null);}
  void edit(String text){taskInput.setText(text);}void cancel(){cancelAutomaticStart();}
  void choose(String key){automaticInputChanged();automaticInstanceChoice=key;currentAutomaticResolution();automaticInstanceChoice=key;}
@@ -158,7 +172,7 @@ def prepare(source, fixture, java_block):
 '''
     emit('org/trillionnium/hepta/local/HeptaAccessibilityService.java',raw[:raw.rfind('}')]+extension+'}\n')
     catalogue=fixture/'org/trillionnium/hepta/local/ProfileCatalogueClient.java';text=catalogue.read_text();end=text.rfind('}')
-    emit('org/trillionnium/hepta/local/ProfileCatalogueClient.java',text[:end]+'static java.util.List<ProfileTarget> load(android.content.Context c){return actual==null?java.util.Collections.<ProfileTarget>emptyList():java.util.Collections.singletonList(actual);}'+'}\n')
+    emit('org/trillionnium/hepta/local/ProfileCatalogueClient.java',text[:end]+'static java.util.List<ProfileTarget> listed;static java.util.List<ProfileTarget> load(android.content.Context c){if(listed!=null)return new java.util.ArrayList<ProfileTarget>(listed);return actual==null?java.util.Collections.<ProfileTarget>emptyList():java.util.Collections.singletonList(actual);}'+'}\n')
     def blocks(path,signatures):
         raw=path.read_bytes();parts=[]
         for signature in signatures:

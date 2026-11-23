@@ -34,18 +34,28 @@ public final class ObserverIntegrationHostTest {
             require(Boolean.FALSE.equals(evidence.get("same_instant_pixels_and_ax_claimed")),scenario+": no simultaneity");
             require(Boolean.TRUE.equals(evidence.get("fresh_action_validation_required")),scenario+": final action validation");
             require(Boolean.FALSE.equals(evidence.get("post_encoding_whole_graph_rechecked")),scenario+": no whole graph claim");
-            require((form?"pre_encoding_form_pair_history":"pre_encoding_paired_history").equals(evidence.get("mode")),scenario+": correct mode");
-            require(number(result,"new_window_checks")==1,scenario+": original current-window publication check");
+            boolean late=scenario.startsWith("post_late");
+            require((late?"post_encoding_form_pair_history":form?"pre_encoding_form_pair_history":"pre_encoding_paired_history").equals(evidence.get("mode")),scenario+": correct mode");
+            require(number(result,"new_window_checks")== (late?0:1),scenario+": expected full graph or window publication check");
             if(form){
-                Map<String,Object> comparison=(Map<String,Object>)evidence.get("form_pair_comparison");
+                Map<String,Object> comparison=(Map<String,Object>)evidence.get(late?"post_encoding_form_pair_comparison":"form_pair_comparison");
                 require(comparison!=null,scenario+": full comparison recorded");
+                if(scenario.startsWith("post_")){
+                    Map<String,Object> permit=(Map<String,Object>)comparison.get("entered_open_read_permit");
+                    require(permit!=null&&result.get("original_frame_id").equals(permit.get("original_observation_id")),scenario+": private entered original frame");
+                }else require(!comparison.containsKey("entered_open_read_permit"),scenario+": ordinary read has no entered navigation");
+
                 require(Boolean.TRUE.equals(comparison.get("full_census_compared")),scenario+": full census");
                 require(Boolean.FALSE.equals(comparison.get("changed_paths_truncated")),scenario+": all differences");
                 require(Boolean.FALSE.equals(comparison.get("query_history_proved")),scenario+": no query history");
                 require(Boolean.FALSE.equals(comparison.get("grants_action_authority")),scenario+": readonly comparison");
                 require(Collections.singletonList("0/0/7/0").equals(comparison.get("changed_paths")),scenario+": exact changed path");
                 require(Boolean.FALSE.equals(evidence.get("form_pair_events_after_census_completion_admitted")),scenario+": closed event interval");
-                require(number(evidence,"pair_sealed_event_watermark")==number(evidence,"form_pair_target_events_at_census_completion"),scenario+": seal uses frozen census watermark");
+                if(late){
+                    require(number(evidence,"post_encoding_complete_native_graph_completed_event_watermark")==number(evidence,"publication_check_event_watermark"),scenario+": closure matches publication");
+                    require(Boolean.FALSE.equals(evidence.get("post_encoding_whole_graph_rechecked")),scenario+": differing C never attests equality");
+                    require(Boolean.FALSE.equals(evidence.get("post_encoding_complete_native_graph_rechecked")),scenario+": C publishes historical classification");
+                }else require(number(evidence,"pair_sealed_event_watermark")==number(evidence,"form_pair_target_events_at_census_completion"),scenario+": seal uses frozen census watermark");
                 boolean immutable=false;try{comparison.put("grants_action_authority",true);}catch(UnsupportedOperationException expected){immutable=true;}
                 require(immutable,scenario+": immutable nested proof");
             }else require(!evidence.containsKey("form_pair_comparison"),scenario+": old exact path unchanged");
@@ -57,6 +67,10 @@ public final class ObserverIntegrationHostTest {
         System.out.println("PASS "+scenario);
     }
     public static void main(String[] args)throws Exception{
+        run("post_early_classified",true,true);
+        run("post_late_classified",true,true);
+        for(String fault:Arrays.asList("post_late_retired","post_late_after_completion","post_late_protected","post_late_foreign",
+                "post_late_untyped","post_late_other_window","post_late_omitted","post_early_event_after_pair","ordinary_late_change"))run(fault,false,false);
         run("classified_complete_pair",true,true);
         run("known_target_event_during_census",true,true);
         run("unrelated_display_event",true,true);

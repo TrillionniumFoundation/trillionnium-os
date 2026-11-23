@@ -91,21 +91,9 @@ final class ProfileRecoveryProcesses {
         for(String name:entries){
             check(proc,request);if(!name.matches("[0-9]+"))continue;
             int pid=positive(name);need(seen.add(pid),"RECOVERY_PROC_DUPLICATE");
-            Directory first=proc.directory(pid);need(first!=null&&first.uid>=0,"RECOVERY_PROC_DIRECTORY_UNKNOWN");
-            Identity before=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
-            String cmdSha="-";
-            if(before.inspect(request.ownerUid)){
-                byte[] command=proc.read(pid,"cmdline",CMDLINE_MAX);inspected++;
-                checkCommand(command,before.flags,request.generation);cmdSha=ProfileIdentity.sha(command);
-            }
-            Identity after=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
-            // A known identity change must reject before any later directory disappearance.
-            need(before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
-            Directory last=proc.directory(pid);
-            need(first.same(last),"RECOVERY_PROC_IDENTITY_CHANGED");
-            rows.put(pid,before.canonical()+":"+first.uid+":"+first.device+":"+first.inode+":"+cmdSha);
-            if(pid==self){need(before.uids[0]==0&&before.uids[1]==0&&before.uids[2]==0&&before.uids[3]==0,
-                    "RECOVERY_PROC_SELF_UID");selfPin.observe(first,before);ownTicks=before.ticks;}
+            VerifiedRow row=verifyRow(proc,pid,request);rows.put(pid,row.canonical());
+            if(row.inspected)inspected++;
+            if(pid==self){requireSelf(row,selfPin);ownTicks=row.identity.ticks;}
         }
         check(proc,request);need(ownTicks>0&&inspected>0,"RECOVERY_PROC_SELF_MISSING");
         StringBuilder canonical=new StringBuilder();for(String row:rows.values())canonical.append(row).append('\n');
@@ -113,6 +101,108 @@ final class ProfileRecoveryProcesses {
                 .put("started_elapsed_ms",begun).put("finished_elapsed_ms",proc.now())
                 .put("self_pid",self).put("self_start_ticks",ownTicks).put("process_count",rows.size())
                 .put("inspected_count",inspected).put("inventory_sha256",ProfileIdentity.sha(canonical.toString()));
+    }
+    private static final class VerifiedRow {
+        final Directory directory;final Identity identity;final String commandSha;final boolean inspected;
+        VerifiedRow(Directory directory,Identity identity,String commandSha,boolean inspected){
+            this.directory=directory;this.identity=identity;this.commandSha=commandSha;this.inspected=inspected;
+        }
+        String canonical(){return identity.canonical()+":"+directory.uid+":"+directory.device+":"+directory.inode+":"+commandSha;}
+    }
+    private static VerifiedRow verifyRow(Proc proc,int pid,CensusScope request)throws Exception{
+        Directory first=proc.directory(pid);need(first!=null&&first.uid>=0,"RECOVERY_PROC_DIRECTORY_UNKNOWN");
+        Identity before=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
+        String cmdSha="-";
+        if(before.inspect(request.ownerUid)){
+            byte[] command=proc.read(pid,"cmdline",CMDLINE_MAX);
+            checkCommand(command,before.flags,request.generation);cmdSha=ProfileIdentity.sha(command);
+        }
+        Identity after=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
+        // A known identity change must reject before any later directory disappearance.
+        need(before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
+        Directory last=proc.directory(pid);
+        need(first.same(last),"RECOVERY_PROC_IDENTITY_CHANGED");
+        return new VerifiedRow(first,before,cmdSha,before.inspect(request.ownerUid));
+    }
+    private static void requireSelf(VerifiedRow row,SelfPin pin)throws IOException{
+        for(int uid:row.identity.uids)need(uid==0,"RECOVERY_PROC_SELF_UID");
+        pin.observe(row.directory,row.identity);
+    }
+    // The business checker brackets independent framework reads with two fresh censuses.
+    // Within one census, reconcile only native-confirmed exit. Every PID in its final
+    // listing has a double-read identity and a directory pin checked against that listing.
+    static JSONObject captureBusiness(Proc proc,int self,int owner,String generation,long started,long deadline)throws Exception{
+        CensusScope request=new CensusScope(owner,generation,started,deadline);
+        long begun=proc.now();SelfPin selfPin=new SelfPin();
+        TreeMap<Integer,VerifiedRow> rows=new TreeMap<Integer,VerifiedRow>();
+        Set<Integer> vanished=new HashSet<Integer>();
+        Set<Integer> current=listedPids(proc,request);int examined=0;
+        for(int wave=0;wave<MAX_BUSINESS_WAVES;wave++){
+            for(int pid:current){
+                check(proc,request);if(rows.containsKey(pid))continue;
+                need(!vanished.contains(pid),"RECOVERY_PROC_IDENTITY_CHANGED");
+                need(++examined<=MAX_PROCESSES,"RECOVERY_PROC_ENUMERATION");
+                try{
+                    VerifiedRow row=verifyRow(proc,pid,request);
+                    if(pid==self)requireSelf(row,selfPin);
+                    rows.put(pid,row);
+                }catch(ProcessGone gone){confirmVanished(proc,pid,self,gone,vanished,request);}
+            }
+            Set<Integer> closing=listedPids(proc,request);
+            need(closing.contains(self)&&rows.containsKey(self),"RECOVERY_PROC_SELF_MISSING");
+            for(int pid:vanished)need(!closing.contains(pid),"RECOVERY_PROC_IDENTITY_CHANGED");
+            // If an inspected PID is omitted at a boundary it cannot fill a later incarnation.
+            for(int pid:rows.keySet())if(!closing.contains(pid))vanished.add(pid);
+            rows.keySet().retainAll(closing);
+            if(rows.size()==closing.size()){
+                boolean complete=true;
+                for(int pid:closing){
+                    check(proc,request);
+                    try{
+                        need(rows.get(pid).directory.same(proc.directory(pid)),"RECOVERY_PROC_IDENTITY_CHANGED");
+                    }catch(ProcessGone gone){
+                        confirmVanished(proc,pid,self,gone,vanished,request);
+                        rows.remove(pid);complete=false;
+                    }
+                }
+                if(complete){
+                    // Pin the checker again after the closing pass.
+                    VerifiedRow checker=verifyRow(proc,self,request);requireSelf(checker,selfPin);
+                    long ticks=checker.identity.ticks;check(proc,request);need(ticks>0,"RECOVERY_PROC_SELF_MISSING");
+                    int inspected=0;StringBuilder canonical=new StringBuilder();
+                    for(VerifiedRow row:rows.values()){
+                        if(row.inspected)inspected++;
+                        canonical.append(row.canonical()).append('\n');
+                    }
+                    check(proc,request);
+                    return new JSONObject().put("complete",true).put("old_creator_absent",true)
+                            .put("started_elapsed_ms",begun).put("finished_elapsed_ms",proc.now())
+                            .put("self_pid",self).put("self_start_ticks",ticks).put("process_count",rows.size())
+                            .put("inspected_count",inspected).put("inventory_sha256",ProfileIdentity.sha(canonical.toString()));
+                }
+                // A directory disappeared after the closing listing. Obtain an independent listing.
+                closing=listedPids(proc,request);
+            }
+            current=closing;
+        }
+        throw new IOException("RECOVERY_PROC_CENSUS_UNSTABLE");
+    }
+    private static final int MAX_BUSINESS_WAVES=6;
+    private static Set<Integer> listedPids(Proc proc,CensusScope request)throws Exception{
+        check(proc,request);String[] entries=proc.entries();
+        need(entries!=null&&entries.length>0&&entries.length<=MAX_PROCESSES,"RECOVERY_PROC_ENUMERATION");
+        Set<Integer> ids=new java.util.LinkedHashSet<Integer>();
+        for(String name:entries){
+            check(proc,request);if(!name.matches("[0-9]+"))continue;
+            need(ids.add(positive(name)),"RECOVERY_PROC_DUPLICATE");
+        }
+        return ids;
+    }
+    private static void confirmVanished(Proc proc,int pid,int self,ProcessGone gone,
+            Set<Integer> vanished,CensusScope request)throws Exception{
+        if(pid==self||gone.pid!=pid||gone.getSuppressed().length!=0||gone.getCause()==null
+                ||gone.getCause().getSuppressed().length!=0)throw gone;
+        check(proc,request);vanished.add(pid);
     }
     static void checkCommand(byte[] bytes,long flags,String generation)throws Exception{
         need(bytes!=null&&bytes.length<=CMDLINE_MAX,"RECOVERY_PROC_CMDLINE_BOUND");

@@ -77,7 +77,9 @@ def main():
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
+        paths.add(ROOT/"tests/native-auto-target/fixtures/legacy-ctrip-gui.json")
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
                              "tests/vlm-contract/fixtures"):
@@ -546,8 +548,14 @@ final class NativeCalendarDateIntent {
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
             "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+        run("native-auto-target",[sys.executable,"-B",ROOT/"tests/native-auto-target/run_host.py",
+            "--source",ROOT,"--output",out/"native-auto-target","--java-home",java_home,"--json-jar",json_jar])
         run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
             "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
+        census_source=ROOT/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"
+        run("profile-recovery-census",[sys.executable,"-B",ROOT/"tests/profile-recovery-census/run_host.py",
+            "--source-root",ROOT,"--expected-processes",hashlib.sha256(census_source.read_bytes()).hexdigest(),
+            "--jdk-bin",java_home/"bin","--json-jar",json_jar,"--output",out/"profile-recovery-census"])
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
@@ -580,6 +588,8 @@ final class NativeCalendarDateIntent {
             raise RuntimeError("Foreground concurrency compile/run stages incomplete")
         report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
             "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
+        run("ctrip-form-observation",[sys.executable,"-B",ROOT/"tests/native-ctrip-form-observation/run_host.py",
+            "--source",ROOT,"--output",out/"ctrip-form-observation","--java-home",java_home,"--json-jar",json_jar])
         run("ctrip-startup-promotion",[sys.executable,"-B",ROOT/"tests/native-ctrip-promotion/run_host.py",
             "--out",out/"ctrip-startup-promotion","--java-home",java_home,"--json-jar",json_jar])
         run("public-profile-terminal-bridge",[sys.executable,"-B",ROOT/"tests/public-profile-terminal-bridge/run_host.py",

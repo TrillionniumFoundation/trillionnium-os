@@ -24,7 +24,8 @@ SHARED.update({
   "src/org/trillionnium/hepta/local/NativeAppEvidence.java": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14",
   "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java": "b89d0adf0c1cf0b7f4e13375b570b670e78fd5ee64d6a66cdb64cb303a94e155",
   "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java": "1fbedb6ffed519a402e265640fab241cfee655ea47863769cc1538cf53ddd983",
-  "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412",
+  # Complete current search census dependency from the reviewed full-page banner change.
+  "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b",
   "src/org/trillionnium/hepta/local/ObservedScrollActions.java": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
   "src/org/trillionnium/hepta/local/ObservedImeEnter.java": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
 })
