@@ -19,6 +19,7 @@
       "src/org/trillionnium/hepta/local/LocalTaskController.java"
     ],
     "test_changed_paths": [
+      "tests/native-app-routing/prepare_native_entry.py",
       "tests/native-auto-target/AutomaticTargetHostTest.java",
       "tests/native-ctrip-form-observation/run_observer_host.py",
       "tests/native-xiaomi-product/run_host.py",
@@ -8613,9 +8614,9 @@
       "sha256": "ed6793a5ebd86ce1840fc44651e6a0fdc392cf476f7747d3f3c40435edeab703"
     },
     {
-      "bytes": 20393,
+      "bytes": 20966,
       "path": "tests/native-app-routing/prepare_native_entry.py",
-      "sha256": "bb0a28fed61762ad2eb52c45ab0b4cec15de0c1b774ebc4b63ca68bb6021f717"
+      "sha256": "a509749fad480dc5099962c4ca4ebd831cd8838669e6992d42dfbc0ab67720da"
     },
     {
       "bytes": 23472,
