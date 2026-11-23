@@ -169,7 +169,13 @@ final class PublicProfileBusinessRecoveryClient {
             process.getOutputStream().close();long remaining=request.deadline-SystemClock.elapsedRealtime();
             if(remaining<=0||!process.waitFor(remaining,TimeUnit.MILLISECONDS))throw new IOException("业务恢复只读检查超过原始期限");
             remaining=request.deadline-SystemClock.elapsedRealtime();if(remaining>0)reader.join(remaining);
-            if(reader.isAlive()||!capture.finished||capture.failure!=null||!capture.eof||process.exitValue()!=0)throw new IOException("业务恢复没有完整且已退出的 root 回执");
+            if(reader.isAlive()||!capture.finished||capture.failure!=null||!capture.eof)throw new IOException("后台状态检查未返回完整结果");
+            int exit=process.exitValue();
+            if(exit!=0){
+                if(exit==70&&"RECOVERY_PROC_CENSUS_UNSTABLE".equals(checkerFailureCode(request,capture.bytes)))
+                    throw new IOException("检查期间有系统进程退出，暂时无法确认后台空间已释放。稍后可再次点击“清理上一次后台空间”。");
+                throw new IOException("后台状态检查未能确认空间已释放（退出码 "+exit+"）");
+            }
             JSONObject verified=PublicProfileBusinessAbsenceRecovery.validate(object(capture.bytes),request,SystemClock.elapsedRealtime(),boot(context));
             if(!PublicProfileBusinessAbsenceRecovery.same(controller,RecoveryControllerIdentity.read(context,uid,request.deadline)))throw new IOException("业务恢复期间安装代码发生变化");
             check.checkBusiness(request.taskId,request.ownerSha256);inputs.unchanged(true);request.requireFence(SystemClock.elapsedRealtime(),boot(context));
@@ -296,6 +302,14 @@ final class PublicProfileBusinessRecoveryClient {
             while((n=owned.read(block))!=-1){if(output.size()+n>PublicProfileBusinessAbsenceRecovery.MAX_OUTPUT)throw new IOException("业务恢复输出超过完整读取上限");output.write(block,0,n);}eof=true;
         }catch(Throwable error){failure=error;}finally{bytes=output.toByteArray();finished=true;}}
     }
+    private static String checkerFailureCode(PublicProfileBusinessAbsenceRecovery.Request request,byte[] output){
+        try{
+            JSONObject failure=object(output);
+            if(!request.proofSchema().equals(failure.opt("schema"))||!request.requestId.equals(failure.opt("request_id"))
+                    ||!Boolean.FALSE.equals(failure.opt("cleanup_known")))return "";
+            String code=string(failure,"error");return code.matches("[A-Z0-9_]{1,96}")?code:"";
+        }catch(Exception unparsed){return "";}
+    }
     private static void recordFailure(Inputs inputs,PublicProfileBusinessAbsenceRecovery.Request request,Flight flight,String command,Exception error)throws Exception{
         inputs.root.unchanged(inputs.context);File recovery=MobiMindPrivateFiles.directory(new File(inputs.root.path,"session-recovery"),false);
         File dir=MobiMindPrivateFiles.directory(new File(recovery,"business-absence-failed-"+request.requestId),true);
@@ -308,7 +322,7 @@ final class PublicProfileBusinessRecoveryClient {
                 .put("cleanup_known",false).put("lease_retired",false).put("automatic_resume",false).put("rewrites_original_task_result",false);
         if(capture!=null&&capture.finished&&capture.bytes!=null){byte[] output=capture.bytes;File raw=new File(dir,"checker-output.bin");MobiMindPrivateFiles.writeNew(raw,output);
             value.put("output_bytes",output.length).put("output_sha256",sha(output));
-            try{JSONObject failure=object(output);String code=string(failure,"error");if(request.requestId.equals(failure.opt("request_id"))&&Boolean.FALSE.equals(failure.get("cleanup_known"))&&code.matches("[A-Z0-9_]{1,96}"))value.put("checker_error",code);}catch(Exception unparsed){/* Actual bytes remain the diagnostic. */}}
+            String code=checkerFailureCode(request,output);if(!code.isEmpty())value.put("checker_error",code);}
         MobiMindPrivateFiles.writeNew(new File(dir,"attempt.json"),value.toString(2).getBytes(StandardCharsets.UTF_8));
     }
     private static JSONObject fileRef(MobiMindPrivateFiles.Read value)throws Exception{return new JSONObject().put("file",value.path.getName()).put("bytes",value.bytes.length).put("sha256",sha(value.bytes));}

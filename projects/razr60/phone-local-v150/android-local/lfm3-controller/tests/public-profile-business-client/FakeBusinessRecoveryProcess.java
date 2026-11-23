@@ -21,14 +21,14 @@ final class FakeBusinessRecoveryProcess extends Process {
     static Path root;
     static int calls,exit,destroyed;
     static boolean badNonce,timeout,readFailure,delayedDrain,cancelled;
-    static String suffix;
+    static String suffix,checkerError;
     static Runnable afterReply;
     static CountDownLatch drainRelease;
     static PublicProfileBusinessAbsenceRecovery.Request lastRequest;
     final byte[] output;
     volatile boolean alive;
     static void reset(){calls=exit=destroyed=0;badNonce=timeout=readFailure=delayedDrain=cancelled=false;
-        suffix="";afterReply=null;lastRequest=null;root=null;drainRelease=new CountDownLatch(1);}
+        suffix="";checkerError="SYNTHETIC_CHECKER_FAILURE";afterReply=null;lastRequest=null;root=null;drainRelease=new CountDownLatch(1);}
     static Process start(String command)throws Exception{
         calls++;String marker=" --request '";int at=command.indexOf(marker);
         if(at<0||!command.endsWith("'")||root==null)throw new IOException("synthetic transport framing");
@@ -36,8 +36,8 @@ final class FakeBusinessRecoveryProcess extends Process {
         Map<String,byte[]> inputs=new TreeMap<String,byte[]>();for(String p:m.paths())inputs.put(p,Files.readAllBytes(root.resolve(p)));
         PublicProfileBusinessAbsenceRecovery.Request r=PublicProfileBusinessAbsenceRecovery.request(m,inputs);lastRequest=r;
         JSONObject proof=PublicProfileBusinessRecoveryHostTest.syntheticProof(r);
+        if(exit!=0)proof=new JSONObject().put("schema",r.proofSchema()).put("request_id",r.requestId).put("cleanup_known",false).put("error",checkerError);
         if(badNonce)proof.put("request_id","99999999-9999-4999-8999-999999999999");
-        if(exit!=0)proof=new JSONObject().put("schema",r.proofSchema()).put("request_id",r.requestId).put("cleanup_known",false).put("error","SYNTHETIC_CHECKER_FAILURE");
         android.os.SystemClock.now=r.started+31;if(afterReply!=null)afterReply.run();
         return new FakeBusinessRecoveryProcess((proof.toString()+"\n"+suffix).getBytes(StandardCharsets.UTF_8));
     }
