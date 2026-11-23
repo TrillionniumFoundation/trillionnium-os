@@ -14,6 +14,7 @@
       "src/org/trillionnium/hepta/local/LocalTaskController.java"
     ],
     "test_changed_paths": [
+      "tests/native-ctrip-form-observation/run_observer_host.py",
       "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
       "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java",
       "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
@@ -8918,9 +8919,9 @@
       "sha256": "e09cc25e3bcc65e61baa29aecc326954c4e73c3c873cc0361178dec51c1e6d6a"
     },
     {
-      "bytes": 65727,
+      "bytes": 66531,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "edd205a04170a092f24f5565b3f7ba08c11246c10727fccf56615b67b10d422d"
+      "sha256": "d114a55fd496d1dce108515429659b41fe955b9a0457c8422366a0f3d97711b3"
     },
     {
       "bytes": 3524,
