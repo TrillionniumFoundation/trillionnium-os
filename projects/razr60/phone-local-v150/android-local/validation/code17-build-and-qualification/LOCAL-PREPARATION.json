@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.code17.local-preparation.v1",
+  "scope": "immutable local preparation evidence; subsequent device and CI outcomes are separate",
+  "source_commit": "c726c48b7f9f9477957a138f5a9c826643d423da",
+  "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
+  "source_archive_sha256": "e5ed51b18a9bb659a4767a133018099c97c428e77a765e997cc51fdfe01754c2",
+  "source_archive_bytes": 664957,
+  "source_verified": true,
+  "apk": {
+    "apk_sha256": "ba93a021c8e16e20dd0fea0814ccdcfcb273acf967377307dc6c0a613e07fb0b",
+    "apk_bytes": 20612783,
+    "package": "org.trillionnium.hepta.local",
+    "version_code": 17,
+    "version_name": "0.17.0-local-observation-fields",
+    "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+    "permissions": []
+  },
+  "true_java_dex_native_rebuild": true,
+  "unsigned_archive_sha256": "dae01c66995a90468f8ee86a587c2e8e30a205b20e3872d3939d51e630576988",
+  "mac_build_receipt_sha256": "2eba71061bb51522dbed39260b0fc91a723712f335c9bfd64f230477d11f1529",
+  "toolchain": {
+    "host": "macOS",
+    "java": "Temurin 17.0.7",
+    "android_platform": 34,
+    "build_tools": "34.0.0",
+    "actual_ndk_revision": "28.1.13356709",
+    "ndk_release": "r28b",
+    "clang": "19.0.0",
+    "cache_directory_name_is_not_revision_authority": true
+  },
+  "native_payloads": {
+    "member_count": 16,
+    "all_members_byte_identical_to_code16": true,
+    "code16_apk_sha256": "6f8cfa51abbb388a010ed1c222fd230de94956390dd3fef8870320acd4afbae3",
+    "generated_native_worker_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a"
+  },
+  "same_original_signer": true,
+  "new_signing_key_created": false,
+  "candidate": {
+    "sha256": "24e03a52d5870e80c4ce5b6d2e450f4a3abe2daadcd9d838fa43e4e5c0d2f36f",
+    "runtime_config_sha256": "8a0415b97cdfec7c8c053e022005846fad0e3f3aca78fed86a93b59de782a9c1",
+    "model_profile": "nemotron-3.5-bolt-e4b-q4_k_m",
+    "requested_compute": "npu",
+    "context_tokens": 4096,
+    "threads": 4
+  },
+  "core9_plan": {
+    "sha256": "1445cedc52c863f4669cc82df9638a5eefeec74f000ce84c6177082eef82a85c",
+    "planned_attempts": 9,
+    "driver_closure_pinned": true,
+    "phone_execution_in_this_receipt": "not_run"
+  },
+  "phone_contacted_during_preparation": false,
+  "ordinary_app_acceleration_proven_by_build": false,
+  "phone_task_acceptance_proven_by_build": false
+}

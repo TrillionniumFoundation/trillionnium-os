@@ -1,0 +1,138 @@
+{
+  "actual_combined_gates": [
+    {
+      "actual_fixture_inputs": true,
+      "assertions": 31,
+      "desired_home_checks": 3,
+      "name": "homepage_stage_regression",
+      "original_query_test_main_executed": false,
+      "passed": true,
+      "receipt_sha256": "766626a7ff33818b5bfee1ddcca45102574e389ff8eaa77989b93874e1bab9b2",
+      "stages": 16,
+      "task_receipt_native_outcomes_synthetic": true
+    },
+    {
+      "actual_failed_native_rows_replayed": false,
+      "assertions": 31,
+      "name": "native_failure_structure",
+      "passed": true,
+      "receipt_sha256": "c9e6f5730e530a26466bed29b7157829b77c2287597dd30a962fab98abd458f8",
+      "synthetic_cases": 8
+    }
+  ],
+  "all_requested_capabilities_qualified": false,
+  "apk": {
+    "bytes": 21387180,
+    "sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+    "version_code": 69,
+    "version_name": "0.69.0-native-background-runtime"
+  },
+  "artifact_sha256": {
+    "FINAL-INTEGRATION.json": "5dbf93c8936c6db57f4fe92cba4672e0b5369cbaccb0139a29c371aec602afe3",
+    "FROZEN-SOURCE.json": "be14cf5cb1798ab28088887629354df2af04362f242f7dba02bde85b2154efe1",
+    "MAC-BUILD-RESULT.json": "edb1adea3ee62da71c5e564162f0ff4543c4a74d302dbb3de2d94adf943893a4",
+    "PRODUCTION-CHANGES.patch": "741b08306723d1c3a40b13ea2590eaf35770bdba7495e35f54df82c4b886a2ed",
+    "PUBLICATION.json": "b651222b438c46444655ffb0fde31c00059ff8b6506505e807ccfa33ed63fd5d",
+    "assembly/ASSEMBLY-RESULT.json": "204f2d238778c23229265c2d5ea6458df0f11547a0fd6b529b1ebab0b97bc580",
+    "assembly/apk-signature.txt": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+    "assembly/out/control-v69-static/STATIC-ACCEPTANCE.json": "ad9419e275cec808ae5efcf2c2881671bfe4d7930b8d67a4d703621b311ec84e"
+  },
+  "binary_android_manifest_byte_identical_to_prior_apk": true,
+  "build_and_signing_pass": true,
+  "build_identity_sha256": "15f0f664397fd2a184ce91fd3685b0cea761ea449d6a2195071e9984d74234f2",
+  "changed_production_files": 4,
+  "component_gates_reused_without_repeating": {
+    "homepage_component_existing": {
+      "baseline": {
+        "composition": {
+          "assertions": 70,
+          "cases": 17
+        },
+        "lifetime": {
+          "assertions": 99,
+          "cases": 31
+        },
+        "query40": {
+          "assertions": 187,
+          "cases": 40
+        }
+      },
+      "candidate": {
+        "composition": {
+          "assertions": 70,
+          "cases": 17
+        },
+        "lifetime": {
+          "assertions": 99,
+          "cases": 31
+        },
+        "query40": {
+          "assertions": 187,
+          "cases": 40
+        }
+      }
+    },
+    "previous_diagnostic": {
+      "all_pass": true,
+      "assertions": 32,
+      "cases": 15,
+      "native_authority_tested_here": false,
+      "path": "host-legacy-02/RESULT.json",
+      "sha256": "dca160a285db8c422a01b640bf05946a7df3b12a5691530b648efd27748ed6e6"
+    }
+  },
+  "component_qualification": [
+    {
+      "kind": "homepage_goal",
+      "patch_sha256": "f533d24d90ff36d92e75f36ccee31f2dbfc85c38136a77f14a1ac0c0bd33e63a",
+      "qualification_sha256": "de1adf172b75cb47e9e2588cabe8548438686c498ec181bc1b00029d31ef5c5f"
+    },
+    {
+      "kind": "failure_only_structure_diagnostic",
+      "patch_sha256": "1237c37c45ce71c54a39a47dfc7435d397c2d456b83e81512c545b510c9105f2",
+      "qualification_sha256": "866cf9f8bb1c3756cfbe6304a08d8a4eb304d2932e8cbb50257987775ee3b45d"
+    }
+  ],
+  "controller_has_internet_permission": false,
+  "draft_pr": 155,
+  "limits": [
+    "Host case/assertion counts and compilation are not phone business-success rates.",
+    "Homepage next_goal is corrected without changing any action mask, permit, identity or deadline; model response still needs actual phone testing.",
+    "Failure-only native metadata does not relax comparison or prove harmlessness, occlusion, or a DOM/native bridge.",
+    "Native byte equality preserves the prior executable artifacts; it is not a new Stop, GPU, MoE or general app qualification."
+  ],
+  "native_libraries_byte_identical_to_prior_apk": 18,
+  "parent": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "phone_outcomes_reported_here": false,
+  "prior_apk_sha256": "5dfa8eb6942aa1b1ce70fdc3ceffd57ade8571178ce11e85ca86a3570ed144f8",
+  "production_changes": [
+    {
+      "after_sha256": "ef6d3da1e657eba3fb710f9656a1f2a42e192d2b3243dcbaf139d2b5dc654646",
+      "before_sha256": "b181815b38be0efe9a3f98178e6dd6ca5e9d36c4e955b81a6a80ba4e73f56e03",
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+    },
+    {
+      "after_sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01",
+      "before_sha256": "cd2caf1854af873a761ef3124c53e4db5827a7f1a890928ce3479f6bf522ff0b",
+      "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java"
+    },
+    {
+      "after_sha256": "d21e5a2c063a3670350591cc2dc12280f6f4b4ff5bb4c25136121520515c4bc9",
+      "before_sha256": "4e218ab1a82889693c48bac6d601e68e6f95d5bab289e6cb0f2b3bc6046e6523",
+      "path": "src/org/trillionnium/hepta/local/WebNativeObservationChanged.java"
+    },
+    {
+      "after_sha256": "9654d2a5b4609e4ff526bb52af214bc111831a4287651a78485694dc956d4449",
+      "before_sha256": "61dad9573d09d6effb77975b008dd8a9190585e971d07d8a6c18548c23ce5a29",
+      "path": "src/org/trillionnium/hepta/local/WebObservationTiming.java"
+    }
+  ],
+  "production_compile_inputs": 316,
+  "schema": "hepta.home-goal-structure-build-and-host-validation.public.v1",
+  "signature_scheme_v3_verified": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "source_head": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "source_manifest_members": 2032,
+  "source_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
+  "source_tree": "02db07bdf728ca6d64a2e090f6e56b4299f8d7bf"
+}

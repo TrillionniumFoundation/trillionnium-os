@@ -1,0 +1,50 @@
+package org.trillionnium.hepta.background;
+import android.os.IBinder;
+import android.os.SystemClock;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.JSONObject;
+/** Exact new broker method; live Android owner/display/RPC guards are explicit IO ports. */
+final class BrokerProbeHost {
+ final Object dispatchGate=new Object();
+ final BrokerProtocol.Config config;
+ final long expires;
+ final int displayId=7;
+ final String displayName="fixture-owned-display";
+ final Readback profileReadback;
+ final ProfilePackages profilePackages;
+ final Displays displays=new Displays();
+ final Owned profileOwnedTask;
+ volatile WindowInfosCapture calendarWindowCapture;
+ volatile JSONObject calendarProbeEvidence;
+ volatile String calendarProbeRequest;
+ boolean cancelled;
+ Runnable beforeGuard;
+ int guards;
+ final AtomicBoolean closing=new AtomicBoolean(),publicAdmissionRetired=new AtomicBoolean();
+ String state="CLOSING";
+ BrokerProbeHost(BrokerProtocol.Config c,ProfilePackages p){config=c;expires=c.expiresElapsedMs;profileReadback=new Readback(c.profileTarget);profilePackages=p;profileOwnedTask=new Owned();}
+ void run(BrokerProtocol.Request r)throws Exception{probeCalendarWindow(r);}
+ void guard(BrokerProtocol.Request r,boolean active)throws Exception{guards++;if(beforeGuard!=null)beforeGuard.run();r.authenticate(config,config.ownerUid);r.checkDeadline(SystemClock.elapsedRealtime(),expires);if(cancelled)throw new BrokerProtocol.Refusal("BROKER_CANCELLED");}
+ static String code(Throwable e){if(e instanceof InputChannelIsolation.Refusal)return((InputChannelIsolation.Refusal)e).code;if(e instanceof BrokerProtocol.Refusal)return e.getMessage();return e.getClass().getName();}
+ static final class Readback {final ProfileTarget target;Readback(ProfileTarget t){target=t;}}
+ final class Owned {
+  int reads;Runnable beforeRead;String taskToken="00000000-0000-4000-8000-000000000007";
+  WindowOwnership window(int window,int task,long deadline)throws Exception{reads++;if(beforeRead!=null)beforeRead.run();if(SystemClock.elapsedRealtime()>=deadline)throw new BrokerProtocol.Refusal("OWNED_READ_DEADLINE");
+   return new WindowOwnership(config.profileTarget,config.generation,displayId,window,task,99,taskToken,
+    "00000000-0000-4000-8000-000000000008",10,config.profileTarget.profile.serial,config.profileTarget.fullUid,SystemClock.elapsedRealtime(),Math.min(expires,SystemClock.elapsedRealtime()+1000));}
+ }
+ static final class Displays {DisplayGeometry value=new DisplayGeometry();DisplayGeometry getDisplay(int id){if(id!=7)throw new AssertionError("physical display lookup");return value;}}
+ static final class DisplayGeometry {
+  int width=100,height=200,rotation;String name="fixture-owned-display";
+  static DisplayGeometry read(DisplayGeometry d,int id){if(d==null||id!=7)throw new AssertionError("display IO");DisplayGeometry v=new DisplayGeometry();v.width=d.width;v.height=d.height;v.rotation=d.rotation;v.name=d.name;return v;}
+  boolean sameSize(DisplayGeometry d){return width==d.width&&height==d.height;}
+  java.util.Map<String,Object> evidence(){java.util.Map<String,Object> v=new java.util.LinkedHashMap<String,Object>();v.put("width",width);v.put("height",height);v.put("rotation",rotation);v.put("name",name);return v;}
+ }
+ JSONObject publicDetachEvidence(){return new JSONObject().put("fixture_detach_port",true);}
+ byte[] retirement(BrokerProtocol.Request request,byte[] response)throws Exception{
+// EXACT_PUBLIC_RETIREMENT_BLOCK
+  return response;
+ }
+// EXACT_PROBE_METHOD
+}

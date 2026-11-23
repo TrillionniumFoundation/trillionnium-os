@@ -1,0 +1,233 @@
+{
+  "schema": "hepta.web-observation-timing-host-validation.v1",
+  "base_head": "480d4bb76c194901b55607193168718eb0592ec7",
+  "scope": "Exact extracted Java lifecycle/observation methods with explicit Android IO carriers; original retained capture DOM values in separate pure Java replay.",
+  "phone_operations": 0,
+  "android_compiled": false,
+  "phone_qualified": false,
+  "business_verified": false,
+  "red": {
+    "baseline_original_cases_passed": 17,
+    "new_diagnostic_assertion_failed": "missing phase timing: main_queue",
+    "compile_passed": true,
+    "test_exit_code": 1
+  },
+  "green_worker": {
+    "schema": "hepta.flight-observation-worker-host.v1",
+    "all_pass": true,
+    "phone_operations": 0,
+    "cases": 21,
+    "android_runtime": false,
+    "native_io_is_instrumented": true,
+    "assertions": 476
+  },
+  "flight_session": {
+    "schema": "hepta.flight-observation-session-original-dom-host.v1",
+    "all_pass": true,
+    "phone_operations": 0,
+    "cases": 16,
+    "production_observe_body_executed": true,
+    "assertions": 39,
+    "original_actual_capture_dom_and_geometry_replayed": true,
+    "business_verified": false,
+    "full_native_snapshot_reconstructed_from_retained_rows": false,
+    "service_native_io_authority_client_and_publisher_instrumented": true
+  },
+  "shopping_retry": {
+    "legacy": {
+      "schema": "hepta.shopping-observation-readonly-retry-host.v1",
+      "all_pass": true,
+      "cases": 1,
+      "previous_six_second_budget_replay": false,
+      "actual_budget_timing": {
+        "schema": "hepta.actual-shopping-budget-timing.v1",
+        "boundary": "Recorded request/reply costs replayed on explicit host clock; subsequent stable frames are synthetic.",
+        "future_stability_proven": false,
+        "completed_rpc_recorded_ms": [
+          4507,
+          4420
+        ],
+        "actual_wait_to_next_request_excluding_sleep_ms": 1690,
+        "phase_start_inferred_from_exact_previous_source": true,
+        "maximum_completed_rpc_recorded_ms": 4507,
+        "proposed_common_window_ms": 32000,
+        "task_id": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+        "business_verified": false,
+        "old_common_window_ms": 6000,
+        "actual_extra_rpc_remaining_ms": 4110
+      },
+      "clock_service_client_and_publisher_instrumented": true,
+      "production_observe_and_retry_bodies_executed": true,
+      "phone_actions": 0,
+      "actual_authenticated_ipc_or_native_authority_proven": false,
+      "names": [
+        "exact_v59_original_failure_preserved"
+      ],
+      "assertions": 3,
+      "business_verified": false,
+      "legacy_original_failure_replay": true,
+      "future_stability_sequences_synthetic": true,
+      "original_actual_dom_and_ax_metadata_replayed": true
+    },
+    "budget_previous": {
+      "schema": "hepta.shopping-observation-readonly-retry-host.v1",
+      "all_pass": true,
+      "cases": 1,
+      "previous_six_second_budget_replay": true,
+      "actual_budget_timing": {
+        "schema": "hepta.actual-shopping-budget-timing.v1",
+        "boundary": "Recorded request/reply costs replayed on explicit host clock; subsequent stable frames are synthetic.",
+        "future_stability_proven": false,
+        "completed_rpc_recorded_ms": [
+          4507,
+          4420
+        ],
+        "actual_wait_to_next_request_excluding_sleep_ms": 1690,
+        "phase_start_inferred_from_exact_previous_source": true,
+        "maximum_completed_rpc_recorded_ms": 4507,
+        "proposed_common_window_ms": 32000,
+        "task_id": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+        "business_verified": false,
+        "old_common_window_ms": 6000,
+        "actual_extra_rpc_remaining_ms": 4110
+      },
+      "clock_service_client_and_publisher_instrumented": true,
+      "production_observe_and_retry_bodies_executed": true,
+      "phone_actions": 0,
+      "actual_authenticated_ipc_or_native_authority_proven": false,
+      "names": [
+        "actual_verified_rpc_cost_exceeds_previous_six_second_phase"
+      ],
+      "assertions": 4,
+      "business_verified": false,
+      "legacy_original_failure_replay": false,
+      "future_stability_sequences_synthetic": true,
+      "original_actual_dom_and_ax_metadata_replayed": true
+    },
+    "current": {
+      "schema": "hepta.shopping-observation-readonly-retry-host.v1",
+      "all_pass": true,
+      "cases": 30,
+      "previous_six_second_budget_replay": false,
+      "actual_budget_timing": {
+        "schema": "hepta.actual-shopping-budget-timing.v1",
+        "boundary": "Recorded request/reply costs replayed on explicit host clock; subsequent stable frames are synthetic.",
+        "future_stability_proven": false,
+        "completed_rpc_recorded_ms": [
+          4507,
+          4420
+        ],
+        "actual_wait_to_next_request_excluding_sleep_ms": 1690,
+        "phase_start_inferred_from_exact_previous_source": true,
+        "maximum_completed_rpc_recorded_ms": 4507,
+        "proposed_common_window_ms": 32000,
+        "task_id": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+        "business_verified": false,
+        "old_common_window_ms": 6000,
+        "actual_extra_rpc_remaining_ms": 4110
+      },
+      "clock_service_client_and_publisher_instrumented": true,
+      "production_observe_and_retry_bodies_executed": true,
+      "phone_actions": 0,
+      "actual_authenticated_ipc_or_native_authority_proven": false,
+      "names": [
+        "actual_original_scope_and_native_change_replayed_without_action_authority",
+        "derived_future_stable_sequence_requires_fresh_full_bracket",
+        "continuous_original_instability_stops_after_two_extra_attempts",
+        "already_stable_original_frame_needs_no_extra_read",
+        "caller_deadline_prevents_even_one_extra_read",
+        "retry_window_does_not_expand_when_each_capture_costs_time",
+        "slow_receipt_and_sleep_cannot_start_read_after_retry_deadline",
+        "actual_verified_rpc_cost_fits_one_complete_extra_bracket",
+        "actual_verified_rpc_cost_still_stops_at_two_unstable_extra_brackets",
+        "cancellation_before_entry_has_zero_reads",
+        "cancellation_during_wait_stops_before_the_next_observation",
+        "retirement_during_wait_stops_before_the_next_observation",
+        "authorization_rechecked_at_wait_edge_1",
+        "background_lease_rechecked_at_wait_edge_1",
+        "authorization_rechecked_at_wait_edge_2",
+        "background_lease_rechecked_at_wait_edge_2",
+        "identity_change_inside_capture_pair_refuses_webview_instance",
+        "identity_change_between_retry_attempts_refuses_webview_instance",
+        "identity_change_inside_capture_pair_refuses_navigation_epoch",
+        "identity_change_between_retry_attempts_refuses_navigation_epoch",
+        "identity_change_inside_capture_pair_refuses_current_native_url",
+        "identity_change_between_retry_attempts_refuses_current_native_url",
+        "identity_change_inside_capture_pair_refuses_display_id",
+        "identity_change_between_retry_attempts_refuses_display_id",
+        "identity_change_inside_capture_pair_refuses_actual_window_id",
+        "identity_change_between_retry_attempts_refuses_actual_window_id",
+        "identity_change_inside_capture_pair_refuses_binding",
+        "identity_change_between_retry_attempts_refuses_binding",
+        "missing_compiled_shopping_purpose_has_no_new_retry_path",
+        "receipt_failure_never_retries_or_publishes"
+      ],
+      "assertions": 89,
+      "business_verified": false,
+      "legacy_original_failure_replay": false,
+      "future_stability_sequences_synthetic": true,
+      "original_actual_dom_and_ax_metadata_replayed": true
+    }
+  },
+  "actual_dom_replay": {
+    "original_capture_count": 4,
+    "private_originals_not_published": true,
+    "host_json_adapter": "Only JSONObject(Map) explicit-null retention is adapted to Android libcore semantics, identical in scope to existing shopping host gate; production parser and captureDom are unchanged.",
+    "same_input_proofs_deterministic": true,
+    "native_snapshots_available": false,
+    "native_io_timed": false,
+    "runs": [
+      {
+        "round": 0,
+        "second_capture_dom_ms": 2988.410842,
+        "error_type": null,
+        "accepted": true,
+        "supports_captures_ms": 2222.976486,
+        "both_ms": 5211.387328,
+        "proof_sha256": "735a771f0452592dd8d6d4b6ca3f9252281b87981de65f6fe08de968fa92ddda"
+      },
+      {
+        "round": 1,
+        "second_capture_dom_ms": 3122.901565,
+        "error_type": null,
+        "accepted": true,
+        "supports_captures_ms": 1968.656418,
+        "both_ms": 5091.557983,
+        "proof_sha256": "735a771f0452592dd8d6d4b6ca3f9252281b87981de65f6fe08de968fa92ddda"
+      },
+      {
+        "round": 2,
+        "second_capture_dom_ms": 2584.208157,
+        "error_type": null,
+        "accepted": true,
+        "supports_captures_ms": 3169.240908,
+        "both_ms": 5753.449065,
+        "proof_sha256": "735a771f0452592dd8d6d4b6ca3f9252281b87981de65f6fe08de968fa92ddda"
+      },
+      {
+        "round": 3,
+        "second_capture_dom_ms": 2710.324955,
+        "error_type": null,
+        "accepted": true,
+        "supports_captures_ms": 1951.770893,
+        "both_ms": 4662.095848,
+        "proof_sha256": "735a771f0452592dd8d6d4b6ca3f9252281b87981de65f6fe08de968fa92ddda"
+      }
+    ],
+    "first_pair_rejected": true,
+    "retry_pair_accepted_all_rounds": true
+  },
+  "preserved_behavior": [
+    "original fixed deadlines",
+    "task and authorization identity",
+    "original complete DOM and native predicates",
+    "native-slot ownership until physical exit",
+    "main display protection",
+    "cleanup identity"
+  ],
+  "source_sha256": {
+    "HeptaAccessibilityService.java": "3d3649d25abb619eaf87892f1b0b9346341d1f50fac11e9378b714faf031095f",
+    "WebFlightSession.java": "b5a06cebe0b12a02b76b28f06632895304c2c9c857f25c133f2fce4f808947db",
+    "WebObservationTiming.java": "b4851f3461ceb5763360339eb13725e5200c87273eb770e9701c8e809ab6243a"
+  }
+}

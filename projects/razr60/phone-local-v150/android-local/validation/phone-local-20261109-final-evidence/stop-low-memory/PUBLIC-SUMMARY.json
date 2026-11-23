@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.public-stop-low-memory-incident.v1",
+  "candidate": {
+    "version_code": 19,
+    "apk_sha256": "e9eb1d119c265e12402975bece2db450bd999436e41e64d62cb64cf315668782",
+    "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+    "model_profile": "gemma4-e4b-qat-q4_0",
+    "compute": "npu",
+    "context_tokens": 4096
+  },
+  "stop_test": {
+    "acceptance": "not_passed",
+    "observed_stop_success": false,
+    "attempts": [
+      {
+        "attempt": 1,
+        "phone_contacted": false,
+        "task_launches": 0,
+        "stop_taps": 0,
+        "terminal": "host_control_request_permissions_rejected"
+      },
+      {
+        "attempt": 2,
+        "phone_contacted": true,
+        "task_launches": 1,
+        "stop_taps": 0,
+        "terminal": "inconclusive_after_application_process_disappeared",
+        "monitor_exit_code": 3
+      }
+    ]
+  },
+  "confirmed_incident": {
+    "android_exit_reason_code": 3,
+    "android_exit_reason": "LOW_MEMORY",
+    "android_reported_importance": 100,
+    "java_crash_not_established": true,
+    "native_final_receipt_present": false,
+    "native_raw_final_present": false,
+    "native_pending_files_preserved": true,
+    "last_native_log_phase": "model_tensor_loading",
+    "logged_model_buffers_mib": {
+      "cpu": 2730,
+      "htp0": 2731.05
+    },
+    "memory_limitations": [
+      "The logged buffer sizes are not total application or NPU peak memory.",
+      "No continuous RAM or power trace covers the exact kill event.",
+      "A completed native generation or successful cancellation was not observed."
+    ]
+  },
+  "recovery_observation": {
+    "accessibility_service_recreated_application": true,
+    "control_journal_remained_stale_running_until_main_activity": true,
+    "plain_activity_launches": 1,
+    "force_stops": 0,
+    "new_task_launches": 0,
+    "configuration_writes": 0,
+    "original_journal_archived_by_application": true,
+    "terminal_state": "interrupted",
+    "blocked": true,
+    "previous_cleanup_known": false,
+    "no_automatic_resume_or_replay": true,
+    "post_launch_samples_without_native_worker": 4,
+    "post_launch_observation_span_ms": 15384
+  },
+  "evidence": {
+    "incident_summary_sha256": "d0bd5de77eb46e3a7278bc830bc8b34d11aa03bcd5ef768059f9a49a03cc7f09",
+    "exit_info_sha256": "a0f3ac60c7381cbb136b7a21219e7f7c9b0d69b70a6c89c761087f058758c853",
+    "native_stderr_sha256": "39779c693ba5b0c501e8d3611df3d32406de012caf7dd78329b98bece909da00",
+    "formal_interruption_summary_sha256": "ed4a43d46fe608a4e6c289eba79521d331a01191da9b54181ee0af64a6d4517e",
+    "original_private_archive_sha256": "58c8a9eb3488b0e04f9d423d31ab00d40ebe2bc6e7a19e137495cf6890eb1616",
+    "post_recovery_screenshot_sha256": "06d9329f7f0f7fc4231b03d644efbb1768248f171cf3195e372fc31288e727c6"
+  },
+  "limitations": [
+    "Ordinary user-button start, successful active-inference Stop, and clean-idle restart acceptance are still unqualified.",
+    "Code19 exposes no visible interrupted-session recovery control; both Start and Stop are disabled in the observed interrupted state.",
+    "The original task remains interrupted with unknown cleanup, not changed into success or clean completion.",
+    "The seven-case continuation result remains separate: three pass and four fail.",
+    "Recovery and model-history fixes are separate unreleased candidates; no phone qualification is implied."
+  ]
+}

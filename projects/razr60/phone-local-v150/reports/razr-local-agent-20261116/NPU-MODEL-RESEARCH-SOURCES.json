@@ -1,0 +1,195 @@
+{
+  "comparability_limits": [
+    "Runtime and model-card support is not app task qualification.",
+    "Single same-APK cases are not a controlled quality or sustained thermal benchmark.",
+    "Author measurements on V81/other V79 devices and DSpark configurations are separate from this V79 phone.",
+    "No byte-count estimate or child PSS alone establishes total runtime memory."
+  ],
+  "existing_evidence": [
+    {
+      "artifact": "PHONE-VALIDATION-DRAFT.json",
+      "id": "E1",
+      "kind": "existing_independent_phone_report",
+      "scope": "21 tasks through APK5dfa: 8 Notes goal passes, 13 failures; 406 consistency checks are not task success rate; 2 additional pre-Start rejections. Includes same-APK 2f588 three-model Notes comparison.",
+      "sha256": "0bbcb5f00b681a3fb390d7c3b24422d6ead42731c45f665401f38bdf275da105"
+    },
+    {
+      "artifact": "HISTORICAL-CAPABILITY-SCOPE-c662.json",
+      "id": "E2",
+      "kind": "existing_sanitized_analysis",
+      "scope": "Historical visual-model qualification and general action versus goal-specific completion scope; not current APK requalification",
+      "sha256": "e509c0c6054fe7b7209e400998e152d29df5525a0051c90732de34b67a9331a1"
+    },
+    {
+      "artifact": "STOP-GPU-VALIDATION.json",
+      "id": "E3",
+      "kind": "existing_sanitized_analysis",
+      "scope": "LFM3 actual first-token ordinary Stop, corrected mapping preserving original failure; Orvena GPU one-token timeout and normal recovery",
+      "sha256": "4332f47850f646c5b9b3bc49d78549f31e2d6c76732b6ac532b181325fff8f7d"
+    },
+    {
+      "artifact": "MOE-35B-STANDALONE.md",
+      "id": "E4",
+      "kind": "existing_sanitized_analysis",
+      "scope": "Frozen B4 standalone, actual speeds, memory limits, fixed-CLI framing adjudication and lack of Hepta App integration",
+      "sha256": "72029bccb14fb00c98e4b5c97546c06f12c17fd37426a25b84c7bc4799580635"
+    },
+    {
+      "artifact": "NATURAL-PRICE-5DFA-DIAGNOSIS.public.json",
+      "id": "E5",
+      "kind": "host_analysis_of_saved_phone_case",
+      "scope": "0-model-invocation natural-price observation failure; no harmful/benign inference from missing failing-row geometry",
+      "sha256": "316fea3f4c63501df6aaac6c060f607eb3eea39288b70cec92e98093fb439e5e"
+    },
+    {
+      "artifact": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "id": "E6",
+      "kind": "frozen_source",
+      "scope": "Fixed Gemma4 E2B QAT GGUF profile: 3349516256 bytes, fa401b55...; host-source verification, not a new phone file hash",
+      "sha256": "11ff3d26283dc4e8789c427363043675427e647bff6524b1c5a987afba4a8a9c",
+      "source_head": "8d277617ae0263631d2bcdd30d5022e3c6cf7897"
+    }
+  ],
+  "historical_background_not_used_as_current_qualification": [
+    {
+      "included_in_current_21_tasks": false,
+      "name": "Gemma4 E2B code14/core4",
+      "summary": "Earlier session recorded core4 1/4. Original receipts were not reacquired for this report; no throughput numbers or unverified failure classes were added."
+    }
+  ],
+  "host_only": true,
+  "new_tests": 0,
+  "phone_commands": 0,
+  "primary_sources": [
+    {
+      "accessed": "2026-11-16",
+      "id": "P1",
+      "kind": "official_documentation",
+      "publisher": "Qualcomm",
+      "scope": "SM8750 / V79; SM8850 / V81",
+      "title": "QAIRT SDK supported Snapdragon devices",
+      "url": "https://docs.qualcomm.com/nav/home/QNN_general_overview.html?product=924033590759186372"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P2",
+      "kind": "official_product_page",
+      "publisher": "Qualcomm",
+      "scope": "Product architecture and relative vendor claims, not phone tokens/s",
+      "title": "Snapdragon 8 Elite Mobile Platform",
+      "url": "https://www.qualcomm.com/smartphones/products/8-series/snapdragon-8-elite-mobile-platform"
+    },
+    {
+      "accessed": "2026-11-16",
+      "additional_url": "https://github.com/qualcomm/GenieX/blob/main/docs/en/models/supported.mdx",
+      "id": "P3",
+      "kind": "official_repository",
+      "publisher": "Qualcomm",
+      "scope": "llama_cpp versus qairt formats and compute routing; specific models still require qualification",
+      "title": "GenieX platform and quantization documentation",
+      "url": "https://github.com/qualcomm/GenieX/blob/main/docs/en/get-started/platforms.mdx"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P4",
+      "kind": "official_release",
+      "published": "2026-11-12",
+      "publisher": "Qualcomm",
+      "scope": "Specific changes, including token accounting and SDK/HTP fixes",
+      "title": "GenieX v0.11.0 release",
+      "url": "https://github.com/qualcomm/GenieX/releases/tag/v0.11.0"
+    },
+    {
+      "accessed": "2026-11-16",
+      "additional_url": "https://github.com/google-ai-edge/LiteRT-LM",
+      "id": "P5",
+      "kind": "official_repository",
+      "publisher": "Google AI Edge",
+      "scope": "Official README explicitly lists Gemma 4 E2B on Snapdragon 8 Elite NPU; not qualification of this app or a specific unverified downloadable artifact",
+      "title": "LiteRT and LiteRT-LM samples",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/main/README.md"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P6",
+      "kind": "model_author_card",
+      "publisher": "Liquid AI",
+      "scope": "Architecture, intended usage, template/thinking/tool format; other-platform or BF16 benchmarks are not this phone",
+      "title": "LFM3-1.7B model card",
+      "url": "https://huggingface.co/LiquidAI/LFM3-1.7B"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P7",
+      "kind": "model_author_card",
+      "publisher": "Liquid AI",
+      "scope": "8.3B total / 1.5B active; architecture and tool use",
+      "title": "LFM2.5-8B-A1B model card",
+      "url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P8",
+      "kind": "model_author_card",
+      "publisher": "Google DeepMind / Google AI for Developers",
+      "scope": "E2B 2.3B effective / 5.1B including embeddings; does not measure Hepta performance",
+      "title": "Gemma 4 model card",
+      "url": "https://ai.google.dev/gemma/docs/core/model_card_4"
+    },
+    {
+      "accessed": "2026-11-16",
+      "additional_url": "https://docs.pytorch.org/executorch/main/backends-qualcomm.html",
+      "id": "P9",
+      "kind": "official_documentation",
+      "publisher": "PyTorch / ExecuTorch",
+      "scope": "Export, quantization, sharding, graph transforms and .pte workflow; host requirements are example-specific",
+      "title": "Run Llama 3 3B Instruct on Android with Qualcomm backend",
+      "url": "https://docs.pytorch.org/executorch/main/llm/build-run-llama3-qualcomm-ai-engine-direct-backend.html"
+    },
+    {
+      "accessed": "2026-11-16",
+      "additional_url": "https://github.com/IPADS-SAI/Mobiinfer-Android",
+      "id": "P10",
+      "kind": "runtime_author_repository",
+      "published": "2026-11-11",
+      "publisher": "IPADS-SAI",
+      "release": "v0.4.5",
+      "revision": "659c3cb5a38493147444a47e0e0762664aacba06",
+      "scope": "Author-reported LES/DSpark/UFS expert streaming and platform-specific benchmark; not this phone's measurement",
+      "title": "MobiInfer Android pinned README",
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/README.md"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P11",
+      "kind": "model_author_card",
+      "publisher": "OpenBMB",
+      "scope": "Base model identity and authorship; not the GGUF conversion publisher",
+      "title": "MiniCPM-V-4.7-35B-A3B model card",
+      "url": "https://huggingface.co/openbmb/MiniCPM-V-4.7-35B-A3B"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P12",
+      "kind": "conversion_publisher",
+      "publisher": "fengerhu1",
+      "revision": "f125f5a71552e70ccc2d5b0061f77f311bee70c5",
+      "scope": "Exact converted artifact provenance, distinct from OpenBMB base weights",
+      "title": "Pinned MiniCPM-V-4.7-35B-A3B GGUF/Hexagon conversion",
+      "url": "https://huggingface.co/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon/tree/f125f5a71552e70ccc2d5b0061f77f311bee70c5"
+    },
+    {
+      "accessed": "2026-11-16",
+      "id": "P13",
+      "kind": "runtime_author_source",
+      "publisher": "IPADS-SAI",
+      "revision": "659c3cb5a38493147444a47e0e0762664aacba06",
+      "scope": "O_DIRECT scratch ownership and persistent pool versus temporary-reader lifecycle",
+      "title": "Pinned expert slot implementation",
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/659c3cb5a38493147444a47e0e0762664aacba06/src/llama-moe-slot.cpp"
+    }
+  ],
+  "repo_or_frozen_source_modified": false,
+  "review_date": "2026-11-16",
+  "schema": "hepta.public-npu-model-research-sources.v1"
+}

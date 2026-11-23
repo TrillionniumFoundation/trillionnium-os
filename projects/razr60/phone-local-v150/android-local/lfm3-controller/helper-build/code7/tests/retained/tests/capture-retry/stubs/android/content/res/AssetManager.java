@@ -1,0 +1,1 @@
+package android.content.res; public final class AssetManager { private final java.io.File asset; public AssetManager(java.io.File f){asset=f;} public java.io.InputStream open(String name)throws java.io.IOException {if(!name.equals("readonly_dom.js"))throw new java.io.IOException("unexpected asset"); return new java.io.FileInputStream(asset);} }

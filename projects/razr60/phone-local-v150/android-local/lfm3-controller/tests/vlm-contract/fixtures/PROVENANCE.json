@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.guiowl.template-fixture.v1",
+  "repository": "mradermacher/GUI-Owl-1.5-4B-Instruct-i1-GGUF",
+  "revision": "86a5a5659edfba4f5e10efed46ac448ae3562467",
+  "model_file": "GUI-Owl-1.5-4B-Instruct.i1-Q4_0.gguf",
+  "model_sha256": "c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df",
+  "metadata_key": "tokenizer.chat_template",
+  "file": "gui-owl-chat-template.jinja",
+  "bytes": 5292,
+  "sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
+  "extracted_bytes_unmodified": true,
+  "model_inference_claimed": false
+}

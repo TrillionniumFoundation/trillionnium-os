@@ -1,0 +1,21 @@
+{
+  "revision": "1add221a5ea6c047fcf1eaaf2d247939d7cf8849",
+  "source": "LiquidAI/LFM3-VL-2B-GGUF",
+  "files": [
+    {
+      "name": "LFM3-VL-2B-QAD-Q4_0.gguf",
+      "bytes": 1049615648,
+      "sha256": "621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6",
+      "reused": false
+    },
+    {
+      "name": "mmproj-LFM3-VL-2B-F16.gguf",
+      "bytes": 378996032,
+      "sha256": "1d8e6e58eefc093e09d6332f081516e1ddbd5b35cfca7f35463fb270db230b1e",
+      "reused": false
+    }
+  ],
+  "completed": true,
+  "phone_operations": 0,
+  "created_unix": 1795161358
+}

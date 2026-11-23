@@ -1,0 +1,709 @@
+{
+  "actions": [
+    {
+      "accepted": true,
+      "action": "wait",
+      "artifact": "step-01-action.json",
+      "dispatched": false,
+      "model_issued": true,
+      "model_run_id": "12750d02e5d74b398078237298086e70",
+      "stale": false
+    },
+    {
+      "accepted": true,
+      "action": "click",
+      "artifact": "step-02-action.json",
+      "dispatched": true,
+      "model_issued": true,
+      "model_run_id": "ff3d1e47df4145d3bdc4db298c3ea9df",
+      "stale": false
+    }
+  ],
+  "apk_sha256": "e99948c0ae1a36ccc9708e9aed83b80b8766b2daf42ea2a59f486cbabe08023a",
+  "audit_checks": {
+    "actual_action_sequence_matches": true,
+    "all_request_identities_match": true,
+    "completion_still_unverified": true,
+    "focus_result_matches_recorded_endpoints": true,
+    "goal_still_unverified": true,
+    "harness_cleanup_flags_and_exit_guard": true,
+    "no_external_model_or_automatic_replay": true,
+    "no_main_display_input": true,
+    "no_remaining_native_in_collected_inventory": true,
+    "no_terminal_pending_worker": true,
+    "selected_route_verified": true,
+    "task_cleanup_known": true,
+    "task_identity_matches": true,
+    "terminal_status_matches": true
+  },
+  "audit_checks_passed": true,
+  "background": {
+    "focus_scope": "Task before-Start and after-release endpoints; not continuous display monitoring. A foreground change is preserved without assigning its cause.",
+    "foreground_changed_before_start": false,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "native_process_count_after_collection": 0,
+    "ordinary_stop_sent": false,
+    "stop_requested_elapsed_ms": null,
+    "task_time_limit_reached": null
+  },
+  "build_source_commit": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+  "business_flag_is_separate_from_goal_proof": true,
+  "case_id": "official_flight_home_structure_build",
+  "controller_summary": "evidence RPC deadline exceeded",
+  "dispatched_model_action_count": 1,
+  "driver_business_verified": false,
+  "evidence": [
+    {
+      "artifact": "driver/RESULT.json",
+      "bytes": 22141,
+      "private_original_published": false,
+      "sha256": "f6dd6e33503081ca32ffc76635fc17098a93895c033a48737185720198d41ead"
+    },
+    {
+      "artifact": "prepare/STATE.json",
+      "bytes": 1697,
+      "private_original_published": false,
+      "sha256": "e24b5106e103b402673c7b1bb21daf5a334fce2605b4ff8be9a67f27e9fd37ea"
+    },
+    {
+      "artifact": "task/result.json",
+      "bytes": 27670,
+      "private_original_published": false,
+      "sha256": "a7d1cc8fb4646bd8f7b1442b1d49edd7cae2c0eef347f4bbc995d757dd5de496"
+    },
+    {
+      "artifact": "task/step-01-action.json",
+      "bytes": 14040,
+      "private_original_published": false,
+      "sha256": "22192b34dc29d16454b292503270b6ab9c8a1527cdd8b32f5418384aca30d8b5"
+    },
+    {
+      "artifact": "task/step-02-action.json",
+      "bytes": 16178,
+      "private_original_published": false,
+      "sha256": "f907685de651a95b6fb1f0ccf526abaf4d1316fc6e091ae9aa86fdf116d71617"
+    },
+    {
+      "artifact": "request/12750d02e5d74b398078237298086e70/app-receipt.json",
+      "bytes": 13855,
+      "private_original_published": false,
+      "sha256": "1fa918d913c511e4bc8b424a560fc46bc1f71872ea3ab8773df02abda8e339c2"
+    },
+    {
+      "artifact": "request/12750d02e5d74b398078237298086e70/native-result.json",
+      "bytes": 5015,
+      "private_original_published": false,
+      "sha256": "338049264caeec8ad65e60447a6cd649e9e2317b55a0a4b3642b6144286d6b18"
+    },
+    {
+      "artifact": "request/ff3d1e47df4145d3bdc4db298c3ea9df/app-receipt.json",
+      "bytes": 12350,
+      "private_original_published": false,
+      "sha256": "8a517f2c3d01cea18022277d473bc132e0219abe4f4d1f467f49d56e30c7321c"
+    },
+    {
+      "artifact": "request/ff3d1e47df4145d3bdc4db298c3ea9df/native-result.json",
+      "bytes": 5022,
+      "private_original_published": false,
+      "sha256": "d09a73227f3da36b0a253af21c97857e5dbf976b8d6ab6aa4c24d971d5ab17f5"
+    },
+    {
+      "artifact": "task/web-observation-timing-094bfef2f8744956bea130834648ec13.json",
+      "bytes": 4711,
+      "private_original_published": false,
+      "sha256": "50e1fdcdd26733e61182dfa7e685a959e3b97cfcd4136da22311c841baed076e"
+    },
+    {
+      "artifact": "task/web-observation-timing-905642c299b14d6e8ed09a6582a86236.json",
+      "bytes": 5425,
+      "private_original_published": false,
+      "sha256": "677b172d299e648e717db16c653cadad2f73d8aea47496aea497b8c1b4de9370"
+    },
+    {
+      "artifact": "task/web-observation-timing-ba5d8cf903d04646b37dd77a07e02906.json",
+      "bytes": 5886,
+      "private_original_published": false,
+      "sha256": "15dbed37de88a9de12fe5abc00a649124f3dc88676dd77f22cdac83a896f0b61"
+    }
+  ],
+  "flight": {
+    "flight_goal_binding_verified": true,
+    "flight_result_verified": false,
+    "query_or_booking_completed": false
+  },
+  "foreground_sampling": {
+    "after_release_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "alias_text_file_count": 17,
+    "alias_text_files_excluded_from_sample_count": true,
+    "all_sampled_components_equal_to_before_start": true,
+    "all_sampled_raw_focus_values_equal_to_before_start": true,
+    "all_samples_have_nonnull_focus": true,
+    "before_start_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+    "endpoint_unchanged": true,
+    "foreground_frame_rate_or_touch_latency_measured": false,
+    "host_wall_clock_only": true,
+    "interpretation": "All existing saved main-display window dumps are audited, with command copies counted once. The recorded focus applies at sampled instants; unsampled gaps and foreground interaction responsiveness remain unmeasured. Zero main-display input is a separate routing fact.",
+    "main_screen_inputs": 0,
+    "max_running_sample_start_gap_s": 4.951000452041626,
+    "max_saved_sample_start_gap_s": 124.50163388252258,
+    "phase_counts": {
+      "before_start": 1,
+      "preparation": 6,
+      "release": 1,
+      "running": 11
+    },
+    "sample_count": 19,
+    "samples": [
+      {
+        "artifact": "commands/prepare-0012-before-windows.stdout",
+        "command_receipt_sha256": "f4eb0b7f5111a77d19709151b62e4af710b3b42db3307aeb4673dee9cd7372e3",
+        "completed_host_wall_s": 1794824723.2681313,
+        "dump_sha256": "6bf3f1216028e564d3bf708c53bd7ab505bf8df4315c4be235abfe042467d47d",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824723.2291896,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0021-prelaunch-windows.stdout",
+        "command_receipt_sha256": "6cd4800f47c2f22dd200234134968d9f9955569692ef8412c8ca2fb95aeb10d1",
+        "completed_host_wall_s": 1794824724.0535893,
+        "dump_sha256": "179ed62cb969648701a4e01e42f66bea2024791b7f400db81b25619eec75e311",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824724.0287926,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "commands/prepare-0030-after-windows.stdout",
+        "command_receipt_sha256": "4bb704d0048adab87515bdf33709f55100f941dc0bdf720d1bec75084b3142f0",
+        "completed_host_wall_s": 1794824725.3147604,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824725.2901156,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-1f69bc8f/commands/select-webhelper-0012-before-selection-windows.stdout",
+        "command_receipt_sha256": "9bea769b28cc36e974fd0c2ade4cf3b43ed36ea634b95dd5266390cfb565398f",
+        "completed_host_wall_s": 1794824726.2760897,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824726.2471683,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "select-webhelper-1f69bc8f/commands/select-webhelper-0023-snapshot-windows.stdout",
+        "command_receipt_sha256": "0605a7e62b4ad19e40869763ecc5d5efee418a6623c1d1e27e3178dcb7bf9a23",
+        "completed_host_wall_s": 1794824726.9841287,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824726.9528098,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "root-frame-refresh/commands/root-frame-refresh-0028-snapshot-windows.stdout",
+        "command_receipt_sha256": "26b69cb9be9247ed0479361d421bfe451df2d64518933658ac9f48e224997e5b",
+        "completed_host_wall_s": 1794824729.7598722,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "preparation",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824729.7376242,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0021-before-start-window.stdout",
+        "command_receipt_sha256": "5244e8e97b85d06f5d3632503ef3926609a1cbe40d1f2acc60e277f483afd5af",
+        "completed_host_wall_s": 1794824854.2731326,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "before_start",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824854.239258,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0027-running-windows.stdout",
+        "command_receipt_sha256": "1ba37808a48b2ac4e4cb4e630b4a26cc09dc2d8a6efb857c4ff25c6b5266c512",
+        "completed_host_wall_s": 1794824855.128105,
+        "dump_sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824855.0891159,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0032-running-windows.stdout",
+        "command_receipt_sha256": "59bfd94237ceddfd7ec3f7174f8f34d7e2cea50be3393a594f131530f4616fda",
+        "completed_host_wall_s": 1794824859.7979293,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824859.773539,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0037-running-windows.stdout",
+        "command_receipt_sha256": "5f6e314399e8d0c4316d022fd59deea573508295f6707871b288301c1b18782f",
+        "completed_host_wall_s": 1794824864.3781157,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824864.3431811,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0042-running-windows.stdout",
+        "command_receipt_sha256": "34e2a373fbee993538ee0cc6dd08f67f5970cda6955dbb265e9e52aa5118445c",
+        "completed_host_wall_s": 1794824869.0017598,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824868.9690664,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0047-running-windows.stdout",
+        "command_receipt_sha256": "3fa6c80db22477b739f5fd5790ce1a4ee2ba9364547fc2f3143a942a55e64d01",
+        "completed_host_wall_s": 1794824873.4994667,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824873.4682007,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0052-running-windows.stdout",
+        "command_receipt_sha256": "d73d0ae6fa6a8d93b178c49db487c15392a0f7c0ff2dee56cb3dd271c3b29b33",
+        "completed_host_wall_s": 1794824878.2212644,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824878.1810808,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0057-running-windows.stdout",
+        "command_receipt_sha256": "47837ae8aac269cf9806039b1ef511c25a14e75d23b741bb378a0d8e1c78d82b",
+        "completed_host_wall_s": 1794824883.1810932,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824883.1320813,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0062-running-windows.stdout",
+        "command_receipt_sha256": "2dba5e51f3d094939632fcc029dd4e099ba62051a3e0dd91fa57fa4314773124",
+        "completed_host_wall_s": 1794824887.7260935,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824887.6922581,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0067-running-windows.stdout",
+        "command_receipt_sha256": "6d9a2eb61a88f78e9d47bd4bf7d8f6343f527472b02b10dbfcfbe1983fc2f0e4",
+        "completed_host_wall_s": 1794824892.5111012,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824892.4685392,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0072-running-windows.stdout",
+        "command_receipt_sha256": "1b6133ca220dc76521d6d2523332d49739f9c1def2b4f5ca7e71bd1c0e5bae1b",
+        "completed_host_wall_s": 1794824896.976125,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824896.9343219,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0077-running-windows.stdout",
+        "command_receipt_sha256": "92ae9cb5ff4bfe2ad3fbdc385a5681a7e68d533d95e693a743c8afdb8c68db61",
+        "completed_host_wall_s": 1794824901.5971074,
+        "dump_sha256": "9d18e0a0d9ac262be98bc92fa139d8ee89c45fe70bf451be3f4859b90c5532b6",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "running",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824901.5556836,
+        "unknown_focus": false
+      },
+      {
+        "artifact": "run-bc32b85e/commands/run-0089-release-windows.stdout",
+        "command_receipt_sha256": "87bbbc06fa9663ae6302454a097232c26bc719408caef13d0704f9156da69c78",
+        "completed_host_wall_s": 1794824907.3270888,
+        "dump_sha256": "57b2b0e84b42add2b4ba6c331e72b5ddc4b288ed7d6613fd0c45f34b1eb9102d",
+        "focused_component": "org.trillionnium.hepta.localprobe/org.trillionnium.hepta.localprobe.MainActivity",
+        "phase": "release",
+        "raw_focus_sha256": "4646a19fe83046a12ad7964282cef6da47da292ed8ad5edbbad876a34cb10738",
+        "started_host_wall_s": 1794824907.2860682,
+        "unknown_focus": false
+      }
+    ],
+    "snapshots_are_not_continuous_monitoring": true,
+    "unknown_focus_sample_count": 0,
+    "unsampled_intervals_present": true
+  },
+  "interpretation": "Two local-model requests produced an accepted no-effect wait and an accepted dispatched click on n38. The task then failed with evidence RPC deadline exceeded. No flight query or flight result was verified; the two model steps are not a completed flight task.",
+  "model_request_count": 2,
+  "model_requests": [
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 10576.368,
+        "generation_complete": true,
+        "request_id": "12750d02e5d74b398078237298086e70",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "8b5466afa9ae4eefa44501c67fee0f9b",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": true,
+            "elapsed_ms": 1343.905,
+            "ended": true,
+            "started": true
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 8042.632,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": true,
+            "elapsed_ms": 868.706,
+            "ended": true,
+            "started": true
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 33.708,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": true,
+            "elapsed_ms": 274.633,
+            "ended": true,
+            "started": true
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 4254520,
+        "decode_tokens_per_second": 23.73945827026316,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 101,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 906.9203331380183,
+        "prompt_time_us": 3785338,
+        "prompt_tokens": 3433,
+        "ttft_us": 3786105
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 11504,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "12750d02e5d74b398078237298086e70",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    },
+    {
+      "complete_generation": true,
+      "interpretation": "Per-request runtime profile only. Cancelled/incomplete generation rates are not steady decode benchmarks.",
+      "model": {
+        "model_id": "LiquidAI/LFM3-1.7B-GGUF",
+        "model_profile": "lfm3-1.7b-qad-q4_0",
+        "model_revision": "",
+        "model_sha256_verified": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+      },
+      "native": {
+        "deadline_observed": false,
+        "elapsed_ms": 10036.064,
+        "generation_complete": true,
+        "request_id": "ff3d1e47df4145d3bdc4db298c3ea9df",
+        "request_status": 0,
+        "signal_observed": 0,
+        "stop_reason": "eos",
+        "worker_generation": "8b5466afa9ae4eefa44501c67fee0f9b",
+        "worker_outcome": "completed"
+      },
+      "partial_token_rate_is_not_steady_decode_measurement": false,
+      "phase_timing": {
+        "clock": "CLOCK_MONOTONIC",
+        "schema": "hepta.native-phase-timing.v1",
+        "stages": {
+          "create": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "deinit": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "destroy": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "generate": {
+            "clock_valid": true,
+            "elapsed_ms": 9995.105,
+            "ended": true,
+            "started": true
+          },
+          "hash": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          },
+          "template_tokenize": {
+            "clock_valid": true,
+            "elapsed_ms": 32.369,
+            "ended": true,
+            "started": true
+          },
+          "vocab": {
+            "clock_valid": false,
+            "elapsed_ms": null,
+            "ended": false,
+            "started": false
+          }
+        },
+        "unit": "ms"
+      },
+      "profile": {
+        "decode_time_us": 5800992,
+        "decode_tokens_per_second": 22.75472884637662,
+        "draft_n_accepted": 0,
+        "draft_n_total": 0,
+        "generated_tokens": 132,
+        "media_time_us": 0,
+        "prefill_tokens_per_second": 903.8342327931484,
+        "prompt_time_us": 4191034,
+        "prompt_tokens": 3788,
+        "ttft_us": 4191738
+      },
+      "request": {
+        "cancel_requested": false,
+        "elapsed_ms": 10045,
+        "fallback_allowed": false,
+        "inference_completed": true,
+        "native_result_binding_valid": true,
+        "request_committed": true,
+        "run_id": "ff3d1e47df4145d3bdc4db298c3ea9df",
+        "runtime_device_selection_valid": true,
+        "status": "request_completed",
+        "timeout_observed": false
+      },
+      "runtime": {
+        "automatic_cpu_fallback": false,
+        "compute_requested": "npu",
+        "device_resolved": "HTP0",
+        "mode": "llm",
+        "runtime": "llama_cpp",
+        "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "sdk_version": "v0.10.0"
+      }
+    }
+  ],
+  "observed_progress": {
+    "accepted_no_effect_waits": 1,
+    "dispatched_clicks": 1,
+    "flight_query_dispatched": false,
+    "flight_query_records": 0,
+    "flight_result_verified": false,
+    "model_requests": 2,
+    "model_wait_decisions": 1,
+    "pre_dispatch_recovery_records": 0
+  },
+  "outcome": "FAIL_GOAL_NOT_VERIFIED",
+  "recorded_action_count": 2,
+  "route": "official_website",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "sample_count": 1,
+  "steps_are_not_business_progress": true,
+  "strict_prepare": {
+    "after_launch_no_controller_task_on_display0": true,
+    "all_three_prepare_gates_replayed": true,
+    "atomic_android_transaction": false,
+    "initial_and_prelaunch_no_controller_task_on_display0": true,
+    "interpretation": "The original guard functions are replayed over their saved snapshots. Activity/window snapshots and launch are separate Android operations; the host lock does not serialize concurrent user or system activity.",
+    "original_main_focus_not_rebased": true,
+    "outer_display_id": 117,
+    "own_ui_transfer": false,
+    "phone_operations_by_auditor": 0,
+    "prepare_sha256": "744121745fef1071c69cf4ab259bf8a8d4d0f08f1b5308d55739dfe734023015",
+    "snapshots": [
+      {
+        "artifact": "prepare/before-activities.txt",
+        "bytes": 61392,
+        "private_original_published": false,
+        "sha256": "3863cdd39ee0cca5fb2c5002fb5f87f27c7cf1913479b26d6cd0b0caa4cdfa0d"
+      },
+      {
+        "artifact": "prepare/before-windows.txt",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "6bf3f1216028e564d3bf708c53bd7ab505bf8df4315c4be235abfe042467d47d"
+      },
+      {
+        "artifact": "prepare/prelaunch-activities.txt",
+        "bytes": 67188,
+        "private_original_published": false,
+        "sha256": "ed44b159b5f536f7c61875f9484be5eed3dada2d719b6570e1ea7134d3ddd7b8"
+      },
+      {
+        "artifact": "prepare/prelaunch-windows.txt",
+        "bytes": 36667,
+        "private_original_published": false,
+        "sha256": "179ed62cb969648701a4e01e42f66bea2024791b7f400db81b25619eec75e311"
+      },
+      {
+        "artifact": "prepare/after-activities.txt",
+        "bytes": 73634,
+        "private_original_published": false,
+        "sha256": "55efc947d8fa8568c76de685bc1600bc83384330079f1e33c1f405f82e5a1c8d"
+      },
+      {
+        "artifact": "prepare/after-windows.txt",
+        "bytes": 37692,
+        "private_original_published": false,
+        "sha256": "fc39962c962115aff2e688184865f65027c40dca0b18a3c6dd0ca6032d419b73"
+      }
+    ],
+    "source_driver_and_action_bytes_preserved": true,
+    "strict_manifest_sha256": "44ad75a190d059f0a39dde66baa127973eb24cc13408805f08e26ef08e5c4f2a"
+  },
+  "task_id": "783db5ed7986423f9b5547d16a129365",
+  "task_verification": {
+    "action_worker_pending_at_terminal": false,
+    "automatic_replay": false,
+    "cleanup_known": true,
+    "completion_verified": false,
+    "external_model": false,
+    "goal_independently_verified": false,
+    "native_cancel_worker_pending_at_terminal": false,
+    "observation_read_worker_pending_at_terminal": false,
+    "status": "failed",
+    "steps": 2
+  },
+  "timing": {
+    "collection_wall_time_used_as_task_duration": false,
+    "overall_task_elapsed_ms": null
+  },
+  "virtual_display_cleanup": {
+    "both_displays_absent_in_final_saved_window_inventory": true,
+    "controller_outer_display_id": 117,
+    "evidence": [
+      {
+        "artifact": "driver/run-0087-release-receipt.stdout",
+        "bytes": 0,
+        "private_original_published": false,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "driver/run-0088-release-receipt.stdout",
+        "bytes": 179,
+        "private_original_published": false,
+        "sha256": "44e34939244adf6f6d327fce62bb18ce01af458eea53cb71734f5092f34076f9"
+      },
+      {
+        "artifact": "driver/run-0089-release-windows.stdout",
+        "bytes": 31098,
+        "private_original_published": false,
+        "sha256": "57b2b0e84b42add2b4ba6c331e72b5ddc4b288ed7d6613fd0c45f34b1eb9102d"
+      },
+      {
+        "artifact": "task/background-bootstrap.json",
+        "bytes": 8655,
+        "private_original_published": false,
+        "sha256": "03fc6d74fc03c02b8bda909a5b53fbf2ea81771ff898cf2d4fbd4d66ce115dc6"
+      },
+      {
+        "artifact": "task/background-cleanup.json",
+        "bytes": 7289,
+        "private_original_published": false,
+        "sha256": "ab2f9db46f2376183e37a220911b8aafbf1782717ab66c4f87b11ad81bf40c87"
+      }
+    ],
+    "initial_empty_outer_release_poll_retained": 1,
+    "outer_release_receipt_matches_original_lease": true,
+    "product_target_release_and_broker_exit_verified": true,
+    "target_app_display_id": 118
+  }
+}
