@@ -73,7 +73,7 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
- parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()
+ parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
  template=(test/'SearchProducerHost.template').read_text()
  for key,value in parts.items():

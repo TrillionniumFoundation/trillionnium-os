@@ -1,0 +1,54 @@
+    static void recordedNavigationWindowCases()throws Exception{
+        Path fixtures=Paths.get(System.getProperty("hepta.test.fullPageCensuses")).getParent();
+        for(String id:Arrays.asList("2a5063","1d0e0e")){
+            byte[] bytes=Files.readAllBytes(fixtures.resolve(id+"-navigation-censuses.json"));
+            boolean price="2a5063".equals(id);
+            check((price?"753d1e2a930e37d15c265355ea10f477552950cedaef669331fdc42e77f99c1e":
+                    "b8ba1d25c084e70760e18a193325b9517d6e028684bc9a9e5c1942043606c999").equals(sha(bytes)),"recorded complete four censuses and original clocks");
+            JSONObject raw=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
+            one(id+"_actual_home_may_verify_only_the_offered_search_bar",()->{
+                NativeActionSnapshotCheck.Snapshot a=fullSwapSnapshot(raw.getJSONObject("A")),b=fullSwapSnapshot(raw.getJSONObject("B"));
+                NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(raw.getJSONObject("C")),d=fullSwapSnapshot(raw.getJSONObject("D"));
+                NativeSearchRole offered=NativeSearchRole.compareForPlanning(a,b);
+                NativeSearchRole fresh=offered.compareCurrent(c,d,true);offered.requireSameRole(fresh);
+                check(c.nodes.size()==75&&d.nodes.size()==75&&!fresh.iconAction&&fresh.actionPath.equals("0/0/3"),"current original work-profile wide switcher");
+                check(!raw.getBoolean("claimed")&&!raw.getBoolean("effect_entered"),"recorded attempts never entered the Android effect");
+                long issued=raw.getLong("original_attempt"),old=raw.getLong("original_deadline");
+                check(old-issued==8000&&NativeSearchPlanning.navigationDeadline(issued,issued+100000)==issued+24000,"new single bounded time reservation");
+                if(price)check(raw.getLong("D_snapshot_completed")==old-23&&raw.isNull("role_compared"),"old complete D arrived only 23 ms before expiry");
+                else{
+                    check(raw.getString("reason").equals("content_event_at_last_preclaim_fence")&&raw.getBoolean("old_revalidation_discarded"),"old pair was discarded after a final event");
+                    long retry=raw.getJSONArray("C_reads").getJSONObject(1).getLong("started_elapsed_ms");
+                    check(retry==old-292,"recorded second full census started with only 292 ms remaining");
+                }
+                JSONObject altered=new JSONObject(raw.getJSONObject("D").toString());
+                swapNode(altered,fresh.actionPath).put("action_click",false);
+                rejected(()->offered.compareCurrent(c,fullSwapSnapshot(altered),true));
+            });
+        }
+        one("fresh_search_census_limit_uses_actual_D_clock_inside_full_navigation_window",()->{
+            try(NativeSearchSessionHostTest.Fixture f=new NativeSearchSessionHostTest.Fixture()){
+                NativeSearchSession.Offer offer=f.offer();long t=NativeSearchSessionHostTest.START+700;
+                NativeSearchSession.Attempt attempt=offer.reserve(f.decision(offer),NativeSearchSessionHostTest.RUN,t,
+                        NativeSearchPlanning.navigationDeadline(t,f.search.chainDeadlineElapsed));
+                attempt.revalidate(f.census(t+6000).snapshot(),f.census(t+10200).snapshot(),t+11000);
+                attempt.requireFreshFinalCensus(t+18199);
+                rejected(()->attempt.claim(t+18200));
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"old D expires regardless of the time remaining");
+                check(NativeSearchPlanning.navigationDeadline(t,t+9000)==t+9000
+                        &&NativeSearchPlanning.navigationDeadline(Long.MAX_VALUE-5,Long.MAX_VALUE)==Long.MAX_VALUE,"short original chain and long arithmetic preserved");
+                rejected(()->NativeSearchPlanning.navigationDeadline(t,t));
+            }
+        });
+        one("fresh_search_after_slow_graphs_allows_only_one_simulated_wide_bar_action",()->{
+            HeptaAccessibilityService service=new HeptaAccessibilityService();try(Fixture f=service.new Fixture()){
+                f.plan();NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);long start=SystemClock.now;
+                NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,start,
+                        NativeSearchPlanning.navigationDeadline(start,f.base.search.chainDeadlineElapsed));
+                f.graphDuration=4500;f.action(attempt);
+                check(SystemClock.now-start>8000&&SystemClock.now-start<24000&&f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1,
+                        "same fresh original wide control returns in the device-sized navigation reservation");
+                rejected(()->attempt.claim(SystemClock.now));
+            }
+        });
+    }

@@ -621,7 +621,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("task_id",taskId).put("started_elapsed_ms",search.startedElapsed)
                         .put("original_task_deadline_elapsed_ms",search.taskDeadlineElapsed)
                         .put("chain_deadline_elapsed_ms",search.chainDeadlineElapsed).put("maximum_chain_ms",NativeSearchSession.CHAIN_LIMIT_MS)
-                        .put("model_limit_ms",MODEL_TIMEOUT_MS).put("action_limit_ms",8000).put("read_limit_ms",NativeSearchPlanning.INITIAL_READ_LIMIT_MS).put("post_effect_read_limit_ms",12000)
+                        .put("model_limit_ms",MODEL_TIMEOUT_MS).put("action_limit_ms",8000).put("native_search_navigation_limit_ms",NativeSearchPlanning.NAVIGATION_LIMIT_MS).put("read_limit_ms",NativeSearchPlanning.INITIAL_READ_LIMIT_MS).put("post_effect_read_limit_ms",12000)
                         .put("maximum_post_D_successors",1).put("deadline_fixed_before_first_planning",true));
                 NativeSearchPlanning planning=awaitNativeSearchPlanning(taskId,evidence,search,deadline);
                 NativeSearchSession.Offer offer=search.offer(planning,SystemClock.elapsedRealtime());
@@ -1735,7 +1735,8 @@ public final class LocalTaskController implements AutoCloseable {
         checkActive(taskDeadline);session.requireLive(SystemClock.elapsedRealtime());
         if(!inference.modelOutputDispatchAllowed())throw new IllegalStateException("本地模型配置未允许工具派发");
         NativeSearchDecision decision=NativeSearchDecision.parse(answer.text);
-        final long issued=SystemClock.elapsedRealtime(),actionDeadline=Math.min(taskDeadline,issued>Long.MAX_VALUE-8000?Long.MAX_VALUE:issued+8000);
+        final long issued=SystemClock.elapsedRealtime();
+        final long actionDeadline=NativeSearchPlanning.navigationDeadline(issued,Math.min(taskDeadline,session.chainDeadlineElapsed));
         final NativeSearchSession.Attempt attempt=offer.reserve(decision,answer.runId,issued,actionDeadline);
         final long navigationDrainedElapsed;
         try{

@@ -305,8 +305,8 @@ public final class NativeSearchSessionHostTest {
             denied(()->o.reserve(f.decision(o,o.planning.id,H),RUN,START+700,START+8700));
             check(f.syntheticEffects==0,"no identity repair or effect");
         }});
-        one("action_deadline_cannot_exceed_original_eight_seconds",()->{try(Fixture f=new Fixture()){
-            NativeSearchSession.Offer o=f.offer();denied(()->o.reserve(f.decision(o),RUN,START+700,START+8701));
+        one("typed_navigation_deadline_cannot_exceed_24_seconds",()->{try(Fixture f=new Fixture()){
+            NativeSearchSession.Offer o=f.offer();denied(()->o.reserve(f.decision(o),RUN,START+700,START+24701));
         }});
         one("reservation_consumes_offer_before_any_effect",()->{try(Fixture f=new Fixture()){
             NativeSearchSession.Offer o=f.offer();NativeSearchSession.Attempt a=f.reserve(o);
