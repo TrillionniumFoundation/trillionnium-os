@@ -27,6 +27,7 @@ final class NativeCtripFlightPage {
     static final String HOME="ctrip_home",FORM="ctrip_single_flight_form",CALENDAR="ctrip_native_calendar";
     static final String RESULTS="ctrip_single_flight_results",OVERLAY="ctrip_research_overlay",UNAVAILABLE="unavailable";
     static final String LOGIN_REQUIRED="ctrip_login_required";
+    static final String PROMOTION="ctrip_startup_promotion", CLOSE_PROMOTION="close_ctrip_startup_promotion";
     static final String LOGIN_EXIT="ctrip_exit_observed_login_once";
     static final String FIRST_LAUNCH_PRIVACY="ctrip_first_launch_privacy";
     private static final String PREFIX="ctrip.android.view:id/";
@@ -167,6 +168,10 @@ final class NativeCtripFlightPage {
         if(!frame.metadataObserved||frame.windowType!=1)return empty(frame,UNAVAILABLE,"actual_application_window_metadata_missing");
         if(!frame.collectionComplete||frame.nodesTruncated)return empty(frame,UNAVAILABLE,"actual_native_collection_incomplete");
         try{
+            if(hasPromotionMarker(frame)){
+                need(promotionClose(frame)!=null,"complete observed startup promotion required");
+                return empty(frame,PROMOTION,null);
+            }
             if(hasFirstLaunchPrivacyMarker(frame))return firstLaunchPrivacy(frame);
             if(hasLoginMarker(frame))return loginRequired(frame);
             // This sheet leaves the underlying native flight tree exposed. Its
@@ -197,6 +202,47 @@ final class NativeCtripFlightPage {
             return empty(frame,UNAVAILABLE,"native_page_provider_not_recognized");
         }catch(IllegalArgumentException rejected){return empty(frame,UNAVAILABLE,"native_page_fields_rejected: "+bounded(rejected.getMessage(),180));}
         catch(DateTimeException rejected){return empty(frame,UNAVAILABLE,"native_calendar_value_rejected: "+bounded(rejected.getMessage(),180));}
+    }
+
+    private static boolean hasPromotionMarker(NativeAppEvidence.Frame frame){
+        boolean image=false,claim=false;
+        for(NativeAppEvidence.Node node:frame.nodes){
+            if((PREFIX+"sdk_dis_ad_close").equals(node.viewId))return true;
+            if("0/0/1/0/0".equals(node.path)&&"广告素材".equals(node.description))image=true;
+            if("0/0/1/0/1/0".equals(node.path)&&"点击收下".equals(node.text))claim=true;
+        }
+        return image&&claim;
+    }
+
+    // v1779 exposes a clickable fullscreen advertisement and a separate, unlabeled
+    // close ImageView. Neither the parent nor either promotional label is a target.
+    static NativeAppEvidence.Node promotionClose(NativeAppEvidence.Frame f){
+        if(!PACKAGE.equals(f.packageName)||f.displayId<=0||!f.metadataObserved||f.windowType!=1
+                ||!f.collectionComplete||f.nodesTruncated||f.nodes.size()!=4
+                ||f.left!=0||f.top!=0||f.right!=f.width||f.bottom!=f.height)return null;
+        NativeAppEvidence.Node veil=promotionNode(f,"0/0","RelativeLayout","FrameLayout","","","",true);
+        NativeAppEvidence.Node close=promotionNode(f,"0/0/0","ImageView","RelativeLayout",PREFIX+"sdk_dis_ad_close","","",true);
+        NativeAppEvidence.Node ad=promotionNode(f,"0/0/1/0/0","ImageView","RelativeLayout","","","广告素材",false);
+        NativeAppEvidence.Node claim=promotionNode(f,"0/0/1/0/1/0","TextView","FrameLayout","","点击收下","",false);
+        if(veil==null||close==null||ad==null||claim==null||!close.label.isEmpty()
+                ||veil.left!=f.left||veil.top!=f.top||veil.right!=f.right||veil.bottom!=f.bottom
+                ||!close.within(veil)||!ad.within(veil)||!claim.within(veil)
+                ||close.bottom>ad.top||close.left<ad.left+(ad.right-ad.left)/2
+                ||claim.left<ad.left||claim.right>ad.right||claim.top<ad.top||claim.bottom>ad.bottom)return null;
+        return close;
+    }
+    private static NativeAppEvidence.Node promotionNode(NativeAppEvidence.Frame f,String path,String cls,String parent,
+            String resource,String text,String description,boolean clickable){
+        for(NativeAppEvidence.Node n:f.nodes)if(path.equals(n.path)&&f.usable(n)&&n.enabled
+                &&("android.widget."+cls).equals(n.className)&&("android.widget."+parent).equals(n.parentClass)
+                &&resource.equals(n.viewId)&&text.equals(n.text)&&description.equals(n.description)
+                &&n.clickable==clickable&&!n.editable&&!n.password&&!n.scrollable&&n.scrollDirections.isEmpty()
+                &&Boolean.FALSE.equals(n.selected)&&Boolean.FALSE.equals(n.checkable)&&Boolean.FALSE.equals(n.checked))return n;
+        return null;
+    }
+    static boolean resourcePromotionCloseClick(NativeAppEvidence.Frame f,String nodeId){
+        NativeAppEvidence.Node close=promotionClose(f);
+        return close!=null&&close.id.equals(nodeId);
     }
 
     /** Classify only the complete observed v1779 first-launch modal. The body
