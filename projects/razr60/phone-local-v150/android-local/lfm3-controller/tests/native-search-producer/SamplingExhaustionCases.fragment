@@ -24,8 +24,8 @@
             else if(n==2){samplingNormal(f);samplingBadGeometry(f);successorEvent(s,3);}
             else{
                 // Actual extracted refresh(false) branch fails this partial graph.
-                // The actual subsequent local wait fence observes the unchanged 10 s end.
-                SystemClock.now=request.started+9990;f.nodes.get("0/2/0").refresh=false;
+                // The next local wait crosses this request’s original sampling cutoff.
+                SystemClock.now=request.samplingDeadline-10;f.nodes.get("0/2/0").refresh=false;
             }
         };
     }
