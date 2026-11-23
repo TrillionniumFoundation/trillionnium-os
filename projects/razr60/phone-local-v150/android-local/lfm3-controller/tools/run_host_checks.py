@@ -79,6 +79,7 @@ def main():
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.add(ROOT/"tests/native-form-history-actions/d1e685-query-refusals.json")
+        paths.add(ROOT/"tests/native-form-history-actions/86b343-departure-year-refusals.json")
         paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         paths.add(ROOT/"tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json")
