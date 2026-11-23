@@ -14,6 +14,10 @@ def predecessor(text):
     candidate = "a855ce737251e86f33a9bc849f07c5342edfe238a1c15f6ca79494883856aeba"
     if digest(text) == baseline:
         return text, {"applied": False, "source_sha256": baseline}
+    from pathlib import Path
+    from runpy import run_path
+    exact = run_path(str(Path(__file__).resolve().parents[1]/"notes-task-info-reader/first_root_history.py"))
+    text = exact["predecessor"]("BackgroundDisplayBroker.java", text)
     if digest(text) != candidate:
         raise RuntimeError("Unreviewed late-ready broker source")
     blocks = [

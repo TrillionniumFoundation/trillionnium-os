@@ -470,6 +470,11 @@ final class NativeCalendarDateIntent {
                 or notes_empty.get("framework_and_binder_fixtures_synthetic") is not True
                 or type(notes_empty.get("phone_operations")) is not int or notes_empty["phone_operations"]!=0):
             raise RuntimeError("Notes empty-activity and actual-field diagnostic cases differ")
+        first_root=notes_cases.get("first_root_bootstrap",{})
+        if (first_root.get("cases")!=22 or first_root.get("assertions")!=116
+                or len(set(first_root.get("case_names",[])))!=22 or first_root.get("phone_operations")!=0
+                or first_root.get("framework_and_binder_fixtures_synthetic") is not True):
+            raise RuntimeError("Complete bound first-root read and refusal cases required")
         notes_stability=notes_cases.get("taskinfo_stability",{})
         if (notes_stability.get("schema")!="hepta.notes-taskinfo-stability-host.v1" or notes_stability.get("all_pass") is not True
                 or type(notes_stability.get("cases")) is not int or notes_stability["cases"]!=12
@@ -556,6 +561,8 @@ final class NativeCalendarDateIntent {
             "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("native-auto-target",[sys.executable,"-B",ROOT/"tests/native-auto-target/run_host.py",
             "--source",ROOT,"--output",out/"native-auto-target","--java-home",java_home,"--json-jar",json_jar])
+        run("native-xiaomi-budget-preview",[sys.executable,"-B",ROOT/"tests/native-xiaomi-budget-preview/run_host.py",
+            "--source",ROOT,"--output",out/"native-xiaomi-budget-preview","--java-home",java_home,"--json-jar",json_jar])
         run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
             "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
         census_source=ROOT/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"

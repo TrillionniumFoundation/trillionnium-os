@@ -79,7 +79,15 @@ def calendar_actual_session_ports(source, output, service):
     # references the new final-census producer. Do not import its unused port.
     search_boundary = output / "NativeSearchSession.java"
     original_search = search_boundary.read_bytes()
-    require(sha(original_search) ==
+    # This generated port copies the current production eligibility predicate verbatim.
+    # Reverse only its reviewed goal extension to verify the original routing boundary.
+    original_predicate = b"NativeAppGoal.PRODUCT_PRICE.equals(task.goal.kind)"
+    budget_predicate = b"task.goal.readsXiaomiProduct()"
+    require(original_search.count(budget_predicate) == 1
+            and original_predicate not in original_search,
+            "one reviewed shopping eligibility change required")
+    parent_search = original_search.replace(budget_predicate, original_predicate)
+    require(sha(parent_search) ==
             "4ee12102d54c43142700a515938506ee6e46314ec4cecc1da0df121a1119801c",
             "exact original routing search boundary required")
     existing = b"        void requireUnclaimedRevalidated(long now){throw unavailable();}\n"

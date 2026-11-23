@@ -211,6 +211,9 @@ public final class AutomaticTargetHostTest {
                 BackgroundAutoTargetResolver.Resolution r=resolve(NOTE,e.ui.automaticTargets);check(r.matches.size()==1&&r.choose(null)==e.notes,"full Notes body remains data");
                 check(TaskCompletionGate.NOTES.equals(TaskCompletionGate.Contract.parse(NOTE,TaskAuthorization.parse(NOTE)).kind),"old complete Notes contract actually parsed");
                 check(resolve(PRODUCT,e.ui.automaticTargets).choose(null)==e.product,"actual native shopping parser");
+                String preview="在小米商城买1台小米路由器AX3000T，预算不超过200元，核对商品、数量和总额后停在订单确认页，不提交，不支付";
+                check(resolve(preview,e.ui.automaticTargets).choose(null)==e.product,"complete order-preview owner picks the stored native Xiaomi instance");
+                check(resolve(preview+"，然后支付",e.ui.automaticTargets).matches.isEmpty(),"added transaction cannot route as a preview");
                 check(resolve(FLIGHT,e.ui.automaticTargets).choose(null)==e.flight,"actual native flight parser");
             }
         });

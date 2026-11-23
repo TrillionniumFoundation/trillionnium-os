@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public final class NativeAppGoal {
     public static final String SCHEMA = "hepta.native-app-owner.v1";
     public static final String PRODUCT_PRICE = "native_product_price";
+    public static final String PRODUCT_ORDER_PREVIEW = "native_product_order_preview";
     public static final String FLIGHT_RESULTS = "native_flight_results";
     public static final String CTRIP_PACKAGE = "ctrip.android.view";
     public static final String CSAIR_PACKAGE = "com.csair.mbp";
@@ -30,6 +31,8 @@ public final class NativeAppGoal {
 
     private static final Set<String> QUERY_TOOLS = Collections.unmodifiableSet(new TreeSet<String>(
             Arrays.asList("open", "click", "type", "submit", "scroll", "back", "wait", "done")));
+    private static final Set<String> PREVIEW_READ_TOOLS = Collections.unmodifiableSet(new TreeSet<String>(
+            Arrays.asList("open","click","type","back","wait","done")));
     private static final String PREFIX = "(?:请)?(?:帮我)?";
     private static final String APP = "(?:(?:在|用)(携程旅行|携程|中国南方航空|南航)"
             + "(?:APP|App|app|应用)?(?:里|中|上)?)?";
@@ -78,6 +81,46 @@ public final class NativeAppGoal {
             + "(?:搜索|查询|查找)(?:小米|Xiaomi)[ ]?(?:路由器[ ]?)?([A-Za-z][A-Za-z0-9-]{1,31})"
             + "[，,]" + FIELD_SPACE + "读取实际商品页面显示的当前(?:售价|价格)并说明商品型号[。.]"
             + FIELD_SPACE + "只查询[，,]不购买[、，,]不提交订单[、，,]不支付[。.]?", Pattern.CASE_INSENSITIVE);
+    private static final String SHOP = PREFIX+"在小米商城(?:APP|App|app|应用)?(?:里|中|上)?";
+    private static final String ITEM = "(?:小米|Xiaomi)?(?:路由器)?[ ]*(?<model>AX3000T)(?:[ ]*[(（](?<variant>白色|标准版)[)）])?";
+    private static final String UNIT = "(?<units>1|一)[ ]*(?:台|件)";
+    private static final String CAP = "(?:人民币)?[ ]*(?<cap>[1-9][0-9]{0,5}(?:\\.[0-9]{1,2})?)[ ]*元";
+    private static final String NO_TRANSACTION = "[，,。.]?[ ]*不提交(?:订单)?[、，,][ ]*不(?:支付|付款)[。.]?";
+    private static final Pattern PREVIEW_BUY = Pattern.compile(SHOP+"(?:买|准备购买)"+UNIT+ITEM
+            +"[，,]预算(?:不超过|上限为)"+CAP+"[，,]核对商品[、，,]数量和总额后停在订单确认页"+NO_TRANSACTION,Pattern.CASE_INSENSITIVE);
+    private static final Pattern PREVIEW_PRICE = Pattern.compile(SHOP+"(?:给|为)?"+ITEM+"[，, ]*"+UNIT
+            +"[，,][ ]*核价[，,][ ]*预算(?:不超过|上限为)?"+CAP
+            +"[，,][ ]*若(?:金额|总额)在预算内(?:就)?(?:准备到|到)(?:订单)?确认页停下"+NO_TRANSACTION,Pattern.CASE_INSENSITIVE);
+
+    /** Owner values only. No observed stock, selected SKU, order total, or action follows from recognition. */
+    public static final class OrderPreview {
+        public final String capYuan, requestedVariant;
+        public final int quantity,quantityStartUtf16,quantityEndUtf16,capStartUtf16,capEndUtf16;
+        private OrderPreview(Matcher match){
+            capYuan=match.group("cap");requestedVariant=match.group("variant");quantity=1;
+            quantityStartUtf16=match.start("units");quantityEndUtf16=match.end("units");
+            capStartUtf16=match.start("cap");capEndUtf16=match.end("cap");
+        }
+        static String describe(String amount,String cap,String variant){
+            int comparison=new java.math.BigDecimal(amount).compareTo(new java.math.BigDecimal(cap));
+            String requested=variant==null?"":("，指定款式"+variant);
+            return "小米商城的 AX3000T 商品详情页显示 "+amount+" 元。您要求 1 件"+requested
+                    +"，预算 "+cap+" 元。页面展示单价"+(comparison>0?"高于":comparison<0?"低于":"等于")
+                    +"预算。尚未核实所选款式、数量及结算总额，已停在商品详情页。";
+        }
+        Map<String,Object> evidence(){
+            Map<String,Object> budget=new LinkedHashMap<String,Object>();budget.put("quantity",quantity);
+            budget.put("budget_ceiling_yuan",capYuan);budget.put("requested_variant",requestedVariant);
+            budget.put("quantity_start_utf16",quantityStartUtf16);budget.put("quantity_end_utf16",quantityEndUtf16);
+            budget.put("budget_start_utf16",capStartUtf16);budget.put("budget_end_utf16",capEndUtf16);
+            budget.put("stop_at_order_confirmation",true);budget.put("order_submission_authorized",false);
+            budget.put("payment_authorized",false);return Collections.unmodifiableMap(budget);
+        }
+    }
+    public final OrderPreview orderPreview;
+    public boolean readsXiaomiProduct(){
+        return XIAOMI_PACKAGE.equals(packageName)&&(PRODUCT_PRICE.equals(kind)||PRODUCT_ORDER_PREVIEW.equals(kind)&&orderPreview!=null);
+    }
     private static final Pattern CITY_CONTROL = Pattern.compile(
             ".*(?:或者|以及|然后|打开|查询|搜索|预订|下单|支付|删除|提醒|闹钟|成人|儿童|婴儿|登录|注册|授权|机票|航班|官网|网页|商城).*");
 
@@ -95,7 +138,7 @@ public final class NativeAppGoal {
     }
 
     private NativeAppGoal(String owner, String selectedPackage, Matcher match, LocalDate date, int suffix, String form) {
-        kind = FLIGHT_RESULTS; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
+        kind = FLIGHT_RESULTS; orderPreview=null; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
         recognition = form; toolCeiling = QUERY_TOOLS;
         departureDate = date; fromCity = match.group(5); toCity = match.group(6); productModel = null;
         adults = 1; children = 0; infants = 0;
@@ -111,12 +154,16 @@ public final class NativeAppGoal {
     }
 
     private NativeAppGoal(String owner, String selectedPackage, Matcher match, String form) {
-        kind = PRODUCT_PRICE; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
-        recognition = form; toolCeiling = QUERY_TOOLS;
+        this(owner,selectedPackage,match,form,null);
+    }
+    private NativeAppGoal(String owner,String selectedPackage,Matcher match,String form,OrderPreview preview) {
+        orderPreview=preview;kind = preview==null?PRODUCT_PRICE:PRODUCT_ORDER_PREVIEW; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
+        recognition = form; toolCeiling = preview==null?QUERY_TOOLS:PREVIEW_READ_TOOLS;
         departureDate = null; fromCity = toCity = null; productModel = PRODUCT_MODEL;
         adults = children = infants = -1;
         dateStartUtf16 = dateEndUtf16 = fromStartUtf16 = fromEndUtf16 = toStartUtf16 = toEndUtf16 = -1;
-        modelStartUtf16 = match.start(1); modelEndUtf16 = match.end(1);
+        modelStartUtf16 = preview==null?match.start(1):match.start("model");
+        modelEndUtf16 = preview==null?match.end(1):match.end("model");
         contractSha256 = contractHash();
     }
 
@@ -161,6 +208,10 @@ public final class NativeAppGoal {
             }
         }
         if (XIAOMI_PACKAGE.equals(explicitlySelectedPackage)) {
+            Matcher preview=PREVIEW_BUY.matcher(owner);
+            if(!preview.matches())preview=PREVIEW_PRICE.matcher(owner);
+            if(preview.matches())return new NativeAppGoal(owner,explicitlySelectedPackage,preview,
+                    "complete_literal_one_unit_budgeted_order_preview.v1",new OrderPreview(preview));
             Matcher match = PRODUCT.matcher(owner);
             if (!match.matches()) {
                 match = PRODUCT_IN_APP.matcher(owner);
@@ -212,6 +263,7 @@ public final class NativeAppGoal {
             out.put("model_end_utf16", modelEndUtf16); out.put("variant_inferred", false);
             out.put("specifications_inferred", false); out.put("price_kind_inferred", false);
         }
+        if(orderPreview!=null)out.put("order_preview",orderPreview.evidence());
         out.put("provider_support_claimed", false); out.put("installed_identity_verified", false);
         out.put("grants_tool_authority", false); out.put("query_executed", false);
         out.put("business_verified", false);
@@ -228,6 +280,11 @@ public final class NativeAppGoal {
                 Integer.toString(toStartUtf16), Integer.toString(toEndUtf16),
                 Integer.toString(modelStartUtf16), Integer.toString(modelEndUtf16)})
             field(out, value == null ? "" : value);
+        if(orderPreview!=null){
+            field(out,Integer.toString(orderPreview.quantity));field(out,orderPreview.capYuan);
+            field(out,orderPreview.requestedVariant==null?"":orderPreview.requestedVariant);
+            field(out,"stop_at_confirmation_without_submission_or_payment");
+        }
         for (String tool : toolCeiling) field(out, tool);
         return hash(out.toString());
     }

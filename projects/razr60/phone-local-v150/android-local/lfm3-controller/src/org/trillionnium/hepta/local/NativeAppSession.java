@@ -825,9 +825,10 @@ final class NativeAppSession {
     }
     private static void requireInstalled(NativeAppGoal goal,NativeAppEvidence.Installed value){
         need(value!=null&&goal.packageName.equals(value.packageName)&&value.apkHashes.size()==1,"complete admitted native APK identity required");
+        if(goal.orderPreview!=null)need(value.profileTarget!=null,"order preparation requires the selected managed-profile application");
         if(NativeCtripFlightPage.supported(goal))need(value.versionCode==NativeCtripFlightPage.VERSION_CODE
                 &&NativeCtripFlightPage.BASE_APK_SHA256.equals(value.apkHashes.get("base")),"Ctrip provider APK/version differs");
-        else if(NativeAppGoal.PRODUCT_PRICE.equals(goal.kind)&&NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName))
+        else if(goal.readsXiaomiProduct()&&NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName))
             need(value.versionCode==20261010L&&"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373".equals(value.apkHashes.get("base")),"Xiaomi provider APK/version differs");
         else throw new IllegalArgumentException("native App provider not implemented for this immutable goal");
     }
@@ -1041,7 +1042,14 @@ final class NativeAppSession {
             }
             for(Map.Entry<String,String> e:product.editValues.entrySet()){edits.put(e.getKey(),e.getValue());purposes.put(e.getKey(),product.purposes.get(e.getKey()));}
             if(product.quote!=null&&"detail_display".equals(product.quote.kind)){
-                if(productOpenProof!=null&&productSemantic!=null&&productSemantic.equals(product.quote.semanticFingerprint))result=productResult(frame);
+                if(productOpenProof!=null&&productSemantic!=null&&productSemantic.equals(product.quote.semanticFingerprint)){
+                    if(goal.orderPreview==null)result=productResult(frame);
+                    else{
+                        Map<String,Object> review=budgetReview(frame);
+                        view.put("order_preview_price_review",review);
+                        view.put("next_goal",review.get("message"));missing.add("selected_sku_quantity_and_checkout_total_unverified");
+                    }
+                }
                 else{back=true;purposes.put("back","return_to_owned_product_search");missing.add("actual_model_query_and_same_card_detail_navigation_required");}
             }
             if(product.quote!=null&&"search_card".equals(product.quote.kind)&&productQueryProof==null){back=true;purposes.put("back","return_to_owned_product_search");}
@@ -1740,6 +1748,24 @@ final class NativeAppSession {
         StringBuilder s=new StringBuilder("携程原生应用当前展示 ").append(goal.departureDate).append(' ').append(goal.fromCity).append("到").append(goal.toCity).append("，1名成人经济舱：");
         for(int i=0;i<Math.min(3,flight.quotes.size());i++){NativeCtripFlightPage.Quote q=flight.quotes.get(i);if(i>0)s.append("；");s.append(q.flightNumber).append(' ').append(q.departureTime).append('–').append(q.arrivalTime).append(' ').append(q.departureAirport).append('→').append(q.arrivalAirport).append("，人民币").append(q.amountDecimal).append("元");if(!q.displayTags.isEmpty())s.append("，").append(q.displayTags);}
         s.append("。这是所见航班卡报价；税费及最终结算价未在本次观测中确认。");out.put("display_summary",s.toString());return out;
+    }
+    private Map<String,Object> budgetReview(NativeAppEvidence.Frame frame){
+        NativeAppEvidence.need(goal.orderPreview!=null&&goal.orderPreview.quantity==1
+                &&installed.profileTarget!=null&&frame.profileWindow!=null&&productQueryProof!=null&&productOpenProof!=null
+                &&"detail_display".equals(product.quote.kind)&&"CNY".equals(product.quote.currency),"bound native product detail required");
+        Map<String,Object> review=NativeAppEvidence.map();
+        review.put("schema","hepta.native-xiaomi-order-price-review.v1");review.put("task_id",taskId);
+        review.put("owner_sha256",goal.ownerSha256);review.put("execution_target_sha256",target.targetSha256);
+        review.put("authorization_sha256",authorization.authorization.sha256);review.put("observation_id",frame.observationId);
+        review.put("phone_observation_record_sha256",frame.sourceRecordSha);review.put("model",goal.productModel);
+        review.put("owner_order_preview",goal.orderPreview.evidence());review.put("detail_quote",product.quote.evidence());
+        review.put("actual_query_and_card_navigation_sha256",NativeAppEvidence.fingerprint(productOpenProof));
+        int comparison=new java.math.BigDecimal(product.quote.amountDecimal).compareTo(new java.math.BigDecimal(goal.orderPreview.capYuan));
+        review.put("displayed_unit_price_against_budget",comparison>0?"above":comparison<0?"below":"equal");
+        review.put("selected_variant_verified",false);review.put("quantity_verified",false);review.put("checkout_total_verified",false);
+        review.put("confirmation_page_reached",false);review.put("order_submitted",false);review.put("payment_dispatched",false);
+        review.put("message",NativeAppGoal.OrderPreview.describe(product.quote.amountDecimal,goal.orderPreview.capYuan,goal.orderPreview.requestedVariant));
+        return NativeAppEvidence.immutableMap(review);
     }
     private Map<String,Object> productResult(NativeAppEvidence.Frame f){Map<String,Object> out=resultBase(f,"hepta.native-xiaomi-displayed-product-price.v1");
         out.put("model",goal.productModel);out.put("actual_query_and_card_navigation",productOpenProof);out.put("detail_quote",product.quote.evidence());

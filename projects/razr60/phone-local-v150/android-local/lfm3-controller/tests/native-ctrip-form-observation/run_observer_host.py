@@ -201,6 +201,11 @@ def generate(source,output,h):
             if h.sha(prior)!=r32_provider_pins[name]:raise RuntimeError('calendar minimum reader must reverse to R32 provider')
             protected_files[name]=actual
             continue
+        if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
+            # Recognizes an additional Xiaomi owner. The actual Ctrip goal and all
+            # the form-observer bodies and original cases compile and run below.
+            protected_files[name]=actual
+            continue
         if name in r32_provider_pins and actual==r32_provider_pins[name]:
             protected_files[name]=actual
             continue

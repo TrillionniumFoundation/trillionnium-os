@@ -584,6 +584,8 @@ public final class BackgroundDisplayBroker {
                         if (!(launchResult instanceof Integer) || ((Integer) launchResult).intValue() < 0)
                             throw new BrokerProtocol.Refusal("FRAMEWORK_LAUNCH_NOT_ACCEPTED");
                         if(ownedSingleTask!=null)ownedSingleTask.accepted(((Integer)launchResult).intValue());
+                        if(publicNotesCustody!=null&&ownedSingleTask==null&&fixedTarget==null)
+                            publicNotesCustody.acceptedOrdinaryLaunch(currentActivity.component,SystemClock.elapsedRealtime());
                     }
                     finally { effectInFlight = false; }
                 }
@@ -1119,7 +1121,7 @@ public final class BackgroundDisplayBroker {
                 }
                 if(publicNotesCustody!=null&&publicNotesReader!=null){
                     phase=PublicPolicyFailureAudit.Phase.NOTES_FRAME_AND_CUSTODY;
-                    publicNotesCustody.observe(publicNotesReader.frame(),SystemClock.elapsedRealtime());
+                    publicNotesCustody.observe(publicNotesReader.frame(publicNotesCustody),SystemClock.elapsedRealtime());
                 }
                 lastUnlockedCheck=SystemClock.elapsedRealtime();return;
             }catch(BrokerProtocol.Refusal refusal){throw refusal;}
