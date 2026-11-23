@@ -30,7 +30,9 @@ final class NativeAppDomain {
         for(String id:clickIds)if((NativeCtripFlightPage.HOME.equals(phase)&&"open_flight_form".equals(this.purposes.get(id))
                 &&NativeCtripFlightPage.resourceHomeClick(frame,id))
                 ||(NativeCtripFlightPage.LOGIN_REQUIRED.equals(phase)&&NativeCtripFlightPage.LOGIN_EXIT.equals(this.purposes.get(id))
-                &&NativeCtripFlightPage.resourceLoginReturnClick(frame,id)))resourceIds.add(id);
+                &&NativeCtripFlightPage.resourceLoginReturnClick(frame,id))
+                ||(NativeCtripFlightPage.PROMOTION.equals(phase)&&NativeCtripFlightPage.CLOSE_PROMOTION.equals(this.purposes.get(id))
+                &&NativeCtripFlightPage.resourcePromotionCloseClick(frame,id)))resourceIds.add(id);
         resourceClickIds=Collections.unmodifiableSet(resourceIds);
         for(String id:clickIds)requireNode(id,true,false);
         for(Map.Entry<String,String> e:editValues.entrySet()){requireNode(e.getKey(),false,true);NativeAppEvidence.need(e.getValue()!=null,"native literal edit value");}
@@ -88,6 +90,7 @@ final class NativeAppDomain {
         if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase))out.retainAll(Collections.singleton("done"));
         if(NativeXiaomiProductPage.LOGIN.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
         if(NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))out.retainAll(Collections.singleton("done"));
+        if(NativeCtripFlightPage.PROMOTION.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
         if(incompleteLoginReturn)out.retainAll(Collections.singleton("done"));
         return out;}
     DecisionGrammar boundedWaitGrammar(ObservedTargetLabels targets,ObservedAppLabels apps,TaskAuthorization.Frame authorization,Set<String> original){
@@ -101,6 +104,9 @@ final class NativeAppDomain {
         try{
             NativeAppEvidence.need(action!=null&&action.toolChildOrigin==null&&frame.observationId.equals(action.observationId)
                     &&frame.packageName.equals(action.packageName),"same native model/frame/package required");
+            if(NativeCtripFlightPage.PROMOTION.equals(phase))
+                NativeAppEvidence.need("click".equals(action.action)||"done".equals(action.action)
+                        &&doneStatuses().contains(action.status),"startup promotion admits its close control or incomplete termination");
             if(incompleteLoginReturn){
                 NativeAppEvidence.need("done".equals(action.action)&&("failure".equals(action.status)||"partial".equals(action.status)),
                         "login returned to the form without target results; incomplete termination only");return;
