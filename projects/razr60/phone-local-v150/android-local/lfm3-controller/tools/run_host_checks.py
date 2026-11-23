@@ -548,6 +548,10 @@ final class NativeCalendarDateIntent {
             "policy":notes_absence["policy"],"display-census":census,"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
             "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
+        census_source=ROOT/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"
+        run("profile-recovery-census",[sys.executable,"-B",ROOT/"tests/profile-recovery-census/run_host.py",
+            "--source-root",ROOT,"--expected-processes",hashlib.sha256(census_source.read_bytes()).hexdigest(),
+            "--jdk-bin",java_home/"bin","--json-jar",json_jar,"--output",out/"profile-recovery-census"])
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
