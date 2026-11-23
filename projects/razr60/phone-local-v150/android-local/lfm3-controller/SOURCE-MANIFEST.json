@@ -19,6 +19,7 @@
       "tests/notes-task-info-reader/8a2c-first-failure.json",
       "tests/notes-task-info-reader/first_root_history.py",
       "tests/notes-after-release-reader/run_host.py",
+      "tests/owned-single-task/run_host.py",
       "tests/profile-permission-ready-confirmation/late_ready_history.py",
       "tools/run_host_checks.py"
     ]
@@ -10054,9 +10055,9 @@
       "sha256": "99143bd0a8d5489361c6af990f43c6b604afe77fc05cb0239154db5dcfae84d2"
     },
     {
-      "bytes": 22419,
+      "bytes": 22439,
       "path": "tests/owned-single-task/run_host.py",
-      "sha256": "426e79fa2880c5e3c91e0bb9edaaa1cbe56a1be48189428a91b3e328b33bc0fa"
+      "sha256": "37750016f5e271ef26acf914b75c1bc510c304207bc7c4438988f9cdc3a46797"
     },
     {
       "bytes": 7754,

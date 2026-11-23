@@ -197,7 +197,7 @@ final class BrokerProtocol {
      static final class ScreenLease {void requireActive(){}}
      static final class KeyguardManager {boolean isKeyguardLocked(){return false;}boolean isDeviceLocked(){return false;}}
      static final class NotesCustody {void observe(Object f,long n){throw new AssertionError("not Notes");}}
-     static final class NotesReader {Object frame(){throw new AssertionError("not Notes");}}
+     static final class NotesReader {Object frame(NotesCustody custody){throw new AssertionError("not Notes");}}
      static final class NotesFailures {void runtime(Exception e,long n){throw new AssertionError("not Notes");}}
      public static final class RootInfo {
       public int taskId,displayId,userId=0,numActivities;public boolean visible;
