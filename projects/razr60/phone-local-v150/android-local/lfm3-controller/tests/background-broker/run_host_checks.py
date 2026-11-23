@@ -107,6 +107,37 @@ public final class DisplayManager {
 }
 ''')
     files += [geometry,metrics,clock,display,display_manager]
+    close_fixture=root/'tests/background-broker/535-close-reply.json'
+    raw=close_fixture.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!='251696da23360e7212b7095763f088a7d3d09414de50286f1cf9aaa86f83879f':
+        raise RuntimeError('535 recorded evidence projection changed')
+    close=json.loads(raw)
+    if not (close['broker_exit_observed'] and close['broker_exit_code']==0 and close['eof_seen']
+            and close['release_confirmed'] and close['terminal_state']=='RELEASED' and not close['custody_retained']
+            and close['failure_phase']=='SCREEN_LEASE' and close['failure_category']=='PUBLIC_SCREEN_NOT_ON'
+            and close['failure_at']==close['screen_released_elapsed_ms']<close['history_checked_elapsed_ms']
+            and close['original_cleanup_error']=='后台响应提前结束' and not close['original_cleanup_known']):
+        raise RuntimeError('535 actual ordering or historical outcome differs')
+    # Extract the actual two broker methods; host ports supply the clock, socket
+    # identities and independently tested cleanup latch/custody inputs.
+    begin=text.index('    private boolean profileCloseReplyPending(')
+    finish=text.index('    private void shutdown(String reason)',begin)
+    methods=text[begin:finish]
+    checks=['request.authenticate(config, accepted.getPeerCredentials().getUid());',
+            'request.checkDeadline(SystemClock.elapsedRealtime(), expires);',
+            'if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))',
+            'authenticatedProfileClosePeer=accepted;', 'response = perform(request);',
+            'BrokerProtocol.writeFrame(accepted.getOutputStream(), response);','authenticatedProfileClosePeer=null;']
+    if any(text.count(h)!=1 for h in checks) or [text.index(h) for h in checks]!=sorted(text.index(h) for h in checks):
+        raise RuntimeError('original authenticated single close socket lifecycle changed')
+    for fence in ('if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));',
+                  'now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)'):
+        if text.count(fence)!=1:raise RuntimeError('normal close monitor/deadline integration changed')
+    close_program=root/'tests/background-broker/BrokerCloseReplyHost.template'
+    close_java=args.out/'BrokerCloseReplyHost.java'
+    close_java.write_text(close_program.read_text().replace('    METHODS',methods))
+    files.append(close_java)
+
     compiler = [str(args.javac)] if args.javac else [str(args.java), '-m', 'jdk.compiler/com.sun.tools.javac.Main']
     flags = [] if args.development_platform_only else ['--release', '8']
     compile_argv = compiler + flags + ['-Xlint:all', '-Werror', '-encoding', 'UTF-8', '-d', str(classes)] + list(map(str, files))
@@ -147,7 +178,15 @@ public final class DisplayManager {
         evidence['geometry_exit_code'] = geometry_result.returncode
         if geometry_result.returncode == 0:
             evidence['geometry_tests'] = json.loads(geometry_result.stdout)
-    evidence['passed'] = evidence.get('compile_exit_code') == 0 and evidence.get('run_exit_code') == 0 and evidence.get('snapshot_exit_code') == 0 and evidence.get('geometry_exit_code') == 0
+    if compile_result.returncode == 0:
+        close_result=subprocess.run([str(args.java),'-cp',str(classes),'org.trillionnium.hepta.background.BrokerCloseReplyHost',
+            str(close['failure_at']),str(close['history_checked_elapsed_ms'])],text=True,capture_output=True,timeout=30)
+        (args.out/'close-reply.stdout').write_text(close_result.stdout)
+        (args.out/'close-reply.stderr').write_text(close_result.stderr)
+        evidence['close_reply_exit_code']=close_result.returncode
+        evidence['close_reply_fixture_sha256']=hashlib.sha256(raw).hexdigest()
+        if close_result.returncode==0:evidence['close_reply_tests']=json.loads(close_result.stdout)
+    evidence['passed'] = evidence.get('compile_exit_code') == 0 and evidence.get('close_reply_exit_code') == 0 and evidence.get('run_exit_code') == 0 and evidence.get('snapshot_exit_code') == 0 and evidence.get('geometry_exit_code') == 0
     (args.out/'RESULT.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2)+'\n')
     print(json.dumps(evidence, ensure_ascii=False))
     raise SystemExit(0 if evidence['passed'] else 1)
