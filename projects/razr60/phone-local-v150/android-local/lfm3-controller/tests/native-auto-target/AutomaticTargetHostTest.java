@@ -143,6 +143,26 @@ public final class AutomaticTargetHostTest {
                 }finally{ProfileCatalogueClient.listed=null;}
             }
         });
+        test("rebinding_visible_model_rows_preserves_one_checked_choice_per_instance",()->{
+            try(Env e=new Env("visible-model-checkmarks",FLIGHT,false)){
+                String before=e.ui.automaticTargets.sha256;
+                ProfileCatalogueClient.listed=Arrays.asList(e.flight.choice.profileTarget,e.product.choice.profileTarget);
+                android.app.AlertDialog dialog;
+                try{dialog=picker(e);}finally{ProfileCatalogueClient.listed=null;}
+                int gui=dialog.row("携程","GUI-Owl"),lfm=dialog.row("携程","LFM3");
+                int notes=dialog.row("备忘录","LFM3"),shop=dialog.row("小米","LFM3");
+                check(gui>=0&&lfm>=0&&notes>=0&&shop>=0&&dialog.checked(gui)&&!dialog.checked(lfm),"original owner model visible");
+                boolean savedNotes=dialog.checked(notes),savedShop=dialog.checked(shop);
+                dialog.tap(lfm);dialog.bindVisibleRows();
+                check(dialog.checked(lfm)&&!dialog.checked(gui),"adapter rebind cannot restore superseded GUI check");
+                check(dialog.checked(notes)==savedNotes&&dialog.checked(shop)==savedShop,"other instance checkmarks unaffected");
+                dialog.tap(gui);dialog.bindVisibleRows();dialog.bindVisibleRows();
+                check(dialog.checked(gui)&&!dialog.checked(lfm),"reverse direction remains exclusive after row reuse");
+                dialog.tap(gui);dialog.bindVisibleRows();
+                check(!dialog.checked(gui)&&!dialog.checked(lfm),"explicitly deselected instance remains empty");
+                dialog.cancel();check(before.equals(BackgroundAutoTargetPreferences.load(e.app).sha256),"cancel retains original settings");
+            }
+        });
         test("stale_picker_and_unsupported_model_never_modify_stored_selection",()->{
             try(Env e=new Env("stale-model-dialog",FLIGHT,false)){
                 String before=e.ui.automaticTargets.sha256;android.app.AlertDialog dialog=picker(e);dialog.tap(dialog.row("携程","LFM3"));

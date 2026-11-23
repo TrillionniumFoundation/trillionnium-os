@@ -61,16 +61,17 @@ public class PackageManager {public static final int GET_SIGNING_CERTIFICATES=13
  public interface Click {void selected(Object dialog,int which);}public interface Multi {void selected(Object dialog,int which,boolean checked);}
  public static volatile AlertDialog shown;
  public static final class ListPort {final boolean[] checked;ListPort(boolean[] initial){checked=initial.clone();}public void setItemChecked(int index,boolean value){checked[index]=value;}}
- private String[] labels;private ListPort list;private Multi multi;private Click positive;
+ private String[] labels;private ListPort list;private boolean[] adapterChoices;private Multi multi;private Click positive;
  public ListPort getListView(){return list;}
  public int row(String app,String model){for(int i=0;i<labels.length;i++)if(labels[i].contains(app)&&labels[i].contains(model))return i;return -1;}
  public boolean checked(int index){return list.checked[index];}
- public void tap(int index){boolean next=!checked(index);list.setItemChecked(index,next);multi.selected(this,index,next);}
+ public void tap(int index){boolean next=!checked(index);list.setItemChecked(index,next);adapterChoices[index]=next;multi.selected(this,index,next);}
+ public void bindVisibleRows(){for(int i=0;i<adapterChoices.length;i++)if(adapterChoices[i])list.setItemChecked(i,true);}
  public void save(){positive.selected(this,-1);shown=null;}
  public void cancel(){shown=null;}
  public static final class Builder {private final AlertDialog value=new AlertDialog();
   public Builder(Activity a){}public Builder setTitle(String s){return this;}public Builder setItems(String[] s,Click c){value.labels=s.clone();return this;}
-  public Builder setMultiChoiceItems(String[] s,boolean[] b,Multi m){value.labels=s.clone();value.list=new ListPort(b);value.multi=m;return this;}
+  public Builder setMultiChoiceItems(String[] s,boolean[] b,Multi m){value.labels=s.clone();value.adapterChoices=b;value.list=new ListPort(b);value.multi=m;return this;}
   public Builder setNegativeButton(String s,Click c){return this;}public Builder setPositiveButton(String s,Click c){value.positive=c;return this;}
   public AlertDialog show(){shown=value;return value;}}
 }''',
