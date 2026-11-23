@@ -3,36 +3,33 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "ordinary_apps_offline_background_integration_candidate",
-  "complete_source_files": 2472,
+  "candidate_status": "scoped_ctrip_late_permission_confirmation",
+  "complete_source_files": 2474,
   "current_successor_delta": {
-    "baseline": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
+    "baseline": "6d52f94137d9c76cbcb7472ff0fa392ee0045f31",
     "original_case_assertions_preserved": true,
     "original_failed_attempts_preserved": true,
     "production_changed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java"
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+      "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "src/org/trillionnium/hepta/local/ProfilePermissionUiSession.java"
     ],
     "test_changed_paths": [
-      "tests/completion/NotesNamedReopenTest.java",
-      "tests/completion/run_host_tests.py",
-      "tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json",
-      "tests/native-ctrip-promotion/NativeCtripPromotionHostTest.java",
-      "tests/native-ctrip-promotion/run_host.py",
-      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/calendar-date-effect/BrokerDateHost.template",
+      "tests/notes-after-release-reader/run_host.py",
+      "tests/profile-permission-ready-confirmation/late_ready_history.py",
+      "tests/profile-permission-ready-confirmation/run_host.py",
+      "tests/profile-permission-ui/LateReadyBrokerHost.template",
+      "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",
+      "tests/profile-permission-ui/UiLifecycleFakes.java",
+      "tests/profile-permission-ui/run_host.py",
       "tools/run_host_checks.py"
     ]
   },
   "current_test_dependency_repairs": {
     "changed_paths": [],
-    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
+    "previous_manifest_sha256": "6ebcf5c0d3679191b3e478d0995f61716970bbeb9369065d293263d1ec237574"
   },
   "files": [
     {
@@ -6206,9 +6203,9 @@
       "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
     },
     {
-      "bytes": 137047,
+      "bytes": 138487,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "f21aa2b52ecb77b253db4b6a0edb421e4554ff1f83779c7e7bd5f8a0eb9ea888"
+      "sha256": "a855ce737251e86f33a9bc849f07c5342edfe238a1c15f6ca79494883856aeba"
     },
     {
       "bytes": 25279,
@@ -6276,9 +6273,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 48148,
+      "bytes": 48630,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "cefd9ed29de56c996fde2aece64bddf49d345e2676a269e517598d61c63d0a86"
+      "sha256": "9eb48382f08f6d5c2a4f0ab89631dff527805a481b8b10e1d90bf42ae184e635"
     },
     {
       "bytes": 21140,
@@ -6491,9 +6488,9 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 147091,
+      "bytes": 147729,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "ef611bfa5c7811bdce3800f580d14df15273cfa8b85ff7016d3657f5e813ef59"
+      "sha256": "5208ea3a32f280c79f2f72e88b0b8bd6ce977b913a4b3173c7c79a9f62887576"
     },
     {
       "bytes": 10735,
@@ -6901,9 +6898,9 @@
       "sha256": "7a36feb5497ddeb323fbdab8dd2cec1e54580b6d8b2006202a494c1b1ffdbae0"
     },
     {
-      "bytes": 19978,
+      "bytes": 21099,
       "path": "src/org/trillionnium/hepta/local/ProfilePermissionUiSession.java",
-      "sha256": "c59b0e43d7b6979696646d0fd5a1e65759fd1da2b99ae16204a14533abf81d9f"
+      "sha256": "48135c95c9d851abb6134abba4fe589a9f10cca2ee3112963ed0ebd74aaec719"
     },
     {
       "bytes": 9577,
@@ -7736,9 +7733,9 @@
       "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
     },
     {
-      "bytes": 13415,
+      "bytes": 13759,
       "path": "tests/calendar-date-effect/BrokerDateHost.template",
-      "sha256": "5f458791e04a05fe852b257cdd0e00be68d94967da650ea54b9c2466bc68f8ec"
+      "sha256": "6c20db1402b886a92a1b01e7e0d95c93653ab595a02ec804e2707d50a7f110b3"
     },
     {
       "bytes": 8510,
@@ -9541,9 +9538,9 @@
       "sha256": "41e7dfc1ab1e4af4eef3cdb4361041c4dbc9b23361433699202005e8403f4f5e"
     },
     {
-      "bytes": 18451,
+      "bytes": 18758,
       "path": "tests/notes-after-release-reader/run_host.py",
-      "sha256": "7f99b8038f436e33fa318b299b13f0d6d93687106b0ba6df2167136d48170f67"
+      "sha256": "d39d9c69eb51accbbffeb46272e9c9452fab97e068ce43c0eeb58966e14a907a"
     },
     {
       "bytes": 42214,
@@ -10231,9 +10228,14 @@
       "sha256": "34a338f0816faf4531ec38b166802ac65a9e281ea90246d7cfc14a1d42e2c0bf"
     },
     {
-      "bytes": 20960,
+      "bytes": 2960,
+      "path": "tests/profile-permission-ready-confirmation/late_ready_history.py",
+      "sha256": "eaae17d93fbf1b284b2870c0b180c3b3276e629c8f751fdc53c78836be4f0b5f"
+    },
+    {
+      "bytes": 21264,
       "path": "tests/profile-permission-ready-confirmation/run_host.py",
-      "sha256": "e86bc03233beb8a3d05bb2236185ee3ac8dd5730677c0d8ac89f19bfe95f200c"
+      "sha256": "21b8f95b95464dbef7441138fc7e7c5073c3de9f617c87da5853751db909e132"
     },
     {
       "bytes": 29281,
@@ -10261,14 +10263,19 @@
       "sha256": "b02634c4bf63b028213bab70cd3abed2bd26960f911064a8c2b9762df78ec939"
     },
     {
-      "bytes": 11313,
-      "path": "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",
-      "sha256": "cf1d339a68ca2143814e78bfa026b43bbfacf12999e5e33f2741198bf8df6642"
+      "bytes": 6295,
+      "path": "tests/profile-permission-ui/LateReadyBrokerHost.template",
+      "sha256": "6f5c0d198a1d73f9e698b47779d8e8f8f92eaa1c3ce9e37094aab8fc83d1c8fc"
     },
     {
-      "bytes": 5060,
+      "bytes": 14384,
+      "path": "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",
+      "sha256": "663302386621476de2766e8041baadfe1609004e0257f0fabfb4ee7fb6ab450a"
+    },
+    {
+      "bytes": 6097,
       "path": "tests/profile-permission-ui/UiLifecycleFakes.java",
-      "sha256": "56347efee01de3f57b054faede3ea32676b90076a2443c37003c27654604ff24"
+      "sha256": "5058ea9b0243feb930f8def7c8f9f113929961646eec7892bb8ebb99153e9e23"
     },
     {
       "bytes": 2607,
@@ -10276,9 +10283,9 @@
       "sha256": "b36bc8289028b9308c8b2205f275dbfea4f876a7840408ea2d9104f6baf667d3"
     },
     {
-      "bytes": 7957,
+      "bytes": 8967,
       "path": "tests/profile-permission-ui/run_host.py",
-      "sha256": "40ce5781cde50e83b14f732e552b5b458b6866c6baf1f45cf7eb97de91d1a837"
+      "sha256": "73bec968bc99bd54d2942ae8591f3bd9c3854b3c8ed52ea89431b9bb549ec558"
     },
     {
       "bytes": 2706,
@@ -12181,9 +12188,9 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 63825,
+      "bytes": 63854,
       "path": "tools/run_host_checks.py",
-      "sha256": "eeb440c6821da514cb9c3baaae641ba71052fd0fb14ecf0b3c9497568fb75e07"
+      "sha256": "7ea961c28607ca2470bfa54f26d55f310e682f71e0029aed53fda6e509bc65ac"
     },
     {
       "bytes": 13873,
@@ -12392,9 +12399,9 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "34e5109e386a8ce1858f457b2e41c9f7c6affdab",
+    "previous_component_git_tree_sha1": "2e3a7b4cd53db8ac37febf7790ae0b56edb4fbbb",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0"
+    "previous_manifest_sha256": "6ebcf5c0d3679191b3e478d0995f61716970bbeb9369065d293263d1ec237574"
   },
   "host_validation_at_preparation": {
     "android_sdk_compile_passed_for_identical_production_inputs": false,
@@ -12403,12 +12410,12 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "14358001e770a60187a0c2d77dc5c2e48868f6fa60794ec1947e70eb39bcc9a0",
+  "production_input_map_sha256": "f0ec05165c3775a6e9e5ff4d047e385ffd0a580d9b0939b466f2c54603cc1909",
   "schema": "hepta.local-source.v3",
-  "scope": "Integrate exact quoted Moto Notes save/reopen, a bounded re-observation after ambiguous Xiaomi home banner motion, and a scoped Ctrip startup promotion close. Each flow preserves the original local-model and background-display checks.",
-  "source_parent_head": "33416945f706cf8eb2397eef81162e8e1c78f1ce",
-  "source_parent_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
-  "source_snapshot_predecessor_manifest_sha256": "c1c5664b8e3a53af40ae4db1bb96f606f015b726f67fb7f0a7650953bd2519f0",
+  "scope": "Same captured Ctrip preparation may coordinate one proven late permission or waiting transition within its original lease and deadline.",
+  "source_parent_head": "6d52f94137d9c76cbcb7472ff0fa392ee0045f31",
+  "source_parent_manifest_sha256": "6ebcf5c0d3679191b3e478d0995f61716970bbeb9369065d293263d1ec237574",
+  "source_snapshot_predecessor_manifest_sha256": "6ebcf5c0d3679191b3e478d0995f61716970bbeb9369065d293263d1ec237574",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

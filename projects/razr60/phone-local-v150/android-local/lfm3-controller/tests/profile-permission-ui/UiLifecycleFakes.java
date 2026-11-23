@@ -41,6 +41,10 @@ final class BackgroundSession {
     final UiPermissionFixture fixture;
     final IdentityHashMap<PermissionWindowObservation,Boolean> received=new IdentityHashMap<PermissionWindowObservation,Boolean>();
     final AtomicInteger reads=new AtomicInteger(),observations=new AtomicInteger(),clicks=new AtomicInteger(),closedAdapters=new AtomicInteger();
+    final ConcurrentLinkedQueue<String> confirmations=new ConcurrentLinkedQueue<String>();
+    final ConcurrentLinkedQueue<String> sampled=new ConcurrentLinkedQueue<String>();
+    final AtomicInteger confirmationCalls=new AtomicInteger();
+    volatile boolean advanceWaiting;
     volatile String state="PERMISSION_PENDING";
     volatile boolean location=true,active=true,accepted=true;
     volatile CountDownLatch readEntered,releaseRead,beforeInput,releaseInput,afterEntered,releaseEntered;
@@ -48,7 +52,19 @@ final class BackgroundSession {
     void requirePermissionPreparationActive(){if(!active)throw new IllegalStateException("profile preparation retired");}
     String readPreparation(HeptaAccessibilityService.Cancellation cancel,long deadline)throws Exception{
         reads.incrementAndGet();CountDownLatch entered=readEntered,release=releaseRead;
-        if(entered!=null){entered.countDown();if(release!=null)release.await();}return state;
+        if(entered!=null){entered.countDown();if(release!=null)release.await();}
+        String scripted=sampled.poll();
+        if(scripted!=null)state=scripted;
+        if(advanceWaiting&&"WAITING".equals(state)){advanceWaiting=false;state="APP_READY";return "WAITING";}
+        return state;
+    }
+    String confirmPermissionPreparation(HeptaAccessibilityService.Cancellation cancel,long deadline){
+        requirePermissionPreparationActive();confirmationCalls.incrementAndGet();
+        if(cancel.isCancelled()||android.os.SystemClock.elapsedRealtime()>=deadline||!"APP_READY".equals(state))
+            throw new IllegalStateException("invalid synthetic confirmation request");
+        String answer=confirmations.poll();if(answer==null)answer="COMPLETE";
+        if("COMPLETE".equals(answer))active=false;else state=answer;
+        return answer;
     }
     void requirePermissionWindow(PermissionWindowObservation proof,long now){
         requirePermissionPreparationActive();if(!received.containsKey(proof))throw new IllegalStateException("not a current synthetic RPC object");proof.requireFresh(now);
