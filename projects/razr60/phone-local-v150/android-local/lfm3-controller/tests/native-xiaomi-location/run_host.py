@@ -69,6 +69,16 @@ def main():
         # Verify only the reviewed source-list/refusing-type additions on a
         # proof copy. The actual current provider below remains unmodified.
         legacy_provider_bytes = original_bytes
+        # Reverse only the exact reviewed runtime/final-census type additions
+        # for the historical proof. Compile the actual current provider below.
+        if sha(legacy_provider_bytes) == "580b6b1aa33bc3e52c6b358c47b7fa1e829648256c845eec79e5f8d98e6eb95e":
+            assert len(legacy_provider_bytes) == 62522
+            runtime_census_type_inverse = [(b'"CalendarFreshObservation", "CalendarActionResult", "CalendarSelectionObservation", "NativeSearchFinalCensusResampleProof")):', b'"CalendarFreshObservation", "CalendarActionResult", "CalendarSelectionObservation")):'), (b'    calendar_types = """\n    static final class NativeSearchFinalCensusResampleProof {\n        private NativeSearchFinalCensusResampleProof(){throw new AssertionError("actual final-census producer unavailable in this pure gate");}\n        void consume(NativeSearchSession.Attempt attempt,NativeSearchRole role,long now){throw new AssertionError("no final-census replacement authority");}\n    }\n', b'    calendar_types = """\n'), (b'    runtime_port = """package org.trillionnium.hepta.local;\nfinal class RuntimeInferenceAdapter implements LocalInference {\n    private RuntimeInferenceAdapter(){throw new AssertionError("runtime router is outside this legacy fixture");}\n    public LocalRuntimeConfig configuration(){throw new AssertionError("no runtime configuration authority");}\n    public Handle generate(String prompt,String system,java.io.File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){throw new AssertionError("no runtime model execution");}\n    final class CalendarModelBinding {\n        private CalendarModelBinding(){throw new AssertionError("no runtime calendar binding in legacy fixture");}\n        VlmInferenceAdapter requireCurrent(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar producer authority");}\n    }\n    synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar binding authority");}\n}\n"""\n    controller_port = """package org.trillionnium.hepta.local;\n', b'    controller_port = """package org.trillionnium.hepta.local;\n'), (b'(("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port), ("RuntimeInferenceAdapter.java", runtime_port))', b'(("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port))')]
+            for current, previous in runtime_census_type_inverse:
+                assert legacy_provider_bytes.count(current) == 1
+                legacy_provider_bytes = legacy_provider_bytes.replace(current, previous, 1)
+            assert sha(legacy_provider_bytes) == "14c341055b75c6b25924327d97da04d343fa6d7a408000ab1a5786d7543169a0"
+            report["retained_provider_runtime_census_type_additions_exactly_reversible"] = True
         # The current calendar carrier is reversed only on this proof copy.
         # The actual provider command below still compiles its untouched current bytes.
         if sha(legacy_provider_bytes) == "14c341055b75c6b25924327d97da04d343fa6d7a408000ab1a5786d7543169a0":

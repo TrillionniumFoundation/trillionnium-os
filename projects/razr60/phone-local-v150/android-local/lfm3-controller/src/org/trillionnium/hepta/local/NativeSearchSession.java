@@ -200,7 +200,7 @@ final class NativeSearchSession {
     static final class Attempt {
         final NativeSearchSession session;final Offer offer;final NativeSearchDecision decision;
         final String modelRunId;final long startedElapsed,deadlineElapsed;
-        private int state;private boolean claimed,closedForSuccessor;private NativeSearchRole revalidation;private long revalidatedElapsed;
+        private int state;private boolean claimed,closedForSuccessor,finalCensusResampled;private NativeSearchRole revalidation;private long revalidatedElapsed;
         private Attempt(Offer offer,NativeSearchDecision decision,String run,long started,long deadline){
             this.offer=offer;session=offer.session;this.decision=decision;modelRunId=run;startedElapsed=started;deadlineElapsed=deadline;
         }
@@ -223,6 +223,21 @@ final class NativeSearchSession {
             synchronized(this){need(state==0&&revalidation==null,"one full current C/D proof only");revalidation=proof;revalidatedElapsed=now;}
             return proof;
         }
+        /** Only HA's actual final preclaim content fence may discard its old
+         * complete proof. State/claim/run/deadline never reset; fresh C/D must
+         * subsequently pass the original revalidate method before one claim. */
+        void discardRevalidationForFinalCensus(HeptaAccessibilityService.NativeSearchFinalCensusResampleProof proof,long now){
+            need(proof!=null,"actual final-census producer capability required");
+            requireUnclaimedRevalidated(now);final NativeSearchRole previous;
+            synchronized(this){need(!finalCensusResampled,"one complete census replacement only");previous=revalidation;}
+            // Do not acquire Session/service/event locks while holding the Attempt lock.
+            proof.consume(this,previous,now);requireLive(now);
+            synchronized(this){
+                need(state==0&&!claimed&&!closedForSuccessor&&!finalCensusResampled&&revalidation==previous,
+                        "old proof must remain current and unclaimed through discard");
+                finalCensusResampled=true;revalidation=null;revalidatedElapsed=-1;
+            }
+        }
         /** Must be adjacent to the shared ActionExecutionState.enterEffect;
          * both one-use checks must succeed before the one Android call. */
         void requireUnclaimedRevalidated(long now){
@@ -243,7 +258,7 @@ final class NativeSearchSession {
             e.put("task_id",session.taskId);e.put("model_run_id",modelRunId);e.put("action",decision.evidence());e.put("planning_receipt_sha256",offer.planning.receiptSha256);
             e.put("authorization_sha256",session.authorization.authorization.sha256);e.put("role_id",offer.planning.role.roleId);
             e.put("started_elapsed_ms",startedElapsed);e.put("deadline_elapsed_ms",deadlineElapsed);e.put("state",state);e.put("claimed",claimed);
-            e.put("revalidation",revalidation==null?null:revalidation.evidence());e.put("automatic_redispatch",false);e.put("query_or_price_verified",false);
+            e.put("revalidation",revalidation==null?null:revalidation.evidence());e.put("final_census_resampled",finalCensusResampled);e.put("automatic_redispatch",false);e.put("query_or_price_verified",false);
             return NativeAppEvidence.immutableMap(e);}
     }
 

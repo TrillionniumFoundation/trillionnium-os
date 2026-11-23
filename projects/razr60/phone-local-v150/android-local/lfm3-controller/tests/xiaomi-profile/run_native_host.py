@@ -38,13 +38,17 @@ def calendar_legacy_closure(source, service_port):
     source_paths = [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in actual_names]
     before = service_port.read_text()
     if not before.endswith("}") or any("class " + name in before for name in (
-            "CalendarFreshObservation", "CalendarActionResult", "CalendarSelectionObservation")):
+            "CalendarFreshObservation", "CalendarActionResult", "CalendarSelectionObservation", "NativeSearchFinalCensusResampleProof")):
         raise RuntimeError("one original Service port without calendar authority required")
     input_port = '    /** Type-only old host boundary: no private action attempt can be constructed. */\n    static final class CalendarInputAttempt {\n        final String operationId=null;\n        final long queuedElapsed=-1;\n        private CalendarInputAttempt(){throw new UnsupportedOperationException("No calendar input authority in legacy fixture");}\n        void requirePermitProducer(NativeAppSession.CalendarPermit actual,boolean entered){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        java.util.Map<String,Object> executionBeforeInput(){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        java.util.Map<String,Object> beginBrokerCall(BackgroundSession actual,Cancellation original)throws Exception{\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n        void requireBeforeSend(BackgroundSession actual,Cancellation original){\n            throw new UnsupportedOperationException("No calendar input authority in legacy fixture");\n        }\n    }\n'
     inherited_input = "class CalendarInputAttempt" in before
     if inherited_input and before.count(input_port) != 1:
         raise RuntimeError("unknown shared CalendarInputAttempt port")
     calendar_types = """
+    static final class NativeSearchFinalCensusResampleProof {
+        private NativeSearchFinalCensusResampleProof(){throw new AssertionError("actual final-census producer unavailable in this pure gate");}
+        void consume(NativeSearchSession.Attempt attempt,NativeSearchRole role,long now){throw new AssertionError("no final-census replacement authority");}
+    }
     public static final class CalendarFreshObservation {
         private CalendarFreshObservation(){throw new AssertionError("calendar publication is outside this legacy fixture");}
         void requireBound(NativeAppSession.CalendarFreshRead read)throws Exception{throw new AssertionError("no calendar publication authority");}
@@ -93,13 +97,25 @@ final class VlmInferenceAdapter implements LocalInference {
     }
 }
 """
+    runtime_port = """package org.trillionnium.hepta.local;
+final class RuntimeInferenceAdapter implements LocalInference {
+    private RuntimeInferenceAdapter(){throw new AssertionError("runtime router is outside this legacy fixture");}
+    public LocalRuntimeConfig configuration(){throw new AssertionError("no runtime configuration authority");}
+    public Handle generate(String prompt,String system,java.io.File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){throw new AssertionError("no runtime model execution");}
+    final class CalendarModelBinding {
+        private CalendarModelBinding(){throw new AssertionError("no runtime calendar binding in legacy fixture");}
+        VlmInferenceAdapter requireCurrent(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar producer authority");}
+    }
+    synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar binding authority");}
+}
+"""
     controller_port = """package org.trillionnium.hepta.local;
 final class LocalTaskController {
     private LocalTaskController(){throw new AssertionError("calendar controller is outside this legacy fixture");}
 }
 """
     generated = []
-    for name, text in (("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port)):
+    for name, text in (("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port), ("RuntimeInferenceAdapter.java", runtime_port)):
         path = service_port.parent / name
         with path.open("x", encoding="utf-8") as f:
             f.write(text)

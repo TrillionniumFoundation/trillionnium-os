@@ -71,8 +71,15 @@ def main():
     begin_preflight = begin_task[len(begin_header):begin_task.index(scope_boundary)]
     if not begin_preflight.endswith("            }\n"):
         raise RuntimeError("ordinary visual model preflight is not a complete block")
-    methods["begin_task_model_preflight"] = ("private String beginTaskModelPreflightError(){\n        try{\n"
-        + begin_preflight + "            return null;\n        }catch(Exception error){return error.getMessage();}\n    }")
+    # Preserve the complete current prefix, including its boolean-returning
+    # automatic branch and all three original parameters. The unchanged old
+    # cases call only the error adapter; automaticMode is explicitly absent.
+    methods["begin_task_model_preflight"] = (
+        "private boolean beginTaskModelPreflight(String owner,String source,String nonceSha) throws Exception{\n"
+        + begin_preflight + "            return true;\n    }\n"
+        + "    private String beginTaskModelPreflightError(){\n        try{\n"
+        + '            if(!beginTaskModelPreflight(null,null,null))throw new AssertionError("manual model preflight cannot schedule automatic work");\n'
+        + "            return null;\n        }catch(Exception error){return error.getMessage();}\n    }")
     # The original model-config fixture has no authorization-preview pane.
     # Retain the actual absent-pane guard; any attempt to use a present pane throws.
     preview = method(ui, "private void previewTaskAuthorization()")
@@ -86,6 +93,11 @@ def main():
         raise RuntimeError("exact production absent-permission-pane guard changed")
     methods["permission_absent"] = permission_guard + '\n        throw new AssertionError("profile permission UI is outside the model-config fixture");\n    }'
     generated = template_file.read_text()
+    automatic_ports = '    // Original manual model-state cases have no automatic targets or Start.\n    private final Object automaticStartPending=null,automaticReadyStart=null;\n    private final Widget automaticTargetMode=null,pickAutomaticTargets=null,pickAutomaticInstance=null;\n    private final AutomaticTargetsAbsent automaticTargets=null;\n    private final AutomaticResolutionAbsent automaticResolution=null;\n    private static final class AutomaticTargetsAbsent {\n        final java.util.List<Object> targets=null;\n        private AutomaticTargetsAbsent(){throw automaticUnavailable();}\n    }\n    private static final class AutomaticResolutionAbsent {\n        final java.util.List<Object> matches=null;\n        private AutomaticResolutionAbsent(){throw automaticUnavailable();}\n    }\n    private boolean automaticMode(){return false;}\n    private String automaticChoiceError(){throw automaticUnavailable();}\n    private boolean prepareAutomaticStart(String owner,String source,String nonceSha){throw automaticUnavailable();}\n    private static UnsupportedOperationException automaticUnavailable(){\n        return new UnsupportedOperationException("Automatic UI authority absent in original model-state fixture");\n    }\n'
+    ui_class = "public final class RuntimeConfigUiHostTest {\n"
+    if generated.count(ui_class) != 1 or "boolean automaticMode()" in generated:
+        raise RuntimeError("exact original manual model-state fixture required")
+    generated = generated.replace(ui_class,ui_class+automatic_ports,1)
     for name, body in methods.items():
         marker = "{{" + name + "}}"
         if generated.count(marker) != 1:
@@ -134,6 +146,16 @@ def main():
         "start_preflight_boundary": "Exact beginTask model/background guard prefix, ending before scopeLaunchError. No scope authorization, task scheduling, keyboard or other Android action is executed.",
         "begin_task_sha256": hashlib.sha256(begin_task.encode()).hexdigest(),
         "begin_task_model_preflight_sha256": hashlib.sha256(begin_preflight.encode()).hexdigest(),
+        "automatic_manual_boundary": {
+            "ports_sha256":hashlib.sha256(automatic_ports.encode()).hexdigest(),
+            "actual_complete_refresh_and_choice_error_verbatim":True,
+            "actual_complete_model_prefix_verbatim":True,
+            "prefix_boolean_return_and_original_parameter_types_preserved":True,
+            "automatic_mode_always_false":True,"automatic_pending_and_ready_always_null":True,
+            "all_new_shape_constructors_private_and_throwing":True,
+            "automatic_authority_endpoints_always_throw":True,
+            "original_template_cases_and_assertions_unchanged":True,
+            "automatic_task_or_model_transition_executed":False},
         "view_session_io_fixtures": True, "android_runtime": False, "phone_tested": False,
         "preview_boundary":"Actual absent-pane guard only, present pane throws; original configuration assertions do not qualify native authorization preview",
         "preview_absent_guard_sha256":hashlib.sha256(preview_guard.encode()).hexdigest(),

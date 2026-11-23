@@ -123,7 +123,7 @@ def main():
   oldtypes=[body(oldport,'public static final class ActionOutcome {')]
   # These effect/result types remain the already-reviewed private, always-refusing ports.
   # CalendarFreshObservation itself is produced by the real HA block above.
-  for name in ['NativeSearchReadRetryProof','NativeSearchNoEffectReplanProof','NativeSearchSamplingExhaustionProof',
+  for name in ['NativeSearchReadRetryProof','NativeSearchNoEffectReplanProof','NativeSearchSamplingExhaustionProof','NativeSearchFinalCensusResampleProof',
                'CalendarInputAttempt','CalendarActionResult','CalendarSelectionObservation']:
    m=re.search(r'(?:public )?static final class '+name+r'\s*\{',oldport)
    if not m:raise RuntimeError('missing already refusing old proof '+name)

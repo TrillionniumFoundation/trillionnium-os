@@ -134,7 +134,7 @@ def main():
     '        boolean sameWindow(Graph other){','        boolean sameWindowAndTree(Graph other){','        Graph copyForAction(String nodeId,WebRegionNativeBridge region){'])
   oldport=selected['org.trillionnium.hepta.local.HeptaAccessibilityService'].read_text()
   oldtypes=[member('HeptaAccessibilityService.java',H,'    public static final class ActionOutcome {')]
-  for name in ['NativeSearchReadRetryProof','NativeSearchNoEffectReplanProof','NativeSearchSamplingExhaustionProof']:
+  for name in ['NativeSearchReadRetryProof','NativeSearchNoEffectReplanProof','NativeSearchSamplingExhaustionProof','NativeSearchFinalCensusResampleProof']:
    m=re.search(r'(?:public )?static final class '+name+r'\s*\{',oldport)
    if not m:raise RuntimeError('missing already refusing old proof '+name)
    oldtypes.append(body(oldport,m.group()))

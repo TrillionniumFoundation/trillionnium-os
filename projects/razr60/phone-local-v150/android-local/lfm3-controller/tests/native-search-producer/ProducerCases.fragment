@@ -4,6 +4,242 @@
     static void noFailureFile(Fixture f){check(f.directory.listFiles((d,n)->n.endsWith("failed-native-search-planning.json")).length==0,"no private failure file");}
     static void rawBounds(Fixture f,boolean visible,int left,int right){Map<String,Object> n=f.values.nodes.get("0/2/0");n.put("visible",visible);n.put("bounds",Arrays.asList(left,600,right,800));}
     static ActionExecutionState legacyState(String id,long at){return new ActionExecutionState(id,NativeProfileIdentityHostTest.TASK,NativeSearchSessionHostTest.RUN,NativeSearchSessionHostTest.OBS,NativeSearchSessionHostTest.H,96,7,NativeActionSnapshotCheckHostTest.UUID,at,at+8000,()->SystemClock.now);}
+    static final List<Map<String,Object>> finalCensusEndpointEvidence=new ArrayList<Map<String,Object>>();
+    static Map<String,Object> finalCensusMark(NativeSearchPlanning.EventMark mark){return new LinkedHashMap<String,Object>(mark.evidence());}
+    static void lastPreclaimSemanticRecoveryCase()throws Exception{
+        HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+            NativeSearchSession.Attempt attempt=f.intent();String run=attempt.modelRunId;long deadline=attempt.deadlineElapsed;
+            final Map<String,NodeData> oldNodes=new LinkedHashMap<String,NodeData>(f.nodes);
+            final Map<String,Object> trace=new LinkedHashMap<String,Object>();final int[] fired={0};
+            android.os.SystemClock.beforeRead=()->{
+                SearchActionWork work=s.activeSearchAction;
+                if(fired[0]==0&&work!=null&&work.profileBeforeEffect!=null&&work.ancestorChainChecked&&work.windowsChecked
+                        &&!entered(work)&&!Boolean.TRUE.equals(work.attempt.evidence().get("claimed"))
+                        &&(inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFinalPreclaimEvents")
+                           ||inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFinalEvents"))){
+                    fired[0]++;
+                    trace.put("endpoint",inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFinalPreclaimEvents")?"requireFinalPreclaimEvents":"requireFinalEvents");
+                    trace.put("D_completed_watermark",finalCensusMark(work.pairCompleted));
+                    trace.put("before_event_watermark",finalCensusMark(work.events.mark()));
+                    trace.put("injected_elapsed_ms",SystemClock.now);
+                    s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    trace.put("after_event_watermark",finalCensusMark(work.events.mark()));
+                }
+            };
+            f.graphHook=()->{if(f.graphReads==5){
+                check(actionSlot.pending()&&s.activeSearchAction!=null,"same live serial worker before replacement C");
+                for(NodeData n:oldNodes.values())check(n.obtained==n.recycled,"old graph references physically closed before replacement");
+                f.nodes.clear();
+            }};
+            f.action(attempt);
+            trace.put("injections",fired[0]);trace.put("graph_reads",f.graphReads);trace.put("platform_calls",f.effects);
+            trace.put("accepted",f.outcome!=null&&f.outcome.accepted);trace.put("dispatched",f.outcome!=null&&f.outcome.dispatched);
+            trace.put("detail",f.outcome==null?"missing":f.outcome.detail);trace.put("model_run_id",attempt.modelRunId);
+            trace.put("original_deadline_elapsed_ms",deadline);trace.put("actual_deadline_elapsed_ms",attempt.deadlineElapsed);
+            trace.put("attempt",attempt.evidence());finalCensusEndpointEvidence.add(trace);
+            check(fired[0]==1,"actual last preclaim endpoint injected exactly once");
+            @SuppressWarnings("unchecked") Map<String,Object> before=(Map<String,Object>)trace.get("before_event_watermark");
+            @SuppressWarnings("unchecked") Map<String,Object> after=(Map<String,Object>)trace.get("after_event_watermark");
+            check(((Number)after.get("events")).longValue()-((Number)before.get("events")).longValue()==1
+                    &&((Number)after.get("content")).longValue()-((Number)before.get("content")).longValue()==1
+                    &&before.get("unknown").equals(after.get("unknown"))&&before.get("boundary").equals(after.get("boundary")),
+                    "the actual production tracker recorded one content and no unknown/boundary/untyped delta");
+            check(f.graphReads==6&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1,
+                    "semantic regression requires a fresh complete C/D and exactly one new-node effect");
+            for(NodeData n:oldNodes.values())check(n.effects==0,"discarded old nodes never receive input");
+            check(attempt.modelRunId.equals(run)&&attempt.deadlineElapsed==deadline,"semantic recovery cannot renew model or deadline");
+        }
+    }
+    static boolean finalCensusPreclaimBoundary(HeptaAccessibilityService service){
+        SearchActionWork work=service.activeSearchAction;
+        return work!=null&&work.profileBeforeEffect!=null&&work.ancestorChainChecked&&work.windowsChecked
+                &&!entered(work)&&!Boolean.TRUE.equals(work.attempt.evidence().get("claimed"))
+                &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFinalPreclaimEvents");
+    }
+    static int[] finalCensusEvent(HeptaAccessibilityService service,int kind,int rounds){
+        final int[] fired={0};
+        android.os.SystemClock.beforeRead=()->{
+            SearchActionWork work=service.activeSearchAction;
+            if(finalCensusPreclaimBoundary(service)&&fired[0]<rounds&&fired[0]==work.finalCensusResamples){
+                fired[0]++;
+                service.noteNativeSearchEvent(kind==1?-1:7,kind==2?97:96,
+                        kind==1?null:NativeAppGoal.XIAOMI_PACKAGE,true,kind!=3);
+            }
+        };
+        return fired;
+    }
+    static JSONObject finalCensusEvidence(Fixture f){return f.outcome.actionExecution.getJSONObject("native_search_execution");}
+    static void finalCensusRecoveryCases()throws Exception{
+        one("shared_semantic_final_preclaim_regression",()->lastPreclaimSemanticRecoveryCase());
+        one("last_preclaim_content_discards_complete_C_D_and_revalidates_once_in_same_attempt",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();String run=attempt.modelRunId;long deadline=attempt.deadlineElapsed;
+                final Map<String,NodeData> oldNodes=new LinkedHashMap<String,NodeData>(f.nodes);final boolean[] sawFresh={false};
+                int[] fired=finalCensusEvent(s,0,1);
+                f.graphHook=()->{if(f.graphReads==5){
+                    check(actionSlot.pending()&&s.activeSearchAction!=null,"same serial worker retains slot for replacement C");
+                    for(NodeData n:oldNodes.values())check(n.obtained==n.recycled,"both old C/D and temporary node references closed before new C");
+                    sawFresh[0]=true;f.nodes.clear();
+                }};
+                f.action(attempt);check(fired[0]==1&&sawFresh[0]&&f.graphReads==6,"real last preclaim event caused one full fresh C and D");
+                check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1,"actual new complete pair reaches exactly one platform call");
+                for(NodeData n:oldNodes.values())check(n.effects==0,"no old retained node is dispatched");
+                JSONObject e=finalCensusEvidence(f);JSONArray old=e.getJSONArray("discarded_final_censuses");JSONObject round=old.getJSONObject(0);
+                check(e.getInt("complete_census_resamples")==1&&old.length()==1,"one explicit prior failure record retained");
+                check(round.getBoolean("old_C_graph_closed")&&round.getBoolean("old_D_graph_closed")&&round.getBoolean("old_revalidation_discarded"),"discard lifecycle executed before replacement");
+                check(round.getJSONObject("current_C").getJSONObject("envelope").getBoolean("full_native_complete")
+                        &&round.getJSONObject("latest_D").getJSONObject("envelope").getBoolean("full_native_complete"),"old full pair preserved as diagnostics");
+                check(round.getJSONObject("rejection_watermark").getLong("events")>round.getJSONObject("D_completed_watermark").getLong("events"),"actual old rejection watermark retained");
+                check(round.getJSONObject("pair_start_watermark").toString().equals(e.getJSONObject("pair_start_watermark").toString()),"original event baseline never reset");
+                JSONArray reads=e.getJSONArray("current_C_read_attempts");
+                check(reads.length()==2&&reads.getJSONObject(1).getInt("ordinal")==2&&reads.getJSONObject(1).getInt("complete_census_round")==2,"one cumulative current-C ledger");
+                check(attempt.modelRunId.equals(run)&&attempt.deadlineElapsed==deadline
+                        &&f.outcome.actionExecution.getLong("queued_elapsed_ms")==attempt.startedElapsed,"run/reservation/deadline not renewed");
+                check(Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"original Attempt once-claims the new proof");
+                f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(s.nativeSearchAllowsLegacyObservation(s.lease),"actual Session consumes current drained navigation receipt");
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"replacement graph node references drained");
+            }
+        });
+        for(int event=1;event<=3;event++){final int kind=event;one("last_preclaim_"+new String[]{"","unknown","boundary","untyped"}[event]+"_is_diagnosed_without_recovery",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();int[] fired=finalCensusEvent(s,kind,1);f.action(attempt);noEffect(f,"ineligible final event");
+                JSONObject e=finalCensusEvidence(f);check(fired[0]==1&&!e.isNull("final_preclaim_rejection_watermark"),"exact third-fence rejection is recorded");
+                check(!e.getBoolean("typed_final_preclaim_content_rejected")&&e.getInt("complete_census_resamples")==0
+                        &&e.getJSONArray("discarded_final_censuses").length()==0&&f.graphReads==4,"no new proof/graph for unknown kind");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"old attempt remains unclaimed");
+            }
+        });}
+        one("repeated_last_preclaim_content_cannot_obtain_a_second_complete_replacement",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();int[] fired=finalCensusEvent(s,0,2);f.action(attempt);noEffect(f,"second final rejection");
+                JSONObject e=finalCensusEvidence(f);check(fired[0]==2&&f.graphReads==6,"exactly original and one replacement pair");
+                check(e.getInt("complete_census_resamples")==1&&e.getJSONArray("discarded_final_censuses").length()==1
+                        &&e.getBoolean("typed_final_preclaim_content_rejected"),"second real watermark retained without third pair");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&attempt.deadlineElapsed==f.outcome.actionExecution.getLong("deadline_elapsed_ms"),"no claim or time renewal");
+            }
+        });
+        for(int event=1;event<=3;event++){final int kind=event;one("final_census_capability_rejects_"+new String[]{"","unknown","boundary","untyped"}[event]+"_during_old_graph_disposal",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();final boolean[] gap={false};finalCensusEvent(s,0,1);
+                final Runnable initialEvent=android.os.SystemClock.beforeRead;
+                android.os.SystemClock.beforeRead=()->{
+                    if(initialEvent!=null)initialEvent.run();
+                    SearchActionWork work=s.activeSearchAction;
+                    if(!gap[0]&&work!=null&&work.pendingFinalCensusResample!=null
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$NativeSearchFinalCensusResampleProof","consume")){
+                        gap[0]=true;s.noteNativeSearchEvent(kind==1?-1:7,kind==2?97:96,kind==1?null:NativeAppGoal.XIAOMI_PACKAGE,true,kind!=3);
+                    }
+                };
+                f.action(attempt);noEffect(f,"tracker spans old graph disposal");check(gap[0]&&f.graphReads==4,"no replacement C after ineligible gap event");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"old proof not discarded by a contaminated capability");
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"closed old refs remain closed after denied consumption");
+            }
+        });}
+        for(int stop=0;stop<3;stop++){final int kind=stop;one("final_census_capability_"+new String[]{"cancel","controller_replacement","deadline"}[stop]+"_before_consumption",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();final boolean[] stopped={false};finalCensusEvent(s,0,1);
+                final Runnable initialEvent=android.os.SystemClock.beforeRead;
+                android.os.SystemClock.beforeRead=()->{
+                    if(initialEvent!=null)initialEvent.run();
+                    SearchActionWork work=s.activeSearchAction;
+                    if(!stopped[0]&&work!=null&&work.pendingFinalCensusResample!=null
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","discardFinalCensusForResample")){
+                        stopped[0]=true;if(kind==0)f.cancelled=true;else if(kind==1)s.ownedController=new Object();else SystemClock.now=attempt.deadlineElapsed;
+                    }
+                };
+                f.action(attempt);noEffect(f,"old live boundary cannot be restored");check(stopped[0]&&f.graphReads==4,"stopped old work cannot start new C");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&!Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"no reset of original state or proof");
+            }
+        });}
+        one("replacement_pair_cost_greater_than_original_remaining_time_stays_failed",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.profileLifetime=8000;final boolean[] fired={false};
+                android.os.SystemClock.beforeRead=()->{
+                    if(!fired[0]&&finalCensusPreclaimBoundary(s)){fired[0]=true;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}
+                };
+                f.graphHook=()->{
+                    // Consume earlier reservation time before C, then obtain real fresh profile proofs in C/D and the final window check.
+                    if(f.graphReads==3)SystemClock.now=attempt.deadlineElapsed-2699-2*f.graphDuration;
+                    if(f.graphReads==5)f.graphDuration=1270;if(f.graphReads==6)f.graphDuration=1746;
+                };
+                f.action(attempt);noEffect(f,"complete new C+D cannot borrow more time");
+                JSONObject e=finalCensusEvidence(f);check(fired[0]&&e.getInt("complete_census_resamples")==1,"only the real eligible fence started recovery");
+                JSONObject oldRound=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                check(attempt.deadlineElapsed-oldRound.getLong("checked_elapsed_ms")==2699,"actual last-fence record has exactly 2699 ms left");
+                check(SystemClock.now>=attempt.deadlineElapsed&&f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed,"original exact absolute deadline controls");
+                check(e.isNull("latest_D")&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"partial replacement D cannot be promoted or claimed");
+            }
+        });
+        one("unknown_in_replacement_C_interval_cannot_be_hidden_by_a_new_pair_baseline",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();finalCensusEvent(s,0,1);
+                f.graphHook=()->{if(f.graphReads==5)s.noteNativeSearchEvent(-1,-1,null,false,false);};
+                f.action(attempt);noEffect(f,"whole original interval remains covered");JSONObject e=finalCensusEvidence(f);
+                check(f.graphReads==6&&e.getInt("complete_census_resamples")==1,"real new full pair read before original-interval refusal");
+                check(e.getJSONObject("D_completed_watermark").getLong("unknown")>e.getJSONObject("pair_start_watermark").getLong("unknown"),"unknown remains in cumulative evidence");
+                check(attempt.evidence().get("revalidation")==null,"invalid replacement never restores claim proof");
+            }
+        });
+        one("replacement_complete_pair_still_requires_the_same_live_C_D_node",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();finalCensusEvent(s,0,1);
+                f.graphHook=()->{if(f.graphReads==5)f.replaceTargetOnSecond=true;};
+                f.action(attempt);noEffect(f,"replacement Android identity mismatch");check(f.graphReads==6&&f.outcome.detail.contains("replaced"),"unchanged same-node fence is executed on replacement");
+                check(!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"new complete pure proof still does not grant an effect");
+            }
+        });
+        one("partial_replacement_C_never_restores_discarded_revalidation",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();finalCensusEvent(s,0,1);
+                f.graphHook=()->{if(f.graphReads>=5){f.refreshGraphChildren=true;f.nodes.get("0/0/0").refresh=false;}};
+                f.action(attempt);noEffect(f,"incomplete replacement C cannot use old role proof");JSONObject e=finalCensusEvidence(f);
+                check(e.getInt("complete_census_resamples")==1&&e.getJSONArray("current_C_read_attempts").length()==8,"original cumulative eight-read cap remains");
+                check(e.isNull("current_C")&&e.isNull("latest_D")&&attempt.evidence().get("revalidation")==null,"old complete pair remains diagnostic only");
+                rejected(()->attempt.claim(SystemClock.now));
+            }
+        });
+        one("eight_C_reads_already_used_cannot_issue_a_ninth_after_final_content",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;finalCensusEvent(s,0,1);
+                f.graphHook=()->f.nodes.get("0/0/0").refresh=f.graphReads>=10;
+                f.action(attempt);noEffect(f,"same Attempt eight-read total");JSONObject e=finalCensusEvidence(f);
+                check(f.graphReads==11&&e.getJSONArray("current_C_read_attempts").length()==8,"seven failed C plus eighth complete C and D only");
+                check(e.getInt("complete_census_resamples")==0&&e.getBoolean("typed_final_preclaim_content_rejected"),"typed final rejection retained but exhausted cap issues no capability");
+                check(e.getJSONArray("discarded_final_censuses").length()==0&&!Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"no silent reset of original C budget");
+            }
+        });
+        for(boolean fail:new boolean[]{false,true}){final boolean eighthFails=fail;one("seven_C_reads_used_leave_only_eighth_"+(fail?"failure":"success")+"_in_replacement",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;finalCensusEvent(s,0,1);
+                f.graphHook=()->f.nodes.get("0/0/0").refresh=f.graphReads>=9&&(!eighthFails||f.graphReads!=11);
+                f.action(attempt);JSONObject e=finalCensusEvidence(f);JSONArray reads=e.getJSONArray("current_C_read_attempts");
+                check(reads.length()==8&&reads.getJSONObject(7).getInt("ordinal")==8&&reads.getJSONObject(7).getInt("complete_census_round")==2,"remaining original eighth read, never ordinal reset");
+                check(e.getInt("complete_census_resamples")==1,"one real full-pair recovery attempt");
+                if(eighthFails){noEffect(f,"failed eighth read exhausts original budget");check(f.graphReads==11&&e.isNull("current_C")&&e.isNull("latest_D"),"no ninth C or incomplete promotion");}
+                else{check(f.outcome.accepted&&f.effects==1&&f.graphReads==12,"eighth complete C plus fresh D may pass all original fences");f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);}
+            }
+        });}
+        one("event_after_original_attempt_claim_is_never_a_census_recovery",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();final boolean[] fired={false};
+                android.os.SystemClock.beforeRead=()->{
+                    SearchActionWork work=s.activeSearchAction;
+                    if(!fired[0]&&work!=null&&Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&!entered(work)){fired[0]=true;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}
+                };
+                f.action(attempt);noEffect(f,"claimed attempt is never reset");JSONObject e=finalCensusEvidence(f);
+                check(fired[0]&&Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&f.graphReads==4,"actual claim happened, no extra read");
+                check(e.getInt("complete_census_resamples")==0&&!f.outcome.actionExecution.getBoolean("effect_entered"),"postclaim event keeps terminal zero-call fact");
+            }
+        });
+        one("absence_of_private_final_census_capability_cannot_clear_current_attempt",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();rejected(()->attempt.discardRevalidationForFinalCensus(null,SystemClock.now));
+                int declared=0;for(java.lang.reflect.Constructor<?> c:NativeSearchFinalCensusResampleProof.class.getDeclaredConstructors())if(!c.isSynthetic()){declared++;check(java.lang.reflect.Modifier.isPrivate(c.getModifiers()),"declared producer constructor is private; Java 8 access bridge is synthetic");}check(declared==1,"one declared private producer constructor");
+                f.action(attempt);check(f.outcome.accepted&&f.effects==1&&f.graphReads==4,"denied capability attempt does not manufacture or consume revalidation");
+            }
+        });
+    }
     public static void main(String[] args)throws Exception {
         NativeProfileIdentityHostTest.workspace=Paths.get(args[1]);Files.createDirectories(NativeProfileIdentityHostTest.workspace);
         one("actual_profile_reply_contract_for_producer_fixture",()->{
@@ -455,9 +691,11 @@
         loadingRetryCases(args);
         successorCases(args);
         samplingCases(args);
+        finalCensusRecoveryCases();
         boolean all=true;for(Map<String,Object> row:cases)all&=Boolean.TRUE.equals(row.get("passed"));
         Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("schema","hepta.native-search-actual-producer-cases.v1");
         report.put("cases",cases.size());report.put("assertions",assertions);report.put("all_pass",all);report.put("results",cases);
+        report.put("final_census_endpoint_evidence",finalCensusEndpointEvidence);
         report.put("android_execution",false);report.put("phone_operations",0);report.put("business_verified",false);
         Files.write(Paths.get(args[0]),NativeSearchPlanning.json(report).toString(2).getBytes(StandardCharsets.UTF_8));
         System.out.println("actual HA producer cases="+cases.size()+" assertions="+assertions+" all_pass="+all);

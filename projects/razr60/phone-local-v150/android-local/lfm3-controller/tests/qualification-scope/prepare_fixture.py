@@ -7,6 +7,7 @@ import ast
 import hashlib
 import json
 import re
+import types
 from pathlib import Path
 
 
@@ -579,5 +580,22 @@ final class PublicProfileBusinessRecoveryClient {
         'actual_discard_methods_verbatim':True,
         'pending_retry_constructible':False,'observer_worker_or_registration_present':False,
         'new_retry_or_effect_authority':False,'old_cases_or_assertions_changed':False}
+    # Every caller of this legacy generator compiles the same complete manual
+    # beginTask. Automatic authority stays absent; the separate auto gate uses
+    # bg.prepare and the real automatic producer, not this qualification fixture.
+    manual_path = source/'tests/native-auto-target/manual_boundary.py'
+    manual_raw = manual_path.read_bytes()
+    if hashlib.sha256(manual_raw).hexdigest() != '03b1399819b54b3032d8da2f37cca70b50ac63327e3c2fd07fa935b41fa199b9':
+        raise RuntimeError('exact private refusing manual compiler boundary required')
+    manual = types.ModuleType('qualification_manual_automatic_boundary')
+    manual.__file__ = str(manual_path)
+    exec(compile(manual_raw,str(manual_path),'exec'),manual.__dict__)
+    files,manual_record = manual.prepare_ui(source,output,files,
+        lambda raw,signature: java_method(raw.decode('utf-8'),'    '+signature+'{'))
+    if manual_path.read_bytes() != manual_raw:
+        raise RuntimeError('manual compiler boundary changed during preparation')
+    manual_record['generator'] = {'path':str(manual_path),'bytes':len(manual_raw),
+        'sha256':hashlib.sha256(manual_raw).hexdigest()}
+    record['automatic_manual_compiler_boundary'] = manual_record
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record

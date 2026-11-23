@@ -197,5 +197,19 @@ final class NativeAppSession {
   'input_attempt_endpoints_all_refuse':True,'calendar_model_or_input_executed':False,
   'generated_same_name_files_to_exclude_when_compiling_actual_classes':['NativeAppSession.java','NativeCalendarDateIntent.java','MobiMindContract.java'],
   'actual_background_session_unchanged':True,'old_client_cases_unchanged':True}
+ # This default legacy client closure never supplies automatic Start provenance.
+ automatic_helper=source/'tests/native-app/legacy-boundary/prepare_search_pure.py'
+ automatic_before=hashlib.sha256(automatic_helper.read_bytes()).hexdigest()
+ automatic_spec=importlib.util.spec_from_file_location('background_automatic_boundary',automatic_helper)
+ automatic_module=importlib.util.module_from_spec(automatic_spec);automatic_spec.loader.exec_module(automatic_module)
+ files=automatic_module.add_auto_boundary(source,files)
+ automatic_type=source/'tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java'
+ if hashlib.sha256(automatic_helper.read_bytes()).hexdigest()!=automatic_before:
+  raise RuntimeError('Automatic compiler helper changed during preparation')
+ records['automatic_type_only_boundary']={
+  'helper_path':str(automatic_helper),'helper_sha256':automatic_before,
+  'compiler_path':str(automatic_type),'compiler_sha256':hashlib.sha256(automatic_type.read_bytes()).hexdigest(),
+  'constructors_private_and_throwing':True,'authority_endpoints_always_refuse':True,
+  'automatic_mode_or_selection_executed':False,'actual_target_unchanged':True}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

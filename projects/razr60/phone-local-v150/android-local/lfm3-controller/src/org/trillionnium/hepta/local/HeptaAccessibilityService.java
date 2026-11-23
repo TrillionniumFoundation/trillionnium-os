@@ -4510,6 +4510,51 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private volatile SearchActionWork activeSearchAction;
     private static final int NATIVE_SEARCH_CURRENT_C_READ_LIMIT=8;
+    /** A memory-only capability from the last unclaimed census fence. It
+     * never creates another model intent, Attempt, action slot or deadline. */
+    static final class NativeSearchFinalCensusResampleProof {
+        private final HeptaAccessibilityService issuer;private final SearchActionWork work;
+        private final NativeSearchRole role;private final Graph oldC,oldD;
+        private final NativeActionSnapshotCheck.Snapshot current,latest;
+        private final NativeSearchPlanning.EventMark rejected;private final long issuedElapsed;
+        private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
+        private NativeSearchFinalCensusResampleProof(HeptaAccessibilityService issuer,SearchActionWork work,
+                NativeSearchRole role,Graph latestGraph,NativeSearchPlanning.EventMark rejected,long now){
+            this.issuer=issuer;this.work=work;this.role=role;oldC=work.currentGraph;oldD=latestGraph;
+            current=work.currentSnapshot;latest=work.latestSnapshot;this.rejected=rejected;issuedElapsed=now;
+        }
+        void consume(NativeSearchSession.Attempt actual,NativeSearchRole actualRole,long now){
+            if(actual!=work.attempt||actualRole!=role||now<issuedElapsed||now>=actual.deadlineElapsed)
+                throw new IllegalStateException("same original unclaimed census proof required");
+            work.check();actual.requireUnclaimedRevalidated(now);
+            synchronized(issuer.nativeSearchEventLock){
+                long observedNow=SystemClock.elapsedRealtime();
+                if(work.pendingFinalCensusResample!=this||work.finalCensusResamples!=0
+                        ||issuer.activeSearchAction!=work||issuer.nativeSearchTrackedAction!=work||issuer.lastActionExecution!=work.state
+                        ||work.currentGraph!=null||oldC==null||oldD==null||!oldC.refs.isEmpty()||!oldD.refs.isEmpty()
+                        ||work.currentSnapshot!=current||work.latestSnapshot!=latest
+                        ||work.finalPreclaimRejectedWatermark!=rejected||!work.typedFinalPreclaimContentRejected
+                        ||work.firstPostDEventRejected||work.typedAfterTargetRefreshPostDEventRejected
+                        ||!work.currentNodeIdentityChecked||!work.ancestorChainChecked||!work.windowsChecked||work.profileBeforeEffect==null
+                        ||work.platformCallInvoked||work.state.effectEntered()||work.state.retired()||work.state.isDrained()
+                        ||work.cancel.isCancelled()||observedNow<issuedElapsed||observedNow>=work.state.deadlineElapsed
+                        ||observedNow>=work.session.chainDeadlineElapsed)
+                    throw new IllegalStateException("closed old graphs and live exact census boundary required");
+                NativeSearchPlanning.EventMark observed=work.events.mark();
+                requireNativeSearchPairEvents(work.pairStart,observed);
+                if(!observed.monotonicSince(rejected)||!consumed.compareAndSet(false,true))
+                    throw new IllegalStateException("one unchanged-identity census resample capability required");
+            }
+        }
+    }
+    /** Local control flow only: every other stale/error path remains terminal. */
+    private static final class NativeSearchFinalCensusChanged extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        final NativeSearchFinalCensusResampleProof proof;
+        private NativeSearchFinalCensusChanged(NativeSearchFinalCensusResampleProof proof){
+            super("new search final unclaimed census was invalidated by an actual content event");this.proof=proof;
+        }
+    }
     /** A new typed intent owns its own current C NodeRef; no PhoneObservation is manufactured. */
     private final class SearchActionWork {
         final NativeSearchSession.Attempt attempt;final NativeSearchSession session;final QualificationScopeConfig.Bound scope;
@@ -4524,6 +4569,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean typedAfterTargetRefreshPostDEventRejected;
         NativeSearchPlanning.EventMark afterTargetRefreshRejectedWatermark;
         long afterTargetRefreshEventsElapsed=-1;
+        long finalPreclaimEventsElapsed=-1;NativeSearchPlanning.EventMark finalPreclaimRejectedWatermark;
+        boolean typedFinalPreclaimContentRejected;int finalCensusResamples;
+        NativeSearchFinalCensusResampleProof pendingFinalCensusResample;
+        final List<Map<String,Object>> discardedFinalCensuses=new ArrayList<Map<String,Object>>();
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
         // Complete immutable values are retained immediately; diagnostic copies are made before drain.
         NativeActionSnapshotCheck.Snapshot currentSnapshot,latestSnapshot;
@@ -4602,6 +4651,61 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String noEffectRejectionReason(){
             if(!hasNoEffectReplanFence())throw new IllegalStateException("exactly one actual preclaim event fence required");
             return firstPostDEventRejected?"post_D_event_before_target_refresh":"post_D_event_after_target_refresh_before_claim";
+        }
+        /** The only recovery boundary is after the complete window/profile/policy
+         * checks and before attempt_journal/claim. Later fences cannot issue it. */
+        void requireFinalPreclaimEvents(NativeSearchRole role,Graph latestGraph){
+            check();attempt.requireUnclaimedRevalidated(SystemClock.elapsedRealtime());requireFinalProfileClock();
+            synchronized(nativeSearchEventLock){
+                finalPreclaimEventsElapsed=SystemClock.elapsedRealtime();
+                NativeSearchPlanning.EventMark observed=events.mark();
+                if(sameSearchEvents(pairCompleted,observed))return;
+                // Always preserve the actual rejection, including ineligible event kinds.
+                finalPreclaimRejectedWatermark=observed;
+                if(firstPostDEventRejected||typedAfterTargetRefreshPostDEventRejected||firstFinalEventsElapsed<0
+                        ||afterTargetRefreshEventsElapsed<firstFinalEventsElapsed
+                        ||finalPreclaimEventsElapsed<afterTargetRefreshEventsElapsed
+                        ||finalPreclaimEventsElapsed>=state.deadlineElapsed||finalPreclaimEventsElapsed>=session.chainDeadlineElapsed
+                        ||cancel.isCancelled()||currentGraph==null||latestGraph==null||currentSnapshot==null||latestSnapshot==null||role==null||roleProof==null
+                        ||!currentNodeIdentityChecked||!ancestorChainChecked||!windowsChecked||profileBeforeEffect==null
+                        ||finalPreclaimEventsElapsed>=profileBeforeEffect.expiresElapsedMs
+                        ||platformCallInvoked||state.effectEntered()||state.retired()||state.isDrained()
+                        ||activeSearchAction!=this||nativeSearchTrackedAction!=this||lastActionExecution!=state)
+                    throw new StaleObservation("new search final census event is outside the live unclaimed boundary");
+                requireNativeSearchPairEvents(pairStart,observed);
+                requireNativeSearchPairEvents(pairCompleted,observed);
+                typedFinalPreclaimContentRejected=true;
+                if(finalCensusResamples!=0||pendingFinalCensusResample!=null||currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT)
+                    throw new StaleObservation("new search final census cannot replace its spent resample/read budget");
+                pendingFinalCensusResample=new NativeSearchFinalCensusResampleProof(HeptaAccessibilityService.this,this,role,latestGraph,observed,finalPreclaimEventsElapsed);
+                throw new NativeSearchFinalCensusChanged(pendingFinalCensusResample);
+            }
+        }
+        void discardFinalCensusForResample(NativeSearchFinalCensusResampleProof proof){
+            check();
+            if(proof==null||proof!=pendingFinalCensusResample)
+                throw new IllegalStateException("actual final-census failure capability required");
+            Map<String,Object> old=new LinkedHashMap<String,Object>();
+            old.put("ordinal",finalCensusResamples+1);old.put("reason","content_event_at_last_preclaim_fence");
+            old.put("current_C",NativeSearchPlanning.snapshot(currentSnapshot));old.put("latest_D",NativeSearchPlanning.snapshot(latestSnapshot));
+            old.put("role_comparison",roleProof);old.put("pair_start_watermark",pairStart.evidence());
+            old.put("D_completed_watermark",pairCompleted.evidence());old.put("rejection_watermark",finalPreclaimRejectedWatermark.evidence());
+            old.put("checked_elapsed_ms",finalPreclaimEventsElapsed);old.put("original_attempt_deadline_elapsed_ms",attempt.deadlineElapsed);
+            old.put("same_attempt",true);old.put("model_reissued",false);old.put("effect_entered",state.effectEntered());old.put("platform_call_invoked",platformCallInvoked);
+            // D and all temporary nodes have already closed in the round's finally.
+            Graph previous=currentGraph;currentGraph=null;if(previous!=null)previous.close();
+            old.put("old_C_graph_closed",previous!=null&&previous.refs.isEmpty());
+            old.put("old_D_graph_closed",proof.oldD!=null&&proof.oldD.refs.isEmpty());
+            discardedFinalCensuses.add(old);
+            attempt.discardRevalidationForFinalCensus(proof,SystemClock.elapsedRealtime());
+            finalCensusResamples++;old.put("old_revalidation_discarded",true);pendingFinalCensusResample=null;
+            // First/second rejection latches were false; never clear a rejected cause.
+            currentSnapshot=null;latestSnapshot=null;roleProof=null;pairCompleted=null;effectWatermark=null;
+            profileBeforeEffect=null;currentNodeIdentityChecked=false;ancestorChainChecked=false;windowsChecked=false;
+            latestReadReturnedElapsed=-1;latestSnapshotCompletedElapsed=-1;roleComparedElapsed=-1;firstFinalEventsElapsed=-1;
+            afterTargetRefreshEventsElapsed=-1;finalPreclaimEventsElapsed=-1;finalPreclaimRejectedWatermark=null;typedFinalPreclaimContentRejected=false;
+            // pairStart and the same live SearchEvents tracker deliberately survive.
+            check();
         }
         void requireFinalEvents(){
             check();if(!sameSearchEvents(pairCompleted,events.mark()))
@@ -4779,6 +4883,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("after_target_refresh_event_check_elapsed_ms",work.afterTargetRefreshEventsElapsed<0?null:Long.valueOf(work.afterTargetRefreshEventsElapsed));
             proof.put("after_target_refresh_event_rejection_watermark",work.afterTargetRefreshRejectedWatermark==null?null:work.afterTargetRefreshRejectedWatermark.evidence());
             proof.put("typed_post_D_after_target_refresh_fence_rejected",work.typedAfterTargetRefreshPostDEventRejected);
+            proof.put("final_preclaim_event_check_elapsed_ms",work.finalPreclaimEventsElapsed<0?null:Long.valueOf(work.finalPreclaimEventsElapsed));
+            proof.put("final_preclaim_rejection_watermark",work.finalPreclaimRejectedWatermark==null?null:work.finalPreclaimRejectedWatermark.evidence());
+            proof.put("typed_final_preclaim_content_rejected",work.typedFinalPreclaimContentRejected);
+            proof.put("complete_census_resamples",work.finalCensusResamples);proof.put("complete_census_resample_limit",1);
+            proof.put("discarded_final_censuses",work.discardedFinalCensuses);
             proof.put("original_chain_deadline_elapsed_ms",work.session.chainDeadlineElapsed);
             proof.put("original_reference_begins_at_current_C",true);proof.put("same_C_D_android_node",work.currentNodeIdentityChecked);
             proof.put("original_C_node_and_actual_ancestor_chain",work.ancestorChainChecked);proof.put("reported_windows_before_after_equal",work.windowsChecked);
@@ -4796,11 +4905,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
      * Eight total reads also bound the ledger and a rapidly failing sampler;
      * this defensive count does not grant more time or another action. */
     private Graph readNativeSearchCurrentGraph(SearchActionWork work){
-        for(int ordinal=1;;ordinal++){
+        for(int ordinal=work.currentReadAttempts.size()+1;;ordinal++){
+            if(ordinal>NATIVE_SEARCH_CURRENT_C_READ_LIMIT)
+                throw new StaleObservation("new search original Attempt current C read budget is exhausted");
             work.phase("graph_read");work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
             if(work.currentGraph!=null||work.currentSnapshot!=null||work.latestSnapshot!=null||work.platformCallInvoked)
                 throw new IllegalStateException("new search current C read cannot reuse a prior graph or effect");
             Map<String,Object> read=new LinkedHashMap<String,Object>();read.put("ordinal",ordinal);
+            read.put("complete_census_round",work.finalCensusResamples+1);
             read.put("started_elapsed_ms",SystemClock.elapsedRealtime());read.put("completed",false);
             read.put("fresh_complete_read_next",false);work.currentReadAttempts.add(read);
             try{
@@ -4818,12 +4930,26 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     private ActionOutcome executeNativeOpenSearch(SearchActionWork work)throws Exception{
+        try{
+            for(;;){
+                try{return executeNativeOpenSearchCensus(work);}
+                catch(NativeSearchFinalCensusChanged changed){
+                    // The private proof permits at most one complete replacement pair.
+                    // This stack keeps the same slot, tracker, model run and old deadline.
+                    work.discardFinalCensusForResample(changed.proof);
+                }
+            }
+        }finally{work.pendingFinalCensusResample=null;}
+    }
+    private ActionOutcome executeNativeOpenSearchCensus(SearchActionWork work)throws Exception{
         work.phase("scope_read");work.scope.verifyUnchanged();
         QualificationScope.require(!work.scope.restricted(),"typed search cannot extend a qualification scope");
         requireTaskAuthorization(work.session.taskId,work.session.authorization);work.attempt.verifyInstalled();work.check();
         Graph fresh=null;
         try{
-            work.pairStart=work.events.mark();work.currentGraph=readNativeSearchCurrentGraph(work);
+            if(work.pairStart==null)work.pairStart=work.events.mark();
+            else requireNativeSearchPairEvents(work.pairStart,work.events.mark());
+            work.currentGraph=readNativeSearchCurrentGraph(work);
             NativeActionSnapshotCheck.Snapshot current=nativeSearchSnapshot(work.currentGraph,work.session,work.attempt.offer.planning.id,work.attempt.startedElapsed);
             work.currentSnapshot=current;
             NativeSearchRole currentRole=NativeSearchRole.compare(current,current);work.attempt.offer.planning.role.requireSameRole(currentRole);
@@ -4853,7 +4979,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             requireSameProfileWindow(fresh.profileWindow,actual.profileWindow);work.profileBeforeEffect=actual.profileWindow;
             work.session.background.requirePolicyBeforeEffect(work.boundedCancellation(),work.state.deadlineElapsed);
             work.scope.verifyUnchanged();requireTaskAuthorization(work.session.taskId,work.session.authorization);
-            work.attempt.requireLive(SystemClock.elapsedRealtime());work.requireFinalEvents();work.requireFinalProfile();
+            work.attempt.requireLive(SystemClock.elapsedRealtime());work.requireFinalPreclaimEvents(revalidated,fresh);work.requireFinalProfile();
             work.phase("attempt_journal");
             work.attempt.claim(SystemClock.elapsedRealtime());work.requireFinalEvents();
             work.marker(work.state.enterEffect(work.cancel.isCancelled(),work.currentLease()));work.check();work.requireFinalEvents();

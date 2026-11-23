@@ -98,13 +98,25 @@ final class VlmInferenceAdapter implements LocalInference {
     }
 }
 """
+    runtime_port = """package org.trillionnium.hepta.local;
+final class RuntimeInferenceAdapter implements LocalInference {
+    private RuntimeInferenceAdapter(){throw new AssertionError("runtime router is outside this legacy fixture");}
+    public LocalRuntimeConfig configuration(){throw new AssertionError("no runtime configuration authority");}
+    public Handle generate(String prompt,String system,java.io.File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){throw new AssertionError("no runtime model execution");}
+    final class CalendarModelBinding {
+        private CalendarModelBinding(){throw new AssertionError("no runtime calendar binding in legacy fixture");}
+        VlmInferenceAdapter requireCurrent(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar producer authority");}
+    }
+    synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar binding authority");}
+}
+"""
     controller_port = """package org.trillionnium.hepta.local;
 final class LocalTaskController {
     private LocalTaskController(){throw new AssertionError("calendar controller is outside this legacy fixture");}
 }
 """
     generated = []
-    for name, text in (("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port)):
+    for name, text in (("VlmInferenceAdapter.java", model_port), ("RuntimeInferenceAdapter.java", runtime_port), ("LocalTaskController.java", controller_port)):
         path = service_port.parent / name
         if path.exists():
             if path.read_bytes() != text.encode("utf-8"):
@@ -190,6 +202,10 @@ def prepare(source, output, extra_tests=()):
     static final class NativeSearchSamplingExhaustionProof {
         private NativeSearchSamplingExhaustionProof(){throw new AssertionError("No Android sampling successor proof in pure Session gate");}
         void close(){throw new AssertionError("No Android sampling successor authority in pure Session gate");}
+    }
+    static final class NativeSearchFinalCensusResampleProof {
+        private NativeSearchFinalCensusResampleProof(){throw new AssertionError("actual final-census producer unavailable in this pure gate");}
+        void consume(NativeSearchSession.Attempt attempt,NativeSearchRole role,long now){throw new AssertionError("no final-census replacement authority");}
     }
     static final class NativeSearchNoEffectReplanProof {
         private NativeSearchNoEffectReplanProof(){throw new AssertionError("Android no-effect successor proof is unavailable in this pure consumer gate");}

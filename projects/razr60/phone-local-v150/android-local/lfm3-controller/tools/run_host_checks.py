@@ -6,6 +6,7 @@ compilation nor model inference, acceleration, phone effects, or release status.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -42,6 +43,15 @@ def main():
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     report["native_fixture_boundary"]="Legacy non-native tests compile the real pure NativeAppEvidence/Domain and an unconstructible all-throw NativeAppSession; native session execution has an independent mandatory gate"
     sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    automatic_helper=ROOT/"tests/native-app/legacy-boundary/prepare_search_pure.py"
+    automatic_spec=importlib.util.spec_from_file_location("old_pure_automatic_boundary",automatic_helper)
+    automatic_boundary=importlib.util.module_from_spec(automatic_spec);automatic_spec.loader.exec_module(automatic_boundary)
+    sources=automatic_boundary.add_auto_boundary(ROOT,sources)
+    report["automatic_fixture_boundary"]={
+        "helper_path":str(automatic_helper),
+        "compiler_path":str(ROOT/"tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java"),
+        "constructors_private_and_throwing":True,"authority_endpoints_always_refuse":True,
+        "automatic_selection_executed":False,"actual_target_compiled":True}
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]

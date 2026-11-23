@@ -55,6 +55,7 @@ def main():
         query=module(source/"tests/web-flight/run_query_host_tests.py","native_route_query_closure")
         bg=module(source/"tests/background-session/prepare_fixture.py","native_route_background_fixture")
         pkg=source/"src/org/trillionnium/hepta/local"
+        auto_boundary=module(source/"tests/native-auto-target/manual_boundary.py","manual_route_auto_boundary")
         owner_parse=query.java_block((pkg/"TaskAuthorization.java").read_bytes(),"public static TaskAuthorization parse(String owner)")
         require(sha(owner_parse.encode())==PRESERVED_OWNER_PARSE_SHA256,"original complete OWNER parser body changed")
         bgfiles,bgrecord=bg.prepare(source,out/"pure-fixture")
@@ -139,6 +140,7 @@ final class NativeCalendarDateEnvelope {
                     "  WebTaskPurpose purpose;WebFlightGoal goal;\n"+prefix+"  return purpose;\n }\n}\n")
         pp=out/"pure-fixture/RouteWebAdmissionProjection.java";write(pp,projection.encode())
         pure += [pp,source/"tests/native-app-routing/NativeAppRoutingPureHostTest.java"]
+        pure,auto_pure_boundary=auto_boundary.prepare_types(source,out/"pure-fixture",pure)
         pure=list(dict.fromkeys(Path(p).resolve() for p in pure));pure_classes=out/"pure-classes";pure_classes.mkdir()
         extraction={"schema":"hepta.native-app-routing-extraction.v1",
                     "preserved_owner_parse_sha256":sha(owner_parse.encode()),
@@ -146,6 +148,7 @@ final class NativeCalendarDateEnvelope {
                     "web_methods":[{"signature":s,"sha256":sha(v.encode()),"bytes":len(v.encode())} for s,v in zip(signatures,parts)],
                     "actual_full_background_fixture":bgrecord,
                     "native_calendar_pure_type_boundary":calendar_boundary,
+                    "automatic_absent_manual_boundary":auto_pure_boundary,
                     "pure_compile_inputs":[str(p) for p in pure]}
         run("pure-compile",[jdk/"bin/javac","--release","8","-encoding","UTF-8","-proc:none","-Xlint:all,-options","-Werror",
                             "-classpath",jar,"-d",pure_classes,*pure])
@@ -157,6 +160,8 @@ final class NativeCalendarDateEnvelope {
         entry,scope_record=scope.prepare(source,out/"entry-fixture")
         native_entry=module(source/"tests/native-app-routing/prepare_native_entry.py","native_route_actual_entry_io")
         entry,native_boundary=native_entry.prepare(source,out/"entry-fixture",entry)
+        entry,auto_entry_boundary=auto_boundary.prepare_ui(source,out/"entry-fixture",entry,query.java_block)
+        scope_record["automatic_absent_manual_boundary"]=auto_entry_boundary
         scope_record["actual_native_entry_io"]=native_boundary
         # Only this generated host IO fixture is made subclassable, so the new tests
         # can supply selected-package/current-choice inputs. Actual UI methods are unchanged.

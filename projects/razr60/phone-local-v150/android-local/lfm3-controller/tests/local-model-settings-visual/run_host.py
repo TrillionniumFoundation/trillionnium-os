@@ -108,10 +108,23 @@ def main():
           "service_injected_controller":method(service,"public synchronized LocalTaskController taskController(LocalInference inference)"),
           "service_engine_controller":method(service,"public synchronized LocalTaskController taskController(LocalModelEngine engine)"),
           "service_settings_idle":method(service,"synchronized boolean modelSettingsIdle()"),
+          "ui_invalidate_automatic":method(ui,"private void invalidateAutomaticStart()"),
           "ui_choose":method(ui,"private void chooseLocalModelFromOwnerButton()"),
           "ui_restore":method(ui,"private void restoreLocalModelFromOwnerButton()"),
         }
         raw_template=take(test/"VisualSettingsBoundary.template").decode();generated=raw_template
+        automatic_ports='    // This original manual-settings fixture cannot create automatic work.\n    private AutomaticStart automaticStartPending,automaticReadyStart;\n    private long automaticUiEpoch;\n    private static final class AutomaticStart {\n        boolean cancelled;\n        private AutomaticStart(){throw new UnsupportedOperationException("No automatic Start in original settings cases");}\n    }\n'
+        need(generated.count("{{ui_choose}}")==1 and "automaticStartPending" not in generated,
+             "one exact old manual owner-button boundary")
+        generated=generated.replace("{{ui_choose}}",automatic_ports+"    {{ui_invalidate_automatic}}\n    {{ui_choose}}",1)
+        result["automatic_manual_boundary"]={
+            "ports_sha256":sha(automatic_ports.encode()),
+            "actual_invalidation_method_verbatim":True,
+            "actual_invalidation_sha256":sha(methods["ui_invalidate_automatic"].encode()),
+            "automatic_start_constructor_private_and_throwing":True,
+            "automatic_pending_and_ready_initially_null_and_never_created":True,
+            "original_owner_button_bodies_template_and_cases_unchanged":True,
+            "automatic_authority_or_settings_callback_executed":False}
         for name,body in methods.items():
             marker="{{"+name+"}}";need(generated.count(marker)==1,"exact source insertion required: "+name)
             generated=generated.replace(marker,body)

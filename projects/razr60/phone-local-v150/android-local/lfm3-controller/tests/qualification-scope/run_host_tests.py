@@ -16,6 +16,19 @@ def main():
     args=parser.parse_args();source=args.source.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec=importlib.util.spec_from_file_location('scope_fixture',Path(__file__).with_name('prepare_fixture.py'));fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
     files,extraction=fixture.prepare(source,out/'fixture');classes=out/'classes';classes.mkdir()
+    # Retain every original manual case and the complete actual beginTask body.
+    boundary_path=source/'tests/native-auto-target/manual_boundary.py'
+    boundary_bytes=boundary_path.read_bytes()
+    if hashlib.sha256(boundary_bytes).hexdigest()!='03b1399819b54b3032d8da2f37cca70b50ac63327e3c2fd07fa935b41fa199b9':
+        raise RuntimeError('exact private refusing automatic boundary required')
+    boundary_spec=importlib.util.spec_from_file_location('scope_manual_automatic_boundary',boundary_path)
+    boundary=importlib.util.module_from_spec(boundary_spec);boundary_spec.loader.exec_module(boundary)
+    files,automatic_metadata=boundary.prepare_ui(source,out/'fixture',files,
+        lambda raw,signature: fixture.java_method(raw.decode('utf-8'),'    '+signature+'{'))
+    if boundary_path.read_bytes()!=boundary_bytes:
+        raise RuntimeError('manual automatic compiler boundary changed')
+    extraction['automatic_manual_compiler_boundary']=automatic_metadata
+    (out/'fixture/EXTRACTION.json').write_text(json.dumps(extraction,indent=2)+'\n')
     compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
     # Match the locally available stripped JDK capability explicitly; full release/API
     # checking remains a separate v32/JDK17 Android build gate, never silently weakened.

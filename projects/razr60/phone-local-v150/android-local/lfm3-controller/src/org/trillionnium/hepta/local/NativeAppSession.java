@@ -103,7 +103,7 @@ final class NativeAppSession {
             synchronized(offer){
                 need(offer.modelRequest==this,"the actually registered original model request is required");
                 offer.session.requireCalendarModelOwner(offer);
-                arrival.accepted.requireBound(offer.inference,offer.source.image,offer.grammar);
+                arrival.accepted.requireBound(offer.requireModelProducer(),offer.source.image,offer.grammar);
                 offer.requireArrivalDeadline(arrival,registeredElapsed);
             }
         }
@@ -208,7 +208,7 @@ final class NativeAppSession {
                         &&now<deadlineElapsed&&now<taskDeadlineElapsed,
                         "original calendar publication owner or deadline is no longer current");
                 session.requireCalendarOwner(session.authorization.frame());
-                requireCalendarRuntime(offer.inference,offer.runtime);
+                requireCalendarRuntime(offer.inference,offer.runtime);offer.requireModelProducer();
             }
         }
         void requireOriginal(NativeAppSession actual,BackgroundSession actualBackground)throws Exception{
@@ -532,6 +532,8 @@ final class NativeAppSession {
         private boolean callbackIssued,callbackDelivered,modelRegistrationConsumed;
         private CalendarModelArrival modelArrival;
         private CalendarModelRequest modelRequest;
+        private VlmInferenceAdapter modelProducer;
+        private RuntimeInferenceAdapter.CalendarModelBinding modelBinding;
         private CalendarOffer(NativeAppSession session,NativeCalendarDateEnvelope source,
                 LocalInference inference,NativeAppDomain domain,NativeCalendarDateProtocol.Clock clock,long now,long deadline){
             this.session=session;this.source=source;this.inference=inference;runtime=inference.configuration();
@@ -557,9 +559,16 @@ final class NativeAppSession {
          * No parsing, file write, observation, claim or effect runs in callback. */
         synchronized VlmInferenceAdapter.AcceptedRequestCallback modelCallback(final CalendarModelSignal signal)throws Exception{
             requireForGrammar(session.authorization.frame());
-            need(inference instanceof VlmInferenceAdapter&&grammarIssued&&grammar!=null
-                    &&!callbackIssued&&signal!=null,"one actual Adapter callback for the original grammar required");
-            callbackIssued=true;
+            need(grammarIssued&&grammar!=null&&!callbackIssued&&signal!=null,
+                    "one actual Adapter callback for the original grammar required");
+            if(inference instanceof RuntimeInferenceAdapter){
+                modelBinding=((RuntimeInferenceAdapter)inference).bindCalendarModel(session.taskId,runtime);
+                modelProducer=modelBinding.requireCurrent(session.taskId,runtime);
+            }else{
+                need(inference instanceof VlmInferenceAdapter,"actual visual Adapter producer required");
+                modelProducer=(VlmInferenceAdapter)inference;
+            }
+            callbackIssued=true;requireModelProducer();
             return new VlmInferenceAdapter.AcceptedRequestCallback(){
                 public void onSuccess(String raw,String run){onFailure("opaque accepted visual request required",false);}
                 public void onFailure(String detail,boolean cleanup){
@@ -570,7 +579,7 @@ final class NativeAppSession {
                     try{
                         synchronized(CalendarOffer.this){
                             need(!closed&&!callbackDelivered&&proof!=null,"one original calendar callback receipt required");
-                            callbackDelivered=true;long arrived=clock.elapsedRealtime();
+                            requireModelProducer();callbackDelivered=true;long arrived=clock.elapsedRealtime();
                             need(arrived>=offeredElapsed&&arrived<taskDeadlineElapsed,"original task clock expired at calendar callback");
                             long end=Math.min(taskDeadlineElapsed,Math.addExact(arrived,NativeCalendarDateProtocol.ACTION_MS));
                             need(end>arrived,"no original calendar action budget remains");
@@ -583,6 +592,18 @@ final class NativeAppSession {
                 }
             };
         }
+        /** Keep the original task router as the owner and validate its exact
+         * captured binding before naming the private receipt's actual producer. */
+        private VlmInferenceAdapter requireModelProducer(){
+            need(callbackIssued&&modelProducer!=null,"original calendar model producer required");
+            if(modelBinding!=null){
+                need(inference instanceof RuntimeInferenceAdapter
+                        &&modelBinding.requireCurrent(session.taskId,runtime)==modelProducer,
+                        "original runtime binding and visual delegate required");
+            }else need(inference==modelProducer&&modelProducer.configuration()==runtime,
+                    "original direct visual Adapter required");
+            return modelProducer;
+        }
         /** Called by the ordinary controller worker after callback delivery.
          * The captured arrival+8s deadline is never restarted at registration. */
         synchronized CalendarModelRequest registerModelReply()throws Exception{
@@ -592,7 +613,7 @@ final class NativeAppSession {
             try{
                 CalendarModelArrival actual=modelArrival;
                 session.requireCalendarModelOwner(this);requireArrivalDeadline(actual,actual.receivedElapsed);
-                actual.accepted.requireBound(inference,source.image,grammar);
+                actual.accepted.requireBound(requireModelProducer(),source.image,grammar);
                 need(session.usedRuns.add(actual.accepted.requestId())&&++session.ordinal<=MAX_ACTIONS,
                         "same model run already consumed or native task action budget exhausted");
                 NativeCalendarDateIntent intent=protocol.propose(actual.accepted.rawText(),actual.accepted.requestId(),
@@ -612,7 +633,7 @@ final class NativeAppSession {
                 // Any failure leaves the offer/model slot consumed and closed.
                 session.journal.write("native-calendar-model-registration.json",NativeAppEvidence.immutableMap(record));
                 session.requireCalendarModelOwner(this);
-                actual.accepted.requireBound(inference,source.image,grammar);
+                actual.accepted.requireBound(requireModelProducer(),source.image,grammar);
                 long completed=requireArrivalDeadline(actual,requested);
                 CalendarModelRequest accepted=new CalendarModelRequest(this,actual,intent,record,completed);
                 modelRequest=accepted;return accepted;
@@ -683,7 +704,7 @@ final class NativeAppSession {
                 &&offer.source.goal==goal&&installed.profileTarget!=null&&offer.source.profile.same(installed.profileTarget),
                 "original calendar Session/Selection/Goal/domain/inspection must remain live");
         requireFrame(offer.source.facts);current.requireCalendarDateSource(offer.source);
-        requireCalendarOwner(authorization.frame());requireCalendarRuntime(offer.inference,offer.runtime);
+        requireCalendarOwner(authorization.frame());requireCalendarRuntime(offer.inference,offer.runtime);offer.requireModelProducer();
         verifyInstalled();offer.source.requireUnchangedOriginal();
         long now=offer.clock.elapsedRealtime();need(now>=offer.offeredElapsed&&now<offer.taskDeadlineElapsed,
                 "original calendar task lifetime expired");

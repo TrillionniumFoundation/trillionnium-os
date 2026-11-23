@@ -62,6 +62,13 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private BackgroundUiPreferences.Selection rememberedBackgroundSelection;
     private String backgroundModePreferenceError,backgroundSelectionPreferenceError;
     private boolean backgroundInitialChoicePending;
+    private CheckBox automaticTargetMode;
+    private Button pickAutomaticTargets,pickAutomaticInstance;
+    private BackgroundAutoTargetPreferences.Snapshot automaticTargets;
+    private BackgroundAutoTargetResolver.Resolution automaticResolution;
+    private String automaticTargetsError,automaticInstanceChoice,automaticStartFeedback;
+    private long automaticUiEpoch;
+    private AutomaticStart automaticStartPending,automaticReadyStart;
     private final java.util.Map<String,String> backgroundAppLabels=new java.util.TreeMap<String,String>();
     private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
     private final java.util.List<String> backgroundInitialPackages=new java.util.ArrayList<String>();
@@ -103,11 +110,14 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         taskAuthorizationInfo=text("",12);
         taskInput.addTextChangedListener(new android.text.TextWatcher(){
             public void beforeTextChanged(CharSequence s,int start,int count,int after){}
-            public void onTextChanged(CharSequence s,int start,int before,int count){previewTaskAuthorization();}
+            public void onTextChanged(CharSequence s,int start,int before,int count){automaticInputChanged();previewTaskAuthorization();}
             public void afterTextChanged(android.text.Editable value){}
         });
         previewTaskAuthorization();
         backgroundMode=new CheckBox(this);backgroundMode.setText("在后台空间操作");page.addView(backgroundMode);
+        automaticTargetMode=new CheckBox(this);automaticTargetMode.setText("根据任务自动选择已保存的目标与模型");page.addView(automaticTargetMode);
+        pickAutomaticTargets=button("管理自动目标与首选模型");page.addView(pickAutomaticTargets);
+        pickAutomaticInstance=button("选择本次应用实例");page.addView(pickAutomaticInstance);pickAutomaticInstance.setVisibility(View.GONE);
         backgroundPermissionState=text("",12);
         backgroundSummary=text("",12);page.addView(backgroundSummary);
         Button showBackgroundPermission=button("后台权限与高级设置（展开）");
@@ -172,6 +182,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         page.addView(cleanupBackground);
         startTask.setOnClickListener(v -> beginTask(taskInput.getText().toString(),"user_button",null));
         stopTask.setOnClickListener(v -> {
+            if(cancelAutomaticStart())return;
             // Controlled tasks cancel their captured task/handle. A diagnostic cancels one captured engine run.
             boolean controlled=tasks.isRunning();tasks.stop();if(!controlled)engine.cancelActive();
             // Explicitly ends this UI prefill only; the running task retains its immutable scope.
@@ -240,7 +251,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         setContentView(outer);tasks.bind(this);refresh();
         restoreBackgroundPreferences();
         if(state==null)handleIntent(getIntent());else{restoreScopeUi(state);restoreBackgroundUi(state);}
-        installBackgroundPreferenceListeners();refresh();
+        restoreAutomaticTargets();installAutomaticTargetListeners();installBackgroundPreferenceListeners();refresh();
     }
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
     private TextView text(String value,int size){TextView view=new TextView(this);view.setText(value);view.setTextSize(size);view.setPadding(0,dp(5),0,dp(5));return view;}
@@ -269,7 +280,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(taskAuthorizationInfo==null)return;
         try{
             String owner=taskInput.getText().toString();TaskAuthorization preview=TaskAuthorization.parse(owner);
-            if(backgroundMode!=null&&backgroundMode.isChecked()){
+            if(backgroundMode!=null&&backgroundMode.isChecked()&&!automaticMode()){
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 preview=preview.forExecutionSelection(new BackgroundSession.Selection(target,selectedIndependentProfileDisplay(),selectedIndependentPersonalDisplay()));
             }
@@ -394,6 +405,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     @Override public void onLocalModelImportChanged(){refresh();}
     private void chooseLocalModelFromOwnerButton(){
+        invalidateAutomaticStart();
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         if(profileCatalogueLoading||!app.canChangeLocalModelSettings(false)){
             localModelSettingsState.setText("请先等待任务、后台空间和模型队列完全空闲。");return;
@@ -424,6 +436,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 }).show();
     }
     private void restoreLocalModelFromOwnerButton(){
+        invalidateAutomaticStart();
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         if(profileCatalogueLoading||!app.canChangeLocalModelSettings(true)){
             localModelSettingsState.setText("当前没有可恢复的配置，或任务和模型队列尚未空闲。");return;
@@ -438,7 +451,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     }catch(Exception error){localModelSettingsState.setText("未开始恢复："+HeptaAccessibilityService.message(error));}
                 }).show();
     }
-    @Override public void onLocalModelSettingsChanged(){refresh();}
+    @Override public void onLocalModelSettingsChanged(){
+        AutomaticStart pending=automaticStartPending;
+        if(pending!=null&&pending.settingsStarted&&!modelSettings.isBusy())finishAutomaticPreparation(pending);
+        refresh();
+    }
 
     /** Only the actual physical-screen MainActivity's ordinary Start callback
      * creates a locator. A VD owner keeps the existing strict initialization path. */
@@ -462,6 +479,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private boolean beginTask(String owner,String source,String nonceSha){
         try{
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
+            if(automaticMode()){
+                if(!backgroundMode.isChecked())throw new IllegalStateException("自动目标需要启用后台空间操作");
+                if(automaticReadyStart==null)return prepareAutomaticStart(owner,source,nonceSha);
+            }
             if(!engine.modelFile().isFile())throw new IllegalStateException("所选本地模型尚未导入");
             LocalRuntimeConfig selectedModel=engine.configuration();
             if(selectedModel.profile.visual()){
@@ -479,24 +500,31 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(this);
                 if(expectedScope!=null||MobiMindPrivateFiles.exists(new File(root.path,QualificationScope.FILE_NAME)))
                     throw new IllegalStateException("当前 qualification scope 已启用，后台任务不可启动；原范围保持不变");
+                if(automaticMode())selection=automaticStartSelection(owner);
+                else{
                 requireCurrentBackgroundChoice();
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 boolean independentProfile=selectedIndependentProfileDisplay();
                 selection=new BackgroundSession.Selection(target,independentProfile,selectedIndependentPersonalDisplay(),
                         independentProfile&&target.profileTarget!=null&&org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.profileTarget.packageName)
                                 ?controllerUiFromOwnerButton(owner):null);
+                }
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
                     throw new IllegalStateException("当前指令不允许打开所选后台起始应用，后台任务未启动");
             }else{selection=null;authorization=originalAuthorization;}
+            if(automaticMode())requireAutomaticSchedule(owner);
             if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             scopeLaunch=scopeLaunch.accepted();
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             if(input!=null)input.hideSoftInputFromWindow(taskInput.getWindowToken(),0);
             if(selection==null&&!moveTaskToBack(true)){tasks.stop();taskState.setText("无法切换到手机前台画面，任务未开始");return false;}
             return true;
-        }catch(Exception error){taskState.setText("无法开始："+HeptaAccessibilityService.message(error));return false;}
+        }catch(Exception error){
+            if(automaticMode()){invalidateAutomaticStart();automaticStartFeedback="无法开始："+HeptaAccessibilityService.message(error);}
+            taskState.setText("无法开始："+HeptaAccessibilityService.message(error));return false;
+        }
     }
 
     private void runProbe(boolean image,int maxTokens){
@@ -675,6 +703,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             refresh();
         });
         backgroundMode.setOnClickListener(view -> {
+            automaticInputChanged();
             try{BackgroundUiPreferences.saveMode(this,backgroundMode.isChecked());backgroundModePreferenceError=null;}
             catch(Exception error){backgroundModePreferenceError="后台模式未能保存，请重新选择。";}
             recheckBackgroundChoice();refresh();
@@ -719,6 +748,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }catch(Exception error){backgroundSelectionPreferenceError="已选应用的安装信息发生变化或不可用，请重新选择范围。";}
     }
     private String backgroundChoiceError(){
+        if(automaticMode())return automaticChoiceError();
         if(backgroundModePreferenceError!=null)return backgroundModePreferenceError;
         if(backgroundSelectionPreferenceError!=null)return backgroundSelectionPreferenceError;
         if(backgroundDisplayPreferenceError!=null)return backgroundDisplayPreferenceError;
@@ -731,6 +761,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     private void refreshBackgroundTaskTarget(){
         if(backgroundChoiceState==null||initialBackgroundApp==null||backgroundInitialLabel==null||backgroundMode==null)return;
+        if(automaticMode()){refreshAutomaticTargetPreview();return;}
         String error=backgroundChoiceError();String summary="";
         if(backgroundMode.isChecked()){
             try{
@@ -742,6 +773,229 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundChoiceState.setText(error==null?summary:error);
         backgroundInitialLabel.setVisibility(backgroundMode.isChecked()?View.VISIBLE:View.GONE);
         initialBackgroundApp.setVisibility(backgroundMode.isChecked()?View.VISIBLE:View.GONE);
+    }
+
+    /** One visible Start, never restored across an Activity lifecycle. Model
+     * settings use their original owner/slot/transaction; no task exists yet. */
+    private static final class AutomaticStart {
+        final MainActivity activity;
+        final BackgroundAutoTargetResolver.Resolution resolution;
+        final BackgroundAutoTargetPreferences.Entry entry;
+        final String owner,source,originalNonce,nonce;
+        final long uiEpoch;
+        final LocalModelEngine.RuntimeGeneration previousRuntime;
+        boolean settingsStarted,cancelled,consumed,entered,scheduleAttempted;
+        LocalModelEngine.RuntimeGeneration readyRuntime;
+        BackgroundAutoTargetResolver.StartSelection confirmed;
+        private AutomaticStart(MainActivity activity,BackgroundAutoTargetResolver.Resolution resolution,
+                BackgroundAutoTargetPreferences.Entry entry,String source,String originalNonce,long uiEpoch,
+                LocalModelEngine.RuntimeGeneration previousRuntime){
+            this.activity=activity;this.resolution=resolution;this.entry=entry;owner=resolution.owner;
+            this.source=source;this.originalNonce=originalNonce;this.uiEpoch=uiEpoch;this.previousRuntime=previousRuntime;
+            nonce=java.util.UUID.randomUUID().toString().replace("-","");
+        }
+    }
+    private boolean automaticMode(){
+        return automaticTargetMode!=null&&automaticTargetMode.isChecked();
+    }
+    private void invalidateAutomaticStart(){
+        if(automaticStartPending!=null)automaticStartPending.cancelled=true;
+        if(automaticReadyStart!=null)automaticReadyStart.cancelled=true;
+        automaticStartPending=null;automaticReadyStart=null;automaticUiEpoch++;
+    }
+    private void automaticInputChanged(){
+        invalidateAutomaticStart();automaticResolution=null;automaticInstanceChoice=null;automaticStartFeedback=null;
+    }
+    private boolean automaticWorkIdle(){
+        return !isFinishing()&&!isDestroyed()&&!profileCatalogueLoading
+                &&!tasks.isRunning()&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
+                &&!engine.isBusy()&&!modelSettings.isBusy()&&!modelImport.isBusy()&&!backgroundPermission.blocksOtherWork();
+    }
+    private boolean automaticUiIdle(){return hasWindowFocus()&&automaticWorkIdle();}
+    private void restoreAutomaticTargets(){
+        try{automaticTargets=BackgroundAutoTargetPreferences.load(this);automaticTargetsError=null;automaticTargetMode.setChecked(automaticTargets.automatic);}
+        catch(Exception error){automaticTargets=null;automaticTargetsError="自动目标偏好无法读取，请重新明确选择。";automaticTargetMode.setChecked(true);}
+        automaticInputChanged();
+    }
+    private void installAutomaticTargetListeners(){
+        automaticTargetMode.setOnClickListener(view->{
+            if(!automaticUiIdle()||!automaticTargetMode.isShown()){
+                automaticTargetMode.setChecked(automaticTargets==null||automaticTargets.automatic);refresh();return;
+            }
+            try{
+                BackgroundAutoTargetPreferences.Snapshot base=automaticTargets==null?BackgroundAutoTargetPreferences.empty():automaticTargets;
+                BackgroundAutoTargetPreferences.Snapshot next=base.withAutomatic(automaticTargetMode.isChecked());
+                BackgroundAutoTargetPreferences.save(this,next);automaticTargets=next;automaticTargetsError=null;automaticInputChanged();
+            }catch(Exception error){automaticTargetMode.setChecked(automaticTargets==null||automaticTargets.automatic);automaticStartFeedback="自动选择未保存："+HeptaAccessibilityService.message(error);taskState.setText(automaticStartFeedback);}
+            refresh();
+        });
+        pickAutomaticTargets.setOnClickListener(view->chooseAutomaticTargets());
+        pickAutomaticInstance.setOnClickListener(view->chooseAutomaticInstance());
+    }
+    private void chooseAutomaticTargets(){
+        if(!automaticUiIdle())return;
+        automaticInputChanged();final long epoch=automaticUiEpoch;
+        profileCatalogueLoading=true;taskState.setText("正在读取可明确保存的应用实例和首选模型……");refresh();
+        final android.content.Context context=getApplicationContext();
+        new Thread(()->{
+            final java.util.List<BackgroundAutoTargetPreferences.Entry> candidates=new java.util.ArrayList<BackgroundAutoTargetPreferences.Entry>();
+            String error=null;
+            try{
+                if(context.getPackageManager().getLaunchIntentForPackage(BackgroundAutoTargetPreferences.NOTES)!=null)
+                    candidates.add(BackgroundAutoTargetPreferences.captureNotes(context));
+                for(org.trillionnium.hepta.background.ProfileTarget target:ProfileCatalogueClient.load(context))
+                    candidates.add(BackgroundAutoTargetPreferences.captureProfile(target));
+            }catch(Exception failure){error=HeptaAccessibilityService.message(failure);}
+            final String failure=error;
+            runOnUiThread(()->{
+                profileCatalogueLoading=false;
+                if(epoch!=automaticUiEpoch||!automaticUiIdle()){refresh();return;}
+                if(failure!=null){taskState.setText("无法读取自动目标："+failure);refresh();return;}
+                if(candidates.isEmpty()){taskState.setText("未找到可用的个人备忘录或工作资料携程、小米商城。");refresh();return;}
+                final BackgroundAutoTargetPreferences.Snapshot previous=automaticTargets==null?BackgroundAutoTargetPreferences.empty():automaticTargets;
+                final java.util.Set<String> chosen=new java.util.HashSet<String>();
+                String[] labels=new String[candidates.size()];boolean[] checked=new boolean[candidates.size()];
+                for(int i=0;i<candidates.size();i++){
+                    BackgroundAutoTargetPreferences.Entry item=candidates.get(i),saved=previous.entry(item.instanceKey);
+                    checked[i]=saved!=null&&saved.identitySha256.equals(item.identitySha256);if(checked[i])chosen.add(item.identitySha256);
+                    labels[i]=item.label()+"\n"+item.modelLabel()+" · "+(item.independentProfile()?"工作资料独立后台显示":"个人空间独立后台显示");
+                }
+                new AlertDialog.Builder(this).setTitle("保存自动目标与首选模型（最多 6 个）")
+                        .setMultiChoiceItems(labels,checked,(dialog,index,enabled)->{
+                            String id=candidates.get(index).identitySha256;if(enabled)chosen.add(id);else chosen.remove(id);
+                        }).setNegativeButton("取消",null).setPositiveButton("保存所选目标与模型",(dialog,which)->{
+                            try{
+                                if(epoch!=automaticUiEpoch||!automaticWorkIdle())throw new IllegalStateException("界面或空闲状态已变化");
+                                if(automaticTargets!=null)BackgroundAutoTargetPreferences.requireSame(this,previous);
+                                java.util.List<BackgroundAutoTargetPreferences.Entry> selected=new java.util.ArrayList<BackgroundAutoTargetPreferences.Entry>();
+                                for(BackgroundAutoTargetPreferences.Entry item:candidates)if(chosen.contains(item.identitySha256))selected.add(item);
+                                BackgroundAutoTargetPreferences.Snapshot next=new BackgroundAutoTargetPreferences.Snapshot(previous.automatic,selected);
+                                BackgroundAutoTargetPreferences.save(this,next);automaticTargets=next;automaticTargetsError=null;
+                                automaticTargetMode.setChecked(next.automatic);automaticInputChanged();
+                            }catch(Exception invalid){taskState.setText("自动目标未保存："+HeptaAccessibilityService.message(invalid));}
+                            refresh();
+                        }).show();refresh();
+            });
+        },"hepta-auto-target-catalogue").start();
+    }
+    private BackgroundAutoTargetResolver.Resolution currentAutomaticResolution(){
+        if(automaticTargetsError!=null)throw new IllegalStateException(automaticTargetsError);
+        if(!automaticMode()||automaticTargets==null||!automaticTargets.automatic)throw new IllegalStateException("请明确启用自动目标模式");
+        String owner=taskInput.getText().toString();
+        if(automaticResolution==null||!automaticResolution.same(owner,automaticTargets)){
+            automaticResolution=BackgroundAutoTargetResolver.resolve(owner,automaticTargets,TaskAuthorization.parse(owner));automaticInstanceChoice=null;
+        }
+        return automaticResolution;
+    }
+    private void chooseAutomaticInstance(){
+        if(!automaticUiIdle())return;
+        try{
+            final BackgroundAutoTargetResolver.Resolution resolution=currentAutomaticResolution();
+            if(resolution.matches.size()<2)return;
+            String[] labels=new String[resolution.matches.size()];
+            for(int i=0;i<labels.length;i++){BackgroundAutoTargetPreferences.Entry item=resolution.matches.get(i);labels[i]=item.label()+"\n"+item.modelLabel();}
+            new AlertDialog.Builder(this).setTitle("明确选择本次任务的应用实例").setItems(labels,(dialog,index)->{
+                if(!automaticWorkIdle()||automaticResolution!=resolution||!resolution.same(taskInput.getText().toString(),automaticTargets))return;
+                invalidateAutomaticStart();automaticInstanceChoice=resolution.matches.get(index).instanceKey;refresh();
+            }).setNegativeButton("取消",null).show();
+        }catch(Exception error){taskState.setText(HeptaAccessibilityService.message(error));}
+    }
+    private String automaticChoiceError(){
+        if(automaticTargetsError!=null)return automaticTargetsError;
+        if(!automaticMode())return null;
+        if(backgroundModePreferenceError!=null)return backgroundModePreferenceError;
+        if(!backgroundMode.isChecked())return "自动目标需要启用后台空间操作。";
+        try{currentAutomaticResolution().choose(automaticInstanceChoice);return null;}
+        catch(Exception error){return HeptaAccessibilityService.message(error);}
+    }
+    private void refreshAutomaticTargetPreview(){
+        String message;int matches=0;
+        try{
+            BackgroundAutoTargetResolver.Resolution resolution=currentAutomaticResolution();matches=resolution.matches.size();
+            BackgroundAutoTargetPreferences.Entry item=resolution.choose(automaticInstanceChoice);
+            message="本次使用："+item.label()+"；首选 "+item.modelLabel()+"。手动起始应用保持不变。";
+        }catch(Exception error){message=HeptaAccessibilityService.message(error);}
+        if(pickAutomaticInstance!=null)pickAutomaticInstance.setVisibility(matches>1?View.VISIBLE:View.GONE);
+        backgroundChoiceState.setText(message+(automaticStartFeedback==null?"":"\n"+automaticStartFeedback));backgroundInitialLabel.setVisibility(View.GONE);initialBackgroundApp.setVisibility(View.GONE);
+    }
+    private void requireAutomaticOwner(AutomaticStart pending)throws Exception{
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper()||pending==null||pending.activity!=this||pending.cancelled||pending.uiEpoch!=automaticUiEpoch
+                ||!"user_button".equals(pending.source)||!hasWindowFocus()||!accessibilityUiStarted||isFinishing()||isDestroyed()
+                ||getWindow()==null||!getWindow().getDecorView().isShown()||startTask==null||!startTask.isShown()
+                ||!backgroundMode.isChecked()||!automaticMode()||automaticResolution!=pending.resolution
+                ||!pending.owner.equals(taskInput.getText().toString())||!pending.resolution.same(pending.owner,automaticTargets)
+                ||pending.resolution.choose(automaticInstanceChoice)!=pending.entry)
+            throw new IllegalStateException("本次自动开始已因界面、任务或目标变化而失效");
+        if(backgroundModePreferenceError!=null||!BackgroundUiPreferences.mode(this))
+            throw new IllegalStateException("后台操作模式未保存或已变化");
+        BackgroundAutoTargetPreferences.requireSame(this,pending.resolution.snapshot);pending.entry.requireCurrent(this);
+    }
+    private boolean prepareAutomaticStart(String owner,String source,String nonceSha)throws Exception{
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper()||!"user_button".equals(source)||!automaticUiIdle()||!accessibilityUiStarted||!startTask.isShown()||!startTask.isEnabled()
+                ||!owner.equals(taskInput.getText().toString())||automaticStartPending!=null||automaticReadyStart!=null)
+            throw new IllegalStateException("自动目标只能由当前可见且空闲的开始按钮确认");
+        if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
+        QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(this);
+        if(scopeLaunch.expectedSha256!=null||MobiMindPrivateFiles.exists(new File(root.path,QualificationScope.FILE_NAME)))
+            throw new IllegalStateException("当前 qualification scope 已启用，自动目标不可开始");
+        TaskAuthorization original=TaskAuthorization.parse(owner);
+        if(original.requireFindAppBeforeOpen||!original.allowedTools.contains("open"))
+            throw new IllegalStateException("当前指令不允许打开应用，模型设置与任务均未开始");
+        BackgroundAutoTargetResolver.Resolution resolution=currentAutomaticResolution();
+        BackgroundAutoTargetPreferences.Entry entry=resolution.choose(automaticInstanceChoice);
+        BackgroundAutoTargetPreferences.requireSame(this,resolution.snapshot);entry.requireCurrent(this);
+        LocalModelEngine.RuntimeGeneration previous=engine.runtimeGeneration();
+        if(previous==null||previous!=engine.runtimeGeneration()||previous.configuration()!=engine.configuration())throw new IllegalStateException("实际模型代已变化");
+        final AutomaticStart pending=new AutomaticStart(this,resolution,entry,source,nonceSha,automaticUiEpoch,previous);
+        automaticStartPending=pending;requireAutomaticOwner(pending);
+        if(entry.matches(previous.configuration()))return finishAutomaticPreparation(pending);
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(!app.canChangeLocalModelSettings(false)){invalidateAutomaticStart();throw new IllegalStateException("请先完成模型设置或清理，再开始任务");}
+        pending.settingsStarted=true;automaticStartFeedback="正在准备 "+entry.label()+" 的首选模型 "+entry.modelLabel()+"，完成后开始本次任务……";taskState.setText(automaticStartFeedback);
+        try{modelSettings.start(entry.modelProfile,entry.compute,false);refresh();return true;}
+        catch(Exception error){invalidateAutomaticStart();throw error;}
+    }
+    private boolean finishAutomaticPreparation(AutomaticStart pending){
+        if(pending==null||automaticStartPending!=pending||pending.cancelled||pending.consumed||modelSettings.isBusy())return false;
+        try{
+            requireAutomaticOwner(pending);
+            LocalProbeApplication app=(LocalProbeApplication)getApplication();
+            if(!app.canChangeLocalModelSettings(false)||engine.settingsBlocked())throw new IllegalStateException("模型准备未完成或退出状态尚未确认");
+            LocalModelEngine.RuntimeGeneration actual=engine.runtimeGeneration();
+            if(actual==null||actual.source==null||actual!=engine.runtimeGeneration()||!pending.entry.matches(actual.configuration())
+                    ||(!pending.settingsStarted&&actual!=pending.previousRuntime)
+                    ||(pending.settingsStarted&&actual==pending.previousRuntime))throw new IllegalStateException("首选模型没有形成已核验的实际配置代");
+            actual.source.unchanged();requireAutomaticOwner(pending);
+            if(actual!=engine.runtimeGeneration())throw new IllegalStateException("模型代在开始前发生变化");
+            pending.readyRuntime=actual;pending.confirmed=pending.resolution.confirm(pending.entry,pending.nonce,actual.id,actual.source.sha());
+            pending.consumed=true;automaticStartPending=null;automaticReadyStart=pending;automaticStartFeedback=null;
+            try{return beginTask(pending.owner,pending.source,pending.originalNonce);}
+            finally{automaticReadyStart=null;refresh();}
+        }catch(Exception error){invalidateAutomaticStart();automaticStartFeedback="自动任务未开始："+HeptaAccessibilityService.message(error);taskState.setText(automaticStartFeedback);refresh();return false;}
+    }
+    private BackgroundSession.Selection automaticStartSelection(String owner)throws Exception{
+        AutomaticStart pending=automaticReadyStart;
+        if(pending==null||!pending.consumed||pending.entered||pending.confirmed==null||!pending.owner.equals(owner))
+            throw new IllegalStateException("自动目标没有同一次已核验的开始来源");
+        pending.entered=true;requireAutomaticOwner(pending);
+        if(pending.readyRuntime!=engine.runtimeGeneration()||!pending.entry.matches(engine.configuration())||engine.settingsBlocked()||modelSettings.isBusy())
+            throw new IllegalStateException("首选模型在开始前已变化");
+        pending.readyRuntime.source.unchanged();
+        BackgroundTaskTarget target=BackgroundTaskTarget.resolveAutomaticSelection(owner,pending.confirmed);
+        boolean profile=pending.entry.independentProfile();
+        return new BackgroundSession.Selection(target,profile,pending.entry.independentPersonal(),
+                profile&&org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.packageName)?controllerUiFromOwnerButton(owner):null);
+    }
+    private void requireAutomaticSchedule(String owner)throws Exception{
+        AutomaticStart pending=automaticReadyStart;
+        if(pending==null||!pending.entered||pending.scheduleAttempted||!pending.owner.equals(owner))throw new IllegalStateException("自动开始不能重复提交");
+        requireAutomaticOwner(pending);
+        if(pending.readyRuntime!=engine.runtimeGeneration()||!pending.entry.matches(engine.configuration())||engine.settingsBlocked()||modelSettings.isBusy())throw new IllegalStateException("实际模型代已变化");
+        pending.readyRuntime.source.unchanged();pending.scheduleAttempted=true;
+    }
+    private boolean cancelAutomaticStart(){
+        if(automaticStartPending==null)return false;
+        invalidateAutomaticStart();automaticStartFeedback="已取消任务开始。正在进行的模型设置会正常收尾，不会自动启动任务。";taskState.setText(automaticStartFeedback);refresh();return true;
     }
 
     private void renderProbe(LocalModelEngine.Result result){
@@ -880,13 +1134,19 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         restoreLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(true));
         localModelSettingsState.setText(modelSettings.state()+"\n设置只使用本机文件；不自动回退 CPU。内存门槛不是实测峰值，8B 仍需同条件验证。");
         taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
-        boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading;
+        boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading||automaticStartPending!=null;
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
                 backgroundMode.isChecked()?(independentProfileDisplay.isChecked()?"将在所选隔离资料应用的独立后台显示中操作":
                         independentPersonalDisplay.isChecked()?"将在所选个人空间应用的新建独立后台显示中操作":"将在所选起始应用的后台空间操作")
                         :"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
+        if(automaticMode()&&backgroundMode.isChecked()&&!tasks.isRunning()&&!tasks.hasBackgroundLease())
+            backgroundSummary.setText("按本次完整任务选择已保存的应用实例和首选模型；每次只执行一个目标。");
+        boolean autoControls=!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()&&!modelSettings.isBusy()&&!modelImport.isBusy();
+        if(automaticTargetMode!=null)automaticTargetMode.setEnabled(autoControls);
+        if(pickAutomaticTargets!=null){pickAutomaticTargets.setEnabled(autoControls);pickAutomaticTargets.setText("管理自动目标与首选模型（"+(automaticTargets==null?0:automaticTargets.targets.size())+" 个）");}
+        if(pickAutomaticInstance!=null){pickAutomaticInstance.setVisibility(automaticMode()&&automaticResolution!=null&&automaticResolution.matches.size()>1?View.VISIBLE:View.GONE);pickAutomaticInstance.setEnabled(autoControls);}
         openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
@@ -898,6 +1158,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         independentPersonalDisplay.setEnabled(backgroundMode.isChecked()&&!busy&&!tasks.isBlocked()&&!tasks.isRecovering()
                 &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
                 &&(personalIndependentTarget()||independentPersonalDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
+        if(automaticMode()){pickBackgroundApps.setEnabled(false);pickProfileTarget.setEnabled(false);initialBackgroundApp.setEnabled(false);independentProfileDisplay.setEnabled(false);independentPersonalDisplay.setEnabled(false);}
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
         cleanupBackground.setEnabled(!modelSettings.isBusy()&&!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
@@ -908,7 +1169,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy&&!modelSettings.isBusy()&&!modelImport.isBusy());
+        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null)
+                &&(!automaticMode()||(backgroundMode.isChecked()&&backgroundError==null)));
+        stopTask.setEnabled(automaticStartPending!=null||(busy&&!modelSettings.isBusy()&&!modelImport.isBusy()));
         runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
@@ -981,10 +1244,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     @Override protected void onResume(){super.onResume();if(tasks!=null){recheckBackgroundChoice();refresh();}}
     @Override public void onWindowFocusChanged(boolean focused){
         super.onWindowFocusChanged(focused);
+        if(!focused&&automaticStartPending!=null){invalidateAutomaticStart();automaticStartFeedback="已离开当前任务界面，自动开始已取消。";}
         if(!focused&&profilePermissionService!=null)profilePermissionService.permissionUi().ownerVisibility(this,null,false);
         if(focused&&accessibilityUiStarted)refreshProfilePermission();
     }
-    @Override protected void onStop(){accessibilityUiStarted=false;HeptaAccessibilityService.removeConnectionListener(accessibilityConnectionChanged);
+    @Override protected void onStop(){automaticInputChanged();accessibilityUiStarted=false;HeptaAccessibilityService.removeConnectionListener(accessibilityConnectionChanged);
         if(profilePermissionService!=null){
             profilePermissionService.permissionUi().ownerVisibility(this,null,false);
             profilePermissionService.permissionUi().unbind(profilePermissionChanged);

@@ -36,16 +36,25 @@ def calendar_actual_session_ports(source, output, service):
     node = next(n for n in ast.parse(raw).body
                 if isinstance(n, ast.FunctionDef) and n.name == "calendar_legacy_closure")
     require(sha(ast.get_source_segment(raw, node).encode()) ==
-            "0be32d214d355656fdbde067b892ec4dc8c7c13d95659b53cd66461066b661fb",
+            "0b70b8ed6a4b7004114a321776d0adb1d0344937feba1d77614ce4ab17d6994e",
             "exact reviewed calendar compiler port helper required")
     values = {}
     for item in node.body:
         if isinstance(item, ast.Assign) and len(item.targets) == 1 and isinstance(item.targets[0], ast.Name):
             name = item.targets[0].id
-            if name in ("actual_names", "calendar_types", "input_port", "model_port"):
+            if name in ("actual_names", "calendar_types", "input_port", "model_port", "runtime_port"):
                 values[name] = ast.literal_eval(item.value)
-    require(set(values) == {"actual_names", "calendar_types", "input_port", "model_port"},
+    require(set(values) == {"actual_names", "calendar_types", "input_port", "model_port", "runtime_port"},
             "complete reviewed literal port set required")
+    # The new fixed helper must reverse exactly to the original reviewed helper.
+    prior_helper = ast.get_source_segment(raw, node)
+    inverse_pairs = [('"CalendarSelectionObservation", "NativeSearchFinalCensusResampleProof"', '"CalendarSelectionObservation"'), ('    static final class NativeSearchFinalCensusResampleProof {\n        private NativeSearchFinalCensusResampleProof(){throw new AssertionError("actual final-census producer unavailable in this pure gate");}\n        void consume(NativeSearchSession.Attempt attempt,NativeSearchRole role,long now){throw new AssertionError("no final-census replacement authority");}\n    }\n', ''), ('    runtime_port = """package org.trillionnium.hepta.local;\nfinal class RuntimeInferenceAdapter implements LocalInference {\n    private RuntimeInferenceAdapter(){throw new AssertionError("runtime router is outside this legacy fixture");}\n    public LocalRuntimeConfig configuration(){throw new AssertionError("no runtime configuration authority");}\n    public Handle generate(String prompt,String system,java.io.File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){throw new AssertionError("no runtime model execution");}\n    final class CalendarModelBinding {\n        private CalendarModelBinding(){throw new AssertionError("no runtime calendar binding in legacy fixture");}\n        VlmInferenceAdapter requireCurrent(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar producer authority");}\n    }\n    synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){throw new AssertionError("no runtime calendar binding authority");}\n}\n"""\n', ''), ('(("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port), ("RuntimeInferenceAdapter.java", runtime_port))', '(("VlmInferenceAdapter.java", model_port), ("LocalTaskController.java", controller_port))')]
+    for added, prior in inverse_pairs:
+        require(prior_helper.count(added) == 1, "exact runtime/proof helper increment required")
+        prior_helper = prior_helper.replace(added, prior, 1)
+    require(sha(prior_helper.encode()) ==
+            "0be32d214d355656fdbde067b892ec4dc8c7c13d95659b53cd66461066b661fb",
+            "original calendar compiler helper changed beyond reviewed ports")
     qualification = source / "tests/qualification-scope/prepare_fixture.py"
     q = next(n for n in ast.parse(qualification.read_text()).body
              if isinstance(n, ast.FunctionDef) and n.name == "prepare")
@@ -66,6 +75,18 @@ def calendar_actual_session_ports(source, output, service):
         service = service.replace(expected, "", 1)
         removed.append({"start": start, "bytes": len(expected.encode()), "sha256": sha(expected.encode())})
     types = values["calendar_types"]
+    # This gate retains the original refusing search Session, which never
+    # references the new final-census producer. Do not import its unused port.
+    search_boundary = output / "NativeSearchSession.java"
+    require(sha(search_boundary.read_bytes()) ==
+            "4ee12102d54c43142700a515938506ee6e46314ec4cecc1da0df121a1119801c",
+            "exact original routing search boundary required")
+    unused_proof = part(types, "    static final class NativeSearchFinalCensusResampleProof {",
+                        "    public static final class CalendarFreshObservation {")
+    require(sha(unused_proof.encode()) ==
+            "0983e5e5d8059e0655bc0324f3784f10670d3700a4c00207a83acfdf30da7b83",
+            "exact unused final-census compiler port required")
+    types = types.replace(unused_proof, "", 1)
     marker = "    public static final class CalendarActionResult {\n"
     # Keep the original controller ABI field; null is not a successful outcome.
     require(types.count(marker) == 1 and qports.count("        final ActionOutcome outcome=null;") == 1,
@@ -81,8 +102,12 @@ def calendar_actual_session_ports(source, output, service):
     require(b"private VlmInferenceAdapter()" in adapter_before and b"AcceptedRequestCallback" in adapter_before
             and b"class AcceptedRequest {" not in adapter_before, "original unconstructable Adapter boundary required")
     adapter.write_text(values["model_port"])
+    runtime_adapter = output / "RuntimeInferenceAdapter.java"
+    require(not runtime_adapter.exists(), "fresh refusing runtime boundary required")
+    with runtime_adapter.open("x", encoding="utf-8") as handle:
+        handle.write(values["runtime_port"])
     actual = [source / "src/org/trillionnium/hepta/local" / (n + ".java") for n in values["actual_names"]]
-    return service, actual, {
+    return service, actual + [runtime_adapter], {
         "schema": "hepta.native-routing-calendar-compiler-boundary.v1",
         "reviewed_port_helper": metadata(provider, provider.read_bytes()),
         "reviewed_helper_body_sha256": sha(ast.get_source_segment(raw, node).encode()),
@@ -91,6 +116,10 @@ def calendar_actual_session_ports(source, output, service):
         "service_extension_sha256": sha(extension.encode()),
         "adapter_before": metadata(adapter, adapter_before), "adapter_after": metadata(adapter, adapter.read_bytes()),
         "actual_pure_sources": [metadata(p, p.read_bytes()) for p in actual],
+        "refusing_runtime_port": metadata(runtime_adapter, runtime_adapter.read_bytes()),
+        "original_helper_exact_inverse": True,
+        "unused_final_census_port_excluded_sha256": sha(unused_proof.encode()),
+        "original_routing_search_boundary": metadata(search_boundary, search_boundary.read_bytes()),
         "real_controller_preserved": True, "all_new_authority_endpoints_always_refuse": True,
         "calendar_model_or_effect_executed": False,
     }

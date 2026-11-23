@@ -58,6 +58,31 @@ public final class RuntimeInferenceAdapter implements LocalInference {
         if(engine.runtimeGeneration()!=runtime)
             throw new IllegalStateException("runtime generation changed while reserving the task");
     }
+    /** Identity of an already reserved visual delegate, not a new inference or
+     * Android dispatch capability. It cannot migrate to a later task binding. */
+    final class CalendarModelBinding {
+        private final Binding original;
+        private CalendarModelBinding(Binding original){this.original=original;}
+        VlmInferenceAdapter requireCurrent(String taskId,LocalRuntimeConfig config){
+            synchronized(RuntimeInferenceAdapter.this){
+                Binding value=requireCalendarTask(taskId,config);
+                if(value!=original)throw new IllegalStateException("calendar runtime task binding changed");
+                return (VlmInferenceAdapter)value.delegate;
+            }
+        }
+    }
+    private Binding requireCalendarTask(String taskId,LocalRuntimeConfig config){
+        Binding value=current();
+        if(!value.taskId.equals(taskId)||value.runtime.configuration()!=config
+                ||config.profile!=ModelProfile.GUI_OWL_4B||config.visualObservationOnly
+                ||!(value.delegate instanceof VlmInferenceAdapter)
+                ||value.delegate.configuration()!=config||!value.delegate.modelOutputDispatchAllowed())
+            throw new IllegalStateException("same reserved GUI-Owl task delegate required");
+        return value;
+    }
+    synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){
+        return new CalendarModelBinding(requireCalendarTask(taskId,config));
+    }
     @Override public void cancelTask(){
         Binding value=binding;if(value!=null)value.delegate.cancelTask();
     }

@@ -1,6 +1,7 @@
 """Compile exact production prompt/admission/input-limit decisions with explicit IO fixtures."""
 import ast
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -203,10 +204,26 @@ public final class PromptAdmissionFixture {
     files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile,
               source/"tests/web-flight/legacy-boundary/WebShoppingQuote.java"]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    # PURE_CLASSES is only the actual pure Java list. Reuse the exact old-domain
+    # boundary which canonical adds separately; no automatic selection exists here.
+    auto_helper=source/"tests/native-app/legacy-boundary/prepare_search_pure.py"
+    auto_raw=auto_helper.read_bytes()
+    if hashlib.sha256(auto_raw).hexdigest()!="ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889":
+        raise RuntimeError("Exact reviewed old-domain automatic compiler helper required")
+    spec=importlib.util.spec_from_file_location("exact_admission_auto_boundary",auto_helper)
+    auto_boundary=importlib.util.module_from_spec(spec);spec.loader.exec_module(auto_boundary)
+    files=auto_boundary.add_auto_boundary(source,files)
+    auto_port=source/"tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java"
     files,calendar_copy=calendar_legacy_types(source,output,files)
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "calendar_fixture_compiler_copy": calendar_copy,
+        "automatic_fixture_compiler_boundary": {
+            "helper":{"path":str(auto_helper),"bytes":len(auto_raw),"sha256":digest(auto_raw)},
+            "source":{"path":str(auto_port),"bytes":auto_port.stat().st_size,"sha256":digest(auto_port.read_bytes())},
+            "complete_actual_background_target_retained":True,
+            "private_constructors_and_all_operations_throw":True,
+            "actual_automatic_resolver_compiled":False,"automatic_authority_created":False},
         "scope": "Exact production full prompt builder, original ordinary/visual pre-native guard projection and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",
         "controller_sha256": digest(controller.encode()),
         "engine_sha256": digest(engine.encode()),

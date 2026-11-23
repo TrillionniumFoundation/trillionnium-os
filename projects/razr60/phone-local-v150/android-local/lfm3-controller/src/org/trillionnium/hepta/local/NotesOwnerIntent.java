@@ -27,6 +27,10 @@ public final class NotesOwnerIntent {
     private static final String QUOTED_NEW = "(?:新建|创建|写)(?:一条|一个|一则)?(?:笔记|备忘录)"
             + "[，,]?" + SPACE + "(?:正文|内容)(?:为|是)[：:]?" + SPACE;
     private static final String DESTINATION = "(?:记到|记在|写入|保存到)(?:备忘录|笔记)(?:里|中)?";
+    // A colon is required here so the entire remaining source span is one body.
+    private static final Pattern UNQUOTED_NEW_BODY = full(SPACE + POLITE
+            + "(?:新建|创建|写)(?:一条|一个|一则)?(?:笔记|备忘录)[，,]?" + SPACE
+            + "(?:正文|内容)(?:为|是)[：:]" + "(.+)");
     private static final Pattern UNQUOTED_PREFIX = full(SPACE + POLITE + PREFIX + "(.+)");
     // Do not consume an apparent polite word from the body: 请假申请记一下
     // must retain 请假申请, rather than silently changing it to 假申请.
@@ -54,7 +58,7 @@ public final class NotesOwnerIntent {
             + "|\\bonly[ \\t]+allow\\b|\\bdo[ \\t]+not[ \\t]+save\\b",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern DRAFT_ONLY = Pattern.compile(
-            "(?:只|仅|先)(?:新建|打开|写)?(?:一个|一条)?(?:笔记)?草稿"
+            "(?:只|仅|先)(?:新建|打开|写|留|保留)?(?:一个|一条)?(?:笔记)?草稿"
             + "|(?:新建|打开|写)(?:一个|一条)?(?:笔记)?草稿"
             + "|不要保存|不保存|不必保存|无需保存|只打开(?:笔记)?编辑器");
     private static final char[][] QUOTES = {{'“','”'}, {'‘','’'}, {'"','"'}, {'\'','\''}};
@@ -100,7 +104,8 @@ public final class NotesOwnerIntent {
          * This choice is data flow, not a second copy of the authority grammar.
          */
         public boolean masksOwnerBodyForAuthority() {
-            return supported && !"natural_note_comma_prefix.v1".equals(recognition)
+            return supported && !"natural_new_note_body.v1".equals(recognition)
+                    && !"natural_note_comma_prefix.v1".equals(recognition)
                     && !"natural_note_save_list_reopen.v2".equals(recognition);
         }
 
@@ -158,6 +163,11 @@ public final class NotesOwnerIntent {
             if (result.supported && AMBIGUOUS_COMMA_BODY.matcher(result.body).find())
                 return refused(owner, false, "ambiguous_unquoted_body_or_additional_goal");
             return result;
+        }
+        Matcher newBody = UNQUOTED_NEW_BODY.matcher(owner);
+        if (newBody.matches()) {
+            // The complete OWNER remains visible to the existing authority compiler.
+            return candidate(owner, newBody, "natural_new_note_body.v1", false, true);
         }
         return refused(owner, DRAFT_ONLY.matcher(outsideQuotedText(owner)).find(),
                 "no_complete_supported_natural_note_request");

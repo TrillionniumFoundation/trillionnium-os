@@ -26,6 +26,7 @@ final class BackgroundTaskTarget {
     final boolean explicitSelection;
     final NativeAppGoal nativeGoal;
     final ProfileTarget profileTarget;
+    final BackgroundAutoTargetResolver.StartSelection automaticStart;
     private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected){
         this(owner,target,recognition,initial,selected,false,null);
     }
@@ -35,9 +36,21 @@ final class BackgroundTaskTarget {
     }
     private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected,
                                  boolean explicitSelection,NativeAppGoal nativeGoal,ProfileTarget profileTarget){
+        this(owner,target,recognition,initial,selected,explicitSelection,nativeGoal,profileTarget,null);
+    }
+    private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected,
+                                 boolean explicitSelection,NativeAppGoal nativeGoal,ProfileTarget profileTarget,
+                                 BackgroundAutoTargetResolver.StartSelection automaticStart){
         if(profileTarget!=null&&(!explicitSelection||!profileTarget.packageName.equals(target)||selected.size()!=1
                 ||!selected.contains(target)||!target.equals(initial)))throw new IllegalArgumentException("隔离资料仅支持明确选择的单一应用实例");
-        this.profileTarget=profileTarget;
+        this.profileTarget=profileTarget;this.automaticStart=automaticStart;
+        if(automaticStart!=null){
+            automaticStart.requireOwner(owner);
+            if(!explicitSelection||selected.size()!=1||!target.equals(initial)
+                    ||!target.equals(automaticStart.entry.packageName())||profileTarget!=automaticStart.entry.choice.profileTarget
+                    ||nativeGoal!=automaticStart.nativeGoal)
+                throw new IllegalArgumentException("自动目标未绑定同一已确认的单实例预览");
+        }
         this.packageName=target;this.recognition=recognition;
         ownerSha256=FixedIntentTarget.payloadSha256(owner);originalInitialPackage=initial;
         TreeSet<String> copy=new TreeSet<String>(selected);
@@ -56,6 +69,7 @@ final class BackgroundTaskTarget {
         for(String value:originalPackages)field(binding,value);
         field(binding,"effective");for(String value:effectivePackages)field(binding,value);
         if(profileTarget!=null){field(binding,"explicit-managed-profile.v1");field(binding,profileTarget.sha256);}
+        if(automaticStart!=null){field(binding,"owner-enabled-auto-target.v1");field(binding,automaticStart.sha256);}
         targetSha256=FixedIntentTarget.payloadSha256(binding.toString());
     }
     /** Ordinary UI entry. Its explicit initial app wins; OWNER is never rewritten.
@@ -82,6 +96,14 @@ final class BackgroundTaskTarget {
         return new BackgroundTaskTarget(owner,initial,goal==null?"explicit_native_app_selection.v1":goal.recognition,
                 initial,selected,true,goal,profileTarget);
     }
+    /** The visible Start confirms one resolved preview; the saved manual initial
+     * preference is not overwritten. Existing execution sees only this singleton. */
+    static BackgroundTaskTarget resolveAutomaticSelection(String owner,BackgroundAutoTargetResolver.StartSelection start){
+        if(start==null)throw new IllegalArgumentException("自动目标开始来源缺失");start.requireOwner(owner);
+        String pkg=start.entry.packageName();
+        return new BackgroundTaskTarget(owner,pkg,"owner_automatic_target_selection.v1",pkg,
+                Collections.singleton(pkg),true,start.nativeGoal,start.entry.choice.profileTarget,start);
+    }
     boolean webHelper(){return WEB_HELPER.equals(route);}
     void requireOwner(String owner){
         if(owner==null||!ownerSha256.equals(FixedIntentTarget.payloadSha256(owner)))
@@ -98,6 +120,7 @@ final class BackgroundTaskTarget {
         value.put("effective_allowed_packages",Collections.unmodifiableList(new ArrayList<String>(effectivePackages)));
         value.put("native_goal",nativeGoal==null?null:nativeGoal.evidence());
         if(profileTarget!=null)value.put("profile_target",profileTarget.evidence());
+        if(automaticStart!=null)value.put("automatic_target_resolution",automaticStart.evidence());
         value.put("owner_rewritten",false);value.put("package_from_model_or_screen",false);
         value.put("grants_tool_authority",false);value.put("business_verified",false);
         return Collections.unmodifiableMap(value);

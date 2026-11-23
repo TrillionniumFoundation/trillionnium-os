@@ -170,7 +170,8 @@ def main():
         need(files.count(service_port)==1 and service_text.endswith('}')
                 and 'class ActionOutcome' not in service_text and 'class NativeSearchReadRetryProof' not in service_text
                 and 'class NativeSearchNoEffectReplanProof' not in service_text
-                and 'class NativeSearchSamplingExhaustionProof' not in service_text,
+                and 'class NativeSearchSamplingExhaustionProof' not in service_text
+                and 'class NativeSearchFinalCensusResampleProof' not in service_text,
                 'one original Service type port without new dispatch/retry types required')
         outcome_port="""    public static final class ActionOutcome {
         public final boolean accepted=false,dispatched=false,stale=true;
@@ -192,7 +193,12 @@ def main():
         void requirePublishedPlanning(NativeSearchSession session,NativeSearchPlanning planning){throw new AssertionError("No successor publication in legacy terminal fixture");}
         java.util.Map<String,Object> evidence(){throw new AssertionError("No successor evidence in legacy terminal fixture");}
     }"""
-        type_ports=outcome_port+chr(10)+retry_port+chr(10)+no_effect_port
+        final_census_port="""    static final class NativeSearchFinalCensusResampleProof {
+        private NativeSearchFinalCensusResampleProof(){throw new AssertionError("actual final-census producer unavailable in this pure gate");}
+        void consume(NativeSearchSession.Attempt attempt,NativeSearchRole role,long now){throw new AssertionError("no final-census replacement authority");}
+    }
+"""
+        type_ports=outcome_port+chr(10)+retry_port+chr(10)+no_effect_port+chr(10)+final_census_port
         service_after=(service_text[:-1]+chr(10)+type_ports+chr(10)+'}').encode('utf-8')
         need(service_after.decode('utf-8').replace(chr(10)+type_ports+chr(10),'',1)==service_text,
                 'original Service port changed outside the refusing type boundary')
@@ -204,7 +210,10 @@ def main():
                 'new_search_path_executed':False,'retry_proof_type_block_sha256':sha(retry_port.encode()),
                 'retry_proof_constructor_always_throws':True,'retry_authority_executed':False,
                 'no_effect_proof_type_block_sha256':sha(no_effect_port.encode()),
-                'no_effect_proof_constructor_and_authority_always_throw':True,'no_effect_successor_executed':False}
+                'no_effect_proof_constructor_and_authority_always_throw':True,'no_effect_successor_executed':False,
+                'final_census_proof_type_block_sha256':sha(final_census_port.encode()),
+                'final_census_proof_private_constructor_and_consume_always_throw':True,
+                'final_census_resampling_executed':False}
         (fixture / 'android/os/Process.java').write_text('package android.os;public final class Process {public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')
         io = fixture / 'android/system/Os.java'
         body, seam = io.read_text(), 'r.st_uid=((Number)a.get("uid")).intValue();'
