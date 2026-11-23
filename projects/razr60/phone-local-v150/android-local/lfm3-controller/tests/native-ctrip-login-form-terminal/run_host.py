@@ -12,6 +12,8 @@ import time
 sys.dont_write_bytecode = True
 EXPECTED_CASES = ["typed_history_phone_to_session_closes_only_login_navigation", "equal_native_ax_form_closes_only_login_navigation", "actual_authorized_grammar_and_domain_allow_only_incomplete_done", "done_failure_keeps_original_noneffect_null_guard", "done_partial_keeps_original_noneffect_null_guard", "later_login_cannot_restart_exit_or_account_flow", "later_result_cards_cannot_reopen_terminal_business_authority", "legacy_pixel_form_retains_existing_pending_contract", "different_query_date_form_does_not_close_navigation", "form_without_actual_query_login_exit_cannot_create_terminal_proof", "stale_unentered_login_return_cannot_create_arrival_proof", "original_fifteen_second_transition_budget_is_not_renewed", "foreign_actual_session_typed_receipt_cannot_close_navigation", "query_history_and_single_exit_are_preserved_without_result_promotion"]
 
+EXPECTED_CASES += ["40c65_exact_date_and_calendar_minimum_from_original_35_rows", "40c65_reject_wrong_calendar_day_amount_role_and_currency", "40c65_partial_is_shown_only_following_bound_query_login_return_and_cleanup"]
+
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
@@ -75,15 +77,30 @@ def main():
         host = source / "tests/native-ctrip-login-form-terminal/NativeCtripLoginFormTerminalHostTest.java"
         helpers = [source / p for p in (
             "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
+            "tests/native-ctrip-login-form-terminal/NativeCtripCalendarMinimumHostTest.java",
             "tests/native-app-fixtures/NativeXmlFixture.java",
             "tests/native-app-provider/NativeAppProviderHostTest.java",
             "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java",
             "tests/native-app-provider/NativeCtripLoginExitHostTest.java")]
         paths, provenance = closure.prepare(source, out / "closure", (host, *helpers))
+        query = module(source/"tests/web-flight/run_query_host_tests.py", "calendar_minimum_exact_extractor")
+        actual_controller = source/"src/org/trillionnium/hepta/local/LocalTaskController.java"
+        block = query.java_block(actual_controller.read_bytes(), "static final class OutcomeExplanation")
+        port = next(p for p in paths if p.name == "LocalTaskController.java")
+        original_port = port.read_text()
+        if not original_port.rstrip().endswith("}"):
+            raise RuntimeError("missing controller test port")
+        display = out/"presentation/LocalTaskController.java"
+        display.parent.mkdir()
+        display.write_text(original_port.rstrip()[:-1].replace("final class LocalTaskController", "import org.json.JSONObject;\nfinal class LocalTaskController")+"\n"+block+"\n}\n")
+        paths=[display if p==port else p for p in paths]
         fixture_owner = module(source / "tests/native-app-provider/run_host.py", "login_form_original_fixture_pins")
         fixtures = source / "tests/native-app-provider/fixtures"
         fixture_manifest = json.loads((fixtures.parent / "FIXTURES.json").read_text())
-        fixture_paths = [fixtures.parent / "FIXTURES.json", source / "tests/native-app-provider/run_host.py"]
+        recorded = host.parent/"40c65-calendar-fare.json"
+        if sha(recorded.read_bytes()) != "e64caf30860c66df04d7a569d7ff9bd091aa3fcbce0d6bd6bedc10b3ab6bb4eb":
+            raise RuntimeError("original 35-node projection differs")
+        fixture_paths = [recorded, actual_controller, fixtures.parent / "FIXTURES.json", source / "tests/native-app-provider/run_host.py"]
         for row in [*fixture_manifest["files"], *fixture_owner.CTRIP_LOGIN_LOADING_FIXTURES]:
             p = fixtures.parent / row["path"]
             if p.stat().st_size != row["bytes"] or sha(p.read_bytes()) != row["sha256"]:
@@ -110,7 +127,7 @@ def main():
             ("compile", [jdk / "bin/javac", "--release", "8", "-encoding", "UTF-8", "-proc:none",
                          "-Xlint:all,-options", "-Werror", "-classpath", jar, "-d", classes, *paths]),
             ("consumers", [jdk / "bin/java", "-cp", str(classes) + os.pathsep + str(jar),
-                           "org.trillionnium.hepta.local.NativeCtripLoginFormTerminalHostTest", out / "CASES.json", out / "work", fixtures])
+                           "org.trillionnium.hepta.local.NativeCtripLoginFormTerminalHostTest", out / "CASES.json", out / "work", fixtures, recorded])
         ]
         for name, argv in commands:
             started = time.monotonic()

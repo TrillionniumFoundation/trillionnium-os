@@ -108,6 +108,30 @@ public final class LocalTaskController implements AutoCloseable {
                 code="native_xiaomi_login_page";
                 message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
             }else if(NativeAppGoal.CTRIP_PACKAGE.equals(frame.packageName)
+                    &&"ctrip_single_flight_form".equals(phase)&&yes(provider,"login_returned_to_form_without_target_result")
+                    &&phase.equals(provider.get("actual_return_destination"))&&Boolean.FALSE.equals(provider.get("query_or_result_proof_created"))
+                    &&Boolean.FALSE.equals(provider.get("credentials_or_agreement_actions_available"))){
+                java.util.Map<?,?> minimum=map(provider.get("historical_calendar_minimum"));
+                java.util.Map<?,?> goal=map(map(completion.get("contract")).get("native_app_goal"));
+                java.util.Map<?,?> progress=map(session.get("progress"));
+                Object day=minimum.get("date"),amount=minimum.get("displayed_amount");
+                if(!"hepta.ctrip-displayed-calendar-minimum.v1".equals(minimum.get("schema"))
+                        ||!task.equals(minimum.get("task_id"))||!owner.equals(minimum.get("owner_sha256"))
+                        ||!owner.equals(goal.get("owner_sha256"))||!NativeAppGoal.FLIGHT_RESULTS.equals(goal.get("kind"))
+                        ||!sameSha(minimum.get("execution_target_sha256"),source.get("execution_target_sha256"),session.get("execution_target_sha256"))
+                        ||!sameSha(minimum.get("authorization_sha256"),source.get("task_authorization_sha256"),session.get("authorization_sha256"))
+                        ||!number(minimum.get("display_id"),frame.displayId)||!frame.backgroundGeneration.equals(minimum.get("background_generation"))
+                        ||!yes(progress,"calendar_year_proved","flight_login_exit_attempted","flight_login_returned_to_form")
+                        ||!(day instanceof String)||!((String)day).matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")
+                        ||!day.equals(goal.get("departure_date"))||!day.equals(progress.get("last_query_date"))
+                        ||!"北京".equals(minimum.get("from"))||!"上海".equals(minimum.get("to"))
+                        ||!minimum.get("from").equals(goal.get("from_city"))||!minimum.get("to").equals(goal.get("to_city"))
+                        ||!"¥".equals(minimum.get("currency_symbol"))||!(amount instanceof String)
+                        ||!((String)amount).matches("[1-9][0-9]{0,6}(?:\\.[0-9]{1,2})?")
+                        ||!Boolean.FALSE.equals(minimum.get("flight_card_verified"))||!originalCalendarMinimum(progress,minimum))return java.util.Collections.emptyMap();
+                code="native_ctrip_calendar_minimum_before_login";
+                message=day+" 北京到上海，查询时低价日历显示 ¥"+amount+"。携程随后要求登录，返回了查询表单。本次未取得具体航班、航司或时刻；可在同一工作资料的携程中登录后再查询。";
+            }else if(NativeAppGoal.CTRIP_PACKAGE.equals(frame.packageName)
                     &&NativeCtripFlightPage.FIRST_LAUNCH_PRIVACY.equals(phase)
                     &&yes(provider,"observed_first_launch_privacy","initialization_required")
                     &&Boolean.FALSE.equals(provider.get("credentials_or_agreement_actions_available"))
@@ -121,6 +145,21 @@ public final class LocalTaskController implements AutoCloseable {
             out.put("observation_id",frame.observationId);out.put("completion_frame_sha256",source.get("completion_frame_sha256"));
             out.put("package",frame.packageName);out.put("phase",phase);out.put("display_id",frame.displayId);
             out.put("background_generation",frame.backgroundGeneration);return out;
+        }
+        private static boolean originalCalendarMinimum(java.util.Map<?,?> progress,java.util.Map<?,?> minimum){
+            Object transitions=progress.get("transitions");
+            if(!(transitions instanceof java.util.List<?>))return false;
+            int matches=0;
+            for(Object item:(java.util.List<?>)transitions){
+                java.util.Map<?,?> row=map(item);
+                if(!minimum.equals(row.get("displayed_calendar_minimum")))continue;
+                java.util.Map<?,?> after=map(row.get("after")),attempt=map(row.get("attempt"));
+                if(!"query_observed_form".equals(attempt.get("purpose"))||!minimum.get("date").equals(row.get("query_date"))
+                        ||!minimum.get("observation_id").equals(after.get("observation_id"))
+                        ||!minimum.get("phone_observation_record_sha256").equals(after.get("phone_observation_record_sha256")))return false;
+                matches++;
+            }
+            return matches==1;
         }
         private static java.util.Map<String,Object> launchReason(String task,String owner,JSONObject background)throws Exception{
             if(background==null||!"hepta.background-session.v1".equals(background.getString("schema"))

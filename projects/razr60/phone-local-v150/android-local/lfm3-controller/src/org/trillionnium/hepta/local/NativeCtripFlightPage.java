@@ -156,6 +156,36 @@ final class NativeCtripFlightPage {
                 result.put(cell.control.id,d);}
             return Collections.unmodifiableMap(result);
         }
+        /** Exact displayed fare strip only. This is neither a flight card nor its fare or availability. */
+        Map<String,Object> calendarMinimum(NativeAppGoal goal,LocalDate queriedDate){
+            if(!supported(goal)||!goal.ownerSha256.equals(frame.ownerSha)||!RESULTS.equals(phase)||!goal.departureDate.equals(queriedDate)
+                    ||!queriedDate.equals(displayedMonthDay(queriedDate))||!frame.metadataObserved
+                    ||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated)return null;
+            try{
+                NativeAppEvidence.Node header=oneRole(frame,"头部信息:"+goal.fromCity+"到"+goal.toCity);
+                NativeAppEvidence.Node date=oneRole(frame,"当天日期"),price=oneRole(frame,"当天最低价"),cell=oneRole(frame,"当天时间");
+                if(!fromHeader.within(header)||!toHeader.within(header)||!header.within(resultRoot)
+                        ||!goal.fromCity.equals(fromHeader.text)||!goal.toCity.equals(toHeader.text)
+                        ||!queriedDate.equals(resolvedDates(queriedDate).get(cell.id))||!date.within(cell)||!price.within(cell)
+                        ||!cell.className.equals(date.parentClass)||!cell.className.equals(price.parentClass)
+                        ||!cell.path.equals(parent(date.path))||!cell.path.equals(parent(price.path))||date.bottom>price.top
+                        ||!"android.widget.TextView".equals(date.className)||!"android.widget.TextView".equals(price.className)
+                        ||!String.format(java.util.Locale.ROOT,"%02d-%02d",queriedDate.getMonthValue(),queriedDate.getDayOfMonth()).equals(date.text)
+                        ||!price.text.startsWith("¥"))return null;
+                Matcher amount=AMOUNT.matcher(price.text.substring(1));
+                if(!amount.matches())return null;
+                Map<String,Object> e=NativeAppEvidence.map();
+                e.put("schema","hepta.ctrip-displayed-calendar-minimum.v1");e.put("task_id",frame.taskId);
+                e.put("owner_sha256",frame.ownerSha);e.put("execution_target_sha256",frame.targetSha);
+                e.put("authorization_sha256",frame.authorizationSha);e.put("display_id",frame.displayId);
+                e.put("background_generation",frame.generation);e.put("observation_id",frame.observationId);
+                e.put("phone_observation_record_sha256",frame.sourceRecordSha);e.put("date",queriedDate.toString());
+                e.put("from",fromHeader.text);e.put("to",toHeader.text);e.put("date_cell",cell.fact("description"));
+                e.put("day_label",date.fact("text"));e.put("day_price",price.fact("text"));e.put("currency_symbol","¥");
+                e.put("displayed_amount",amount.group(1));e.put("flight_card_verified",false);
+                return NativeAppEvidence.immutableMap(e);
+            }catch(IllegalArgumentException absent){return null;}
+        }
         LocalDate displayedMonthDay(LocalDate provedQueryDate){Map<String,LocalDate> resolved=resolvedDates(provedQueryDate);
             for(DateCell d:dates)if(d.fullMonthDay)return resolved.get(d.control.id);return null;}
     }

@@ -889,6 +889,9 @@ final class NativeAppSession {
             // This is a proved navigation destination, never a flight-result proof.
             // The one login exit has been spent; do not query or enter login again.
             view.put("login_returned_to_form_without_target_result",true);
+            if(NativeCtripFlightPage.FORM.equals(phase)&&lastQueryProof!=null
+                    &&goal.departureDate.equals(lastQueryDate)&&lastQueryProof.get("displayed_calendar_minimum")!=null)
+                view.put("historical_calendar_minimum",lastQueryProof.get("displayed_calendar_minimum"));
             view.put("actual_return_destination",NativeCtripFlightPage.FORM);
             view.put("query_or_result_proof_created",false);
             view.put("credentials_or_agreement_actions_available",false);
@@ -1647,6 +1650,12 @@ final class NativeAppSession {
                 calendarProposedDate=null;calendarInspection=null;complete=true;
             }else if("query_observed_form".equals(p)&&NativeCtripFlightPage.RESULTS.equals(flight.phase)&&a.date.equals(flight.displayedMonthDay(a.date))){
                 proof.put("calendar_year_round_trip",calendarYearProof);proof.put("query_form",a.flight.form.evidence());proof.put("query_date",a.date.toString());
+                if(installed.profileTarget!=null&&a.before.frame.profileWindow!=null&&frame.profileWindow!=null
+                        &&NativeAppEvidence.sameProfileOwner(a.before.frame.profileWindow,frame.profileWindow)
+                        &&calendarYearProof!=null&&goal.departureDate.equals(a.date)){
+                    Map<String,Object> minimum=flight.calendarMinimum(goal,a.date);
+                    if(minimum!=null)proof.put("displayed_calendar_minimum",minimum);
+                }
                 proof.put("result_date_strip",dateEvidence(flight));lastQueryDate=a.date;lastQueryProof=NativeAppEvidence.immutableMap(proof);complete=true;
             }else if(p!=null&&p.startsWith("navigate_departure_date:")&&NativeCtripFlightPage.RESULTS.equals(flight.phase)
                     &&a.date.equals(flight.displayedMonthDay(lastQueryDate))){proof.put("actual_result_date_strip",dateEvidence(flight));proof.put("proved_date",a.date.toString());complete=true;}
