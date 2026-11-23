@@ -158,6 +158,50 @@ public final class NativeSearchSessionHostTest {
                     nativeTask.selectionSha,id(),NativeAppGoal.XIAOMI_PACKAGE,env.session.generation,H,H,H,H,H,
                     env.session.displayId(),96,0,1224,2992,0,0,1224,2992,at,false,complete,rows,1,true,window(at));
         }
+        NativeAppEvidence.Frame recordedLogin(long at,String fault)throws Exception{
+            byte[] raw=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.recordedLogin")));
+            check("1e2c97901d9f2ab2b32f84c098a3116b77f4bda439d67bf6fe579125854dbe85".equals(NativeAppEvidence.hash(new String(raw,StandardCharsets.UTF_8))),"retained public UI bytes");
+            JSONObject fixture=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+            check(fixture.getInt("complete_pair_size")==16&&fixture.getInt("retained")==13&&fixture.getBoolean("same_complete_pair"),"both recorded complete traversals match");
+            org.json.JSONArray input=fixture.getJSONArray("nodes");List<NativeAppEvidence.Node> rows=new ArrayList<NativeAppEvidence.Node>();
+            for(int i=0;i<input.length();i++){
+                JSONObject n=input.getJSONObject(i);org.json.JSONArray b=n.getJSONArray("bounds");String path=n.getString("path");
+                if("missing".equals(fault)&&"0/3/4".equals(path))continue;
+                if("phone".equals(fault)&&"0/3/2".equals(path))n.put("text","查询商品");
+                if("return".equals(fault)&&"0/0".equals(path))n.put("description","同意");
+                if("foreign".equals(fault)&&"0/3/0".equals(path))n.put("package","foreign.package");
+                rows.add(new NativeAppEvidence.Node(n.getString("id"),n.getString("package"),n.getString("class"),n.getString("view_id"),
+                        n.getString("text"),n.getString("description"),path,n.getString("parent_class"),n.getString("signature"),n.getString("label"),
+                        b.getInt(0),b.getInt(1),b.getInt(2),b.getInt(3),n.getBoolean("enabled"),n.getBoolean("password"),n.getBoolean("clickable"),
+                        n.getBoolean("editable"),n.getBoolean("scrollable"),n.getBoolean("selected"),n.getBoolean("checkable"),n.getBoolean("checked"),
+                        Collections.<String>emptySet()));
+            }
+            return new NativeAppEvidence.Frame(search.taskId,nativeTask.goal.ownerSha256,nativeTask.target.targetSha256,authority.sha256,
+                    nativeTask.selectionSha,id(),NativeAppGoal.XIAOMI_PACKAGE,env.session.generation,H,H,H,H,H,
+                    env.session.displayId(),96,0,1224,2992,0,0,1224,2992,at,false,true,rows,1,true,window(at));
+        }
+        NativeAppEvidence.Frame recordedHome(long at)throws Exception{
+            Path census=Paths.get(System.getProperty("hepta.test.recordedLogin")).getParent().getParent()
+                    .resolve("native-search-producer/6bea-search-icon-censuses.json");
+            JSONObject stored=new JSONObject(new String(Files.readAllBytes(census),StandardCharsets.UTF_8));
+            org.json.JSONArray nodes=stored.getJSONObject("D").getJSONArray("nodes");List<NativeAppEvidence.Node> rows=new ArrayList<NativeAppEvidence.Node>();
+            for(int i=0;i<nodes.length();i++){
+                JSONObject n=nodes.getJSONObject(i);if(n.isNull("ref_signature_sha256"))continue;org.json.JSONArray b=n.getJSONArray("bounds");
+                rows.add(new NativeAppEvidence.Node("n"+i,n.getString("package"),n.getString("class"),n.getString("view_id"),n.getString("text"),n.getString("description"),
+                        n.getString("path"),n.getString("parent_class"),n.getString("ref_signature_sha256"),n.getString("label"),b.getInt(0),b.getInt(1),
+                        b.getInt(2),b.getInt(3),n.getBoolean("enabled"),n.getBoolean("password"),n.getBoolean("clickable"),n.getBoolean("editable"),
+                        n.getBoolean("scrollable"),n.getBoolean("selected"),n.getBoolean("checkable"),n.getBoolean("checked"),Collections.<String>emptySet()));
+            }
+            return new NativeAppEvidence.Frame(search.taskId,nativeTask.goal.ownerSha256,nativeTask.target.targetSha256,authority.sha256,
+                    nativeTask.selectionSha,id(),NativeAppGoal.XIAOMI_PACKAGE,env.session.generation,H,H,H,H,H,
+                    env.session.displayId(),96,0,1224,2992,0,0,1224,2992,at,false,true,rows,1,true,window(at));
+        }
+        void returnFromRecordedLogin(NativeAppEvidence.Frame login)throws Exception{
+            ActionDecision back=ActionDecision.parse(new JSONObject().put("action","click").put("package",login.packageName)
+                    .put("observation_id",login.observationId).put("node_id","n0").put("node_label","返回").toString(),ActionDecision.IME_ACTION_SCHEMA);
+            String run=id();gate.check(back,run);nativeTask.beforeModelAction(2,back,run,START+1150);
+            nativeTask.modelActionOutcome(back,run,true,true,false,H,START+1200);
+        }
         public void close()throws IOException{search.retire();env.close();}
     }
     @SuppressWarnings("unchecked") static Map<String,Object> map(Object value){return (Map<String,Object>)value;}
@@ -339,6 +383,53 @@ public final class NativeSearchSessionHostTest {
         one("incomplete_provider_frame_cannot_close_navigation",()->{try(Fixture f=new Fixture()){
             f.acceptedNavigation();denied(()->f.nativeTask.observed(f.inputFrame(START+1100,false)));
             denied(()->f.nativeTask.requireModelPlanning());
+        }});
+        one("recorded_8436_login_exposes_only_return_without_query",()->{try(Fixture f=new Fixture()){
+            f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");
+            f.nativeTask.observed(login);f.search.navigationObserved(login);f.nativeTask.requireModelPlanning();
+            NativeAppDomain page=f.nativeTask.domain();check(page.phase.equals("native_login")&&page.clickIds.equals(Collections.singleton("n0")),"actual return only");
+            check(page.editValues.isEmpty()&&!page.resultReady&&page.doneStatuses().equals(Collections.singleton("failure")),"no phone field, purchase, or price");
+            check(f.journalNames.contains("native-search-login-observed.json")&&!f.journalNames.contains("native-search-navigation-observed.json"),"separate navigation evidence");
+            Map<String,Object> progress=map(f.nativeTask.evidence().get("progress"));
+            check(Boolean.FALSE.equals(progress.get("typed_search_navigation_observed"))&&Boolean.FALSE.equals(progress.get("typed_search_navigation_pending"))
+                    &&Boolean.FALSE.equals(map(progress.get("typed_search_login_observed")).get("query_or_price_verified")),"login does not imply a successful query");
+            denied(()->f.search.navigationObserved(login));denied(()->f.offer());
+        }});
+        one("recorded_8436_login_rejects_missing_phone_return_and_foreign",()->{
+            for(String fault:Arrays.asList("missing","phone","return","foreign"))try(Fixture f=new Fixture()){
+                f.acceptedNavigation();denied(()->f.nativeTask.observed(f.recordedLogin(START+1100,fault)));
+                denied(()->f.nativeTask.requireModelPlanning());check(!f.journalNames.contains("native-search-login-observed.json"),"malformed login never admitted");
+            }
+        });
+        one("returned_home_after_wide_search_stops_price_and_budget",()->{
+            for(String owner:Arrays.asList(NativeProfileIdentityHostTest.OWNER,"在小米商城买1台小米路由器AX3000T，预算不超过200元，核对商品、数量和总额后停在订单确认页，不提交，不支付"))try(Fixture f=new Fixture(owner)){
+                f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");f.nativeTask.observed(login);f.search.navigationObserved(login);
+                f.returnFromRecordedLogin(login);NativeAppEvidence.Frame home=f.recordedHome(START+1300);f.nativeTask.observed(home);
+                NativeAppDomain d=f.nativeTask.domain();check(d.phase.equals("native_login_requires_user")&&d.missing.contains("native_login_returned_to_home_after_wide_search"),"same wide entrance is not re-issued");
+                check(d.clickIds.isEmpty()&&d.editValues.isEmpty()&&d.toolMask(null).equals(Collections.singleton("done"))&&!d.resultReady,"no further home, login, query or purchase action");
+                Map<String,Object> p=map(f.nativeTask.evidence().get("progress"));
+                check(Boolean.FALSE.equals(p.get("typed_search_navigation_observed"))&&Boolean.FALSE.equals(p.get("product_query_observed")),"no price or order proof");
+                check("home_search".equals(map(d.evidence().get("provider")).get("actual_return_destination")),"current actual destination in domain");
+            }
+        });
+        one("later_login_or_changed_page_cannot_inherit_wide_home_message",()->{
+            for(boolean laterLogin:new boolean[]{true,false})try(Fixture f=new Fixture()){
+                f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");f.nativeTask.observed(login);f.search.navigationObserved(login);
+                f.returnFromRecordedLogin(login);f.nativeTask.observed(f.recordedHome(START+1300));
+                f.nativeTask.observed(laterLogin?f.recordedLogin(START+1400,""):f.inputFrame(START+1400,true));
+                NativeAppDomain d=f.nativeTask.domain();Map<String,Object> view=map(d.evidence().get("provider"));
+                check(d.phase.equals("native_login_requires_user")&&d.toolMask(null).equals(Collections.singleton("done"))&&!d.resultReady,"only unverified terminal remains");
+                check(Boolean.valueOf(laterLogin).equals(view.get("observed_login_page"))&&!"home_search".equals(view.get("actual_return_destination")),"source attribution follows the complete current page");
+                if(laterLogin)check(d.missing.equals(Collections.singletonList("native_login_after_reserved_exit_requires_user")),"real current login, no repeated exit");
+                else check(d.missing.equals(Collections.singletonList("native_login_return_destination_changed"))&&"search_input".equals(view.get("current_provider_phase"))
+                        &&Boolean.FALSE.equals(view.get("returned_to_home_after_wide_search")),"a subsequent editor is neither the previous login nor its return observation");
+            }
+        });
+        one("fresh_input_after_explicit_login_return_allows_query",()->{try(Fixture f=new Fixture()){
+            f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");f.nativeTask.observed(login);f.search.navigationObserved(login);
+            f.returnFromRecordedLogin(login);NativeAppEvidence.Frame input=f.inputFrame(START+1300,true);f.nativeTask.observed(input);
+            check(f.nativeTask.domain().phase.equals("search_input")&&f.nativeTask.domain().editValues.size()==1,"only independently parsed search field may accept the product query");
+            check(Boolean.TRUE.equals(map(f.nativeTask.evidence().get("progress")).get("typed_search_navigation_observed"))&&!f.nativeTask.domain().resultReady,"input reached, price still unknown");
         }});
         one("fresh_actual_provider_contract_handoff_is_navigation_only",()->{try(Fixture f=new Fixture()){
             f.acceptedNavigation();NativeAppEvidence.Frame frame=f.inputFrame(START+1100,true);

@@ -82,6 +82,7 @@ def main():
         paths.add(ROOT/"tests/native-form-history-actions/86b343-departure-year-refusals.json")
         paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")
         paths.add(ROOT/"tests/native-search-producer/6bea-search-icon-censuses.json")
+        paths.add(ROOT/"tests/native-search-session/8436-retained-login.json")
         paths.add(ROOT/"tests/native-search-producer/SearchIconCases.fragment")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         paths.add(ROOT/"tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json")
@@ -563,6 +564,8 @@ final class NativeCalendarDateIntent {
             "--source",ROOT,"--output",out/"native-auto-target","--java-home",java_home,"--json-jar",json_jar])
         run("native-xiaomi-budget-preview",[sys.executable,"-B",ROOT/"tests/native-xiaomi-budget-preview/run_host.py",
             "--source",ROOT,"--output",out/"native-xiaomi-budget-preview","--java-home",java_home,"--json-jar",json_jar])
+        run("native-search-login-handoff",[sys.executable,"-B",ROOT/"tests/native-search-session/run_host.py",
+            "--source",ROOT,"--output",out/"native-search-login-handoff","--java-home",java_home,"--json-jar",json_jar])
         run("native-search-producer",[sys.executable,"-B",ROOT/"tests/native-search-producer/run_producer.py",
             "--source",ROOT,"--output",out/"native-search-producer","--java-home",java_home,"--json-jar",json_jar])
         census_source=ROOT/"src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"

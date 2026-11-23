@@ -5,7 +5,7 @@ No phone, adb, UI, source edits, or production task simulation. Outputs are new
 host-only files; the source tree must remain byte-identical.
 """
 from pathlib import Path
-import argparse, ast, hashlib, json, os, subprocess, sys
+import argparse, ast, hashlib, json, os, runpy, subprocess, sys
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--component', type=Path, required=True)
@@ -40,6 +40,8 @@ assert sha((src/'LocalTaskSession.java').read_bytes()) in {
 # terminal method digests and all maximum-census/projection/IO checks remain.
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
+if sha(native_snapshot_raw)=='dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05':
+    native_snapshot_proof=runpy.run_path(str(root/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](native_snapshot_raw)
 if sha(native_snapshot_proof)=='4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b':
     # The two approved complete-census Xiaomi banner checks are additive.
     # Strip their exact bytes only on the proof copy; javac still uses the full source.

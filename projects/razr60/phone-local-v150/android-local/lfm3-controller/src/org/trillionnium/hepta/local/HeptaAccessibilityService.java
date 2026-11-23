@@ -3375,7 +3375,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(first.windows,second.windows,
                             first.before,first.after,second.before,second.after,request.events.mark());
                     if(!completingInFlightPair)noteNativeSearchSamplingAnchor(request,first,second,timing,context);
-                    try{encoded=NativeSearchPlanning.encodeIcon(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
+                    try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
                         if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
@@ -4600,7 +4600,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
         // Complete immutable values are retained immediately; diagnostic copies are made before drain.
         NativeActionSnapshotCheck.Snapshot currentSnapshot,latestSnapshot;
-        Map<String,Object> targetSignatureRefusal;
+        Map<String,Object> targetSignatureRefusal,finalSwitcherHint;
         Map<String,Object> roleProof;
         final List<Map<String,Object>> currentReadAttempts=new ArrayList<Map<String,Object>>();
         NativeSearchPlanning.EventMark pairStart,pairCompleted,effectWatermark;
@@ -4728,7 +4728,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             attempt.discardRevalidationForFinalCensus(proof,SystemClock.elapsedRealtime());
             finalCensusResamples++;old.put("old_revalidation_discarded",true);pendingFinalCensusResample=null;
             // First/second rejection latches were false; never clear a rejected cause.
-            currentSnapshot=null;latestSnapshot=null;roleProof=null;pairCompleted=null;effectWatermark=null;
+            currentSnapshot=null;latestSnapshot=null;roleProof=null;finalSwitcherHint=null;pairCompleted=null;effectWatermark=null;
             profileBeforeEffect=null;currentNodeIdentityChecked=false;ancestorChainChecked=false;windowsChecked=false;
             latestReadReturnedElapsed=-1;latestSnapshotCompletedElapsed=-1;roleComparedElapsed=-1;firstFinalEventsElapsed=-1;
             afterTargetRefreshEventsElapsed=-1;finalPreclaimEventsElapsed=-1;finalPreclaimRejectedWatermark=null;typedFinalPreclaimContentRejected=false;
@@ -4902,6 +4902,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("latest_D",work.latestSnapshot==null?null:NativeAppEvidence.immutableMap(NativeSearchPlanning.snapshot(work.latestSnapshot)));
             proof.put("current_C_read_attempts",work.currentReadAttempts);proof.put("current_C_resample_limit",NATIVE_SEARCH_CURRENT_C_READ_LIMIT-1);
             proof.put("original_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
+            if(work.finalSwitcherHint!=null)proof.put("final_switcher_hint",work.finalSwitcherHint);
             if(work.targetSignatureRefusal!=null)proof.put("fresh_signature_refusal",work.targetSignatureRefusal);
             proof.put("role_comparison",work.roleProof);proof.put("pair_start_watermark",work.pairStart==null?null:work.pairStart.evidence());
             proof.put("D_completed_watermark",work.pairCompleted==null?null:work.pairCompleted.evidence());
@@ -5071,6 +5072,24 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private boolean refreshNativeSearchNode(SearchActionWork work,AccessibilityNodeInfo node){
         work.phase("node_refresh");boolean refreshed=node.refresh();work.check();return refreshed;
     }
+    private boolean currentSwitcherHint(SearchActionWork work,Graph latest,NativeActionSnapshotCheck.Snapshot saved,
+            AccessibilityNodeInfo cursor,NativeActionSnapshotCheck.Node entry,ObservedChildText.Result observed,
+            List<AccessibilityNodeInfo> temporary){
+        NativeSearchRole proposed=work.attempt.offer.planning.role;
+        if(proposed.iconAction||!proposed.targetPath.equals(entry.path)||cursor.getChildCount()!=1)return false;
+        AccessibilityNodeInfo node=cursor;NativeActionSnapshotCheck.Node[] descendants=new NativeActionSnapshotCheck.Node[2];
+        String path=entry.path;
+        for(int i=0;i<descendants.length;i++){
+            AccessibilityNodeInfo child=node.getChild(0);if(child==null)return false;
+            temporary.add(child);if(!refreshNativeSearchNode(work,child))return false;
+            requireNativeSearchNodeWindow(work,latest,child);
+            AccessibilityNodeInfo parent=child.getParent();if(parent==null)return false;temporary.add(parent);
+            if(!parent.equals(node)||child.getChildCount()!=1-i)return false;
+            path+="/0";descendants[i]=snapshotNativeActionNode(child,path,string(node.getClassName()),null,null);node=child;
+        }
+        return NativeActionSnapshotCheck.currentSwitcherHint(saved,entry,descendants[0],descendants[1],observed);
+    }
+
     /** Refreshes C's exact reference and actual parent/child identities against complete D. */
     private void refreshNativeSearchTargetChain(SearchActionWork work,NodeRef original,String targetPath,
             NativeActionSnapshotCheck.Snapshot snapshot,Graph latest)throws Exception{
@@ -5093,7 +5112,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(signature!=null){
                     ObservedChildText.Result children=observedChildText(cursor,true,work.budget());
                     String refreshedSignature=NativeAppEvidence.hash(nodeSignature(cursor,children));
-                    if(!signature.equals(refreshedSignature)){
+                    boolean hintChanged=!signature.equals(refreshedSignature)&&path.equals(targetPath)
+                            &&currentSwitcherHint(work,latest,snapshot,cursor,actual,children,temporary);
+                    if(hintChanged){
+                        Map<String,Object> hint=new LinkedHashMap<String,Object>();
+                        hint.put("target_path",path);hint.put("previous_reference_sha256",signature);
+                        hint.put("current_reference_sha256",refreshedSignature);hint.put("current_child_fingerprint",children.fingerprint);
+                        hint.put("retained_c_and_d_action_target",true);work.finalSwitcherHint=hint;
+                    }
+                    if(!signature.equals(refreshedSignature)&&!hintChanged){
                         Map<String,Object> refusal=new LinkedHashMap<String,Object>();refusal.put("path",path);
                         refusal.put("model_action_target",path.equals(targetPath));refusal.put("expected_full_signature_sha256",signature);
                         refusal.put("fresh_full_signature_sha256",refreshedSignature);refusal.put("direct_node_fields_equal",true);

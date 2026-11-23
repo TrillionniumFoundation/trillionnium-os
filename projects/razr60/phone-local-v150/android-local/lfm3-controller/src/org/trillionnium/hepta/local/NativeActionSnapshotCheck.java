@@ -355,6 +355,23 @@ final class NativeActionSnapshotCheck {
         scope(in,original); // Complete original structure and derived references, never a resource-ID shortcut.
         return live.click()&&stableHintFacts(target,null).equals(stableHintFacts(live,null));
     }
+    /** The retained switcher stays the action target. Only its two proved inert
+     * descendants can supply a different hint at the final Android refresh. */
+    static boolean currentSwitcherHint(Snapshot saved,Node entry,Node hint,Node term,ObservedChildText.Result observed){
+        Node previous=saved.node(entry.path),oldHint=saved.node(entry.path+"/0"),oldTerm=saved.node(entry.path+"/0/0");
+        if(!"com.xiaomi.shop.plugin.homepage:id/switcher".equals(entry.view)||!entry.click()||entry.children!=1
+                ||!hint.path.equals(entry.path+"/0")||!term.path.equals(hint.path+"/0")||hint.children!=1||term.children!=0
+                ||!stableHintFacts(previous,null).equals(stableHintFacts(entry,null))
+                ||!stableHintFacts(oldHint,"description").equals(stableHintFacts(hint,"description"))
+                ||!stableSearchIconTermFacts(oldTerm).equals(stableSearchIconTermFacts(term))
+                ||!hint.usable()||!term.usable()||!hint.within(entry)||!term.within(hint)
+                ||term.text.trim().isEmpty()||!hint.desc.equals("搜索"+term.text)
+                ||observed==null||!"derived".equals(observed.status)||observed.truncated||!observed.sourcesComplete)return false;
+        Map<String,Node> live=new TreeMap<String,Node>();
+        for(Node n:Arrays.asList(entry,hint,term))live.put(n.path,n);
+        ObservedChildText.Result derived=searchHintChildren(live,entry);
+        return derived.sourcesComplete&&!derived.truncated&&derived.fingerprint.equals(observed.fingerprint);
+    }
     private static Map<String,Object> stableHintFacts(Node node,String literal){
         Map<String,Object> value=new TreeMap<String,Object>(node.v);
         if(literal!=null)value.remove(literal);
@@ -382,7 +399,7 @@ final class NativeActionSnapshotCheck {
     }
     private static void requireSearchHintReferences(Snapshot snapshot,Node entry,Node hint,Node term){
         for(Node node:Arrays.asList(entry,hint,term)){
-            ObservedChildText.Result child=searchHintChildren(snapshot,node);
+            ObservedChildText.Result child=searchHintChildren(snapshot.nodes,node);
             String label=ObservedTargetLabels.project(!node.text.isEmpty()?node.text:!node.desc.isEmpty()?node.desc:child.text);
             need(label.equals(node.label),"hint original projected label");
             String full=child.bind(searchHintBase(node))+"\nscroll_actions="+s(node.v,"scroll_actions")
@@ -392,7 +409,7 @@ final class NativeActionSnapshotCheck {
     }
     /** The same bounded pure collector as Service; no Android refresh, replacement
      * node, observation, authority or effect is created by this reconstruction. */
-    private static ObservedChildText.Result searchHintChildren(final Snapshot snapshot,final Node root){
+    private static ObservedChildText.Result searchHintChildren(final Map<String,Node> nodes,final Node root){
         return ObservedChildText.collect(root,new ObservedChildText.Reader<Node>(){
             public ObservedChildText.Metadata metadata(Node node){
                 boolean click=b(node.v,"clickable"),action=b(node.v,"action_click"),input=b(node.v,"editable");
@@ -405,7 +422,7 @@ final class NativeActionSnapshotCheck {
             public String identity(Node node){return searchHintBase(node);}
             public String viewId(Node node){return node.view;}
             public int childCount(Node node){return node.children;}
-            public Node child(Node node,int index){return snapshot.node(node.path+"/"+index);}
+            public Node child(Node node,int index){return nodes.get(node.path+"/"+index);}
             public void release(Node node){/* Immutable census value, not an Android reference. */}
         });
     }
