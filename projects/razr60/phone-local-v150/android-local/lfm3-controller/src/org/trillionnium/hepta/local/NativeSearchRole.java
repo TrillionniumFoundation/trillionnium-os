@@ -14,7 +14,9 @@ import java.util.TreeSet;
  * a dispatch capability, a stable full frame, or evidence of a product price. */
 final class NativeSearchRole {
     static final String ROLE="xiaomi_home_open_search";
-    final String roleId,targetPath,iconPath,navbarPath;
+    static final String ICON_ROLE="xiaomi_home_open_labeled_search_icon";
+    final String roleId,targetPath,iconPath,navbarPath,actionPath,modelRole;
+    final boolean iconAction;
     final Map<String,Object> facts,authority;
     final Map<String,Map<String,Object>> ancestors;
     final NativeActionSnapshotCheck.Snapshot first,second;
@@ -30,7 +32,7 @@ final class NativeSearchRole {
             this.first=first;this.second=second;
         }
     }
-    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap){
+    private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap,boolean iconAction){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;
         Map<String,Object> ae=stableEnvelope(a),be=stableEnvelope(b);
@@ -38,6 +40,17 @@ final class NativeSearchRole {
         facts=immutable(NativeActionSnapshotCheck.searchPlanningRoleFacts(a));
         need(facts.equals(NativeActionSnapshotCheck.searchPlanningRoleFacts(b)),"search role/hint structure or global page roles changed");
         targetPath=string(facts,"target_path");iconPath=string(facts,"icon_path");navbarPath=string(facts,"navbar_path");
+        this.iconAction=iconAction;modelRole=iconAction?ICON_ROLE:ROLE;actionPath=iconAction?iconPath:targetPath;
+        if(iconAction){
+            // The original whole-page comparison already proves the unique search
+            // resource, clickable action, common parent, and disjoint button geometry.
+            NativeActionSnapshotCheck.Node icon=a.node(iconPath);
+            need(icon.v.equals(b.node(iconPath).v)&&icon.click()&&icon.children==0
+                    &&"android.widget.ImageView".equals(icon.cls)&&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(icon.view)
+                    &&icon.text.isEmpty()&&"搜索".equals(icon.desc)&&"搜索".equals(icon.label)
+                    &&icon.v.get("ref_signature_sha256") instanceof String
+                    &&NativeAppEvidence.sha((String)icon.v.get("ref_signature_sha256")),"exact separately clickable icon and reference required");
+        }
         Set<String> hints=new TreeSet<String>(Arrays.asList(targetPath,string(facts,"hint_path"),string(facts,"term_path")));
         Set<String> protectedPaths=new TreeSet<String>();
         // The accessibility tree may flatten every navigation label directly
@@ -63,7 +76,8 @@ final class NativeSearchRole {
             need(old!=null&&fresh!=null&&old.v.equals(fresh.v),"protected search/icon/navigation subtree changed: "+path);
         }
         ancestors=Collections.unmodifiableMap(fixedAncestors);
-        Map<String,Object> identity=new TreeMap<String,Object>();identity.put("role",ROLE);identity.put("authority",authority);
+        Map<String,Object> identity=new TreeMap<String,Object>();identity.put("role",modelRole);identity.put("authority",authority);
+        if(iconAction){identity.put("action_target_path",actionPath);identity.put("action_target",a.node(actionPath).v);}
         identity.put("role_facts",facts);identity.put("actual_ancestors",ancestors);
         roleId=NativeAppEvidence.fingerprint(identity);
         Set<String> paths=new TreeSet<String>(a.nodes.keySet());paths.addAll(b.nodes.keySet());
@@ -102,8 +116,9 @@ final class NativeSearchRole {
         changedPaths=Collections.unmodifiableList(changed);enclosures=Collections.unmodifiableList(new ArrayList<String>(antichain));
         fullTreeEqual=changed.isEmpty();
         Map<String,Object> out=new LinkedHashMap<String,Object>();
-        out.put("schema","hepta.native-search-role-proof.v1");out.put("role",ROLE);out.put("role_id",roleId);
-        out.put("target_path",targetPath);out.put("first_census_sha256",a.sha);out.put("second_census_sha256",b.sha);
+        out.put("schema","hepta.native-search-role-proof.v1");out.put("role",modelRole);out.put("role_id",roleId);
+        if(iconAction){out.put("search_switcher_path",targetPath);out.put("action_target",a.node(actionPath).v);}
+        out.put("target_path",actionPath);out.put("first_census_sha256",a.sha);out.put("second_census_sha256",b.sha);
         out.put("complete_pair",true);out.put("full_tree_equal",fullTreeEqual);out.put("changed_paths",changedPaths);
         out.put("fixed_disjoint_enclosures",enclosures);out.put("changed_path_classification",classification);out.put("role_facts",facts);out.put("actual_ancestors",ancestors);
         out.put("protected_role_roots",new ArrayList<String>(protectedRoots));
@@ -226,15 +241,21 @@ final class NativeSearchRole {
                 &&!Boolean.TRUE.equals(n.v.get("action_click"))&&Boolean.FALSE.equals(n.v.get("selected"));
     }
 
-    static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b,false);}
+    static NativeSearchRole compare(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){return new NativeSearchRole(a,b,false,false);}
     // Historical AX semantics can support model planning. A decision still needs a new C/D pair and a live node.
     static NativeSearchRole compareForPlanning(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
-        return new NativeSearchRole(a,b,true);
+        return new NativeSearchRole(a,b,true,false);
     }
     // Obtained only from a model's reserved Attempt. All actual window, role,
     // original target/ancestor refresh, event and one-use effect checks still run.
     static NativeSearchRole compareForExecution(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
-        return new NativeSearchRole(a,b,true);
+        return new NativeSearchRole(a,b,true,false);
+    }
+    static NativeSearchRole iconPair(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap){
+        return new NativeSearchRole(a,b,allowFullPageSwap,true);
+    }
+    NativeSearchRole compareCurrent(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap){
+        return new NativeSearchRole(a,b,allowFullPageSwap,iconAction);
     }
     void requireSameRole(NativeSearchRole current){need(current!=null&&roleId.equals(current.roleId),"new current search role differs from the offered role");}
     Map<String,Object> evidence(){return proof;}

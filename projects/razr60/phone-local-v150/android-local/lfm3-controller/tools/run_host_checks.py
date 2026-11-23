@@ -80,6 +80,8 @@ def main():
         paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.add(ROOT/"tests/native-form-history-actions/d1e685-query-refusals.json")
         paths.add(ROOT/"tests/native-search-producer/99c24-retired-search.json")
+        paths.add(ROOT/"tests/native-search-producer/6bea-search-icon-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/SearchIconCases.fragment")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         paths.add(ROOT/"tests/native-ctrip-login-form-terminal/40c65-calendar-fare.json")
         paths.add(ROOT/"tests/native-auto-target/fixtures/legacy-ctrip-gui.json")
