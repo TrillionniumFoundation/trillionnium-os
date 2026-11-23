@@ -100,7 +100,10 @@ def main():
         record['extraction']=metadata;record['compile_inputs_before']=[ref(x) for x in inputs]
         classes=out/'classes';classes.mkdir();empty=out/'empty';empty.mkdir()
         run('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all,-options','-Werror','-sourcepath',empty,'-cp',jar,'-d',classes,*inputs])
-        run('cases',[jdk/'bin/java','-Dhepta.fixture.host_uid='+str(os.getuid()),'-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.AutomaticTargetHostTest',out/'cases'])
+        legacy=source/'tests/native-auto-target/fixtures/legacy-ctrip-gui.json'
+        need(sha(legacy.read_bytes())=='a81058189584615f52dea098d79ba7d78fef59f996e38456009a1e1eb36949d7','exact R32 generated preference')
+        record['legacy_r32_preference']=ref(legacy)
+        run('cases',[jdk/'bin/java','-Dhepta.fixture.host_uid='+str(os.getuid()),'-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.AutomaticTargetHostTest',out/'cases',legacy])
         result=json.loads((out/'cases/RESULT.json').read_text());record['cases']=result;need(result['all_pass'],'all cases must pass')
         record['compile_inputs_after']=[ref(x) for x in inputs];need(record['compile_inputs_after']==record['compile_inputs_before'],'compile inputs changed')
         record['all_pass']=True

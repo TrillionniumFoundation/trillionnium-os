@@ -40,8 +40,9 @@ final class BackgroundAutoTargetPreferences {
                 need(p.profile.userId>0&&p.packageName.equals(choice.initial)&&PROFILE.equals(displayMode),"工作资料自动目标身份或显示方式不一致");
                 instanceKey="profile:"+p.profile.userId+":"+p.profile.serial+":"+p.packageName;
             }
-            String expected=ProfileTarget.CTRIP.equals(choice.initial)?ModelProfile.GUI_OWL_4B.id:ModelProfile.LFM3.id;
-            need(expected.equals(modelProfile)&&"npu".equals(compute),"自动目标的首选模型组合不受支持");
+            boolean supported=ModelProfile.LFM3.id.equals(modelProfile)
+                    ||(p!=null&&ProfileTarget.CTRIP.equals(choice.initial)&&ModelProfile.GUI_OWL_4B.id.equals(modelProfile));
+            need(supported&&"npu".equals(compute),"自动目标的首选模型组合不受支持");
             this.choice=choice;this.displayMode=displayMode;this.modelProfile=modelProfile;this.compute=compute;
             StringBuilder canonical=new StringBuilder();field(canonical,"hepta.auto-target-entry.v1");
             field(canonical,instanceKey);field(canonical,choice.initial);field(canonical,displayMode);field(canonical,modelProfile);field(canonical,compute);
@@ -49,6 +50,7 @@ final class BackgroundAutoTargetPreferences {
             field(canonical,Integer.toString(installed.uid));for(String signer:installed.signers)field(canonical,signer);
             field(canonical,p==null?"":p.wire());identitySha256=hash(canonical.toString());
         }
+        Entry withModel(ModelProfile profile){return new Entry(choice,displayMode,profile.id,compute);}
         String packageName(){return choice.initial;}
         boolean independentProfile(){return PROFILE.equals(displayMode);}
         boolean independentPersonal(){return PERSONAL.equals(displayMode);}

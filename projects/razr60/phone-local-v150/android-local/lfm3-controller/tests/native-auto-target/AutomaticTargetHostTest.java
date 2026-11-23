@@ -77,8 +77,105 @@ public final class AutomaticTargetHostTest {
         void noTask(){check(app.tasks.schedules==0&&!ui.pending(),"invalidated Start consumed without scheduling");ui.onLocalModelSettingsChanged();check(app.tasks.schedules==0,"later callback cannot resurrect Start");}
         public void close(){if(app.model.verificationRelease!=null)app.model.verificationRelease.countDown();app.modelSettings.close();app.model.close();}
     }
+    private static android.app.AlertDialog picker(Env e)throws Exception{
+        ProfileCatalogueClient.actual=e.flight.choice.profileTarget;
+        android.app.AlertDialog.shown=null;e.ui.openTargetPicker();
+        long stop=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
+        while(android.app.AlertDialog.shown==null&&System.nanoTime()<stop)android.os.Handler.pump();
+        android.app.AlertDialog dialog=android.app.AlertDialog.shown;
+        check(dialog!=null,"ordinary automatic target management opened");
+        return dialog;
+    }
+    private static void pickFlightModel(Env e,boolean lfm,boolean save)throws Exception{
+        android.app.AlertDialog dialog=picker(e);int text=dialog.row("携程","LFM3"),visual=dialog.row("携程","GUI-Owl");
+        check(text>=0&&visual>=0&&text!=visual,"one Ctrip profile must expose both reviewed local model choices");
+        int target=lfm?text:visual,other=lfm?visual:text;
+        if(!dialog.checked(target))dialog.tap(target);
+        check(dialog.checked(target)&&!dialog.checked(other),"model choices are exclusive for the same instance");
+        if(save)dialog.save();else dialog.cancel();
+    }
+    private static void flightPreferenceCases(Path legacy)throws Exception{
+        test("legacy_saved_gui_instance_keeps_its_wire_identity_and_snapshot_hash",()->{
+            byte[] bytes=Files.readAllBytes(legacy);
+            check("a81058189584615f52dea098d79ba7d78fef59f996e38456009a1e1eb36949d7".equals(BackgroundAutoTargetPreferences.hash(new String(bytes,StandardCharsets.UTF_8))),"original R32 preference fixture");
+            BackgroundAutoTargetPreferences.Snapshot saved=BackgroundAutoTargetPreferences.decode(new String(bytes,StandardCharsets.UTF_8));
+            BackgroundAutoTargetPreferences.Entry old=saved.targets.get(0),fresh=target(10,ProfileTarget.CTRIP);
+            check("406b45c56724e29f0ab05f536eced7b3f8ea7765eebed41e923ad55c72e22a5c".equals(saved.sha256),"original list digest");
+            check("415d15ca3089080277ecbf8668ad938090c5207cdaa0fd32d4677ac6758f8ac1".equals(old.identitySha256)
+                    &&old.identitySha256.equals(fresh.identitySha256)&&old.modelProfile.equals(ModelProfile.GUI_OWL_4B.id),"default unchanged");
+        });
+        test("ordinary_picker_cancel_save_reopen_and_switch_preserve_one_profile",()->{
+            try(Env e=new Env("owner-model-picker",FLIGHT,false)){
+                String prior=BackgroundAutoTargetPreferences.load(e.app).sha256;
+                pickFlightModel(e,true,false);check(prior.equals(BackgroundAutoTargetPreferences.load(e.app).sha256),"cancel retains settings");
+                pickFlightModel(e,true,true);BackgroundAutoTargetPreferences.Snapshot saved=BackgroundAutoTargetPreferences.load(e.app);
+                BackgroundAutoTargetPreferences.Entry selected=saved.entry(e.flight.instanceKey);
+                check(selected.modelProfile.equals(ModelProfile.LFM3.id)&&selected.compute.equals("npu"),"persisted LFM3 NPU");
+                check(selected.choice.profileTarget.same(e.flight.choice.profileTarget)&&!selected.identitySha256.equals(e.flight.identitySha256),"same signed installation, different model identity");
+                rejects(()->new BackgroundAutoTargetPreferences.Snapshot(true,Arrays.asList(selected,e.flight)));
+                check(saved.entry(e.notes.instanceKey).modelProfile.equals(ModelProfile.LFM3.id)&&e.app.tasks.schedules==0&&e.app.model.verificationCalls==0,"preference edits only");
+                android.app.AlertDialog restored=picker(e);check(restored.checked(restored.row("携程","LFM3"))&&!restored.checked(restored.row("携程","GUI-Owl")),"saved model visibly restored");restored.cancel();
+                e.ui.automaticTargets=BackgroundAutoTargetPreferences.load(e.app);
+                check(e.ui.start()&&e.app.tasks.schedules==1&&e.app.model.verificationCalls==0,"already current text generation schedules once");
+                check(e.app.tasks.selection.taskTarget.automaticStart.entry.modelProfile.equals(ModelProfile.LFM3.id)&&e.app.tasks.selection.independentProfileDisplay,"start binding uses exact saved model and profile");
+                e.ui.onLocalModelSettingsChanged();check(e.app.tasks.schedules==1,"callback cannot duplicate the same start");
+            }
+        });
+        test("switching_back_to_gui_recovers_original_identity",()->{
+            try(Env e=new Env("restore-gui-model",FLIGHT,false)){
+                pickFlightModel(e,true,true);pickFlightModel(e,false,true);
+                check(BackgroundAutoTargetPreferences.load(e.app).entry(e.flight.instanceKey).identitySha256.equals(e.flight.identitySha256),"restored original GUI identity");
+            }
+        });
+        test("per_instance_model_choice_does_not_clear_another_work_profile",()->{
+            try(Env e=new Env("two-flight-instances",FLIGHT,false)){
+                BackgroundAutoTargetPreferences.Entry second=target(11,ProfileTarget.CTRIP);
+                e.ui.automaticTargets=new BackgroundAutoTargetPreferences.Snapshot(true,Arrays.asList(e.flight,second));
+                BackgroundAutoTargetPreferences.save(e.app,e.ui.automaticTargets);
+                ProfileCatalogueClient.listed=Arrays.asList(e.flight.choice.profileTarget,second.choice.profileTarget);
+                try{
+                    android.app.AlertDialog dialog=picker(e);int first=dialog.row("工作资料 10","LFM3"),other=dialog.row("工作资料 11","GUI-Owl");
+                    check(first>=0&&other>=0&&dialog.checked(other),"two genuine installed profile alternatives");
+                    dialog.tap(first);check(dialog.checked(first)&&dialog.checked(other),"one selection per profile");
+                    dialog.save();BackgroundAutoTargetPreferences.Snapshot again=BackgroundAutoTargetPreferences.load(e.app);
+                    check(again.targets.size()==2&&again.entry(e.flight.instanceKey).modelProfile.equals(ModelProfile.LFM3.id)
+                            &&again.entry(second.instanceKey).identitySha256.equals(second.identitySha256),"two distinct profile preferences persisted");
+                }finally{ProfileCatalogueClient.listed=null;}
+            }
+        });
+        test("stale_picker_and_unsupported_model_never_modify_stored_selection",()->{
+            try(Env e=new Env("stale-model-dialog",FLIGHT,false)){
+                String before=e.ui.automaticTargets.sha256;android.app.AlertDialog dialog=picker(e);dialog.tap(dialog.row("携程","LFM3"));
+                e.ui.edit(FLIGHT+" ");dialog.save();check(before.equals(BackgroundAutoTargetPreferences.load(e.app).sha256),"stale activity epoch refused");
+                for(BackgroundAutoTargetPreferences.Entry item:Arrays.asList(e.notes,e.product,e.flight)){
+                    JSONObject raw=new JSONObject(BackgroundAutoTargetPreferences.encode(new BackgroundAutoTargetPreferences.Snapshot(true,Collections.singletonList(item))));
+                    raw.getJSONArray("targets").getJSONObject(0).put("model_profile",item==e.flight?ModelProfile.LFM3_VL_2B.id:ModelProfile.GUI_OWL_4B.id);
+                    try{BackgroundAutoTargetPreferences.decode(raw.toString());throw new AssertionError("unsupported profile admitted");}
+                    catch(IllegalArgumentException refusal){check(refusal.getMessage().contains("首选模型组合"),"model allow-list refused before digest");}
+                }
+                check(e.app.tasks.schedules==0&&e.app.model.verificationCalls==0,"picker never schedules or verifies model");
+            }
+        });
+        test("Ctrip_text_preference_validates_assets_before_exactly_one_visible_start",()->{
+            try(Env e=new Env("from-gui-to-text",FLIGHT,true)){
+                pickFlightModel(e,true,true);e.hold();e.startedSettings();e.finish();
+                check(e.app.model.configuration().profile==ModelProfile.LFM3&&e.app.tasks.schedules==1&&e.app.model.verificationCalls==1,"real settings switch once before flight task");
+                check(e.app.tasks.selection.profileTarget.same(e.flight.choice.profileTarget),"isolated flight instance retained");
+                e.ui.onLocalModelSettingsChanged();check(e.app.tasks.schedules==1,"completed settings event cannot replay");
+            }
+        });
+        test("Ctrip_text_asset_failure_retains_gui_generation_and_schedules_nothing",()->{
+            try(Env e=new Env("text-model-assets-fail",FLIGHT,true)){
+                pickFlightModel(e,true,true);e.hold();e.app.model.failVerification=true;e.startedSettings();e.finish();e.noTask();
+                check(e.app.model.configuration().profile==ModelProfile.GUI_OWL_4B&&Arrays.equals(e.originalConfig,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath())),"original visual config restored");
+            }
+        });
+    }
     public static void main(String[] args)throws Exception {
         root=Paths.get(args[0]);Files.createDirectories(root);android.os.Looper.getMainLooper();
+        ProfileTarget originalCatalogue=ProfileCatalogueClient.actual;
+        try{flightPreferenceCases(Paths.get(args[1]));}
+        finally{ProfileCatalogueClient.actual=originalCatalogue;android.app.AlertDialog.shown=null;}
         test("saved_instance_list_roundtrip_digest_and_manual_preferences_untouched",()->{
             try(Env e=new Env("roundtrip",NOTE,false)){
                 BackgroundUiPreferences.save(e.app,e.notes.choice);Map<String,?> before=e.app.getSharedPreferences("background-ui-choice-v1",0).getAll();
