@@ -161,6 +161,9 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        if anchor=='    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){':
+            proof=once(proof,'if((request.postEffectRetrySubmission!=null||request.postEffectController!=null\n                    &&(product.formPair!=null||product.postEncodingFormPair!=null))\n                    &&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)){','if(request.postEffectRetrySubmission!=null&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)){')
+            if h.sha(proof.encode())!='d86064ad2a7361af1e3be8e1b601b542d3faa73795b849c742b86397a76d710f':raise RuntimeError('historical form publication must restore exact R32 owner check')
         sampling=REVIEWED_SAMPLING_BODY_INVERSE.get(anchor);sampling_inverse=False
         if sampling is not None and actual==sampling['sha256']:
             for revised,prior in sampling['inverse']:proof=once(proof,revised,prior)
@@ -182,6 +185,10 @@ def generate(source,output,h):
     protected_files={}
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
+        r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
+        if name in r32_provider_pins and actual==r32_provider_pins[name]:
+            protected_files[name]=actual
+            continue
         if actual!=expected:
             proof_current=current
             if name=='NativeActionSnapshotCheck.java' and actual=='df7231303bac13507172dd83ebfe36fb17d107390f4aaa40a80ce4cf18263412':
@@ -212,6 +219,8 @@ def generate(source,output,h):
     compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts)
     for name in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
         template=once(template,'{{'+name+'}}',compiled_parts[name])
+    template=once(template,'            long transitionDeadline(){requireCurrent();return transition;}',
+                  '            String fixtureOrigin; String originalObservationId(){requireCurrent();if(fixtureOrigin==null)throw new IllegalStateException("missing prior entered fixture frame");return fixtureOrigin;} Map<String,Object> evidence(){return Collections.<String,Object>singletonMap("original_observation_id",originalObservationId());}\n            long transitionDeadline(){requireCurrent();return transition;}')
     main=h.body(template,'    public static void main(String[] args)throws Exception{')
     template=once(template,main,BRIDGE)
     template=once(template,'import java.util.*;','import java.util.*;\nimport java.security.NoSuchAlgorithmException;\nimport org.json.JSONArray;\nimport org.json.JSONException;\nimport org.trillionnium.hepta.background.ProfileIdentity;\nimport org.trillionnium.hepta.background.ProfileTarget;\nimport org.trillionnium.hepta.background.WindowOwnership;')
@@ -463,14 +472,36 @@ BRIDGE = r'''
         f.taskBackground=bg;
         final NativeActionSnapshotCheckHostTest.Fixture before=FormPairHostTest.managedForm();
         final NativeActionSnapshotCheckHostTest.Fixture after=FormPairHostTest.changedForm(before);
-        f.readHook=(graph,n)->populate(f,graph,n==6&&!"unchanged_pair_keeps_legacy_mode".equals(scenario)?after:before,scenario,n);
+        boolean post=scenario.startsWith("post_")||scenario.equals("ordinary_late_change");
+        boolean late=scenario.startsWith("post_late")||scenario.equals("ordinary_late_change");
+        f.readHook=(graph,n)->{
+            int changeAt=late?7:6;
+            boolean changed=n==changeAt&&!"unchanged_pair_keeps_legacy_mode".equals(scenario);
+            populate(f,graph,changed?after:before,post?"post_fixture":scenario,n);
+            if(post){
+                graph.digest=changed?"changed-form":"original-form";
+                if(changed){
+                    if(scenario.endsWith("protected"))replaceNode(graph,"0/0/2/5","text","11月18日周三");
+                    if(scenario.endsWith("omitted"))graph.collectionStats=counters(graph,graph.nativeActionNodes.size(),0,1,0);
+                    if(scenario.endsWith("foreign"))graph.backgroundOwnerSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+                    if(scenario.endsWith("untyped"))f.noteObservationEvent(-1);
+                    if(scenario.endsWith("other_window"))f.noteObservationEvent(15,97,NativeAppGoal.CTRIP_PACKAGE,false);
+                }
+            }
+        };
         return f;
     }
+    NativeAppSession.PostEffectReadPermit submitted;
     void beginFormRead(){
-        observe(lease,directory,()->cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,SystemClock.now+100000),new ObservationCallback(){
+        ObservationCallback callback=new ObservationCallback(){
             public void onObservation(PhoneObservation value){expect(isMain(),"publication off main");delivered.add(value);}
             public void onError(String error){expect(isMain(),"error off main");errors.add(error);}
-        });main.drain();
+        };
+        long deadline=ObservationStabilityGate.requestDeadline(SystemClock.now,SystemClock.now+100000);
+        if(submitted==null)observe(lease,directory,()->cancelled.get(),deadline,callback);
+        else observePostEffectNative(ownedController,submitted.owner,submitted,lease,taskAuthorization,taskBackground,directory,
+                ()->cancelled.get(),deadline,SystemClock.now+100000,callback,null);
+        main.drain();
     }
     ObservationRequest captureFormRead()throws Exception{
         beginFormRead();ObservationRequest r=activeObservation;expect(r!=null,"read admitted");
@@ -496,11 +527,22 @@ BRIDGE = r'''
             if("known_event_during_publication_check".equals(scenario))f.windowHook=()->f.noteObservationEvent(15);
             if("unknown_event_during_publication_check".equals(scenario))f.windowHook=()->f.noteObservationEvent(-1);
             if("publication_window_replaced".equals(scenario))f.windowHook=()->f.windowValue=changedWindow(f.windowValue);
+            if(scenario.startsWith("post_")){
+                f.ownedController=new LocalTaskController();
+                f.submitted=new NativeAppSession.PostEffectReadPermit(new NativeAppSession(),f.taskAuthorization,f.lease,
+                        f.taskBackground.selection,f.taskBackground.generation,15,SystemClock.now+15000);
+                f.submitted.fixtureOrigin=before.id;
+            }
+            if(scenario.startsWith("post_late")||scenario.equals("ordinary_late_change")||scenario.equals("post_early_event_after_pair"))
+                Bitmap.encodeHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
             ObservationRequest request=f.captureFormRead();long captureAt=f.lastScreenshotAt;
             await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"after-capture worker drain");
+            if("post_late_retired".equals(scenario))f.submitted.valid=false;
+            if("post_late_after_completion".equals(scenario))f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
             if("known_event_after_publication_check".equals(scenario))f.noteObservationEvent(15);
             if("unknown_event_after_publication_check".equals(scenario))f.noteObservationEvent(-1);
             f.main.drain();
+            out.put("original_frame_id",before.id);
             out.put("scenario",scenario);out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
             out.put("original_deadline_preserved",request.deadline==request.started+12000);
             out.put("new_full_reads",f.reads.get()-readsBefore);out.put("new_window_checks",f.windowChecks.get()-windowsBefore);
