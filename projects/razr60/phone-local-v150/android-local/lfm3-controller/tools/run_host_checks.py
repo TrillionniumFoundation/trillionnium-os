@@ -77,6 +77,7 @@ def main():
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
         paths.add(ROOT/"tests/native-app-provider/fixtures/ctrip-startup-promotion-native-ax.json")
         paths.add(ROOT/"tests/native-search-producer/0b742-execution-censuses.json")
+        paths.add(ROOT/"tests/native-search-producer/dcc738-progress-censuses.json")
         paths.update((ROOT/"tests/native-search-producer").glob("*.fragment"))
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
