@@ -76,6 +76,16 @@ public final class ProfileTaskPolicy {
             roots=Collections.unmodifiableList(copy);leaves=Collections.unmodifiableMap(children);
             allIds=Collections.unmodifiableSet(ids);
         }
+        /** A read-only snapshot for comparing all task facts outside one proven empty root. */
+        List<List<?>> excludingRoot(int id){
+            List<List<?>> rows=new ArrayList<List<?>>();
+            for(Root root:roots)if(root.id!=id){
+                rows.add(java.util.Arrays.asList(root.id,root.display,root.user,root.activities,root.visible,root.base,root.top));
+                for(int i=0;i<root.childIds.length;i++)rows.add(java.util.Arrays.asList(root.id,root.childIds[i],root.childUsers[i],
+                        root.childNames[i],java.util.Arrays.toString(root.childBounds[i])));
+            }
+            return rows;
+        }
         public void requireDedicatedEmpty(ProfileTarget target)throws Refusal{
             for(Root root:roots)need(root.user!=target.profile.userId,"PROFILE_ALREADY_HAS_ROOT_TASK");
             for(Leaf leaf:leaves.values())need(leaf.user!=target.profile.userId,"PROFILE_ALREADY_HAS_LEAF_TASK");
