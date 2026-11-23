@@ -72,6 +72,7 @@ def main():
     ap.add_argument("--original-paths", required=True, type=Path)
     ap.add_argument("--java-home", required=True, type=Path)
     ap.add_argument("--json-jar", required=True, type=Path)
+    ap.add_argument("--incomplete-client-close", action="store_true", help="Replay a real failed model disposition following a lost normal close reply")
     ap.add_argument("--visual", action="store_true", help="Replay genuine visual-task originals from the supplied manifest and path map")
     ap.add_argument("--retained-before-model", action="store_true", help="Replay original retained-custody capture before the first model request")
     args = ap.parse_args()
@@ -86,7 +87,9 @@ def main():
     script = Path(__file__).resolve(strict=True)
     host_test = source/"tests/public-profile-business-recovery/PublicProfileBusinessRecoveryHostTest.java"
     special_name = "PublicProfileRetainedBeforeModelHostTest" if args.retained_before_model else "PublicProfileBusinessVisualHostTest"
-    special = args.visual or args.retained_before_model
+    if args.incomplete_client_close:
+        special_name = "PublicProfileBusinessIncompleteHostTest"
+    special = args.visual or args.retained_before_model or args.incomplete_client_close
     visual_test = host_test.with_name(special_name+".java")
     before = inventory(source)
     tools_before = {n: ref(p) for n,p in (("java",java),("javac",javac),("json_jar",jar),("runner",script))}
