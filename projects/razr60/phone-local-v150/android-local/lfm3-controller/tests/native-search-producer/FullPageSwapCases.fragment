@@ -17,7 +17,43 @@
         f.values.nodes.get("0/0/0/0/0").put("text","路由器推荐");
         f.values.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(156,301,420,360));
     }
+    static void recordedDelayedPlanningPair()throws Exception{
+        byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.fullPageCensuses")).resolveSibling("dcc738-planning-censuses.json"));
+        check("bfa12881a9ab19f967047fc9b06ce8ec138287f157f15c19e927259eeb1b058e".equals(sha(bytes)),"unchanged dcc738 source projection");
+        JSONObject r=new JSONObject(new String(bytes,StandardCharsets.UTF_8)),pair=r.getJSONObject("last_complete_pair");
+        JSONObject first=pair.getJSONObject("first"),second=pair.getJSONObject("second");
+        NativeActionSnapshotCheck.Snapshot a=fullSwapSnapshot(first.getJSONObject("census")),b=fullSwapSnapshot(second.getJSONObject("census"));
+        NativeSearchPlanning.EventMark a0=NativeSearchPlanning.EventMark.read(first.getJSONObject("before_watermark").toMap());
+        NativeSearchPlanning.EventMark a1=NativeSearchPlanning.EventMark.read(first.getJSONObject("after_watermark").toMap());
+        NativeSearchPlanning.EventMark b0=NativeSearchPlanning.EventMark.read(second.getJSONObject("before_watermark").toMap());
+        NativeSearchPlanning.EventMark b1=NativeSearchPlanning.EventMark.read(second.getJSONObject("after_watermark").toMap());
+        Map<String,Object> wA=first.getJSONObject("windows").toMap(),wB=second.getJSONObject("windows").toMap();
+        NativeSearchPlanning.CaptureContext context=new NativeSearchPlanning.CaptureContext(wA,wB,a0,a1,b0,b1,b1);
+        long start=r.getLong("request_started_elapsed_ms"),deadline=r.getLong("request_deadline_elapsed_ms");
+        long aStart=first.getLong("read_started_elapsed_ms"),aEnd=first.getLong("read_completed_elapsed_ms"),aCaptured=first.getLong("census_captured_elapsed_ms");
+        long bStart=second.getLong("read_started_elapsed_ms"),bEnd=second.getLong("read_completed_elapsed_ms"),bCaptured=second.getLong("census_captured_elapsed_ms");
+        String id=r.getString("request_id");Map<String,Object> bind=r.getJSONObject("session_binding").toMap();
+        // Persistence times below are host-only. Both captured frames, their bounds and event counters are from the device.
+        NativeSearchPlanning.Timing t=new NativeSearchPlanning.Timing(start,deadline,aStart,aEnd,aCaptured,bStart,bEnd,bCaptured,bEnd+1,true);
+        one("dcc738_complete_inflight_planning_pair_survives_blank_banner_swap",()->{
+            check(a.nodes.size()==77&&b.nodes.size()==77&&bStart-start==8459&&bEnd-start==10981,"original pair within the original hard deadline");
+            byte[] encoded=NativeSearchPlanning.encode(id,a,b,bind,t,context);
+            NativeSearchPlanning replay=NativeSearchPlanning.fromSealedBytes(encoded,sha(encoded),bind,bEnd+2);
+            check(replay.role.fullPageSwap&&replay.role.changedPaths.size()==9&&replay.publication==null,"only historical planning without window publication");
+            check(!((Boolean)replay.role.evidence().get("grants_dispatch"))&&replay.timing.requestDeadline==deadline,"no action or harder deadline renewal");
+            rejected(()->NativeSearchPlanning.fromSealedBytes(encoded,sha(encoded),bind,deadline));
+        });
+        one("dcc738_late_pair_with_new_window_event_cannot_plan",()->{
+            NativeSearchPlanning.EventMark boundary=new NativeSearchPlanning.EventMark(b1.events+1,b1.unknown,b1.content,b1.boundary+1);
+            NativeSearchPlanning.CaptureContext changed=new NativeSearchPlanning.CaptureContext(wA,wB,a0,a1,b0,b1,boundary);
+            rejected(()->NativeSearchPlanning.encode(id,a,b,bind,t,changed));
+        });
+        one("dcc738_second_read_cannot_start_in_the_publication_margin",()->{
+            rejected(()->new NativeSearchPlanning.Timing(start,deadline,aStart,aEnd,aCaptured,start+10000,bEnd,bCaptured,bEnd+1,true));
+        });
+    }
     static void fullPageSwapCases()throws Exception{
+        recordedDelayedPlanningPair();
         byte[] bytes=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.fullPageCensuses")));
         check("443f25ee1ff14efa857a8e588b4e7f4b4f82a1978cc5acaebbfdd53cbc21f328".equals(sha(bytes)),"complete 0b742 recorded C/D projection");
         final JSONObject record=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
