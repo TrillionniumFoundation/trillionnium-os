@@ -6707,9 +6707,9 @@
       "sha256": "57af291e1da6778072969b5fd7e8fc7ce723a1b484be05130e6eea681d5d8a26"
     },
     {
-      "bytes": 167469,
+      "bytes": 167928,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "88c55d0fad1538777c7ab7f522025b65934298ef6297681fa56c3b93dac2be78"
+      "sha256": "40098f04b5c8d43628cd9ed93603aa112628e8bd3611bb54bd6ff90a8b7e995d"
     },
     {
       "bytes": 2562,
@@ -9307,14 +9307,14 @@
       "sha256": "1e2c97901d9f2ab2b32f84c098a3116b77f4bda439d67bf6fe579125854dbe85"
     },
     {
-      "bytes": 38665,
+      "bytes": 40260,
       "path": "tests/native-search-session/NativeSearchSessionHostTest.java",
-      "sha256": "45ea2d33b9804fbd55c63ee4a5da4ef28f357597e5e665e531e92d4d77f218c6"
+      "sha256": "7e952a130fb8f73ad03f80af7f9b90e08958ed48bfd8c323fafd98241112fafa"
     },
     {
-      "bytes": 8531,
+      "bytes": 8595,
       "path": "tests/native-search-session/run_host.py",
-      "sha256": "65d68f914163a686930d9531bb24bf3c1be010f3618909ea54833efdcefb9f23"
+      "sha256": "5d3170fabd73ae8ebfc84c87207b1d8c9ba5ff65507390eeac0dddc2d09fce3b"
     },
     {
       "bytes": 14528,
@@ -12524,7 +12524,7 @@
   "main_java_sources": 213,
   "phone_qualified": false,
   "production_build_inputs_count": 390,
-  "production_input_map_sha256": "cb33acbd29c2592c9ff1bff3cd067c01a475e4f4b1f52f861aa5519bdfc1ecc1",
+  "production_input_map_sha256": "2b42cb453c499f92c0e7648177816308b8348a36dec5136f7b8880184a063799",
   "schema": "hepta.local-source.v3",
   "scope": "Offer the actual wide Xiaomi query entry. Verify the inert hint subtree and the retained Android action target; handle separately observed account login without a query or purchase claim.",
   "source_parent_head": "6379598d8536699a1e677723ce02e78673b13d5f",

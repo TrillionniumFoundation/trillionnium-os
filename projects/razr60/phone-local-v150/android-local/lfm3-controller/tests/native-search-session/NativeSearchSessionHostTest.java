@@ -412,6 +412,19 @@ public final class NativeSearchSessionHostTest {
                 check("home_search".equals(map(d.evidence().get("provider")).get("actual_return_destination")),"current actual destination in domain");
             }
         });
+        one("later_login_or_changed_page_cannot_inherit_wide_home_message",()->{
+            for(boolean laterLogin:new boolean[]{true,false})try(Fixture f=new Fixture()){
+                f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");f.nativeTask.observed(login);f.search.navigationObserved(login);
+                f.returnFromRecordedLogin(login);f.nativeTask.observed(f.recordedHome(START+1300));
+                f.nativeTask.observed(laterLogin?f.recordedLogin(START+1400,""):f.inputFrame(START+1400,true));
+                NativeAppDomain d=f.nativeTask.domain();Map<String,Object> view=map(d.evidence().get("provider"));
+                check(d.phase.equals("native_login_requires_user")&&d.toolMask(null).equals(Collections.singleton("done"))&&!d.resultReady,"only unverified terminal remains");
+                check(Boolean.valueOf(laterLogin).equals(view.get("observed_login_page"))&&!"home_search".equals(view.get("actual_return_destination")),"source attribution follows the complete current page");
+                if(laterLogin)check(d.missing.equals(Collections.singletonList("native_login_after_reserved_exit_requires_user")),"real current login, no repeated exit");
+                else check(d.missing.equals(Collections.singletonList("native_login_return_destination_changed"))&&"search_input".equals(view.get("current_provider_phase"))
+                        &&Boolean.FALSE.equals(view.get("returned_to_home_after_wide_search")),"a subsequent editor is neither the previous login nor its return observation");
+            }
+        });
         one("fresh_input_after_explicit_login_return_allows_query",()->{try(Fixture f=new Fixture()){
             f.acceptedNavigation();NativeAppEvidence.Frame login=f.recordedLogin(START+1100,"");f.nativeTask.observed(login);f.search.navigationObserved(login);
             f.returnFromRecordedLogin(login);NativeAppEvidence.Frame input=f.inputFrame(START+1300,true);f.nativeTask.observed(input);
