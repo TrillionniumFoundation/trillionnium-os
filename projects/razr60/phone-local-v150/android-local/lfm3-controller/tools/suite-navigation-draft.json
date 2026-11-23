@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.phone-suite.v1",
+  "suite_id": "lfm3-r3-navigation-npu",
+  "candidate": {
+    "package": "org.trillionnium.hepta.local",
+    "apk_sha256": null,
+    "version_code": 3,
+    "model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+    "compute": "npu",
+    "context_tokens": 4096,
+    "threads": 4
+  },
+  "cases": [
+    {
+      "case_id": "settings-open-01",
+      "instruction": "打开系统设置，不修改设置。",
+      "expected_package": "com.android.settings",
+      "expected_visible_text": [],
+      "text_match": "exact",
+      "required_actions": [{"action": "open", "package": "com.android.settings"}],
+      "setup_home": true,
+      "timeout_seconds": 540
+    },
+    {
+      "case_id": "settings-home-settings-01",
+      "instruction": "依次完成：打开系统设置，回到桌面，再次打开系统设置。不要修改设置。",
+      "expected_package": "com.android.settings",
+      "expected_visible_text": [],
+      "text_match": "exact",
+      "required_actions": [{"action": "open", "package": "com.android.settings"}, {"action": "home"}, {"action": "open", "package": "com.android.settings"}],
+      "setup_home": true,
+      "timeout_seconds": 540
+    }
+  ]
+}

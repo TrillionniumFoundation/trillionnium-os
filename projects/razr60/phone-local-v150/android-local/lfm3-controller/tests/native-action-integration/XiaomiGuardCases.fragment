@@ -1,0 +1,178 @@
+    /** Focused entry; original private Harness above is extracted verbatim. */
+    static void guardCase(String name,Test test)throws Exception{
+        IntegrationChecks.one(name,()->{int before=checks;test.run();IntegrationChecks.addHelperAssertions(checks-before);});
+    }
+    static ActionDecision startGuardAttempt(Harness h,String purpose)throws Exception{
+        ActionDecision action=h.action(purpose);h.step++;h.clock+=10;h.run=id(h.task+":action-guard:"+h.step);
+        h.owner.check(action,h.run);h.session.beforeModelAction(h.step,action,h.run,h.clock);return action;
+    }
+    static NativeAppSession.ActionGuard newGuard(Harness h,ActionDecision action)throws Exception{
+        return h.session.actionGuard(action,h.run,h.frame.observationId,h.clock,h.clock+8000);
+    }
+    static void finishGuardAttempt(Harness h,ActionDecision action,String next)throws Exception{
+        h.session.modelActionOutcome(action,h.run,true,true,false,sha("host-original-outcome:"+h.run),++h.clock);h.xml(next);
+    }
+    static void run(Path fixtureRoot)throws Exception{
+        fixtures=fixtureRoot;
+        guardCase("xiaomi_original_home_search_guard_is_navigation_only",()->{
+            Harness h=new Harness("guard-home");h.xml("home.xml");ActionDecision a=startGuardAttempt(h,NativeActionSnapshotCheck.SEARCH);
+            NativeAppSession.ActionGuard g=newGuard(h,a);int writes=h.journal.size();
+            check(g!=null&&NativeActionSnapshotCheck.SEARCH.equals(g.purpose)&&g.action==a,"original search action");
+            check(g.frame==h.frame&&g.targetNode==h.frame.byId.get(a.nodeId)&&g.selection==h.selection&&g.goal==h.selection.target.nativeGoal,"original frame/node/Selection/goal");
+            check(g.queryHistory==null&&g.historySha==null,"search navigation has no product query proof");
+            g.requireOpen(a,h.run,h.clock);g.verifyInstalled();g.claim(a,h.run,h.clock);g.requireClaimed();
+            check(h.journal.size()==writes&&!h.session.domain().resultReady,"guard does not create observation/result");
+            finishGuardAttempt(h,a,"search-entry.xml");
+            IntegrationChecks.rejects(()->g.requireClaimed(),"outcome closes original home guard");
+            check(h.node("set_product_query")!=null,"original parsed transition is still required");h.noQueryOrResult();
+        });
+        unsupportedGuardCases();
+    }
+    static void unsupportedGuardCases()throws Exception{
+        guardCase("xiaomi_type_submit_and_exact_card_remain_outside_four_purpose_guard",()->{
+            Harness h=new Harness("guard-unsupported");h.xml("home.xml");h.perform(NativeActionSnapshotCheck.SEARCH,"search-entry.xml");
+            ActionDecision type=startGuardAttempt(h,"set_product_query");check(newGuard(h,type)==null,"type keeps old full currentness");
+            finishGuardAttempt(h,type,"suggestions.xml");
+            String submit=h.node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query";
+            ActionDecision query=startGuardAttempt(h,submit);check(newGuard(h,query)==null,"query not aliased to navigation");
+            finishGuardAttempt(h,query,"results.xml");
+            ActionDecision card=startGuardAttempt(h,"open_exact_product");check(newGuard(h,card)==null,"card/price not aliased to navigation");
+            finishGuardAttempt(h,card,"detail.xml");
+            check(h.session.domain().resultReady,"unchanged synthetic query/card/detail chain remains usable");
+        });
+        guardCase("xiaomi_replaced_installed_identity_refuses_bound_worker_guard",()->{
+            Harness h=new Harness("guard-installed");h.xml("home.xml");ActionDecision a=startGuardAttempt(h,NativeActionSnapshotCheck.SEARCH);NativeAppSession.ActionGuard g=newGuard(h,a);
+            h.installedCurrent=false;IntegrationChecks.rejects(()->g.verifyInstalled(),"bound installed verifier detects replacement");
+            g.close();IntegrationChecks.rejects(()->g.claim(a,h.run,h.clock),"closed home search cannot be reused");
+        });
+    }
+
+
+    static void stableIconSessionCases(Path fixtureRoot)throws Exception{
+        fixtures=fixtureRoot;
+        guardCase("search_entry_default_session_has_new_purpose_not_legacy_alias",()->{
+            Harness h=new Harness("icon-default");h.xml("home.xml");
+            check(h.node(NativeActionSnapshotCheck.SEARCH)!=null&&h.node(NativeXiaomiProductPage.SEARCH_ICON)==null,"ordinary constructor exposes only the observed query entry");
+            ActionDecision a=h.action(NativeActionSnapshotCheck.SEARCH);
+            check("com.xiaomi.shop.plugin.homepage:id/switcher".equals(h.frame.byId.get(a.nodeId).viewId),"actual default target is exact switcher");
+            h.noQueryOrResult();
+        });
+        guardCase("search_entry_click_receipt_does_not_complete_navigation",()->{
+            Harness h=new Harness("icon-receipt");h.xml("home.xml");h.issue(h.action(NativeActionSnapshotCheck.SEARCH),true,true,false);
+            check(h.progress().get("pending")!=null&&((List<?>)h.progress().get("transitions")).isEmpty(),"receipt alone supplies no observed navigation transition");
+            h.noQueryOrResult();
+        });
+        guardCase("search_entry_unchanged_home_does_not_confirm_editor",()->{
+            Harness h=new Harness("icon-same-home");h.xml("home.xml");h.perform(NativeActionSnapshotCheck.SEARCH,"home.xml");h.pendingOnly();
+        });
+        guardCase("search_entry_direct_results_do_not_create_query_or_open_proof",()->{
+            Harness h=new Harness("icon-direct-results");h.xml("home.xml");h.perform(NativeActionSnapshotCheck.SEARCH,"results.xml");h.pendingOnly();
+        });
+        guardCase("search_entry_fresh_existing_editor_contract_is_navigation_only",()->{
+            Harness h=new Harness("icon-editor");h.xml("home.xml");h.perform(NativeActionSnapshotCheck.SEARCH,"search-entry.xml");
+            check(h.progress().get("pending")==null&&h.node("set_product_query")!=null,"fresh original editor contract is required");
+            List<?> transitions=(List<?>)h.progress().get("transitions");Map<?,?> proof=(Map<?,?>)transitions.get(transitions.size()-1);
+            check(Boolean.TRUE.equals(proof.get("navigation_only"))&&Boolean.FALSE.equals(proof.get("query_or_result_proof_created"))
+                    &&Boolean.FALSE.equals(proof.get("business_transition_verified")),"no product query or business completion from navigation");
+            h.noQueryOrResult();
+        });
+        pendingObservationBarrierCase();
+    }
+
+
+
+    /** Real Controller barrier/await methods, actual Session; IO is host-only. */
+    private static JSONObject pendingBoundary;
+    private static final class PendingObservationController {
+        static final class PhoneObservation {
+            final String id;final NativeAppEvidence.Frame frame;
+            PhoneObservation(NativeAppEvidence.Frame f){frame=f;id=f.observationId;}
+            JSONObject toEvidenceJson(){return new JSONObject(frame.evidence());}
+        }
+        static final class HeptaAccessibilityService {
+            static final class NativeObservationRetryProof {}
+            static String sha(byte[] bytes){return NativeAppEvidence.hash(new String(bytes,StandardCharsets.UTF_8));}
+        }
+        static final class WebFlightSession {
+            interface Observer {PhoneObservation observe()throws Exception;}
+            PhoneObservation observe(PhoneObservation p,Observer o,long d){throw new AssertionError("no Web path");}
+        }
+        static final class NativeAppObservation {
+            static NativeAppEvidence.Frame copy(String id,TaskAuthorization.Gate g,Object b,PhoneObservation p,Object c,String hash){
+                return p.frame; // Explicit detached host frame, not Android acquisition.
+            }
+        }
+        final Harness h;final NativeAppSession activeNativeTask;final Object activeNativeBackground=new Object();
+        final WebFlightSession activeWebTask=null;final PhoneObservation next;final ActionDecision acceptedAction;
+        Object postEffectNativeObservation; // This original Xiaomi fixture has no Ctrip post-effect permit.
+        void requirePostEffectNativeObservation(Object expected,String id,TaskAuthorization.Gate g,long deadline){throw new AssertionError("Xiaomi cannot acquire post-effect context");}
+        PhoneObservation awaitPostEffectNativeObservation(String id,File d,TaskAuthorization.Gate g,long deadline,ActionDecision action,String run,PhoneObservation before)throws Exception{
+            if(activeNativeTask.postEffectReadPermit(action,run,before.id)!=null)throw new AssertionError("Xiaomi cannot acquire Ctrip post-effect permit");
+            return awaitObservation(id,d,g,deadline);
+        }
+        final java.util.concurrent.CountDownLatch entered=new java.util.concurrent.CountDownLatch(1),release=new java.util.concurrent.CountDownLatch(1);
+        final java.util.concurrent.atomic.AtomicInteger modelCallbacks=new java.util.concurrent.atomic.AtomicInteger();
+        int recordCalls,rawCalls,staleRounds;PhoneObservation observation;
+        PendingObservationController(Harness harness,ActionDecision action)throws Exception{acceptedAction=action;h=harness;activeNativeTask=h.session;next=new PhoneObservation(h.xmlFrame("home.xml"));}
+        void checkActive(long deadline){if(deadline!=h.clock+4000)throw new AssertionError("deadline changed");}
+        void emit(String text){}
+        void record(File d,String leaf,JSONObject body){recordCalls++;if(!leaf.equals("native-app-frame-"+next.id+".json"))throw new AssertionError("original frame record");}
+        Object completionFrame(PhoneObservation p){return p.frame.completionFrameSha;}
+        PhoneObservation awaitObservationRaw(String id,File d,TaskAuthorization.Gate g,long deadline,HeptaAccessibilityService.NativeObservationRetryProof proof)throws Exception{
+            if(proof!=null||g!=h.owner||!id.equals(h.task)||deadline!=h.clock+4000)throw new AssertionError("original task/authorization/deadline");
+            rawCalls++;entered.countDown();
+            if(!release.await(3,java.util.concurrent.TimeUnit.SECONDS))throw new IllegalStateException("host raw observation not released");
+            return next;
+        }
+        PhoneObservation awaitObservationRaw(String id,File d,TaskAuthorization.Gate g,long deadline)throws Exception{return awaitObservationRaw(id,d,g,deadline,null);}
+{{controller_pending_await}}
+{{controller_pending_await_request}}
+        void acceptedThenNextModel()throws Exception{
+            final String taskId=h.task;final File evidence=new File("host-only-no-frame-write");
+            final TaskAuthorization.Gate authorization=h.owner;final long deadline=h.clock+4000;
+            final ActionDecision action=acceptedAction;final String decisionRunId=id("pending-observation-fixture");
+            final PhoneObservation before=new PhoneObservation(h.frame);
+{{controller_pending_barrier}}
+            modelCallbacks.incrementAndGet(); // Explicit host callback after real barrier.
+        }
+    }
+    static void pendingObservationBarrierCase()throws Exception{
+        guardCase("search_entry_actual_controller_fresh_observation_barrier_before_next_model",()->{
+            Harness h=new Harness("controller-pending");h.xml("home.xml");
+            ActionDecision first=h.action(NativeActionSnapshotCheck.SEARCH);h.issue(first,true,true,false);
+            String oldId=h.frame.observationId;
+            check(h.progress().get("pending")!=null,"receipt awaits a fresh observed transition");
+            PendingObservationController c=new PendingObservationController(h,first);
+            java.util.concurrent.ExecutorService worker=java.util.concurrent.Executors.newSingleThreadExecutor();
+            java.util.concurrent.Future<?> future=worker.submit(()->{try{c.acceptedThenNextModel();}catch(Exception e){throw new RuntimeException(e);}});
+            try{
+                check(c.entered.await(2,java.util.concurrent.TimeUnit.SECONDS),"actual await reached raw observation");
+                check(!future.isDone()&&c.modelCallbacks.get()==0&&h.session.domain().frame.observationId.equals(oldId),"no next model while observation blocked");
+                c.release.countDown();future.get(3,java.util.concurrent.TimeUnit.SECONDS);
+                check(c.rawCalls==1&&c.recordCalls==1&&c.modelCallbacks.get()==1,"one read and record before one callback");
+                check(!oldId.equals(c.next.id)&&c.next.id.equals(h.session.domain().frame.observationId),"actual Session observed new frame");
+                h.pendingOnly();
+                ActionDecision click=ActionDecision.parse(new JSONObject().put("action","click").put("package",PACKAGE)
+                    .put("observation_id",c.next.id).put("node_id",first.nodeId).put("node_label",first.nodeLabel).toString(),ActionDecision.IME_ACTION_SCHEMA);
+                rejects(()->h.session.domain().requireCurrent(click),"fresh pending domain rejects a second navigation");
+            }finally{c.release.countDown();worker.shutdownNow();check(worker.awaitTermination(3,java.util.concurrent.TimeUnit.SECONDS),"host worker drained");}
+            Harness direct=new Harness("direct-pending");direct.xml("home.xml");
+            ActionDecision original=direct.action(NativeActionSnapshotCheck.SEARCH);direct.issue(original,true,true,false);
+            boolean admitted=false;String refusal=null;
+            try{direct.session.beforeModelAction(direct.step+1,original,id("direct-new-run-same-frame"),direct.clock+1);admitted=true;}
+            catch(Exception error){refusal=error.getClass().getName()+": "+error.getMessage();}
+            pendingBoundary=new JSONObject().put("schema","hepta.r5.native-pending-controller-boundary.v1")
+                .put("actual_controller_barrier_completed",true).put("next_model_waited_for_actual_session_observed",true)
+                .put("fresh_pending_domain_refused_second_icon",true)
+                .put("direct_session_new_run_same_frame_admitted",admitted)
+                .put("direct_session_refusal",refusal==null?JSONObject.NULL:refusal)
+                .put("direct_session_pending_barrier_claimed",false)
+                .put("raw_acquisition_copy_record_and_next_model_are_host_endpoints",true)
+                .put("phone_operations",0).put("android_execution",false).put("real_model_executed",false);
+        });
+    }
+    static void writePendingBoundary(Path path)throws Exception{
+        if(pendingBoundary==null)throw new AssertionError("pending-boundary case missing");
+        Files.write(path,(pendingBoundary.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
+    }
+

@@ -1,0 +1,1 @@
+package android.content;public final class ComponentName {final String pkg,type;public ComponentName(String p,String t){pkg=p;type=t;}public boolean equals(Object o){return o instanceof ComponentName&&pkg.equals(((ComponentName)o).pkg)&&type.equals(((ComponentName)o).type);}public int hashCode(){return pkg.hashCode()*31+type.hashCode();}}

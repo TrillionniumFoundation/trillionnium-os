@@ -1,0 +1,273 @@
+    private static final String EXIT="leave_native_login_once";
+    private static void login(Harness h)throws Exception{
+        NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();
+        h.observe(h.make(f.nodes,sha("synthetic-login-capture:"+h.observations),f.windowId,f.width,f.height,f.left,f.top,f.right,f.bottom));
+    }
+    private static NativeAppEvidence.Frame frameWith(NativeAppEvidence.Frame f,List<NativeAppEvidence.Node> nodes,String pkg,
+            boolean complete,boolean truncated,int type,boolean metadata){
+        return new NativeAppEvidence.Frame(f.taskId,f.ownerSha,f.targetSha,f.authorizationSha,f.selectionSha,f.observationId,pkg,
+                f.generation,f.treeSha,f.stateSha,f.screenshotSha,f.sourceRecordSha,f.completionFrameSha,f.displayId,f.windowId,
+                f.rotation,f.width,f.height,f.left,f.top,f.right,f.bottom,f.capturedElapsedMs,truncated,complete,nodes,type,metadata);
+    }
+    private static NativeAppEvidence.Node nodeWith(NativeAppEvidence.Node n,String key,Object v){
+        return new NativeAppEvidence.Node("id".equals(key)?(String)v:n.id,"package".equals(key)?(String)v:n.packageName,
+                "class".equals(key)?(String)v:n.className,"view".equals(key)?(String)v:n.viewId,"text".equals(key)?(String)v:n.text,
+                "description".equals(key)?(String)v:n.description,"path".equals(key)?(String)v:n.path,
+                "parent".equals(key)?(String)v:n.parentClass,"signature".equals(key)?(String)v:n.signature,
+                "label".equals(key)?(String)v:n.label,n.left,n.top,"right".equals(key)?((Integer)v).intValue():n.right,n.bottom,
+                "enabled".equals(key)?((Boolean)v).booleanValue():n.enabled,"password".equals(key)?((Boolean)v).booleanValue():n.password,
+                "clickable".equals(key)?((Boolean)v).booleanValue():n.clickable,"editable".equals(key)?((Boolean)v).booleanValue():n.editable,
+                n.scrollable,"selected".equals(key)?(Boolean)v:n.selected,"checkable".equals(key)?(Boolean)v:n.checkable,
+                "checked".equals(key)?(Boolean)v:n.checked,n.scrollDirections);
+    }
+    private static NativeXiaomiProductPage.Page inspectLogin(NativeAppEvidence.Frame f){
+        return NativeXiaomiProductPage.inspect(NativeAppGoal.parse(OWNER,PACKAGE),f);
+    }
+    private static void notLogin(NativeAppEvidence.Frame f){
+        NativeXiaomiProductPage.Page p=inspectLogin(f);
+        check(!"native_login".equals(p.phase)&&!p.purposes.containsValue(EXIT),"unproved login shape grants no return target");
+        check(p.quote==null,"unproved login never becomes price evidence");
+    }
+    private static ActionDecision terminalDecision(Harness h,String status)throws Exception{
+        return ActionDecision.parse(new JSONObject().put("action","done").put("package",PACKAGE)
+                .put("observation_id",h.frame.observationId).put("status",status).put("summary","explicit host fixture; no phone query").toString(),ActionDecision.IME_ACTION_SCHEMA);
+    }
+    private static ActionDecision waitDecision(Harness h)throws Exception{
+        return ActionDecision.parse(new JSONObject().put("action","wait").put("package",PACKAGE)
+                .put("observation_id",h.frame.observationId).put("duration_ms",1000).toString(),ActionDecision.IME_ACTION_SCHEMA);
+    }
+    private static ActionDecision nodeDecision(Harness h,String action,String node)throws Exception{
+        JSONObject o=new JSONObject().put("action",action).put("package",PACKAGE).put("observation_id",h.frame.observationId)
+                .put("node_id",node).put("node_label",h.frame.byId.get(node).label);
+        if("type".equals(action))o.put("text","host-invalid-input");
+        return ActionDecision.parse(o.toString(),ActionDecision.IME_ACTION_SCHEMA);
+    }
+    private static void blocked(Harness h)throws Exception{
+        NativeAppDomain d=h.session.domain();check("native_login_requires_user".equals(d.phase),"reserved exit followed by login must stop");
+        check(d.clickIds.isEmpty()&&d.editValues.isEmpty()&&!d.backAllowed,"login stop has zero navigation/account targets");
+        check(d.toolMask(null).equals(Collections.singleton("done")),"only terminal branch remains");
+        d.requireCurrent(terminalDecision(h,"failure"));rejects(()->d.requireCurrent(terminalDecision(h,"success")),"no false success");
+        rejects(()->d.requireCurrent(waitDecision(h)),"no repeated login waits");
+        rejects(()->d.requireCurrent(nodeDecision(h,"click","n0")),"no second login return effect");h.noQueryOrResult();
+    }
+    private static ActionDecision reserve(Harness h)throws Exception{
+        ActionDecision a=h.action(EXIT);h.step++;h.clock+=10;h.run=id(h.task+":synthetic-login-model:"+h.step);
+        h.owner.check(a,h.run);h.session.beforeModelAction(h.step,a,h.run,h.clock);return a;
+    }
+    private static Map<String,Object> unentered(Harness h){
+        Map<String,Object> x=NativeAppEvidence.map();x.put("schema","hepta.action-execution.v1");x.put("execution_kind","serial_action_worker");
+        x.put("operation_id",id(h.run+":synthetic-operation"));x.put("task_id",h.task);x.put("model_run_id",h.run);
+        x.put("observation_id",h.frame.observationId);x.put("authorization_sha256",h.auth.sha256);x.put("window_id",h.frame.windowId);
+        x.put("display_id",7);x.put("background_generation",GENERATION);x.put("retired",false);x.put("retirement_reason",null);
+        x.put("effect_entered",false);x.put("effect_returned",false);x.put("api_accepted",null);x.put("worker_drained",true);
+        x.put("callback_published",true);x.put("callback_authority_current",true);x.put("automatic_redispatch",false);
+        x.put("queued_elapsed_ms",Long.valueOf(h.clock));x.put("worker_drained_elapsed_ms",Long.valueOf(h.clock+1));
+        x.put("deadline_elapsed_ms",Long.valueOf(h.clock+8000));return x;
+    }
+    private static void outcome(Harness h,ActionDecision a,Map<String,Object> x)throws Exception{
+        h.session.modelActionOutcome(a,h.run,false,false,true,sha("synthetic-login-receipt:"+h.run),++h.clock,x);
+    }
+    private static JSONObject rawExecution(Map<String,Object> value)throws Exception{
+        JSONObject raw=new JSONObject();
+        for(Map.Entry<String,Object> entry:value.entrySet())raw.put(entry.getKey(),entry.getValue()==null?JSONObject.NULL:entry.getValue());
+        return raw;
+    }
+    private static void refusedRelease(String field,Object value,boolean remove)throws Exception{
+        Harness h=new Harness("receipt-"+field+"-"+String.valueOf(value));login(h);ActionDecision a=reserve(h);Map<String,Object> x=unentered(h);
+        if(remove)x.remove(field);else x.put(field,value);outcome(h,a,x);
+        check(Boolean.TRUE.equals(h.progress().get("product_login_exit_reserved")),"ambiguous or mismatched receipt cannot release: "+field);
+        login(h);blocked(h);
+    }
+    public static void main(String[] args)throws Exception{
+        fixtures=Paths.get(args[0]);
+        one("portable_complete_native_login_exposes_only_literal_return_control",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();NativeXiaomiProductPage.Page p=inspectLogin(f);
+            check(f.nodes.size()==13&&f.collectionComplete&&!f.nodesTruncated&&f.windowId==71&&f.displayId==7,"explicit complete portable frame identity");
+            check("native_login".equals(p.phase)&&p.clickIds.equals(Collections.singleton("n0")),"actual return target identified");
+            check(p.purposes.equals(Collections.singletonMap("n0",EXIT))&&p.editValues.isEmpty()&&p.quote==null,"no login, agreement or query capability");
+            check("com.xiaomi.shop:id/back".equals(f.byId.get("n0").viewId)&&"返回".equals(f.byId.get("n0").description),"literal resource and description");
+        });
+        one("every_missing_login_member_refuses_complete_form_classification",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();
+            for(int i=0;i<f.nodes.size();i++){List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);ns.remove(i);notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));}
+        });
+        one("duplicated_return_control_cannot_become_a_second_target",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            ns.add(nodeWith(nodeWith(ns.get(0),"id","n99"),"path","0/8"));notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));
+            ns.remove(1);notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));
+        });
+        one("unknown_extra_login_control_and_replaced_control_are_refused",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            NativeAppEvidence.Node extra=nodeWith(nodeWith(nodeWith(ns.get(11),"id","n99"),"path","0/8"),"view","com.xiaomi.shop:id/unknown_account_action");
+            ns.add(extra);notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));ns.remove(1);notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));
+        });
+        one("incomplete_truncated_or_unobserved_application_window_has_no_login_authority",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();notLogin(frameWith(f,f.nodes,PACKAGE,false,false,1,true));
+            notLogin(frameWith(f,f.nodes,PACKAGE,true,true,1,true));notLogin(frameWith(f,f.nodes,PACKAGE,true,false,3,true));
+            notLogin(frameWith(f,f.nodes,PACKAGE,true,false,1,false));
+        });
+        one("foreign_frame_or_node_package_cannot_impersonate_login",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();rejects(()->inspectLogin(frameWith(f,f.nodes,"com.foreign.app",true,false,1,true)),"foreign package owner mismatch");
+            List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);ns.set(0,nodeWith(ns.get(0),"package","com.foreign.app"));notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));
+        });
+        one("return_target_class_resource_label_path_parent_state_and_bounds_are_literal",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();
+            Object[][] changes={{"class","android.widget.Button"},{"view","com.xiaomi.shop:id/login"},{"description","登录"},{"label","关闭"},
+                    {"path","0/8"},{"parent","android.webkit.WebView"},{"signature",null},{"enabled",false},{"password",true},
+                    {"clickable",false},{"editable",true},{"selected",true},{"checkable",true},{"checked",true},{"right",Integer.valueOf(f.width+1)}};
+            for(Object[] c:changes){List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);ns.set(0,nodeWith(ns.get(0),(String)c[0],c[1]));notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));}
+        });
+        one("changed_login_title_phone_placeholder_or_agreement_state_is_not_guessed",()->{
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();
+            Object[][] changes={{Integer.valueOf(6),"text","账号设置"},{Integer.valueOf(8),"text","host-account-value"},
+                    {Integer.valueOf(8),"class","android.widget.EditText"},{Integer.valueOf(9),"checked",true},
+                    {Integer.valueOf(10),"text","未知协议"},{Integer.valueOf(11),"text","确认支付"},{Integer.valueOf(12),"view","com.xiaomi.shop:id/unknown_login"}};
+            for(Object[] c:changes){List<NativeAppEvidence.Node> ns=new ArrayList<NativeAppEvidence.Node>(f.nodes);int ix=((Integer)c[0]).intValue();ns.set(ix,nodeWith(ns.get(ix),(String)c[1],c[2]));notLogin(frameWith(f,ns,PACKAGE,true,false,1,true));}
+        });
+        one("actual_session_masks_and_real_grammar_allow_one_click_or_failure",()->{
+            Harness h=new Harness("grammar");login(h);NativeAppDomain d=h.session.domain();
+            check(d.clickIds.equals(Collections.singleton("n0"))&&d.editValues.isEmpty()&&!d.backAllowed,"explicit node click; no global Back or input");
+            check(d.toolMask(null).equals(new TreeSet<String>(Arrays.asList("click","done"))),"login grammar ceiling");
+            check(d.toolMask(Collections.singleton("done")).equals(Collections.singleton("done"))&&d.toolMask(Collections.<String>emptySet()).isEmpty(),"existing authority only narrows");
+            ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,h.frame.observationId,PACKAGE,Collections.singletonMap("n0","返回"));
+            ObservedAppLabels apps=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,h.frame.observationId,PACKAGE,Collections.<String,String>emptyMap());
+            DecisionGrammar g=DecisionGrammar.createImeAuthorized(h.frame.observationId,PACKAGE,Collections.<String>emptySet(),d.clickIds,d.editValues.keySet(),
+                    Collections.<String,ObservedScrollActions>emptyMap(),Collections.<String,ObservedImeEnter>emptyMap(),targets,apps,h.owner.frame(),true,d.toolMask(null),false);
+            check(new TreeSet<String>(g.actions).equals(new TreeSet<String>(Arrays.asList("click","done")))&&!g.successAllowed,"actual GBNF branch set and no success");
+            check(g.text.contains("click ::=")&&g.text.contains("done ::=")&&!g.text.contains("back ::=")&&!g.text.contains("type ::=")&&!g.text.contains("wait ::="),"no credential/navigation/loop branches");
+            h.noQueryOrResult();
+        });
+        one("all_observed_account_controls_and_global_back_are_rejected",()->{
+            Harness h=new Harness("excluded");login(h);NativeAppDomain d=h.session.domain();d.requireCurrent(h.action(EXIT));
+            for(int n=1;n<13;n++){final String node="n"+n;rejects(()->d.requireCurrent(nodeDecision(h,"click",node)),"account/control click cannot escape allowed singleton");}
+            rejects(()->d.requireCurrent(nodeDecision(h,"type","n8")),"phone input denied");
+            rejects(()->d.requireCurrent(h.back(h.frame.observationId,PACKAGE)),"global back denied");
+            rejects(()->d.requireCurrent(waitDecision(h)),"login wait loop denied");rejects(()->d.requireCurrent(terminalDecision(h,"success")),"no false price success");
+            d.requireCurrent(terminalDecision(h,"failure"));
+        });
+        one("old_observation_foreign_action_package_and_wrong_label_are_rejected",()->{
+            Harness h=new Harness("action-binding");login(h);
+            for(String field:Arrays.asList("observation_id","package","node_label")){
+                JSONObject o=new JSONObject().put("action","click").put("package",PACKAGE).put("observation_id",h.frame.observationId).put("node_id","n0").put("node_label","返回");
+                o.put(field,"observation_id".equals(field)?id("old-observation"):"package".equals(field)?"com.foreign.app":"登录");
+                ActionDecision a=ActionDecision.parse(o.toString(),ActionDecision.IME_ACTION_SCHEMA);rejects(()->h.session.domain().requireCurrent(a),"exact current action binding");
+            }
+        });
+        one("effect_entered_login_return_then_same_login_stops_without_second_click",()->{
+            Harness h=new Harness("persistent");login(h);h.issue(h.action(EXIT),true,true,false);login(h);blocked(h);
+            check(h.progress().get("pending")==null,"fresh login classified as blocked navigation, not unresolved successful query");
+            Map<?,?> proof=(Map<?,?>)((List<?>)h.progress().get("transitions")).get(0);
+            check(Boolean.FALSE.equals(proof.get("business_transition_verified"))&&Boolean.FALSE.equals(proof.get("query_or_result_proof_created")),"login observation is not business progress");
+        });
+        one("effect_entered_return_to_home_then_login_reappearance_stays_blocked",()->{
+            Harness h=new Harness("reentry");login(h);h.perform(EXIT,"home.xml");check(h.node("open_search")!=null,"fresh supported home can resume original query");
+            h.noQueryOrResult();login(h);blocked(h);
+        });
+        one("login_interrupts_prior_navigation_without_manufacturing_its_proof",()->{
+            Harness h=new Harness("interruption");h.xml("home.xml");h.issue(h.action("open_search"),true,true,false);login(h);
+            check(h.progress().get("pending")==null&&EXIT.equals(h.session.domain().purposes.get("n0")),"fresh explicit login can offer its one return");
+            check(Boolean.TRUE.equals(((Map<?,?>)((List<?>)h.progress().get("transitions")).get(0)).get("login_interrupted_navigation")),"interruption is reported explicitly");h.noQueryOrResult();
+        });
+        one("legacy_boolean_stale_receipt_retains_the_reserved_exit",()->{
+            Harness h=new Harness("ambiguous");login(h);h.issue(h.action(EXIT),false,false,true);login(h);blocked(h);
+        });
+        one("proved_unentered_drained_receipt_releases_only_after_durable_outcome",()->{
+            Harness h=new Harness("release");login(h);NativeAppEvidence.Frame old=h.frame;ActionDecision a=reserve(h);String oldRun=h.run;
+            outcome(h,a,unentered(h));check(Boolean.FALSE.equals(h.progress().get("product_login_exit_reserved")),"proved zero-effect reservation released");
+            Map<?,?> value=(Map<?,?>)h.journal.get(h.journal.size()-1).get("value");Map<?,?> receipt=(Map<?,?>)((Map<?,?>)value.get("attempt")).get("actual_action_receipt");
+            check(Boolean.TRUE.equals(receipt.get("login_exit_reservation_released"))&&receipt.get("login_exit_reservation_release") instanceof Map<?,?>,"durable explicit release proof");
+            rejects(()->h.session.observed(old),"old frame cannot clear released-reservation barrier");
+            rejects(()->h.session.beforeModelAction(h.step+1,a,id("new-model-with-old-frame"),h.clock+1),"must observe before next model action");
+            login(h);ActionDecision fresh=h.action(EXIT);rejects(()->h.session.beforeModelAction(h.step+1,fresh,oldRun,h.clock+1),"old model run cannot be replayed");
+            h.issue(fresh,true,true,false);login(h);blocked(h);
+        });
+        one("fresh_capture_before_drained_receipt_cannot_clear_release_barrier",()->{
+            Harness h=new Harness("early-capture");login(h);ActionDecision a=reserve(h);outcome(h,a,unentered(h));long finished=h.clock;
+            h.clock=finished-11;NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();NativeAppEvidence.Frame early=h.make(f.nodes,sha("early"),f.windowId,f.width,f.height,f.left,f.top,f.right,f.bottom);
+            rejects(()->h.session.observed(early),"new ID alone is not a post-drain observation");
+        });
+        one("real_controller_projection_preserves_null_scalars_and_releases_only_absent_guard",()->{
+            Harness h=new Harness("projected-release");login(h);ActionDecision a=reserve(h);
+            JSONObject raw=rawExecution(unentered(h));Map<String,Object> projected=nativeQueryExecution(raw);
+            check(raw.has("api_accepted")&&raw.isNull("api_accepted")&&raw.has("retirement_reason")&&raw.isNull("retirement_reason"),"explicit host JSON null shape is retained");
+            check(projected!=null&&projected.containsKey("api_accepted")&&projected.get("api_accepted")==null&&projected.containsKey("retirement_reason")&&projected.get("retirement_reason")==null,"actual Controller retains required null fields");
+            check(!raw.has("native_action_guard")&&!projected.containsKey("native_action_guard"),"actual unguarded login action has absent guard key");
+            outcome(h,a,projected);check(Boolean.FALSE.equals(h.progress().get("product_login_exit_reserved")),"actual JSON projection can prove no effect");
+            login(h);check(EXIT.equals(h.session.domain().purposes.get("n0")),"fresh observation restores only one model-decided return capability");
+        });
+        one("real_controller_projection_rejects_present_nonobject_guards_without_releasing_login",()->{
+            Object[] invalid={JSONObject.NULL,"invalid-guard",Boolean.FALSE,Integer.valueOf(0),new JSONArray()};
+            for(int i=0;i<invalid.length;i++){
+                Harness h=new Harness("projected-invalid-guard-"+i);login(h);ActionDecision a=reserve(h);
+                JSONObject raw=rawExecution(unentered(h));raw.put("native_action_guard",invalid[i]);
+                Map<String,Object> projected=nativeQueryExecution(raw);check(raw.has("native_action_guard")&&projected==null,"present null or nonobject guard rejects entire projection");
+                outcome(h,a,projected);check(Boolean.TRUE.equals(h.progress().get("product_login_exit_reserved")),"discarded malformed guard cannot become absent authority");
+                login(h);blocked(h);
+            }
+        });
+        one("real_controller_projection_preserves_object_guard_and_retains_login_reservation",()->{
+            Harness h=new Harness("projected-object-guard");login(h);ActionDecision a=reserve(h);
+            JSONObject raw=rawExecution(unentered(h));raw.put("native_action_guard",new JSONObject().put("state",0));
+            Map<String,Object> projected=nativeQueryExecution(raw);
+            check(projected!=null&&projected.get("native_action_guard") instanceof Map<?,?>,"object guard is retained by actual projection");
+            outcome(h,a,projected);check(Boolean.TRUE.equals(h.progress().get("product_login_exit_reserved")),"login return never borrows guarded query authority");
+            login(h);blocked(h);
+        });
+        one("failed_outcome_journal_never_releases_reservation_or_inflight_attempt",()->{
+            Harness h=new Harness("journal");login(h);ActionDecision a=reserve(h);h.failOutcomeJournal=true;
+            rejects(()->outcome(h,a,unentered(h)),"synthetic durable write failure must propagate");
+            check(Boolean.TRUE.equals(h.progress().get("product_login_exit_reserved")),"reservation remains retained on journal failure");
+            rejects(()->h.session.beforeModelAction(h.step+1,a,id("after-failed-journal"),h.clock+1),"in-flight action cannot be replaced after failed journal");
+        });
+        Object[][] rejectedProofs={{"schema","unknown"},{"execution_kind","model_claim"},{"operation_id","bad"},
+                {"task_id",id("foreign-task")},{"model_run_id",id("foreign-model")},{"observation_id",id("foreign-observation")},
+                {"authorization_sha256",sha("foreign-owner")},{"window_id",Integer.valueOf(999)},{"display_id",Integer.valueOf(0)},
+                {"background_generation","12345678-1234-4234-8234-123456789abd"},{"retired",Boolean.TRUE},{"retirement_reason","stop"},
+                {"effect_entered",Boolean.TRUE},{"effect_returned",Boolean.TRUE},{"api_accepted",Boolean.FALSE},
+                {"worker_drained",Boolean.FALSE},{"callback_published",Boolean.FALSE},{"callback_authority_current",Boolean.FALSE},
+                {"automatic_redispatch",Boolean.TRUE},{"native_action_guard",Collections.singletonMap("state",Integer.valueOf(1))}};
+        for(Object[] row:rejectedProofs){final String field=(String)row[0];final Object value=row[1];
+            one("login_reservation_retained_for_mismatched_or_ambiguous_"+field,()->refusedRelease(field,value,false));}
+        for(String missing:Arrays.asList("effect_entered","effect_returned","api_accepted","worker_drained","retirement_reason","callback_authority_current")){
+            final String field=missing;one("login_reservation_retained_for_missing_"+field,()->refusedRelease(field,null,true));
+        }
+        one("original_worker_clock_and_deadline_are_required_for_release",()->{
+            for(String mutation:Arrays.asList("queued-before-attempt","drained-before-queue","drained-after-callback","expired-deadline","expanded-deadline","numeric-string")){
+                Harness h=new Harness(mutation);login(h);ActionDecision a=reserve(h);Map<String,Object> x=unentered(h);
+                if("queued-before-attempt".equals(mutation))x.put("queued_elapsed_ms",Long.valueOf(h.clock-1));
+                if("drained-before-queue".equals(mutation))x.put("worker_drained_elapsed_ms",Long.valueOf(h.clock-1));
+                if("drained-after-callback".equals(mutation))x.put("worker_drained_elapsed_ms",Long.valueOf(h.clock+2));
+                if("expired-deadline".equals(mutation))x.put("deadline_elapsed_ms",Long.valueOf(h.clock+1));
+                if("expanded-deadline".equals(mutation))x.put("deadline_elapsed_ms",Long.valueOf(h.clock+8001));
+                if("numeric-string".equals(mutation))x.put("worker_drained_elapsed_ms",Long.toString(h.clock+1));
+                outcome(h,a,x);check(Boolean.TRUE.equals(h.progress().get("product_login_exit_reserved")),"original bounded timing retained: "+mutation);
+            }
+        });
+        one("retired_session_and_changed_installed_identity_cannot_navigate_login",()->{
+            Harness retired=new Harness("retired");login(retired);ActionDecision a=retired.action(EXIT);retired.session.retire();rejects(()->retired.issue(a,true,true,false),"retired session");
+            Harness changedApp=new Harness("installed");login(changedApp);ActionDecision b=changedApp.action(EXIT);changedApp.installedCurrent=false;rejects(()->changedApp.issue(b,true,true,false),"pinned installed identity changed");
+        });
+        one("task_owner_lease_display_bindings_remain_required",()->{
+            Harness h=new Harness("binding");login(h);NativeAppEvidence.Frame f=h.frame;
+            rejects(()->h.session.observed(changed(f,id("foreign-task"),f.ownerSha,f.generation,f.displayId,true,false)),"foreign task");
+            rejects(()->h.session.observed(changed(f,f.taskId,sha("foreign-owner"),f.generation,f.displayId,true,false)),"foreign owner");
+            rejects(()->h.session.observed(changed(f,f.taskId,f.ownerSha,"12345678-1234-4234-8234-123456789abd",f.displayId,true,false)),"foreign lease");
+            rejects(()->h.session.observed(changed(f,f.taskId,f.ownerSha,f.generation,8,true,false)),"foreign display");
+        });
+        one("login_return_or_failure_plus_cleanup_never_completes_price_query",()->{
+            Harness h=new Harness("failure");login(h);h.issue(terminalDecision(h,"failure"),true,false,false);
+            check(!h.completionGate.verified(h.completion),"login has no price");check(!Boolean.TRUE.equals(h.terminal(true).get("completion_verified")),"cleanup is not a business result");
+        });
+        one("fresh_home_after_single_login_return_preserves_original_query_card_detail_chain",()->{
+            Harness h=new Harness("complete");login(h);h.perform(EXIT,"home.xml");h.noQueryOrResult();
+            h.perform("open_search","search-entry.xml");h.perform("set_product_query","suggestions.xml");
+            h.perform(h.node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query","results.xml");h.perform("open_exact_product","detail.xml");
+            check(h.session.domain().resultReady&&h.completionGate.verified(h.completion),"original separately proved price chain remains necessary and usable");
+            h.claim();check(Boolean.TRUE.equals(h.terminal(true).get("completion_verified")),"full explicit host query/final/cleanup composition remains intact");
+        });
+        JSONObject out=new JSONObject().put("schema","hepta.native-xiaomi-login-session-host.v1").put("all_pass",true)
+                .put("cases",names.size()).put("assertions",checks).put("case_names",new JSONArray(names))
+                .put("phone_operations",0).put("android_execution",false).put("model_executed",false).put("business_completion_verified",false)
+                .put("boundary","Synthetic portable public login UI shape; actual production parser/Session/Domain/grammar/TCG and reservation proof. Identities, hashes, task/lease, subsequent frames, installed verifier, model callbacks, action receipts, clock, journal failure and cleanup are explicit host fixtures. No device receipt or login/return dispatch is included.");
+        Files.write(Paths.get(args[1]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);System.out.println(out.toString());
+    }

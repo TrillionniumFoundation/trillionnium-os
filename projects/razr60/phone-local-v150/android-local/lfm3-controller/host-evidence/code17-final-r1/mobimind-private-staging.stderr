@@ -1,0 +1,9 @@
+test_fixture_cannot_change_owner_or_type (test_prepare_private_request.PrivateRequestTest.test_fixture_cannot_change_owner_or_type) ... ok
+test_links_and_invalid_budgets_rejected (test_prepare_private_request.PrivateRequestTest.test_links_and_invalid_budgets_rejected) ... ok
+test_private_staging_binding_and_no_replacement (test_prepare_private_request.PrivateRequestTest.test_private_staging_binding_and_no_replacement) ... ok
+test_tampered_prompt_and_image_rejected_before_staging (test_prepare_private_request.PrivateRequestTest.test_tampered_prompt_and_image_rejected_before_staging) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+OK

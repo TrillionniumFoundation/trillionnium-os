@@ -1,0 +1,310 @@
+import java.io.File;
+
+/** Exact production refresh/config accessors; Android views and session IO are fixtures. */
+public final class RuntimeConfigUiHostTest {
+    private static int checks;
+    private static final String CONFIG_ERROR="runtime-config.json: unsupported model profile";
+    private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
+
+    private static final class Widget {
+        String text="";boolean enabled=true,checked;int visibility;
+        void setText(String value){text=value;}void setEnabled(boolean value){enabled=value;}
+        boolean isChecked(){return checked;}void setVisibility(int value){visibility=value;}
+    }
+    private static final class View {static final int VISIBLE=0,GONE=8;}
+    // Mutable view inputs retain the legacy subjects; directory selection delegates to the actual allowlist.
+    private static final class Profile {
+        String displayName="fixture model",fileName="model.bin",id=ModelProfile.GUI_OWL_4B.id;
+        boolean visual;boolean visual(){return visual;}
+        String visualDirectory(){return ModelProfile.named(id).visualDirectory();}
+        void select(ModelProfile pinned){id=pinned.id;displayName=pinned.displayName;fileName=pinned.fileName;visual=pinned.visual();}
+    }
+    private static final class LocalRuntimeConfig {String compute="gpu";final Profile profile=new Profile();boolean visualObservationOnly;}
+    private static final class LocalModelEngine {
+        final File files;final LocalRuntimeConfig configuration=new LocalRuntimeConfig();
+        final RuntimeGeneration runtime=new RuntimeGeneration(configuration);
+        private static final class RuntimeGeneration {
+            final LocalRuntimeConfig config;String error;
+            RuntimeGeneration(LocalRuntimeConfig config){this.config=config;}
+{{generation_configuration}}
+        }
+        boolean busy;Result result;
+        LocalModelEngine(File files){this.files=files;}
+        boolean isBusy(){return busy;}Result lastResult(){return result;}
+        static final class Result {String runId="text-result";}
+{{model_directory}}
+{{model_file}}
+{{model_directory_config}}
+{{model_file_config}}
+{{configuration}}
+    }
+    private static final class LocalTaskSession {
+        boolean running,blocked,recovering,backgroundLease,acknowledge;LocalTaskController.TaskResult result;
+        String stateText="fixture state";
+        boolean isRunning(){return running;}boolean isBlocked(){return blocked;}boolean isRecovering(){return recovering;}
+        boolean hasBackgroundLease(){return backgroundLease;}boolean canAcknowledgeInterruption(){return acknowledge;}
+        String state(){return stateText;}String log(){return "fixture log";}String taskId(){return null;}
+        LocalTaskController.TaskResult lastResult(){return result;}
+    }
+    private static final class LocalTaskController {
+        static final class TaskResult {String taskId,summary,displaySummary,evidenceDirectory;int steps;boolean cleanupKnown;}
+    }
+    private static final class BackgroundPermissionSession {
+        boolean blocks;String state(){return "fixture permission state";}boolean blocksOtherWork(){return blocks;}
+    }
+    private static final class MobiMindModelEngine {
+        boolean busy,blocked;Result result;
+        boolean isBusy(){return busy;}boolean isBlocked(){return blocked;}
+        Result lastResult(){return result;}String recoveryMessage(){return "fixture visual recovery";}
+        static final class Result {String runId="visual-result";}
+    }
+    private static final class UiVenusModelEngine {
+        boolean busy,blocked;Result result;
+        boolean isBusy(){return busy;}boolean isBlocked(){return blocked;}
+        Result lastResult(){return result;}String recoveryMessage(){return "fixture venus recovery";}
+        static final class Result {String runId="venus-result";}
+    }
+    private static final class HeptaAccessibilityService {
+        static Object connected(){return new Object();}
+        static String message(Exception error){return error.getMessage();}
+    }
+    // These original view cases never run a settings transaction. New settings controls remain ineligible.
+    private static final class LocalModelSettings {boolean isBusy(){return false;}String state(){return "fixture settings idle";}}
+    // Importer and application admission are view inputs only; real I/O/slot behavior has its own gate.
+    private static final class LocalModelImport {boolean busy;String stateText="fixture import idle";boolean isBusy(){return busy;}String state(){return stateText;}}
+    private static final class LocalProbeApplication {boolean importEligible;boolean canImportLocalModel(){return importEligible;}boolean canChangeLocalModelSettings(boolean restore){return false;}}
+    private final LocalModelSettings modelSettings=new LocalModelSettings();
+    private final LocalModelImport modelImport=new LocalModelImport();
+    private String pendingImportAsset;
+    private final Widget modelIdentity=new Widget(),importLocalModel=new Widget(),cancelModelImport=new Widget(),localModelImportState=new Widget();
+    private final LocalProbeApplication application=new LocalProbeApplication();
+    private Object getApplication(){return application;}
+    private final Widget chooseLocalModel=new Widget(),restoreLocalModel=new Widget(),localModelSettingsState=new Widget();
+    private final LocalModelEngine engine;
+    private final LocalTaskSession tasks=new LocalTaskSession();
+    private final BackgroundPermissionSession backgroundPermission=new BackgroundPermissionSession();
+    private final MobiMindModelEngine visualDiagnostic=new MobiMindModelEngine();
+    private final UiVenusModelEngine uiVenusDiagnostic=new UiVenusModelEngine();
+    private final Widget modelInfo=new Widget(),taskState=new Widget(),taskLog=new Widget();
+    private final Widget modelDiagnostics=new Widget(),backgroundSummary=new Widget(),taskDiagnostics=new Widget();
+    private final Widget backgroundPermissionState=new Widget(),openRootManager=new Widget(),prepareBackgroundPermission=new Widget();
+    private final Widget backgroundMode=new Widget(),pickBackgroundApps=new Widget(),initialBackgroundApp=new Widget();
+    private final Widget independentProfileDisplay=new Widget(); // Legacy mode only; no profile authority.
+    private final Widget independentPersonalDisplay=new Widget(); // Unchecked; this model-state fixture has no personal display choice.
+    private final Widget cleanupBackground=new Widget(),acknowledgeInterruption=new Widget(),backgroundChoiceState=new Widget();
+    private final Widget startTask=new Widget(),stopTask=new Widget(),runText=new Widget(),taskResult=new Widget();
+    private final Widget visualProbeOutput=new Widget(),uiVenusProbeOutput=new Widget();
+    private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
+    private String backgroundModePreferenceError,backgroundSelectionPreferenceError,backgroundDisplayPreferenceError;
+    private Object selectedProfileTarget(){return null;} // Model-state fixture has no selected managed profile.
+    private boolean personalIndependentTarget(){return false;} // No selected Notes/MiShop target in this model-state fixture.
+    private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
+    private int renderCalls;
+    private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.
+    private final Widget profilePermissionCard=null; // No permission pane in this original model-config fixture.
+    private boolean cachedModelFilePresent;
+    // Explicit view/catalogue IO fixture; this model-config gate never launches a profile catalogue.
+    private boolean profileCatalogueLoading;private final Widget pickProfileTarget=new Widget();
+    // Android target-choice IO is a fixture boundary; the separate target gate executes its production policy.
+    private void refreshBackgroundTaskTarget(){}
+    private RuntimeConfigUiHostTest(File files){engine=new LocalModelEngine(files);}
+    private void renderProbe(LocalModelEngine.Result result){renderCalls++;lastShownProbeId=result.runId;}
+    private void renderVisualProbe(MobiMindModelEngine.Result result){renderCalls++;lastShownVisualProbeId=result.runId;}
+    private void renderUiVenusProbe(UiVenusModelEngine.Result result){renderCalls++;lastShownUiVenusProbeId=result.runId;}
+{{navigation_idle}}
+{{choice_error}}
+{{refresh}}
+{{refresh_impl}}
+{{preview_absent}}
+{{permission_absent}}
+{{begin_task_model_preflight}}
+    private static void present(File file)throws Exception{
+        File parent=file.getParentFile();
+        if(!parent.isDirectory()&&!parent.mkdirs())throw new IllegalStateException("fixture directory creation failed");
+        if(!file.createNewFile())throw new IllegalStateException("fresh fixture file required");
+    }
+    private static void remove(File file)throws Exception{
+        if(!file.delete())throw new IllegalStateException("fixture removal failed");
+    }
+    public static int entryChecks(File files)throws Exception{
+        int before=checks;
+        RuntimeConfigUiHostTest text=new RuntimeConfigUiHostTest(new File(files,"text"));
+        present(text.engine.modelFile());
+        check(text.beginTaskModelPreflightError()==null,"ordinary text entry preserves the existing file preflight");
+
+        RuntimeConfigUiHostTest lfm=new RuntimeConfigUiHostTest(new File(files,"lfm"));
+        lfm.engine.configuration.profile.select(ModelProfile.LFM3_VL_2B);
+        lfm.engine.configuration.compute="npu";lfm.engine.configuration.visualObservationOnly=true;lfm.backgroundMode.checked=true;
+        File model=lfm.engine.modelFile(),projector=new File(lfm.engine.modelDirectory(),VlmResultContract.LFM3_VL_2B.projectorFilename);
+        File wrong=new File(lfm.engine.modelDirectory(),VlmResultContract.GUI_OWL_4B.projectorFilename);
+        present(model);present(projector);
+        check(lfm.beginTaskModelPreflightError()==null,"actual beginTask model guards must admit the correct LFM F16 pair");
+        lfm.backgroundMode.checked=false;
+        check(lfm.beginTaskModelPreflightError().contains("需要启用后台"),"LFM preflight preserves the background-only requirement");
+        lfm.backgroundMode.checked=true;remove(projector);present(wrong);
+        check(lfm.beginTaskModelPreflightError().contains("投影文件尚未导入"),"foreign GUI projector cannot admit LFM entry");
+        remove(wrong);
+        check(lfm.beginTaskModelPreflightError().contains("投影文件尚未导入"),"missing LFM projector cannot admit entry");
+        present(projector);remove(model);
+        check(lfm.beginTaskModelPreflightError().contains("所选本地模型尚未导入"),"correct projector cannot replace the LFM language model");
+        present(model);lfm.tasks.running=true;
+        check(lfm.beginTaskModelPreflightError().contains("已有本地请求"),"running task retains exclusive admission");
+        lfm.tasks.running=false;lfm.tasks.blocked=true;
+        check(lfm.beginTaskModelPreflightError().contains("已有本地请求"),"blocked task retains exclusive admission");
+        lfm.tasks.blocked=false;lfm.engine.busy=true;
+        check(lfm.beginTaskModelPreflightError().contains("已有本地请求"),"busy model retains exclusive admission");
+        lfm.engine.busy=false;
+        check(lfm.beginTaskModelPreflightError()==null&&lfm.renderCalls==0,"cleared fixture state admits only preflight without inference");
+
+        RuntimeConfigUiHostTest gui=new RuntimeConfigUiHostTest(new File(files,"gui"));
+        gui.engine.configuration.profile.select(ModelProfile.GUI_OWL_4B);gui.engine.configuration.compute="npu";gui.backgroundMode.checked=true;
+        File guiProjector=new File(gui.engine.modelDirectory(),VlmResultContract.GUI_OWL_4B.projectorFilename);
+        present(gui.engine.modelFile());present(guiProjector);
+        check(gui.beginTaskModelPreflightError()==null,"actual GUI pair preserves ordinary visual entry");
+        remove(guiProjector);present(new File(gui.engine.modelDirectory(),VlmResultContract.LFM3_VL_2B.projectorFilename));
+        check(gui.beginTaskModelPreflightError().contains("投影文件尚未导入"),"foreign LFM F16 cannot admit GUI entry");
+        present(guiProjector);gui.backgroundMode.checked=false;
+        check(gui.beginTaskModelPreflightError().contains("需要启用后台"),"GUI preflight keeps the same background requirement");
+        text.engine.busy=true;
+        check(text.beginTaskModelPreflightError().contains("已有本地请求"),"text preflight keeps the same exclusive model gate");
+        return checks-before;
+    }
+
+    public static int importerUiChecks(File files)throws Exception{
+        int before=checks;
+        RuntimeConfigUiHostTest ui=new RuntimeConfigUiHostTest(files);
+        present(ui.engine.modelFile());ui.refresh();
+        check("本地模型已导入 · 无障碍已启用".equals(ui.modelInfo.text),"existing exact readiness node stays compatible");
+        check(ui.modelIdentity.text.contains("fixture model")&&ui.modelIdentity.text.contains("Adreno GPU"),"separate home identity shows the selected model and GPU");
+        ui.engine.configuration.compute="npu";ui.refresh();
+        check(ui.modelIdentity.text.contains("Hexagon NPU"),"home identity tracks the selected NPU");
+        check(!ui.importLocalModel.enabled,"import UI follows denied application admission");
+        check(ui.cancelModelImport.visibility==View.GONE&&!ui.cancelModelImport.enabled,"idle import has no enabled cancellation");
+        check("fixture import idle".equals(ui.localModelImportState.text),"idle importer state is visible");
+        ui.application.importEligible=true;ui.refresh();
+        check(ui.importLocalModel.enabled,"idle eligible admission enables the file selection entry");
+        ui.pendingImportAsset="fixture-selection";ui.refresh();
+        check(!ui.importLocalModel.enabled,"outstanding file selection cannot start a second picker");
+        ui.pendingImportAsset=null;ui.profileCatalogueLoading=true;ui.refresh();
+        check(!ui.importLocalModel.enabled,"catalogue loading excludes file selection");
+        ui.profileCatalogueLoading=false;ui.application.importEligible=false;
+        ui.modelImport.busy=true;ui.modelImport.stateText="正在导入本地文件";ui.engine.busy=true;ui.refresh();
+        check(!ui.importLocalModel.enabled&&ui.cancelModelImport.visibility==View.VISIBLE&&ui.cancelModelImport.enabled,"busy import offers cancellation without second import");
+        check("正在导入本地文件".equals(ui.localModelImportState.text),"active importer progress is visible");
+        check(!ui.startTask.enabled&&!ui.runText.enabled&&!ui.stopTask.enabled,"import-held model slot excludes task and probe controls");
+        ui.modelImport.busy=false;ui.modelImport.stateText="本地文件已就绪";ui.engine.busy=false;ui.application.importEligible=true;ui.refresh();
+        check(ui.importLocalModel.enabled&&ui.cancelModelImport.visibility==View.GONE&&!ui.cancelModelImport.enabled&&ui.startTask.enabled&&ui.runText.enabled,"terminal importer view restores idle controls");
+        check("本地文件已就绪".equals(ui.localModelImportState.text)&&ui.renderCalls==0,"importer state display performs no inference");
+        return checks-before;
+    }
+
+    public static void main(String[] args)throws Exception {
+        File files=new File(args[0]);File model=new File(files,"model/model.bin");
+        if(!model.getParentFile().mkdirs()||!model.createNewFile())throw new IllegalStateException("fresh model fixture required");
+
+        RuntimeConfigUiHostTest invalid=new RuntimeConfigUiHostTest(files);
+        invalid.engine.runtime.error=CONFIG_ERROR;
+        invalid.refresh();
+        check(invalid.modelInfo.text.contains(CONFIG_ERROR),"configuration failure must remain visible");
+        check(invalid.modelDiagnostics.text.contains("运行参数待修正"),"configuration diagnostics must request repair");
+        check(!invalid.modelInfo.text.contains("本地模型已导入"),"invalid configuration must not claim a usable model");
+        check(!invalid.startTask.enabled&&!invalid.runText.enabled,"invalid configuration must disable new inference");
+        check(!invalid.stopTask.enabled,"idle invalid configuration must not invent an active worker");
+        check(invalid.openRootManager.enabled&&invalid.prepareBackgroundPermission.enabled,"configuration error must retain idle permission controls");
+        check(invalid.backgroundMode.enabled&&invalid.pickBackgroundApps.enabled&&invalid.initialBackgroundApp.enabled,"configuration error must retain owner UI choices");
+        invalid.refresh();
+        check(invalid.modelInfo.text.contains(CONFIG_ERROR)&&CONFIG_ERROR.equals(invalid.engine.runtime.error),"refresh must not clear or silently replace the configuration error");
+
+        invalid.tasks.running=true;invalid.refresh();
+        check(invalid.stopTask.enabled,"configuration error must not prevent Stop for an active task");
+        check(!invalid.startTask.enabled&&!invalid.runText.enabled,"active task remains blocked from new work");
+        invalid.tasks.running=false;invalid.engine.busy=true;invalid.refresh();
+        check(invalid.stopTask.enabled,"configuration error must not prevent Stop for an external worker");
+        invalid.engine.busy=false;invalid.tasks.backgroundLease=true;invalid.tasks.blocked=true;invalid.refresh();
+        check(invalid.cleanupBackground.visibility==View.VISIBLE&&invalid.cleanupBackground.enabled,"configuration error must retain background cleanup");
+        invalid.tasks.acknowledge=true;invalid.refresh();
+        check(invalid.acknowledgeInterruption.enabled,"configuration error must retain eligible interruption recovery");
+
+        RuntimeConfigUiHostTest background=new RuntimeConfigUiHostTest(files);
+        background.backgroundMode.checked=true;background.backgroundPackages.add("example.notes");
+        background.engine.runtime.error=CONFIG_ERROR;background.refresh();
+        check(background.backgroundMode.checked&&background.backgroundPackages.contains("example.notes"),"refresh must preserve selected background mode and range");
+        check(!background.startTask.enabled,"background mode must not re-enable invalid configuration");
+
+        RuntimeConfigUiHostTest valid=new RuntimeConfigUiHostTest(files);valid.refresh();
+        check(valid.startTask.enabled&&valid.runText.enabled,"valid idle configuration must retain normal controls");
+        check(valid.modelDiagnostics.text.contains("fixture model")&&valid.modelDiagnostics.text.contains("Adreno GPU")&&valid.modelInfo.text.contains("本地模型已导入"),"concise model state and separate diagnostics must remain accurate");
+        valid.engine.configuration.compute="npu";valid.refresh();
+        check(valid.modelDiagnostics.text.contains("Hexagon NPU"),"NPU diagnostics must retain its selected backend");
+        valid.engine.busy=true;valid.refresh();
+        check(valid.stopTask.enabled&&!valid.startTask.enabled&&!valid.runText.enabled,"valid busy configuration retains Stop and existing gating");
+        valid.engine.busy=false;valid.visualDiagnostic.blocked=true;valid.refresh();
+        check(!valid.startTask.enabled&&!valid.runText.enabled,"configuration readiness must not bypass diagnostic recovery");
+
+        RuntimeConfigUiHostTest missing=new RuntimeConfigUiHostTest(new File(files,"missing"));missing.refresh();
+        check(missing.modelInfo.text.contains("本地模型待导入"),"valid configuration without weights retains missing-model status");
+        check(missing.startTask.enabled&&missing.runText.enabled,"this repair must preserve existing missing-weight entry behavior");
+        check(invalid.renderCalls==0&&background.renderCalls==0&&valid.renderCalls==0&&missing.renderCalls==0,"refresh must not launch inference or synthesize results");
+        RuntimeConfigUiHostTest outcome=new RuntimeConfigUiHostTest(files);
+        LocalTaskController.TaskResult failed=new LocalTaskController.TaskResult();
+        failed.taskId="synthetic-outcome";failed.summary="模型报告无法完成：未知";
+        failed.displaySummary="最后读取到的是小米账号登录页。\n\n任务记录："+failed.summary;failed.cleanupKnown=true;
+        outcome.tasks.result=failed;outcome.refresh();
+        check(failed.displaySummary.equals(outcome.taskState.text)&&failed.displaySummary.equals(outcome.taskResult.text),"both visible outcome fields use the bound presentation");
+        check("模型报告无法完成：未知".equals(failed.summary),"rendering preserves the original terminal summary");
+        check(outcome.startTask.enabled&&!outcome.stopTask.enabled&&outcome.renderCalls==0,"presentation neither restarts work nor changes idle admission");
+        outcome.tasks.blocked=true;outcome.refresh();
+        check("fixture state".equals(outcome.taskState.text)&&!outcome.startTask.enabled,"a later journal/recovery block remains primary over the earlier result presentation");
+        RuntimeConfigUiHostTest cold=new RuntimeConfigUiHostTest(files);
+        cold.tasks.stateText="上次任务已结束\n\n上次任务结果：\n"+failed.displaySummary;cold.refresh();
+        check(cold.tasks.result==null&&cold.tasks.stateText.equals(cold.taskState.text),"cold session state retains the recovered explanation without an in-memory TaskResult");
+        check(cold.startTask.enabled&&!cold.stopTask.enabled&&cold.renderCalls==0,"cold result presentation does not start or restore a task");
+        RuntimeConfigUiHostTest visual=new RuntimeConfigUiHostTest(files);
+        visual.engine.configuration.profile.visual=true;visual.engine.configuration.compute="npu";
+        visual.engine.configuration.visualObservationOnly=true;visual.refresh();
+        check(visual.modelInfo.text.contains("本地模型待导入")&&visual.modelInfo.text.contains("仅观察，不执行工具"),"visual observation mode never claims missing model pair is imported");
+        check(!visual.runText.enabled&&visual.renderCalls==0,"visual profile cannot enter the text-only probe");
+        File visualModel=new File(files,"gui-owl-model/model.bin"),projector=new File(files,"gui-owl-model/"+VlmPins.PROJECTOR);
+        check(visualModel.getParentFile().mkdirs()&&visualModel.createNewFile(),"fresh visual model fixture created");
+        visual.refresh();check(visual.modelInfo.text.contains("本地模型待导入"),"main model alone does not claim the pair is available");
+        check(projector.createNewFile(),"fresh projector fixture created");visual.refresh();
+        check(visual.modelInfo.text.contains("本地模型已导入")&&visual.modelDiagnostics.text.contains("Hexagon NPU + Adreno GPU"),"the visual pair and explicit two-device route are visible");
+        visual.engine.configuration.visualObservationOnly=false;visual.backgroundMode.checked=true;visual.backgroundPackages.add("example.notes");visual.refresh();
+        check(visual.modelInfo.text.contains("本地视觉工具模式")&&!visual.modelInfo.text.contains("仅观察"),"explicit tools configuration has its own visible state");
+        check(visual.backgroundSummary.text.contains("所选起始应用")&&!visual.runText.enabled,"background summary reflects one selected initial app and visual text-probe remains disabled");
+        visual.engine.busy=true;visual.refresh();check(visual.stopTask.enabled&&!visual.startTask.enabled,"visual busy mode keeps ordinary Stop");
+        int originalChecks=checks;
+        if(originalChecks!=38)throw new AssertionError("the original 38 UI assertions must remain");
+        RuntimeConfigUiHostTest lfm=new RuntimeConfigUiHostTest(files);
+        lfm.engine.configuration.profile.select(ModelProfile.LFM3_VL_2B);
+        lfm.engine.configuration.compute="npu";lfm.engine.configuration.visualObservationOnly=true;
+        File lfmDirectory=new File(files,ModelProfile.LFM3_VL_2B.visualDirectory());
+        File lfmModel=new File(lfmDirectory,ModelProfile.LFM3_VL_2B.fileName);
+        File lfmProjector=new File(lfmDirectory,VlmResultContract.LFM3_VL_2B.projectorFilename);
+        File wrongGuiProjector=new File(lfmDirectory,VlmResultContract.GUI_OWL_4B.projectorFilename);
+        check(lfm.engine.modelDirectory().equals(lfmDirectory)&&lfm.engine.modelFile().equals(lfmModel),"LFM UI accessors use the actual closed profile directory and model");
+        lfm.refresh();
+        check(lfm.modelInfo.text.contains("本地模型待导入")&&lfm.modelInfo.text.contains("仅观察，不执行工具")&&!lfm.runText.enabled&&lfm.renderCalls==0,"missing LFM assets keep observation status and never enable text inference");
+        check(lfmDirectory.mkdirs()&&lfmModel.createNewFile(),"fresh LFM model fixture created");
+        lfm.refresh();check(lfm.modelInfo.text.contains("本地模型待导入"),"LFM model without its F16 projector remains missing");
+        check(wrongGuiProjector.createNewFile(),"foreign GUI projector fixture created in the LFM directory");
+        lfm.refresh();check(lfm.modelInfo.text.contains("本地模型待导入"),"GUI projector must not satisfy the LFM visual pair");
+        check(lfmProjector.createNewFile(),"correct LFM F16 projector fixture created");
+        lfm.refresh();check(lfm.modelInfo.text.contains("本地模型已导入")&&lfm.modelDiagnostics.text.contains(ModelProfile.LFM3_VL_2B.displayName)&&lfm.modelDiagnostics.text.contains("Hexagon NPU + Adreno GPU"),"correct LFM pair is visible with its actual profile and selected devices");
+        check(lfm.modelInfo.text.contains("仅观察，不执行工具")&&!lfm.runText.enabled&&lfm.renderCalls==0,"present LFM pair retains observation authority and does not synthesize inference");
+        check(lfmProjector.delete(),"remove only the correct LFM projector");
+        lfm.refresh();check(lfm.modelInfo.text.contains("本地模型待导入"),"foreign GUI projector cannot keep an LFM pair present after F16 removal");
+
+        RuntimeConfigUiHostTest guiPair=new RuntimeConfigUiHostTest(new File(files,"gui-projector-collision"));
+        guiPair.engine.configuration.profile.select(ModelProfile.GUI_OWL_4B);
+        guiPair.engine.configuration.compute="npu";guiPair.engine.configuration.visualObservationOnly=false;
+        File guiDirectory=guiPair.engine.modelDirectory();
+        check(guiDirectory.mkdirs()&&guiPair.engine.modelFile().createNewFile(),"fresh actual GUI model fixture created");
+        File wrongLfmProjector=new File(guiDirectory,VlmResultContract.LFM3_VL_2B.projectorFilename);
+        check(wrongLfmProjector.createNewFile(),"foreign LFM projector fixture created in GUI directory");
+        guiPair.refresh();check(guiPair.modelInfo.text.contains("本地模型待导入"),"LFM F16 projector must not satisfy the GUI visual pair");
+        check(new File(guiDirectory,VlmResultContract.GUI_OWL_4B.projectorFilename).createNewFile(),"correct GUI projector fixture created");
+        guiPair.refresh();check(guiPair.modelInfo.text.contains("本地模型已导入")&&guiPair.modelInfo.text.contains("本地视觉工具模式")&&!guiPair.modelInfo.text.contains("仅观察"),"correct GUI pair preserves the existing tools display");
+        System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":7,\"original_passed\":"+originalChecks+",\"visual_projector_passed\":"+(checks-originalChecks)+"}");
+    }
+}

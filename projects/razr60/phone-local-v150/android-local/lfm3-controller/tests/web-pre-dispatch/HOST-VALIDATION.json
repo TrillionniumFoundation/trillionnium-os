@@ -1,0 +1,588 @@
+{
+  "schema": "hepta.web-pre-dispatch-candidate-validation.v1",
+  "base_head": "47d47aec94bc52d7ef2b848762533d7bf8de3a07",
+  "production_patch_sha256": "ab2bfefbf04d296797951dfcc8aa881493f58423d42f91377e74581932c118a6",
+  "files": [
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "before_sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c",
+      "after_sha256": "452681545a72966ebd0d660ab1aa4c4fca0e42e2eec46fc2b8a960248cc22255"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "before_sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c",
+      "after_sha256": "351fba6ac61f182658b1d2622d89825a4f20bc7d866152a855838747790fd64f"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+      "before_sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c",
+      "after_sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
+    },
+    {
+      "path": "tests/web-pre-dispatch/WebPreDispatchHost.template",
+      "before_sha256": null,
+      "after_sha256": "43d4767413678b408cc24a0a157e92699b7e6e0892a552a5d6c35dd20c73e712"
+    },
+    {
+      "path": "tests/web-pre-dispatch/WebPreDispatchReceiptHostTest.java",
+      "before_sha256": null,
+      "after_sha256": "7844ae6a2908f9d0dfaf78a80378b81da18237f7d0ea4cf8f3aff8f3b33c9b3a"
+    },
+    {
+      "path": "tests/web-pre-dispatch/run_predispatch_host.py",
+      "before_sha256": null,
+      "after_sha256": "3547f9e0e8e2e5ea55bfe724bb75647e8eca0570357a1ab6c74baee9b5f3b895"
+    }
+  ],
+  "all_host_gates_passed": true,
+  "phone_tested": false,
+  "apk_build_started": false,
+  "phone_commands": 0,
+  "pre_dispatch_gate": {
+    "schema": "hepta.web-pre-dispatch-host.v1",
+    "passed": true,
+    "phone_commands": 0,
+    "stages": [
+      {
+        "name": "baseline-compile",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_s": 1.5231074390467256,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "baseline-cases",
+        "exit_code": 1,
+        "expected_exit_code": 1,
+        "elapsed_s": 0.1693121320568025,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "60c41dcc0a0d91ae081980cb23df2660bb8794cf284aa48680cce275b86033c6"
+      },
+      {
+        "name": "current-compile",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_s": 1.974902810063213,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "current-cases",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_s": 0.20965708303265274,
+        "stdout_sha256": "9abe8835c8f1b2167e30e5263da53a2e9cf757223e12d4abee7be0ac3473f279",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "receipt-compile",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_s": 4.916603370918892,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "receipt-cases",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_s": 0.511960937990807,
+        "stdout_sha256": "c49ba6a553c739affbdc83f8bbe6b36f884c78435993c2fc06463f7c9372baab",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "scope": "Exact Session methods and Controller catch/continue. Android, model and IPC effects are synthetic. Full receipt verifier uses synthetic or saved authentication inputs.",
+    "source_inputs": [
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+        "sha256": "452681545a72966ebd0d660ab1aa4c4fca0e42e2eec46fc2b8a960248cc22255"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+        "sha256": "351fba6ac61f182658b1d2622d89825a4f20bc7d866152a855838747790fd64f"
+      },
+      {
+        "path": "tests/action-worker/run_host_tests.py",
+        "sha256": "b4fccf4b1dad46a8141e1e7bf1562eeec9a23ce2f8f533738a084d2383c8848c"
+      }
+    ],
+    "methods": [
+      {
+        "signature": "static final class PreDispatchPageChanged extends IllegalStateException",
+        "sha256": "ebf81fa2016f52b22b1f49e965db20ebd3d0298f6f1aed396d009fc63f5ca672"
+      },
+      {
+        "signature": "private void requirePreDispatchCapture(WebTaskDomain original,PhoneObservation frame,ActionDecision action,",
+        "sha256": "b7e5840167ac3cf0d5a8c07b8fc562f616797071b473f19c672fd7682be54f85"
+      },
+      {
+        "signature": "void claimPreDispatchReobserve(PreDispatchPageChanged failure,PhoneObservation frame,ActionDecision action,",
+        "sha256": "10224e0c159330aa8d6389b4095eb7e65a09a827099c18ddf15b2640c936be65"
+      },
+      {
+        "signature": "void beforeModelAction(ActionDecision action,String run,long deadline)",
+        "sha256": "c4a0345eb071a707e1ad28cd8b394275002f9228b6e93dbd91f697ebf195528b"
+      }
+    ],
+    "controller_block_sha256": "97666aad4d0d779d43ac226e70d7cf268dc2cc1a6e8b790c15dd9e548370441d",
+    "test_inputs": [
+      {
+        "path": "run_predispatch_host.py",
+        "sha256": "3547f9e0e8e2e5ea55bfe724bb75647e8eca0570357a1ab6c74baee9b5f3b895"
+      },
+      {
+        "path": "WebPreDispatchHost.template",
+        "sha256": "43d4767413678b408cc24a0a157e92699b7e6e0892a552a5d6c35dd20c73e712"
+      },
+      {
+        "path": "WebPreDispatchReceiptHostTest.java",
+        "sha256": "7844ae6a2908f9d0dfaf78a80378b81da18237f7d0ea4cf8f3aff8f3b33c9b3a"
+      }
+    ],
+    "baseline": {
+      "session_sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c",
+      "controller_sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c",
+      "active_method_sha256": "f521cadd88ccf9a61636ff7cd905e57ca323b5715193784dfd5257d205774dd1",
+      "controller_block_sha256": "e1a0ba3887d2ebe4c9c0948beb699a98c8c0c9a6b8f3312327317875e3264e8d",
+      "candidate_type_helpers_compiled_but_unreachable_from_baseline_flow": true
+    },
+    "control_flow": {
+      "cases": 66,
+      "names": [
+        "exact unavailable has no surviving action capability",
+        "reason is exact: DOM changed across visual callback ",
+        "reason is exact: dom changed across visual callback",
+        "reason is exact: no_main_frame_commit",
+        "reason is exact: RPC deadline exhausted",
+        "reason is exact: unknown",
+        "status is exact: state_changed",
+        "status is exact: rejected",
+        "status is exact: unknown",
+        "receipt identity boundary 0",
+        "receipt identity boundary 1",
+        "receipt identity boundary 2",
+        "receipt identity boundary 3",
+        "receipt identity boundary 4",
+        "receipt identity boundary 5",
+        "receipt identity boundary 6",
+        "live or effect guard 0",
+        "live or effect guard 1",
+        "live or effect guard 2",
+        "live or effect guard 3",
+        "live or effect guard 4",
+        "live or effect guard 5",
+        "live or effect guard 6",
+        "live or effect guard 7",
+        "live or effect guard 8",
+        "live or effect guard 9",
+        "live or effect guard 10",
+        "live or effect guard 11",
+        "live or effect guard 12",
+        "live or effect guard 13",
+        "live or effect guard 14",
+        "live or effect guard 15",
+        "live or effect guard 16",
+        "live or effect guard 17",
+        "live or effect guard 18",
+        "live or effect guard 19",
+        "live or effect guard 20",
+        "live or effect guard 21",
+        "live or effect guard 22",
+        "live or effect guard 23",
+        "live or effect guard 24",
+        "live or effect guard 25",
+        "live or effect guard 26",
+        "live or effect guard 27",
+        "live or effect guard 28",
+        "cancellation during capture is not retryable",
+        "native entry during capture is not retryable",
+        "domain replacement during capture is not retryable",
+        "client deadline failure is not retryable",
+        "proof is bound to original frame action run deadline and session",
+        "cancellation at claim does not recover",
+        "fresh observation requires a new model decision",
+        "third stale refusal is recorded then stopped",
+        "shared stale counter is not reset",
+        "durable record failure prevents fresh read",
+        "cancellation after refusal record prevents fresh read",
+        "deadline after refusal record prevents fresh read",
+        "replacement controller task cannot claim refusal",
+        "native task overlap cannot claim web refusal",
+        "old observation id cannot enter new decision",
+        "old model action cannot run after fresh frame",
+        "cancellation after fresh read prevents next model",
+        "unknown capture failure bypasses recovery catch",
+        "captured semantic target change is still fatal",
+        "failure after an ARM attempt is still fatal",
+        "wait retains no-page-effect behavior"
+      ],
+      "phone_commands": 0,
+      "passed": true,
+      "assertions": 145,
+      "ipc_authority_page_recognition_clock_model_and_platform_mocked": true
+    },
+    "receipt_verifier_inputs": [
+      {
+        "path": "src/org/trillionnium/hepta/local/WebNativeObservationChanged.java",
+        "sha256": "4e218ab1a82889693c48bac6d601e68e6f95d5bab289e6cb0f2b3bc6046e6523"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+        "sha256": "a97ab4c75d5f7838b5c0953b11147b852023c674a53a5d55f984e2653ba85a9a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
+        "sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+        "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+        "sha256": "699f1eebe2db1ae4d7973f95f51c342748c24d767efd6f1a998d27f60c9b339f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+        "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "sha256": "30fab955aa9016bcae743b9d38acc2c969dc7eeb387e226f8c4cf58ba1df1b99"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+        "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+        "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+        "sha256": "2a0962c9e6050d0e0282333636aa71bf3c6fe30b502d1848c26751617f699ba9"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+        "sha256": "15a934bb9ad19c1e3eeafdeb225a9863d990a01fd0d9f95ce323da980f4ddf64"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+        "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+        "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+        "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "sha256": "5851664ef71af222f565d6031316510439ef49b7fd6185f7837c30812e8a2053"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "sha256": "9e927199e30ef0316c81c7587956c5a866ca884d4949895e1d37e2cf7afa2012"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "sha256": "da4afaa5437331e731799718e591dd5e3f62e0f7448dbd1009e234cd8c084772"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+        "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+        "sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+        "sha256": "cd2caf1854af873a761ef3124c53e4db5827a7f1a890928ce3479f6bf522ff0b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+        "sha256": "bfae931eb2d00142b908ea920647c328a3b9ffc873688a821844ad2146cfaf86"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+        "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+        "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+        "sha256": "6e06a007af283ab8b90e45b55a0b8a223dbcedc4434f209660503d41f25a2560"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "sha256": "30ef8a141c6502a623fc818798af9e71683c14a8a94dfa5a705243544e0975bf"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebCaptureAcknowledgement.java",
+        "sha256": "eae4d8766b1480c2964229047ff03bc0dd54cd7fab5155bea6903d844a7b1cd9"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+        "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+        "sha256": "2af8121fd6e36bd631871a20393af4869535d2f6b18ac84777b5c74dee4cd7c1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+        "sha256": "e7ea2f28df02e1ed271a0b0f38672c2d722f032e2dc417e14e42fe05c99091a4"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightResult.java",
+        "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+        "sha256": "bdd9d743d66f3452b15e74544a4f89c463b72efa30c7299059eb5f9b4c7f6175"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+        "sha256": "d6daff55e02af33debadee3c36f49c81a63353191e5dc85e1f32ae5aa0e05561"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+        "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+        "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+        "sha256": "faf50cafc7b11e763a840def5bee6c2cff77535c4a904c06ccd7d74afa489ca2"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+        "sha256": "81a1783c70ccb5c8b2797ea04c813efe828933b6f6a87535e2194540d2c6edeb"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingQuote.java",
+        "sha256": "af4791997c7920c74b3192c1d091aaffaef1fbf2446521b72bede4f80a1cb776"
+      },
+      {
+        "path": "tests/qualification-scope/fixtures/android/graphics/Rect.java",
+        "sha256": "ed85b3caacb411968d7c4798e8f68b9d5d4c19f1e12b70665ad4b47fd4a0fe00"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
+        "sha256": "ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+        "sha256": "495f9d98854d8137e48e07b074987d81bcfbab8f3b3fe437cdd3239c16719f1a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+        "sha256": "085309202a24c8f4f0f5986027bc32c13d73a8a5766ff046539a09ea2a719541"
+      },
+      {
+        "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+        "sha256": "d834849f2dc578aad516907f60f560a8e5c9317094fe830bcfe32fd4d560bb30"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+        "sha256": "d7e760032b9fdc0889330730ebe880a48f1cf786284f1f961571b12272233313"
+      }
+    ],
+    "host_json_boundary": {
+      "class": "WebTaskPurpose",
+      "original_sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647",
+      "compiled_projection_sha256": "fb10b2225951265540f2513ec62cdc7163f2e88df1a4fb2d2ba4045f669a6e77",
+      "change": "JSONObject(Map) explicit-null entries retained as on Android",
+      "production_source_modified": false,
+      "original_capture_callback_and_binding_bytes_modified": false
+    },
+    "receipt_verifier": {
+      "names": [
+        "metadata-only unavailable is independently verified",
+        "verifier refuses changed task_id",
+        "verifier refuses changed controller_session_nonce",
+        "verifier refuses changed request_nonce",
+        "verifier refuses changed method",
+        "verifier refuses changed schema",
+        "verifier refuses changed binding_sha256",
+        "verifier refuses changed webview_instance",
+        "verifier refuses changed actual_helper_uid",
+        "verifier refuses changed actual_display_id",
+        "verifier refuses changed actual_window_id",
+        "verifier refuses changed navigation_epoch",
+        "verifier refuses changed retired",
+        "verifier refuses changed raw_length",
+        "verifier refuses changed raw_sha256",
+        "verifier refuses changed cleanup",
+        "verifier refuses changed recovery",
+        "late reply refused",
+        "wrong expected epoch refused",
+        "duplicate callback key refused"
+      ],
+      "actual_saved_callback_count": 1,
+      "actual_saved_callbacks": [
+        {
+          "receipt_replay_passed": true,
+          "page_or_action_accepted": false,
+          "request_file_sha256": "60e22e4ddffe1ef491e09f9ddb2d448b03ae8b05e972b0a02248f9953b64a0bb",
+          "reply_file_sha256": "f7593f01c1653f312068a25ab9de4f1e1c548bedf9e74da44258bd0a1cab7f59",
+          "retry_predicate_reason_matched": true,
+          "live_binder_authentication_reperformed": false
+        }
+      ],
+      "phone_commands": 0,
+      "passed": true,
+      "assertions": 26,
+      "synthetic_cases": 20
+    }
+  },
+  "pre_dispatch_receipt_sha256": "bc2355f450b0d62b643f8093851914c3b46efc28aaf9a3b2a8b4a3b97795cc6e",
+  "legacy_completion_gate": {
+    "receipt_sha256": "ed58b79c100309123124add2cc799d1b3ce9f1ed907669f6bf5040b3c872bfcc",
+    "full_controller_source_compiled": true,
+    "android_model_web_io_explicit_fakes": true,
+    "web_legacy_stub_always_throws": true,
+    "stages": [
+      {
+        "name": "compile",
+        "exit_code": 0
+      },
+      {
+        "name": "actual-completion",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-task-phase",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-task-phase-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-list-provenance",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-recovery",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-recovery-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-task-scope",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-task-scope-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "calculator-input",
+        "exit_code": 0
+      },
+      {
+        "name": "calculator-input-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "failed-action-observation",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-editor-phase",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-editor-phase-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "completion-status",
+        "exit_code": 0
+      },
+      {
+        "name": "completion-status-grammar",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-create-workflow",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-workflow-controller",
+        "exit_code": 0
+      },
+      {
+        "name": "notes-reopen-readiness",
+        "exit_code": 0
+      }
+    ]
+  }
+}

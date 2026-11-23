@@ -1,0 +1,462 @@
+    /** Actual HA queue/callback and actual Session/NativeTask successor tests.
+     * Only Android IO, clocks and model transport are synthetic host ports. */
+    static final class NoEffectRun {
+        final HeptaAccessibilityService service;final Fixture fixture;final NativeSearchSession.Attempt attempt;
+        SearchActionWork work;ActionOutcome outcome;NativeSearchNoEffectReplanProof proof;String failedReceiptSha;
+        NoEffectRun(HeptaAccessibilityService service,Fixture fixture,NativeSearchSession.Attempt attempt){this.service=service;this.fixture=fixture;this.attempt=attempt;}
+        void marker(){check(actionIo.hasJobs(),"actual serial action marker queued");actionIo.one();check(proof==null,"worker marker cannot publish authority");service.main.one();}
+        void closeOld()throws Exception{
+            check(proof!=null,"actual opaque proof was minted: "+(outcome==null?"no outcome":outcome.detail));
+            failedReceiptSha=NativeSearchNoEffectControllerHost.actualFailedReceipt(fixture.directory,outcome,proof);
+            fixture.base.search.acceptNoEffectForReplan(attempt,outcome,failedReceiptSha,proof,SystemClock.now);
+            attempt.requireClosedForSuccessor();check(!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"retired original remains unclaimed");
+        }
+        NativeSearchRequest submit(){
+            Fixture f=fixture;f.planning=null;f.error=null;
+            service.observeNativeSearchPlanningAfterNoEffect(service.lease,f.directory,f.base.search,f.cancel(),
+                    Math.min(SystemClock.now+12000,f.base.search.chainDeadlineElapsed),new NativeSearchSession.ObservationCallback(){
+                        public void onPlanning(NativeSearchPlanning value){f.planning=value;f.callbackCount++;}
+                        public void onError(String value){f.error=value;f.callbackCount++;}
+                    },proof);
+            service.main.one();return service.activeNativeSearchObservation;
+        }
+        NativeSearchSession.Offer publish()throws Exception{
+            int reads=fixture.graphReads;NativeSearchRequest next=submit();check(next!=null&&next.admitted,"new actual read admitted: "+fixture.error);
+            check(next.replanSubmission==proof&&service.nativeSearchTrackedAction==null,"atomic tracker to fresh-request handoff");
+            observationIo.one();service.main.one();check(fixture.planning!=null,"fresh full pair published: "+fixture.error);
+            check(fixture.graphReads==reads+2&&next.publishedPlanning==fixture.planning&&next.workerDrained,"two actual host graph reads and exact published object");
+            check(next.deadline-next.started<=12000&&fixture.planning.timing.bReadCompleted-next.started<10000,"original new-read local caps");
+            check(!fixture.planning.id.equals(attempt.offer.planning.id)&&proof.consumed.get(),"old observation not reused and proof consumed once");
+            return fixture.base.search.offerAfterNoEffect(fixture.planning,proof,SystemClock.now);
+        }
+    }
+    static void successorEvent(HeptaAccessibilityService service,int kind){
+        if(kind==0)service.noteNativeSearchEvent(-1,-1,null,false,false);
+        else if(kind==1)service.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+        else if(kind==2)service.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,false);
+        else if(kind==3)service.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+        else throw new AssertionError("unknown synthetic event kind");
+    }
+    static boolean successorStack(String cls,String method){for(StackTraceElement frame:Thread.currentThread().getStackTrace())
+        if(frame.getClassName().equals(cls)&&frame.getMethodName().equals(method))return true;return false;}
+    static void armFirstFinalEvent(HeptaAccessibilityService service,int kind){SystemClock.beforeRead=()->{
+        if(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFirstFinalEvents")){
+            SystemClock.beforeRead=null;successorEvent(service,kind);
+        }
+    };}
+    static NoEffectRun beginNoEffect(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Attempt attempt,int kind){
+        NoEffectRun value=new NoEffectRun(service,f,attempt);armFirstFinalEvent(service,kind);
+        service.performNativeOpenSearch(service.lease,attempt,f.cancel(),new NativeSearchSession.ActionCallback(){
+            public void onResult(ActionOutcome outcome){value.outcome=outcome;f.outcome=outcome;f.callbackCount++;}
+            public void onNoEffectReplanAvailable(ActionOutcome outcome,NativeSearchNoEffectReplanProof proof){value.outcome=outcome;value.proof=proof;f.outcome=outcome;f.callbackCount++;}
+        });service.main.one();value.work=service.activeSearchAction;check(value.work!=null,"real old action admitted");
+        actionIo.one();check(value.work.firstPostDEventRejected,"actual first D event fence rejected");
+        check(value.work.state.isDrained()&&value.work.currentGraph==null&&service.activeSearchAction==null&&!actionSlot.pending(),"actual original finally closes graph and drains slot");
+        check(value.proof==null&&value.outcome==null&&value.work.sealedDiagnostic!=null&&NativeAppEvidence.sha(value.work.sealedDiagnosticSha),"diagnostic sealed but callback/proof awaits serial marker");
+        check(f.effects==0&&!value.work.platformCallInvoked&&!value.work.state.evidence().get("effect_entered").equals(Boolean.TRUE),"no platform effect before successor");
+        for(NodeData node:f.nodes.values())check(node.obtained==node.recycled,"all original Android node references recycled");
+        check(service.nativeSearchTrackedAction==value.work,"continuous tracker retained after physical drain");return value;
+    }
+    static NoEffectRun readyNoEffect(HeptaAccessibilityService service,Fixture f)throws Exception{
+        NoEffectRun value=beginNoEffect(service,f,f.intent(),3);value.marker();check(value.proof!=null,"typed same-owner content allows only read successor");return value;
+    }
+    static String successorReceipt(ActionOutcome outcome){return sha(outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8));}
+    static void completeFreshSearch(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Offer offer,String run)throws Exception{
+        offer.grammar();NativeSearchSession.Attempt next=offer.reserve(f.base.decision(offer),run,SystemClock.now,SystemClock.now+8000);
+        int reads=f.graphReads;f.outcome=null;f.action(next);check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1,"one new intent alone enters Android port");
+        check(f.graphReads==reads+2&&next.deadlineElapsed-next.startedElapsed<=8000,"new C/D and original eight-second cap");
+        f.base.search.acceptOutcome(next,f.outcome,successorReceipt(f.outcome),SystemClock.now);
+        check(service.nativeSearchAllowsLegacyObservation(service.lease),"actual accepted effect unlocks ordinary observer");
+        SystemClock.now+=10;NativeAppEvidence.Frame input=f.base.inputFrame(SystemClock.now,true);f.base.nativeTask.observed(input);f.base.search.navigationObserved(input);
+        f.base.nativeTask.requireModelPlanning();check(f.base.journalNames.contains("native-search-navigation-attempt-02.json"),"second reservation has its own create-only leaf");
+    }
+    static final class ControllerRun {Throwable failure;PhoneObservation unused;}
+    static Throwable pumpController(NativeSearchNoEffectControllerHost controller,Fixture fixture)throws Exception{
+        java.util.concurrent.atomic.AtomicReference<Throwable> failure=new java.util.concurrent.atomic.AtomicReference<Throwable>();
+        Thread runner=new Thread(()->{try{controller.runAll(fixture.directory);}catch(Throwable error){failure.set(error);}},"actual-LTC-host-caller");
+        runner.start();long until=System.nanoTime()+10000000000L;
+        while(runner.isAlive()&&System.nanoTime()<until){
+            boolean work=false;if(controller.service.main.hasJobs()){controller.service.main.one();work=true;}
+            if(observationIo.hasJobs()){observationIo.one();work=true;}if(actionIo.hasJobs()){actionIo.one();work=true;}
+            if(!work)Thread.yield();
+        }
+        if(runner.isAlive()){controller.cancelled.set(true);runner.interrupt();runner.join(1000);throw new AssertionError("actual Controller host queue did not finish");}
+        runner.join();return failure.get();
+    }
+    static NativeSearchSession clockSession(Fixture f,long start,long deadline)throws Exception{
+        NativeAppSession task=new NativeAppSession(f.base.nativeTask.taskId,f.base.gate,f.base.env.session.selection,
+                new NativeAppEvidence.Installed(f.base.env.target),f.base.nativeTask.selectionSha,f.base.env.session.generation,f.base.env.session.displayId(),
+                ()->{},(name,value)->{});
+        return new NativeSearchSession(f.base.controller,task,f.base.env.session,start,deadline);
+    }
+    /** New cases inject a synthetic event through the existing Android refresh port.
+     * No old phone failure is assigned a watermark that its original receipt lacks. */
+    static void armTargetRefreshEvent(HeptaAccessibilityService service,Fixture fixture,int kind,Runnable duringRefresh){
+        NodeData root=fixture.nodes.get("0");check(root!=null,"actual full synthetic census contains root");
+        root.beforeRefresh=()->{
+            check(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","refreshNativeSearchTargetChain"),"event arrives during the actual target/ancestor refresh method");
+            SearchActionWork work=service.activeSearchAction;
+            check(work!=null&&work.firstFinalEventsElapsed>=0&&!work.firstPostDEventRejected,"first actual D event fence already passed");
+            if(duringRefresh!=null)duringRefresh.run();
+            successorEvent(service,kind);
+        };
+    }
+    static NoEffectRun submitCapturedSearch(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Attempt attempt){
+        NoEffectRun value=new NoEffectRun(service,f,attempt);
+        service.performNativeOpenSearch(service.lease,attempt,f.cancel(),new NativeSearchSession.ActionCallback(){
+            public void onResult(ActionOutcome outcome){value.outcome=outcome;f.outcome=outcome;f.callbackCount++;}
+            public void onNoEffectReplanAvailable(ActionOutcome outcome,NativeSearchNoEffectReplanProof proof){value.outcome=outcome;value.proof=proof;f.outcome=outcome;f.callbackCount++;}
+        });service.main.one();value.work=service.activeSearchAction;
+        check(value.work!=null,"actual SearchActionWork acquired the original shared slot");return value;
+    }
+    static NoEffectRun beginTargetRefreshRejection(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Attempt attempt,int kind,Runnable duringRefresh){
+        armTargetRefreshEvent(service,f,kind,duringRefresh);NoEffectRun value=submitCapturedSearch(service,f,attempt);actionIo.one();
+        check(!value.work.firstPostDEventRejected&&value.work.firstRejectedWatermark==null,"second cause never relabels the first passed fence");
+        check(value.work.state.isDrained()&&value.work.currentGraph==null&&service.activeSearchAction==null&&!actionSlot.pending(),"original worker finally releases actual graph and slot");
+        check(f.effects==0&&!value.work.platformCallInvoked,"no Android action invocation in the refused attempt");
+        for(NodeData node:f.nodes.values())check(node.obtained==node.recycled,"late-refresh refusal recycles every actual fixture node");
+        return value;
+    }
+    static void rejectedUncheckedPublication(ActionExecutionState state){
+        boolean refused=false;try{state.publish(false,true);}catch(IllegalStateException expected){refused=true;}
+        check(refused&&!state.isDrained(),"real ActionExecutionState refuses a callback before its original finally drain");
+    }
+    static final String SEARCH_BANNER="0/0/2/0/0";
+    static void installTestBanner(Fixture f,int edge){
+        NativeActionSnapshotCheckHostTest.Fixture v=f.values;
+        List<Integer> full=Arrays.asList(0,0,1224,395);
+        v.add("0/0/2","androidx.recyclerview.widget.RecyclerView","com.xiaomi.shop:id/recyclerView","","",full);
+        v.add("0/0/2/0","android.widget.FrameLayout","","","",full);
+        v.add(SEARCH_BANNER,"androidx.viewpager.widget.ViewPager","com.xiaomi.shop:id/bannerViewPager","","",full);
+        v.nodes.get(SEARCH_BANNER).put("scrollable",true);
+        v.add(SEARCH_BANNER+"/0","android.widget.FrameLayout","","","",full);
+        v.add(SEARCH_BANNER+"/1","android.widget.FrameLayout","","","",Arrays.asList(0,0,edge,395));
+        for(String path:Arrays.asList(SEARCH_BANNER+"/0",SEARCH_BANNER+"/1")){
+            v.click(path);v.nodes.get(path).put("ime_enter",ObservedImeEnter.ABSENT.fingerprintInput());
+        }
+        v.link();
+    }
+    static void advanceTestBanner(Fixture f){
+        f.values.nodes.get(SEARCH_BANNER+"/0").put("bounds",Arrays.asList(0,0,0,395));
+        f.values.nodes.get(SEARCH_BANNER+"/0").put("visible",false);
+        f.values.nodes.get(SEARCH_BANNER+"/1").put("bounds",Arrays.asList(0,0,1224,395));
+    }
+    static void successorCases(String[] args)throws Exception{
+        for(String scenario:Arrays.asList("fresh_decision","wider_overlap","unrelated_mutation","target_replaced","unknown_event","cancelled","deadline","spent_model_run","spent_successor")){
+            one("ambiguous_banner_"+scenario,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installTestBanner(f,"wider_overlap".equals(scenario)?2:1);
+                    NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    f.graphHook=()->{if(f.graphReads==d){
+                        advanceTestBanner(f);
+                        if("unrelated_mutation".equals(scenario))f.values.nodes.get("0/2/0").put("selected",true);
+                        if("target_replaced".equals(scenario))f.replaceTargetOnSecond=true;
+                    }};
+                    NoEffectRun r=submitCapturedSearch(s,f,old);actionIo.one();
+                    f.graphHook=null;f.replaceTargetOnSecond=false;
+                    if("unknown_event".equals(scenario))successorEvent(s,0);
+                    if("cancelled".equals(scenario))f.cancelled=true;
+                    if("deadline".equals(scenario))SystemClock.now=old.deadlineElapsed;
+                    if(actionIo.hasJobs())r.marker();else s.main.one();
+                    check(r.outcome!=null&&!r.outcome.accepted&&!r.outcome.dispatched&&f.effects==0
+                            &&r.work.roleProof==null&&!r.work.platformCallInvoked,"ambiguous pair never grants or dispatches an effect");
+                    if(!"fresh_decision".equals(scenario)&&!"spent_successor".equals(scenario)&&!"spent_model_run".equals(scenario)){
+                        check(r.proof==null,"ineligible variant cannot authorize a new read");return;
+                    }
+                    check(r.proof!=null&&r.outcome.stale&&"overlapping_blank_home_banner_before_claim".equals(r.proof.evidence().get("rejection_reason")),
+                            "one bounded fresh read requires the recorded preclaim banner refusal: "+r.outcome.detail);
+                    rejected(()->old.claim(SystemClock.now));
+                    r.closeOld();NativeSearchSession.Offer fresh=r.publish();
+                    if("spent_model_run".equals(scenario)){
+                        rejected(()->fresh.reserve(f.base.decision(fresh),old.modelRunId,SystemClock.now,SystemClock.now+8000));
+                        check(f.effects==0,"the previous model run never dispatches a second action");return;
+                    }
+                    if("spent_successor".equals(scenario)){
+                        installTestBanner(f,1);int secondD=f.graphReads+2;
+                        f.graphHook=()->{if(f.graphReads==secondD)advanceTestBanner(f);};
+                        NativeSearchSession.Attempt next=fresh.reserve(f.base.decision(fresh),UUID.randomUUID().toString().replace("-",""),SystemClock.now,SystemClock.now+8000);
+                        NoEffectRun second=submitCapturedSearch(s,f,next);actionIo.one();second.marker();
+                        check(second.proof==null&&f.effects==0,"a second ambiguous attempt stays terminal");
+                    }else{
+                        completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));
+                        check(f.effects==1&&f.base.search.navigationEffectRecorded(),"only a new decision with fresh stable C/D reaches the search input");
+                    }
+                }
+            });
+        }
+
+        one("successor_opaque_actual_drain_marker_and_graph_release",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                int declared=0;for(java.lang.reflect.Constructor<?> ctor:NativeSearchNoEffectReplanProof.class.getDeclaredConstructors()){check(!java.lang.reflect.Modifier.isPublic(ctor.getModifiers()),"no public proof constructor");if(!ctor.isSynthetic()){declared++;check(java.lang.reflect.Modifier.isPrivate(ctor.getModifiers()),"opaque source constructor remains private");}}check(declared==1,"exact one source constructor; Java 8 synthetic access bridge is not a source API");
+                NoEffectRun r=readyNoEffect(s,f);Map<String,Object> e=r.proof.evidence();
+                check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("automatic_redispatch"))&&Boolean.FALSE.equals(e.get("business_verified")),"proof grants only fresh read opportunity");
+                check(((Number)e.get("action_queue_drain_marker_elapsed_ms")).longValue()>=((Number)r.work.state.evidence().get("worker_drained_elapsed_ms")).longValue(),"serial marker follows actual worker drain");
+                check(r.work.currentGraph==null&&r.work.currentSnapshot!=null&&r.work.latestSnapshot!=null,"only immutable C/D values retained");
+                check(r.work.firstFinalEventsElapsed>=r.work.latestReadReturnedElapsed&&r.work.sealedDiagnostic.getBoolean("typed_post_D_first_fence_rejected"),"real diagnostic clocks preserve first failed fence");
+                rejected(()->r.proof.requireOutcome(new ActionOutcome(false,false,true,r.outcome.detail)));
+            }
+        });
+        for(int event=0;event<3;event++){final int kind=event;one("successor_initial_bad_event_"+kind+"_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginNoEffect(s,f,f.intent(),kind);r.marker();check(r.proof==null&&r.outcome!=null&&!r.outcome.dispatched&&f.effects==0,"unknown/boundary/untyped never mints successor");
+            }
+        });}
+        for(int gap=0;gap<4;gap++)for(int event=0;event<3;event++){final int where=gap,kind=event;one("successor_continuous_event_gap_"+where+"_bad_kind_"+kind,()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginNoEffect(s,f,f.intent(),3);
+                if(where==0){successorEvent(s,kind);r.marker();check(r.proof==null,"bad event before drain marker invalidates authority");}
+                else if(where==1){actionIo.one();successorEvent(s,kind);s.main.one();check(r.proof==null,"bad event after drain before current callback invalidates authority");}
+                else if(where==2){r.marker();check(r.proof!=null,"proof exists before later event");successorEvent(s,kind);rejected(()->r.closeOld());check(s.taskObservationAdmissions==1,"no new read after later bad event");}
+                else{r.marker();r.closeOld();NativeSearchRequest fresh=r.submit();check(fresh!=null&&s.nativeSearchTrackedAction==null,"new request owns tracker");
+                    successorEvent(s,kind);check(fresh.events.mark().events==1,"one callback counted once after atomic handoff");observationIo.one();s.main.one();
+                    check(f.planning==null&&f.error!=null&&f.graphReads==4,"bad successor event rejected before any new graph");}
+                check(f.effects==0&&!Boolean.TRUE.equals(r.attempt.evidence().get("claimed")),"all event-gap refusals remain no effect");
+            }
+        });}
+        one("successor_content_continuity_new_offer_new_run_new_CD_once",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);long chain=f.base.search.chainDeadlineElapsed,oldDeadline=r.attempt.deadlineElapsed;
+                successorEvent(s,3);r.closeOld();successorEvent(s,3);NativeSearchSession.Offer fresh=r.publish();
+                check(!s.nativeSearchAllowsLegacyObservation(s.lease)&&f.effects==0,"fresh planning is still not generic action authority");
+                rejected(()->r.attempt.offer.grammar());rejected(()->r.attempt.claim(SystemClock.now));
+                completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));
+                check(f.base.search.chainDeadlineElapsed==chain&&r.attempt.deadlineElapsed==oldDeadline&&s.taskObservationAdmissions==2,"fixed chain and old eight-second deadline never reset");
+                check(f.base.journalNames.contains("native-search-navigation-attempt.json")&&f.base.journalNames.contains("native-search-no-effect-retirement-01.json"),"old intent and durable no-effect retirement preserved");
+                rejected(()->r.proof.requireReadTarget(s,s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        one("successor_old_model_run_cannot_reserve_fresh_offer",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);r.closeOld();NativeSearchSession.Offer fresh=r.publish();
+                rejected(()->fresh.reserve(f.base.decision(fresh),r.attempt.modelRunId,SystemClock.now,SystemClock.now+8000));
+                check(f.effects==0&&!f.base.journalNames.contains("native-search-navigation-attempt-02.json"),"spent model run cannot authorize another intent");
+            }
+        });
+        one("successor_proof_consumed_once_no_second_read",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);r.closeOld();NativeSearchSession.Offer fresh=r.publish();int reads=f.graphReads,admissions=s.taskObservationAdmissions;
+                r.submit();check(f.error!=null&&f.graphReads==reads&&s.taskObservationAdmissions==admissions,"same opaque proof cannot admit twice");
+                check(fresh!=null&&f.effects==0,"no stale effect replay");
+            }
+        });
+        one("successor_second_late_failure_cannot_mint_third_intent",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun old=readyNoEffect(s,f);old.closeOld();NativeSearchSession.Offer fresh=old.publish();
+                NativeSearchSession.Attempt next=fresh.reserve(f.base.decision(fresh),UUID.randomUUID().toString().replace("-",""),SystemClock.now,SystemClock.now+8000);
+                NoEffectRun second=beginNoEffect(s,f,next,3);second.marker();check(second.proof==null&&second.outcome!=null&&!second.outcome.dispatched&&f.effects==0,"one successor cap rejects a second failed intent");
+                check(s.taskObservationAdmissions==2&&f.base.journalNames.contains("native-search-navigation-attempt-02.json"),"second actual intent preserved without third read");
+            }
+        });
+        one("successor_native_retirement_journal_failure_blocks_new_read",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);f.base.journalFails=true;rejected(()->r.closeOld());f.base.journalFails=false;
+                rejected(()->f.base.search.requireFreshPlanningAfterNoEffect(r.proof,SystemClock.now));
+                check(s.taskObservationAdmissions==1&&f.effects==0&&!f.base.journalNames.contains("native-search-no-effect-retirement-01.json"),"failed actual journal cannot close old attempt into successor");
+            }
+        });
+        one("successor_old_deadline_expiry_before_marker_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginNoEffect(s,f,f.intent(),3);SystemClock.now=r.attempt.deadlineElapsed;r.marker();
+                check(r.proof==null&&f.effects==0,"drained old attempt deadline still governs proof mint");
+            }
+        });
+        one("successor_admit_resamples_old_deadline_under_event_lock",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);r.closeOld();SystemClock.beforeRead=()->{
+                    if(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService$NativeSearchNoEffectReplanProof","admit")){SystemClock.beforeRead=null;SystemClock.now=r.attempt.deadlineElapsed;}
+                };r.submit();check(!r.proof.consumed.get()&&f.error!=null&&s.taskObservationAdmissions==1&&f.effects==0,"late lock acquisition cannot renew original action deadline");
+            }
+        });
+        one("successor_cancel_between_drain_and_callback_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginNoEffect(s,f,f.intent(),3);f.cancelled=true;r.marker();check(r.proof==null&&f.effects==0,"cancelled drained work never grants successor");
+            }
+        });
+        one("successor_actual_controller_replacement_rejected",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);s.ownedController=new Object();rejected(()->r.closeOld());check(f.effects==0,"same task string does not replace actual controller identity");
+            }
+        });
+        one("successor_actual_gate_replacement_rejected",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=readyNoEffect(s,f);s.taskAuthorization=f.base.authority.bind(f.base.search.taskId);rejected(()->r.closeOld());
+                check(f.effects==0&&s.taskObservationAdmissions==1,"same-valued different Gate object cannot receive successor");
+            }
+        });
+        one("successor_changed_last_action_callback_rejected",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginNoEffect(s,f,f.intent(),3);s.lastActionExecution=null;r.marker();check(r.proof==null&&f.effects==0,"replacement callback identity cannot mint proof");
+            }
+        });
+        one("successor_marker_queue_rejection_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=f.intent();armFirstFinalEvent(s,3);NoEffectRun r=new NoEffectRun(s,f,a);
+                s.performNativeOpenSearch(s.lease,a,f.cancel(),new NativeSearchSession.ActionCallback(){public void onResult(ActionOutcome o){r.outcome=o;}public void onNoEffectReplanAvailable(ActionOutcome o,NativeSearchNoEffectReplanProof p){r.proof=p;}});
+                s.main.one();actionIo.reject=true;actionIo.one();if(s.main.hasJobs())s.main.one();actionIo.reject=false;
+                check(r.proof==null&&f.effects==0&&!actionIo.hasJobs(),"rejected serial drain marker cannot prove handoff");
+            }
+        });
+        one("successor_marker_queue_uncertain_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=f.intent();armFirstFinalEvent(s,3);NoEffectRun r=new NoEffectRun(s,f,a);
+                s.performNativeOpenSearch(s.lease,a,f.cancel(),new NativeSearchSession.ActionCallback(){public void onResult(ActionOutcome o){r.outcome=o;}public void onNoEffectReplanAvailable(ActionOutcome o,NativeSearchNoEffectReplanProof p){r.proof=p;}});
+                s.main.one();actionIo.uncertain=true;actionIo.one();actionIo.uncertain=false;if(actionIo.hasJobs())actionIo.one();if(s.main.hasJobs())s.main.one();
+                check(r.proof==null&&f.effects==0,"uncertain marker submission remains fail closed even when queued body later drains");
+            }
+        });
+        one("successor_fixed_174s_and_task_deadline_overflow_safe",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession capped=clockSession(f,1000000,1500000);check(capped.chainDeadlineElapsed==1174000&&NativeSearchSession.CHAIN_LIMIT_MS==174000,"first Session fixes 174-second maximum");
+                NativeSearchSession shorter=clockSession(f,1000000,1010000);check(shorter.chainDeadlineElapsed==1010000,"original task deadline clips chain");
+                NativeSearchSession overflow=clockSession(f,Long.MAX_VALUE-100,Long.MAX_VALUE);check(overflow.chainDeadlineElapsed==Long.MAX_VALUE,"cap addition cannot overflow");
+                capped.retire();shorter.retire();overflow.retire();
+            }
+        });
+        one("successor_loading_read_then_postD_read_keeps_all_admission_ordinals",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                loadingRetryReady(s,f);f.startPlanning(f.retryProof);observationIo.one();s.main.one();check(f.planning!=null&&s.taskObservationAdmissions==2,"original loading successor fully admitted");
+                NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+                NoEffectRun r=beginNoEffect(s,f,attempt,3);r.marker();r.closeOld();NativeSearchSession.Offer fresh=r.publish();
+                check(s.taskObservationAdmissions==3&&((Number)r.proof.evidence().get("original_read_ordinal")).intValue()==2,"no initial/read ordinal reset");
+                completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));check(s.taskObservationAdmissions==3,"ordinary post-navigation gate remains usable after all three admissions");
+            }
+        });
+        one("successor_actual_LTC_two_models_failed_receipt_new_intent_once",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);controller.beforeModel=n->{if(n==1)armFirstFinalEvent(s,3);};Throwable failure=pumpController(controller,f);
+                if(failure!=null)throw new AssertionError("actual Controller successor failed",failure);
+                check(controller.modelCalls==2&&controller.completedSteps==2&&controller.oldAxCalls==1&&f.effects==1,"actual loop requires two new model calls and one new effect then ordinary AX handoff");
+                check(new HashSet<String>(controller.modelRuns).size()==2&&new HashSet<String>(controller.modelObservations).size()==2,"new grammar/observation and run for successor");
+                JSONObject first=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"step-01-action.json").toPath()),StandardCharsets.UTF_8));
+                JSONObject second=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"step-02-action.json").toPath()),StandardCharsets.UTF_8));
+                check(!first.getBoolean("accepted")&&!first.getBoolean("dispatched")&&second.getBoolean("accepted")&&second.getBoolean("dispatched"),"failed step is durably distinct from later successful navigation");
+                check(f.base.journalNames.contains("native-search-no-effect-retirement-01.json")&&f.base.journalNames.contains("native-search-navigation-attempt-02.json"),"actual Session/NativeTask durable records preserve both intents");
+            }
+        });
+        one("successor_actual_LTC_failed_action_record_prevents_successor",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);controller.beforeModel=n->{if(n==1)armFirstFinalEvent(s,3);};File sentinel=new File(f.directory,"step-01-action.json");byte[] original="preexisting-create-only-sentinel".getBytes(StandardCharsets.UTF_8);Files.write(sentinel.toPath(),original,StandardOpenOption.CREATE_NEW);
+                Throwable failure=pumpController(controller,f);check(failure!=null,"actual create-new action receipt write must fail");
+                check(controller.modelCalls==1&&f.effects==0&&s.taskObservationAdmissions==1&&!f.base.journalNames.contains("native-search-no-effect-retirement-01.json"),"receipt failure blocks retirement, new read and model");
+                check(Arrays.equals(original,Files.readAllBytes(sentinel.toPath())),"existing failed-receipt target never overwritten");
+            }
+        });
+        one("successor_actual_LTC_second_late_attempt_stops_without_third_model",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);controller.beforeModel=n->armFirstFinalEvent(s,3);Throwable failure=pumpController(controller,f);
+                check(failure!=null&&controller.modelCalls==2&&f.effects==0&&s.taskObservationAdmissions==2,"actual Controller cannot replan twice");
+                check(new File(f.directory,"step-01-action.json").isFile()&&new File(f.directory,"step-02-action.json").isFile(),"both no-effect failures durably kept");
+            }
+        });
+        one("post_refresh_typed_content_real_drain_new_offer_CD_effect_once",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();long chain=f.base.search.chainDeadlineElapsed,deadline=attempt.deadlineElapsed;
+                armTargetRefreshEvent(s,f,3,null);NoEffectRun r=submitCapturedSearch(s,f,attempt);final boolean[] beforeDrain={false};
+                SystemClock.beforeRead=()->{
+                    if(successorStack("org.trillionnium.hepta.local.ActionExecutionState","drained")){
+                        SystemClock.beforeRead=null;beforeDrain[0]=true;
+                        check(r.work.typedAfterTargetRefreshPostDEventRejected&&!r.work.state.isDrained()&&actionSlot.pending(),"real second-fence rejection precedes original worker drain");
+                        check(r.proof==null&&r.outcome==null,"no callback or opaque proof before worker drain");
+                        rejectedUncheckedPublication(r.work.state);
+                    }
+                };
+                actionIo.one();check(beforeDrain[0],"actual ActionExecutionState.drained clock boundary executed");
+                check(r.work.state.isDrained()&&r.work.currentGraph==null&&!actionSlot.pending()&&r.proof==null&&r.outcome==null,"actual finally completed but serial marker still required");
+                check(!r.work.firstPostDEventRejected&&r.work.firstRejectedWatermark==null&&r.work.afterTargetRefreshEventsElapsed>=r.work.firstFinalEventsElapsed,"independent later fence clock and watermark");
+                check(r.work.afterTargetRefreshRejectedWatermark.content>r.work.pairCompleted.content&&!r.work.ancestorChainChecked&&!r.work.windowsChecked,"typed same-owner content only, precise pre-return phase");
+                check(Boolean.FALSE.equals(attempt.evidence().get("claimed"))&&!r.work.state.effectEntered()&&!r.work.platformCallInvoked&&f.effects==0,"actual original intent unclaimed with zero effects");
+                r.marker();check(r.proof!=null,"actual current callback minted the private read-only proof");
+                check("post_D_event_after_target_refresh_before_claim".equals(r.proof.evidence().get("rejection_reason")),"proof identifies the real second fence");
+                check(!r.work.sealedDiagnostic.getBoolean("typed_post_D_first_fence_rejected")&&r.work.sealedDiagnostic.getBoolean("typed_post_D_after_target_refresh_fence_rejected"),"sealed full diagnostic preserves both fence meanings");
+                r.closeOld();NativeSearchSession.Offer fresh=r.publish();rejected(()->attempt.claim(SystemClock.now));
+                completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));
+                check(f.base.search.chainDeadlineElapsed==chain&&attempt.deadlineElapsed==deadline&&f.effects==1,"same 174-second chain and old eight-second deadline, one new intent effect");
+                rejected(()->r.proof.requireReadTarget(s,s.ownedController,f.base.search,s.lease,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        for(int event=0;event<3;event++){final int kind=event;one("post_refresh_bad_event_"+kind+"_never_mints_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginTargetRefreshRejection(s,f,f.intent(),kind,null);
+                check(r.work.afterTargetRefreshRejectedWatermark!=null&&!r.work.typedAfterTargetRefreshPostDEventRejected,"actual unknown/boundary/untyped watermark retained without eligible cause");
+                check(!actionIo.hasJobs(),"ineligible second fence does not claim a serial proof marker");s.main.one();
+                check(r.proof==null&&r.outcome!=null&&!r.outcome.accepted&&!r.outcome.dispatched&&r.outcome.stale,"bad event remains a failed no-effect outcome");
+                check(!Boolean.TRUE.equals(r.attempt.evidence().get("claimed"))&&s.taskObservationAdmissions==1,"no claimed old intent or successor read");
+            }
+        });}
+        one("post_refresh_actual_root_metadata_change_still_refused",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginTargetRefreshRejection(s,f,f.intent(),3,()->f.windowTitle="changed actual fixture window title");
+                check(r.work.afterTargetRefreshEventsElapsed<0&&!r.work.hasNoEffectReplanFence(),"actual changed root/window metadata rejects before the dedicated event fence");
+                s.main.one();check(r.proof==null&&r.outcome!=null&&r.outcome.detail.contains("root/window metadata changed"),"window failure cannot be classified from a later content event or error string");
+            }
+        });
+        for(int entered=0;entered<2;entered++){final boolean effect=entered==1;one("post_refresh_later_"+(effect?"effect_entered":"claimed")+"_generic_fence_never_replans",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=f.intent();NoEffectRun r=submitCapturedSearch(s,f,a);final boolean[] injected={false};
+                SystemClock.beforeRead=()->{
+                    SearchActionWork work=s.activeSearchAction;
+                    if(work!=null&&successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFinalEvents")
+                            &&Boolean.TRUE.equals(work.attempt.evidence().get("claimed"))&&work.state.effectEntered()==effect){
+                        SystemClock.beforeRead=null;injected[0]=true;successorEvent(s,3);
+                    }
+                };
+                actionIo.one();s.main.one();
+                check(injected[0]&&Boolean.TRUE.equals(a.evidence().get("claimed"))&&r.work.state.effectEntered()==effect,"real original claim/effect entry preceded the unchanged generic fence");
+                check(r.work.afterTargetRefreshEventsElapsed>=0&&!r.work.hasNoEffectReplanFence()&&r.work.afterTargetRefreshRejectedWatermark==null,"passed second fence does not authorize any later rejection");
+                check(r.proof==null&&r.outcome!=null&&!r.outcome.accepted&&f.effects==0&&!r.work.platformCallInvoked,"even zero platform calls cannot infer retry after claim/effect entry");
+                check(s.taskObservationAdmissions==1,"no new planning admitted after claim/effect");
+            }
+        });}
+        one("post_refresh_original_deadline_before_marker_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginTargetRefreshRejection(s,f,f.intent(),3,null);check(r.work.typedAfterTargetRefreshPostDEventRejected,"live typed second fence reached");
+                SystemClock.now=r.attempt.deadlineElapsed;r.marker();
+                check(r.proof==null&&r.outcome!=null&&!r.outcome.accepted&&f.effects==0,"actual original eight-second expiry prevents proof after drain");
+            }
+        });
+        one("post_refresh_deadline_during_actual_ancestor_refresh_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=f.intent();NoEffectRun r=beginTargetRefreshRejection(s,f,a,3,()->SystemClock.now=a.deadlineElapsed);
+                check(!r.work.hasNoEffectReplanFence(),"expired real refresh cannot establish a typed preclaim cause");
+                s.main.one();check(r.proof==null&&r.outcome!=null&&!r.outcome.accepted&&f.effects==0,"unchanged deadline/check guard stops the old action");
+            }
+        });
+        one("post_refresh_marker_definitive_rejection_never_mints_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=f.intent();armTargetRefreshEvent(s,f,3,null);NoEffectRun r=submitCapturedSearch(s,f,a);
+                actionIo.reject=true;actionIo.one();actionIo.reject=false;s.main.one();
+                check(r.work.typedAfterTargetRefreshPostDEventRejected&&r.work.state.isDrained()&&!r.work.replanDrainMarkerCompleted,"old worker drain cannot replace the missing serial marker");
+                check(r.proof==null&&r.outcome!=null&&f.effects==0,"rejected real marker submission remains closed");
+            }
+        });
+        one("post_refresh_cancel_between_drain_and_callback_no_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NoEffectRun r=beginTargetRefreshRejection(s,f,f.intent(),3,null);f.cancelled=true;r.marker();
+                check(r.proof==null&&r.outcome!=null&&!r.outcome.accepted&&f.effects==0,"actual cancelled task cannot receive second-fence authority");
+            }
+        });
+        one("post_refresh_actual_LTC_new_model_and_new_intent_only_once",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);controller.beforeModel=n->{if(n==1)armTargetRefreshEvent(s,f,3,null);};Throwable failure=pumpController(controller,f);
+                if(failure!=null)throw new AssertionError("actual second-fence Controller successor failed",failure);
+                check(controller.modelCalls==2&&controller.completedSteps==2&&controller.oldAxCalls==1&&f.effects==1,"actual unchanged LTC branch makes a new model call and one new intent");
+                check(new HashSet<String>(controller.modelRuns).size()==2&&new HashSet<String>(controller.modelObservations).size()==2,"original model output/observation not reused");
+                JSONObject first=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"step-01-action.json").toPath()),StandardCharsets.UTF_8));
+                JSONObject second=new JSONObject(new String(Files.readAllBytes(new File(f.directory,"step-02-action.json").toPath()),StandardCharsets.UTF_8));
+                check(!first.getBoolean("accepted")&&!first.getBoolean("dispatched")&&second.getBoolean("accepted")&&second.getBoolean("dispatched"),"old actual failed receipt remains distinct from later navigation acceptance");
+                check(f.base.journalNames.contains("native-search-no-effect-retirement-01.json")&&f.base.journalNames.contains("native-search-navigation-attempt-02.json"),"same actual Session ledger preserves durable retirement and unique next intent");
+            }
+        });
+        one("post_refresh_actual_LTC_second_rejection_has_no_third_attempt",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);controller.beforeModel=n->armTargetRefreshEvent(s,f,3,null);Throwable failure=pumpController(controller,f);
+                check(failure!=null&&controller.modelCalls==2&&f.effects==0&&s.taskObservationAdmissions==2,"same existing one-successor cap stops repeated second-fence rejection");
+                check(new File(f.directory,"step-01-action.json").isFile()&&new File(f.directory,"step-02-action.json").isFile(),"both actual failed outcomes retained");
+            }
+        });
+    }

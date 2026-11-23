@@ -1,0 +1,377 @@
+{
+  "associated_frozen_source_head": "8d277617ae0263631d2bcdd30d5022e3c6cf7897",
+  "case": "strict-natural-price-5dfa8eb6/natural-price-5dfa-01/run-977b8a18",
+  "contains_device_serial_ip_or_argv": false,
+  "contains_host_path": false,
+  "contains_raw_page_text": false,
+  "contains_screenshot": false,
+  "dom_and_footer": {
+    "basis": "Read-only inspection of all four original capture envelopes and the unchanged-state branch in frozen source.",
+    "capture_envelope_sha256": [
+      "59d33f1bcec2159db3abcb628963bad820c1c68254fac7834ca9ebe199cb591a",
+      "994e0266d3b0b3a0a199e4f02f8901f66c31ca996453aa3837ba15868d0430de",
+      "304cab9a2e924d251b94159a2884aaaf5f4edd623f89485a6c8caa4c52d56dec",
+      "438df4abb93fdafbe8f6b62534f1790b35a8c36435cd1b4dc3d201270b3b94a7"
+    ],
+    "dom_native_changed_node_correspondence_proved": false,
+    "dom_samples": 8,
+    "first_pair_exact_private_predicate_error_logged": false,
+    "first_pair_head_membership_changed": true,
+    "first_pair_membership_rejection_is_source_and_raw_inference": true,
+    "footer_visibility_exception_exercised": false,
+    "observed_footer_img_visibility_pairs": [
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ],
+      [
+        false,
+        true
+      ]
+    ],
+    "raw_capture_count": 4,
+    "second_pair_eligibility_accepted": true
+  },
+  "host_analysis_only": true,
+  "interpretation_limits": [
+    "The second eligibility acceptance does not prove a final verified price quote.",
+    "The missing private failing native row prevents assessment of its control semantics or geometric relation to the selected card.",
+    "No observation guard, final quote guard, permission, or deadline is relaxed by this diagnosis.",
+    "The failure-only structure candidate is host-qualified; phone capture availability and performance remain unvalidated."
+  ],
+  "native_rejection": {
+    "actual_failed_row_before_after_retained": false,
+    "after_canonical_sha256": "502e6ac58f424fe789cb706e262e03414f2b57058fa8bf266738dd6a767bfa1f",
+    "animation_or_occlusion_inferred": false,
+    "before_canonical_sha256": "7f862481bc8496b0d89e0df0f01f9dcb6189092c23ed2f2a6a9d1178e9be24de",
+    "benign_change_proved": false,
+    "candidate_path_is_distinct_branch": true,
+    "changed_fields": [
+      "bounds"
+    ],
+    "comparison": "private complete native snapshot pair before live final recheck",
+    "failed_row_rect_class_flags_recoverable_from_saved_evidence": false,
+    "geometric_disjointness_proved": false,
+    "native_path": "0/2/0/0/0/1/1/1/0",
+    "retained_before_after_frame_sha256": [
+      "ce51473a4a76a6f1f9439c3f6752ee9c07f4a5a95cb504dbc7e9457f60e14b03",
+      "06fd09bd7701f8c374d23949da7c42e7d157f945d6ccdc170688600bd36f6dfb"
+    ],
+    "selected_card_candidate_bounds": [
+      0,
+      494,
+      292,
+      918
+    ],
+    "selected_card_candidate_path": "0/2/0/0/0/3/4/1/0",
+    "target_dom_native_bridge_verified": false
+  },
+  "original_artifacts": [
+    {
+      "relative_name": "RESULT.json",
+      "sha256": "c4af113665d06b501132a1109f9b028d4242a0e8212b49df84bfdd7976d2c295"
+    },
+    {
+      "relative_name": "collection/task/result.json",
+      "sha256": "cadc9f9d521183f96b836e9ddf4046e54e1a239dde3eac29f9fe2e8646670d06"
+    },
+    {
+      "relative_name": "collection/task/web-observation-timing-582a7db6f646417b93ec952e319e33e0.json",
+      "sha256": "16ddcc479eaab8cb390cbb3941b6d3287d59bb5d40801921425e0bd947a4c659"
+    },
+    {
+      "relative_name": "collection/task/web-flight-owner.json",
+      "sha256": "c92d5f795ccab5bef4994ac3e0ae48ed61dc38c1bc06af2ba36420d9290ce1a7"
+    },
+    {
+      "relative_name": "collection/task/web-native-change-f74d64ee812a4a428954846580fe5cd0.json",
+      "sha256": "23440bdff968a9328d1a27a7963d62fc8fbbae889e74624b941f5575f9ed9193"
+    }
+  ],
+  "outcome": {
+    "blocked_terminal_observed": false,
+    "cleanup_exit_gate_passed": true,
+    "cleanup_flags_verified": true,
+    "cleanup_known": true,
+    "completion_verified": false,
+    "external_model": false,
+    "goal_independently_verified": false,
+    "local_model_process_started": false,
+    "main_focus_unchanged": true,
+    "main_screen_inputs": 0,
+    "native_processes_after": 0,
+    "ordinary_stop_sent": false,
+    "status": "failed",
+    "steps": 0,
+    "summary": "evidence RPC deadline exceeded",
+    "web_route_verified": true
+  },
+  "owner_purpose": {
+    "binding_sha256": "322499697b91f381a1fd4e25dc9255289ec6c37c21389525516eda0badebb4d4",
+    "is_legacy_case": false,
+    "natural_price_only": true,
+    "owner_sha256": "413fca2c85d41f3d988b4c0e9da56cd43faf3f0529df389decedb4afe5ee8e8f",
+    "router_spec_required": false,
+    "single_unit_required": false
+  },
+  "phone_actions_by_this_analysis": 0,
+  "schema": "hepta.natural-price-failure-diagnosis.public.v1",
+  "timing": {
+    "attribution": "A real native-row rejection was followed by capture RPC exhaustion of the bounded observation retry budget. No local-model invocation occurred.",
+    "bounded_retry_budget_ms": 32000,
+    "bounded_retry_deadline_elapsed_ms": 187058125,
+    "clock": "Android elapsedRealtime milliseconds",
+    "eligibility_ms": [
+      1249,
+      2468
+    ],
+    "eligibility_predicates": [
+      false,
+      true
+    ],
+    "last_capture_started_with_budget_ms": 2602,
+    "native_dom_bracket_ms": 4513,
+    "native_read_ms": 4639,
+    "native_wait_ms": 4640,
+    "nested_spans_must_not_be_summed": true,
+    "observe_ms": 44399,
+    "overall_task_budget_remaining_at_observe_finish_ms": 429966,
+    "overall_task_deadline_reached": false,
+    "phase_events": [
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 44399,
+        "error_type": "java.io.IOException",
+        "finished_elapsed_ms": 187058129,
+        "outcome": "failed",
+        "phase": "observe",
+        "predicate_result": null,
+        "started_elapsed_ms": 187013730
+      },
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187013731,
+        "outcome": "completed",
+        "phase": "main_queue",
+        "predicate_result": null,
+        "started_elapsed_ms": 187013731
+      },
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 1,
+        "error_type": null,
+        "finished_elapsed_ms": 187013732,
+        "outcome": "completed",
+        "phase": "main_wait",
+        "predicate_result": null,
+        "started_elapsed_ms": 187013731
+      },
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 1,
+        "error_type": null,
+        "finished_elapsed_ms": 187013732,
+        "outcome": "completed",
+        "phase": "main_read",
+        "predicate_result": null,
+        "started_elapsed_ms": 187013731
+      },
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 263,
+        "error_type": "java.lang.IllegalArgumentException",
+        "finished_elapsed_ms": 187024876,
+        "outcome": "failed",
+        "phase": "dom_scope_bracket",
+        "predicate_result": null,
+        "started_elapsed_ms": 187024613
+      },
+      {
+        "deadline_elapsed_ms": 187488095,
+        "duration_ms": 1249,
+        "error_type": null,
+        "finished_elapsed_ms": 187026125,
+        "outcome": "completed",
+        "phase": "shopping_dom_eligibility",
+        "predicate_result": false,
+        "started_elapsed_ms": 187024876
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187031552,
+        "outcome": "completed",
+        "phase": "main_queue",
+        "predicate_result": null,
+        "started_elapsed_ms": 187031552
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187031552,
+        "outcome": "completed",
+        "phase": "main_wait",
+        "predicate_result": null,
+        "started_elapsed_ms": 187031552
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187031552,
+        "outcome": "completed",
+        "phase": "main_read",
+        "predicate_result": null,
+        "started_elapsed_ms": 187031552
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 401,
+        "error_type": "java.lang.IllegalArgumentException",
+        "finished_elapsed_ms": 187043031,
+        "outcome": "failed",
+        "phase": "dom_scope_bracket",
+        "predicate_result": null,
+        "started_elapsed_ms": 187042630
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 2468,
+        "error_type": null,
+        "finished_elapsed_ms": 187045499,
+        "outcome": "completed",
+        "phase": "shopping_dom_eligibility",
+        "predicate_result": true,
+        "started_elapsed_ms": 187043031
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187045501,
+        "outcome": "completed",
+        "phase": "main_queue",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045501
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187045501,
+        "outcome": "completed",
+        "phase": "main_wait",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045501
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187045501,
+        "outcome": "completed",
+        "phase": "main_read",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045501
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 1,
+        "error_type": null,
+        "finished_elapsed_ms": 187045573,
+        "outcome": "completed",
+        "phase": "native_queue",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045572
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 4640,
+        "error_type": "org.trillionnium.hepta.local.WebNativeObservationChanged",
+        "finished_elapsed_ms": 187050212,
+        "outcome": "failed",
+        "phase": "native_wait",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045572
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 4639,
+        "error_type": "org.trillionnium.hepta.local.WebNativeObservationChanged",
+        "finished_elapsed_ms": 187050212,
+        "outcome": "failed",
+        "phase": "native_read",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045573
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 4513,
+        "error_type": "org.trillionnium.hepta.local.WebNativeObservationChanged",
+        "finished_elapsed_ms": 187050212,
+        "outcome": "failed",
+        "phase": "native_dom_bracket",
+        "predicate_result": null,
+        "started_elapsed_ms": 187045699
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187055523,
+        "outcome": "completed",
+        "phase": "main_queue",
+        "predicate_result": null,
+        "started_elapsed_ms": 187055523
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187055523,
+        "outcome": "completed",
+        "phase": "main_wait",
+        "predicate_result": null,
+        "started_elapsed_ms": 187055523
+      },
+      {
+        "deadline_elapsed_ms": 187058125,
+        "duration_ms": 0,
+        "error_type": null,
+        "finished_elapsed_ms": 187055523,
+        "outcome": "completed",
+        "phase": "main_read",
+        "predicate_result": null,
+        "started_elapsed_ms": 187055523
+      }
+    ]
+  }
+}

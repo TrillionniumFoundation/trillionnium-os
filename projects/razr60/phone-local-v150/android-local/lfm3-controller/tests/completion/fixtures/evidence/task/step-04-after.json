@@ -1,0 +1,341 @@
+{
+  "observation_id": "9ef1a8233c8940e0a4aaf7731a856713",
+  "package": "com.motorola.stylus",
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 3387,
+  "screen_sha256": "f85f08b176712c78b41fcedec6bc145a54c220b6e2c6622e2cc6818f776f47aa",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3387,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 0,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "Moto 笔记",
+    "title_truncated": false
+  },
+  "app_tree_sha256": "2572b0253c38bedb2ac10fcd0c38ae1bb9ea6411de33e5e35e8609fd3911a615",
+  "observation_state_sha256": "ceae38285762dcf951bb36bc96bd28ea24fca52e8a2615f6120dd0b0625e0332",
+  "ime_visible": true,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        130,
+        176,
+        311
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        176,
+        130,
+        696,
+        311
+      ],
+      "text": "标题",
+      "view_id": "com.motorola.stylus:id\/title",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        696,
+        130,
+        872,
+        311
+      ],
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "enabled": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        872,
+        130,
+        1048,
+        311
+      ],
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "enabled": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        1048,
+        130,
+        1224,
+        311
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        0,
+        311,
+        1224,
+        1631
+      ],
+      "text": "NoteEditor",
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "down"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        58,
+        1637,
+        279,
+        1806
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        279,
+        1637,
+        500,
+        1806
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        500,
+        1637,
+        721,
+        1806
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        721,
+        1637,
+        942,
+        1806
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        942,
+        1637,
+        1163,
+        1806
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        60,
+        311,
+        1164,
+        1631
+      ],
+      "text": "Hepta-v43r3-1f2921c77294。购物清单：牛奶、鸡蛋、面包。\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": "948e15865a2673e04b796abbf4ae1c0567a3a7fb93f24cb3d9cbc6bb26b4c470",
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": true,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_semantics_unverified"
+      },
+      "submit_available": false,
+      "focused": true
+    }
+  ]
+}

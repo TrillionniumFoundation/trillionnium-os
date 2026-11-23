@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.mobimind.integration-overlay.v1",
+  "base_source_manifest_sha256": "519b46dba5078e591bc1c9ef1a0e20c92bef2a68e023108c6c7c582bea774394",
+  "base_version": "code10",
+  "overlays": [
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "base_sha256": "ec6c6cb0f0b20be68423acbaad62ff49dfd332e90941ac34a92b078ab5726385",
+      "overlay_sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "base_sha256": "f5a41d9e717ff2e3fdfd663bf0298b6d7ce83ef5eff1903cdc20bd50d540be0e",
+      "overlay_sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "base_sha256": "f8dddb642f8153ee5e78e4d7940bfbe34d230d29129468aff470298f16e4ab06",
+      "overlay_sha256": "f734b29824b3bfd08a87c84a1d32d6ad4afb3b3adfb087b3612ff836f0b14936"
+    }
+  ],
+  "new_source_files": [
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "bytes": 15174,
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 21496,
+      "sha256": "13decbcc1416a9e3850dff072ce4b08c2ed48bfaaafe4e7dd1ba7bc189504e2e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "bytes": 2565,
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "bytes": 3910,
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "bytes": 9097,
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    }
+  ],
+  "native_runtime_version": "r4",
+  "internet_permission_added": false,
+  "phone_actions_connected": false
+}

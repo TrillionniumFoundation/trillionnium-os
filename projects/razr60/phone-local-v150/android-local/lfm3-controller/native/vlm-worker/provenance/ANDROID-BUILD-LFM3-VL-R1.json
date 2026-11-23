@@ -1,0 +1,223 @@
+{
+  "schema": "hepta.vlm.android-build.v1",
+  "commands": [
+    [
+      "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang",
+      "-std=c11",
+      "-O2",
+      "-fPIE",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-fvisibility=hidden",
+      "-ffile-prefix-map=/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source=hepta-vlm-worker",
+      "-c",
+      "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/native/generation-bridge.c",
+      "-o",
+      "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/generation-bridge.o"
+    ],
+    [
+      "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang++",
+      "-std=c++17",
+      "-O2",
+      "-fPIE",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-fvisibility=hidden",
+      "-ffile-prefix-map=/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source=hepta-vlm-worker",
+      "-pie",
+      "-nostdlib++",
+      "-isystem/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama",
+      "-isystem/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/vendor/llama/common",
+      "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/source/native/vlm-worker.cpp",
+      "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/generation-bridge.o",
+      "-L/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime",
+      "-lllama-common",
+      "-lmtmd",
+      "-lllama",
+      "-lggml",
+      "-lggml-base",
+      "-ldl",
+      "-lm",
+      "-Wl,-rpath,$ORIGIN",
+      "-Wl,-rpath-link,/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime",
+      "-Wl,-z,max-page-size=16384",
+      "-Wl,-z,now",
+      "-Wl,-z,relro",
+      "-Wl,--no-undefined",
+      "-o",
+      "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/libhepta_local_vlm_runner.so"
+    ]
+  ],
+  "compiler_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android30\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "compiler_path": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang++",
+  "compiler_wrapper_sha256": "662b264a3a4ecaa251c2eee4537000a69b5078211223a9eeb76b0c3a213a1ee4",
+  "source_properties_sha256": "84bef2c605bb263571c299f1eef3307ff58f741710f8cce514cb525b28567f41",
+  "source_manifest_sha256": "f1d11753423a1a71a1e25c755cee1e302ffb6ba86d9469e4bb98ed80e2dfd8b9",
+  "runtime": [
+    {
+      "name": "libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libllama.so"
+    },
+    {
+      "name": "libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libmtmd.so"
+    },
+    {
+      "name": "libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libllama-common.so"
+    },
+    {
+      "name": "libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml.so"
+    },
+    {
+      "name": "libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml-base.so"
+    },
+    {
+      "name": "libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml-cpu.so"
+    },
+    {
+      "name": "libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml-hexagon.so"
+    },
+    {
+      "name": "libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml-htp-v79.so"
+    },
+    {
+      "name": "libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libggml-opencl.so"
+    },
+    {
+      "name": "libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76",
+      "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/runtime/libomp.so"
+    }
+  ],
+  "dt_needed": [
+    "libllama-common.so",
+    "libmtmd.so",
+    "libllama.so",
+    "libggml.so",
+    "libggml-base.so",
+    "libdl.so",
+    "libm.so",
+    "libc.so"
+  ],
+  "runpath": [
+    "$ORIGIN"
+  ],
+  "strong_undefined_closure_complete": false,
+  "sdk_cpp_undefined_closure_complete": true,
+  "vendor_needed": [
+    {
+      "from": "libggml-opencl.so",
+      "needed": "libOpenCL.so",
+      "device_namespace_verified": false
+    }
+  ],
+  "vendor_opencl_verification_pending": true,
+  "vendor_versioned_symbols": [
+    "clBuildProgram@OPENCL_1.0",
+    "clCreateBuffer@OPENCL_1.0",
+    "clCreateBufferWithProperties@OPENCL_3.0",
+    "clCreateCommandQueue@OPENCL_1.0",
+    "clCreateContext@OPENCL_1.0",
+    "clCreateImage@OPENCL_1.2",
+    "clCreateKernel@OPENCL_1.0",
+    "clCreateProgramWithBinary@OPENCL_1.0",
+    "clCreateProgramWithSource@OPENCL_1.0",
+    "clCreateSubBuffer@OPENCL_1.1",
+    "clEnqueueBarrierWithWaitList@OPENCL_1.2",
+    "clEnqueueCopyBuffer@OPENCL_1.0",
+    "clEnqueueFillBuffer@OPENCL_1.2",
+    "clEnqueueMapBuffer@OPENCL_1.0",
+    "clEnqueueMarkerWithWaitList@OPENCL_1.2",
+    "clEnqueueNDRangeKernel@OPENCL_1.0",
+    "clEnqueueReadBuffer@OPENCL_1.0",
+    "clEnqueueUnmapMemObject@OPENCL_1.0",
+    "clEnqueueWriteBuffer@OPENCL_1.0",
+    "clFinish@OPENCL_1.0",
+    "clFlush@OPENCL_1.0",
+    "clGetDeviceIDs@OPENCL_1.0",
+    "clGetDeviceInfo@OPENCL_1.0",
+    "clGetKernelSubGroupInfo@OPENCL_2.1",
+    "clGetKernelWorkGroupInfo@OPENCL_1.0",
+    "clGetPlatformIDs@OPENCL_1.0",
+    "clGetPlatformInfo@OPENCL_1.0",
+    "clGetProgramBuildInfo@OPENCL_1.0",
+    "clGetProgramInfo@OPENCL_1.0",
+    "clReleaseEvent@OPENCL_1.0",
+    "clReleaseKernel@OPENCL_1.0",
+    "clReleaseMemObject@OPENCL_1.0",
+    "clReleaseProgram@OPENCL_1.0",
+    "clSetKernelArg@OPENCL_1.0",
+    "clWaitForEvents@OPENCL_1.0"
+  ],
+  "new_cpp_runtime_added": false,
+  "symbol_closure_sha256": "05b41a6409d3cd9c66d7d536a5b33c78043adab3b62e1f70b1982cb615639ef5",
+  "required_api_imports": [
+    "mtmd_tokenize_from_parts",
+    "mtmd_helper_get_n_tokens",
+    "mtmd_helper_get_n_pos",
+    "mtmd_helper_eval_chunks",
+    "llama_sampler_init_grammar",
+    "llama_model_load_from_file",
+    "mtmd_init_from_file",
+    "ggml_backend_reg_by_name",
+    "ggml_backend_reg_name",
+    "ggml_backend_dev_backend_reg"
+  ],
+  "sha2_instruction_owners": {
+    "hepta_sha256_armv8_blocks": 56
+  },
+  "linked_backend_abi": {
+    "registration": "linked_GGML_BACKEND_DL_OFF",
+    "libraries": {
+      "libggml-cpu.so": "ggml_backend_cpu_reg",
+      "libggml-hexagon.so": "ggml_backend_hexagon_reg",
+      "libggml-opencl.so": "ggml_backend_opencl_reg"
+    },
+    "generic_plugin_entry_absent": true,
+    "phone_registration_executed": false
+  },
+  "linked_backend_host_checks": 23,
+  "linked_backend_host_receipt_sha256": "7db24984e22951b884ffbef5c379a698b0fcc75175704ce718372e7a3ce9abf6",
+  "vision_init_order_host_cases": 5,
+  "vision_init_order_host_checks": 23,
+  "vision_init_order_host_receipt_sha256": "b500549ecd4227916ee61ff3a077170d5ddf3de35eae08c39a8cd174773be6d3",
+  "worker": {
+    "path": "/Users/qianqi/hepta-razr-resume-20261120-e6a5823a-r1/lfm3-vl-native-build-r2/build/libhepta_local_vlm_runner.so",
+    "bytes": 152048,
+    "sha256": "cf6688361c2dbec7b6d8f01df047fd067f79db988f5cb384f64d7c3d37cf0680"
+  },
+  "elapsed_seconds": 1.492506041,
+  "android_executed": false,
+  "phone_contacted": false,
+  "model_inference_performed": false,
+  "ordinary_app_qualified": false,
+  "dispatcher_connected": false
+}
