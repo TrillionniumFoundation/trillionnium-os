@@ -677,7 +677,7 @@ final class NativeCalendarDateIntent {
         permission_contracts={
             "profile-permission-initialization":("hepta.permission-init-core-host.v1",{
                 "new_policy_cases":(81,330),"physical_fence_cases":(26,40)}),
-            "profile-permission-ui":("hepta.permission-ui-host.v1",{"checks":(15,72)})}
+            "profile-permission-ui":("hepta.permission-ui-host.v1",{"checks":(23,104),"late_ready_broker":(11,22)})}
         report["permission_initialization_gates"]={}
         for name,(schema,case_contracts) in permission_contracts.items():
             run(name,[sys.executable,"-B",ROOT/"tests"/name/"run_host.py",

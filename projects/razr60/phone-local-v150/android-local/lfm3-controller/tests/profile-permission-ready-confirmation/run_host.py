@@ -181,7 +181,7 @@ def main():
               here / "ProfileReadyConfirmationHostTest.java"]
     platform = background / "ProfileTaskPlatform.java"
     broker = background / "BackgroundDisplayBroker.java"
-    tracked = set(files + [platform, broker, fixture, here / "run_host.py", here / "README.md",
+    tracked = set(files + [source / "tests/profile-permission-ready-confirmation/late_ready_history.py", platform, broker, fixture, here / "run_host.py", here / "README.md",
                           original / "run_host.py", original / "ProfileStateSettleHostTest.java",
                           original / "README.md", source / "src/org/trillionnium/hepta/local/BackgroundSession.java"])
     result = {"schema": "hepta.profile-ready-confirmation-canonical-host.v1",
@@ -243,12 +243,15 @@ def main():
         notes_new_call = "remaining=publicNotesReader.frameAfterRelease(custody.releasedRead());live=remaining.global;"
         if broker_text.count(notes_new_call) != 1:
             raise RuntimeError("Exact independent Notes cleanup call differs")
-        prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(broker_text)
+        from runpy import run_path
+        history = run_path(str(source/"tests/profile-permission-ready-confirmation/late_ready_history.py"))
+        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](broker_text)
+        prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(r31_text)
         result["reviewed_calendar_broker_inverse"] = calendar_inverse
         ready_broker = prior_broker.replace(notes_new_call, notes_old_call, 1)
         old_call = 'if(!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");'
         new_call = 'if(!' + ready_call + ')throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");'
-        if (broker_text.count(new_call) != 1 or digest(ready_broker.replace(new_call, old_call, 1).encode())
+        if (r31_text.count(new_call) != 1 or digest(ready_broker.replace(new_call, old_call, 1).encode())
                 != "ddc76c3a6ba7fb74ae1ec2b3552a59e47957c28a8149bced34cf49fbe31c1c5a"):
             raise RuntimeError("Broker differs beyond the one authorized preparation call")
         result["ready_wiring"] = {"only_prepare_done_second_confirmation": True,

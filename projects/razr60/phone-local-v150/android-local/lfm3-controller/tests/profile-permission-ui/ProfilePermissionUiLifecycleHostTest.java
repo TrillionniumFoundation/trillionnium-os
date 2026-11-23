@@ -48,7 +48,48 @@ public final class ProfilePermissionUiLifecycleHostTest {
         void failed()throws Exception{joined();yes(failure!=null,"expected controlled failure");}
         void checkNoInput(){yes(bg.clicks.get()==0,"unexpected permission input");}
     }
+    static void lateReady()throws Exception{
+        test("confirmed late optional location uses same reservation and freshly confirms app",()->{
+            Rig r=new Rig();r.bg.state="APP_READY";r.bg.confirmations.add("PERMISSION_PENDING");
+            r.start();r.success();yes(r.bg.clicks.get()==1,"late optional location skipped");
+            yes(r.bg.confirmationCalls.get()==2,"fresh app confirmation missing");
+            yes(new File(r.evidence,"profile-permission-deny-result.json").isFile(),"missing late deny receipt");
+        });
+        test("late waiting settles to the existing app with no input",()->{
+            Rig r=new Rig();r.bg.state="APP_READY";r.bg.advanceWaiting=true;r.bg.confirmations.add("WAITING");
+            r.start();r.success();r.checkNoInput();yes(r.bg.confirmationCalls.get()==2,"expected one fresh confirmation");
+        });
+        test("permission arrives on ordinary read preceding final RPC",()->{
+            Rig r=new Rig();r.bg.sampled.add("APP_READY");r.bg.sampled.add("PERMISSION_PENDING");
+            r.start();r.success();yes(r.bg.clicks.get()==1&&r.bg.confirmationCalls.get()==1,"lost pending pre-confirmation read");
+        });
+        test("second changing confirmation fails without another dispatch",()->{
+            Rig r=new Rig();r.bg.state="APP_READY";r.bg.advanceWaiting=true;
+            r.bg.confirmations.add("WAITING");r.bg.confirmations.add("PERMISSION_PENDING");
+            r.start();r.failed();r.checkNoInput();yes(r.bg.confirmationCalls.get()==2,"second deferral touched again");
+        });
+        test("unknown confirmation does not authorize a permission input",()->{
+            Rig r=new Rig();r.bg.state="APP_READY";r.bg.confirmations.add("UNAVAILABLE");
+            r.start();r.failed();r.checkNoInput();yes(r.bg.observations.get()==0,"unverified permission read");
+        });
+        test("a second permission after reserved input never retries the deny",()->{
+            Rig r=new Rig();r.bg.confirmations.add("PERMISSION_PENDING");r.start();r.failed();
+            yes(r.bg.clicks.get()==1&&r.bg.confirmationCalls.get()==1,"repeated deny or confirmation");
+            yes(new File(r.evidence,"profile-permission-deny-result.json").isFile(),"missing first result");
+        });
+        test("late unknown permission retains original owner visibility rule",()->{
+            Rig r=new Rig();r.bg.location=false;r.bg.state="APP_READY";r.bg.confirmations.add("PERMISSION_PENDING");
+            r.start();ProfilePermissionUiSession.Presentation p=r.preview();
+            yes(!r.ui.denyFromOwnerButton(p,r.activity),"hidden callback admitted");r.stop();r.failed();r.checkNoInput();
+        });
+        test("late waiting expires under the original deadline",()->{
+            Rig r=new Rig();r.bg.state="APP_READY";r.bg.confirmations.add("WAITING");
+            r.start(SystemClock.elapsedRealtime()+250);r.failed();r.checkNoInput();
+            yes(r.bg.confirmationCalls.get()==1,"waiting started a fresh confirmation budget");
+        });
+    }
     static void runAll()throws Exception{
+        lateReady();
         test("ordinary app ready needs no permission preview or input",()->{
             Rig r=new Rig();r.bg.state="APP_READY";r.start();r.success();r.checkNoInput();yes(r.bg.observations.get()==0,"read permission tree unnecessarily");
         });
@@ -117,7 +158,7 @@ public final class ProfilePermissionUiLifecycleHostTest {
             finally{MobiMindPrivateFiles.failLeaf=null;}
         });
         test("fresh deadline cannot reuse durable preview for same retired task",()->{
-            Rig r=new Rig();r.start();r.success();int original=r.bg.clicks.get();r.finished=false;r.failure=null;r.bg.state="PERMISSION_PENDING";
+            Rig r=new Rig();r.start();r.success();int original=r.bg.clicks.get();r.finished=false;r.failure=null;r.bg.state="PERMISSION_PENDING";r.bg.active=true;
             r.start(SystemClock.elapsedRealtime()+11000);r.failed();yes(r.bg.clicks.get()==original,"same task replayed after deadline reset");
         });
         test("original deadline expiry cannot drain a blocked read or accept a new worker",()->{
