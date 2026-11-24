@@ -363,6 +363,8 @@ final class NativeXiaomiProductPage {
         if(!"0/1".equals(field.path)||!field.viewId.isEmpty()||!field.clickable||field.scrollable
                 ||!field.scrollDirections.isEmpty()||!unselected(field))
             return page(frame,"search_input_unverified","observed_frame_layout_query_field_required",null,null);
+        String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
+        boolean exactFilledQuery=field.text.equals(literal);
         NativeAppEvidence.Node normal=null,normalLabel=null,toggle=null,toggleLabel=null;int labels=0;
         for(NativeAppEvidence.Node label:exactText(frame,"搜索")){
             NativeAppEvidence.Node button=clickAncestor(frame,label);
@@ -375,7 +377,11 @@ final class NativeXiaomiProductPage {
                     ||label.clickable||label.editable||label.scrollable||!label.scrollDirections.isEmpty()||!unselected(label)
                     ||distance(label.path,button.path)!=1||childIndex(label.path)!=0)
                 return page(frame,"search_input_unverified","observed_frame_layout_search_controls_required",null,null);
-            if("0/4".equals(button.path)){if(normal!=null)return page(frame,"search_input_unverified","duplicate_normal_search_button",null,null);
+            // The actual filled editor removes its hint siblings: the same
+            // normal search control is then at 0/2. Only exact owner readback
+            // admits that closed variant; an empty or different query cannot.
+            if("0/4".equals(button.path)||(exactFilledQuery&&"0/2".equals(button.path))){
+                if(normal!=null)return page(frame,"search_input_unverified","duplicate_normal_search_button",null,null);
                 normal=button;normalLabel=label;}
             else if("0/0".equals(button.path)){if(toggle!=null)return page(frame,"search_input_unverified","duplicate_search_mode_toggle",null,null);
                 toggle=button;toggleLabel=label;}
@@ -385,15 +391,16 @@ final class NativeXiaomiProductPage {
                 ||toggle.top<field.top||normal.top<field.top
                 ||Math.min(toggle.bottom,normal.bottom)<=Math.max(toggle.top,normal.top))
             return page(frame,"search_input_unverified","normal_search_and_mode_toggle_not_distinguished",null,null);
-        if(!directRootSearchToolbar(frame,field,normal,normalLabel,toggle,toggleLabel))
+        boolean filledToolbar="0/2".equals(normal.path);
+        if(!directRootSearchToolbar(frame,field,normal,normalLabel,toggle,toggleLabel,filledToolbar))
             return page(frame,"search_input_unverified","observed_direct_root_search_toolbar_required",null,null);
         Map<String,Object> proof=map();proof.put("query_field",field.fact("text"));
         proof.put("normal_search_button",normal.fact("description"));proof.put("normal_search_label",normalLabel.fact("text"));
         proof.put("excluded_mode_toggle",toggle.fact("description"));proof.put("excluded_mode_toggle_label",toggleLabel.fact("text"));
         proof.put("same_native_toolbar_path","0");proof.put("toolbar_shape","observed_frame_layout_direct_children.v1");
         proof.put("mode_toggle_offered",false);proof.put("derived_label_grants_authority",false);
-        proof.put("search_toolbar_variant","direct_root_framelayout");
-        String literal=goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16);
+        proof.put("search_toolbar_variant",filledToolbar?"direct_root_framelayout_filled":"direct_root_framelayout");
+        if(filledToolbar)proof.put("current_query_readback_equals_immutable_owner_literal",true);
         Map<String,String> purposes=new LinkedHashMap<String,String>();Map<String,Object> facts=map();
         if(!field.text.equals(literal)){
             Map<String,String> edits=new LinkedHashMap<String,String>();edits.put(field.id,literal);
@@ -573,9 +580,10 @@ final class NativeXiaomiProductPage {
      * submit after the actual editable field contains the immutable query. */
     private static boolean directRootSearchToolbar(NativeAppEvidence.Frame frame,NativeAppEvidence.Node field,
             NativeAppEvidence.Node normal,NativeAppEvidence.Node normalLabel,
-            NativeAppEvidence.Node toggle,NativeAppEvidence.Node toggleLabel){
+            NativeAppEvidence.Node toggle,NativeAppEvidence.Node toggleLabel,boolean filledToolbar){
         NativeAppEvidence.Node[] nodes={field,normal,normalLabel,toggle,toggleLabel};
-        String[] paths={"0/1","0/4","0/4/0","0/0","0/0/0"};
+        String[] paths=filledToolbar?new String[]{"0/1","0/2","0/2/0","0/0","0/0/0"}
+                :new String[]{"0/1","0/4","0/4/0","0/0","0/0/0"};
         for(int i=0;i<nodes.length;i++){
             NativeAppEvidence.Node n=nodes[i];boolean label=i==2||i==4;
             if(!usable(frame,n)||!paths[i].equals(n.path)||!n.viewId.isEmpty()

@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.native-xiaomi-filled-toolbar-fixtures.v1",
+  "task_id": "42fb3d48dfbc4d32a8d33a38e841eec5",
+  "source_head": "f2dbf2906e01baeb1753c70678005dc0c41e4af1",
+  "original_observation_json_unchanged": true,
+  "original_typed_ax_receipts_unchanged": true,
+  "files": [
+    {
+      "path": "step-04-before.json",
+      "bytes": 119783,
+      "sha256": "3552dee3b62ef716da960c78a0b9aa663e0a9f25ba7ff67be29a8d9558d32316",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "step-04-after.json",
+      "bytes": 126599,
+      "sha256": "e3e4f94c7c0be3bdb0f48604e7fc717987f89b149fc355c7311c4dd900c7093e",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "native-app-binding.json",
+      "bytes": 4141,
+      "sha256": "fd48e926c9d8a5f2e0d879c74d30e2dd3678bec77a3e4b343c8c0c67e344443e",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "step-03-action.json",
+      "bytes": 291889,
+      "sha256": "ce92230e0b32f4a6c401bd9832a52868f26ef1b25d5b09e5a372a96a01e4e653",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "fa594195d78840f69f4f620eea47fb32-native-ax.json",
+      "bytes": 238251,
+      "sha256": "6ec2865623fb9202a376b94f23a20e5521117c2e0cdaa1948bd45157df41b32a",
+      "original_bytes_preserved": true
+    },
+    {
+      "path": "b15f855f68674e8db86c77cf02d04785-native-ax.json",
+      "bytes": 244506,
+      "sha256": "f9c0f60e8f994264ce7a234154caa5d4eb5718dfe84944d8227e8cb468880f49",
+      "original_bytes_preserved": true
+    }
+  ],
+  "fixture_use": "historical_parser_regression_only",
+  "live_node_or_dispatch_authority": false,
+  "old_failed_input_preserved": true,
+  "business_success_claimed": false,
+  "phone_operations": 0
+}

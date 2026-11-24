@@ -1,0 +1,69 @@
+
+    /** The Android IO is synthetic; all admission, capture, full-graph mismatch,
+     * failure and resource retirement bodies execute from the actual source.
+     * The 11277 ms boundary reproduces recorded task 659625's failed saved census.
+     * It does not turn that failed census or the historical click into authority. */
+    static void postCaptureSettleCases()throws Exception{
+        for(final long cut:new long[]{11277,10000,10001,11800,11999})eventCase("post_capture_settle_no_new_read_at_"+cut,()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();
+            try{
+                s.f.readHook=(g,n)->{
+                    int k=n-s.priorReads;
+                    sealedReadGraph(g,k>=4?"changed-complete-saved-census":"complete-before-census");g.windowId=8;
+                    SystemClock.now=s.started+(k==1?6500:k==2?7300:k==3?8000:cut);
+                    if(k==3)s.f.noteObservationEvent(9); // Known boundary prevents the old pair being sealed.
+                    sealGraph(g);
+                };
+                Bitmap.encodeHook=()->SystemClock.now=s.started+8200;
+                s.f.hashHook=()->SystemClock.now=s.started+8400;
+                s.queue();int reads=s.f.reads.get();long deadline=s.request.deadline;long transition=s.permit.transitionDeadline();
+                check(reads==s.priorReads+4&&count(s.request,"SAVED_GRAPH_CHANGED")==1,"actual complete saved census differs");
+                check(s.request.postEffectIdentity==null&&s.out.proofs.isEmpty(),"unsealed differing pair supplies no private retry proof");
+                s.f.main.drain();s.f.finish();
+                check(s.f.reads.get()==reads,"settle-expired failed capture must not start another complete Graph/Binder read");
+                check(s.request.finished&&s.out.failures.size()==1&&s.out.observations.isEmpty()&&s.out.proofs.isEmpty(),"exactly one ordinary failure, no publication or invented proof");
+                check(s.request.failedAt==s.started+cut&&s.request.failedAt<s.request.deadline,"failure is returned before unchanged request deadline");
+                check(s.request.deadline==deadline&&deadline==s.started+12000&&s.permit.transitionDeadline()==transition,"request and transition are never renewed");
+                check(s.f.taskObservationAdmissions==2&&s.permit.admissions.get()==1,"no replacement request or action admission");
+                check(s.request.readWorksStarted==s.request.readWorksFinished&&!observationIoBusy.get()&&observationIo.active.get()==0,"actual read workers have returned");
+                s.released();
+            }finally{s.dispose();}
+        });
+        eventCase("post_capture_settle_does_not_grant_new_authority_before_expiry",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();
+            try{
+                s.f.readHook=(g,n)->{
+                    int k=n-s.priorReads;sealedReadGraph(g,k>=4?"changed-before-settle":"same-before");g.windowId=8;
+                    SystemClock.now=s.started+(k==1?1000:k==2?1400:k==3?1900:9000);
+                    if(k==3)s.f.noteObservationEvent(9);sealGraph(g);
+                };
+                Bitmap.encodeHook=null;s.f.hashHook=null;
+                s.queue();s.f.main.drain();
+                check(!s.request.finished&&s.out.proofs.isEmpty()&&s.out.observations.isEmpty()&&s.f.current==s.prior,"pre-expiry mismatch retains existing same-request reobservation only");
+                check(s.request.deadline==s.started+12000&&s.f.taskObservationAdmissions==2&&s.permit.admissions.get()==1,"no new request or effect authority");
+                s.f.cancelled.set(true);SystemClock.now+=200;s.f.main.drain();s.f.finish();
+                check(s.out.observations.isEmpty()&&s.out.proofs.isEmpty(),"Stop still defeats queued reobservation");
+            }finally{s.dispose();}
+        });
+        for(final String fault:new String[]{"unknown_event","cancel","owner","window"})eventCase("post_capture_settle_preserves_"+fault+"_refusal",()->{
+            PostEffectReadScenario s=new PostEffectReadScenario();
+            try{
+                s.f.readHook=(g,n)->{
+                    int k=n-s.priorReads;sealedReadGraph(g,k>=4?"changed-whole-census":"complete-before");g.windowId=8;
+                    SystemClock.now=s.started+(k==1?6500:k==2?7300:k==3?8000:11277);
+                    if(k==3)s.f.noteObservationEvent(9);
+                    if(k==4&&"owner".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+                    if(k==4&&"window".equals(fault))g.windowId=9;
+                    sealGraph(g);
+                };
+                Bitmap.encodeHook=()->SystemClock.now=s.started+8200;s.f.hashHook=()->SystemClock.now=s.started+8400;
+                s.queue();int reads=s.f.reads.get();
+                if("unknown_event".equals(fault))s.f.noteObservationEvent(-1);
+                if("cancel".equals(fault))s.f.cancelled.set(true);
+                s.f.main.drain();s.f.finish();
+                check(s.f.reads.get()==reads&&s.out.observations.isEmpty()&&s.out.proofs.isEmpty(),"identity/cancel/unknown event never becomes a read or publication exception");
+                check(s.request.deadline==s.started+12000&&s.f.current==s.prior&&s.permit.admissions.get()==1,"old authority/deadline not revived");
+                check(s.request.finished&&s.request.captured==null&&!s.request.shotPending,"failed resources released");
+            }finally{s.dispose();}
+        });
+    }

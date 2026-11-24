@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.native-app-session.v1",
+  "task_id": "42fb3d48dfbc4d32a8d33a38e841eec5",
+  "owner_sha256": "529d4a20339f49e781d93913b2bfc189c4af4689aa4b1521f4203bda7c625007",
+  "execution_target_sha256": "ff5d855baaf9892f0e2b12ebcfc71ef12873ef2ac337942b88e7fac7893aed25",
+  "authorization_sha256": "f88ab39b9d949796256553deb8ab23a50a06fadaf6238dea39107c0bd5335be0",
+  "profile_target": {
+    "schema": "hepta.profile-target.v1",
+    "profile": {
+      "schema": "hepta.managed-profile-identity.v1",
+      "user_id": 10,
+      "user_serial": 10,
+      "parent_user_id": 0,
+      "user_type": "android.os.usertype.profile.MANAGED",
+      "profile_identity_sha256": "8bb4f64b9ac56501b5984b14030c2fd5ac984d326080d27a20c43e00ec492797",
+      "grants_action_authority": false
+    },
+    "full_uid": 1010485,
+    "package": "com.xiaomi.shop",
+    "component": "com.xiaomi.shop\/com.xiaomi.shop2.activity.MainActivity",
+    "version_code": 20261010,
+    "apk_hashes": {
+      "base": "95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"
+    },
+    "apk_set_sha256": "ae070b251cd4977754c498f24a527de1d28e38df878fdd2628fe8cfb3f026eab",
+    "signer_sha256": [
+      "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"
+    ],
+    "target_identity_sha256": "b87c9b12660fcdd9c2bf1b8e77cc6fcf9428cdeb4ccd02908b59fc9f1b39f7c4",
+    "grants_action_authority": false
+  },
+  "installed_app": {
+    "package": "com.xiaomi.shop",
+    "uid": 1010485,
+    "version_code": 20261010,
+    "apk_hashes": {
+      "base": "95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"
+    },
+    "apk_set_sha256": "ae070b251cd4977754c498f24a527de1d28e38df878fdd2628fe8cfb3f026eab",
+    "profile_target": {
+      "schema": "hepta.profile-target.v1",
+      "profile": {
+        "schema": "hepta.managed-profile-identity.v1",
+        "user_id": 10,
+        "user_serial": 10,
+        "parent_user_id": 0,
+        "user_type": "android.os.usertype.profile.MANAGED",
+        "profile_identity_sha256": "8bb4f64b9ac56501b5984b14030c2fd5ac984d326080d27a20c43e00ec492797",
+        "grants_action_authority": false
+      },
+      "full_uid": 1010485,
+      "package": "com.xiaomi.shop",
+      "component": "com.xiaomi.shop\/com.xiaomi.shop2.activity.MainActivity",
+      "version_code": 20261010,
+      "apk_hashes": {
+        "base": "95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"
+      },
+      "apk_set_sha256": "ae070b251cd4977754c498f24a527de1d28e38df878fdd2628fe8cfb3f026eab",
+      "signer_sha256": [
+        "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"
+      ],
+      "target_identity_sha256": "b87c9b12660fcdd9c2bf1b8e77cc6fcf9428cdeb4ccd02908b59fc9f1b39f7c4",
+      "grants_action_authority": false
+    }
+  },
+  "selection_projection_sha256": "1ce8406c8335eaf31be3cec1e0698089d4b85d249c4a3df2d287e28f379ff321",
+  "goal": {
+    "schema": "hepta.native-app-owner.v1",
+    "kind": "native_product_price",
+    "package_name": "com.xiaomi.shop",
+    "owner_sha256": "529d4a20339f49e781d93913b2bfc189c4af4689aa4b1521f4203bda7c625007",
+    "contract_sha256": "27022fc447f212bd1a8bd04799e36766f9e9eeea931e2b6f291640b2ef6f3153",
+    "recognition": "complete_literal_native_ax3000t_price.v1",
+    "owner_start_utf16": 0,
+    "owner_end_utf16": 16,
+    "owner_rewritten": false,
+    "source": "complete_immutable_owner_and_explicit_initial_package",
+    "tool_ceiling": [
+      "back",
+      "click",
+      "done",
+      "open",
+      "scroll",
+      "submit",
+      "type",
+      "wait"
+    ],
+    "product_model": "AX3000T",
+    "model_start_utf16": 7,
+    "model_end_utf16": 14,
+    "variant_inferred": false,
+    "specifications_inferred": false,
+    "price_kind_inferred": false,
+    "provider_support_claimed": false,
+    "installed_identity_verified": false,
+    "grants_tool_authority": false,
+    "query_executed": false,
+    "business_verified": false
+  },
+  "background_generation": "258fb73a-940f-4581-afa1-7bd4daa5ca09",
+  "display_id": 592,
+  "model_actions_required": true,
+  "screenshots_used_as_text": false,
+  "automatic_actions_or_replay": false,
+  "query_result_verified": false
+}
