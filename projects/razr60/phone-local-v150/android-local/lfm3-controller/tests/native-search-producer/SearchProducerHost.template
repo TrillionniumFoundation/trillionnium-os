@@ -168,7 +168,7 @@ public final class HeptaAccessibilityService {
         return ObservedImeEnter.ABSENT.fingerprintInput().equals(node.value("ime_enter"))?ObservedImeEnter.ABSENT:ObservedImeEnter.UNKNOWN;
     }
     Graph readGraph(GraphBudget budget,BackgroundSession background){return fixture.graph(budget,background);}
-    static void actualBackgroundChildRefresh(AccessibilityNodeInfo node,AccessibilityNodeInfo root,BackgroundSession background){
+    static void actualBackgroundChildRefresh(AccessibilityNodeInfo node,AccessibilityNodeInfo root,BackgroundSession background,String nativePath){
         {{background_child_guard}}
     }
     static String string(CharSequence v){return v==null?"":v.toString();}
@@ -251,7 +251,7 @@ public final class HeptaAccessibilityService {
             for(Map.Entry<String,NodeData> entry:nodes.entrySet()){
                 AccessibilityNodeInfo node=new AccessibilityNodeInfo(entry.getValue());
                 try{
-                    if(refreshGraphChildren)actualBackgroundChildRefresh(node,"0".equals(entry.getKey())?node:null,background);
+                    if(refreshGraphChildren)actualBackgroundChildRefresh(node,"0".equals(entry.getKey())?node:null,background,entry.getKey());
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);PhoneObservation.Node retained=null;NodeRef ref=null;
                     if(node.isVisibleToUser()&&!bounds.isEmpty()&&(!observableLoadingProjection||node.isClickable()||node.isEditable()||node.isScrollable()||!string(node.getText()).isEmpty()||!string(node.getContentDescription()).isEmpty())){
                         retained=new PhoneObservation.Node();retained.id="n"+g.rows.size();retained.packageName=string(node.getPackageName());retained.nativeTreePath=entry.getKey();

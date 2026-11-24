@@ -614,11 +614,17 @@
                 for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all eight failed graphs drain all references");
             }
         });
-        one("unavailable_D_does_not_restart_C_or_reuse_any_effect",()->{
+        one("unavailable_D_discards_old_C_once_then_terminally_refuses_persistently_missing_C",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;f.graphHook=()->{if(f.graphReads==4)f.nodes.get("0/2/0").refresh=false;};f.action(attempt);
-                noEffect(f,"second full read D is outside first-C recovery");check(f.graphReads==4&&f.outcome.stale,"D fails exactly once");
-                JSONObject proof=f.outcome.actionExecution.getJSONObject("native_search_execution");check(!proof.isNull("current_C")&&proof.isNull("latest_D")&&proof.getJSONArray("current_C_read_attempts").length()==1,"complete C preserved as failed diagnostic only");
+                noEffect(f,"original D and bounded replacement C cannot establish a complete new pair");check(f.graphReads==11&&f.outcome.stale,"one failed D followed by only the remaining seven original C reads");
+                JSONObject proof=f.outcome.actionExecution.getJSONObject("native_search_execution");
+                check(proof.isNull("current_C")&&proof.isNull("latest_D")&&proof.getJSONArray("current_C_read_attempts").length()==8,"no partial replacement is promoted and the original C budget remains exhausted");
+                check(proof.getInt("complete_census_resamples")==1&&proof.getJSONArray("discarded_final_censuses").length()==1,"one shared complete-pair replacement was consumed");
+                JSONObject discarded=proof.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                check(discarded.getBoolean("old_C_graph_closed")&&discarded.isNull("latest_D"),"old complete C was disposed; original D was incomplete");
+                check(f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed&&!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&attempt.evidence().get("revalidation")==null,"old deadline and unclaimed state remain; no incomplete proof grants input");
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"original and all replacement references are drained");
             }
         });
         one("identical_unavailable_child_text_without_typed_reason_cannot_resample",()->{

@@ -243,13 +243,32 @@ final class NativeSearchPlanning {
     /** Publication is a small immutable envelope over the already decoded
      * core. It records actual late content events without pretending that B is
      * a current full tree; the new tool still requires a complete fresh C/D. */
+    /** Only this exact already-sealed value can report capture-age-only expiry.
+     * Every other publication clock, window and ownership check stays terminal. */
+    static final class PublicationCaptureExpired extends IllegalArgumentException {
+        private static final long serialVersionUID=1L;
+        final NativeSearchPlanning planning;final long observedElapsed;final EventMark watermark;final WindowCheck check;
+        private PublicationCaptureExpired(NativeSearchPlanning planning,long now,EventMark watermark,WindowCheck check){
+            super("native search planning: original capture age/publication deadline exceeded");
+            this.planning=planning;observedElapsed=now;this.watermark=watermark;this.check=check;
+        }
+    }
     NativeSearchPlanning published(long now,EventMark watermark,WindowCheck check){
-        need(publication==null&&watermark!=null&&now>=persistedElapsed&&now<timing.requestDeadline
-                &&now-capturedElapsed<=2000,"original capture age/publication deadline exceeded");
+        return published(now,watermark,check,null);
+    }
+    NativeSearchPlanning published(long now,EventMark watermark,WindowCheck check,Map<String,Object> producerDiagnostics){
+        need(publication==null&&watermark!=null&&now>=persistedElapsed&&now<timing.requestDeadline,
+                "original capture age/publication deadline exceeded");
         need(check!=null&&persistedElapsed<=check.started&&check.completed<=now&&check.before.monotonicSince(context.sealed)
                 &&watermark.monotonicSince(check.after),"actual late window check/event order differs");
         Map<String,Object> currentWindowFacts=check.facts;validateWindowFacts(second,currentWindowFacts,now);
         need(sameWindowFacts(context.secondWindowFacts,currentWindowFacts),"publication window/owner facts changed");
+        if(now-capturedElapsed>2000){
+            // The complete A/B was already accepted, sealed and read back with its full history.
+            // Only later changes are constrained here; no earlier counter is erased or called neutral.
+            need(watermark.contentOnlySince(context.sealed),"original capture age/publication deadline exceeded");
+            throw new PublicationCaptureExpired(this,now,watermark,check);
+        }
         Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-planning-publication.v1");
         e.put("receipt_sha256",receiptSha256);e.put("published_elapsed_ms",now);e.put("watermark",watermark.evidence());
         e.put("worker_window_check",check.evidence());e.put("current_window_facts",currentWindowFacts);e.put("late_content_events",watermark.content-context.sealed.content);
@@ -257,6 +276,7 @@ final class NativeSearchPlanning {
         e.put("late_untyped_events",watermark.events-context.sealed.events-(watermark.content-context.sealed.content)-(watermark.boundary-context.sealed.boundary));
         e.put("planning_as_of_B",true);e.put("no_event_neutrality_claim",true);
         e.put("current_full_tree_claimed",false);e.put("capture_clock_refreshed",false);e.put("fresh_effect_census_required",true);
+        if(producerDiagnostics!=null)e.put("producer_diagnostics",NativeAppEvidence.immutableMap(producerDiagnostics));
         return new NativeSearchPlanning(this,now,NativeAppEvidence.immutableMap(e));
     }
     private NativeSearchPlanning(NativeSearchPlanning original,long now,Map<String,Object> publication){

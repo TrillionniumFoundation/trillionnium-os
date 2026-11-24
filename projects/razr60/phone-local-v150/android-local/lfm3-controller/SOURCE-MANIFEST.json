@@ -3,45 +3,24 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_retained_test_fixture_successor",
-  "complete_source_files": 2538,
+  "candidate_status": "reviewed_complete_census_publication_successor",
+  "complete_source_files": 2540,
   "current_successor_delta": {
-    "baseline": "647615d009849b53bbbb8901493bc49017af0263",
+    "baseline": "1122e45ccc6d4fc277167c6a9edea87cc8efd976",
     "reviewed_paths": [
-      "tests/native-ctrip-form-observation/run_pure_host.py",
-      "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
-      "tests/native-observation-events/run_host.py",
-      "tests/native-observation-retry/run_host.py",
-      "tests/native-observation-screenshot-seed/run_host.py",
-      "tests/native-observation-snapshot/run_host.py",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
+      "tests/native-search-producer/IncompleteCensusCases.fragment",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/native-search-producer/PublicationReplacementCases.fragment",
       "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-stale-recovery/run_budget.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/observation-diagnostics/run_host.py",
-      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java"
+      "tests/native-search-producer/run_producer.py"
     ],
-    "scope": "Repair eleven existing host test wiring files for the reviewed retained cleanup and bounded Xiaomi search-input production: fail-closed IO symbols, exact source proof inverses, and explicit compilation dependencies. Production, test cases, business expectations, budgets, and thresholds are byte-identical to the parent.",
-    "production_changed": false,
+    "scope": "Repair two no-effect Xiaomi observation failures: consume the existing once-only complete C/D resample allowance on a typed incomplete D child refresh before claim; and permit one same-request full A/B replacement for an explicitly expired publication after real serial-worker drain. Preserve all original deadlines, budgets, complete census, ownership, event tracking, and once-only input effect boundaries.",
+    "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
     "automatic_default_model_unchanged": true
-  },
-  "current_test_dependency_repairs": {
-    "changed_paths": [
-      "tests/native-ctrip-form-observation/run_pure_host.py",
-      "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
-      "tests/native-observation-events/run_host.py",
-      "tests/native-observation-retry/run_host.py",
-      "tests/native-observation-screenshot-seed/run_host.py",
-      "tests/native-observation-snapshot/run_host.py",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-stale-recovery/run_budget.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/observation-diagnostics/run_host.py",
-      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java"
-    ],
-    "previous_manifest_sha256": "0d83a883214accecbd9cc21b0f613b4c9005fea5943f45baa9844489b73729fa",
-    "original_failed_full_host_preserved": true
   },
   "files": [
     {
@@ -6586,8 +6565,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 636226,
-      "sha256": "9ec966ce122234ada15d2e7e60d614baacbfec6b720223215716d926736f5ef3"
+      "bytes": 657267,
+      "sha256": "091ce587909ed61c5a810e14f86dbdcb6cdecdf6033ae32c463a35eae93ffc34"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6771,8 +6750,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-      "bytes": 32723,
-      "sha256": "116c4fe58e61e0d51060f3934392f599abd597d2ed98dbdcafdc57f97bc804f8"
+      "bytes": 34195,
+      "sha256": "93e6ab09ed9d87b59c1728001f699d3c81d64e02fdd799bb7620313847dfb22b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeSearchRole.java",
@@ -9360,6 +9339,11 @@
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
     },
     {
+      "path": "tests/native-search-producer/IncompleteCensusCases.fragment",
+      "bytes": 18113,
+      "sha256": "e007ff4f1183b5b2bf7b9b3ec9f47cd0965aa11223c277ad312dc530d550c626"
+    },
+    {
       "path": "tests/native-search-producer/LoadingControllerHost.template",
       "bytes": 1382,
       "sha256": "08aeb77c0b982439f52cd899a532aff0d0c227e74d076cde1d0a44d907acc552"
@@ -9391,13 +9375,18 @@
     },
     {
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "bytes": 74111,
-      "sha256": "9ee18c8117fda39689c4abb6ee722be05ae30fe0ce7f4c7d6b3ace03786f31ec"
+      "bytes": 75116,
+      "sha256": "2623a91137cb9510a9d1a9c908e018518e422efb59cf6f40b577143fab730570"
     },
     {
       "path": "tests/native-search-producer/ProgressHomeCases.fragment",
       "bytes": 13317,
       "sha256": "400c1498a156891d567625907aa857573f4be9694c42f7c0fcf9828ce81364f3"
+    },
+    {
+      "path": "tests/native-search-producer/PublicationReplacementCases.fragment",
+      "bytes": 22807,
+      "sha256": "e38be46092b5d0c6388f45f0ad78c366f57575c49e473f5365dc27827267baa1"
     },
     {
       "path": "tests/native-search-producer/SamplingExhaustionCases.fragment",
@@ -9411,8 +9400,8 @@
     },
     {
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "bytes": 29247,
-      "sha256": "0808254f4df274ac5f91889a658d9d4a814e0bd3a5a1a30a011bac972c966c83"
+      "bytes": 29280,
+      "sha256": "f0feb6049485c3c63d99998ed742172ce803f80a7d2b64a5d56179450552ac1f"
     },
     {
       "path": "tests/native-search-producer/dcc738-planning-censuses.json",
@@ -9436,8 +9425,8 @@
     },
     {
       "path": "tests/native-search-producer/run_producer.py",
-      "bytes": 20132,
-      "sha256": "275466fe50ac69ec72d81c958b589253159196f945635e062c2b47a871428c68"
+      "bytes": 20316,
+      "sha256": "58c153f50d902ca8c781b3781240bc557752f13f03dbb7c807170e2ff0b0b721"
     },
     {
       "path": "tests/native-search-session/8436-retained-login.json",
@@ -12731,69 +12720,19 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "58a7e386ce7204a480e233b46240457073dcece9",
-    "previous_manifest_sha256": "0d83a883214accecbd9cc21b0f613b4c9005fea5943f45baa9844489b73729fa",
+    "previous_component_git_tree_sha1": "5d338c795133ad663ec6524f0472d1f320881c17",
+    "previous_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
-    "targeted_reports": {
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/native-ctrip-form-observation/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/native-ctrip-form-observation/RESULT.json",
-        "bytes": 5518,
-        "sha256": "e96eb01b0abbb9d511a66ab1dc51e3ad23e7974f54e5be7ca53db44a28a4fa65"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/native-observation-snapshot/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/native-observation-snapshot/RESULT.json",
-        "bytes": 35218,
-        "sha256": "dc536c9fc2d11b7e58239a1cddfb3e3914c95b4dff8774dadc0051c9f0087390"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/observation-diagnostics/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r1/observation-diagnostics/RESULT.json",
-        "bytes": 40923,
-        "sha256": "c8f84dcf52a09552a410422d846c4c7c50ee01219f60f115a1661a9c448cb9ed"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-events/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-events/RESULT.json",
-        "bytes": 34798,
-        "sha256": "21d5e9b00956fa8fe357b38093846e09308527121e5ce189b2f89f1a52ecf734"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-retry/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-retry/RESULT.json",
-        "bytes": 25766,
-        "sha256": "07de3be975f40bd10a7893942ccab7d9994c0e2d749b9cb766e715d6f8cab312"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-screenshot-seed/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-observation-screenshot-seed/RESULT.json",
-        "bytes": 14875,
-        "sha256": "5e969f0403eefef6df9194b615d203590765ccf1c3ce6864d3aba3558754bbc8"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-xiaomi-product/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/mobile-observers-r2/native-xiaomi-product/RESULT.json",
-        "bytes": 22021,
-        "sha256": "4400ba2761fc44d3de51a5c4d2ac1fd93e3284330bc6213820d4686afc1cd879"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-focused-r1/routing/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-focused-r1/routing/RESULT.json",
-        "bytes": 530755,
-        "sha256": "ffc11925b3b1c625eb9def9b6d84e612dfdad89b7d93b67bcfcb2e48218e2aa9"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-stale-r2/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-stale-r2/RESULT.json",
-        "bytes": 1531821,
-        "sha256": "4647fb193b03afa4f9f4f76237c5e580ac40ec5585a514940cd237f20d395b2d"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-producer-r1/producer/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-producer-r1/producer/RESULT.json",
-        "bytes": 178870,
-        "sha256": "7e14f4f6e7b37874858a84f6e1d1aec7662e6f918bec35d9b15396bdea74d97e"
-      },
-      "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-producer-r1/form-history/RESULT.json": {
-        "path": "/home/alex/hepta-razr-retained-fixture-followup-20261124-r1/validation/android-fixture-producer-r1/form-history/RESULT.json",
-        "bytes": 13830,
-        "sha256": "483ddf15aae64cc6d4ec9762d8af5a9f43d0479cd6f156f9b617ab4ca4754892"
+    "targeted_reports": [
+      {
+        "path": "/home/alex/hepta-razr-complete-census-followup-20261124-r1/validation/integrated-producer-r3-sealed-counters/RESULT.json",
+        "bytes": 184209,
+        "sha256": "d6f7079f558b5263de7400a51ce18c6b0c43f48a7c948fdcd054cde947856ae2"
       }
-    },
+    ],
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false
@@ -12801,12 +12740,29 @@
   "main_java_sources": 217,
   "phone_qualified": false,
   "production_build_inputs_count": 394,
-  "production_input_map_sha256": "70c03f7099e9e053b50b58f33df26836cc8eb12704689cdcc130dae3c94f09cf",
+  "production_input_map_sha256": "b6ade8e6c14faff648124e19ca1fe0150aa4423ed66e5258c833ca63802da46c",
   "schema": "hepta.local-source.v3",
-  "scope": "Repair eleven existing host test wiring files for the reviewed retained cleanup and bounded Xiaomi search-input production: fail-closed IO symbols, exact source proof inverses, and explicit compilation dependencies. Production, test cases, business expectations, budgets, and thresholds are byte-identical to the parent.",
-  "source_parent_head": "647615d009849b53bbbb8901493bc49017af0263",
-  "source_parent_manifest_sha256": "0d83a883214accecbd9cc21b0f613b4c9005fea5943f45baa9844489b73729fa",
-  "source_snapshot_predecessor_manifest_sha256": "0d83a883214accecbd9cc21b0f613b4c9005fea5943f45baa9844489b73729fa",
+  "scope": "Repair two no-effect Xiaomi observation failures: consume the existing once-only complete C/D resample allowance on a typed incomplete D child refresh before claim; and permit one same-request full A/B replacement for an explicitly expired publication after real serial-worker drain. Preserve all original deadlines, budgets, complete census, ownership, event tracking, and once-only input effect boundaries.",
+  "source_parent_head": "1122e45ccc6d4fc277167c6a9edea87cc8efd976",
+  "source_parent_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
+  "source_snapshot_predecessor_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
   "version_code": 69,
-  "version_name": "0.69.0-native-background-runtime"
+  "version_name": "0.69.0-native-background-runtime",
+  "current_bounded_observation_repairs": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
+      "tests/native-search-producer/IncompleteCensusCases.fragment",
+      "tests/native-search-producer/ProducerCases.fragment",
+      "tests/native-search-producer/PublicationReplacementCases.fragment",
+      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/native-search-producer/run_producer.py"
+    ],
+    "previous_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
+    "full_new_cases": 42,
+    "original_case_changes": [
+      "One existing D-child-missing case now expects the reviewed once-only complete resample; its old expectation failure is preserved."
+    ],
+    "deadlines_and_effect_authority_unchanged": true
+  }
 }

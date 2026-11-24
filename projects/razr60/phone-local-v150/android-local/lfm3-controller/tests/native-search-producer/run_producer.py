@@ -73,7 +73,7 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
- parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();',1)+(test/'ModalPreludeCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()

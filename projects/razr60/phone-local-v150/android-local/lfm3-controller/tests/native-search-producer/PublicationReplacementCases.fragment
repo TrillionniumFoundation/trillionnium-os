@@ -1,0 +1,236 @@
+    static void publicationReplacementCases()throws Exception{
+        one("ec2998_recorded_event_counters_and_4259ms_age_with_explicit_synthetic_sealed_baseline",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning(null,30000);String id=request.id;long started=request.started,deadline=request.deadline,sampling=request.samplingDeadline;
+                int ordinal=s.taskObservationAdmissions;
+                check(deadline-started==30000&&sampling-started==28000,"actual original 30s request and 28s sampling clocks");
+                // Replay the recorded counters through the actual event producer. The old device
+                // sealed artifact was not retained: this fixture explicitly seals at B.after=13,
+                // one possible monotonic point, and does not claim a complete device AX replay.
+                for(int i=0;i<9;i++)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                f.graphHook=()->{
+                    if(f.graphReads==1)for(int i=0;i<3;i++)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                    if(f.graphReads==2)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                };
+                android.system.Os.afterFsync=path->{if(path.endsWith(id+"-native-search-planning.json")){
+                    for(int i=0;i<45;i++)s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    SystemClock.now=request.lastCompletePair.second.captured+4259;
+                }};
+                observationIo.one();android.system.Os.afterFsync=null;
+                NativeSearchPair original=request.lastCompletePair;File old=request.path;byte[] oldBytes=Files.readAllBytes(old.toPath());
+                check(original.first.before.events==9&&original.first.before.boundary==9&&original.first.before.content==0
+                        &&original.first.after.events==12&&original.first.after.boundary==12&&original.first.after.content==0
+                        &&original.second.before.events==12&&original.second.before.boundary==12&&original.second.before.content==0
+                        &&original.second.after.events==13&&original.second.after.boundary==12&&original.second.after.content==1,
+                        "actual event IO reproduces the recorded A9-to12 and B12-to13 sequence");
+                NativeSearchPlanning.EventMark oldDelivery=request.events.mark();
+                check(oldDelivery.events==58&&oldDelivery.boundary==12&&oldDelivery.content==46&&oldDelivery.unknown==0,
+                        "recorded delivery counters 58/0/46/12 remain visible before the age refusal");
+                Runnable oldCallback=s.main.jobs.peek();s.main.one();
+                check(!request.finished&&!request.published&&request.failureReason==null&&f.callbackCount==0,
+                        "age-only rejection precedes finish and cannot publish the expired pair");
+                check(request.publicationReplacements==1&&request.publicationReplacementQueued&&observationIoBusy.get()
+                        &&!request.workerDrained&&observationIo.jobs.size()==1,"one same-serial-executor replacement owns physical capacity");
+                check(request.publicationOriginal.second.sha.equals(original.second.snapshot.sha)&&request.publicationTraces.size()==1,
+                        "the exact rejected complete pair is retained only as historical evidence");
+                NativeSearchPlanning.CaptureContext sourceHistory=request.publicationOriginal.context;
+                check(sourceHistory.sealed.events==13&&sourceHistory.sealed.boundary==12&&sourceHistory.sealed.content==1
+                        &&oldDelivery.contentOnlySince(sourceHistory.sealed)&&!oldDelivery.contentOnlySince(sourceHistory.aBefore),
+                        "this explicit fixture baseline is the accepted sealed B; the earlier boundary history is neither erased nor called neutral");
+                Map<String,Object> parsedEnvelope=NativeSearchRole.stableEnvelope(request.publicationOriginal.second);
+                Map<String,Object> nativeEnvelope=NativeSearchRole.stableEnvelope(original.second.snapshot);
+                Object parsedSerial=parsedEnvelope.get("profile_user_serial"),nativeSerial=nativeEnvelope.get("profile_user_serial");
+                check(parsedSerial instanceof Integer&&nativeSerial instanceof Long
+                        &&((Number)parsedSerial).longValue()==((Number)nativeSerial).longValue()
+                        &&!parsedEnvelope.equals(nativeEnvelope)&&NativeSearchPlanning.equal(parsedEnvelope,nativeEnvelope),
+                        "actual sealed JSON readback preserves numeric identity across Integer/Long without raw Map.equals");
+                Map<String,Object> changedEnvelope=new TreeMap<String,Object>(parsedEnvelope);
+                changedEnvelope.put("profile_user_serial",((Number)parsedSerial).longValue()+1);
+                check(!NativeSearchPlanning.equal(changedEnvelope,nativeEnvelope),"canonical comparison still rejects a different profile serial");
+                long oldMain=request.activePublicationTrace.mainStarted;SystemClock.now+=17;oldCallback.run();
+                check(request.activePublicationTrace.mainStarted==oldMain&&!request.finished&&observationIo.jobs.size()==1,
+                        "late old callback cannot alter its timestamp, deliver or submit again");
+                observationIo.one();check(request.publicationTraces.size()==2&&request.workerDrained&&!observationIoBusy.get(),
+                        "new producer entered only after previous serial worker returned and then really drained");
+                s.main.one();
+                check(f.planning!=null&&f.error==null&&request.finished&&request.published&&f.callbackCount==1,
+                        "one external callback publishes the new complete pair: error="+f.error+" reads="+f.graphReads+" callbacks="+f.callbackCount+" phase="+request.phase);
+                check(f.graphReads==4&&f.effects==0&&s.taskObservationAdmissions==ordinal&&request.id.equals(id)
+                        &&request.started==started&&request.deadline==deadline&&request.samplingDeadline==sampling,
+                        "complete A+B replacement creates no request, model, action, admission or renewed clock");
+                check(f.planning.first!=original.first.snapshot&&f.planning.second!=original.second.snapshot
+                        &&f.planning.capturedElapsed>original.second.captured&&f.planning.publishedElapsed-f.planning.capturedElapsed<=2000,
+                        "fresh complete nodes/times replace the entire pair; no old-frame timestamp refresh");
+                check(old.exists()&&Arrays.equals(oldBytes,Files.readAllBytes(old.toPath()))&&request.path!=old
+                        &&request.path.getName().equals(id+"-native-search-planning-publication-replacement-1.json"),
+                        "expired bytes survive while successor owns a distinct create-only sealed path");
+                JSONObject diagnostics=new JSONObject(f.planning.publication).getJSONObject("producer_diagnostics");
+                check(diagnostics.getInt("same_request_replacements")==1&&diagnostics.getJSONArray("attempts").length()==2
+                        &&!diagnostics.getBoolean("new_request_created")&&!diagnostics.getBoolean("capture_clock_refreshed"),
+                        "successful replacement carries bounded producer provenance");
+                JSONObject previous=diagnostics.getJSONObject("previous_complete_A_B_history");
+                check("previous_validated_sealed_B".equals(diagnostics.getString("replacement_history_baseline_kind"))
+                        &&diagnostics.getJSONObject("replacement_history_baseline").getLong("events")==13
+                        &&!diagnostics.getBoolean("previous_A_B_history_event_neutrality_claimed")
+                        &&previous.getJSONObject("first_before").getLong("events")==9
+                        &&previous.getJSONObject("first_after").getLong("events")==12
+                        &&previous.getJSONObject("second_before").getLong("events")==12
+                        &&previous.getJSONObject("second_after").getLong("events")==13,
+                        "publication evidence names the actual fixture sealed baseline and retains all recorded prior counters");
+                for(NativeSearchPublicationTrace trace:request.publicationTraces){
+                    check(trace.workerStarted<=trace.encodeStarted&&trace.encodeStarted<=trace.encodeCompleted
+                            &&trace.encodeCompleted<=trace.writeStarted&&trace.writeStarted<=trace.writeCompleted
+                            &&trace.writeCompleted<=trace.readStarted&&trace.readStarted<=trace.readCompleted
+                            &&trace.readCompleted<=trace.hashStarted&&trace.hashStarted<=trace.hashCompleted
+                            &&trace.hashCompleted<=trace.parseStarted&&trace.parseStarted<=trace.parseCompleted
+                            &&trace.parseCompleted<=trace.windowStarted&&trace.windowStarted<=trace.windowCompleted
+                            &&trace.windowCompleted<=trace.workerDrained&&trace.workerDrained<=trace.mainPosted
+                            &&trace.mainPosted<=trace.mainStarted,"actual successful stage timestamps stay monotonic");
+                }
+                check(request.publicationTraces.get(0).captureExpiredAt-original.second.captured==4259,
+                        "the actual ec2998 age, not a claimed fsync cause, drives the injected clock");
+                check(request.publicationTraces.get(1).previousWorkerReturned>=request.publicationTraces.get(0).mainPosted,
+                        "serial replacement records old worker-return boundary");
+                noFailureFile(f);
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all original and replacement Android references drained");
+            }
+        });
+        one("exact_2000ms_age_still_publishes_without_a_replacement",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();
+                SystemClock.now=r.lastCompletePair.second.captured+2000;s.main.one();
+                check(f.planning!=null&&r.publicationReplacements==0&&f.graphReads==2&&f.callbackCount==1,
+                        "original inclusive 2000ms boundary is unchanged");
+            }
+        });
+        one("second_age_expiry_preserves_both_artifacts_and_never_starts_a_third_pair",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest r=f.startPlanning();android.system.Os.afterFsync=path->{if(path.contains(r.id+"-native-search-planning"))
+                    SystemClock.now=r.lastCompletePair.second.captured+2400;};
+                observationIo.one();File first=r.path;byte[] before=Files.readAllBytes(first.toPath());s.main.one();
+                observationIo.one();File second=r.path;s.main.one();android.system.Os.afterFsync=null;
+                check(f.planning==null&&f.error!=null&&f.callbackCount==1&&r.finished&&!r.published,
+                        "a second explicit expiry is a terminal read failure");
+                check(f.graphReads==4&&r.publicationReplacements==1&&r.publicationTraces.size()==2&&f.effects==0,
+                        "the single allowance cannot submit a third complete pair: error="+f.error+" reads="+f.graphReads+" traces="+r.publicationTraces.size());
+                if(observationIo.hasJobs())observationIo.one();
+                check(first.exists()&&second.exists()&&Arrays.equals(before,Files.readAllBytes(first.toPath())),
+                        "both independently rejected artifacts remain exact bytes");
+                JSONObject d=f.diagnostic();check(d.getJSONObject("publication_producer_diagnostics").getJSONArray("attempts").length()==2
+                        &&d.getLong("request_deadline_elapsed_ms")==r.deadline,"original failure record owns both bounded timing traces");
+            }
+        });
+        for(int kind=0;kind<2;kind++){final int boundary=kind;one("age_replacement_cannot_extend_"+(kind==0?"sampling":"request")+"_deadline",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();
+                long original=r.deadline;SystemClock.now=boundary==0?r.samplingDeadline:r.deadline;s.main.one();
+                check(f.planning==null&&f.error!=null&&r.publicationReplacements==0&&f.graphReads==2&&r.deadline==original,
+                        "original absolute sampling/request boundary remains terminal");
+                if(observationIo.hasJobs())observationIo.one();
+            }
+        });}
+        for(int kind=1;kind<=3;kind++){final int event=kind;one("combined_capture_age_and_"+new String[]{"","unknown","boundary","untyped"}[kind]+"_is_not_typed_recovery",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();
+                SystemClock.now=r.lastCompletePair.second.captured+2400;
+                s.noteNativeSearchEvent(event==1?-1:7,event==2?97:96,event==1?null:NativeAppGoal.XIAOMI_PACKAGE,true,event!=3);
+                s.main.one();check(f.planning==null&&f.error!=null&&r.publicationReplacements==0&&f.graphReads==2,
+                        "age plus a non-content event remains terminal without replacement");
+                if(observationIo.hasJobs())observationIo.one();
+            }
+        });}
+        one("content_only_history_survives_the_same_request_publication_replacement",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();
+                NativeSearchPlanning.EventMark original=r.lastCompletePair.first.before;SystemClock.now=r.lastCompletePair.second.captured+2400;
+                s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);s.main.one();
+                NativeSearchPlanning.EventMark gap=r.events.mark();observationIo.one();s.main.one();
+                check(f.planning!=null&&r.publicationReplacements==1&&r.publicationOriginal.context.aBefore.evidence().equals(original.evidence()),
+                        "same original event baseline is retained rather than reset for a fresh frame: error="+f.error+" reads="+f.graphReads);
+                check(r.events.mark().monotonicSince(gap)&&gap.content>original.content
+                        &&r.events.mark().contentOnlySince(original),"actual cumulative content history stays visible");
+            }
+        });
+        for(int kind=1;kind<=3;kind++){final int event=kind;one("queued_replacement_rejects_"+new String[]{"","unknown","boundary","untyped"}[kind]+"_before_new_sampling",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;s.main.one();
+                s.noteNativeSearchEvent(event==1?-1:7,event==2?97:96,event==1?null:NativeAppGoal.XIAOMI_PACKAGE,true,event!=3);
+                observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&f.graphReads==2&&r.publicationReplacements==1,
+                        "the original request tracker rejects a contaminated gap before taking another frame");
+                check(!observationIoBusy.get()&&f.effects==0,"failed serial worker actually drained without input");
+            }
+        });}
+        for(int kind=0;kind<3;kind++){final int stop=kind;one("queued_replacement_cannot_restore_"+new String[]{"cancelled","retired_controller","expired_request"}[kind]+"_authority",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;s.main.one();
+                if(stop==0)f.cancelled=true;else if(stop==1)s.ownedController=new Object();else SystemClock.now=r.deadline;
+                observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&f.graphReads==2&&r.publicationReplacements==1&&f.effects==0,
+                        "queued work cannot renew original cancellation, owner or absolute clock");
+            }
+        });}
+        one("replacement_complete_read_changed_window_is_terminal_without_another_sampling_loop",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;s.main.one();
+                f.windowTitle="different complete owned window metadata";observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&f.graphReads==3&&f.effects==0,
+                        "new complete ownership/window identity must match and failure is not a transient child retry");
+            }
+        });
+        one("publication_replacement_never_steals_another_worker_capacity",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;
+                check(observationIoBusy.compareAndSet(false,true),"synthetic independent worker takes idle capacity");s.main.one();
+                check(r.publicationReplacements==0&&f.error!=null&&f.planning==null&&observationIoBusy.get()
+                        &&observationIo.jobs.isEmpty(),"refusal cannot clear or enqueue into another worker ownership");
+                observationIoBusy.set(false);
+            }
+        });
+        one("definitely_rejected_publication_replacement_submit_does_not_retry",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;
+                observationIo.reject=true;s.main.one();
+                check(f.planning==null&&f.error!=null&&r.publicationReplacements==1&&r.workerDrained&&!observationIoBusy.get()
+                        &&observationIo.jobs.isEmpty()&&f.graphReads==2,"definite queue rejection releases only its own new capacity and remains terminal");
+                check(r.path.exists()&&r.publicationTraces.get(0).preserveExpiredPath,"original failed sealed artifact survives refusal");
+            }
+        });
+        one("uncertain_publication_replacement_submit_preserves_capacity_until_actual_worker_drain",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;
+                observationIo.uncertain=true;s.main.one();
+                check(r.publicationReplacementUncertain&&!r.workerDrained&&observationIoBusy.get()&&observationIo.jobs.size()==1
+                        &&f.callbackCount==1&&f.error!=null,"uncertain submit is never reported drained or replayed");
+                observationIo.one();if(s.main.hasJobs())s.main.one();
+                check(r.workerDrained&&!observationIoBusy.get()&&f.graphReads==2&&f.callbackCount==1&&f.planning==null,
+                        "later real return drains the uncertain task without new samples or a second callback");
+            }
+        });
+        one("replacement_create_only_collision_never_deletes_a_preexisting_private_file",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;s.main.one();
+                File existing=new File(f.directory,r.id+"-native-search-planning-publication-replacement-1.json");byte[] sentinel="preexisting private evidence".getBytes(StandardCharsets.UTF_8);
+                MobiMindPrivateFiles.writeNew(existing,sentinel);observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&existing.exists()&&Arrays.equals(sentinel,Files.readAllBytes(existing.toPath())),
+                        "no deletion custody is acquired when create-only persistence fails");
+                check(r.publicationTraces.get(1).path==null&&r.publicationTraces.get(0).path.exists(),
+                        "failed successor has no owned path; original rejected path remains preserved");
+            }
+        });
+        one("publication_replacement_never_issues_a_sampling_successor_after_original_sampling_expiry",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.profileLifetime=12000;NativeSearchRequest r=f.startPlanning();observationIo.one();SystemClock.now=r.lastCompletePair.second.captured+2400;s.main.one();
+                SystemClock.now=r.samplingDeadline;observationIo.one();s.main.one();
+                check(f.planning==null&&f.error!=null&&r.publicationReplacements==1&&r.samplingIssued==null
+                        &&s.nativeSearchSamplingTracked==null&&f.graphReads==2,"preserved original sealed path excludes every old successor protocol");
+            }
+        });
+        one("capture_age_cause_has_only_a_private_producer_constructor",()->{
+            int constructors=0;
+            for(java.lang.reflect.Constructor<?> c:NativeSearchPlanning.PublicationCaptureExpired.class.getDeclaredConstructors()){
+                if(c.isSynthetic())continue;constructors++;check(java.lang.reflect.Modifier.isPrivate(c.getModifiers()),"capture-age capability has no caller constructor");
+            }
+            check(constructors==1,"one typed construction site within the immutable actual publisher");
+        });
+    }

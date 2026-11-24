@@ -1,0 +1,198 @@
+    /** Real Service/Attempt paths; only Android read/refresh/event endpoints are synthetic. */
+    static final String INCOMPLETE_D_PATH="0/2/0";
+    static void incompleteNodesDrained(Map<String,NodeData> nodes,String detail){
+        for(NodeData n:nodes.values())check(n.obtained==n.recycled,detail);
+    }
+    static void firstIncompleteDThenFreshPair(Fixture f){
+        f.refreshGraphChildren=true;
+        f.graphHook=()->{
+            if(f.graphReads==4)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+            if(f.graphReads==5){
+                incompleteNodesDrained(f.nodes,"old C and failed partial D references closed before replacement C");
+                f.nodes.clear();
+            }
+        };
+    }
+    static void incompleteForbiddenEvent(HeptaAccessibilityService s,int kind){
+        s.noteNativeSearchEvent(kind==1?-1:7,kind==2?97:96,
+                kind==1?null:NativeAppGoal.XIAOMI_PACKAGE,true,kind!=3);
+    }
+    static void incompleteCensusCases()throws Exception{
+        one("incomplete_D_discards_old_C_and_partial_D_then_actual_new_C_D_once_claims",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();long deadline=attempt.deadlineElapsed;
+                String model=attempt.modelRunId;final Map<String,NodeData> oldNodes=new LinkedHashMap<String,NodeData>(f.nodes);
+                firstIncompleteDThenFreshPair(f);f.action(attempt);
+                check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"A/B,C,failed D,new C/D and one effect");
+                incompleteNodesDrained(oldNodes,"old Android references released before their replacement");
+                for(NodeData n:oldNodes.values())check(n.effects==0,"old C and partial D never receive the effect");
+                JSONObject e=finalCensusEvidence(f),old=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                JSONArray failures=e.getJSONArray("incomplete_D_census_reads"),reads=e.getJSONArray("current_C_read_attempts");
+                JSONObject failed=failures.getJSONObject(0);
+                check(failures.length()==1&&failed.getBoolean("replacement_pair_admitted")
+                        &&INCOMPLETE_D_PATH.equals(failed.getString("failed_descendant_path")),"actual failing traversal path retained");
+                check(failed.isNull("failed_path_is_action_target")&&!failed.getBoolean("target_failure_inferred"),"path is diagnostic, not a target guess");
+                check(old.getBoolean("old_C_graph_closed")&&old.getBoolean("partial_D_graph_and_queue_discarded")
+                        &&old.isNull("latest_D")&&old.getJSONObject("current_C").getJSONObject("envelope").getBoolean("full_native_complete"),"failed D never becomes a complete snapshot");
+                check(!old.getBoolean("old_revalidation_discarded")&&old.getBoolean("original_attempt_still_unvalidated"),"there was no previous complete D or claim proof");
+                check(e.getInt("complete_census_resamples")==1&&reads.length()==2
+                        &&reads.getJSONObject(1).getInt("ordinal")==2&&reads.getJSONObject(1).getInt("complete_census_round")==2,"one shared replacement and cumulative C ledger");
+                check(old.getJSONObject("pair_start_watermark").toString().equals(e.getJSONObject("pair_start_watermark").toString()),"original event baseline retained");
+                check(deadline==attempt.deadlineElapsed&&model.equals(attempt.modelRunId)
+                        &&f.outcome.actionExecution.getLong("queued_elapsed_ms")==attempt.startedElapsed,"same model, reservation and absolute deadline");
+                check(Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&!Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"original previously unvalidated Attempt once-claims the new full pair");
+                f.base.search.acceptOutcome(attempt,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+                check(s.nativeSearchAllowsLegacyObservation(s.lease),"actual Session accepts only the freshly verified navigation");
+                incompleteNodesDrained(f.nodes,"successful new C/D and target references drained");
+            }
+        });
+        one("second_incomplete_D_cannot_get_a_second_pair_or_NoEffect_model_successor",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();final SearchActionWork[] work={null};f.refreshGraphChildren=true;
+                f.graphHook=()->{
+                    if(f.graphReads==4){work[0]=s.activeSearchAction;f.nodes.get(INCOMPLETE_D_PATH).refresh=false;}
+                    if(f.graphReads==5){incompleteNodesDrained(f.nodes,"old pair drained");f.nodes.clear();}
+                    if(f.graphReads==6)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                };
+                f.action(attempt);noEffect(f,"second actual D read is terminal");
+                JSONObject e=finalCensusEvidence(f);JSONArray failures=e.getJSONArray("incomplete_D_census_reads");
+                check(f.graphReads==6&&failures.length()==2&&e.getInt("complete_census_resamples")==1,"no third C/D");
+                check(failures.getJSONObject(0).getBoolean("replacement_pair_admitted")&&!failures.getJSONObject(1).getBoolean("replacement_pair_admitted"),"only first typed failure consumes replacement");
+                check(e.isNull("latest_D")&&attempt.evidence().get("revalidation")==null&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"partial D never restores a claim proof");
+                check(work[0]!=null&&!work[0].hasNoEffectReplanFence(),"incomplete read does not forge post-D rejection");
+                rejected(()->s.requireNativeSearchNoEffectFacts(work[0],f.outcome));
+                incompleteNodesDrained(f.nodes,"second failed pair drained");
+            }
+        });
+        one("incomplete_D_and_late_final_content_share_one_replacement_allowance",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);final boolean[] fired={false};
+                SystemClock.beforeRead=()->{
+                    if(!fired[0]&&finalCensusPreclaimBoundary(s)&&s.activeSearchAction.finalCensusResamples==1){
+                        fired[0]=true;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    }
+                };
+                f.action(attempt);noEffect(f,"last preclaim cannot grant a second replacement");
+                JSONObject e=finalCensusEvidence(f);
+                check(fired[0]&&f.graphReads==6&&e.getInt("complete_census_resamples")==1
+                        &&e.getJSONArray("discarded_final_censuses").length()==1,"incomplete D consumed the same once budget");
+                check(e.getBoolean("typed_final_preclaim_content_rejected")&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"new final rejection retained without dispatch");
+            }
+        });
+        one("late_final_content_and_incomplete_D_share_one_replacement_allowance",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;int[] fired=finalCensusEvent(s,0,1);
+                f.graphHook=()->{if(f.graphReads==6)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;};
+                f.action(attempt);noEffect(f,"replacement D failure cannot reopen complete-census budget");
+                JSONObject e=finalCensusEvidence(f);JSONArray failures=e.getJSONArray("incomplete_D_census_reads");
+                check(fired[0]==1&&f.graphReads==6&&e.getInt("complete_census_resamples")==1
+                        &&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"prior real complete-pair replacement retained");
+                check(failures.length()==1&&!failures.getJSONObject(0).getBoolean("replacement_pair_admitted")
+                        &&e.isNull("latest_D")&&attempt.evidence().get("revalidation")==null,"failed D remains incomplete");
+            }
+        });
+        one("eighth_C_followed_by_incomplete_D_cannot_borrow_a_ninth_C",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->f.nodes.get(INCOMPLETE_D_PATH).refresh=f.graphReads>=10&&f.graphReads!=11;
+                f.action(attempt);noEffect(f,"original eight C budget exhausted");
+                JSONObject e=finalCensusEvidence(f);
+                check(f.graphReads==11&&e.getJSONArray("current_C_read_attempts").length()==8
+                        &&e.getInt("complete_census_resamples")==0,"seven failed C then eighth complete C and failed D only");
+                check(!e.getJSONArray("incomplete_D_census_reads").getJSONObject(0).getBoolean("replacement_pair_admitted"),"D failure cannot reset cumulative C allowance");
+            }
+        });
+        for(boolean fail:new boolean[]{false,true}){final boolean eighthFails=fail;one("incomplete_D_after_seventh_C_leaves_only_eighth_"+(fail?"failure":"success"),()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->f.nodes.get(INCOMPLETE_D_PATH).refresh=f.graphReads>=9&&f.graphReads!=10&&(!eighthFails||f.graphReads!=11);
+                f.action(attempt);JSONObject e=finalCensusEvidence(f);JSONArray reads=e.getJSONArray("current_C_read_attempts");
+                check(reads.length()==8&&reads.getJSONObject(7).getInt("ordinal")==8&&e.getInt("complete_census_resamples")==1,"original ordinal retained across failed D");
+                if(eighthFails){noEffect(f,"eighth actual C fails");check(f.graphReads==11&&e.isNull("current_C")&&e.isNull("latest_D"),"no ninth read or partial promotion");}
+                else{check(f.graphReads==12&&f.outcome.accepted&&f.effects==1,"only eighth complete C plus new complete D may dispatch");}
+                check(f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed,"absolute deadline preserved");
+                incompleteNodesDrained(f.nodes,"all bounded C/D references drained");
+            }
+        });}
+        for(int event=1;event<=3;event++){final int kind=event;one("incomplete_D_retains_original_"+new String[]{"","unknown","boundary","untyped"}[event]+"_event_fence",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->{if(f.graphReads==4){f.nodes.get(INCOMPLETE_D_PATH).refresh=false;incompleteForbiddenEvent(s,kind);}};
+                f.action(attempt);noEffect(f,"forbidden original-interval event");
+                JSONObject e=finalCensusEvidence(f);
+                check(f.graphReads==4&&e.getInt("complete_census_resamples")==0&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"no new C after contaminated incomplete D");
+                incompleteNodesDrained(f.nodes,"rejected old C and partial D drained");
+            }
+        });}
+        for(int stop=0;stop<4;stop++){final int kind=stop;one("incomplete_D_"+new String[]{"deadline","cancel","controller_replacement","retirement"}[stop]+"_cannot_start_new_pair",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
+                f.graphHook=()->{if(f.graphReads==4){NodeData child=f.nodes.get(INCOMPLETE_D_PATH);child.refresh=false;child.beforeRefresh=()->{
+                    if(kind==0)SystemClock.now=attempt.deadlineElapsed;else if(kind==1)f.cancelled=true;
+                    else if(kind==2)s.ownedController=new Object();else s.activeSearchAction.state.retire("controller_abandoned");
+                };}};
+                f.action(attempt);noEffect(f,"original live identity and time still required");
+                check(f.graphReads==4&&finalCensusEvidence(f).getInt("complete_census_resamples")==0
+                        &&f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed,"no time renewal or replacement read");
+                incompleteNodesDrained(f.nodes,"stopped read and original C drained");
+            }
+        });}
+        one("same_D_failure_message_without_typed_descendant_cause_is_not_retriable",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();
+                f.graphHook=()->{if(f.graphReads==4)throw new StaleObservation("后台子节点已不可用，需重新观察");};
+                f.action(attempt);noEffect(f,"text cannot grant a typed replacement");
+                check(f.graphReads==4&&finalCensusEvidence(f).getInt("complete_census_resamples")==0,"exact classification required");
+            }
+        });
+        one("replacement_after_incomplete_D_still_requires_same_current_C_D_node",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);final Runnable first=f.graphHook;
+                f.graphHook=()->{first.run();if(f.graphReads==5)f.replaceTargetOnSecond=true;};
+                f.action(attempt);noEffect(f,"identical values do not establish current Android node identity");
+                check(f.graphReads==6&&f.outcome.detail.contains("replaced")&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"new full pair still passes original same-node fence");
+            }
+        });
+        one("replacement_after_incomplete_D_still_requires_fresh_ancestor_chain",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);final boolean[] changed={false};
+                f.windowHook=()->{SearchActionWork w=s.activeSearchAction;if(!changed[0]&&w!=null&&w.finalCensusResamples==1&&w.currentNodeIdentityChecked&&w.pairCompleted!=null){
+                    changed[0]=true;String target=attempt.offer.planning.role.actionPath;String parent=target.substring(0,target.lastIndexOf('/'));f.nodes.get(parent).v.put("selected",true);
+                }};
+                f.action(attempt);noEffect(f,"new target ancestry must still match complete D");
+                check(changed[0]&&f.graphReads==6&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"fresh ancestor mutation cannot use the earlier C/D proof");
+            }
+        });
+        one("replacement_after_incomplete_D_still_requires_final_reported_windows",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);final boolean[] changed={false};
+                f.windowHook=()->{SearchActionWork w=s.activeSearchAction;if(!changed[0]&&w!=null&&w.finalCensusResamples==1&&w.currentNodeIdentityChecked&&w.pairCompleted!=null){
+                    changed[0]=true;f.actualWindow=97;
+                }};
+                f.action(attempt);noEffect(f,"reported window set remains a final fence");
+                check(changed[0]&&f.graphReads==6&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"new pair cannot bypass changed final windows");
+            }
+        });
+        one("replacement_after_incomplete_D_still_requires_live_final_profile_proof",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);final boolean[] expired={false};
+                android.app.KeyguardManager.beforeCheck=()->{SearchActionWork w=s.activeSearchAction;
+                    if(!expired[0]&&w!=null&&w.finalCensusResamples==1&&entered(w)&&inMethod("org.trillionnium.hepta.local.BackgroundSession","requireProfileWindow")){
+                        expired[0]=true;SystemClock.now=w.profileBeforeEffect.expiresElapsedMs;
+                    }};
+                f.action(attempt);noEffect(f,"late actual profile expiry before the platform call");
+                check(expired[0]&&f.graphReads==6&&f.outcome.actionExecution.getBoolean("effect_entered")
+                        &&!finalCensusEvidence(f).getBoolean("platform_call_invoked"),"actual entered state retained without false API dispatch");
+            }
+        });
+        one("once_claimed_replacement_Attempt_cannot_read_or_dispatch_again",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();firstIncompleteDThenFreshPair(f);f.action(attempt);
+                check(f.effects==1&&f.graphReads==6&&Boolean.TRUE.equals(attempt.evidence().get("claimed")),"actual first effect once-claimed");
+                f.outcome=null;f.graphHook=null;boolean denied=false;
+                try{f.action(attempt);denied=f.outcome!=null&&!f.outcome.accepted&&!f.outcome.dispatched;}
+                catch(IllegalArgumentException|IllegalStateException expected){denied=true;}
+                check(denied&&f.effects==1&&f.graphReads==6,"old claimed Attempt cannot obtain new graph reads or a second effect");
+            }
+        });
+    }
