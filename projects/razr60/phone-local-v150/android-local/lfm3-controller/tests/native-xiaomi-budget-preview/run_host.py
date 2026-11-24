@@ -30,7 +30,7 @@ def main():
     out.mkdir(parents=True)
     closure = load(source/"tests/native-search-planning/host_closure.py","preview_real_session")
     query = load(source/"tests/web-flight/run_query_host_tests.py","preview_java_extractor")
-    result = {"all_pass":False,"hardware_operations":0,"fixture_scope":"Recorded native public XML with synthetic profile transport, model outcomes and cleanup."}
+    result = {"all_pass":False,"hardware_operations":0,"fixture_scope":"Recorded native public XML plus explicitly synthetic price-boundary derivatives; synthetic profile transport, model outcomes and cleanup."}
     try:
         if digest(jar)!=closure.JSON_SHA:
             raise RuntimeError("original JSON library required")
@@ -70,7 +70,7 @@ def main():
             (out/(name+".stdout")).write_bytes(process.stdout);(out/(name+".stderr")).write_bytes(process.stderr)
             if process.returncode:raise RuntimeError(name+" failed")
         cases=json.loads((out/"CASES.json").read_bytes())
-        if not cases["all_pass"] or cases["cases"]!=8 or not all(digest(Path(p))==v for p,v in pins.items()):
+        if not cases["all_pass"] or cases["cases"]!=11 or not all(digest(Path(p))==v for p,v in pins.items()):
             raise RuntimeError("case count, judgment or source binding differs")
         result.update(all_pass=True,cases=cases["cases"],assertions=cases["assertions"],source_sha256=pins)
     except Exception as e:

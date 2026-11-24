@@ -147,7 +147,7 @@ public final class LocalTaskController implements AutoCloseable {
                         ||!Boolean.FALSE.equals(terms.get("payment_authorized"))||!yes(progress,"product_query_observed","product_detail_navigation_observed")
                         ||!"detail_display".equals(quote.get("quote_kind"))||!"Xiaomi路由器AX3000T".equals(quote.get("model_raw"))
                         ||!"CNY".equals(quote.get("currency"))||!(amount instanceof String)||!amount.equals(displayed.get("amount_decimal"))
-                        ||!((String)amount).matches("[1-9][0-9]{0,6}(?:\\.[0-9]{1,2})?")
+                        ||!NativeXiaomiProductPage.isCanonicalObservedAmount((String)amount)
                         ||!(cap instanceof String)||!((String)cap).matches("[1-9][0-9]{0,5}(?:\\.[0-9]{1,2})?")
                         ||(variant!=null&&!"白色".equals(variant)&&!"标准版".equals(variant))
                         ||!Boolean.FALSE.equals(review.get("checkout_total_verified"))||!Boolean.FALSE.equals(review.get("confirmation_page_reached"))

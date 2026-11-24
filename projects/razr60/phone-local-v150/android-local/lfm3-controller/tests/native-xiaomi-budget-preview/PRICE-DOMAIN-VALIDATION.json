@@ -1,0 +1,832 @@
+{
+  "android_sdk_compile_passed": false,
+  "baseline": {
+    "assertions": 167,
+    "case_results": [
+      {
+        "assertions": 19,
+        "name": "complete_owner_scope_and_negative_transactions",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_200",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_159",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_100",
+        "passed": true
+      },
+      {
+        "assertions": 3,
+        "name": "direct_detail_cannot_create_review_without_current_query_and_card",
+        "passed": true
+      },
+      {
+        "assertions": 6,
+        "name": "managed_login_shows_budget_blocker",
+        "passed": true
+      },
+      {
+        "assertions": 6,
+        "name": "managed_login_shows_price_blocker",
+        "passed": true
+      },
+      {
+        "assertions": 8,
+        "name": "login_then_home_explanation_requires_original_navigation",
+        "passed": true
+      },
+      {
+        "assertions": 11,
+        "error": "java.lang.AssertionError: every supported parsed amount must retain the explanation: 0.01",
+        "name": "supported_price_domain_survives_provider_to_terminal",
+        "passed": false
+      },
+      {
+        "assertions": 72,
+        "name": "unsupported_raw_price_formats_remain_unverified",
+        "passed": true
+      },
+      {
+        "assertions": 6,
+        "error": "java.lang.AssertionError: a terminal record must use a canonical supported amount: 1.00",
+        "name": "terminal_rejects_noncanonical_or_out_of_domain_amounts",
+        "passed": false
+      }
+    ],
+    "cases": 11,
+    "compile_passed": true,
+    "failures": [
+      {
+        "assertions": 11,
+        "error": "java.lang.AssertionError: every supported parsed amount must retain the explanation: 0.01",
+        "name": "supported_price_domain_survives_provider_to_terminal",
+        "passed": false
+      },
+      {
+        "assertions": 6,
+        "error": "java.lang.AssertionError: a terminal record must use a canonical supported amount: 1.00",
+        "name": "terminal_rejects_noncanonical_or_out_of_domain_amounts",
+        "passed": false
+      }
+    ],
+    "review_passed": false
+  },
+  "candidate": {
+    "assertions": 260,
+    "case_results": [
+      {
+        "assertions": 19,
+        "name": "complete_owner_scope_and_negative_transactions",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_200",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_159",
+        "passed": true
+      },
+      {
+        "assertions": 12,
+        "name": "real_detail_unit_price_compared_to_100",
+        "passed": true
+      },
+      {
+        "assertions": 3,
+        "name": "direct_detail_cannot_create_review_without_current_query_and_card",
+        "passed": true
+      },
+      {
+        "assertions": 6,
+        "name": "managed_login_shows_budget_blocker",
+        "passed": true
+      },
+      {
+        "assertions": 6,
+        "name": "managed_login_shows_price_blocker",
+        "passed": true
+      },
+      {
+        "assertions": 8,
+        "name": "login_then_home_explanation_requires_original_navigation",
+        "passed": true
+      },
+      {
+        "assertions": 96,
+        "name": "supported_price_domain_survives_provider_to_terminal",
+        "passed": true
+      },
+      {
+        "assertions": 72,
+        "name": "unsupported_raw_price_formats_remain_unverified",
+        "passed": true
+      },
+      {
+        "assertions": 14,
+        "name": "terminal_rejects_noncanonical_or_out_of_domain_amounts",
+        "passed": true
+      }
+    ],
+    "cases": 11,
+    "compile_passed": true,
+    "compiled_inputs_pinned": 152,
+    "external_dependency_inputs": [
+      {
+        "path": "json-20240303.jar",
+        "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+      }
+    ],
+    "generated_host_fixture_inputs": [
+      {
+        "path": "closure/ports/android/app/KeyguardManager.java",
+        "sha256": "eea652c037f62b6271d2001332676653868b3aaff15ef4d9619a532aa1c30c9c"
+      },
+      {
+        "path": "closure/ports/android/content/Context.java",
+        "sha256": "d5b1e66ed409f9d52f535cdccfb1238e13b39452f55f299dc3f67c95301f13b8"
+      },
+      {
+        "path": "closure/ports/android/content/pm/ApplicationInfo.java",
+        "sha256": "0aea7ad33689355df5adc080a7e10149889028b66c3260278be85f5390f7e44a"
+      },
+      {
+        "path": "closure/ports/android/hardware/display/DisplayManager.java",
+        "sha256": "ce9404bd37027fd1fab1ec5bb919403b8a0203fa1588b3f86e72f1ccc4723c75"
+      },
+      {
+        "path": "closure/ports/android/net/Credentials.java",
+        "sha256": "cb6fd28faa5622120d0320c4f2db3eb8898a693175312d6f15c9dde51c12c921"
+      },
+      {
+        "path": "closure/ports/android/net/LocalSocket.java",
+        "sha256": "80381bdd17fede1ef6231927e2ce78c6bf563964189b2712bfa12ec43cc9e0a9"
+      },
+      {
+        "path": "closure/ports/android/net/LocalSocketAddress.java",
+        "sha256": "5e3cccc95957f41618dcda924ae31e67b7f6b428422839949e7c65b025888415"
+      },
+      {
+        "path": "closure/ports/android/os/Looper.java",
+        "sha256": "4482d82f17e7b24ee8d624d1ac443b7b1312a02bd939d17889b9b47e8c2a56e9"
+      },
+      {
+        "path": "closure/ports/android/os/Process.java",
+        "sha256": "d4c90787159e9ad4b0be102181cda2cee3aee8533ac30253cd2a727b9ff71e0d"
+      },
+      {
+        "path": "closure/ports/android/os/SystemClock.java",
+        "sha256": "86d128b12c0608f70758a211831b675a1f2342072991459b6f2b214d17eabe1f"
+      },
+      {
+        "path": "closure/ports/android/provider/Settings.java",
+        "sha256": "5622ad74424ee9a06ad3ccb128d56f9422a6b7176f40d897fcafee10df5d1e8b"
+      },
+      {
+        "path": "closure/ports/android/system/ErrnoException.java",
+        "sha256": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6"
+      },
+      {
+        "path": "closure/ports/android/system/Os.java",
+        "sha256": "6b167c2b8aae4706e52acff79292a3e55738e41d462d2bd930783d37dd42e522"
+      },
+      {
+        "path": "closure/ports/android/system/OsConstants.java",
+        "sha256": "a22094ee793d8e66b243965d31326329ef726a53d6c1aeb4f0959bbac1de1ca2"
+      },
+      {
+        "path": "closure/ports/android/system/StructStat.java",
+        "sha256": "7bda01d378b4343f2afdd150647db95fb5f0f70c0a249c64742780e85e0c6fa5"
+      },
+      {
+        "path": "closure/ports/android/view/Display.java",
+        "sha256": "bbd757d755b680ccc097d3893789a0a416ad1a67efb0da33fd4f28f10d28e480"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/background/RecoveryControllerIdentity.java",
+        "sha256": "74334946016bed25a3f3de4723990bca722d28b9f086071d0e32cfe6e3f55c67"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/CalculatorGoalContract.java",
+        "sha256": "080253866794a7c287fdb53a18801e7b504368ef7f63cf14aadea6a55b58f5e1"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+        "sha256": "f47bffccb4540010a6cf6db280452a62e5d54b820b4d5789c7b087c17ca953df"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/HostRecoveryProcessBoundary.java",
+        "sha256": "d782f07d995ec85c740194eeb262f4160de2bdfe32a0b0cc403de8ca50e2a1a9"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/LocalProbeApplication.java",
+        "sha256": "de42801b6b7b41195bc27125ca0dc6dd452dc862c98aa50c8abe738b10c60542"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/ProfileCatalogueClient.java",
+        "sha256": "211f7c4ad4db1b66e14239568e7a64d1829943eb2efc5cbd58c02f204bc743a5"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/ProfileClientPort.java",
+        "sha256": "ae3cd30fe460103b5bce9b113429b5b39391485af03a7ab6cd9ea7bd1ac0f22d"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java",
+        "sha256": "07e054d6c514fecf0a4ab4ae8bfb0f2aef6409753f75e6b8a2ace493871e9854"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/ProfileRecoveryClient.java",
+        "sha256": "3d6735649c01307a40d6870a99b6da2fcf34721a35d844cf8fd1de5f907c44d9"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
+        "sha256": "8e7b35ca46643c964fa88cd59f3e80dc6315f5864ea1f7427ba7b9d0c66df979"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
+        "sha256": "94f91993d5f6515d25191d83014f816ac232f1a80456921b0a0dbeb6341fe247"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/PublicProfileRecoveryClient.java",
+        "sha256": "ba464c7cce706e9ece0aa988e3d04b7f5019a8cac875e31c6512da97526730f5"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/QualificationScopeConfig.java",
+        "sha256": "c8ee981d392d9ca77dc907f4aaa9afc74e9ff86415fe718ca9d0998424bfb927"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/RuntimeInferenceAdapter.java",
+        "sha256": "40eb31b6977535ca037b07254e4c30aef383443f37bbd598246d522c544de66d"
+      },
+      {
+        "path": "closure/ports/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
+        "sha256": "3baac0f6194e53785f2e74329ac55e56466353ccc7b9c4c56f63e6a891ee782f"
+      },
+      {
+        "path": "login-fixture/SyntheticXiaomiNativeLoginFixture.java",
+        "sha256": "33b8f2b6df4611df56d43ee81eb9d4c35344175166494a0d43816e30feb4ff06"
+      },
+      {
+        "path": "presentation/LocalTaskController.java",
+        "sha256": "08373e2faa10fdaaa9bee5be0e23077299436ab16f51b64ffa05a72c35af2371"
+      }
+    ],
+    "generated_host_fixture_inputs_pinned": 33,
+    "published_source_inputs_pinned": 118,
+    "review_passed": true,
+    "tested_sources": [
+      {
+        "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
+        "sha256": "c11744cde9daad3723388b44ea3bcc600ca64fe525aba994278e2a62ce168269"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
+        "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
+        "sha256": "f2a137bde87ba56891ce165d354c240be48a3c08aafbf29f116abe6e8514cb97"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "sha256": "d5316cd9330cb260b7f1ac080e86753d0aaec87ff0cec09b5b5067d0bf90b384"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PermissionWindowObservation.java",
+        "sha256": "b7deba68699311af54ef8e06137ab455f2753201915f1e0e2696f14ac89c8c5a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfileDisplayCustody.java",
+        "sha256": "245cb70d0ab59918e6bbc1fa032120bfbea18065a31d6172483d4768ae409b75"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfileIdentity.java",
+        "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+        "sha256": "760e4ae27ddef1860cfa7ba30bd3858241998c8b0345c98d8b977c7b5fb72ef0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
+        "sha256": "7367d708d764fd050e2e770ee81de982b31b9ca6861fad25d3d9f42ddbe9b3aa"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
+        "sha256": "a6f9da68bffa89040399b4ce58d9d94814ac9bedda2818448b1bfea4d057ec7a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfilePrelaunchRecovery.java",
+        "sha256": "895598fab3f3a2640a877b7565960331365f9cc34903cfeb70fbe7bd4a181a70"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfileTarget.java",
+        "sha256": "268dc50e7d3205cc8fb35883843fbdf8a10cc517f773867a9aae6d00fe07f2fd"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
+        "sha256": "97bf188bfc08591a33a06a89393a1b1445b11efcaa44ba31ef40e94657484eb6"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
+        "sha256": "3b63a9370426984025cb9c5e5815300c992960bb0e42e40b468cd99818f6e79b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java",
+        "sha256": "f959004a176c61752c694d7d77927ee5b2fff908ee2d1b1780297bdaef1dd7a0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicPermissionControllerUi.java",
+        "sha256": "878ef7a5662d54e2ac3f92889b5870c46f9d145ed868e76fdf3e4a38bb84c247"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+        "sha256": "d1d1b423f1a33979373bab4652ae02e7c068119d78602440f2fd1fbc4cc4e797"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
+        "sha256": "29232617cb34bcd85b768549474f895edf4a55b5c235c494ff8edef928380cf2"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
+        "sha256": "60f901b4a6d863f2e712d49aaa166859c4a2437fbf46a2562e16413acb3a65c4"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
+        "sha256": "d68bc585593f0014888fa06a914fa713d2c440e91b310b6777347d5268b4de1b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
+        "sha256": "a37f9eb8c95919e1c5084c4d8531fc74c6041e704b63acb2b99eb0e85115f94f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/RetainedProfileCleanupAttempt.java",
+        "sha256": "d948dd4f84ceac43b1faf7c8e8eb494e84298628bc09a97a34c80e6b67a9bd63"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/background/WindowOwnership.java",
+        "sha256": "60ccf09113a3463179dfa64cc463eeca363006a30f5518747751420cfc1fb80c"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+        "sha256": "226747a0d12dcccec8323144db168f07c4c46d58c29c3d38c05e349d74be11a0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ActionExecutionState.java",
+        "sha256": "12d0918c35d73ed3b7f2d05991a22ebcec9c3a790b97120891dc62382b72eedb"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+        "sha256": "c7346ac8804e9bd0d06283f2416b908065f97f84294a7ea367331aed63aee5db"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+        "sha256": "ce5f7f1e1485ea62b7da30adb13d9cf8f4c60bad8a22f91887c55a291b60050f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+        "sha256": "2af8121fd6e36bd631871a20393af4869535d2f6b18ac84777b5c74dee4cd7c1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+        "sha256": "699f1eebe2db1ae4d7973f95f51c342748c24d767efd6f1a998d27f60c9b339f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+        "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "sha256": "1a821a5766f98574660dc918aea24c60499bcbb5349367fcf64ab53115c176d4"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+        "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+        "sha256": "73d906b09ed2b8670faceab8b27152bbb0f2227ebdbb29eb7e4c987d3f3df7d3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+        "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+        "sha256": "3bb778d01eb0ae1f4a727023048b07fc9e3160a3d29907288b84ce1525648b1c"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+        "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+        "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+        "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+        "sha256": "9bf20793a50815d82d4a9447f5aaa290ab3dafe506f21179f6bf28b560d0ff9e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+        "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+        "sha256": "5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+        "sha256": "3223404d1d7554c0b407061efe2443d538655f8a45bccd1248e883ac979cc028"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
+        "sha256": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
+        "sha256": "9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppObservation.java",
+        "sha256": "42b69f8d7fbdf31ac3f2064f6910bad0f1dad8270f9bcdb240dff0052557f2dc"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
+        "sha256": "ce1f906e6fa39bc7ea140371ac1863b5f509c378295536f4be8c59c026a2bae0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCalendarDateEnvelope.java",
+        "sha256": "63e5063098878551248b630e2daba46ab7efd556f806963e85450238b186d734"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCalendarDateIntent.java",
+        "sha256": "81007892a189eeb5a4e514b2809fb150ba71fe04597ba49cf23d04a06f66d390"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCalendarDateProtocol.java",
+        "sha256": "301e8524af1013a76c785b2280dac56e56f1ab411e0a7c3ab8597228fd3f3def"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+        "sha256": "8f848806d0761d1ba33c9a1f8030bb2bacb385c7ae534992daa88349705821cb"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java",
+        "sha256": "1fbedb6ffed519a402e265640fab241cfee655ea47863769cc1538cf53ddd983"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeSearchDecision.java",
+        "sha256": "71bc8f2c41c991e8240106d0d7f9977df590f5c2e9a00e5649c9013c5e67f2c8"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
+        "sha256": "93e6ab09ed9d87b59c1728001f699d3c81d64e02fdd799bb7620313847dfb22b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeSearchRole.java",
+        "sha256": "ebf7ebda402cf42cd4406696098f64199759d71a21b9802625d8218342e87093"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeSearchSession.java",
+        "sha256": "a947fde81c983b10f3dcbddba90193c50e169baeefa137f1b7f968dc2eaaa307"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+        "sha256": "f0a321f91824928f7ed09fe88df942f3bec68ff5de49e90e07f6bd0311449263"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
+        "sha256": "8d1b531b7161d925b71079edffd33fd37b7f720d6fe372f82b8d22ff872e1914"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+        "sha256": "4d3b0b1f8fb96d98ba71576404f9d4c73e6bac08fd90ae1b93f6c54fa02bdbf5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+        "sha256": "358fcb5c3ce0c285aecb3deccd7ce4a8e708cacf0d0e3ea42ba6f3f6562cb1db"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "sha256": "b7842a7c9ad9d87549cb394a285c67959480cb706d93083ba7fd8a89c477b4f1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
+        "sha256": "e7f5ba2bf975f5a39ab47909176912ec1e825c32fb51ac778ee6a76e4abcf39d"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+        "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+        "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+        "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "sha256": "d97a57ded9023e5b01a4eb5f6ae06a9747e915878b9c3ba398f133049a9628d1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+        "sha256": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/QualificationScope.java",
+        "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/RecoveryJournalStore.java",
+        "sha256": "cac25c2f6a849142a4075b12beb341bf3a2283d0810235d2f67dfdeaa918086d"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+        "sha256": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+        "sha256": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/RetainedProfileCleanupClient.java",
+        "sha256": "64e86f4585de784511c0275a4ecc49a6f6cc4cc67c42f043232b1d8a503da110"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+        "sha256": "f9c79691e3f0e1cb0a2c5f3d7fd8828e3fc8556eef213b9e17ea3e3831546e40"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "sha256": "49dc8fe1fd39b03416c268d8ed61577b67d5add232a5f774c7f88307853d7d04"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "sha256": "f5d743e8f0387d25fcaf093399a2c53e7c59840808fa8ce069c6e09276639871"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+        "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+        "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+        "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+        "sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+        "sha256": "1b1a27d8c4bb410b92827a85621904e2db2fdc8287730d01c0a5af3d5e7826b5"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+        "sha256": "bfae931eb2d00142b908ea920647c328a3b9ffc873688a821844ad2146cfaf86"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+        "sha256": "e7ea2f28df02e1ed271a0b0f38672c2d722f032e2dc417e14e42fe05c99091a4"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightResult.java",
+        "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+        "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebNativeObservationChanged.java",
+        "sha256": "d21e5a2c063a3670350591cc2dc12280f6f4b4ff5bb4c25136121520515c4bc9"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+        "sha256": "faf50cafc7b11e763a840def5bee6c2cff77535c4a904c06ccd7d74afa489ca2"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+        "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+        "sha256": "70170e5f9f9946021ea703ff668116a5d68f354a65424b469be9cf3da596e52f"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingQuote.java",
+        "sha256": "af4791997c7920c74b3192c1d091aaffaef1fbf2446521b72bede4f80a1cb776"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+        "sha256": "6e06a007af283ab8b90e45b55a0b8a223dbcedc4434f209660503d41f25a2560"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WorkerGenerationProof.java",
+        "sha256": "38dcc6d07d9d9dcbd49497f4974661df81f2acfc22f2e093c87fb6fed1a00e19"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebCaptureAcknowledgement.java",
+        "sha256": "eae4d8766b1480c2964229047ff03bc0dd54cd7fab5155bea6903d844a7b1cd9"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+        "sha256": "bdd9d743d66f3452b15e74544a4f89c463b72efa30c7299059eb5f9b4c7f6175"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+        "sha256": "d6daff55e02af33debadee3c36f49c81a63353191e5dc85e1f32ae5aa0e05561"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "sha256": "30ef8a141c6502a623fc818798af9e71683c14a8a94dfa5a705243544e0975bf"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+        "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+        "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+        "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+      },
+      {
+        "path": "tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",
+        "sha256": "c61991bb5074fe67f1fe443f24403413b2374e337f15c6669e52d5b9a7c42e7f"
+      },
+      {
+        "path": "tests/native-app-fixtures/NativeXmlFixture.java",
+        "sha256": "142e9a87d29e425c3284dc2b331709c0f3326e33004412e0bc8c2bbe6dca34d4"
+      },
+      {
+        "path": "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
+        "sha256": "4341eca0c3e5f4e81eee05e2a89f7bb1070475a59d5e5ff28c8c70016ec70e08"
+      },
+      {
+        "path": "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
+        "sha256": "9c035e1b51ca8e0bbfd883835918434595f2d9825d12ed7e5b6c54fec9505b31"
+      },
+      {
+        "path": "tests/native-xiaomi-product/fixtures/detail.xml",
+        "sha256": "cfcaac115754a654e9091336ba1ef8c7e43ba066191f5e80deeaa238b1b09f88"
+      },
+      {
+        "path": "tests/native-xiaomi-product/fixtures/results.xml",
+        "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
+      },
+      {
+        "path": "tests/native-xiaomi-product/fixtures/suggestions.xml",
+        "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
+      },
+      {
+        "path": "tests/qualification-scope/fixtures/android/graphics/Rect.java",
+        "sha256": "ed85b3caacb411968d7c4798e8f68b9d5d4c19f1e12b70665ad4b47fd4a0fe00"
+      },
+      {
+        "path": "tests/xiaomi-profile/NativeProfileIdentityHostTest.java",
+        "sha256": "3cb92cb0fcc2d28604dab385db439b24717d23c966d695dfb8060bfd124afbb5"
+      }
+    ]
+  },
+  "candidate_head_embedded": false,
+  "changed_files": [
+    {
+      "base_sha256": "4384a396b76a429e4c393f0a31b18587f24c767e19c7c35b0f02bb2ffd774e54",
+      "candidate_sha256": "f0a321f91824928f7ed09fe88df942f3bec68ff5de49e90e07f6bd0311449263",
+      "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    },
+    {
+      "base_sha256": "67513c939a7c11e9c2058a1840ca35c85469365a6bf69f7a13f64a085cd007e5",
+      "candidate_sha256": "3bb778d01eb0ae1f4a727023048b07fc9e3160a3d29907288b84ce1525648b1c",
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java"
+    },
+    {
+      "base_sha256": "fe2913c96276db1e3642f2f1b8e4dd30ff2f7babcf678abc7c4d63db9526d671",
+      "candidate_sha256": "9c035e1b51ca8e0bbfd883835918434595f2d9825d12ed7e5b6c54fec9505b31",
+      "path": "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java"
+    },
+    {
+      "base_sha256": "4eca0081d13658291a5b2f4ee4e229b3ab1041622117fe4804823b5730631161",
+      "candidate_sha256": "4a0340408e1cb7e8e80ed80329f6ea8b10a11c6b58744ad4608bc4c9c1e15309",
+      "path": "tests/native-xiaomi-budget-preview/run_host.py"
+    }
+  ],
+  "checkout_preview_completion_verified": false,
+  "fixture_scope": "Recorded native public XML plus explicitly synthetic price-boundary derivatives; synthetic profile transport, model outcomes and cleanup.",
+  "full_current_host_suite_completed": false,
+  "hardware_operations": 0,
+  "host_toolchain": {
+    "java": "Temurin 17.0.21+9",
+    "javac_flags": [
+      "--release",
+      "8",
+      "-encoding",
+      "UTF-8",
+      "-proc:none",
+      "-Xlint:all,-options",
+      "-Werror"
+    ],
+    "json_jar_sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+  },
+  "identity_binding": "This report binds the listed tested source bytes; exact candidate Git identity is the containing commit. It is not Android or phone qualification.",
+  "order_submitted": false,
+  "payment_dispatched": false,
+  "phone_qualified": false,
+  "previous_results_are_not_current_qualification": true,
+  "provider_amount_domain": {
+    "canonical_output": "BigDecimal.stripTrailingZeros().toPlainString()",
+    "positive_only": true,
+    "raw_format": "(?:0|[1-9][0-9]{0,7})(?:\\.[0-9]{1,2})?",
+    "zero_rejected": true
+  },
+  "raw_evidence_sha256": {
+    "price-domain.patch": "d74e99ffdaa62f84dd8cf5d37c82f3cc68951fc3529a26b4eb858f35462f87e0",
+    "validation-baseline/CASES.json": "7b5843608a182647fdb32f75941bc00f520c961345a0b8a08b64a77a92250cae",
+    "validation-baseline/RESULT.json": "80fe94d38479ee7085c13c86f44c83103e0ad0761e850415705fa557ed4f90e2",
+    "validation-candidate/CASES.json": "b00b56bc73fbfe7e62a06e820d337f1c535f00cd9ba3b8c0e24beb20dc0682e2",
+    "validation-candidate/RESULT.json": "f0650a1e07497bb7bd70f1e38b7cc56beb97ba2a9cd1ec657927ee3116935ff7"
+  },
+  "remaining_checkout_gaps": [
+    "selected_variant_verified",
+    "quantity_verified",
+    "checkout_total_verified",
+    "confirmation_page_reached"
+  ],
+  "schema": "hepta.native-xiaomi-price-domain-host-validation.v1",
+  "scope": "Use the provider normalization function to validate the canonical amount; do not change the provider amount domain or order-preview completion/actions.",
+  "source_parent_component_tree": "0eaf752ae72360befddf99457390ac89ac592ffc",
+  "source_parent_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
+  "source_parent_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+  "status": "TARGETED_HOST_REGRESSION_PASSED"
+}

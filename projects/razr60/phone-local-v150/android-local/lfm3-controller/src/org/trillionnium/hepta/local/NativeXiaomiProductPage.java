@@ -746,6 +746,12 @@ final class NativeXiaomiProductPage {
         if(path==null)return -1;try{return Integer.parseInt(path.substring(path.lastIndexOf('/')+1));}
         catch(NumberFormatException invalid){return -1;}
     }
+    /** Terminal records carry the same normalized positive amount emitted by Quote. */
+    static boolean isCanonicalObservedAmount(String value){
+        if(value==null)return false;
+        try{return value.equals(decimal(value));}
+        catch(IllegalArgumentException invalid){return false;}
+    }
     private static String decimal(String raw){
         NativeAppEvidence.need(raw!=null&&NUMBER.matcher(raw).matches(),"observed decimal amount required");
         BigDecimal value=new BigDecimal(raw);NativeAppEvidence.need(value.signum()>0,"positive observed amount required");

@@ -1,18 +1,19 @@
 {
   "android_qualified": false,
-  "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
-  "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
+  "base_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
+  "base_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_personal_notes_recovery_routing_successor",
-  "complete_source_files": 2552,
+  "candidate_status": "reviewed_native_xiaomi_price_domain_successor",
+  "complete_source_files": 2553,
   "current_successor_delta": {
-    "baseline": "e81828664a043caefb40eb2c551119c04d077c78",
+    "baseline": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-      "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
-      "tests/notes-recovery-routing/run_host.py"
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
+      "tests/native-xiaomi-budget-preview/run_host.py"
     ],
-    "scope": "Discriminate a genuine supported public work-profile business origin before choosing that recovery branch. Route the actual cancelled personal Notes task through the existing strict personal current-absence verifier and ordinary ACK path. Preserve the original task, cancellation, failed cleanup, profile/owner/boot/expiry/queue checks, all authority and deadline limits, and the installed native/model configuration.",
+    "scope": "Preserve every positive canonical amount already supported by native Xiaomi detail quotes in terminal explanations, including sub-yuan and eight-digit prices. Reuse the provider normalization and reject zero, unsupported raw formats, and noncanonical terminal amount records. Checkout preview stages and authority remain unchanged.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6626,8 +6627,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 300450,
-      "sha256": "67513c939a7c11e9c2058a1840ca35c85469365a6bf69f7a13f64a085cd007e5"
+      "bytes": 300454,
+      "sha256": "3bb778d01eb0ae1f4a727023048b07fc9e3160a3d29907288b84ce1525648b1c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -6771,8 +6772,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "bytes": 57266,
-      "sha256": "4384a396b76a429e4c393f0a31b18587f24c767e19c7c35b0f02bb2ffd774e54"
+      "bytes": 57570,
+      "sha256": "f0a321f91824928f7ed09fe88df942f3bec68ff5de49e90e07f6bd0311449263"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
@@ -9491,13 +9492,18 @@
     },
     {
       "path": "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
-      "bytes": 17253,
-      "sha256": "fe2913c96276db1e3642f2f1b8e4dd30ff2f7babcf678abc7c4d63db9526d671"
+      "bytes": 22161,
+      "sha256": "9c035e1b51ca8e0bbfd883835918434595f2d9825d12ed7e5b6c54fec9505b31"
+    },
+    {
+      "path": "tests/native-xiaomi-budget-preview/PRICE-DOMAIN-VALIDATION.json",
+      "bytes": 35150,
+      "sha256": "55097f4751c96eff45eceda747149a5ef1439294f679c17074b62578e78d37ae"
     },
     {
       "path": "tests/native-xiaomi-budget-preview/run_host.py",
-      "bytes": 5086,
-      "sha256": "4eca0081d13658291a5b2f4ee4e229b3ab1041622117fe4804823b5730631161"
+      "bytes": 5136,
+      "sha256": "4a0340408e1cb7e8e80ed80329f6ea8b10a11c6b58744ad4608bc4c9c1e15309"
     },
     {
       "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
@@ -12776,32 +12782,40 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "c3bcdaffd9098993cb88db35af0c1e1c6cf3674d",
-    "previous_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
+    "previous_component_git_tree_sha1": "0eaf752ae72360befddf99457390ac89ac592ffc",
+    "previous_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "/home/alex/hepta-razr-notes-recovery-routing-followup-20261124-r1/validation/routing-focused-r1/RESULT.json",
-        "bytes": 156893,
-        "sha256": "a6841db28e7ad8dbcb5737172f3ba01a8321b4b7b90be7d17b527ca8a58cefc6"
+        "path": "tests/native-xiaomi-budget-preview/PRICE-DOMAIN-VALIDATION.json",
+        "bytes": 35150,
+        "sha256": "55097f4751c96eff45eceda747149a5ef1439294f679c17074b62578e78d37ae"
       }
     ],
+    "targeted_cases": 11,
+    "targeted_assertions": 260,
+    "tested_source_inputs_pinned": 118,
+    "compiled_inputs_pinned": 152,
+    "external_dependency_inputs_pinned": 1,
+    "generated_host_fixture_inputs_pinned": 33,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
-    "phone_qualified": false
+    "phone_qualified": false,
+    "hardware_operations": 0,
+    "retained_host_checks_and_provenance_are_historical": true
   },
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "5eec5c12cfff8800ddad194278b02977bf85b9ef822cc60b8ebe7de91006a38a",
+  "production_input_map_sha256": "60b3f027d81d482ad3d0534eed7484bb8e37a29062c94e1b443f223599d1f828",
   "schema": "hepta.local-source.v3",
-  "scope": "Discriminate a genuine supported public work-profile business origin before choosing that recovery branch. Route the actual cancelled personal Notes task through the existing strict personal current-absence verifier and ordinary ACK path. Preserve the original task, cancellation, failed cleanup, profile/owner/boot/expiry/queue checks, all authority and deadline limits, and the installed native/model configuration.",
-  "source_parent_head": "e81828664a043caefb40eb2c551119c04d077c78",
-  "source_parent_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
-  "source_snapshot_predecessor_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
+  "scope": "Preserve every positive canonical amount already supported by native Xiaomi detail quotes in terminal explanations, including sub-yuan and eight-digit prices. Reuse the provider normalization and reject zero, unsupported raw formats, and noncanonical terminal amount records. Checkout preview stages and authority remain unchanged.",
+  "source_parent_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
+  "source_parent_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+  "source_snapshot_predecessor_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12857,6 +12871,19 @@
     "personal_notes_existing_strict_recovery_path": true,
     "actual_cancelled_startup_origin_regression_required": true,
     "historical_cancelled_and_unknown_results_preserved": true,
+    "deadline_and_authority_limits_unchanged": true
+  },
+  "current_native_xiaomi_price_domain": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
+      "tests/native-xiaomi-budget-preview/run_host.py"
+    ],
+    "previous_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+    "provider_amount_domain_unchanged": true,
+    "canonical_terminal_amount_required": true,
+    "checkout_completion_not_claimed": true,
     "deadline_and_authority_limits_unchanged": true
   }
 }

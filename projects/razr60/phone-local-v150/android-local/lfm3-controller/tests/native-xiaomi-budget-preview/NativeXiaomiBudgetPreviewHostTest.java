@@ -91,6 +91,27 @@ public final class NativeXiaomiBudgetPreviewHostTest {
         }
         public void close()throws IOException{env.close();}
     }
+
+    /** Derived price fixtures exercise numeric boundaries, not observed retail offers. */
+    static Path syntheticPriceFixtures(String amount)throws Exception{
+        Path out=Files.createTempDirectory(NativeProfileIdentityHostTest.workspace,"synthetic-price-domain-");
+        for(String name:new String[]{"suggestions","results","detail"}){
+            String raw=new String(Files.readAllBytes(fixtures.resolve(name+".xml")),StandardCharsets.UTF_8);
+            if("results".equals(name))raw=replaceOnce(raw,"text=\"159\"","text=\""+amount+"\"");
+            if("detail".equals(name)){
+                raw=replaceOnce(raw,"content-desc=\"159元划线价199元\"","content-desc=\""+amount+"元划线价199元\"");
+                raw=replaceOnce(raw,"text=\"￥1590￥199\"","text=\"￥"+amount+"0￥199\"");
+            }
+            Files.write(out.resolve(name+".xml"),raw.getBytes(StandardCharsets.UTF_8));
+        }
+        return out;
+    }
+    static String replaceOnce(String source,String before,String after){
+        int at=source.indexOf(before);
+        check(at>=0&&source.indexOf(before,at+before.length())<0,"one original price attribute");
+        return source.substring(0,at)+after+source.substring(at+before.length());
+    }
+
     @SuppressWarnings("unchecked")
     static Map<String,Object> editableChild(Map<String,Object> record,String key){
         Map<String,Object> value=new LinkedHashMap<String,Object>((Map<String,Object>)record.get(key));
@@ -177,6 +198,60 @@ public final class NativeXiaomiBudgetPreviewHostTest {
                 progress.put("transitions",Collections.singletonList(login));check(h.explain(facts).isEmpty(),"a login page alone cannot prove the return home");
             }
         });
+
+        one("supported_price_domain_survives_provider_to_terminal",()->{
+            Path originalFixtures=fixtures;
+            for(String raw:new String[]{"0.01","0.10","0.99","1","1.00","9999999.99","10000000","99999999.99"}){
+                try{
+                    fixtures=syntheticPriceFixtures(raw);
+                    try(Harness h=new Harness(AUDIT)){
+                        h.detail();
+                        String canonical=new java.math.BigDecimal(raw).stripTrailingZeros().toPlainString();
+                        NativeXiaomiProductPage.Page parsed=NativeXiaomiProductPage.inspect(h.task.goal,h.frame);
+                        check(parsed.quote!=null&&canonical.equals(parsed.quote.amountDecimal),"provider accepts and normalizes "+raw);
+                        NativeAppDomain d=h.task.domain();
+                        check(d.incompleteOrderPreview&&!d.resultReady&&d.toolMask(null).equals(Collections.singleton("done")),
+                                "numeric coverage grants no checkout action");
+                        Map<String,Object> answer=h.end();
+                        check("native_xiaomi_order_preview_price_only".equals(answer.get("code")),
+                                "every supported parsed amount must retain the explanation: "+raw);
+                        check(String.valueOf(answer.get("message")).contains(canonical+" 元")
+                                &&Boolean.FALSE.equals(answer.get("business_verified")),"canonical amount without order completion");
+                    }
+                }finally{fixtures=originalFixtures;}
+            }
+        });
+        one("unsupported_raw_price_formats_remain_unverified",()->{
+            Path originalFixtures=fixtures;
+            for(String raw:new String[]{"0","0.00","-1","+1","00.10","1.001","1e2","1,000","100000000","1."," 1","1 "}){
+                try{
+                    fixtures=syntheticPriceFixtures(raw);
+                    try(Harness h=new Harness(AUDIT)){
+                        h.observe("detail");
+                        check(NativeXiaomiProductPage.inspect(h.task.goal,h.frame).quote==null,
+                                "provider continues to reject unsupported amount: "+raw);
+                        check(!h.task.domain().resultReady&&!h.task.domain().incompleteOrderPreview&&h.end().isEmpty(),
+                                "invalid amount cannot create a review or completed task");
+                    }
+                }finally{fixtures=originalFixtures;}
+            }
+        });
+        one("terminal_rejects_noncanonical_or_out_of_domain_amounts",()->{
+            try(Harness h=new Harness(AUDIT)){
+                h.detail();Map<String,Object> originalFacts=h.terminalEvidence();
+                for(String amount:new String[]{"1.00","0","0.00","-1","1e2","01","100000000","1.001"," 1"}){
+                    Map<String,Object> facts=new LinkedHashMap<String,Object>(originalFacts);
+                    Map<String,Object> session=editableChild(facts,"native_app_session");
+                    Map<String,Object> domain=editableChild(session,"current_domain");
+                    Map<String,Object> providerView=editableChild(domain,"provider");
+                    Map<String,Object> review=editableChild(providerView,"order_preview_price_review");
+                    editableChild(review,"detail_quote").put("amount_decimal",amount);
+                    editableChild(providerView,"current_displayed_quote").put("amount_decimal",amount);
+                    check(h.explain(facts).isEmpty(),"a terminal record must use a canonical supported amount: "+amount);
+                }
+            }
+        });
+
         boolean pass=true;for(Map<String,Object> r:results)pass&=Boolean.TRUE.equals(r.get("passed"));
         Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("all_pass",pass);out.put("cases",results.size());out.put("assertions",assertions);out.put("results",results);
         Files.write(Paths.get(args[2]),(new JSONObject(out).toString(2)+"\n").getBytes(StandardCharsets.UTF_8));
