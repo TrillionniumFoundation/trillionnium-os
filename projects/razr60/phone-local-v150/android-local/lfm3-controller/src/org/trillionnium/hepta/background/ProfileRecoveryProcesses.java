@@ -109,20 +109,36 @@ final class ProfileRecoveryProcesses {
         }
         String canonical(){return identity.canonical()+":"+directory.uid+":"+directory.device+":"+directory.inode+":"+commandSha;}
     }
+    private static final int MAX_EMPTY_CMDLINE_ATTEMPTS=3;
     private static VerifiedRow verifyRow(Proc proc,int pid,CensusScope request)throws Exception{
-        Directory first=proc.directory(pid);need(first!=null&&first.uid>=0,"RECOVERY_PROC_DIRECTORY_UNKNOWN");
-        Identity before=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
-        String cmdSha="-";
-        if(before.inspect(request.ownerUid)){
-            byte[] command=proc.read(pid,"cmdline",CMDLINE_MAX);
-            checkCommand(command,before.flags,request.generation);cmdSha=ProfileIdentity.sha(command);
+        Directory pinnedDirectory=null;Identity pinnedIdentity=null;
+        for(int attempt=0;attempt<MAX_EMPTY_CMDLINE_ATTEMPTS;attempt++){
+            check(proc,request);
+            // A retry always starts a complete row. No partial stat/status/command is reused.
+            Directory first=proc.directory(pid);need(first!=null&&first.uid>=0,"RECOVERY_PROC_DIRECTORY_UNKNOWN");
+            if(pinnedDirectory!=null)need(pinnedDirectory.same(first),"RECOVERY_PROC_IDENTITY_CHANGED");
+            Identity before=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
+            if(pinnedIdentity!=null)need(pinnedIdentity.same(before),"RECOVERY_PROC_IDENTITY_CHANGED");
+            String cmdSha="-";boolean emptyUnknown=false;
+            if(before.inspect(request.ownerUid)){
+                byte[] command=proc.read(pid,"cmdline",CMDLINE_MAX);
+                emptyUnknown=command!=null&&command.length==0&&(before.flags&PF_KTHREAD)==0;
+                if(!emptyUnknown){
+                    // Positive broker/generation evidence and every other command error are terminal.
+                    checkCommand(command,before.flags,request.generation);cmdSha=ProfileIdentity.sha(command);
+                }
+            }
+            Identity after=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
+            // A known identity change must reject before any later directory disappearance.
+            need(before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
+            Directory last=proc.directory(pid);
+            need(first.same(last),"RECOVERY_PROC_IDENTITY_CHANGED");
+            if(!emptyUnknown)return new VerifiedRow(first,before,cmdSha,before.inspect(request.ownerUid));
+            // Zero bytes prove neither a kernel thread nor absence. Only a new complete row
+            // with this same directory/start/UID identity can resolve this bounded ambiguity.
+            pinnedDirectory=first;pinnedIdentity=before;check(proc,request);
         }
-        Identity after=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
-        // A known identity change must reject before any later directory disappearance.
-        need(before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
-        Directory last=proc.directory(pid);
-        need(first.same(last),"RECOVERY_PROC_IDENTITY_CHANGED");
-        return new VerifiedRow(first,before,cmdSha,before.inspect(request.ownerUid));
+        throw new IOException("RECOVERY_PROC_CMDLINE_UNKNOWN");
     }
     private static void requireSelf(VerifiedRow row,SelfPin pin)throws IOException{
         for(int uid:row.identity.uids)need(uid==0,"RECOVERY_PROC_SELF_UID");

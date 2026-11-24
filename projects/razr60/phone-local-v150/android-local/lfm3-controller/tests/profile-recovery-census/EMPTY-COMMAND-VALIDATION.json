@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.empty-command-complete-row-source-validation.v1",
+  "source_parent_head": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
+  "source_parent_component_tree": "3812d40efe67ecb100a21a1cd017ee408b3e56fa",
+  "source_parent_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+  "status": "TARGETED_HOST_REGRESSIONS_PASSED_FULL_HOST_AND_ANDROID_PENDING",
+  "candidate_head_embedded": false,
+  "identity_binding": "The containing Git commit is the candidate identity; source byte pins bind the executed targeted host gate.",
+  "scope": "Reobserve only an inspected non-kernel process row with an empty command line, using at most three complete stat/status/command/directory observations of the same pinned identity within the original deadline. Reject persistent empty data, identity changes, positive broker/generation evidence, and all other errors. Preserve native positive-disappearance handling, full census closing waves, self pins, and independent display/task/recents absence requirements.",
+  "changed_files": [
+    {
+      "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "bytes": 17891,
+      "sha256": "736ce29d462ac2a2f42ca58a1c0ace1f7ef0cf0df1081b8a4979ac968c1fa7c0",
+      "base_sha256": "3d3e6be68c085e66069e32b1394d6d766437a25db9abda9551f9c89781433edc"
+    },
+    {
+      "path": "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
+      "bytes": 8497,
+      "sha256": "b65b04fbe3acea53087e3ae160c1dd756c7789e2ed67279e2208367659d46449",
+      "base_sha256": null
+    },
+    {
+      "path": "tests/profile-recovery-census/run_host.py",
+      "bytes": 5984,
+      "sha256": "97036244045707b63d80918f7527fc1a439e5b7ad39e34f4c016e07f7254fbd5",
+      "base_sha256": "605c0e91dd1b913e9cac69d747203d1a948756475fd4554e32df14abf5e657d3"
+    }
+  ],
+  "production_diff_sha256": "ef90ba56cc2f3d2cd1b8a8011359d4c815afddbc4ee74204ce7977ab26818605",
+  "targeted_host": {
+    "report_sha256": "f36ff44f03376b87bc493b0b539137ec57c70aeddf1d713ece7cf78168988d64",
+    "empty_command_cases": 28,
+    "empty_command_assertions": 57,
+    "existing_census_cases": 22,
+    "existing_census_assertions": 83,
+    "existing_business_census_cases": 22,
+    "existing_business_census_assertions": 34,
+    "all_pass": true,
+    "proc_boundary": "synthetic; actual production census entry points",
+    "phone_operations": 0
+  },
+  "current_incident": {
+    "recorded_error": "RECOVERY_PROC_CMDLINE_UNKNOWN",
+    "original_failing_row_identified": false,
+    "later_readonly_snapshot_reproduced_persistent_failure": false,
+    "transient_condition_not_proven_as_historical_cause": true
+  },
+  "unchanged_guards": {
+    "original_deadline": true,
+    "self_identity": true,
+    "directory_and_start_and_four_uids": true,
+    "positive_broker_and_generation": true,
+    "persistent_empty_rejected": true,
+    "no_zombie_or_dead_state_exception": true,
+    "no_permission_or_generic_io_retry": true,
+    "native_gone_evidence": true,
+    "closing_census": true,
+    "current_display_task_recents_absence": true,
+    "explicit_ack": true
+  },
+  "full_current_host_suite_completed": false,
+  "android_sdk_compile_passed": false,
+  "phone_qualified": false,
+  "app_recovery_completed": false,
+  "phone_operations": 0,
+  "old_checks_and_phone_results_not_current_qualification": true
+}

@@ -1,17 +1,18 @@
 {
   "android_qualified": false,
-  "base_head": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
-  "base_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+  "base_head": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
+  "base_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_v7_monotone_broker_eof_successor",
-  "complete_source_files": 2559,
+  "candidate_status": "reviewed_bounded_empty_cmdline_complete_row_successor",
+  "complete_source_files": 2561,
   "current_successor_delta": {
-    "baseline": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
+    "baseline": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java"
+      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
+      "tests/profile-recovery-census/run_host.py"
     ],
-    "scope": "For the separate v7 completed-workflow retirement-refusal request only, admit a current producer receipt whose only difference from the immutable historical receipt is the typed monotone eof_seen boolean. Keep historical EOF=false, persisted=true, and exact equality of every other field; preserve legacy v3/v6 validation and fresh current absence/ordinary ACK requirements.",
+    "scope": "Reobserve only an inspected non-kernel process row with an empty command line, using at most three complete stat/status/command/directory observations of the same pinned identity within the original deadline. Reject persistent empty data, identity changes, positive broker/generation evidence, and all other errors. Preserve native positive-disappearance handling, full census closing waves, self pins, and independent display/task/recents absence requirements.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6305,8 +6306,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "bytes": 16665,
-      "sha256": "3d3e6be68c085e66069e32b1394d6d766437a25db9abda9551f9c89781433edc"
+      "bytes": 17891,
+      "sha256": "736ce29d462ac2a2f42ca58a1c0ace1f7ef0cf0df1081b8a4979ac968c1fa7c0"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileTarget.java",
@@ -10734,14 +10735,24 @@
       "sha256": "010f083be0e1a17ae0a9f8894ae248b9dfd2565d8499338f1d6ebca5e00b076d"
     },
     {
+      "path": "tests/profile-recovery-census/EMPTY-COMMAND-VALIDATION.json",
+      "bytes": 3353,
+      "sha256": "4c41f8d3bc3c4353faa688172b887311405ba2c84007988aed2c80a63bf79a71"
+    },
+    {
+      "path": "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
+      "bytes": 8497,
+      "sha256": "b65b04fbe3acea53087e3ae160c1dd756c7789e2ed67279e2208367659d46449"
+    },
+    {
       "path": "tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java",
       "bytes": 9798,
       "sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c"
     },
     {
       "path": "tests/profile-recovery-census/run_host.py",
-      "bytes": 5642,
-      "sha256": "605c0e91dd1b913e9cac69d747203d1a948756475fd4554e32df14abf5e657d3"
+      "bytes": 5984,
+      "sha256": "97036244045707b63d80918f7527fc1a439e5b7ad39e34f4c016e07f7254fbd5"
     },
     {
       "path": "tests/profile-recovery-platform/FdOwnershipHostTest.java",
@@ -12810,22 +12821,22 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "79fcbc0771d4281037cffaeedb0f9345d4f52fb7",
-    "previous_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+    "previous_component_git_tree_sha1": "3812d40efe67ecb100a21a1cd017ee408b3e56fa",
+    "previous_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "tests/notes-workflow-retirement-refusal/EOF-SUCCESSOR-VALIDATION.json",
-        "bytes": 3259,
-        "sha256": "1794ee19a8847c7c5f002dd52d84101950204b02a9ebb5eb9e2d8c70c4e80daf"
+        "path": "tests/profile-recovery-census/EMPTY-COMMAND-VALIDATION.json",
+        "bytes": 3353,
+        "sha256": "4c41f8d3bc3c4353faa688172b887311405ba2c84007988aed2c80a63bf79a71"
       }
     ],
-    "recovery_cases": 182,
-    "recovery_assertions": 314,
-    "tested_source_inputs_pinned": 3,
+    "empty_command_cases": 28,
+    "empty_command_assertions": 57,
+    "tested_source_inputs_pinned": 19,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false,
@@ -12835,12 +12846,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "c2f325b9929a798f6c0d5e81e58bcc0dd68dd2b8dac8430e7091c28effa79217",
+  "production_input_map_sha256": "415907b42e5e9496477cbf5fbd0b9f575033c3cfec71154ffac7be017440f277",
   "schema": "hepta.local-source.v3",
-  "scope": "For the separate v7 completed-workflow retirement-refusal request only, admit a current producer receipt whose only difference from the immutable historical receipt is the typed monotone eof_seen boolean. Keep historical EOF=false, persisted=true, and exact equality of every other field; preserve legacy v3/v6 validation and fresh current absence/ordinary ACK requirements.",
-  "source_parent_head": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
-  "source_parent_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
-  "source_snapshot_predecessor_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+  "scope": "Reobserve only an inspected non-kernel process row with an empty command line, using at most three complete stat/status/command/directory observations of the same pinned identity within the original deadline. Reject persistent empty data, identity changes, positive broker/generation evidence, and all other errors. Preserve native positive-disappearance handling, full census closing waves, self pins, and independent display/task/recents absence requirements.",
+  "source_parent_head": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
+  "source_parent_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+  "source_snapshot_predecessor_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12947,5 +12958,22 @@
     "request_v3_and_v6_unchanged": true,
     "fresh_current_absence_and_ack_still_required": true,
     "actual_post_shutdown_eof_captured": false
+  },
+  "current_process_empty_command_reobservation": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
+      "tests/profile-recovery-census/run_host.py"
+    ],
+    "previous_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+    "maximum_complete_row_attempts": 3,
+    "same_identity_required": true,
+    "only_empty_non_kernel_ambiguity_reobserved": true,
+    "persistent_empty_rejected": true,
+    "original_deadline_unchanged": true,
+    "no_zombie_or_dead_state_exception": true,
+    "original_capture_and_closing_preserved": true,
+    "current_display_task_recents_absence_and_ack_still_required": true,
+    "original_failing_process_row_identified": false
   }
 }

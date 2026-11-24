@@ -22,7 +22,8 @@ def main():
  legacy=a.source_root/'tests/profile-recovery/ProfileRecoveryHostTest.java'
  test=Path(__file__).with_name('ProfileRecoveryCensusHostTest.java')
  business=test.with_name('BusinessRecoveryCensusHostTest.java')
- files=common+[legacy,test,business,candidate]+([a.baseline_processes] if a.baseline_processes else [])
+ empty=test.with_name('EmptyCommandRowHostTest.java')
+ files=common+[legacy,test,business,empty,candidate]+([a.baseline_processes] if a.baseline_processes else [])
  pins={str(p):sha(p) for p in files}
  result={'schema':'hepta.census-retry-host-validation.v1','all_pass':False,'phone_contacted':False,'android_runtime':False,
   'source_inputs':pins,'stages':[],'framework_proc_boundary':'synthetic; actual production census and original proof validator'}
@@ -35,7 +36,7 @@ def main():
  def compile_sources(label,processes):
   classes=a.output/(label+'-classes');classes.mkdir()
   r=run(label+'-compile',[a.jdk_bin/'javac','--release','8','-Xlint:all,-options','-Werror','-proc:none',
-   '-encoding','UTF-8','-cp',a.json_jar,'-d',classes,*common,processes,legacy,test]+([business] if label=='candidate' else []))
+   '-encoding','UTF-8','-cp',a.json_jar,'-d',classes,*common,processes,legacy,test]+([business,empty] if label=='candidate' else []))
   if r.returncode or r.stderr:raise RuntimeError(label+' compile failed')
   return str(classes)+':'+str(a.json_jar)
  def java(label,cp,klass,*args):
@@ -64,6 +65,10 @@ def main():
   business=json.loads(r.stdout)
   if r.returncode or r.stderr or business.get('passed') is not True:raise RuntimeError('Business census cases failed')
   result['business_census']=business
+  r=java('empty-command-complete-rows',cp,'EmptyCommandRowHostTest')
+  empty_rows=json.loads(r.stdout)
+  if r.returncode or r.stderr or empty_rows.get('passed') is not True:raise RuntimeError('Empty-command complete-row gate failed')
+  result['empty_command_rows']=empty_rows
   r=java('candidate-legacy',cp,'ProfileRecoveryHostTest')
   legacy_result=json.loads(r.stdout)
   if r.returncode or r.stderr or legacy_result['passed'] is not True:raise RuntimeError('Existing identity/proof gate failed')
