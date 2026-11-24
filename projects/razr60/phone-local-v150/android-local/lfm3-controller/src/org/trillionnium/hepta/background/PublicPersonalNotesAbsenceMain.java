@@ -130,7 +130,7 @@ public final class PublicPersonalNotesAbsenceMain {
         JSONObject out=new JSONObject().put("complete",true).put("rows",new JSONArray(rows.values()));PublicPersonalNotesAbsenceRecovery.requireDisplays(out,r);return out;
     }
     private static void failure(AtomicBoolean emitted,PublicPersonalNotesAbsenceRecovery.Request request,String code){try{
-        emit(emitted,new JSONObject().put("schema",PublicPersonalNotesAbsenceRecovery.SCHEMA).put("request_id",request==null?JSONObject.NULL:request.requestId)
+        emit(emitted,new JSONObject().put("schema",request==null?PublicPersonalNotesAbsenceRecovery.SCHEMA:request.proofSchema()).put("request_id",request==null?JSONObject.NULL:request.requestId)
                 .put("cleanup_known",false).put("error",code));}catch(Throwable ignored){System.err.println("notes_absence_recovery_output_failed");}}
     private static boolean emit(AtomicBoolean emitted,JSONObject value){if(!emitted.compareAndSet(false,true))return false;
         System.out.println(value.toString());System.out.flush();return true;}

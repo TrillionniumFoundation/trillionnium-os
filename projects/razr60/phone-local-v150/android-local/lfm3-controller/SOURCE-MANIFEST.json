@@ -3,20 +3,25 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_complete_census_publication_successor",
-  "complete_source_files": 2540,
+  "candidate_status": "reviewed_notes_create_and_cancelled_recovery_successor",
+  "complete_source_files": 2546,
   "current_successor_delta": {
-    "baseline": "1122e45ccc6d4fc277167c6a9edea87cc8efd976",
+    "baseline": "089e1dee0c444cbd59a81993ffe05355b31630cd",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-      "tests/native-search-producer/IncompleteCensusCases.fragment",
-      "tests/native-search-producer/ProducerCases.fragment",
-      "tests/native-search-producer/PublicationReplacementCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/run_producer.py"
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
+      "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
+      "tests/notes-app-qualified-create/real-owner-50af.json",
+      "tests/notes-app-qualified-create/run_host.py",
+      "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
+      "tests/notes-cancelled-absence/README.md",
+      "tests/notes-cancelled-absence/run_host.py"
     ],
-    "scope": "Repair two no-effect Xiaomi observation failures: consume the existing once-only complete C/D resample allowance on a typed incomplete D child refresh before claim; and permit one same-request full A/B replacement for an explicitly expired publication after real serial-worker drain. Preserve all original deadlines, budgets, complete census, ownership, event tracking, and once-only input effect boundaries.",
+    "scope": "Recognize exact app-qualified Notes create bodies and reject unsupported explicit-create requests before task lease or bootstrap; add a separate cancelled-personal-Notes current-absence recovery mode preserving the cancelled 143 model result, historical failed task and cleanup-unknown facts. Preserve original bounded archives, current complete census, physical and foreign checks, exact lease CAS and ordinary recovery ACK.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6375,13 +6380,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
-      "bytes": 16386,
-      "sha256": "0123feeb924ee24a63eba816efc684555d9682996867ac39378f01571aa13c0e"
+      "bytes": 16422,
+      "sha256": "db8371471e52fb3fbdf20c7fb48bdf441f410bc6c8ddd40afebf3337cea93ac3"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 102483,
-      "sha256": "abcabd502dbcda52fdde21322cc1dfef16c079a923d9808d4f4fdca8136c4bac"
+      "bytes": 133411,
+      "sha256": "d1d1b423f1a33979373bab4652ae02e7c068119d78602440f2fd1fbc4cc4e797"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
@@ -6620,8 +6625,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 300342,
-      "sha256": "60c0e68b2f8eb523d5a82ea47e525fc307c4ad7e93e671b33ac9e5dff1da69e9"
+      "bytes": 300450,
+      "sha256": "67513c939a7c11e9c2058a1840ca35c85469365a6bf69f7a13f64a085cd007e5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -6785,8 +6790,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "bytes": 14857,
-      "sha256": "669c720643a45dc1ced6b1b187ea5210fd4331044c075d4e39f98b927b144eff"
+      "bytes": 17643,
+      "sha256": "b7842a7c9ad9d87549cb394a285c67959480cb706d93083ba7fd8a89c477b4f1"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
@@ -6925,8 +6930,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "bytes": 31123,
-      "sha256": "664dd069a8ed49416bde3e430ea47d149bb55cea2ae3c0d776237a1cd839802b"
+      "bytes": 40901,
+      "sha256": "ab0e713074b83180696af116425ff75a6ecc83fdca0162693f868d9ee6dcde5e"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
@@ -7045,8 +7050,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "bytes": 67064,
-      "sha256": "4bf400aa7d04efd67cf4ca67ca69cf40186b42781936660ce3cac0699f82d36a"
+      "bytes": 68296,
+      "sha256": "f5d743e8f0387d25fcaf093399a2c53e7c59840808fa8ce069c6e09276639871"
     },
     {
       "path": "src/org/trillionnium/hepta/local/TaskDisplayText.java",
@@ -9787,6 +9792,36 @@
       "path": "tests/notes-after-release-reader/run_host.py",
       "bytes": 19224,
       "sha256": "7856ccc4125ca48a9c0683c7bb64f766338651e7094ac666fb8e9c6f81c84989"
+    },
+    {
+      "path": "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
+      "bytes": 24543,
+      "sha256": "b287adfce0b9597c921c86334808ff30af81a76908228da2d11e3d1d9948f618"
+    },
+    {
+      "path": "tests/notes-app-qualified-create/real-owner-50af.json",
+      "bytes": 6340,
+      "sha256": "37d86eac8c717a3b5f4fde428b47046461fe302648a50ff7a7fa33d55fd4a4f5"
+    },
+    {
+      "path": "tests/notes-app-qualified-create/run_host.py",
+      "bytes": 6623,
+      "sha256": "8cf9decce9cd870913bd687792add8e7034b8a43aa9471d2e444ed87a192a64b"
+    },
+    {
+      "path": "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
+      "bytes": 23933,
+      "sha256": "bdb671d5dfa99ab527eeea2fbe10df2011cb1be6bc79c7aa453d56b6bfc9933d"
+    },
+    {
+      "path": "tests/notes-cancelled-absence/README.md",
+      "bytes": 2003,
+      "sha256": "2de642d5ca8fa660c137491761f4928376a138b39f580b25b0226cdd33932591"
+    },
+    {
+      "path": "tests/notes-cancelled-absence/run_host.py",
+      "bytes": 7328,
+      "sha256": "280c1c23e85ba3b9f888025572d24211659e2da725e3c5116670997dee6c8763"
     },
     {
       "path": "tests/notes-create-workflow/NotesCreateWorkflowHostTest.java",
@@ -12720,17 +12755,22 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "5d338c795133ad663ec6524f0472d1f320881c17",
-    "previous_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
+    "previous_component_git_tree_sha1": "1ce12d2d862f9c3fc643b29c9260e758c52cb882",
+    "previous_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "/home/alex/hepta-razr-complete-census-followup-20261124-r1/validation/integrated-producer-r3-sealed-counters/RESULT.json",
-        "bytes": 184209,
-        "sha256": "d6f7079f558b5263de7400a51ce18c6b0c43f48a7c948fdcd054cde947856ae2"
+        "path": "/home/alex/hepta-razr-notes-create-followup-20261124-r1/validation/mobile-notes-create-r3/RESULT.json",
+        "bytes": 116954,
+        "sha256": "7ad9c996cd45010e9fbbfbb9faeed5f48f860bef67757851e5c079fd42628062"
+      },
+      {
+        "path": "/home/alex/hepta-razr-notes-create-followup-20261124-r1/validation/cancelled-final-r1/RESULT.json",
+        "bytes": 64633,
+        "sha256": "d9c2a68aab60bce211ea57a47d497d55ae98b9d3d10caa299d759a6b783381a6"
       }
     ],
     "full_current_host_suite_completed_at_preparation": false,
@@ -12740,29 +12780,35 @@
   "main_java_sources": 217,
   "phone_qualified": false,
   "production_build_inputs_count": 394,
-  "production_input_map_sha256": "b6ade8e6c14faff648124e19ca1fe0150aa4423ed66e5258c833ca63802da46c",
+  "production_input_map_sha256": "d8da1c5ff21e042dd184c23dd4c437c18b55bd65eb436443236337dcf21b1aca",
   "schema": "hepta.local-source.v3",
-  "scope": "Repair two no-effect Xiaomi observation failures: consume the existing once-only complete C/D resample allowance on a typed incomplete D child refresh before claim; and permit one same-request full A/B replacement for an explicitly expired publication after real serial-worker drain. Preserve all original deadlines, budgets, complete census, ownership, event tracking, and once-only input effect boundaries.",
-  "source_parent_head": "1122e45ccc6d4fc277167c6a9edea87cc8efd976",
-  "source_parent_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
-  "source_snapshot_predecessor_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
+  "scope": "Recognize exact app-qualified Notes create bodies and reject unsupported explicit-create requests before task lease or bootstrap; add a separate cancelled-personal-Notes current-absence recovery mode preserving the cancelled 143 model result, historical failed task and cleanup-unknown facts. Preserve original bounded archives, current complete census, physical and foreign checks, exact lease CAS and ordinary recovery ACK.",
+  "source_parent_head": "089e1dee0c444cbd59a81993ffe05355b31630cd",
+  "source_parent_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
+  "source_snapshot_predecessor_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
-  "current_bounded_observation_repairs": {
+  "current_notes_create_and_cancelled_recovery": {
     "changed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/NativeSearchPlanning.java",
-      "tests/native-search-producer/IncompleteCensusCases.fragment",
-      "tests/native-search-producer/ProducerCases.fragment",
-      "tests/native-search-producer/PublicationReplacementCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/run_producer.py"
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
+      "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
+      "tests/notes-app-qualified-create/real-owner-50af.json",
+      "tests/notes-app-qualified-create/run_host.py",
+      "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
+      "tests/notes-cancelled-absence/README.md",
+      "tests/notes-cancelled-absence/run_host.py"
     ],
-    "previous_manifest_sha256": "5032b90f26696cd56780aaab8eea8b27195df680873f6500624161c8308e6a95",
-    "full_new_cases": 42,
-    "original_case_changes": [
-      "One existing D-child-missing case now expects the reviewed once-only complete resample; its old expectation failure is preserved."
-    ],
-    "deadlines_and_effect_authority_unchanged": true
+    "previous_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
+    "complete_owner_span_preserved": true,
+    "unsupported_create_rejected_before_task_lease": true,
+    "cancelled_model_exit_code_remains": 143,
+    "historical_model_receipt_valid_remains": false,
+    "historical_business_and_cleanup_success_not_claimed": true,
+    "archive_and_deadline_limits_unchanged": true
   }
 }

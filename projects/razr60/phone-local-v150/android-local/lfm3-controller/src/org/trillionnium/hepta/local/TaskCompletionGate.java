@@ -344,6 +344,21 @@ public final class TaskCompletionGate {
                 &&webDomain.windowId==frame.windowId,"current official page evidence is unavailable");
         return webDomain;
     }
+    /** No task/display/model is acquired here. Unknown explicit Notes creation
+     * cannot fall through to generic writes against an existing editor. */
+    static void requireSupportedNotesCreate(String owner,TaskAuthorization authorization,
+                                           BackgroundTaskTarget.SelectionBinding selection){
+        if(selection==null)return;
+        BackgroundTaskTarget target=selection.executionTarget();
+        if(target==null||target.webHelper()||!NotesCompletionEvidence.NOTES.equals(target.packageName))return;
+        authorization.requireOwner(owner);authorization.requireCompletionSelection(selection);target.requireOwner(owner);
+        if(!NotesOwnerIntent.explicitCreateRequest(owner))return;
+        // Parse the complete existing contract, including the older long forms.
+        // Merely checking NotesOwnerIntent.supported would reject those forms.
+        if(NOTES.equals(Contract.parse(owner,authorization).kind)||NotesOwnerIntent.explicitEmptyDraftRequest(owner))return;
+        throw new IllegalArgumentException("无法确定新建备忘录的完整正文。请写成“在备忘录里新建一条备忘录：完整正文”，并将其他操作分成独立任务。");
+    }
+
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
         this(task,owner,authorization,null);
     }

@@ -24,6 +24,10 @@ public final class NotesOwnerIntent {
     private static final String POLITE = "(?:(?:请帮我|帮我|请)" + SPACE + ")?";
     private static final String END = SPACE + "[。.!！]?" + SPACE;
     private static final String PREFIX = "(?:记一下|记录一下|记个笔记|记一条笔记|新建(?:一条|一个)?(?:笔记|备忘录))[：:]";
+    // One explicit Notes app qualifier. It is matched in immutable OWNER;
+    // it is never stripped and then reparsed with shifted source offsets.
+    private static final String APP_QUALIFIER = "在" + SPACE
+            + "(?:备忘录|笔记|(?i:Moto)" + SPACE + "笔记)(?:里|中)" + SPACE;
     private static final String QUOTED_NEW = "(?:新建|创建|写)(?:一条|一个|一则)?(?:笔记|备忘录)"
             + "[，,]?" + SPACE + "(?:正文|内容)(?:为|是)[：:]?" + SPACE;
     private static final String APP_SAVE_PREFIX = SPACE + POLITE
@@ -38,6 +42,8 @@ public final class NotesOwnerIntent {
             + "(?:新建|创建|写)(?:一条|一个|一则)?(?:笔记|备忘录)[，,]?" + SPACE
             + "(?:正文|内容)(?:为|是)[：:]" + "(.+)");
     private static final Pattern UNQUOTED_PREFIX = full(SPACE + POLITE + PREFIX + "(.+)");
+    private static final Pattern UNQUOTED_APP_PREFIX =
+            full(SPACE + POLITE + APP_QUALIFIER + PREFIX + "(.+)");
     // Do not consume an apparent polite word from the body: 请假申请记一下
     // must retain 请假申请, rather than silently changing it to 假申请.
     private static final Pattern UNQUOTED_SUFFIX = full(SPACE + "(.+?)[，,]?记一下" + END);
@@ -67,6 +73,19 @@ public final class NotesOwnerIntent {
             "(?:只|仅|先)(?:新建|打开|写|留|保留)?(?:一个|一条)?(?:笔记)?草稿"
             + "|(?:新建|打开|写)(?:一个|一条)?(?:笔记)?草稿"
             + "|不要保存|不保存|不必保存|无需保存|只打开(?:笔记)?编辑器");
+    // This prefix only classifies an explicit new-note request for fail-closed
+    // admission. It is not a body recognizer, a tool grant or a completion rule.
+    private static final Pattern EXPLICIT_CREATE = Pattern.compile("\\A" + SPACE + POLITE
+            + "(?:" + APP_QUALIFIER + ")?(?:(?:新建|创建)(?:并保存)?|写)(?:一条|一个|一则)?(?:笔记|备忘录)"
+            + "(?=[ \\t，,：:。.!！]|正文|内容|然后|随后|接着|再|并|$)");
+    private static final String EMPTY_DRAFT = "(?:一条|一个)?(?:空白|空)?(?:笔记|备忘录)?草稿";
+    private static final String NO_SAVE_TAIL = "(?:[，,]" + SPACE + "(?:不要|不)保存)?";
+    // Only a completely consumed, explicitly draft-only request is exempt.
+    // A draft phrase in a body or before a second action is not such a request.
+    private static final Pattern EXPLICIT_EMPTY_DRAFT = full(SPACE + POLITE
+            + "(?:" + APP_QUALIFIER + ")?(?:(?:只|仅)(?:打开|新建|创建)" + EMPTY_DRAFT + NO_SAVE_TAIL
+            + "|(?:新建|创建)(?:一条|一个)?(?:笔记|备忘录)[，,]" + SPACE
+            + "(?:但)?(?:只|仅)打开" + EMPTY_DRAFT + NO_SAVE_TAIL + ")" + END);
     private static final char[][] QUOTES = {{'“','”'}, {'‘','’'}, {'"','"'}, {'\'','\''}};
     // One bounded literal body followed by the complete requested workflow and
     // limits. The body is not a fixed test message, and no later clause is cut
@@ -112,7 +131,9 @@ public final class NotesOwnerIntent {
         public boolean masksOwnerBodyForAuthority() {
             return supported && !"natural_new_note_body.v1".equals(recognition)
                     && !"natural_note_comma_prefix.v1".equals(recognition)
-                    && !"natural_note_save_list_reopen.v2".equals(recognition);
+                    && !"natural_note_save_list_reopen.v2".equals(recognition)
+                    && !"natural_app_note_prefix.v1".equals(recognition)
+                    && !"quoted_app_note_prefix.v1".equals(recognition);
         }
 
         /** Return authority text only for this parser's exact immutable OWNER.
@@ -142,14 +163,25 @@ public final class NotesOwnerIntent {
                 SPACE + POLITE + QUOTED_NEW + body + END,
                 SPACE + POLITE + "把" + body + DESTINATION + END,
                 SPACE + body + "[，,]?记一下" + END,
-                APP_SAVE_PREFIX + body + REOPEN_FROM_LIST
+                APP_SAVE_PREFIX + body + REOPEN_FROM_LIST,
+                SPACE + POLITE + APP_QUALIFIER + PREFIX + SPACE + body + END
             };
             String[] forms = {"quoted_note_prefix.v1", "quoted_new_note.v1",
-                    "quoted_note_destination.v1", "quoted_note_suffix.v1", "quoted_save_reopen_note.v1"};
+                    "quoted_note_destination.v1", "quoted_note_suffix.v1", "quoted_save_reopen_note.v1",
+                    "quoted_app_note_prefix.v1"};
             for (int i = 0; i < expressions.length; i++) {
                 Matcher match = full(expressions[i]).matcher(owner);
                 if (match.matches()) return candidate(owner, match, forms[i], true);
             }
+        }
+        Matcher appPrefix = UNQUOTED_APP_PREFIX.matcher(owner);
+        if (appPrefix.matches()) {
+            Result result = candidate(owner, appPrefix, "natural_app_note_prefix.v1", false);
+            // Keep all old unquoted-prefix limits. Additional action/authority
+            // language is also refused; the entire OWNER remains unmasked.
+            if (result.supported && AMBIGUOUS_COMMA_BODY.matcher(result.body).find())
+                return refused(owner, false, "ambiguous_unquoted_body_or_additional_goal");
+            return result;
         }
         Matcher commaPrefix = UNQUOTED_COMMA_PREFIX.matcher(owner);
         if (commaPrefix.matches()) {
@@ -178,6 +210,14 @@ public final class NotesOwnerIntent {
         }
         return refused(owner, DRAFT_ONLY.matcher(outsideQuotedText(owner)).find(),
                 "no_complete_supported_natural_note_request");
+    }
+
+    static boolean explicitCreateRequest(String immutableOwner) {
+        return immutableOwner != null && EXPLICIT_CREATE.matcher(immutableOwner).find();
+    }
+
+    static boolean explicitEmptyDraftRequest(String immutableOwner) {
+        return validOwner(immutableOwner) && EXPLICIT_EMPTY_DRAFT.matcher(immutableOwner).matches();
     }
 
     private static Result candidate(String owner, Matcher match, String form, boolean quoted) {

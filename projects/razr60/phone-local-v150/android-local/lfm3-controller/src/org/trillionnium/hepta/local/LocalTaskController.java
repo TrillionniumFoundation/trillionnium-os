@@ -409,6 +409,7 @@ public final class LocalTaskController implements AutoCloseable {
             if(Character.isHighSurrogate(c)){if(i+1>=instruction.length()||!Character.isLowSurrogate(instruction.charAt(++i)))throw new IllegalArgumentException("指令包含无效字符");}
             else if(Character.isLowSurrogate(c))throw new IllegalArgumentException("指令包含无效字符");
         }
+        TaskCompletionGate.requireSupportedNotesCreate(instruction,ownerAuthorization,backgroundSelection);
         final String id=UUID.randomUUID().toString().replace("-","");
         if(!service.acquireTask(id,new Runnable(){public void run(){stop();}}))return false;
         final TaskAuthorization.Gate authorization;
