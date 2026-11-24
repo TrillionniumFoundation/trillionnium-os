@@ -757,6 +757,36 @@ final class NativeAppSession {
         live();need(session!=null&&searchPlanning==session&&session.nativeTask==this&&session.authorization==authorization
                 &&session.selection==selection&&session.goal==goal,"actual native search Session differs");
     }
+    void requireInitialImageModalPrelude(NativeSearchSession session){
+        requireSearchPlanningCurrent(session);need(current==null&&observations.isEmpty()&&inFlight==null&&pending==null
+                &&ordinal==0&&!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
+                "image-modal prelude must precede every native observation/action/query");
+    }
+    boolean imageModalBackReady(NativeSearchSession session,ActionDecision action,String run,long now){
+        requireSearchPlanningCurrent(session);Attempt a=pending;
+        return a!=null&&inFlight==null&&a.action==action&&a.run.equals(run)&&a.before==current&&a.receipt!=null&&a.outcomeJournaled
+                &&"back".equals(action.action)&&"dismiss_image_modal_once".equals(a.purpose)&&a.product!=null
+                &&NativeXiaomiProductPage.IMAGE_MODAL.equals(a.product.phase)&&productModalExitAttempted
+                &&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null
+                &&searchNavigationAttempt==null&&searchNavigationEffect==null&&now>=a.finished&&now-a.finished<OBSERVED_TRANSITION_MS;
+    }
+    long imageModalTransitionDeadline(NativeSearchSession session,ActionDecision action,String run,long now){
+        need(imageModalBackReady(session,action,run,now),"same accepted model image-modal Back required");
+        return pending.finished+OBSERVED_TRANSITION_MS;
+    }
+    void observeSearchHomeAfterImageModal(NativeSearchSession session,NativeSearchPlanning planning,long now){
+        requireSearchPlanningCurrent(session);Attempt a=pending;
+        need(a!=null&&imageModalBackReady(session,a.action,a.run,now)&&planning!=null
+                &&NativeSearchPlanning.equal(session.binding(),planning.binding)&&planning.publication!=null
+                &&planning.timing.aReadStarted>=a.finished&&planning.capturedElapsed>=a.finished
+                &&planning.capturedElapsed-a.finished<=OBSERVED_TRANSITION_MS,
+                "new complete owned home-search planning must follow the one accepted Back");
+        Map<String,Object> e=base();e.put("schema","hepta.native-search-image-modal-home.v1");e.put("attempt",a.evidence());
+        e.put("fresh_home_planning",planning.evidence());e.put("navigation_only",true);e.put("actual_return_destination","home_search");
+        e.put("ordinary_frame_created",false);e.put("query_or_result_proof_created",false);e.put("business_transition_verified",false);
+        try{journal.write("native-search-image-modal-home.json",e);}catch(Exception failed){throw new IllegalStateException("image-modal home receipt unavailable",failed);}
+        transitions.add(NativeAppEvidence.immutableMap(e));pending=null;current=null;product=null;acceptedClaim=null;
+    }
     void reserveSearchNavigation(NativeSearchSession session,NativeSearchSession.Attempt attempt)throws Exception{
         requireSearchPlanningCurrent(session);need(current==null&&inFlight==null&&pending==null
                 &&searchNavigationEffect==null&&attempt!=null&&attempt.session==session
@@ -809,6 +839,13 @@ final class NativeAppSession {
     }
     private void observeSearchNavigation(NativeAppEvidence.Frame frame)throws Exception{
         if(searchPlanning==null||searchNavigationObserved||typedSearchLoginObserved!=null)return;
+        if(searchPlanning.allowsImageModalObservation()){
+            need(searchNavigationAttempt==null&&searchNavigationEffect==null&&pending==null&&inFlight==null
+                    &&product!=null&&NativeXiaomiProductPage.IMAGE_MODAL.equals(product.phase)
+                    &&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
+                    "fresh ordinary image-modal provider required before model navigation");
+            return;
+        }
         need(searchNavigationAttempt!=null&&searchNavigationEffect!=null&&current==null&&inFlight==null&&pending==null
                 &&frame.capturedElapsedMs>=searchNavigationEffectElapsed,"fresh observed input must follow the actual typed navigation effect");
 

@@ -36,7 +36,8 @@ public final class HeptaAccessibilityService {
     String lease;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;
     BackgroundSession taskBackground;NativeAxMode nativeAxMode;ActionExecutionState lastActionExecution;
     boolean capturePending,cancellationPending;int taskObservationAdmissions;
-    PhoneObservation current;Graph currentGraph;
+    PhoneObservation current;Graph currentGraph;Bitmap currentBitmap;
+    static final class Bitmap {void recycle(){}}
     Fixture fixture;
     static final class ProfilePermissionUiSession {static boolean pending;static boolean workPending(){return pending;}void retire(String task,String reason){/* unrelated permission IO stays pending until its own owner drains */}}
     final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession();
@@ -110,6 +111,7 @@ public final class HeptaAccessibilityService {
         public boolean equals(Object v){return v instanceof HeptaAccessibilityService.AccessibilityNodeInfo&&((AccessibilityNodeInfo)v).data==data;}public int hashCode(){return System.identityHashCode(data);}
     }
     static final class PhoneObservation {
+        String id;
         static final class CollectionStats {int visited,retained,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean truncated(){return pending!=0||nodeBudgetOmissions!=0||textBudgetOmissions!=0||childSlotsOmitted!=0;}}
         static final class Node {String id,packageName,nativeTreePath,nativeParentClass,observedAppTreeSignature,text,description;Boolean selected,checkable,checked;boolean selectionStateObserved;Rect bounds;ObservedChildText.Result childText;String label(){return ObservedChildText.displayLabel(text,description,childText);}}
     }
@@ -230,7 +232,10 @@ public final class HeptaAccessibilityService {
                 for(NodeData child:replacement.children)child.parent=replacement;
             }
             Graph g=new Graph();Graph graph=g;try{g.readStartedElapsedMs=SystemClock.now;SystemClock.now+=graphDuration/3;checkReadBudget(budget);
-            g.packageName=NativeAppGoal.XIAOMI_PACKAGE;g.windowId=actualWindow;g.displayId=7;g.bounds=new Rect(0,0,1224,2992);g.state=new StateCarrier();
+            g.packageName=NativeAppGoal.XIAOMI_PACKAGE;g.windowId=actualWindow;g.displayId=7;
+            List<?> rootBounds=(List<?>)nodes.get("0").v.get("bounds");
+            g.bounds=new Rect(((Number)rootBounds.get(0)).intValue(),((Number)rootBounds.get(1)).intValue(),
+                    ((Number)rootBounds.get(2)).intValue(),((Number)rootBounds.get(3)).intValue());g.state=new StateCarrier();
             g.backgroundGeneration=background.generation;g.backgroundOwnerSha=background.ownerSha256;g.backgroundBootstrapPackage=background.selection.initialPackage;g.backgroundAllowedPackages=background.selection.allowedPackages;
             g.nativeActionTaskId=background.taskId;g.nativeActionAuthorizationSha=taskAuthorization.authorization.sha256;g.nativeActionSelectionSha=base.nativeTask.selectionSha;
             g.nativeActionTargetSha=base.nativeTask.target.targetSha256;g.nativeActionGoalSha=base.nativeTask.goal.contractSha256;

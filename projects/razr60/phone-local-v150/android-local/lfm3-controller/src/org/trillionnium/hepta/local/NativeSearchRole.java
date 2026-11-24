@@ -32,6 +32,44 @@ final class NativeSearchRole {
             this.first=first;this.second=second;
         }
     }
+
+    /** Routing hint only: no retained node, Frame, action or inferred close button.
+     * The ordinary provider must independently observe IMAGE_MODAL before its
+     * existing one-Back domain can be offered to the model. */
+    static Map<String,Object> imageModalReadCandidate(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b){
+        need(a!=null&&b!=null&&stableEnvelope(a).equals(stableEnvelope(b)),"modal candidate owner/window changed");
+        need(a.nodes.size()==3&&a.nodes.keySet().equals(b.nodes.keySet()),"complete three-node image window required");
+        for(String path:a.nodes.keySet())need(a.node(path).v.equals(b.node(path).v),"image window changed between actual reads");
+        NativeActionSnapshotCheck.Node root=a.node("0"),image=a.node("0/0"),small=a.node("0/1");
+        int width=((Number)a.env.get("width")).intValue(),height=((Number)a.env.get("height")).intValue();
+        need(NativeAppGoal.XIAOMI_PACKAGE.equals(a.env.get("package"))&&root.cls.equals("android.widget.FrameLayout")
+                &&root.children==2&&root.parent.isEmpty()&&root.view.isEmpty()&&root.text.isEmpty()&&root.desc.isEmpty()
+                &&!root.click()&&root.visible()&&root.bounds.get(0)>0&&root.bounds.get(1)>0
+                &&root.bounds.get(2)<width&&root.bounds.get(3)<height,"centered native image-window root required");
+        for(NativeActionSnapshotCheck.Node node:Arrays.asList(root,image,small)){
+            need(Boolean.TRUE.equals(node.v.get("enabled"))&&!Boolean.TRUE.equals(node.v.get("editable"))
+                    &&!Boolean.TRUE.equals(node.v.get("scrollable"))&&!Boolean.TRUE.equals(node.v.get("focused"))
+                    &&!Boolean.TRUE.equals(node.v.get("password"))&&Boolean.FALSE.equals(node.v.get("selected"))
+                    &&Boolean.FALSE.equals(node.v.get("checkable"))&&Boolean.FALSE.equals(node.v.get("checked"))
+                    &&"hepta.observed-scroll-actions.v1|observed".equals(node.v.get("scroll_actions")),"image-window capabilities differ");
+        }
+        for(NativeActionSnapshotCheck.Node node:Arrays.asList(image,small)){
+            need(node.cls.equals("android.widget.ImageView")&&node.parent.equals(root.cls)&&node.children==0&&node.click()
+                    &&node.visible()&&node.text.isEmpty()&&node.desc.isEmpty()&&"".equals(node.label)&&node.view.isEmpty()
+                    &&positive(node.bounds)&&contains(root.bounds,node.bounds),"only two complete unlabelled image leaves required");
+        }
+        long sw=(long)small.bounds.get(2)-small.bounds.get(0),sh=(long)small.bounds.get(3)-small.bounds.get(1);
+        long gap=(long)small.bounds.get(1)-image.bounds.get(3);
+        need(image.bounds.get(0).equals(root.bounds.get(0))&&image.bounds.get(1).equals(root.bounds.get(1))
+                &&image.bounds.get(2).equals(root.bounds.get(2))&&small.bounds.get(3).equals(root.bounds.get(3))
+                &&sw==sh&&sw<(long)image.bounds.get(2)-image.bounds.get(0)&&sh<(long)image.bounds.get(3)-image.bounds.get(1)
+                &&(long)small.bounds.get(0)+small.bounds.get(2)==(long)root.bounds.get(0)+root.bounds.get(2)
+                &&gap>0&&gap<=sh,"observed image-window geometry differs");
+        Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-image-modal-read.v1");
+        e.put("first_census_sha256",a.sha);e.put("second_census_sha256",b.sha);e.put("routing_hint_only",true);
+        e.put("fresh_ordinary_observation_required",true);e.put("image_content_classified",false);
+        e.put("close_button_identified",false);e.put("grants_action_authority",false);return immutable(e);
+    }
     private NativeSearchRole(NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot b,boolean allowFullPageSwap,boolean iconAction){
         need(a!=null&&b!=null,"two complete actual censuses required");
         first=a;second=b;

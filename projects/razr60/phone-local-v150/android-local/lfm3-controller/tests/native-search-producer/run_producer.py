@@ -49,7 +49,7 @@ def main():
   raise RuntimeError('actual incomplete graph and queue cleanup must remain')
  parts['background_child_guard']=child_guard[0];parts['read_graph_failure_cleanup']=cleanup
  signatures=[
-  '    private synchronized BackgroundSession backgroundFor(', '    void verifyBackgroundRemote(',
+  '    private void clearSnapshot(', '    private synchronized BackgroundSession backgroundFor(', '    void verifyBackgroundRemote(',
   '    private synchronized boolean ownsBackground(', '    private synchronized boolean ownsAuthorization(',
  '    void requireTaskAuthorization(', '    private synchronized QualificationScopeConfig.Bound scopeFor(',
  '    private synchronized boolean ownsScope(', '    private static JSONObject callbackScopeEvidence(',
@@ -72,6 +72,8 @@ def main():
  if raw.count(start)!=1 or raw.count(end)!=1:raise RuntimeError('legacy callback anchors')
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
+ if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();',1)+(test/'ModalPreludeCases.fragment').read_text()
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -122,6 +124,7 @@ def main():
  controller_raw=(pkg/'LocalTaskController.java').read_text()
  controller_signatures=['    private static final class NativeSearchLoadingReadFailure extends IllegalStateException {',
   '    private static final class NativeSearchSamplingReadFailure extends IllegalStateException {',
+  '    private static final class NativeSearchImageModalReadFailure extends IllegalStateException {',
   '    private void requireInitialSearchPlanningRead(', '    private NativeSearchPlanning awaitNativeSearchPlanning(',
   '    private NativeSearchPlanning awaitNativeSearchPlanningOnce(', '    private void checkActive(',
   '    private static final class Stopped extends Exception {','    private static void record(']
@@ -132,6 +135,7 @@ def main():
  write(controller_source,controller_template.replace('{{actual_controller_methods}}','\n'.join(controller_parts.values())))
  additional.append(controller_source)
  successor_signatures=controller_signatures+[
+  '    private static final class NativeSearchChainResult {', '    private void runNativeSearchChain(',
   '    private static final class NativeSearchActionReply {',
   '    private static final class NativeSearchNoEffectReplanRequired extends IllegalStateException {',
   '    private NativeSearchPlanning awaitNativeSearchPlanningAfterNoEffect(',
@@ -177,6 +181,8 @@ def main():
  extraction['actual_successor_controller_search_branch_sha256']=sha(successor_branch.encode())
  extraction['actual_successor_controller_model_precheck_sha256']=sha(model_precheck.encode())
  extraction['synthetic_controller_endpoints']=['model output and latency','token estimate metadata','post-effect old AX callback using real provider Frame']
+ modal_fixture=source/'tests/native-search-modal/recorded-5b8-modal-censuses.json'
+ report['modal_fixture_before']=meta(modal_fixture)
  original_before=meta(args.loading_original) if args.loading_original else None
  report['external_loading_original']=original_before
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
@@ -191,13 +197,14 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']
   report['external_original_unchanged']=original_before is None or original_before==meta(args.loading_original)
-  report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged'] and report['external_original_unchanged']
+  report['modal_fixture_after']=meta(modal_fixture);report['modal_fixture_unchanged']=report['modal_fixture_before']==report['modal_fixture_after']
+  report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged'] and report['external_original_unchanged'] and report['modal_fixture_unchanged']
   write(out/'RESULT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')
  print(json.dumps({'all_pass':report['all_pass'],'stages':[{k:s[k] for k in ('name','exit_code','seconds')} for s in report['stages']],'result':meta(out/'RESULT.json')}))
  return 0 if report['all_pass'] else 1

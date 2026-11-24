@@ -2524,6 +2524,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private volatile NativeSearchRequest activeNativeSearchObservation;
     private volatile NativeSearchRequest nativeSearchRetryPending;
     private boolean nativeSearchPlanningAdmitted;
+    private int nativeSearchInitialAdmissionBase;
+    private boolean nativeSearchModalResumePending;
+    private NativeSearchRequest nativeSearchModalPending;
+    private long nativeSearchModalDrainedAt=-1;
     private File nativeSearchPlanningDirectory;
     // One memory-only tracker survives action drain until the one successor read
     // is admitted. Event callback routing/handoff is atomic and never suppresses events.
@@ -2543,6 +2547,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||observationReadWorkPending()||actionWorkPending()||nativeCancellationWorkPending())
             throw new IllegalStateException("native search requires the actual idle text controller/Session/lease");
         session.requireLive(SystemClock.elapsedRealtime());nativeSearchSession=session;nativeSearchPlanningDirectory=null;
+        nativeSearchInitialAdmissionBase=0;nativeSearchModalResumePending=false;nativeSearchModalPending=null;nativeSearchModalDrainedAt=-1;
     }
     private synchronized boolean nativeSearchSessionCurrent(NativeSearchSession session,QualificationScopeConfig.Bound scope){
         return session!=null&&session==nativeSearchSession&&live==this&&ownedController==session.controller
@@ -2553,7 +2558,45 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private boolean nativeSearchAllowsLegacyObservation(String taskId){
         NativeSearchSession session=nativeSearchSession;
-        return activeNativeSearchObservation==null&&(session==null||!session.taskId.equals(taskId)||session.navigationEffectRecorded());
+        return activeNativeSearchObservation==null&&(session==null||!session.taskId.equals(taskId)||session.navigationEffectRecorded()
+                ||session.allowsImageModalObservation());
+    }
+    /** Consume the actual drained producer handoff, never caller-supplied JSON.
+     * This opens only a new ordinary observation; its existing IMAGE_MODAL
+     * provider and model action checks remain the sole Back authority. */
+    synchronized Map<String,Object> beginNativeSearchImageModalPrelude(Object controller,NativeSearchSession session,File directory,long deadline){
+        NativeSearchRequest request=nativeSearchModalPending;long now=SystemClock.elapsedRealtime();
+        if(request==null||request.session!=session||session.controller!=controller||request.directory!=directory
+                ||session.taskDeadlineElapsed!=deadline||nativeSearchRetryPending!=request||!request.callbackDelivered.get()
+                ||nativeSearchModalDrainedAt<request.failureElapsed||now<nativeSearchModalDrainedAt
+                ||!nativeSearchImageModalEligible(request,now))throw new IllegalStateException("actual image-modal read handoff unavailable");
+        session.beginImageModalPrelude(now);
+        Map<String,Object> e=new LinkedHashMap<String,Object>();e.put("schema","hepta.native-search-image-modal-prelude.v1");
+        e.put("task_id",session.taskId);e.put("failed_request_id",request.id);e.put("routing_hint",request.imageModalCandidate);
+        e.put("failed_request_diagnostic_leaf",request.id+"-failed-native-search-planning.json");
+        e.put("read_queue_drained_elapsed_ms",nativeSearchModalDrainedAt);e.put("read_admissions_preserved",taskObservationAdmissions);
+        e.put("original_chain_deadline_elapsed_ms",session.chainDeadlineElapsed);e.put("old_pair_executable",false);
+        e.put("fresh_ordinary_observation_required",true);e.put("model_requested",false);e.put("action_dispatched",false);
+        nativeSearchModalPending=null;nativeSearchRetryPending=null;return NativeAppEvidence.immutableMap(e);
+    }
+    synchronized void prepareNativeSearchAfterImageModal(Object controller,NativeSearchSession session,ActionDecision action,String run){
+        long now=SystemClock.elapsedRealtime();
+        if(session==null||session.controller!=controller||!nativeSearchSessionCurrent(session,taskScope)
+                ||activeObservation!=null||activeNativeSearchObservation!=null||capturePending||observationReadWorkPending()
+                ||actionWorkPending()||nativeCancellationWorkPending()||nativeSearchRetryPending!=null
+                ||nativeSearchModalPending!=null||nativeSearchModalResumePending||nativeSearchInitialAdmissionBase!=0
+                ||!nativeSearchPlanningAdmitted||current==null||!current.id.equals(action.observationId)||lastActionExecution==null)
+            throw new IllegalStateException("image-modal Back did not leave the same idle native lanes");
+        Map<String,Object> x=lastActionExecution.evidence();
+        if(!session.taskId.equals(x.get("task_id"))||!run.equals(x.get("model_run_id"))
+                ||!action.observationId.equals(x.get("observation_id"))||!session.nativeTask.generation.equals(x.get("background_generation"))
+                ||!Boolean.TRUE.equals(x.get("effect_entered"))||!Boolean.TRUE.equals(x.get("effect_returned"))
+                ||!Boolean.TRUE.equals(x.get("api_accepted"))||!Boolean.TRUE.equals(x.get("worker_drained"))
+                ||!Boolean.TRUE.equals(x.get("callback_published"))||!Boolean.TRUE.equals(x.get("callback_authority_current"))
+                ||!Boolean.FALSE.equals(x.get("retired")))throw new IllegalStateException("same drained accepted model Back required");
+        session.prepareImageModalHomePlanning(action,run,now);
+        nativeSearchInitialAdmissionBase=taskObservationAdmissions;nativeSearchModalResumePending=true;
+        clearSnapshot(); // The spent modal Frame/NodeRefs never become home-search authority.
     }
     /** Only counters from actual service callbacks; no node traversal occurs here. */
     private static final class SearchEvents {
@@ -2701,7 +2744,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||now<issuedAt||issuedAt<drainedAt||drainedAt<failed.failureElapsed
                     ||failed.failureElapsed<failed.samplingExhaustion.observedElapsed
                     ||now>=failed.deadline||now>=session.chainDeadlineElapsed
-                    ||issuer.taskObservationAdmissions!=1||!issuer.nativeSearchSamplingHistoryLocked(failed))
+                    ||issuer.taskObservationAdmissions!=issuer.nativeSearchInitialAdmissionBase+1||!issuer.nativeSearchSamplingHistoryLocked(failed))
                 throw new IllegalStateException("sampling successor original identity, drain, history or one-use deadline changed");
             session.requireBeforeFirstPlanning(now);
         }
@@ -2774,7 +2817,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||request.lastCompletePair!=null||!request.failureDiagnosticClaimed||request.samplingDiagnosticSha==null
                 ||request.diagnosticWritePending||request.samplingDrainUncertain||request.callbackDelivered.get()
                 ||!"complete_pair_written".equals(request.diagnosticDisposition)
-                ||taskObservationAdmissions!=1||!nativeSearchSessionCurrent(request.session,request.scope)
+                ||taskObservationAdmissions!=nativeSearchInitialAdmissionBase+1||!nativeSearchSessionCurrent(request.session,request.scope)
                 ||request.cancel.isCancelled()||locked(request.session.background)||activeObservation!=null
                 ||activeNativeSearchObservation!=null||capturePending||observationIoBusy.get()
                 ||actionWorkPending()||nativeCancellationWorkPending()||now<request.failureElapsed
@@ -3013,6 +3056,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         volatile boolean samplingTrackingClosed,samplingRecoveryPending,samplingDrainUncertain;
         volatile NativeSearchPlanning publishedPlanning;
         volatile Map<String,Object> loadingRetryClassification,loadingRetryIdentity;
+        volatile Map<String,Object> imageModalCandidate;
+        volatile NativeSearchPlanning.EventMark imageModalPairStarted;
         volatile NativeSearchPlanning.EventMark loadingPairStarted;
         volatile boolean retryDrainPending,retryDrainUncertain;
         volatile boolean finished,workerDrained,published,admitted;volatile String phase="queued";
@@ -3091,7 +3136,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(replan==null){
                     if(proof!=null&&sampling!=null)throw new IllegalStateException("initial recovery proof kinds are exclusive");
                     boolean initialSuccessor=proof!=null||sampling!=null;
-                    if(nativeSearchPlanningAdmitted!=initialSuccessor||taskObservationAdmissions!=(initialSuccessor?1:0))
+                    if(nativeSearchModalResumePending){
+                        if(initialSuccessor||!nativeSearchPlanningAdmitted||!session.imageModalHomePlanning()
+                                ||taskObservationAdmissions!=nativeSearchInitialAdmissionBase)
+                            throw new IllegalStateException("image-modal home planning admission changed");
+                        nativeSearchModalResumePending=false;
+                    }else if(nativeSearchPlanningAdmitted!=initialSuccessor
+                            ||taskObservationAdmissions!=nativeSearchInitialAdmissionBase+(initialSuccessor?1:0))
                         throw new IllegalStateException("original initial planning admission ordinal changed");
                     session.requireBeforeFirstPlanning(now);
                     if(proof!=null){
@@ -3184,6 +3235,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(value==null&&request.workerDrained&&request.path!=null)request.path.delete();
         if(value==null){
             final String detail=error+" [diagnostic="+request.diagnosticDisposition+"]";
+            if(offerNativeSearchImageModalAfterDrain(request,detail)){closeNativeSearchSampling(request);return;}
             if(offerNativeSearchSamplingAfterDrain(request,detail))return;
             boolean loading=offerNativeSearchLoadingRetryAfterDrain(request,detail);
             closeNativeSearchSampling(request);
@@ -3197,13 +3249,49 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!request.callbackDelivered.compareAndSet(false,true))return;
         if(proof==null)request.callback.onError(detail);else request.callback.onLoadingReadRetryAvailable(detail,proof);
     }
+    private boolean nativeSearchImageModalEligible(NativeSearchRequest request,long now){
+        if(request==null||request.imageModalCandidate==null||request.imageModalPairStarted==null
+                ||request.retrySubmission!=null||request.replanSubmission!=null||request.samplingSubmission!=null
+                ||!request.finished||!request.admitted||!request.workerDrained||request.published||request.path!=null
+                ||!request.failureDiagnosticClaimed||request.diagnosticWritePending||request.retryDrainPending||request.retryDrainUncertain
+                ||!"complete_pair_written".equals(request.diagnosticDisposition)||taskObservationAdmissions!=1
+                ||nativeSearchInitialAdmissionBase!=0||!nativeSearchSessionCurrent(request.session,request.scope)
+                ||request.cancel.isCancelled()||locked(request.session.background)||activeObservation!=null
+                ||activeNativeSearchObservation!=null||capturePending||observationIoBusy.get()||actionWorkPending()
+                ||nativeCancellationWorkPending()||now<request.failureElapsed||now>=request.deadline
+                ||!request.session.imageModalPreludeUnused())return false;
+        NativeSearchPlanning.EventMark events=request.events.mark();
+        return events.contentOnlySince(request.imageModalPairStarted)&&request.failureWatermark!=null
+                &&events.monotonicSince(request.failureWatermark);
+    }
+    private boolean offerNativeSearchImageModalAfterDrain(final NativeSearchRequest request,final String detail){
+        if(request.callbackDelivered.get()||nativeSearchModalPending!=null
+                ||nativeSearchRetryPending!=null&&nativeSearchRetryPending!=request
+                ||!nativeSearchImageModalEligible(request,SystemClock.elapsedRealtime())
+                ||!observationIoBusy.compareAndSet(false,true))return false;
+        nativeSearchRetryPending=request;request.retryDrainPending=true;
+        try{observationIo.execute(new Runnable(){public void run(){
+            final long drainedAt=SystemClock.elapsedRealtime();request.retryDrainPending=false;observationIoBusy.set(false);
+            boolean posted=main.post(new Runnable(){public void run(){
+                long now=SystemClock.elapsedRealtime();
+                if(nativeSearchRetryPending!=request||drainedAt<request.failureElapsed||now<drainedAt
+                        ||!nativeSearchImageModalEligible(request,now)){deliverNativeSearchReadFailure(request,detail,null);return;}
+                nativeSearchModalPending=request;nativeSearchModalDrainedAt=drainedAt;
+                if(request.callbackDelivered.compareAndSet(false,true))request.callback.onImageModalReadAvailable(detail);
+            }});
+            if(!posted)deliverNativeSearchReadFailure(request,detail,null);
+        }});return true;}
+        catch(java.util.concurrent.RejectedExecutionException rejected){request.retryDrainPending=false;observationIoBusy.set(false);
+            if(nativeSearchRetryPending==request)nativeSearchRetryPending=null;return false;}
+        catch(RuntimeException uncertain){request.retryDrainUncertain=true;return false;}
+    }
     private boolean nativeSearchLoadingRetryEligible(NativeSearchRequest request,long now){
         if((nativeSearchRetryPending!=null&&nativeSearchRetryPending!=request)
                 ||request.retrySubmission!=null||request.replanSubmission!=null||request.samplingSubmission!=null||request.loadingRetryClassification==null||request.loadingRetryIdentity==null
                 ||!request.finished||!request.admitted||!request.workerDrained||request.published||request.path!=null
                 ||!request.failureDiagnosticClaimed||request.diagnosticWritePending||request.retryDrainPending||request.retryDrainUncertain
                 ||!"complete_pair_written".equals(request.diagnosticDisposition)||request.callbackDelivered.get()
-                ||taskObservationAdmissions!=1||!nativeSearchSessionCurrent(request.session,request.scope)
+                ||taskObservationAdmissions!=nativeSearchInitialAdmissionBase+1||!nativeSearchSessionCurrent(request.session,request.scope)
                 ||request.cancel.isCancelled()||locked(request.session.background)||activeObservation!=null
                 ||activeNativeSearchObservation!=null||capturePending||observationIoBusy.get()
                 ||actionWorkPending()||nativeCancellationWorkPending()||request.failureElapsed<request.started
@@ -3291,6 +3379,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Map<String,Object> both=null;if(pair!=null){both=new LinkedHashMap<String,Object>();
                 both.put("first",nativeSearchDiagnosticSample(pair.first));both.put("second",nativeSearchDiagnosticSample(pair.second));}
             out.put("last_complete_pair",both);out.put("diagnostic_only",true);out.put("planning_published",false);
+            out.put("image_modal_read_candidate",request.imageModalCandidate);
             out.put("new_samples_taken_for_diagnostic",0);out.put("action_permission",false);
             if(request.samplingExhaustion!=null){
                 Map<String,Object> sampling=new LinkedHashMap<String,Object>();
@@ -3317,6 +3406,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         finally{request.lastCompletePair=null;}
     }
     private void retireNativeSearch(String taskId,String reason){
+        if(nativeSearchModalPending!=null&&nativeSearchModalPending.taskId.equals(taskId))nativeSearchModalPending=null;
         synchronized(nativeSearchEventLock){
             if(nativeSearchSamplingTracked!=null&&nativeSearchSamplingTracked.taskId.equals(taskId))
                 closeNativeSearchSampling(nativeSearchSamplingTracked);
@@ -3383,6 +3473,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     catch(IllegalArgumentException unavailable){
                         if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
+                        if(request.retrySubmission==null&&request.replanSubmission==null&&request.samplingSubmission==null
+                                &&request.session.imageModalPreludeUnused()){
+                            Map<String,Object> modal=null;
+                            try{modal=NativeSearchRole.imageModalReadCandidate(first.snapshot,second.snapshot);}
+                            catch(IllegalArgumentException notModal){/* Routing only; retain the ordinary original rejection. */}
+                            if(modal!=null&&request.events.mark().contentOnlySince(first.before)){
+                                request.imageModalCandidate=modal;request.imageModalPairStarted=first.before;
+                                throw new IllegalStateException("complete image-only window requires fresh ordinary provider observation");
+                            }
+                        }
                         request.loadingRetryClassification=null;request.loadingRetryIdentity=null;request.loadingPairStarted=null;
                         if(request.retrySubmission==null&&request.samplingSubmission==null){
                             try{

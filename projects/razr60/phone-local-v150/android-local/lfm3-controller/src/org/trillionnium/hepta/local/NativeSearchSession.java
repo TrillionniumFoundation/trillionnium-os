@@ -12,6 +12,7 @@ final class NativeSearchSession {
     interface ObservationCallback {
         void onPlanning(NativeSearchPlanning value);void onError(String detail);
         default void onLoadingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchReadRetryProof proof){onError(detail);}
+        default void onImageModalReadAvailable(String detail){onError(detail);}
         default boolean acceptsSamplingReadRetry(){return false;}
         default void onSamplingReadRetryAvailable(String detail,HeptaAccessibilityService.NativeSearchSamplingExhaustionProof proof){
             try{onError(detail);}finally{proof.close();}
@@ -41,6 +42,8 @@ final class NativeSearchSession {
     private HeptaAccessibilityService.NativeSearchNoEffectReplanProof successorProof;
     private String successorReceiptSha;
     private boolean successorOffered;
+    private boolean imageModalPreludeUsed,imageModalObserving,imageModalHomePlanning,imageModalHomeObserved;
+    private long imageModalTransitionDeadline=-1;
 
     NativeSearchSession(Object controller,NativeAppSession task,BackgroundSession background,long started,long taskDeadline)throws Exception{
         need(controller!=null&&task!=null&&background!=null&&started>=0&&taskDeadline>started,"actual controller/native task/background/deadline required");
@@ -73,17 +76,49 @@ final class NativeSearchSession {
         nativeTask.requireSearchPlanningCurrent(this);
     }
     synchronized void requireBeforeFirstPlanning(long now){
-        requireLive(now);need(offered==null&&attempted==null&&successorProof==null&&closedSuccessorAttempt==null&&!successorOffered&&!navigationEffectRecorded&&!navigationObserved,
+        requireLive(now);need(!imageModalObserving&&offered==null&&attempted==null&&successorProof==null&&closedSuccessorAttempt==null&&!successorOffered&&!navigationEffectRecorded&&!navigationObserved,
                 "loading read recovery cannot cross a planning Offer, model intent or navigation effect");
     }
+    synchronized boolean imageModalPreludeUnused(){return !retired&&!imageModalPreludeUsed&&offered==null&&attempted==null;}
+    synchronized boolean allowsImageModalObservation(){return !retired&&imageModalObserving&&!imageModalHomePlanning&&offered==null&&attempted==null;}
+    synchronized boolean imageModalHomePlanning(){return !retired&&imageModalHomePlanning&&!imageModalHomeObserved;}
+    void beginImageModalPrelude(long now){
+        synchronized(this){requireBeforeFirstPlanning(now);need(imageModalPreludeUnused(),"one initial image-modal prelude only");}
+        nativeTask.requireInitialImageModalPrelude(this);
+        synchronized(this){requireBeforeFirstPlanning(now);need(imageModalPreludeUnused(),"image-modal prelude superseded");
+            imageModalPreludeUsed=true;imageModalObserving=true;}
+    }
+    boolean imageModalBackReady(ActionDecision action,String run,long now){
+        synchronized(this){if(!allowsImageModalObservation())return false;requireLive(now);}
+        return nativeTask.imageModalBackReady(this,action,run,now);
+    }
+    void prepareImageModalHomePlanning(ActionDecision action,String run,long now){
+        need(imageModalBackReady(action,run,now),"actual model Back and durable accepted outcome required");
+        long bound=nativeTask.imageModalTransitionDeadline(this,action,run,now);
+        synchronized(this){requireLive(now);need(allowsImageModalObservation(),"image-modal prelude changed");
+            imageModalTransitionDeadline=Math.min(chainDeadlineElapsed,bound);imageModalObserving=false;imageModalHomePlanning=true;}
+    }
+    synchronized long initialPlanningDeadline(){return imageModalHomePlanning()?Math.min(chainDeadlineElapsed,imageModalTransitionDeadline):chainDeadlineElapsed;}
     Map<String,Object> binding(){return binding;}
     void verifyInstalled()throws Exception{nativeTask.verifyInstalled();}
-    synchronized Offer offer(NativeSearchPlanning planning,long now){
-        requireLive(now);need(offered==null&&attempted==null&&planning!=null,"one actual planning Offer only");
+    private void requireInitialOffer(NativeSearchPlanning planning,long now){
+        requireLive(now);need(!imageModalObserving&&(!imageModalPreludeUsed||imageModalHomePlanning)
+                &&offered==null&&attempted==null&&planning!=null,"one actual planning Offer only after any accepted modal Back");
         need(NativeSearchPlanning.equal(binding,planning.binding)&&planning.timing.requestStarted>=startedElapsed
                 &&planning.timing.requestDeadline<=chainDeadlineElapsed&&planning.publication!=null&&planning.publishedElapsed<=now&&planning.persistedElapsed<=now
                 &&now-planning.capturedElapsed<=2000,"planning receipt not current for the same Session");
-        offered=new Offer(this,planning);return offered;
+        if(imageModalHomePlanning){
+            need(!imageModalHomeObserved&&planning.capturedElapsed<=imageModalTransitionDeadline&&now<imageModalTransitionDeadline,
+                    "fresh home search must follow Back within its original transition deadline");
+        }
+    }
+    Offer offer(NativeSearchPlanning planning,long now){
+        final boolean modal;
+        synchronized(this){requireInitialOffer(planning,now);modal=imageModalHomePlanning;}
+        // Durable native navigation evidence is written outside the Stop-visible Session lock.
+        if(modal)nativeTask.observeSearchHomeAfterImageModal(this,planning,now);
+        synchronized(this){requireInitialOffer(planning,now);if(modal)imageModalHomeObserved=true;
+            offered=new Offer(this,planning);return offered;}
     }
 
     /** The same task remains bound; only one proved-unentered attempt may retire

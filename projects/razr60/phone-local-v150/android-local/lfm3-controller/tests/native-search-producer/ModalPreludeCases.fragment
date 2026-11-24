@@ -1,0 +1,200 @@
+    // Real saved 5b8 modal node geometry/capabilities, with only the explicit
+    // host window identity adapted. Actual copied Service methods recapture
+    // their own references; this fixture has no phone or model authority.
+    static JSONObject modalRecordedCensuses;
+    static final class ModalRead {
+        String detail;int callbacks;
+        final Fixture fixture;
+        ModalRead(Fixture fixture){this.fixture=fixture;}
+    }
+    static void modalNodes(Fixture f,boolean second){
+        f.observableLoadingProjection=true;f.recordedPlanningNodes=true;
+        f.values=f.base.census(SystemClock.now);f.values.nodes.clear();
+        JSONArray nodes=modalRecordedCensuses.getJSONObject(second?"second":"first").getJSONArray("nodes");
+        for(Object value:nodes){
+            Map<String,Object> row=new TreeMap<String,Object>(((JSONObject)value).toMap());
+            row.put("window_id",f.actualWindow);
+            f.values.nodes.put((String)row.get("path"),row);
+        }
+    }
+    static NativeSearchRequest startModalRead(HeptaAccessibilityService s,Fixture f,ModalRead result){
+        s.observeNativeSearchPlanning(s.lease,f.directory,f.base.search,f.cancel(),SystemClock.now+12000,
+                new NativeSearchSession.ObservationCallback(){
+                    public void onPlanning(NativeSearchPlanning value){f.callbackCount++;f.planning=value;}
+                    public void onError(String detail){f.callbackCount++;f.error=detail;}
+                    public void onImageModalReadAvailable(String detail){f.callbackCount++;result.callbacks++;result.detail=detail;}
+                });
+        s.main.one();return s.activeNativeSearchObservation;
+    }
+    static NativeSearchRequest modalMarkerPending(HeptaAccessibilityService s,Fixture f,ModalRead result)throws Exception{
+        modalNodes(f,false);NativeSearchRequest old=startModalRead(s,f,result);
+        check(old!=null&&!old.finished&&f.graphReads==0,"actual initial request admitted without synchronous reads");
+        rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+        observationIo.one();
+        check(old.workerDrained&&!observationIoBusy.get()&&result.callbacks==0,"read worker drained before callback or marker");
+        rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+        s.main.one();
+        check(old.finished&&!old.published&&old.imageModalCandidate!=null&&old.lastCompletePair==null,
+                "failed original pair becomes only a retained private diagnostic");
+        check(result.callbacks==0&&f.error==null&&f.planning==null&&observationIoBusy.get()&&old.retryDrainPending,
+                "modal callback still waits for actual serial drain marker: "+f.error);
+        check(f.graphReads==2&&f.effects==0&&s.current==null&&s.currentGraph==null,"exactly two full reads, no Frame or effect");
+        JSONObject raw=f.diagnostic();
+        check(raw.getBoolean("complete_pair_available")&&raw.getBoolean("diagnostic_only")&&!raw.getBoolean("planning_published")
+                &&!raw.getBoolean("action_permission"),"failed complete pair is not planning/action authority");
+        JSONObject candidate=raw.getJSONObject("image_modal_read_candidate");
+        check(candidate.getBoolean("routing_hint_only")&&candidate.getBoolean("fresh_ordinary_observation_required")
+                &&!candidate.getBoolean("close_button_identified")&&!candidate.getBoolean("image_content_classified")
+                &&!candidate.getBoolean("grants_action_authority"),"no inferred image meaning, close target or dispatch");
+        check(!s.nativeSearchAllowsLegacyObservation(s.lease),"old observation channel stays closed until same-owner consume");
+        rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+        return old;
+    }
+    static NativeSearchRequest modalReady(HeptaAccessibilityService s,Fixture f,ModalRead result)throws Exception{
+        NativeSearchRequest old=modalMarkerPending(s,f,result);
+        observationIo.one();
+        check(!observationIoBusy.get()&&result.callbacks==0,"worker marker cannot publish callback off-main");
+        rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+        s.main.one();
+        check(result.callbacks==1&&result.detail!=null&&f.callbackCount==1&&f.error==null&&f.planning==null,
+                "one actual modal callback after complete drain: "+f.error);
+        check(!s.nativeSearchAllowsLegacyObservation(s.lease)&&f.effects==0,"callback alone grants no old Frame or input");
+        return old;
+    }
+    static void modalPreludeCases()throws Exception{
+        String path=System.getProperty("hepta.test.imageModalCensuses");
+        check(path!=null,"explicit real modal fixture property required");
+        byte[] bytes=Files.readAllBytes(Paths.get(path));
+        check("6935ba680b938d16b187ad5261d088823deca3101cc8f0c4d307ffb0303d8f54".equals(sha(bytes)),"exact retained 5b8 modal fixture bytes");
+        modalRecordedCensuses=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
+        one("modal_producer_uses_actual_three_node_geometry_with_no_inferred_button",()->{
+            check(!modalRecordedCensuses.getBoolean("dispatch_authority"),"raw fixture grants no authority");
+            check("bb560a1b65b5406b4cd6ee297df2af24ff1c87b81773f66c68208f071e758311".equals(modalRecordedCensuses.getString("source_receipt_sha256")),"exact failed-read provenance");
+            for(String key:Arrays.asList("first","second")){
+                JSONObject graph=modalRecordedCensuses.getJSONObject(key);check(graph.getJSONArray("nodes").length()==3,"entire recorded census");
+                check(graph.getJSONObject("envelope").getJSONArray("root_bounds").toString().equals("[186,694,1038,2298]"),"actual centered root, not fullscreen repair");
+            }
+        });
+        one("modal_producer_waits_for_worker_marker_callback_then_one_same_owner_consume",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);NativeSearchRequest old=modalReady(s,f,result);
+                long deadline=f.base.search.chainDeadlineElapsed;
+                Map<String,Object> handoff=s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed);
+                check(old.id.equals(handoff.get("failed_request_id"))&&Boolean.FALSE.equals(handoff.get("old_pair_executable"))
+                        &&Boolean.TRUE.equals(handoff.get("fresh_ordinary_observation_required"))
+                        &&Boolean.FALSE.equals(handoff.get("model_requested"))&&Boolean.FALSE.equals(handoff.get("action_dispatched")),"actual consumed handoff is read routing only");
+                check(s.nativeSearchAllowsLegacyObservation(s.lease)&&f.base.search.allowsImageModalObservation(),"only a new ordinary provider observation is enabled");
+                check(s.current==null&&s.currentGraph==null&&f.planning==null&&old.publishedPlanning==null&&old.lastCompletePair==null
+                        &&f.effects==0&&s.taskObservationAdmissions==1,"no old pair/Frame/Offer/model/effect minted or read counter reset");
+                check(f.base.search.chainDeadlineElapsed==deadline,"original chain deadline unchanged");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->f.base.search.offer(null,SystemClock.now));
+                rejected(()->f.base.search.requireBeforeFirstPlanning(SystemClock.now));
+                rejected(()->s.prepareNativeSearchAfterImageModal(s.ownedController,f.base.search,null,NativeSearchSessionHostTest.RUN));
+                check(f.graphReads==2&&f.callbackCount==1&&f.effects==0,"repeated consume or missing actual Back does not read or act");
+            }
+        });
+        one("modal_producer_rejects_foreign_controller_session_directory_deadline_before_consume",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalReady(s,f,result);
+                rejected(()->s.beginNativeSearchImageModalPrelude(new Object(),f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,null,f.directory,f.base.search.taskDeadlineElapsed));
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,new File(f.directory.getPath()),f.base.search.taskDeadlineElapsed));
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed+1));
+                HeptaAccessibilityService other=new HeptaAccessibilityService();
+                rejected(()->other.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                check(!s.nativeSearchAllowsLegacyObservation(s.lease)&&f.base.search.imageModalPreludeUnused(),"foreign identities cannot consume actual handoff");
+                s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed);
+                check(f.base.search.allowsImageModalObservation()&&f.effects==0,"original same-owner handoff remains available once");
+            }
+        });
+        for(int kind=0;kind<3;kind++){final int actual=kind;one("modal_producer_"+new String[]{"unknown","boundary","untyped"}[kind]+"_event_during_marker_refuses",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalMarkerPending(s,f,result);
+                if(actual==0)s.noteNativeSearchEvent(-1,-1,null,false,false);
+                else s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,actual==1);
+                observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.error!=null&&f.planning==null&&!observationIoBusy.get(),"late unqualified event preserves original failure");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                check(f.effects==0&&f.graphReads==2,"event does not trigger a repeated read or effect");
+            }
+        });}
+        for(int kind=0;kind<3;kind++){final int actual=kind;one("modal_producer_"+new String[]{"cancel","deadline","owner_change"}[kind]+"_before_marker_refuses",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);NativeSearchRequest old=modalMarkerPending(s,f,result);
+                if(actual==0)f.cancelled=true;else if(actual==1)SystemClock.now=old.deadline;else s.ownedController=new Object();
+                observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.error!=null&&f.effects==0&&!observationIoBusy.get(),"same live owner and original deadline required");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });}
+        one("modal_producer_retired_after_callback_never_opens_fresh_observation",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalReady(s,f,result);s.retireNativeSearch(s.lease,"synthetic owner stop");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                check(!f.base.search.allowsImageModalObservation()&&f.effects==0,"retired Session cannot consume routing");
+            }
+        });
+        one("modal_producer_boundary_after_callback_before_consume_refuses",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalReady(s,f,result);
+                s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+                check(f.base.search.imageModalPreludeUnused()&&f.effects==0,"no stale event-bound handoff consumption");
+            }
+        });
+        one("modal_producer_stable_labeled_image_is_not_unlabeled_modal_route",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalNodes(f,false);
+                f.values.nodes.get("0/1").put("description","关闭");
+                startModalRead(s,f,result);observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.planning==null&&f.error!=null&&f.effects==0,"same geometry with new label cannot use this exact initial route");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        one("modal_producer_changed_complete_pair_is_not_stable_modal_route",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);f.graphHook=()->{
+                    modalNodes(f,(f.graphReads&1)==0);
+                    if((f.graphReads&1)==0)f.values.nodes.get("0/0").put("bounds",Arrays.asList(186,694,1038,2123));
+                };
+                startModalRead(s,f,result);observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.planning==null&&f.error!=null&&f.effects==0,"every complete A/B pair differs, with individually valid modal geometry");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        one("modal_producer_wrong_window_node_never_qualifies_routing",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalNodes(f,false);f.values.nodes.get("0/1").put("window_id",97);
+                startModalRead(s,f,result);observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.planning==null&&f.error!=null&&f.effects==0,"complete actual same-window node requirement retained");
+            }
+        });
+        one("modal_producer_failed_private_diagnostic_cannot_offer_handoff",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalNodes(f,false);
+                android.system.Os.beforeWrite=()->{throw new IllegalStateException("synthetic diagnostic write failure");};
+                startModalRead(s,f,result);observationIo.one();s.main.one();
+                check(result.callbacks==0&&f.error!=null&&f.planning==null&&!observationIoBusy.get(),"unrecorded failed pair cannot qualify routing");
+                rejected(()->s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed));
+            }
+        });
+        one("modal_producer_marker_submit_rejection_keeps_failure_no_retry",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalNodes(f,false);startModalRead(s,f,result);
+                observationIo.one();observationIo.reject=true;s.main.one();
+                check(result.callbacks==0&&f.error!=null&&!observationIoBusy.get()&&observationIo.submissions==2,"definite rejected marker cannot grant or resubmit");
+                check(f.graphReads==2&&f.effects==0,"no extra observation or effect");
+            }
+        });
+        one("modal_producer_uncertain_marker_waits_for_real_drain_without_handoff",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead result=new ModalRead(f);modalNodes(f,false);startModalRead(s,f,result);
+                observationIo.one();observationIo.uncertain=true;s.main.one();
+                check(result.callbacks==0&&f.error!=null&&observationIoBusy.get(),"uncertain submit is not actual drain");
+                observationIo.one();s.main.one();
+                check(result.callbacks==0&&!observationIoBusy.get()&&f.callbackCount==1&&f.effects==0,"real later drain cannot republish successful modal terminal");
+            }
+        });
+        one("modal_producer_keeps_recorded_fixture_byte_exact",()->check(Arrays.equals(bytes,Files.readAllBytes(Paths.get(path))),"no raw evidence mutation"));
+    }

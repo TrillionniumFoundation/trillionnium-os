@@ -577,9 +577,9 @@ final class NativeActionSnapshotCheck {
         }
         return changed&&fullA==1&&fullB==1&&edgeA+edgeB==1;
     }
-    // Full-width page swaps have equal visible coverage. The typed attempt
-    // classifies only these direct blank children, never the container, the
-    // search target or a coordinate. A partially visible neighbour is excluded.
+    // A transition may partition the same full banner rectangle among blank
+    // direct children. Exact horizontal coverage above rejects any gap, overlap
+    // or changed capability; it never clips bounds or supplies an input target.
     static String fullPageSearchBannerSwap(Snapshot a,Snapshot b,String target,Set<String> validatedHintPaths){
         Node banner=searchBanner(a,b,target);
         if(banner==null||!banner.v.equals(b.node(banner.path).v)
@@ -588,20 +588,13 @@ final class NativeActionSnapshotCheck {
             if(!under(node.path,banner.path)&&!validatedHintPaths.contains(node.path)
                     &&!node.v.equals(b.node(node.path).v))return null;
         }
-        String first=null,second=null;
+        boolean visiblePageChanged=false;
         for(int slot=0;slot<banner.children;slot++){
             String child=banner.path+"/"+slot;
             Node old=a.node(child),fresh=b.node(child);
-            if(old.visible()){
-                if(first!=null||!old.bounds.equals(banner.bounds))return null;
-                first=child;
-            }
-            if(fresh.visible()){
-                if(second!=null||!fresh.bounds.equals(banner.bounds))return null;
-                second=child;
-            }
+            visiblePageChanged|=(old.visible()||fresh.visible())&&!old.v.equals(fresh.v);
         }
-        return first!=null&&second!=null&&!first.equals(second)?banner.path:null;
+        return visiblePageChanged?banner.path:null;
     }
     private static Node searchBanner(Snapshot a,Snapshot b,String target){
         if(!a.nodes.keySet().equals(b.nodes.keySet()))return null;
