@@ -40,9 +40,10 @@ public final class RuntimeConfigUiHostTest {
     }
     private static final class LocalTaskSession {
         boolean running,blocked,recovering,backgroundLease,acknowledge;LocalTaskController.TaskResult result;
-        String stateText="fixture state";
+        String stateText="fixture state",recoveryReason="fixture recovery unavailable";
         boolean isRunning(){return running;}boolean isBlocked(){return blocked;}boolean isRecovering(){return recovering;}
         boolean hasBackgroundLease(){return backgroundLease;}boolean canAcknowledgeInterruption(){return acknowledge;}
+        String interruptionRecoveryUnavailableReason(){return recoveryReason;}
         String state(){return stateText;}String log(){return "fixture log";}String taskId(){return null;}
         LocalTaskController.TaskResult lastResult(){return result;}
     }
@@ -92,6 +93,8 @@ public final class RuntimeConfigUiHostTest {
     private final Widget independentProfileDisplay=new Widget(); // Legacy mode only; no profile authority.
     private final Widget independentPersonalDisplay=new Widget(); // Unchecked; this model-state fixture has no personal display choice.
     private final Widget cleanupBackground=new Widget(),acknowledgeInterruption=new Widget(),backgroundChoiceState=new Widget();
+    private final Widget recoveryCard=new Widget(),recoveryTitle=new Widget(),recoveryMessage=new Widget();
+    private String recoveryUiFeedback;
     private final Widget startTask=new Widget(),stopTask=new Widget(),runText=new Widget(),taskResult=new Widget();
     private final Widget visualProbeOutput=new Widget(),uiVenusProbeOutput=new Widget();
     private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
@@ -195,6 +198,41 @@ public final class RuntimeConfigUiHostTest {
         ui.modelImport.busy=false;ui.modelImport.stateText="本地文件已就绪";ui.engine.busy=false;ui.application.importEligible=true;ui.refresh();
         check(ui.importLocalModel.enabled&&ui.cancelModelImport.visibility==View.GONE&&!ui.cancelModelImport.enabled&&ui.startTask.enabled&&ui.runText.enabled,"terminal importer view restores idle controls");
         check("本地文件已就绪".equals(ui.localModelImportState.text)&&ui.renderCalls==0,"importer state display performs no inference");
+        return checks-before;
+    }
+
+    public static int recoveryUiChecks(File files)throws Exception{
+        int before=checks;
+        RuntimeConfigUiHostTest ui=new RuntimeConfigUiHostTest(files);
+        present(ui.engine.modelFile());ui.backgroundMode.checked=true;ui.refresh();
+        check(ui.recoveryCard.visibility==View.GONE,"idle session does not display old-session recovery");
+        check(ui.startTask.enabled,"idle presentation preserves existing Start admission");
+        ui.tasks.running=true;ui.tasks.backgroundLease=true;ui.tasks.blocked=true;ui.refresh();
+        check(ui.recoveryCard.visibility==View.GONE,"a running task lease is not presented as an old background space");
+        check("正在后台执行".equals(ui.backgroundSummary.text),"active background work keeps its current summary");
+        ui.tasks.running=false;ui.refresh();
+        check(ui.recoveryCard.visibility==View.VISIBLE&&ui.recoveryTitle.text.startsWith("第 1 步"),"interrupted lease presents cleanup as the first action");
+        check(ui.cleanupBackground.visibility==View.VISIBLE&&ui.cleanupBackground.enabled&&!ui.acknowledgeInterruption.enabled,"lease keeps cleanup available and acknowledgement gated");
+        check(!ui.startTask.enabled,"recovery presentation does not bypass a blocked task");
+        ui.tasks.recovering=true;ui.refresh();
+        check(ui.recoveryTitle.text.equals("正在核验上次会话"),"active recovery takes priority over the retained lease");
+        check(!ui.acknowledgeInterruption.enabled&&!ui.cleanupBackground.enabled,"active recovery cannot be started twice");
+        ui.tasks.recovering=false;ui.tasks.backgroundLease=false;ui.tasks.recoveryReason="会话记录正在保存，完成后才能确认中断。";ui.refresh();
+        check(ui.recoveryTitle.text.startsWith("第 2 步"),"lease removal still shows the required separate acknowledgement");
+        check(ui.tasks.recoveryReason.equals(ui.recoveryMessage.text),"a disabled acknowledgement shows its current unavailable reason");
+        check(!ui.startTask.enabled&&ui.cleanupBackground.visibility==View.GONE,"lease removal does not silently clear the interruption");
+        ui.automaticPresentation=true;ui.refresh();
+        check(ui.backgroundSummary.text.equals(ui.recoveryTitle.text),"automatic-target summary cannot hide a pending interruption");
+        check(!ui.startTask.enabled,"automatic target mode preserves interrupted-session Start gating");
+        ui.tasks.acknowledge=true;ui.refresh();
+        check(ui.acknowledgeInterruption.enabled&&!ui.startTask.enabled,"eligible acknowledgement is offered separately from Start");
+        check(ui.recoveryMessage.text.contains("不会自动开始任务")&&!ui.recoveryMessage.text.contains("已释放"),"absence of a lease is not relabelled as verified release or automatic resume");
+        ui.tasks.blocked=false;ui.tasks.acknowledge=false;ui.refresh();
+        check(ui.recoveryCard.visibility==View.GONE&&ui.startTask.enabled,"new idle session restores the existing normal controls");
+        check(ui.backgroundSummary.text.startsWith("按本次完整任务"),"normal automatic summary returns only after recovery stops blocking");
+        ui.tasks.blocked=true;ui.recoveryUiFeedback="清理未开始：核验状态已变化";ui.refresh();
+        check(ui.recoveryUiFeedback.equals(ui.recoveryMessage.text),"owner-action failure remains visible at the recovery action");
+        check(ui.renderCalls==0&&ui.tasks.blocked&&!ui.startTask.enabled,"presentation performs no inference and does not change the blocked state");
         return checks-before;
     }
 

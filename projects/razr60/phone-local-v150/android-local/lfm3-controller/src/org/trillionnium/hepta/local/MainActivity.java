@@ -47,6 +47,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private TextView taskAuthorizationInfo;
     private boolean accessibilityUiStarted;
     private boolean ownerCleanupFeedbackPending;
+    private LinearLayout recoveryCard;
+    private TextView recoveryTitle,recoveryMessage;
+    private String recoveryUiFeedback;
     private boolean cachedModelFilePresent;
     private final Runnable accessibilityConnectionChanged=new Runnable(){
         @Override public void run(){
@@ -95,6 +98,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
         TextView title=text("Hepta",25);page.addView(title);
         page.addView(text("用手机本地模型理解指令并操作应用",15));
+        recoveryCard=new LinearLayout(this);recoveryCard.setOrientation(LinearLayout.VERTICAL);
+        recoveryCard.setPadding(dp(12),dp(10),dp(12),dp(10));recoveryCard.setBackgroundColor(0xfffff3df);
+        recoveryTitle=text("",17);recoveryMessage=text("",13);
+        recoveryCard.addView(recoveryTitle);recoveryCard.addView(recoveryMessage);
+        recoveryCard.setVisibility(View.GONE);page.addView(recoveryCard);
         modelIdentity=text("",12);page.addView(modelIdentity);
         modelInfo=text("",12);page.addView(modelInfo);
         LinearLayout modelImportButtons=new LinearLayout(this);page.addView(modelImportButtons);
@@ -167,11 +175,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         reloadBackgroundApps();updateBackgroundSelection(null);
         cleanupBackground=button("清理上一次后台空间");
         cleanupBackground.setOnClickListener(v -> {
-            ownerCleanupFeedbackPending=true;
+            recoveryUiFeedback=null;ownerCleanupFeedbackPending=true;
             try{tasks.reconcileBackgroundFromOwnerButton();}
             catch(Exception error){
-                ownerCleanupFeedbackPending=false;refresh();
-                taskState.setText("清理未开始："+HeptaAccessibilityService.message(error));revealTaskState();return;
+                ownerCleanupFeedbackPending=false;recoveryUiFeedback="清理未开始："+HeptaAccessibilityService.message(error);refresh();
+                taskState.setText(recoveryUiFeedback);revealTaskState();return;
             }
             refresh();revealTaskState();
         });
@@ -179,7 +187,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         startTask=button("开始任务");actions.addView(startTask);
         stopTask=button("停止");actions.addView(stopTask);
         Button accessibility=button("启用无障碍");actions.addView(accessibility);
-        page.addView(cleanupBackground);
+        recoveryCard.addView(cleanupBackground);
         startTask.setOnClickListener(v -> beginTask(taskInput.getText().toString(),"user_button",null));
         stopTask.setOnClickListener(v -> {
             if(cancelAutomaticStart())return;
@@ -188,14 +196,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             // Explicitly ends this UI prefill only; the running task retains its immutable scope.
             scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;refresh(false);});
         accessibility.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
-        acknowledgeInterruption=button("确认中断并开始新会话");page.addView(acknowledgeInterruption);
+        acknowledgeInterruption=button("确认中断并开始新会话");recoveryCard.addView(acknowledgeInterruption);
         acknowledgeInterruption.setOnClickListener(v -> new AlertDialog.Builder(this)
             .setTitle("保留旧任务，建立新会话")
             .setMessage("旧任务不会恢复。它仍记为中断，原进程退出与清理状态仍未知。应用会先保存原记录并核验当前可见的本应用进程；通过后只建立空闲会话，不会自动开始任务。其它诊断仍未确认退出时不能解除阻塞。")
             .setNegativeButton("暂不确认",null)
             .setPositiveButton("确认并核验",(dialog,which) -> {
+                recoveryUiFeedback=null;
                 try{tasks.acknowledgeInterruptionFromOwnerButton();}
-                catch(Exception error){taskState.setText("无法确认中断："+HeptaAccessibilityService.message(error));}
+                catch(Exception error){recoveryUiFeedback="无法确认中断："+HeptaAccessibilityService.message(error);
+                    refresh();taskState.setText(recoveryUiFeedback);revealTaskState();}
             }).show());
         taskState=text("",15);taskState.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);page.addView(taskState);
         profilePermissionCard=new LinearLayout(this);profilePermissionCard.setOrientation(LinearLayout.VERTICAL);
@@ -597,6 +607,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                         BackgroundUiPreferences.Selection choice=BackgroundUiPreferences.captureProfile(targets.get(index));
                         BackgroundUiPreferences.save(MainActivity.this,choice);BackgroundUiPreferences.saveMode(MainActivity.this,true);
                         rememberedBackgroundSelection=choice;backgroundPackages.clear();backgroundPackages.add(choice.initial);
+                        restoreIndependentProfileDisplay();
                         backgroundMode.setChecked(true);backgroundModePreferenceError=null;backgroundSelectionPreferenceError=null;
                         reloadBackgroundApps();updateBackgroundSelection(choice.initial);refresh();
                     }catch(Exception invalid){taskState.setText("隔离实例未保存："+HeptaAccessibilityService.message(invalid));}
@@ -718,6 +729,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     reloadBackgroundApps();
                     BackgroundUiPreferences.requireCurrent(MainActivity.this,next,backgroundPackages,selectedBackgroundPackage(),backgroundAppLabels.keySet());
                     BackgroundUiPreferences.save(MainActivity.this,next);rememberedBackgroundSelection=next;backgroundSelectionPreferenceError=null;
+                    restoreIndependentProfileDisplay();
                 }catch(Exception error){backgroundSelectionPreferenceError="应用范围需要重新确认，请重新选择。";}
                 refresh();
             }
@@ -729,6 +741,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             reloadBackgroundApps();
             BackgroundUiPreferences.Selection next=BackgroundUiPreferences.capture(this,backgroundPackages,selectedBackgroundPackage(),backgroundAppLabels.keySet());
             BackgroundUiPreferences.save(this,next);rememberedBackgroundSelection=next;backgroundSelectionPreferenceError=null;
+            restoreIndependentProfileDisplay();
         }catch(Exception error){backgroundSelectionPreferenceError="应用范围未能保存或安装信息已变，请重新选择。";}
     }
     private void requireCurrentBackgroundChoice()throws Exception{
@@ -1072,17 +1085,18 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
     @Override public void onSessionChanged(){
-        refresh(false);
+        recoveryUiFeedback=null;refresh(false);
         if(ownerCleanupFeedbackPending&&!tasks.isRecovering()){
             ownerCleanupFeedbackPending=false;revealTaskState();
         }
     }
-    /** Scroll only this Activity's own status into view after the owner's cleanup request. */
+    /** Reveal this Activity's next recovery action, without changing any task or display. */
     private void revealTaskState(){
-        taskState.post(() -> {
+        final View target=recoveryCard!=null&&recoveryCard.getVisibility()==View.VISIBLE?recoveryCard:taskState;
+        target.post(() -> {
             if(accessibilityUiStarted&&hasWindowFocus()&&!isFinishing()&&!isDestroyed())
-                taskState.requestRectangleOnScreen(new android.graphics.Rect(0,0,taskState.getWidth(),
-                        Math.max(1,taskState.getLineHeight()*3)),false);
+                target.requestRectangleOnScreen(new android.graphics.Rect(0,0,target.getWidth(),
+                        Math.max(1,Math.min(target.getHeight(),dp(300)))),false);
         });
     }
     @Override public void onPermissionPreparationChanged(){refresh();}
@@ -1152,12 +1166,18 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading||automaticStartPending!=null;
         backgroundPermissionState.setText(backgroundPermission.state());
-        backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
+        boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
+        BackgroundRecoveryPresentation recovery=BackgroundRecoveryPresentation.from(tasks.isRunning(),tasks.isRecovering(),
+                tasks.hasBackgroundLease(),tasks.isBlocked(),recoveryAvailable,
+                recoveryAvailable?null:tasks.interruptionRecoveryUnavailableReason());
+        recoveryCard.setVisibility(recovery.visible?View.VISIBLE:View.GONE);
+        recoveryTitle.setText(recovery.title);recoveryMessage.setText(recoveryUiFeedback==null?recovery.message:recoveryUiFeedback);
+        backgroundSummary.setText(recovery.visible?recovery.title:tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
                 backgroundMode.isChecked()?(independentProfileDisplay.isChecked()?"将在所选隔离资料应用的独立后台显示中操作":
                         independentPersonalDisplay.isChecked()?"将在所选个人空间应用的新建独立后台显示中操作":"将在所选起始应用的后台空间操作")
                         :"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
-        if(automaticMode()&&backgroundMode.isChecked()&&!tasks.isRunning()&&!tasks.hasBackgroundLease())
+        if(automaticMode()&&backgroundMode.isChecked()&&!tasks.isRunning()&&!tasks.hasBackgroundLease()&&!recovery.visible)
             backgroundSummary.setText("按本次完整任务选择已保存的应用实例和首选模型；每次只执行一个目标。");
         boolean autoControls=!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()&&!modelSettings.isBusy()&&!modelImport.isBusy();
         if(automaticTargetMode!=null)automaticTargetMode.setEnabled(autoControls);
@@ -1177,7 +1197,6 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(automaticMode()){pickBackgroundApps.setEnabled(false);pickProfileTarget.setEnabled(false);initialBackgroundApp.setEnabled(false);independentProfileDisplay.setEnabled(false);independentPersonalDisplay.setEnabled(false);}
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
         cleanupBackground.setEnabled(!modelSettings.isBusy()&&!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
-        boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
         acknowledgeInterruption.setVisibility(tasks.isBlocked()||tasks.isRecovering()||recoveryAvailable?View.VISIBLE:View.GONE);
         acknowledgeInterruption.setEnabled(recoveryAvailable);
         String backgroundError=backgroundChoiceError();

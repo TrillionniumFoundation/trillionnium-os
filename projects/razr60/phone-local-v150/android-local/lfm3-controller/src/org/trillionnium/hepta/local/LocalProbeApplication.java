@@ -152,6 +152,23 @@ public final class LocalProbeApplication extends Application {
         return recoveryBarrier==null?!model.isBusy():model.canReserveRecovery(recoveryBarrier);
     }
 
+    /** Read-only explanation after the UI has queried the existing admission gate. */
+    synchronized String controlRecoveryUnavailableReason(){
+        recoveryMainThread();initializeSessions();
+        if(controlRecoveryCallbackFailed)return "上次恢复的收尾状态未确认，当前不能建立新会话。详情见高级诊断。";
+        if(controlRecoveryAttempt!=null)return "上次中断核验仍在收尾，完成后才能建立新会话。";
+        if(tasks.isRunning())return "当前任务仍在运行，请先停止任务并等待退出。";
+        if(permissionPreparationBlocksWork())return "后台权限核验仍在运行或退出未确认，请先处理后台权限状态。";
+        if(visualDiagnostic.isBusy()||visualDiagnostic.isBlocked())return "本地视觉诊断仍在运行或退出未确认，请先处理该诊断。";
+        if(uiVenusDiagnostic.isBusy()||uiVenusDiagnostic.isBlocked())return "UiVenus 诊断仍在运行或退出未确认，请先处理该诊断。";
+        if(backgroundRecoveryAttempt!=null)return "后台空间核验仍在收尾，完成后才能确认中断。";
+        if(backgroundRecoveryCloseFailed)return "后台空间核验的收尾状态未确认，当前不能建立新会话。详情见高级诊断。";
+        if(!tasks.isBlocked()&&recoveryBarrier==null)return "当前没有待确认的中断会话。";
+        if(recoveryBarrier==null?model.isBusy():!model.canReserveRecovery(recoveryBarrier))
+            return "本地推理或进程核验尚未空闲，当前不能建立新会话。";
+        return null;
+    }
+
     /**
      * A background-absence check borrows the same no-child process slot, but can
      * only return it to the original interrupted-session barrier. It has no

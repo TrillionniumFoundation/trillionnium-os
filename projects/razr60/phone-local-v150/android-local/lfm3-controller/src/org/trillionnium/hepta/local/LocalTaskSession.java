@@ -71,6 +71,14 @@ public final class LocalTaskSession {
     public boolean canAcknowledgeInterruption(){
         return !recovering&&!isRunning()&&!journalQueue.pending()&&!hasBackgroundLease()&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
     }
+    /** Presentation only. The existing recovery admission above remains authoritative. */
+    public String interruptionRecoveryUnavailableReason(){
+        if(recovering)return "正在核验上次会话，请等待本次核验完成。";
+        if(isRunning())return "当前任务仍在运行，请先停止任务并等待退出。";
+        if(journalQueue.pending())return "会话记录正在保存，完成后才能确认中断。";
+        if(hasBackgroundLease())return "上次后台空间尚未确认释放，请先清理后台空间。";
+        return ((LocalProbeApplication)context).controlRecoveryUnavailableReason();
+    }
     public String state() { return state; }
     public String log() { return log; }
     public String taskId() { return taskId; }

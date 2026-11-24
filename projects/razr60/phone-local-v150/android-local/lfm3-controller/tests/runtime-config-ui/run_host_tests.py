@@ -45,8 +45,9 @@ def main():
     main_file, engine_file = java_dir / "MainActivity.java", java_dir / "LocalModelEngine.java"
     template_file = Path(__file__).resolve().with_name("RefreshFixture.template")
     display_file = java_dir / "TaskDisplayText.java"
+    recovery_display_file = java_dir / "BackgroundRecoveryPresentation.java"
     metadata_files = tuple(java_dir / name for name in ("ModelProfile.java", "VlmResultContract.java", "VlmPins.java", "MobiMindContract.java", "MobiMindPins.java"))
-    inputs = (main_file, engine_file, display_file, template_file, Path(__file__).resolve()) + metadata_files
+    inputs = (main_file, engine_file, display_file, recovery_display_file, template_file, Path(__file__).resolve()) + metadata_files
     pins = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs}
     ui, engine = main_file.read_text(), engine_file.read_text()
     methods = {
@@ -93,7 +94,7 @@ def main():
         raise RuntimeError("exact production absent-permission-pane guard changed")
     methods["permission_absent"] = permission_guard + '\n        throw new AssertionError("profile permission UI is outside the model-config fixture");\n    }'
     generated = template_file.read_text()
-    automatic_ports = '    // Original manual model-state cases have no automatic targets or Start.\n    private final Object automaticStartPending=null,automaticReadyStart=null;\n    private final Widget automaticTargetMode=null,pickAutomaticTargets=null,pickAutomaticInstance=null;\n    private final AutomaticTargetsAbsent automaticTargets=null;\n    private final AutomaticResolutionAbsent automaticResolution=null;\n    private static final class AutomaticTargetsAbsent {\n        final java.util.List<Object> targets=null;\n        private AutomaticTargetsAbsent(){throw automaticUnavailable();}\n    }\n    private static final class AutomaticResolutionAbsent {\n        final java.util.List<Object> matches=null;\n        private AutomaticResolutionAbsent(){throw automaticUnavailable();}\n    }\n    private boolean automaticMode(){return false;}\n    private String automaticChoiceError(){throw automaticUnavailable();}\n    private boolean prepareAutomaticStart(String owner,String source,String nonceSha){throw automaticUnavailable();}\n    private static UnsupportedOperationException automaticUnavailable(){\n        return new UnsupportedOperationException("Automatic UI authority absent in original model-state fixture");\n    }\n'
+    automatic_ports = '    // Original manual model-state cases have no automatic targets or Start.\n    private final Object automaticStartPending=null,automaticReadyStart=null;\n    private final Widget automaticTargetMode=null,pickAutomaticTargets=null,pickAutomaticInstance=null;\n    private final AutomaticTargetsAbsent automaticTargets=null;\n    private final AutomaticResolutionAbsent automaticResolution=null;\n    private static final class AutomaticTargetsAbsent {\n        final java.util.List<Object> targets=null;\n        private AutomaticTargetsAbsent(){throw automaticUnavailable();}\n    }\n    private static final class AutomaticResolutionAbsent {\n        final java.util.List<Object> matches=null;\n        private AutomaticResolutionAbsent(){throw automaticUnavailable();}\n    }\n    private boolean automaticPresentation;\n    private boolean automaticMode(){return automaticPresentation;}\n    private String automaticChoiceError(){if(automaticPresentation)return null;throw automaticUnavailable();}\n    private boolean prepareAutomaticStart(String owner,String source,String nonceSha){throw automaticUnavailable();}\n    private static UnsupportedOperationException automaticUnavailable(){\n        return new UnsupportedOperationException("Automatic UI authority absent in original model-state fixture");\n    }\n'
     ui_class = "public final class RuntimeConfigUiHostTest {\n"
     if generated.count(ui_class) != 1 or "boolean automaticMode()" in generated:
         raise RuntimeError("exact original manual model-state fixture required")
@@ -113,6 +114,11 @@ def main():
         raise RuntimeError("production display helper package differs")
     display_fixture = out / "TaskDisplayText.java"
     display_fixture.write_text(display_source[len(declaration):])
+    recovery_display_source = recovery_display_file.read_text()
+    if not recovery_display_source.startswith(declaration):
+        raise RuntimeError("production recovery display helper package differs")
+    recovery_display_fixture = out / "BackgroundRecoveryPresentation.java"
+    recovery_display_fixture.write_text(recovery_display_source[len(declaration):])
     # Compile exact closed profile/artifact metadata; only the legacy fixture's package boundary is adapted.
     metadata_fixtures = []
     for dependency in metadata_files:
@@ -130,13 +136,18 @@ def main():
     import_fixture.write_text('public final class RuntimeConfigImportUiHostTest {public static void main(String[] args)throws Exception{'
         'int checks=RuntimeConfigUiHostTest.importerUiChecks(new java.io.File(args[0]));'
         'System.out.println("{\\"passed\\":"+checks+",\\"failed\\":0,\\"import_io_executed\\":false}");}}\n')
+    recovery_fixture = out / "RuntimeRecoveryUiHostTest.java"
+    recovery_fixture.write_text('public final class RuntimeRecoveryUiHostTest {public static void main(String[] args)throws Exception{'
+        'int checks=RuntimeConfigUiHostTest.recoveryUiChecks(new java.io.File(args[0]));'
+        'System.out.println("{\\\"passed\\\":"+checks+",\\\"failed\\\":0,\\\"recovery_performed\\\":false}");}}\n')
     javac = shutil.which("javac")
     compiler = [javac] if javac else ["java", "-m", "jdk.compiler/com.sun.tools.javac.Main"]
     flags = ["--release", "8", "-Xlint:all"] if args.release8 else ["-source", "8", "-target", "8", "-Xlint:all,-options"]
-    stages = [("compile", compiler + flags + ["-encoding", "UTF-8", "-Werror", "-d", str(classes), str(fixture), str(display_fixture), str(entry_fixture), str(import_fixture)] + [str(path) for path in metadata_fixtures]),
+    stages = [("compile", compiler + flags + ["-encoding", "UTF-8", "-Werror", "-d", str(classes), str(fixture), str(display_fixture), str(recovery_display_fixture), str(entry_fixture), str(import_fixture), str(recovery_fixture)] + [str(path) for path in metadata_fixtures]),
               ("refresh", ["java", "-cp", str(classes), "RuntimeConfigUiHostTest", str(out / "files")]),
               ("entry", ["java", "-cp", str(classes), "RuntimeConfigEntryHostTest", str(out / "entry-files")]),
-              ("importer-ui", ["java", "-cp", str(classes), "RuntimeConfigImportUiHostTest", str(out / "import-ui-files")])]
+              ("importer-ui", ["java", "-cp", str(classes), "RuntimeConfigImportUiHostTest", str(out / "import-ui-files")]),
+              ("recovery-ui", ["java", "-cp", str(classes), "RuntimeRecoveryUiHostTest", str(out / "recovery-ui-files")])]
     report = {"schema": "hepta.runtime-config-ui-host-validation.v1", "passed": False,
         "source_sha256": pins, "stages": [],
         "production_methods_sha256": {name: hashlib.sha256(body.encode()).hexdigest() for name, body in methods.items()},
@@ -151,7 +162,8 @@ def main():
             "actual_complete_refresh_and_choice_error_verbatim":True,
             "actual_complete_model_prefix_verbatim":True,
             "prefix_boolean_return_and_original_parameter_types_preserved":True,
-            "automatic_mode_always_false":True,"automatic_pending_and_ready_always_null":True,
+            "automatic_mode_false_in_original_cases":True,"automatic_mode_enabled_only_for_recovery_view_cases":True,
+            "automatic_pending_and_ready_always_null":True,
             "all_new_shape_constructors_private_and_throwing":True,
             "automatic_authority_endpoints_always_throw":True,
             "original_template_cases_and_assertions_unchanged":True,
@@ -176,6 +188,8 @@ def main():
                 report["cases" if name == "refresh" else "entry_cases"] = json.loads(run.stdout)
             if name == "importer-ui":
                 report["importer_ui_cases"] = json.loads(run.stdout)
+            if name == "recovery-ui":
+                report["recovery_ui_cases"] = json.loads(run.stdout)
         except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError) as error:
             report["stages"].append({"name": name, "exit_code": None, "argv": command, "error": str(error)})
             break
@@ -189,7 +203,10 @@ def main():
         and report.get("entry_cases", {}).get("task_scheduling_executed") is False
         and report.get("importer_ui_cases", {}).get("passed") == 14
         and report.get("importer_ui_cases", {}).get("failed") == 0
-        and report.get("importer_ui_cases", {}).get("import_io_executed") is False)
+        and report.get("importer_ui_cases", {}).get("import_io_executed") is False
+        and report.get("recovery_ui_cases", {}).get("passed") == 20
+        and report.get("recovery_ui_cases", {}).get("failed") == 0
+        and report.get("recovery_ui_cases", {}).get("recovery_performed") is False)
     (out / "RESULT.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({key: report[key] for key in ("passed", "compiler_contract", "sources_unchanged", "phone_tested")}))
     return 0 if report["passed"] else 1

@@ -152,7 +152,16 @@ final class BackgroundUiPreferences {
                 .put("profile_target_sha256",selection.profileTarget.sha256);
         String raw=value.toString();
         if(raw.getBytes(StandardCharsets.UTF_8).length>MAX_BYTES)throw new IllegalStateException("background choice is too large");
-        if(!preferences(context).edit().putString(SELECTION,raw).commit())
+        // One visible target choice must not retain a display mode belonging to
+        // the previous target. Preserve compatible choices; never enable a mode here.
+        SharedPreferences.Editor editor=preferences(context).edit().putString(SELECTION,raw);
+        if(selection.profileTarget!=null)editor.putBoolean(INDEPENDENT_PERSONAL_DISPLAY,false);
+        else{
+            editor.putBoolean(INDEPENDENT_PROFILE_DISPLAY,false);
+            if(!"com.motorola.stylus".equals(selection.initial)&&!"com.xiaomi.shop".equals(selection.initial))
+                editor.putBoolean(INDEPENDENT_PERSONAL_DISPLAY,false);
+        }
+        if(!editor.commit())
             throw new IllegalStateException("background choice was not persisted");
     }
     static Selection captureProfile(ProfileTarget actualTarget){
