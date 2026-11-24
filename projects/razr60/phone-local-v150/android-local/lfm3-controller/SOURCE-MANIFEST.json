@@ -3,26 +3,15 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_notes_create_and_cancelled_recovery_successor",
+  "candidate_status": "reviewed_notes_cancelled_jsonarray_fixture_successor",
   "complete_source_files": 2546,
   "current_successor_delta": {
-    "baseline": "089e1dee0c444cbd59a81993ffe05355b31630cd",
+    "baseline": "7370629ec461eed44cdabfc3044a498dd0fe4732",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
-      "tests/notes-app-qualified-create/real-owner-50af.json",
-      "tests/notes-app-qualified-create/run_host.py",
-      "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
-      "tests/notes-cancelled-absence/README.md",
-      "tests/notes-cancelled-absence/run_host.py"
+      "tests/background-session/prepare_fixture.py"
     ],
-    "scope": "Recognize exact app-qualified Notes create bodies and reject unsupported explicit-create requests before task lease or bootstrap; add a separate cancelled-personal-Notes current-absence recovery mode preserving the cancelled 143 model result, historical failed task and cleanup-unknown facts. Preserve original bounded archives, current complete census, physical and foreign checks, exact lease CAS and ordinary recovery ACK.",
-    "production_changed": true,
+    "scope": "Test fixture only: add standard strict JSONArray typed accessors getJSONArray/getString to the existing background-session host port. All production bytes, previous cases, assertions and Android behavior remain unchanged. Preserve the original 7370629 failed host reports; obtain new complete host and SDK qualification for this successor.",
+    "production_changed": false,
     "native_runtime_changed": false,
     "model_weights_changed": false,
     "automatic_default_model_unchanged": true
@@ -7695,8 +7684,8 @@
     },
     {
       "path": "tests/background-session/prepare_fixture.py",
-      "bytes": 24056,
-      "sha256": "88334094a884e36e4f1243877f4d847f5e928c45fdf0d584eb91e65d2e3a0310"
+      "bytes": 24954,
+      "sha256": "8fcd379e9cb584331035287dfadc9782705d7537f1cb02f1b3bba838a2c5716d"
     },
     {
       "path": "tests/background-session/run_host_tests.py",
@@ -12755,22 +12744,22 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "1ce12d2d862f9c3fc643b29c9260e758c52cb882",
-    "previous_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
+    "previous_component_git_tree_sha1": "dec0080731246a6bfa5c15ec0de7241a3581b2b0",
+    "previous_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "/home/alex/hepta-razr-notes-create-followup-20261124-r1/validation/mobile-notes-create-r3/RESULT.json",
-        "bytes": 116954,
-        "sha256": "7ad9c996cd45010e9fbbfbb9faeed5f48f860bef67757851e5c079fd42628062"
+        "path": "/home/alex/hepta-razr-notes-fixture-followup-20261124-r1/validation/background-client-r1/VALIDATION.json",
+        "bytes": 29154,
+        "sha256": "5353b55b1b99430c027200a96a82501517ccee11dd1ef20cea33a42b762b62ef"
       },
       {
-        "path": "/home/alex/hepta-razr-notes-create-followup-20261124-r1/validation/cancelled-final-r1/RESULT.json",
-        "bytes": 64633,
-        "sha256": "d9c2a68aab60bce211ea57a47d497d55ae98b9d3d10caa299d759a6b783381a6"
+        "path": "/home/alex/hepta-razr-notes-fixture-followup-20261124-r1/validation/sealed-retained-r1/RESULT.json",
+        "bytes": 80473,
+        "sha256": "ff8856a1de22867449f50030b90775ef2df9730641875f3e3c317841d72da329"
       }
     ],
     "full_current_host_suite_completed_at_preparation": false,
@@ -12782,10 +12771,10 @@
   "production_build_inputs_count": 394,
   "production_input_map_sha256": "d8da1c5ff21e042dd184c23dd4c437c18b55bd65eb436443236337dcf21b1aca",
   "schema": "hepta.local-source.v3",
-  "scope": "Recognize exact app-qualified Notes create bodies and reject unsupported explicit-create requests before task lease or bootstrap; add a separate cancelled-personal-Notes current-absence recovery mode preserving the cancelled 143 model result, historical failed task and cleanup-unknown facts. Preserve original bounded archives, current complete census, physical and foreign checks, exact lease CAS and ordinary recovery ACK.",
-  "source_parent_head": "089e1dee0c444cbd59a81993ffe05355b31630cd",
-  "source_parent_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
-  "source_snapshot_predecessor_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
+  "scope": "Test fixture only: add standard strict JSONArray typed accessors getJSONArray/getString to the existing background-session host port. All production bytes, previous cases, assertions and Android behavior remain unchanged. Preserve the original 7370629 failed host reports; obtain new complete host and SDK qualification for this successor.",
+  "source_parent_head": "7370629ec461eed44cdabfc3044a498dd0fe4732",
+  "source_parent_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
+  "source_snapshot_predecessor_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {

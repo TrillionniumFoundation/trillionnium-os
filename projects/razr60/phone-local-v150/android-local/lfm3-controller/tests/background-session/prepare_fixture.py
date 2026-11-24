@@ -21,6 +21,21 @@ def prepare(source,output,*,include_terminal=True):
     if text.count(anchor)!=1:raise RuntimeError('nonunique JSON optString compatibility insertion point')
     text=text.replace(anchor,one_arg_method+anchor)
    text=text.replace('    private static String quote(', '    public static String quote(')
+  if name=='org/json/JSONArray.java':
+   anchor='    public JSONObject getJSONObject(int index)throws JSONException{'
+   if text.count(anchor)!=1 or 'public JSONArray getJSONArray(' in text or 'public String getString(' in text:
+    raise RuntimeError('nonunique JSON array typed-accessor fixture insertion point')
+   methods='''    public JSONArray getJSONArray(int index)throws JSONException{
+        Object value=values.get(index);if(value instanceof JSONArray)return (JSONArray)value;
+        if(value instanceof java.util.Collection<?>)return new JSONArray((java.util.Collection<?>)value);
+        throw new JSONException("not array");
+    }
+    public String getString(int index)throws JSONException{
+        Object value=values.get(index);if(value instanceof String)return (String)value;
+        throw new JSONException("not string");
+    }
+'''
+   text=text.replace(anchor,methods+anchor,1)
   if name=='android/system/OsConstants.java':
    anchor='ENOENT=2,O_RDONLY=0,O_WRONLY=1,'
    if text.count(anchor)!=1:raise RuntimeError('nonunique legacy OsConstants insertion point')
