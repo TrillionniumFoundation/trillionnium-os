@@ -9,8 +9,10 @@ final class NativeSearchPlanning {
     static long initialReadDeadline(long started,long chainDeadline){throw unavailable();}
     final String id=null,packageName=null,receiptSha256=null;
     final Timing timing=null;
+    final Map<String,Object> binding=null;
+    final long capturedElapsed=0;
     static final class Timing {
-        final long requestStarted=0,requestDeadline=0;
+        final long requestStarted=0,requestDeadline=0,aReadStarted=0;
         private Timing(){throw unavailable();}
     }
     final NativeActionSnapshotCheck.Snapshot second=null;
@@ -23,6 +25,7 @@ final class NativeSearchPlanning {
     }
     Map<String,Object> evidence(){throw unavailable();}
     static JSONObject json(Map<String,Object> value){throw unavailable();}
+    static boolean equal(Object first,Object second){throw unavailable();}
     private static UnsupportedOperationException unavailable(){
         return new UnsupportedOperationException("No typed search planning in old Controller fixtures");
     }

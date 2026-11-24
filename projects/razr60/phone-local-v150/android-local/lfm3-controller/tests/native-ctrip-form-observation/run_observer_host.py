@@ -207,7 +207,8 @@ def generate(source,output,h):
             # the form-observer bodies and original cases compile and run below.
             protected_files[name]=actual
             continue
-        if name=='NativeActionSnapshotCheck.java' and actual=='dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05':
+        if name=='NativeActionSnapshotCheck.java' and actual in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
+                'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac'):
             proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](current)
             if h.sha(proof)!=r32_provider_pins[name]:raise RuntimeError('full prior comparator required')
             protected_files[name]=actual

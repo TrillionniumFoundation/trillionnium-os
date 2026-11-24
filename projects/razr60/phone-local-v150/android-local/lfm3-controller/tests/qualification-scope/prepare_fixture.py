@@ -122,6 +122,7 @@ def prepare(source, output):
     private volatile NativeSearchSession nativeSearchSession;
     private volatile NativeSearchRequest activeNativeSearchObservation;
     private volatile NativeSearchRequest nativeSearchRetryPending;
+    private volatile NativeSearchRequest nativeSearchModalPending;
     private final NativeSearchRequest nativeSearchSamplingTracked=null;
     private final java.util.concurrent.atomic.AtomicBoolean observationIoBusy=new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile SearchActionWork activeSearchAction;
@@ -158,6 +159,8 @@ def prepare(source, output):
         private SearchActionWork(){throw new AssertionError("No typed action work in old fixture");}
     }
     synchronized void bindNativeSearchSession(NativeSearchSession session){throw new AssertionError("No typed Session binding in old fixture");}
+    synchronized Map<String,Object> beginNativeSearchImageModalPrelude(Object controller,NativeSearchSession session,File directory,long deadline){throw new AssertionError("No image-modal read handoff in old fixture");}
+    synchronized void prepareNativeSearchAfterImageModal(Object controller,NativeSearchSession session,ActionDecision action,String run){throw new AssertionError("No image-modal Back or home planning authority in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback){throw new AssertionError("No typed planning IO in old fixture");}
     void observeNativeSearchPlanning(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchReadRetryProof retry){throw new AssertionError("No typed planning recovery IO in old fixture");}
     void observeNativeSearchPlanningAfterNoEffect(String task,File directory,NativeSearchSession session,Cancellation cancel,long deadline,NativeSearchSession.ObservationCallback callback,NativeSearchNoEffectReplanProof successor){throw new AssertionError("No typed successor planning IO in old fixture");}
@@ -505,6 +508,8 @@ final class PublicProfileBusinessRecoveryClient {
             'actual_legacy_read_gate_sha256':hashlib.sha256(search_legacy_gate.encode()).hexdigest(),
             'actual_retire_sha256':hashlib.sha256(search_retire.encode()).hexdigest(),
             'typed_ports_constructible':False,'typed_operations_all_refuse':True,
+            'image_modal_pending_permanently_absent':True,
+            'image_modal_abi_operations_always_refuse':True,
             'legacy_dispatch_methods_modified':False,
             'covered_by':'tests/native-search-producer/run_producer.py',
             'separate_typed_gate_execution_not_claimed_here':True},

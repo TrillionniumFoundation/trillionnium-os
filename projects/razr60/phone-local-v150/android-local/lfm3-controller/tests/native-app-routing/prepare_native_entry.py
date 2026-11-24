@@ -86,7 +86,17 @@ def calendar_actual_session_ports(source, output, service):
     require(original_search.count(budget_predicate) == 1
             and original_predicate not in original_search,
             "one reviewed shopping eligibility change required")
-    parent_search = original_search.replace(budget_predicate, original_predicate)
+    # The current Controller/Session compile closure adds only refusing modal
+    # signatures. Reverse the exact byte block before checking the old boundary.
+    modal_abi = b"""    /** Image-modal ABI only; every operation refuses in this legacy fixture. */
+    boolean allowsImageModalObservation(){throw unavailable();}
+    boolean imageModalBackReady(ActionDecision action,String run,long now){throw unavailable();}
+    long initialPlanningDeadline(){throw unavailable();}
+    Map<String,Object> binding(){throw unavailable();}
+"""
+    require(original_search.count(modal_abi) == 1,
+            "one exact refusing image-modal ABI increment required")
+    parent_search = original_search.replace(modal_abi, b"", 1).replace(budget_predicate, original_predicate)
     require(sha(parent_search) ==
             "4ee12102d54c43142700a515938506ee6e46314ec4cecc1da0df121a1119801c",
             "exact original routing search boundary required")
@@ -134,6 +144,8 @@ def calendar_actual_session_ports(source, output, service):
         "original_helper_exact_inverse": True,
         "unused_final_census_port_excluded_sha256": sha(unused_proof.encode()),
         "original_routing_search_boundary": metadata(search_boundary, original_search),
+        "image_modal_abi_sha256": sha(modal_abi),
+        "original_routing_boundary_exact_inverse": True,
         "current_routing_search_boundary": metadata(search_boundary, search_boundary.read_bytes()),
         "real_controller_preserved": True, "all_new_authority_endpoints_always_refuse": True,
         "calendar_model_or_effect_executed": False,

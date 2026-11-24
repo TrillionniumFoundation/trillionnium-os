@@ -119,12 +119,22 @@ def generate(source,out):
     projection=replace(original,main,(source/TEST/'XiaomiGuardCases.fragment').read_text())
     projection=replace(projection,'class NativeXiaomiModalSessionHostTest','class XiaomiActionGuardHost')
     projection=replace(projection,'private NativeXiaomiModalSessionHostTest(){}','private XiaomiActionGuardHost(){}')
-    # Exact Controller accepted-outcome barrier and complete await methods.
+    # This legacy harness exercises the ordinary accepted-outcome wait, without
+    # a typed-search Session. Keep its common precheck and ordinary await verbatim;
+    # the intervening typed modal continuation belongs to the full Controller.
+    # The retained parent barrier pin prevents silently changing this old path.
+    pending_precheck=section(controller,'                staleRounds=0;checkActive(deadline);',
+        '                if(activeNativeSearch!=null&&activeNativeSearch.imageModalBackReady(action,decisionRunId,SystemClock.elapsedRealtime())){')
+    pending_observation=section(controller,
+        '                emit("操作后正在重新观察…");observation=awaitPostEffectNativeObservation(taskId,evidence,authorization,deadline,action,decisionRunId,before);',
+        '                JSONObject row=new JSONObject().put("step",steps).put("action",action.action).put("detail",outcome.detail)')
+    pending_barrier=pending_precheck+pending_observation
+    need(sha(pending_barrier.encode())=='8a95526a1b2a0a2194c6fb8e8b2c6139ef009e79156c58fc5a3f57f4244b085e',
+         'ordinary Controller barrier must equal retained pre-modal parent bytes')
     pending_parts={
       'controller_pending_await':body(controller,'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{'),
       'controller_pending_await_request':body(controller,'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline,'),
-      'controller_pending_barrier':section(controller,'                staleRounds=0;checkActive(deadline);',
-        '                JSONObject row=new JSONObject().put("step",steps).put("action",action.action).put("detail",outcome.detail)')}
+      'controller_pending_barrier':pending_barrier}
     for name,value in pending_parts.items():projection=replace(projection,'{{'+name+'}}',value)
     projection=replace(projection,'import java.nio.charset.StandardCharsets;','import java.io.File;\nimport java.nio.charset.StandardCharsets;')
     methods.update(pending_parts)
@@ -347,6 +357,8 @@ def main():
           'open_legacy_click_branch_exact_inverse_of_one_condition':True,
           'open_host_endpoint_manually_claims_guard':False,
           'open_actual_receipt_create_write_fsync':True,
+          'pending_controller_barrier_scope':'ordinary post-effect wait; common precheck and ordinary await are verbatim noncontiguous production segments, pinned to unchanged pre-modal parent bytes',
+          'pending_controller_typed_modal_continuation_exercised':False,
           'boundary':'Session/authorization/provider classes and Service extracted bodies are actual. Complete census rows, Android APIs, traversal, clock, installed verifier and performAction are explicit synthetic host endpoints. No PhoneObservation screenshot is fabricated as device proof.'}
         save(out/'EXTRACTION.json',record)
         report['compile_inputs']=[meta(p) for p in paths]

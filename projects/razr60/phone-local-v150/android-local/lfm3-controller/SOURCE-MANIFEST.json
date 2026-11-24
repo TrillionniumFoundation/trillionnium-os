@@ -3,45 +3,38 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "xiaomi_modal_search_and_banner_successor",
+  "candidate_status": "xiaomi_fixture_dependency_successor",
   "complete_source_files": 2521,
   "current_successor_delta": {
-    "baseline": "fed922870d154528692d491201688179a421319a",
+    "baseline": "a8d491cbd45641fdddf05729386c225b31cce462",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeSearchRole.java",
-      "src/org/trillionnium/hepta/local/NativeSearchSession.java",
-      "tests/native-search-carousel-edge/NativeSearchBannerCoverageHostTest.java",
-      "tests/native-search-carousel-edge/banner-censuses.json",
-      "tests/native-search-carousel-edge/run_banner_host.py",
-      "tests/native-search-modal/NativeSearchModalHostTest.java",
-      "tests/native-search-modal/recorded-5b8-modal-censuses.json",
-      "tests/native-search-modal/run_host.py",
-      "tests/native-search-producer/ModalPreludeCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/run_producer.py"
+      "tests/native-action-integration/run_host.py",
+      "tests/native-app-routing/prepare_native_entry.py",
+      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-search-producer/protected_snapshot.py",
+      "tests/native-xiaomi-product/run_host.py",
+      "tests/qualification-scope/prepare_fixture.py"
     ],
-    "scope": "Bounded Xiaomi image-modal return followed by a fresh typed search; complete-census comparison for neutral banner coverage changes; existing action authorization, budgets and business verification preserved.",
+    "scope": "Repair exact host extraction and refusing legacy fixture ABI closures; bind reviewed SnapshotCheck banner increment while preserving business expectations and all production bytes.",
     "native_runtime_changed": false,
-    "business_backend_changed": true,
+    "business_backend_changed": false,
+    "xiaomi_feature_production_preserved": true,
     "owner_ui_fixes_inherited": true
   },
   "current_test_dependency_repairs": {
     "changed_paths": [
-      "tests/native-search-carousel-edge/NativeSearchBannerCoverageHostTest.java",
-      "tests/native-search-carousel-edge/banner-censuses.json",
-      "tests/native-search-carousel-edge/run_banner_host.py",
-      "tests/native-search-modal/NativeSearchModalHostTest.java",
-      "tests/native-search-modal/recorded-5b8-modal-censuses.json",
-      "tests/native-search-modal/run_host.py",
-      "tests/native-search-producer/ModalPreludeCases.fragment",
-      "tests/native-search-producer/SearchProducerHost.template",
-      "tests/native-search-producer/run_producer.py"
+      "tests/native-action-integration/run_host.py",
+      "tests/native-app-routing/prepare_native_entry.py",
+      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-search-producer/protected_snapshot.py",
+      "tests/native-xiaomi-product/run_host.py",
+      "tests/qualification-scope/prepare_fixture.py"
     ],
-    "previous_manifest_sha256": "1188d3a6c8f25b1b1f4edb25f324258d54248314debae0e03e4cc3b0f7fc9cd2"
+    "previous_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec"
   },
   "files": [
     {
@@ -8341,8 +8334,8 @@
     },
     {
       "path": "tests/native-action-integration/run_host.py",
-      "bytes": 34037,
-      "sha256": "9cbe538d80891cc9896bdce64a2d38d1f156e497a4dc32d3f3bba20785aea96f"
+      "bytes": 35216,
+      "sha256": "c00412810c6aeb8e2e1968a6314f85af310611cd797ad743b94bd7d235eee9c0"
     },
     {
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
@@ -8656,8 +8649,8 @@
     },
     {
       "path": "tests/native-app-routing/prepare_native_entry.py",
-      "bytes": 20966,
-      "sha256": "a509749fad480dc5099962c4ca4ebd831cd8838669e6992d42dfbc0ab67720da"
+      "bytes": 21757,
+      "sha256": "f944c63913632814a8e1d74a15ea0351e185864b5afd865a98b93a6e9fe08c88"
     },
     {
       "path": "tests/native-app-routing/run_host.py",
@@ -8691,13 +8684,13 @@
     },
     {
       "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "bytes": 1339,
-      "sha256": "f272c5a3cb5919bc6c229ac0f5c2bee8c425ec7e7f7539a51793da8601810f38"
+      "bytes": 1506,
+      "sha256": "bfc170c4e4a7e623ab7702f9ad0b25f2d3f590709ca8e91e7dca2189533205f4"
     },
     {
       "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "bytes": 3642,
-      "sha256": "ccfec236e60af3299de4154f1ef41440329aa2202e4e6fc6b6a54a4d86e0e743"
+      "bytes": 3996,
+      "sha256": "538ca69c03981e1e29799c1fcaf2d5e1160f20afe2ca5900f0eef03bcef46114"
     },
     {
       "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
@@ -8966,8 +8959,8 @@
     },
     {
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "bytes": 67309,
-      "sha256": "58db703f32ba3bfed47475447b8d302df7eedd2aef19d7136446927b72f1c50d"
+      "bytes": 67397,
+      "sha256": "205600850e037ec3d50abc7b676839e3e60f25a865d61bf02cf32bd902621c40"
     },
     {
       "path": "tests/native-ctrip-form-observation/run_pure_host.py",
@@ -9401,8 +9394,8 @@
     },
     {
       "path": "tests/native-search-producer/protected_snapshot.py",
-      "bytes": 1358,
-      "sha256": "ebb884e304919e1fc466b1c4e5de7749e2ddc055f672ca805d828af7d99b6d29"
+      "bytes": 3913,
+      "sha256": "e54abdbe4fcd2aa6e21bd0c5bf41fb7599d92f21bc3407305812c869587dd7e8"
     },
     {
       "path": "tests/native-search-producer/r38-planning-captures.json",
@@ -9687,7 +9680,7 @@
     {
       "path": "tests/native-xiaomi-product/run_host.py",
       "bytes": 9411,
-      "sha256": "113d9f8c2abd42780233170bcee78ff179b22853d434b314d207ef34cd3b47bc"
+      "sha256": "0d7ceaa1f1bdf049fbb40ace827be6284cba3904061f5f5cb4498656de136eba"
     },
     {
       "path": "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
@@ -11146,8 +11139,8 @@
     },
     {
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "bytes": 50436,
-      "sha256": "94c1bc305670ebc5feaff885da2f4048a7e0997bceb34e5352f5824b66b03513"
+      "bytes": 51072,
+      "sha256": "7b0d8f4a9ed44e97856e3915fd86c7df9c9c523afe9e875724703137903d1dce"
     },
     {
       "path": "tests/qualification-scope/run_host_tests.py",
@@ -12646,37 +12639,27 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "4b0674322400f8d1b887595763dbec71f2d1b085",
-    "previous_manifest_sha256": "1188d3a6c8f25b1b1f4edb25f324258d54248314debae0e03e4cc3b0f7fc9cd2",
+    "previous_component_git_tree_sha1": "f855f4634ea5a7ed1d2e69635b5c4d99ca1dc6b0",
+    "previous_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": {
-      "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/session-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/session-r1/RESULT.json",
-        "bytes": 176900,
-        "sha256": "6ba692bfb6ff4cefe6fc7c64ad1650e5afd8e433e687523972cab5fdb1f7b93a"
+      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/action-integration-r1/RESULT.json": {
+        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/action-integration-r1/RESULT.json",
+        "bytes": 1098201,
+        "sha256": "9581c65d81daee561ce6db70947dc7bef547b6ffd0e265c9d3007932fb4d0889"
       },
-      "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/modal-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/modal-r1/RESULT.json",
-        "bytes": 151081,
-        "sha256": "1f8b119f071e828fadfc356c6ac933f1805c54d7cf02234534d0bed28819eca3"
+      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/ctrip-form-observation-r1/RESULT.json": {
+        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/ctrip-form-observation-r1/RESULT.json",
+        "bytes": 5288,
+        "sha256": "48297192a80f7d1f7bfd100ee6113b3418323299ec19455622478cd6730d843a"
       },
-      "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/producer-modal-r3/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/producer-modal-r3/RESULT.json",
-        "bytes": 170275,
-        "sha256": "4dbf03878ce0eed6ac616efd8493c9bdcde6216acb41f73accc542be1740fee1"
-      },
-      "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/banner-coverage-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/banner-coverage-r1/RESULT.json",
-        "bytes": 2157424,
-        "sha256": "ef47d5108b1eb2e002a930704158542c2a5c54d806cc6f368a043c13db03f593"
-      },
-      "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/banner-carousel-regression-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-followup-20261124-r1/validation/banner-carousel-regression-r1/RESULT.json",
-        "bytes": 2164040,
-        "sha256": "6f41d402e7692cf57ab2e3e2789266a4c7c7387a962a5d0e9a6fcb45c959f867"
+      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/mobile-fixture-focused-r1.json": {
+        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/mobile-fixture-focused-r1.json",
+        "bytes": 5128,
+        "sha256": "d276a3e36f837243706f21e5711a134d4ef8571ae9828b8a74eefd765217156d"
       }
     },
     "full_current_host_suite_completed_at_preparation": false,
@@ -12689,9 +12672,9 @@
   "production_input_map_sha256": "08d4dd82715cd6d61afdff260fa4a610c33231bbb829850a0c6c2592cebc5c43",
   "schema": "hepta.local-source.v3",
   "scope": "Run the Xiaomi work-profile search entry on the verified virtual display and recover a formerly retained, empty managed-profile display through its original owner after sealing the initial uncertainty. Recover and preserve the genuine failed model outcome after an observed released broker loses its normal close reply. Allow the original verified close response to flush after a completed cleanup and reject stale screen-monitor shutdowns.",
-  "source_parent_head": "fed922870d154528692d491201688179a421319a",
-  "source_parent_manifest_sha256": "1188d3a6c8f25b1b1f4edb25f324258d54248314debae0e03e4cc3b0f7fc9cd2",
-  "source_snapshot_predecessor_manifest_sha256": "1188d3a6c8f25b1b1f4edb25f324258d54248314debae0e03e4cc3b0f7fc9cd2",
+  "source_parent_head": "a8d491cbd45641fdddf05729386c225b31cce462",
+  "source_parent_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
+  "source_snapshot_predecessor_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
