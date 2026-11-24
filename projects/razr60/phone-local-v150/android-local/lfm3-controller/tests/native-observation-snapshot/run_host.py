@@ -115,6 +115,7 @@ def main():
     inputs=[source/PKG/n for n in JAVA]+own+[rect,BUNDLE/'tests/observation-pipeline/ObserverPipelineHost.template',BUNDLE/'tests/observation-diagnostics/run_host.py']
     inputs += [BUNDLE/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('ProfileIdentity','ProfileTarget','WindowOwnership')]
     if source!=BUNDLE:inputs.append(BUNDLE/PKG/JAVA[0])
+    inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
     result={'schema':'hepta.native-observation-snapshot-host.v1','all_pass':False,'stages':[],
         'input_before':before,'tools_before':tool_before,'source_root':str(source),'test_bundle_root':str(BUNDLE),
@@ -128,6 +129,7 @@ def main():
         # Full current PhoneObservation carries real immutable profile types; the scheduling carrier above remains fail-only for profile.
         sources += [BUNDLE/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('ProfileIdentity','ProfileTarget','WindowOwnership')]
         sources += [HERE/'SnapshotChecks.java',HERE/'ObservationEvidenceHost.java',rect,generated/'ObserverPipelineHost.java']
+        sources += h.png_sources(source)
         result['stages'].append(h.stage('compile',[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources)),output))
         if result['stages'][-1]['exit_code']!=0:raise RuntimeError('production observer fixture compilation failed')
         result['stages'].append(h.stage('cases',[str(java),'-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.ObserverPipelineHost',str(output/'CASES.json')],output))

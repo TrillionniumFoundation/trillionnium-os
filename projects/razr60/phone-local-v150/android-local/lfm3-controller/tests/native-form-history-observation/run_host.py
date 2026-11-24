@@ -38,7 +38,8 @@ def main():
  if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
  raw=a.census_input.resolve()
  if raw.stat().st_size!=562920 or h.sha(raw.read_bytes())!='ea77dee1c7f044fac8014d101922c10ab8035c0d12a2335b8d207f817328924d':raise RuntimeError('complete original A/C raw pin')
- deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
+ deps_png=h.png_sources(source)
+ deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]+deps_png
  profiles=[source/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  rect=source/'tests/qualification-scope/fixtures/android/graphics/Rect.java'
  fixtures=[source/'tests/native-observation-snapshot'/n for n in ['SnapshotChecks.java','ObservationEvidenceHost.java']]+[source/'tests/native-ax-observation/ActualAxPhoneChecks.java']

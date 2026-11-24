@@ -1,0 +1,11 @@
+package org.trillionnium.hepta.local;
+import android.graphics.Bitmap;
+import java.io.FileOutputStream;
+/** Synthetic only at Android pixels/metadata and the original work-guard endpoint. */
+final class HeptaAccessibilityService {
+    static final class Stopped extends RuntimeException {private static final long serialVersionUID=1L;}
+    static final class ObservationRequest {long now,deadline=1000000;boolean cancel;int checks;}
+    void requireObservationWork(ObservationRequest r){r.checks++;if(r.cancel||r.now>=r.deadline)throw new Stopped();}
+    void encode(ObservationRequest r,Bitmap b,FileOutputStream out)throws Exception{writeObservationPng(r,b,out);}
+{{actual_helper}}
+}

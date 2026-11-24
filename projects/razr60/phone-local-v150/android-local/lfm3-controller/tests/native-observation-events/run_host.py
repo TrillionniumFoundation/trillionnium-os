@@ -170,6 +170,7 @@ def main():
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
     inputs=[source/PKG/'NativeAppEvidence.java',source/PKG/'ObservationCaptureEvidence.java']+[source/PKG/n for n in JAVA]+[source/TEST/n for n in OWN]+[
         source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']+tools
+    inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
     r={'schema':'hepta.native-observation-events-host-gate.v1','all_pass':False,'stages':[],
        'input_before':before,'tools_before':tool_before,'compiler_contract':'JDK17 --release 8 -Xlint:all -Werror',
@@ -182,6 +183,7 @@ def main():
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/n for n in JAVA if n not in ('HeptaAccessibilityService.java','PhoneObservation.java')]
         sources += [source/TEST/'EventChecks.java',generated/'ObserverPipelineHost.java']
+        sources += h.png_sources(source)
         argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))
         s=h.stage('compile',argv,output);r['stages'].append(s)
         if s['exit_code']!=0:raise RuntimeError('actual observer fixture compilation failed')

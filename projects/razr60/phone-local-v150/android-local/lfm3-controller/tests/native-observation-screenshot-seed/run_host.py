@@ -69,7 +69,25 @@ def reverse_input_history_helper(path, raw):
                       'actual_compilation_uses_unmodified_current_helper': True}
 
 
+
+# Exact PNG type/compile closure inverse; historical proof only, never the compiled source.
+PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.template': {'current_sha256': '7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f', 'prior_sha256': '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2', 'operations': [['        int getWidth(){return 1080;}int getHeight(){return 2400;}\n', '        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n        int getWidth(){return 1080;}int getHeight(){return 2400;}\n']]}, 'tests/observation-diagnostics/run_host.py': {'current_sha256': '0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f', 'prior_sha256': 'd70aee4bdb21724d9a0c88bca02b5653bd60b02cfe9931be964b085f44bb3d0c', 'operations': [['def sha(raw):', "def png_sources(source):\n    # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.\n    return [source/PKG/'ObservationPngEncoder.java',\n            source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',\n            source/'tests/observation-png/stubs/android/os/Build.java']\n\ndef sha(raw):"], ['    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n', '    paths += png_sources(source)\n    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n'], ["        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += png_sources(source)\n        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}, 'tests/native-observation-events/run_host.py': {'current_sha256': 'd47a7dc865b678a5cd5c4d49c45635886ae0e49da0b90749bc6e7401d9536a27', 'prior_sha256': '70b3abf2899f84f59ae09b2324c7b3581551c426005ecb6d629a859659984dc2', 'operations': [['    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n', '    inputs += h.png_sources(source)\n    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n'], ["        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += h.png_sources(source)\n        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}}
+
+def reverse_png_closure(path, raw):
+    spec=PNG_CLOSURE_INVERSES[path]
+    need(sha(raw)==spec['current_sha256'],'exact current PNG closure source required: '+path)
+    restored=raw
+    for prior,current in reversed(spec['operations']):
+        prior=prior.encode();current=current.encode()
+        need(restored.count(current)==1,'unique exact PNG closure inverse required: '+path)
+        restored=restored.replace(current,prior,1)
+    need(sha(restored)==spec['prior_sha256'],'complete pre-PNG closure bytes must be restored: '+path)
+    return restored,{'current_sha256':sha(raw),'prior_sha256':sha(restored),
+                     'operations':len(spec['operations']),'proof_copy_only':True,
+                     'compilation_uses_actual_current_source':True}
+
 def reverse_calendar_helper(path, raw):
+    raw, png_inverse = reverse_png_closure(path, raw)
     raw, input_history_inverse = reverse_input_history_helper(path, raw)
     spec = CALENDAR_HELPER_INVERSES[path]
     need(len(raw) == spec['current_bytes'] and sha(raw) == spec['current_sha256'],
@@ -85,7 +103,7 @@ def reverse_calendar_helper(path, raw):
         restored = restored[:start] + prior + restored[end:]
     need(len(restored) == spec['prior_bytes'] and sha(restored) == spec['prior_sha256'],
          'whole historical helper bytes must be restored: ' + path)
-    return restored, {'actual_current_sha256': input_history_inverse['actual_current_sha256'],
+    return restored, {'actual_current_sha256': png_inverse['current_sha256'], 'png_closure_inverse': png_inverse,
                       'input_history_inverse': input_history_inverse, 'whole_prior_sha256': sha(restored),
                       'inverse_operation_count': len(spec['operations']),
                       'complete_prior_bytes_restored': True, 'proof_copy_only': True,
@@ -99,8 +117,10 @@ def verify_original_fixtures(source, before):
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
 '''
     raw = (source / template).read_bytes()
+    need(before[template]['sha256']==sha(raw),'actual current template inventory differs')
+    raw, png_inverse = reverse_png_closure(template, raw)
     current_sha = '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2'
-    need(before[template]['sha256'] == sha(raw) == current_sha,
+    need(sha(raw) == current_sha,
          'reviewed fail-only fixture template differs')
     # Proof copy only: the actual generator still reads the current typed-failure port.
     typed_child_port = b'''    // Explicit Android read-failure port. Existing one-argument callers remain untyped.
@@ -218,7 +238,7 @@ def verify_original_fixtures(source, before):
          'saved-seed scheduling inverse must restore the complete original fixture')
     need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner, seed_fixture)),
          'original reviewed fixture bytes differ')
-    return {'template': template, 'current_sha256': current_sha,
+    return {'template': template, 'current_sha256': png_inverse['current_sha256'], 'png_closure_inverse': png_inverse,
             'typed_child_port_inverse': {'prior_complete_sha256': prior_template_sha,
                 'exact_current_block_sha256': sha(typed_child_port), 'proof_copy_only': True,
                 'actual_compilation_uses_current_template': True},
@@ -399,6 +419,7 @@ def main():
         classes.mkdir()
         sources = [source / events.PKG / name for name in events.JAVA if name not in ('HeptaAccessibilityService.java', 'PhoneObservation.java')]
         sources += [source / 'tests/native-observation-events/EventChecks.java', path]
+        sources += helper.png_sources(source)
         row = helper.stage('compile', [str(javac), '--release', '8', '-encoding', 'UTF-8', '-Xlint:all', '-Werror', '-cp', str(jar), '-d', str(classes)] + list(map(str, sources)), output)
         result['stages'].append(row)
         need(row['exit_code'] == 0, 'actual observer compilation failed')

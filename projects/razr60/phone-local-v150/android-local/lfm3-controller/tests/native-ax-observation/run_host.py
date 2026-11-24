@@ -115,7 +115,8 @@ def main():
  snap=load(source/'tests/native-observation-snapshot/run_host.py','ax_snapshot')
  java=a.java_home/'bin/java';javac=a.java_home/'bin/javac';jar=a.json_jar.resolve()
  if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
- deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeXiaomiSearchInputObservation.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
+ deps_png=h.png_sources(source)
+ deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeXiaomiSearchInputObservation.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]+deps_png
  profiles=[source/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  rect=source/'tests/qualification-scope/fixtures/android/graphics/Rect.java'
  fixtures=[source/'tests/native-observation-snapshot'/n for n in ['SnapshotChecks.java','ObservationEvidenceHost.java']]+[HERE/'ActualAxPhoneChecks.java']

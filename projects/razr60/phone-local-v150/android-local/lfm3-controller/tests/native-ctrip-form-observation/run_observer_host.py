@@ -99,8 +99,13 @@ def generate(source,output,h):
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    if h.sha(template.encode())!='1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2':
+    if h.sha(template.encode())!='7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f':
         raise RuntimeError('reviewed current observer fixture changed')
+    # Proof copy only: compile the current metadata ports with all original scheduling cases.
+    png_metadata='        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n'
+    pre_png_template=once(template,png_metadata,'')
+    if h.sha(pre_png_template.encode())!='1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2':
+        raise RuntimeError('PNG metadata ports must reverse to the complete prior observer fixture')
     # Restore only the exact failure-type proof copy; template stays current for compilation.
     typed_child_port = '''    // Explicit Android read-failure port. Existing one-argument callers remain untyped.
     static final class StaleObservation extends IllegalStateException {
@@ -112,7 +117,7 @@ def generate(source,output,h):
     prior_stale_port = '''    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
 '''
     prior_template_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
-    prior_typed_template = once(template,typed_child_port,prior_stale_port)
+    prior_typed_template = once(pre_png_template,typed_child_port,prior_stale_port)
     if h.sha(prior_typed_template.encode())!=prior_template_sha:
         raise RuntimeError('typed child-failure port must reverse to the complete prior observer fixture')
     # Restore only a proof copy; generated code keeps the actual pending method
@@ -346,6 +351,7 @@ def main():
     inputs += [source/TEST/n for n in ('ObserverIntegrationHostTest.java','run_observer_host.py','FormPairHostTest.java')]
     inputs += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
+    inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],
             'source_root':str(source),'source_inputs':before,'tools_before':tools_before,
@@ -358,6 +364,7 @@ def main():
         compiled=[source/PKG/n for n in JAVA]+[source/PROFILE/n for n in PROFILE_NAMES]
         compiled += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                      source/TEST/'FormPairHostTest.java',source/TEST/'ObserverIntegrationHostTest.java',generated/'ObserverPipelineHost.java']
+        compiled += h.png_sources(source)
         report['stages'].append(h.stage('compile',[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+[str(p) for p in compiled],output))
         if report['stages'][-1]['exit_code']!=0:raise RuntimeError('actual observer extraction compilation failed')
         report['stages'].append(h.stage('observer-cases',[str(java),'-cp',str(classes)+os.pathsep+str(jar),

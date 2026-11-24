@@ -2228,7 +2228,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.path=path; // Only a file actually created by this request may be removed.
                     request.phase("png_encode");product.encodeStartedAt=SystemClock.elapsedRealtime();
                     try(FileOutputStream stream=new FileOutputStream(path)){
-                        if(!product.bitmap.compress(Bitmap.CompressFormat.PNG,100,stream))throw new IllegalStateException("截图编码失败");
+                        writeObservationPng(request,product.bitmap,stream);
                         product.encodeCompletedAt=SystemClock.elapsedRealtime();
                         requireObservationWork(request);request.phase("png_fsync");stream.getFD().sync();
                     }
@@ -2512,6 +2512,32 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}
         finally{if(!transferred)product.close();}
     }
+    /** Faster lossless encoding only for an unchanged, opaque sRGB screenshot.
+     * All read identity, event, persistence and publication checks remain at their original sites. */
+    private void writeObservationPng(final ObservationRequest request,Bitmap bitmap,FileOutputStream stream)throws Exception{
+        requireObservationWork(request);
+        byte[] fast=null;
+        android.graphics.ColorSpace color=bitmap.getColorSpace();
+        int width=bitmap.getWidth(),height=bitmap.getHeight();
+        if(bitmap.getConfig()==Bitmap.Config.ARGB_8888&&!bitmap.isMutable()
+                &&android.graphics.ColorSpace.get(android.graphics.ColorSpace.Named.SRGB).equals(color)
+                &&(android.os.Build.VERSION.SDK_INT<34||!bitmap.hasGainmap())
+                &&ObservationPngEncoder.supportedSize(width,height)){
+            int generation=bitmap.getGenerationId();
+            int[] pixels=new int[width*height];
+            bitmap.getPixels(pixels,0,width,0,0,width,height);
+            requireObservationWork(request);
+            if(bitmap.getGenerationId()!=generation)throw new IllegalStateException("截图像素已变化");
+            fast=ObservationPngEncoder.encode(pixels,width,height,new Runnable(){
+                public void run(){requireObservationWork(request);}
+            });
+        }
+        requireObservationWork(request);
+        if(fast!=null)stream.write(fast);
+        else if(!bitmap.compress(Bitmap.CompressFormat.PNG,100,stream))throw new IllegalStateException("截图编码失败");
+        requireObservationWork(request);
+    }
+
     private static Bitmap copyScreenshot(ScreenshotResult result) {
         HardwareBuffer buffer=result.getHardwareBuffer();Bitmap wrapped=null;
         try{

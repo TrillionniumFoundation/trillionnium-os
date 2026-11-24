@@ -90,6 +90,7 @@ def main():
    '    private void captureObservation(final ObservationRequest request){',
    '    private void processScreenshot(final ObservationRequest request,final CaptureIdentity identity,final ScreenshotResult result){',
    '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){',
+   '    private void writeObservationPng(final ObservationRequest request,Bitmap bitmap,FileOutputStream stream)throws Exception{',
    '    private static Bitmap copyScreenshot(ScreenshotResult result) {',
    '    private void clearSnapshot(){',
    '    private synchronized boolean owns(String taskId) {',
@@ -171,6 +172,12 @@ def main():
   bp=selected['android.graphics.Bitmap'];bt=bp.read_text()
   bt=bt[:bt.rfind('}')]+"""
  public byte[] encoded;
+ // Unknown color metadata retains the pre-existing encoded-byte IO endpoint.
+ public android.graphics.ColorSpace getColorSpace(){return null;}
+ public Config getConfig(){return Config.ARGB_8888;}
+ public boolean isMutable(){return false;}
+ public boolean hasGainmap(){return false;}
+ public int getGenerationId(){return 1;}
  public boolean isRecycled(){return recycled;}
  public enum CompressFormat {PNG}
  public static Bitmap wrapHardwareBuffer(android.hardware.HardwareBuffer b,Object color){return b.bitmap;}
@@ -180,10 +187,14 @@ def main():
 }
 """
   generated('android/graphics/Bitmap.java',bt)
+  for name in ['android.graphics.ColorSpace','android.os.Build']:
+   if name not in selected:
+    p=S/'tests/observation-png/stubs'/Path(name.replace('.','/')+'.java')
+    selected[name]=p;originals.append(p)
   generated('android/hardware/HardwareBuffer.java','package android.hardware;public final class HardwareBuffer {public final android.graphics.Bitmap bitmap;public boolean closed;public static int closes;public HardwareBuffer(android.graphics.Bitmap b){bitmap=b;}public void close(){if(closed)throw new IllegalStateException("hardware buffer double close");closed=true;closes++;}}')
   cp=selected['android.os.SystemClock'];generated('android/os/SystemClock.java',cp.read_text().replace('public static long now=','public static volatile long now=').replace('public static long elapsedRealtime()', 'public static long uptimeMillis(){return now-17;}public static long elapsedRealtime()'))
   generated('android/view/accessibility/AccessibilityWindowInfo.java','package android.view.accessibility;public final class AccessibilityWindowInfo {public static final int TYPE_APPLICATION=1;}')
-  for n in ['ObservationDiagnostics','ObservationStabilityGate']:
+  for n in ['ObservationDiagnostics','ObservationStabilityGate','ObservationPngEncoder']:
    p=S/PKG/(n+'.java');selected['org.trillionnium.hepta.local.'+n]=p;originals.append(p)
   test=here/'NativeCalendarDateActionHostTest.java';selected[base.classname(test)]=test;originals.append(test)
   originals=list(dict.fromkeys(originals+[S/PKG/'HeptaAccessibilityService.java',S/PKG/'LocalTaskController.java',S/PKG/'QualificationScopeConfig.java']))

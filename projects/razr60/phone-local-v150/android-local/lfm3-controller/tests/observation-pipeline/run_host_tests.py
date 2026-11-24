@@ -72,10 +72,14 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
         'extracted':{key:hashlib.sha256(value.encode()).hexdigest() for key,value in parts.items()},'phone_operations':False,'android_runtime':False,'native_inference':False,'production_methods_executed':['acquireTask','recoveryControllerIdle','observe','sampleObservation','acceptSample','watchObservation','captureObservation','watchCapture','processScreenshot','acceptScreenshot','failObservation','retryObservation','copyScreenshot'],'boundary':'Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.'}
 record['calendar_legacy_boundary']=calendar_boundary
+png_sources=[root/'src/org/trillionnium/hepta/local/ObservationPngEncoder.java',
+             root/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
+             root/'tests/observation-png/stubs/android/os/Build.java']
+record['png_closure_sources']={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in png_sources}
 compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
 flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
 classes=out/'classes';classes.mkdir()
-commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java'),str(root/'src/org/trillionnium/hepta/local/ObservedWindowMetadata.java')]+[str(p) for p in sorted((root/'tests/qualification-scope/fixtures/org/json').glob('*.java'))]+[str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
+commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java'),str(root/'src/org/trillionnium/hepta/local/ObservedWindowMetadata.java')]+[str(p) for p in sorted((root/'tests/qualification-scope/fixtures/org/json').glob('*.java'))]+[str(p) for p in png_sources]+[str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
 record['stages']=[]
 for name,command in commands:
     begin=time.monotonic();result=subprocess.run(command,text=True,capture_output=True,timeout=60)

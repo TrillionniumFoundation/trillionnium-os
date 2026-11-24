@@ -24,6 +24,12 @@ JAVA = ['ObservationCaptureEvidence.java', 'HeptaAccessibilityService.java','Loc
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
        'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template','AxPublicationDiagnosticsHostTest.java']
 
+def png_sources(source):
+    # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.
+    return [source/PKG/'ObservationPngEncoder.java',
+            source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
+            source/'tests/observation-png/stubs/android/os/Build.java']
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def meta(path):
     path=Path(path).absolute();raw=path.read_bytes()
@@ -307,6 +313,7 @@ def main():
     if not all(p.is_file() for p in tools):raise RuntimeError('complete strict JDK and JSON tool closure required')
     if jar.stat().st_size!=78332 or sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('pinned JSON jar required')
     paths=[source/PKG/x for x in JAVA]+[source/TEST/x for x in OWN]+[source/'tests/observation-pipeline/ObserverPipelineHost.template']+tools
+    paths += png_sources(source)
     before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]
     report={'schema':'hepta.observation-diagnostics-host-gate.v1','all_pass':False,'stages':[],
         'input_before':before,'tools_before':tools_before,'android_execution':False,'phone_execution':False,'phone_operations':0,
@@ -319,6 +326,7 @@ def main():
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/x for x in JAVA if x not in ('HeptaAccessibilityService.java','LocalTaskController.java')]
         sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java',source/TEST/'PrivateCensusDiagnosticsHostTest.java',source/TEST/'AxPublicationDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))
+        sources += png_sources(source)
         command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))
         compiled=stage('compile',command,output);report['stages'].append(compiled)
         if compiled['exit_code']!=0:raise RuntimeError('actual diagnostic wiring compilation failed')

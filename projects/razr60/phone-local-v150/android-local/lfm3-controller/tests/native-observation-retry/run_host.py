@@ -59,7 +59,7 @@ def main():
         raise RuntimeError('complete strict JDK17 and JSON closure required')
     if jar.stat().st_size != 78332 or h.sha(jar.read_bytes()) != '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':
         raise RuntimeError('pinned JSON jar required')
-    sources = [source/PKG/n for n in events.JAVA]
+    sources = [source/PKG/n for n in events.JAVA] + h.png_sources(source)
     inputs = sources + [source/PKG/'LocalTaskController.java', source/PKG/'NativeAppSession.java', source/PKG/'ObservationCaptureEvidence.java']
     inputs += [source/'tests/native-observation-events'/n for n in events.OWN]
     inputs += [source/'tests/observation-pipeline/ObserverPipelineHost.template', source/'tests/observation-diagnostics/run_host.py']

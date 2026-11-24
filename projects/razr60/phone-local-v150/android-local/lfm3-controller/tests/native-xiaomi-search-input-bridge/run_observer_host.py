@@ -26,7 +26,8 @@ def main():
  if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
  raw=a.census_input.resolve()
  if raw.stat().st_size!=703748 or h.sha(raw.read_bytes())!='a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644':raise RuntimeError('complete d7 original receipt fixture pin')
- deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeXiaomiSearchInputObservation.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
+ deps_png=h.png_sources(source)
+ deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeXiaomiSearchInputObservation.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]+deps_png
  profiles=[source/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  rect=source/'tests/qualification-scope/fixtures/android/graphics/Rect.java'
  fixtures=[source/'tests/native-observation-snapshot'/n for n in ['SnapshotChecks.java','ObservationEvidenceHost.java']]+[source/'tests/native-ax-observation/ActualAxPhoneChecks.java']

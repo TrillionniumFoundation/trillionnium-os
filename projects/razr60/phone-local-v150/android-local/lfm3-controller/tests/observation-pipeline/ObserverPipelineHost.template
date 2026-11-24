@@ -135,6 +135,15 @@ public final class ObserverPipelineHost {
         static final class CompressFormat {static final CompressFormat PNG=new CompressFormat();}
         static Bitmap wrapHardwareBuffer(HardwareBuffer ignored,Object color){expect(!isMain(),"hardware copy on main");return new Bitmap(true);}
         Bitmap copy(Config config,boolean mutable){if(copyHook!=null)copyHook.run();return new Bitmap(false);}
+        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.
+        android.graphics.ColorSpace getColorSpace(){return null;}
+        Config getConfig(){return Config.ARGB_8888;}
+        boolean isMutable(){return false;}
+        boolean hasGainmap(){return false;}
+        int getGenerationId(){return 1;}
+        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){
+            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");
+        }
         int getWidth(){return 1080;}int getHeight(){return 2400;}
         boolean compress(CompressFormat format,int quality,OutputStream out){
             expect(!isMain(),"PNG encoding on main");if(encodeHook!=null)encodeHook.run();
