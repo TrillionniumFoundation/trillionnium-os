@@ -3,19 +3,16 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_personal_notes_token_retirement_successor",
-  "complete_source_files": 2550,
+  "candidate_status": "reviewed_personal_notes_recovery_routing_successor",
+  "complete_source_files": 2552,
   "current_successor_delta": {
-    "baseline": "c4274d3041c1574b1ccab360406c3b4adfc29b18",
+    "baseline": "e81828664a043caefb40eb2c551119c04d077c78",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
-      "tests/notes-token-retirement/run_host.py"
+      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
+      "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
+      "tests/notes-recovery-routing/run_host.py"
     ],
-    "scope": "Retire personal Notes attached owned root-as-leaf tasks once through their original Binder tokens before releasing the virtual display. Require complete fresh task, ancestor, owner, physical-screen and foreign-history checks; retain unknown on detached, ambiguous, changed, late or failed outcomes. Preserve historical cancelled task/model facts and all original authority and deadline limits. No numeric task-ID effect fallback, force-stop or model/runtime changes.",
+    "scope": "Discriminate a genuine supported public work-profile business origin before choosing that recovery branch. Route the actual cancelled personal Notes task through the existing strict personal current-absence verifier and ordinary ACK path. Preserve the original task, cancellation, failed cleanup, profile/owner/boot/expiry/queue checks, all authority and deadline limits, and the installed native/model configuration.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6939,8 +6936,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-      "bytes": 40989,
-      "sha256": "507c13c7e994d20acd04e3b21822e842b97d4fc2a3d790669a251fd74107ccc6"
+      "bytes": 41288,
+      "sha256": "ca23463b793ebbb4d6f261053bff631ecbbb0e32e145c19672994afc048468e0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicProfileRecoveryClient.java",
@@ -9933,6 +9930,16 @@
       "sha256": "e24824e723ef6a9c15cf95287beec289a3a4707a6eef728658ed71922663873f"
     },
     {
+      "path": "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
+      "bytes": 14835,
+      "sha256": "2c4fafb6f6a1275a63fd94b6e0bcf0689e3c2957f2efe8091f397f71f64e71c5"
+    },
+    {
+      "path": "tests/notes-recovery-routing/run_host.py",
+      "bytes": 15249,
+      "sha256": "6bf0b10ade0e01ef9e133a2b229c0e62d3542b457a431755b63d5f1511b80dbf"
+    },
+    {
       "path": "tests/notes-reopen-readiness/NotesReopenReadinessHostTest.java",
       "bytes": 23802,
       "sha256": "3f5bd2d37b25a17a3f98195ecead147453c5d6d1f036fec9c3add273db172f4a"
@@ -12769,17 +12776,17 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "370327690686b9d80c295cba0634d4deb85c2327",
-    "previous_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
+    "previous_component_git_tree_sha1": "c3bcdaffd9098993cb88db35af0c1e1c6cf3674d",
+    "previous_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "/home/alex/hepta-razr-notes-token-cleanup-followup-20261124-r1/validation/focused-r3/RESULT.json",
-        "bytes": 51318,
-        "sha256": "7c880f7c15d67131f4bd9f2faec4f9b9e3e714957eeab91d40b581e6781037e9"
+        "path": "/home/alex/hepta-razr-notes-recovery-routing-followup-20261124-r1/validation/routing-focused-r1/RESULT.json",
+        "bytes": 156893,
+        "sha256": "a6841db28e7ad8dbcb5737172f3ba01a8321b4b7b90be7d17b527ca8a58cefc6"
       }
     ],
     "full_current_host_suite_completed_at_preparation": false,
@@ -12789,12 +12796,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "e2927e21c44307880c0fcf8499c610b583f053c5707958e14538d241fbdcbfcd",
+  "production_input_map_sha256": "5eec5c12cfff8800ddad194278b02977bf85b9ef822cc60b8ebe7de91006a38a",
   "schema": "hepta.local-source.v3",
-  "scope": "Retire personal Notes attached owned root-as-leaf tasks once through their original Binder tokens before releasing the virtual display. Require complete fresh task, ancestor, owner, physical-screen and foreign-history checks; retain unknown on detached, ambiguous, changed, late or failed outcomes. Preserve historical cancelled task/model facts and all original authority and deadline limits. No numeric task-ID effect fallback, force-stop or model/runtime changes.",
-  "source_parent_head": "c4274d3041c1574b1ccab360406c3b4adfc29b18",
-  "source_parent_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
-  "source_snapshot_predecessor_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
+  "scope": "Discriminate a genuine supported public work-profile business origin before choosing that recovery branch. Route the actual cancelled personal Notes task through the existing strict personal current-absence verifier and ordinary ACK path. Preserve the original task, cancellation, failed cleanup, profile/owner/boot/expiry/queue checks, all authority and deadline limits, and the installed native/model configuration.",
+  "source_parent_head": "e81828664a043caefb40eb2c551119c04d077c78",
+  "source_parent_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
+  "source_snapshot_predecessor_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12838,5 +12845,18 @@
     "historical_cancelled_and_unknown_results_preserved": true,
     "deadline_and_authority_limits_unchanged": true,
     "framework_process_impact_not_claimed_absent": true
+  },
+  "current_personal_notes_recovery_routing": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
+      "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
+      "tests/notes-recovery-routing/run_host.py"
+    ],
+    "previous_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4",
+    "genuine_profile_business_origin_required": true,
+    "personal_notes_existing_strict_recovery_path": true,
+    "actual_cancelled_startup_origin_regression_required": true,
+    "historical_cancelled_and_unknown_results_preserved": true,
+    "deadline_and_authority_limits_unchanged": true
   }
 }

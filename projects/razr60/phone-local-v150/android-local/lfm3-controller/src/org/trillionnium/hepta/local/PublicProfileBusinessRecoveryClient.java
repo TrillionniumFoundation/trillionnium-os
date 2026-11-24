@@ -50,6 +50,10 @@ final class PublicProfileBusinessRecoveryClient {
         JSONObject journal=object(MobiMindPrivateFiles.read(lease,16384,true).bytes);
         if(!Boolean.TRUE.equals(journal.opt("public_own_group_experimental"))||!(journal.opt("display_id") instanceof Number)
                 ||number(journal,"display_id")<=1)return false;
+        // A public display group may belong to user-0 personal Notes. Only a
+        // profile-target lease enters this client; the ordinary recovery path
+        // still validates the entire personal journal, scope and original task.
+        if(!journal.has("profile_target_wire"))return false;
         JSONObject current=object(MobiMindPrivateFiles.read(new File(root.path,PublicProfileBusinessAbsenceRecovery.CONTROL),SUMMARY_LIMIT,true).bytes);
         String origin=originPath(current);JSONObject summary=PublicProfileBusinessAbsenceRecovery.CONTROL.equals(origin)?current:
                 object(MobiMindPrivateFiles.read(new File(root.path,origin),SUMMARY_LIMIT,true).bytes);
