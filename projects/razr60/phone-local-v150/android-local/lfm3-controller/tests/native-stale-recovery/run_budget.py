@@ -30,7 +30,25 @@ assert sha(a.json_jar.read_bytes()) == '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b376
 assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0'
 # Preserve the audited legacy file and admit only this reviewed successor. The
 # 21 terminal method bodies below remain byte-identical to the legacy contract.
-assert sha((src/'LocalTaskSession.java').read_bytes()) in {
+local_session_raw=(src/'LocalTaskSession.java').read_bytes()
+local_session_proof=local_session_raw
+# The UI-only explanation getter is not part of the terminal/budget contract.
+# Reverse its exact bytes on a proof copy; the full current source is retained.
+if sha(local_session_raw)=='8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b':
+    ui_recovery_getter=(
+        '    /** Presentation only. The existing recovery admission above remains authoritative. */\n'
+        '    public String interruptionRecoveryUnavailableReason(){\n'
+        '        if(recovering)return "正在核验上次会话，请等待本次核验完成。";\n'
+        '        if(isRunning())return "当前任务仍在运行，请先停止任务并等待退出。";\n'
+        '        if(journalQueue.pending())return "会话记录正在保存，完成后才能确认中断。";\n'
+        '        if(hasBackgroundLease())return "上次后台空间尚未确认释放，请先清理后台空间。";\n'
+        '        return ((LocalProbeApplication)context).controlRecoveryUnavailableReason();\n'
+        '    }\n'
+    ).encode('utf-8')
+    assert local_session_proof.count(ui_recovery_getter)==1, 'unique reviewed UI recovery getter'
+    local_session_proof=local_session_proof.replace(ui_recovery_getter,b'',1)
+    assert sha(local_session_proof)=='091e0a17fd8f9399bbe50743d74a7755ac227138a2f5d817b95ed98bc1dae057', 'complete pre-UI Session required'
+assert sha(local_session_proof) in {
     '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6',
     '62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc',
     # Reviewed separate positive-step recovery; the original 21 method digest below remains mandatory.
@@ -40,7 +58,8 @@ assert sha((src/'LocalTaskSession.java').read_bytes()) in {
 # terminal method digests and all maximum-census/projection/IO checks remain.
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
-if sha(native_snapshot_raw)=='dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05':
+if sha(native_snapshot_raw) in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
+        'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac'):
     native_snapshot_proof=runpy.run_path(str(root/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](native_snapshot_raw)
 if sha(native_snapshot_proof)=='4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b':
     # The two approved complete-census Xiaomi banner checks are additive.
@@ -160,6 +179,7 @@ record = {'schema':'hepta.native-census-boundary-audit.v1','all_pass':False,
           'synthetic_fixture':True,'phone_operations':0,'production_source_mutations':0,
           'scope':'diagnostic contribution through actual projection methods and actual terminal IO; not a global maximum of unrelated app text or a phone task',
           'source_inputs':before,'native_snapshot_actual_sha256':sha(native_snapshot_raw),'native_snapshot_legacy_proof_sha256':sha(native_snapshot_proof),
+          'local_task_session_actual_sha256':sha(local_session_raw),'local_task_session_legacy_proof_sha256':sha(local_session_proof),
           'terminal_extracted_methods':ns['record']['extracted_methods'],
           'projection_extracted_methods':[{'path':name,'signature':signature,'sha256':sha(code.encode())} for (name,_,signature),code in zip(methods,extracted)],
           'stale_history_block_sha256':sha(stale.encode()),'fixture_producer_prefix_sha256':sha(prefix.encode()),

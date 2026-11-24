@@ -6,18 +6,11 @@
   "candidate_status": "xiaomi_fixture_dependency_successor",
   "complete_source_files": 2521,
   "current_successor_delta": {
-    "baseline": "a8d491cbd45641fdddf05729386c225b31cce462",
+    "baseline": "83f5125b4da9c129ca3a36dafe7c7f00ed9ad4b6",
     "reviewed_paths": [
-      "tests/native-action-integration/run_host.py",
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-search-producer/protected_snapshot.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/qualification-scope/prepare_fixture.py"
+      "tests/native-stale-recovery/run_budget.py"
     ],
-    "scope": "Repair exact host extraction and refusing legacy fixture ABI closures; bind reviewed SnapshotCheck banner increment while preserving business expectations and all production bytes.",
+    "scope": "Recognize the already reviewed recovery explanation and banner comparator increments by exact inverse proof; compile actual current sources while preserving the 21 terminal-method digests, census budgets and business expectations.",
     "native_runtime_changed": false,
     "business_backend_changed": false,
     "xiaomi_feature_production_preserved": true,
@@ -25,16 +18,9 @@
   },
   "current_test_dependency_repairs": {
     "changed_paths": [
-      "tests/native-action-integration/run_host.py",
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-search-producer/protected_snapshot.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/qualification-scope/prepare_fixture.py"
+      "tests/native-stale-recovery/run_budget.py"
     ],
-    "previous_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec"
+    "previous_manifest_sha256": "33caadca54d8155cc0b571ad79e5b8788729927f3cafaaad90c19f35dedaf075"
   },
   "files": [
     {
@@ -9454,8 +9440,8 @@
     },
     {
       "path": "tests/native-stale-recovery/run_budget.py",
-      "bytes": 13865,
-      "sha256": "8cbfbea415f83a1af1811c9b1ae26d8b99f37e791d1d0b0d3c85216c27536c47"
+      "bytes": 15506,
+      "sha256": "0c00af4745adfbbac5dbc1528b32fd3f3eed8444b03911beae80db53b3415bd4"
     },
     {
       "path": "tests/native-stale-recovery/run_host.py",
@@ -12639,31 +12625,26 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "f855f4634ea5a7ed1d2e69635b5c4d99ca1dc6b0",
-    "previous_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
+    "previous_component_git_tree_sha1": "011ba04f02e8d8b68137cf24169674f3fd4a04e3",
+    "previous_manifest_sha256": "33caadca54d8155cc0b571ad79e5b8788729927f3cafaaad90c19f35dedaf075",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": {
-      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/action-integration-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/action-integration-r1/RESULT.json",
-        "bytes": 1098201,
-        "sha256": "9581c65d81daee561ce6db70947dc7bef547b6ffd0e265c9d3007932fb4d0889"
+      "/home/alex/hepta-razr-final-host-closure-20261124-r1/validation/native-stale-recovery-r1/RESULT.json": {
+        "path": "/home/alex/hepta-razr-final-host-closure-20261124-r1/validation/native-stale-recovery-r1/RESULT.json",
+        "bytes": 1482767,
+        "sha256": "743eb1ea8ab45239b4882169284e0f31e7f342dc0e66e4a9211f5e1faa4986b2"
       },
-      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/ctrip-form-observation-r1/RESULT.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/ctrip-form-observation-r1/RESULT.json",
-        "bytes": 5288,
-        "sha256": "48297192a80f7d1f7bfd100ee6113b3418323299ec19455622478cd6730d843a"
-      },
-      "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/mobile-fixture-focused-r1.json": {
-        "path": "/home/alex/hepta-razr-xiaomi-fixture-followup-20261124-r1/validation/mobile-fixture-focused-r1.json",
-        "bytes": 5128,
-        "sha256": "d276a3e36f837243706f21e5711a134d4ef8571ae9828b8a74eefd765217156d"
+      "/home/alex/hepta-razr-final-host-closure-20261124-r1/validation/native-stale-recovery-r1/budget/RESULT.json": {
+        "path": "/home/alex/hepta-razr-final-host-closure-20261124-r1/validation/native-stale-recovery-r1/budget/RESULT.json",
+        "bytes": 31112,
+        "sha256": "6209199596fdd21b26930404dac226d284b60234748ba7dbb5caeb0603d78ec0"
       }
     },
     "full_current_host_suite_completed_at_preparation": false,
-    "android_sdk_compile_passed_for_identical_production_inputs": false,
+    "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false
   },
   "main_java_sources": 214,
@@ -12672,9 +12653,9 @@
   "production_input_map_sha256": "08d4dd82715cd6d61afdff260fa4a610c33231bbb829850a0c6c2592cebc5c43",
   "schema": "hepta.local-source.v3",
   "scope": "Run the Xiaomi work-profile search entry on the verified virtual display and recover a formerly retained, empty managed-profile display through its original owner after sealing the initial uncertainty. Recover and preserve the genuine failed model outcome after an observed released broker loses its normal close reply. Allow the original verified close response to flush after a completed cleanup and reject stale screen-monitor shutdowns.",
-  "source_parent_head": "a8d491cbd45641fdddf05729386c225b31cce462",
-  "source_parent_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
-  "source_snapshot_predecessor_manifest_sha256": "0942c5a2cc2479f7c8e83ef6e784ebf1e1bf46d17091f9839a7e3a68ed646dec",
+  "source_parent_head": "83f5125b4da9c129ca3a36dafe7c7f00ed9ad4b6",
+  "source_parent_manifest_sha256": "33caadca54d8155cc0b571ad79e5b8788729927f3cafaaad90c19f35dedaf075",
+  "source_snapshot_predecessor_manifest_sha256": "33caadca54d8155cc0b571ad79e5b8788729927f3cafaaad90c19f35dedaf075",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
