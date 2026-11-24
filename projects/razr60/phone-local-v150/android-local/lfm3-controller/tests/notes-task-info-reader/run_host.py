@@ -58,7 +58,7 @@ def main():
         tracked.append(terminal)
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4','approved reader differs')
+    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)

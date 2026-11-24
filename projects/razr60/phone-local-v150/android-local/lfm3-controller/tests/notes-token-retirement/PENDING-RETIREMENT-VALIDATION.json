@@ -116,5 +116,27 @@
   "phone_qualified": false,
   "app_recovery_completed": false,
   "phone_operations": 0,
-  "old_phone_results_not_current_qualification": true
+  "old_phone_results_not_current_qualification": true,
+  "legacy_reader_runner_binding": {
+    "source_successor_parent_head": "9d1547ea4ac05000cfba13c05c10b054a5739533",
+    "exact_reader_sha256": "f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f",
+    "previous_pin_sha256": "d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4",
+    "runner_sha256": "30e0447f03bd367c2743586eb23784048414cbbf830f03a7e5d552f37655bce1",
+    "one_literal_pin_updated": true,
+    "assertion_and_test_expectations_unchanged": true,
+    "production_map_unchanged": true,
+    "previous_full_host_attempt": {
+      "source_head": "9d1547ea4ac05000cfba13c05c10b054a5739533",
+      "report_sha256": "ac0f3f61004d160040460b0c276f75fdceac4e47e9b7eed80fdcd2c2cc0b4806",
+      "all_pass": false,
+      "failed_stages": [
+        "canonical",
+        "recorded-first-notes-root"
+      ],
+      "reason": "exact approved Reader pin still referred to the predecessor source",
+      "source_inputs_unchanged": true,
+      "phone_operations": 0
+    },
+    "current_full_host_suite_completed_at_preparation": false
+  }
 }
