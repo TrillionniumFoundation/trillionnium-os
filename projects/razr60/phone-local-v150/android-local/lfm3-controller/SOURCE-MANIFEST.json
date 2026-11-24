@@ -1,9 +1,9 @@
 {
   "android_qualified": false,
-  "base_head": "f2dbf2906e01baeb1753c70678005dc0c41e4af1",
-  "base_manifest_sha256": "5c0cfcb7cda35057bb23208643bfcda0d659d7afe5971d3f8820a3e359626026",
+  "base_head": "f7a7ce7edff2b8c7db65571a0527bd04c4b5c17e",
+  "base_manifest_sha256": "95caa8ddd88f7b4d85d7f5a55b2ebeea4b92af220877686ecfeedb89ce801442",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_xiaomi_filled_toolbar_and_ctrip_postcapture_settle_successor",
+  "candidate_status": "reviewed_exact_seed_runner_closure_successor",
   "complete_source_files": 2583,
   "current_native_xiaomi_modal_handoff_order": {
     "actual_old_failure_preserved": true,
@@ -154,28 +154,15 @@
     "same_identity_required": true
   },
   "current_successor_delta": {
-    "baseline": "f2dbf2906e01baeb1753c70678005dc0c41e4af1",
-    "production_changed": true,
+    "baseline": "f7a7ce7edff2b8c7db65571a0527bd04c4b5c17e",
+    "production_changed": false,
     "model_weights_changed": false,
     "native_runtime_changed": false,
     "automatic_default_model_unchanged": true,
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "tests/native-app-provider/NativeXiaomiFilledToolbarHostTest.java",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/PROVENANCE.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/b15f855f68674e8db86c77cf02d04785-native-ax.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/fa594195d78840f69f4f620eea47fb32-native-ax.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/native-app-binding.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/step-03-action.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/step-04-after.json",
-      "tests/native-app-provider/fixtures/xiaomi-filled-toolbar-42fb/step-04-before.json",
-      "tests/native-app-provider/run_host.py",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-observation-events/PostCaptureSettleCases.fragment",
-      "tests/native-observation-events/run_host.py"
+      "tests/native-observation-screenshot-seed/run_host.py"
     ],
-    "scope": "Recognize only the exact-owner filled Xiaomi normal-search toolbar variant; stop impossible Ctrip postcapture resampling after the original settle deadline. No new retry proof, deadline extension, action replay, model/runtime change, or device business qualification."
+    "scope": "Close the screenshot seed host runner over the ten frozen postcapture cases with an exact historical inverse and separate legacy/new case accounting. Production bytes are unchanged from f7a7ce."
   },
   "files": [
     {
@@ -9370,8 +9357,8 @@
     },
     {
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "bytes": 55866,
-      "sha256": "e2f6c626f25bd8a3dd4b6f85296be0e9025f6dccec143f64bc4f827852b05365"
+      "bytes": 61014,
+      "sha256": "90509aeed77e3f9c87c3f3ae6fb7b5165c94a372b792a6bbe78e0c96421f2968"
     },
     {
       "path": "tests/native-observation-snapshot/ObservationEvidenceHost.java",
@@ -13090,10 +13077,12 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "5fdbf943fc09d2e543c2c91117b723aae13b80c1",
-    "previous_manifest_sha256": "5c0cfcb7cda35057bb23208643bfcda0d659d7afe5971d3f8820a3e359626026",
+    "previous_component_git_tree_sha1": "33334414991644eb372cb76db08a8e0f73b6eb52",
+    "previous_manifest_sha256": "95caa8ddd88f7b4d85d7f5a55b2ebeea4b92af220877686ecfeedb89ce801442",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_full_host_passed": true
+    "previous_full_host_passed": false,
+    "previous_full_host_failure": "Exact current PNG closure source required: tests/native-observation-events/run_host.py",
+    "previous_failed_report_sha256": "63c852ce814c809566775b7a57262a66a91ae96540ff6df4156ccff8e546ca1e"
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
@@ -13101,17 +13090,22 @@
     "hardware_operations": 0,
     "phone_qualified": false,
     "retained_host_checks_and_provenance_are_historical": true,
-    "combined_original_source_tests_pending": true
+    "original_cases": 238,
+    "original_assertions": 3671,
+    "postcapture_cases": 10,
+    "postcapture_assertions": 170,
+    "screenshot_seed_cases": 35,
+    "screenshot_seed_assertions": 420
   },
   "main_java_sources": 220,
   "phone_qualified": false,
   "production_build_inputs_count": 397,
   "production_input_map_sha256": "baa9a907d32083efa10c5bc4da7d9286c8c22c423cafe7e11f562c5b40578a94",
   "schema": "hepta.local-source.v3",
-  "scope": "Recognize only the exact-owner filled Xiaomi normal-search toolbar variant; stop impossible Ctrip postcapture resampling after the original settle deadline. No new retry proof, deadline extension, action replay, model/runtime change, or device business qualification.",
-  "source_parent_head": "f2dbf2906e01baeb1753c70678005dc0c41e4af1",
-  "source_parent_manifest_sha256": "5c0cfcb7cda35057bb23208643bfcda0d659d7afe5971d3f8820a3e359626026",
-  "source_snapshot_predecessor_manifest_sha256": "5c0cfcb7cda35057bb23208643bfcda0d659d7afe5971d3f8820a3e359626026",
+  "scope": "Close the screenshot seed host runner over the ten frozen postcapture cases with an exact historical inverse and separate legacy/new case accounting. Production bytes are unchanged from f7a7ce.",
+  "source_parent_head": "f7a7ce7edff2b8c7db65571a0527bd04c4b5c17e",
+  "source_parent_manifest_sha256": "95caa8ddd88f7b4d85d7f5a55b2ebeea4b92af220877686ecfeedb89ce801442",
+  "source_snapshot_predecessor_manifest_sha256": "95caa8ddd88f7b4d85d7f5a55b2ebeea4b92af220877686ecfeedb89ce801442",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_lossless_png_observation": {
@@ -13162,5 +13156,17 @@
     "input_replay": false,
     "complete_graph_window_identity_unchanged": true,
     "actual_cleanup_success_claimed": false
+  },
+  "current_seed_runner_closure": {
+    "changed_path": "tests/native-observation-screenshot-seed/run_host.py",
+    "original_238_cases_and_3671_assertions_preserved": true,
+    "new_postcapture_10_cases_and_170_assertions_separately_required": true,
+    "unknown_runner_rejected": true,
+    "production_changes": 0,
+    "prior_failed_combined_candidate_preserved": true,
+    "legacy_original_case_names_sha256": "92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5",
+    "authoring_freeze_sha256": "05542a97b0f7b41b4afba0a2a48337523920bad6a2f88d6c8ed3c5ee546cf6cb",
+    "targeted_review_sha256": "16f91df72b7fb6c04c2aaa075ce5cff10ab4b4a400938f1efd2a8c52a4f6a277",
+    "root_independent_review_completed": true
   }
 }

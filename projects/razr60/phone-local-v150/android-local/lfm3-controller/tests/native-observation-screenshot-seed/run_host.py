@@ -86,6 +86,26 @@ def reverse_png_closure(path, raw):
                      'operations':len(spec['operations']),'proof_copy_only':True,
                      'compilation_uses_actual_current_source':True}
 
+# These exact additions are reversed only in the historical proof copy.
+# Compilation and execution keep the current runner and all ten additional cases.
+POSTCAPTURE_EVENT_INVERSE = {'current_sha256': 'ae53f1a9506ba7ff1c04d03a46f45edc64a59813a1647af93c79e1fbbdf24c83', 'prior_sha256': 'd47a7dc865b678a5cd5c4d49c45635886ae0e49da0b90749bc6e7401d9536a27', 'operations': [("OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment','PublicationRecheckCases.fragment']\n", "OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment','PublicationRecheckCases.fragment','PostCaptureSettleCases.fragment']\n"), ("    case_source=(source/TEST/'SavedGraphSeedCases.fragment').read_text()+'\\n'+(source/TEST/'PublicationRecheckCases.fragment').read_text()\n", "    case_source=(source/TEST/'SavedGraphSeedCases.fragment').read_text()+'\\n'+(source/TEST/'PublicationRecheckCases.fragment').read_text()+'\\n'+(source/TEST/'PostCaptureSettleCases.fragment').read_text()\n"), ("        '        savedGraphSeedCases();\\n        savedGraphSeedAdditionalCases();\\n        savedGraphSeedProfileCases();\\n        publicationRecheckCases();\\n        observationIo.executor.shutdown();EventChecks.finish(args[0]);')\n", "        '        savedGraphSeedCases();\\n        savedGraphSeedAdditionalCases();\\n        savedGraphSeedProfileCases();\\n        publicationRecheckCases();\\n        postCaptureSettleCases();\\n        observationIo.executor.shutdown();EventChecks.finish(args[0]);')\n"), ('', "        'post_capture_settle_cases':h.meta(source/TEST/'PostCaptureSettleCases.fragment'),\n")]}
+POSTCAPTURE_CASE_NAMES = ['post_capture_settle_no_new_read_at_11277', 'post_capture_settle_no_new_read_at_10000', 'post_capture_settle_no_new_read_at_10001', 'post_capture_settle_no_new_read_at_11800', 'post_capture_settle_no_new_read_at_11999', 'post_capture_settle_does_not_grant_new_authority_before_expiry', 'post_capture_settle_preserves_unknown_event_refusal', 'post_capture_settle_preserves_cancel_refusal', 'post_capture_settle_preserves_owner_refusal', 'post_capture_settle_preserves_window_refusal']
+LEGACY_EVENT_CASE_NAMES_SHA256 = '92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5'
+
+def reverse_postcapture_event_helper(raw):
+    spec = POSTCAPTURE_EVENT_INVERSE
+    need(sha(raw) == spec['current_sha256'], 'exact current postcapture event runner required')
+    restored = raw
+    for prior, current in reversed(spec['operations']):
+        prior, current = prior.encode(), current.encode()
+        need(restored.count(current) == 1, 'unique exact postcapture test addition required')
+        restored = restored.replace(current, prior, 1)
+    need(sha(restored) == spec['prior_sha256'], 'complete pre-postcapture event runner must be restored')
+    return restored, {'actual_current_sha256': sha(raw), 'whole_prior_sha256': sha(restored),
+                      'inverse_operation_count': len(spec['operations']), 'proof_copy_only': True,
+                      'actual_compilation_uses_unmodified_current_helper': True}
+
+
 def reverse_calendar_helper(path, raw):
     raw, png_inverse = reverse_png_closure(path, raw)
     raw, input_history_inverse = reverse_input_history_helper(path, raw)
@@ -194,7 +214,12 @@ def verify_original_fixtures(source, before):
     event_runner = 'tests/native-observation-events/run_host.py'
     event_current = (source / event_runner).read_bytes()
     need(before[event_runner]['sha256'] == sha(event_current), 'actual current event inventory differs')
-    event_raw, event_calendar_inverse = reverse_calendar_helper(event_runner, event_current)
+    postcapture = 'tests/native-observation-events/PostCaptureSettleCases.fragment'
+    need(before[postcapture]['sha256'] == sha((source / postcapture).read_bytes()) ==
+         '681aad0b44a8dc2460d947efe3ab6ccc9cb8f533614cf96938f5af5ad95e5b7d',
+         'exact current postcapture cases required')
+    event_prior, event_postcapture_inverse = reverse_postcapture_event_helper(event_current)
+    event_raw, event_calendar_inverse = reverse_calendar_helper(event_runner, event_prior)
     need(sha(event_raw) == 'acc08946e27093f36defb5d4e304131d66062e230399cdec5bb98620b25ef446',
          'exact reviewed event-generator history guard required')
     event_guard_current = b"    # The reviewed history source now requires the same native guard even when\n    # its historical whole-tree digest happens to match. Prove the only call-site\n    # change against the complete legacy branch above; execute actual bodies.\n    legacy_condition='}else if(!graph.digest.equals(now.digest)){'\n    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'\n    if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')\n    actual_branch=branch.replace(legacy_condition,history_condition,1)\n    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:\n        raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')\n    if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')"
@@ -252,6 +277,7 @@ def verify_original_fixtures(source, before):
             'diagnostic_runner_original_sha256': sha(restored),
             'diagnostic_runner_reverse_original_byte_equality': True,
             'event_runner_current_sha256': sha(event_current), 'event_runner_original_sha256': sha(event_original),
+            'event_postcapture_inverse': event_postcapture_inverse,
             'event_calendar_inverse': event_calendar_inverse,
             'event_runner_reverse_original_byte_equality': True,
             'fail_only_port': True, 'reverse_original_byte_equality': True}
@@ -391,20 +417,29 @@ def main():
         extraction = events.add_saved_graph_seed_cases(source, generated, helper, extraction)
         path = generated / 'ObserverPipelineHost.java'
         original = path.read_text()
+        postcapture_call = '        postCaptureSettleCases();'
+        postcapture_counted = '''        int legacyCases=EventChecks.names.size(),legacyAssertions=EventChecks.assertions;
+        postCaptureSettleCases();
+        int postcaptureCases=EventChecks.names.size()-legacyCases,postcaptureAssertions=EventChecks.assertions-legacyAssertions;'''
+        counted = events.replace(original, postcapture_call, postcapture_counted)
         fragment = (source / TEST / 'ScreenshotGraphSeedCases.fragment').read_text()
-        text = events.replace(original, '    public static void main(String[] args)throws Exception{',
+        text = events.replace(counted, '    public static void main(String[] args)throws Exception{',
                               fragment + '\n    public static void main(String[] args)throws Exception{')
         marker = '        observationIo.executor.shutdown();EventChecks.finish(args[0]);'
-        appended = '''        int originalCases=EventChecks.names.size(),originalAssertions=EventChecks.assertions;
+        appended = '''        int originalCases=legacyCases,originalAssertions=legacyAssertions;
+        int beforeSeedCases=EventChecks.names.size(),beforeSeedAssertions=EventChecks.assertions;
         screenshotGraphSeedCases();
         org.json.JSONObject seedResult=new org.json.JSONObject().put("schema","hepta.native-observation-screenshot-seed-cases.v1")
             .put("all_pass",true).put("original_cases",originalCases).put("original_assertions",originalAssertions)
-            .put("new_cases",EventChecks.names.size()-originalCases).put("new_assertions",EventChecks.assertions-originalAssertions)
-            .put("new_case_names",new java.util.ArrayList<String>(EventChecks.names.subList(originalCases,EventChecks.names.size())));
+            .put("postcapture_cases",postcaptureCases).put("postcapture_assertions",postcaptureAssertions)
+            .put("postcapture_case_names",new java.util.ArrayList<String>(EventChecks.names.subList(originalCases,beforeSeedCases)))
+            .put("new_cases",EventChecks.names.size()-beforeSeedCases).put("new_assertions",EventChecks.assertions-beforeSeedAssertions)
+            .put("new_case_names",new java.util.ArrayList<String>(EventChecks.names.subList(beforeSeedCases,EventChecks.names.size())));
         Files.write(Paths.get(args[1]),seedResult.toString(2).getBytes(StandardCharsets.UTF_8));
         observationIo.executor.shutdown();EventChecks.finish(args[0]);'''
         text = events.replace(text, marker, appended)
-        need(text.replace(fragment + '\n', '', 1).replace(appended, marker, 1) == original,
+        need(text.replace(fragment + '\n', '', 1).replace(appended, marker, 1)
+             .replace(postcapture_counted, postcapture_call, 1) == original,
              'only independent new cases and statistics may be appended to generated fixture')
         path.write_text(text, encoding='utf-8')
         extraction['independent_screenshot_seed_cases'] = {'fragment': helper.meta(source / TEST / 'ScreenshotGraphSeedCases.fragment'),
@@ -432,11 +467,19 @@ def main():
         need(cases['all_pass'] is True and len(cases['case_names']) == len(set(cases['case_names'])) == cases['cases'], 'complete unique passing event cases required')
         need(new['all_pass'] is True and new['original_cases'] == 238 and new['original_assertions'] == 3671,
              'all original 238 cases and 3670 assertions plus the reviewed before-accept assertion must execute')
+        need(sha(packed(cases['case_names'][:new['original_cases']])) == LEGACY_EVENT_CASE_NAMES_SHA256,
+             'complete original 238 case names and order must be preserved')
+        need(new['postcapture_cases'] == 10 and new['postcapture_assertions'] == 170
+             and new['postcapture_case_names'] == POSTCAPTURE_CASE_NAMES,
+             'all ten postcapture cases and 170 assertions must execute separately')
         need(new['new_cases'] == len(new['new_case_names']) == 35 and all(name.startswith('screenshot_seed_') for name in new['new_case_names'])
-             and cases['cases'] == new['original_cases'] + new['new_cases']
-             and cases['assertions'] == new['original_assertions'] + new['new_assertions'], 'independent seed case accounting differs')
+             and cases['cases'] == new['original_cases'] + new['postcapture_cases'] + new['new_cases']
+             and cases['assertions'] == new['original_assertions'] + new['postcapture_assertions'] + new['new_assertions'],
+             'independent seed case accounting differs')
         result.update(all_pass=True, cases=cases['cases'], assertions=cases['assertions'], original_cases=new['original_cases'],
                       original_assertions=new['original_assertions'], new_cases=new['new_cases'], new_assertions=new['new_assertions'],
+                      postcapture_cases=new['postcapture_cases'], postcapture_assertions=new['postcapture_assertions'],
+                      postcapture_case_names=new['postcapture_case_names'], original_case_names_sha256=LEGACY_EVENT_CASE_NAMES_SHA256,
                       original_cases_and_assertions_preserved=True, historical_original_assertions=3670,
                       reviewed_before_accept_assertions_added=1, cases_file=helper.meta(output / 'CASES.json'),
                       seed_cases_file=helper.meta(output / 'SEED-CASES.json'), extraction_file=helper.meta(output / 'EXTRACTION.json'),
