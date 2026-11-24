@@ -17,6 +17,11 @@ import org.trillionnium.hepta.background.WindowOwnership;
  * Session/Gate/Offer/Attempt, persistent receipt IO and value validators are real production classes.
  * This harness cannot issue phone commands or establish Android/business qualification. */
 public final class HeptaAccessibilityService {
+    // Recovery is outside this producer gate; shared actual client code cannot acquire it here.
+    static HeptaAccessibilityService connected(){return null;}
+    BackgroundSession retiredBusinessBackgroundForCleanup(String task,String generation,String owner){
+        throw new UnsupportedOperationException("retained business recovery is outside the search producer IO port");
+    }
     interface Cancellation {boolean isCancelled();}
     interface ActionCallback {void onResult(ActionOutcome value);}
     {{outcome}}

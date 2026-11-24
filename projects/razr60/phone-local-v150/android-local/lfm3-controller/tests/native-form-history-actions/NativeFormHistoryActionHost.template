@@ -22,7 +22,8 @@ final class NativeFormHistoryActionHost {
     static void yes(boolean value,String message){assertions++;if(!value)throw new AssertionError(message);}
     static void one(String name,Work work)throws Exception{work.run();cases.add(name);}
     static final class SystemClock {static long time=1000;static long elapsedRealtime(){return time;}}
-    static final class Capture {final boolean history;Capture(boolean value){history=value;}boolean formHistory(){return history;}}
+    // This bridge exercises Ctrip captures only; it cannot create Xiaomi input history.
+    static final class Capture {final boolean history;Capture(boolean value){history=value;}boolean formHistory(){return history;}boolean inputHistory(){return false;}boolean planningHistory(){return formHistory();}}
     static final class PhoneObservation {
         final String id="observed",packageName="ctrip.android.view";
         final long capturedElapsedMillis=900;
@@ -65,6 +66,7 @@ final class NativeFormHistoryActionHost {
         Object nativeRegion;
         Object budget(){return this;}
     }
+    private static boolean nativeSearchInputGuard(ActionWork work){return false;} // Xiaomi input authority is unavailable in this Ctrip-only port.
     static final class ActionPolicy {
         // Explicit stable-tree classification input; no policy qualification.
         static boolean requiresStableTree(ActionDecision action){return "click".equals(action.action);}

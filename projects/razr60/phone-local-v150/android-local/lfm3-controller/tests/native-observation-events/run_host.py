@@ -79,14 +79,25 @@ def generate(source,out,h):
                             return "stale:原生目的复核失败："+message(mismatch);}
                     }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
                 }'''
-    # The reviewed history source now requires the same native guard even when
-    # its historical whole-tree digest happens to match. Prove the only call-site
-    # change against the complete legacy branch above; execute actual bodies.
+    # Both separately sealed planning-history kinds require the unchanged native
+    # guard even when the historical whole-tree digest matches. Check the exact
+    # closed kind predicates, then reverse only this reviewed condition through
+    # the prior form-history condition to the complete original fallback branch.
+    capture=(source/PKG/'ObservationCaptureEvidence.java').read_text()
+    history_predicates='''    boolean formHistory(){return NATIVE_AX_FORM_HISTORY.equals(kind);}
+    boolean inputHistory(){return NATIVE_AX_INPUT_HISTORY.equals(kind);}
+    boolean planningHistory(){return formHistory()||inputHistory();}'''
+    if capture.count(history_predicates)!=1:
+        raise RuntimeError('exact two-kind planning-history predicate required')
     legacy_condition='}else if(!graph.digest.equals(now.digest)){'
-    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'
+    form_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'
+    history_condition='}else if(expected.capture!=null&&expected.capture.planningHistory()||!graph.digest.equals(now.digest)){'
     if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')
-    actual_branch=branch.replace(legacy_condition,history_condition,1)
-    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:
+    form_branch=branch.replace(legacy_condition,form_condition,1)
+    actual_branch=form_branch.replace(form_condition,history_condition,1)
+    if (actual_branch.count(history_condition)!=1
+            or actual_branch.replace(history_condition,form_condition,1)!=form_branch
+            or form_branch.replace(form_condition,legacy_condition,1)!=branch):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     h.write(out/'ObserverPipelineHost.java',template)
@@ -157,7 +168,7 @@ def main():
     tools=[java,javac,jdk/'lib/modules',jdk/'lib/ct.sym',jar]
     if not all(p.is_file() for p in tools):raise RuntimeError('strict JDK17 and JSON closure required')
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
-    inputs=[source/PKG/'NativeAppEvidence.java']+[source/PKG/n for n in JAVA]+[source/TEST/n for n in OWN]+[
+    inputs=[source/PKG/'NativeAppEvidence.java',source/PKG/'ObservationCaptureEvidence.java']+[source/PKG/n for n in JAVA]+[source/TEST/n for n in OWN]+[
         source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']+tools
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
     r={'schema':'hepta.native-observation-events-host-gate.v1','all_pass':False,'stages':[],

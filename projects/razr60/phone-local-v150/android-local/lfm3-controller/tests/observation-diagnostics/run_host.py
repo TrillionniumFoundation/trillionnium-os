@@ -20,7 +20,7 @@ PKG = Path('src/org/trillionnium/hepta/local')
 TEST = Path('tests/observation-diagnostics')
 JAVA = ['ObservationCaptureEvidence.java', 'HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
         'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java',
-        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java']
+        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
        'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template','AxPublicationDiagnosticsHostTest.java']
 
@@ -244,14 +244,25 @@ def generate(source,output):
                             return "stale:原生目的复核失败："+message(mismatch);}
                     }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
                 }'''
-    # The reviewed history source now requires the same native guard even when
-    # its historical whole-tree digest happens to match. Prove the only call-site
-    # change against the complete legacy branch above; execute actual bodies.
+    # Both separately sealed planning-history kinds require the unchanged native
+    # guard even when the historical whole-tree digest matches. Check the exact
+    # closed kind predicates, then reverse only this reviewed condition through
+    # the prior form-history condition to the complete original fallback branch.
+    capture=(source/PKG/'ObservationCaptureEvidence.java').read_text()
+    history_predicates='''    boolean formHistory(){return NATIVE_AX_FORM_HISTORY.equals(kind);}
+    boolean inputHistory(){return NATIVE_AX_INPUT_HISTORY.equals(kind);}
+    boolean planningHistory(){return formHistory()||inputHistory();}'''
+    if capture.count(history_predicates)!=1:
+        raise RuntimeError('exact two-kind planning-history predicate required')
     legacy_condition='}else if(!graph.digest.equals(now.digest)){'
-    history_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'
+    form_condition='}else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){'
+    history_condition='}else if(expected.capture!=null&&expected.capture.planningHistory()||!graph.digest.equals(now.digest)){'
     if branch.count(legacy_condition)!=1:raise RuntimeError('exact legacy guard condition required')
-    actual_branch=branch.replace(legacy_condition,history_condition,1)
-    if actual_branch.count(history_condition)!=1 or actual_branch.replace(history_condition,legacy_condition,1)!=branch:
+    form_branch=branch.replace(legacy_condition,form_condition,1)
+    actual_branch=form_branch.replace(form_condition,history_condition,1)
+    if (actual_branch.count(history_condition)!=1
+            or actual_branch.replace(history_condition,form_condition,1)!=form_branch
+            or form_branch.replace(form_condition,legacy_condition,1)!=branch):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     callback='callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));'
@@ -270,6 +281,8 @@ def generate(source,output):
         'methods':{name:{'bytes':len(value.encode()),'sha256':sha(value.encode())} for name,value in {**parts,**methods}.items()},
         'stale_refusal_callsite':{'bytes':len(actual_branch.encode()),'sha256':sha(actual_branch.encode())},
         'stale_refusal_legacy_inverse':{'bytes':len(branch.encode()),'sha256':sha(branch.encode()),'exact_inverse':True},
+        'stale_refusal_form_history_inverse':{'bytes':len(form_branch.encode()),'sha256':sha(form_branch.encode()),'exact_inverse':True},
+        'planning_history_kind_predicates':{'bytes':len(history_predicates.encode()),'sha256':sha(history_predicates.encode()),'exact_form_or_input_only':True},
         'action_callback_callsite':{'bytes':len(callback.encode()),'sha256':sha(callback.encode())},
         'legacy_pipeline_main_not_replaced_in_source':True,
         'default_whole_graph_action_refusal_retained':True,'native_action_guard_qualification_claimed':False,

@@ -59,7 +59,8 @@ assert sha(local_session_proof) in {
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
 if sha(native_snapshot_raw) in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
-        'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac'):
+        'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac',
+        '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf'):
     native_snapshot_proof=runpy.run_path(str(root/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](native_snapshot_raw)
 if sha(native_snapshot_proof)=='4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b':
     # The two approved complete-census Xiaomi banner checks are additive.
@@ -162,14 +163,14 @@ harness_path = generated/'CensusBudgetAudit.java'
 harness_path.write_bytes(template.read_bytes())
 
 inputs = [root/row['path'] for row in ns['record']['source_inputs']]
-inputs += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+inputs += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 inputs += [Path(__file__).resolve(), template, a.json_jar.resolve()]
 before = [identity(path) for path in inputs]
 # Real org.json is deliberately used: the legacy host fixture's toString(2)
 # delegates to compact JSON and cannot establish pretty-file byte counts.
 sources = [path for path in sorted((out/'terminal-fixtures/src').rglob('*.java'))
            if 'org/json' not in path.as_posix()]
-sources += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java', 'SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
+sources += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java', 'SessionJournalQueue.java','SessionRecovery.java','SessionTerminalEvidence.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ActionExecutionState.java','RecentActionProjection.java']]
 sources += [bridge_path, harness_path]
 classes = out/'classes'
 classes.mkdir()

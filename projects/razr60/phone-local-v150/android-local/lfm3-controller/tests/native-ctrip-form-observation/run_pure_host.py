@@ -14,7 +14,7 @@ def main():
     java=a.java_home.resolve()/"bin/java";javac=a.java_home.resolve()/"bin/javac";jar=a.json_jar.resolve()
     tools=[java,javac,java.parent.parent/"lib/modules",java.parent.parent/"lib/ct.sym",jar]
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed":raise RuntimeError("JSON pin")
-    names=['ObservationCaptureEvidence.java', "NativeCtripFormObservation.java","NativeActionSnapshotCheck.java","ObservedChildText.java","ObservedTargetLabels.java","ObservedScrollActions.java","ObservedImeEnter.java"]
+    names=['ObservationCaptureEvidence.java', "NativeCtripFormObservation.java","NativeXiaomiSearchInputObservation.java","NativeActionSnapshotCheck.java","ObservedChildText.java","ObservedTargetLabels.java","ObservedScrollActions.java","ObservedImeEnter.java"]
     paths=[source/PKG/n for n in names]+[source/"tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",HERE/"FormPairHostTest.java"]
     inputs=paths+[Path(__file__).resolve(),source/"tests/observation-diagnostics/run_host.py"]
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
