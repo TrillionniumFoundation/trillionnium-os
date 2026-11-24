@@ -45,6 +45,15 @@ final class NativeAppDomain {
                     ||NativeActionSnapshotCheck.QUERY.equals(purpose),"historical form can propose only inspected date/query purposes");
             for(String id:clickIds)frame.capture.requireFormHistoryTarget(frame.byId.get(id).path);
         }
+        if(frame.capture!=null&&frame.capture.inputHistory()){
+            NativeAppEvidence.need("search_input".equals(phase)&&NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)
+                    &&result==null&&!back&&clickIds.isEmpty()&&resourceIds.isEmpty()&&editValues.size()==1&&this.purposes.size()==1,
+                    "historical empty input admits only its original literal edit planning");
+            for(String id:editValues.keySet()){
+                NativeAppEvidence.need(NativeActionSnapshotCheck.SET_QUERY.equals(this.purposes.get(id)),"historical empty input purpose differs");
+                frame.capture.requireInputHistoryTarget(frame.byId.get(id).path);
+            }
+        }
         incompleteLoginReturn=Boolean.TRUE.equals(providerView.get("login_returned_to_form_without_target_result"));
         if(incompleteLoginReturn)NativeAppEvidence.need(NativeCtripFlightPage.PACKAGE.equals(frame.packageName)
                 &&clickIds.isEmpty()&&editValues.isEmpty()&&this.purposes.isEmpty()&&!back&&result==null
@@ -161,6 +170,10 @@ final class NativeAppDomain {
         if(frame.capture!=null&&frame.capture.formHistory()){
             out.put("historical_form_planning_only",true);out.put("published_pair_is_current_tree_claimed",false);
             out.put("form_history",frame.capture.formHistoryEvidence());out.put("fresh_complete_census_and_native_guard_required",true);
+        }
+        if(frame.capture!=null&&frame.capture.inputHistory()){
+            out.put("historical_empty_input_planning_only",true);out.put("published_pair_is_current_tree_claimed",false);
+            out.put("input_history",frame.capture.inputHistoryEvidence());out.put("fresh_complete_census_and_native_guard_required",true);
         }
         out.put("result_ready",resultReady);out.put("missing",missing);out.put("booking_purchase_or_payment_allowed",false);
         out.put("web_helper_allowed",false);out.put("external_model_allowed",false);return out;}

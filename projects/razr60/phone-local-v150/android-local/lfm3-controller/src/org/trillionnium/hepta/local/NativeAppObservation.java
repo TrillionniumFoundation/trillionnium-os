@@ -37,6 +37,9 @@ final class NativeAppObservation {
             observed.capture.requireBinding(goalBinding);
             if(observed.capture.formHistory())NativeAppEvidence.need(NativeCtripFlightPage.supported(target.nativeGoal)
                     &&background.profileTarget()!=null,"historical form requires the actual supported Ctrip profile goal");
+            if(observed.capture.inputHistory())NativeAppEvidence.need(target.nativeGoal.readsXiaomiProduct()
+                    &&NativeAppGoal.PRODUCT_MODEL.equals(target.nativeGoal.productModel)&&background.profileTarget()!=null,
+                    "historical empty input requires the actual supported Xiaomi profile goal");
         }else NativeAppEvidence.need(ObservationCaptureEvidence.PIXELS.equals(observed.captureKind)&&observed.capture==null
                 &&observed.screenshot!=null&&NativeAppEvidence.sha(observed.screenshotSha256),"actual original pixel observation required");
         List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();

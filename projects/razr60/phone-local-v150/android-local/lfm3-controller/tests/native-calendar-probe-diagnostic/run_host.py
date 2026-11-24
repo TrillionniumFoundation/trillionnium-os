@@ -65,7 +65,7 @@ def prepare(source,fixture,here):
     # Use the real JSON library for diagnostic and private receipt serialization.
     files=[Path(x) for x in files if '/org/json/' not in str(x)]
     actual_names=('PhoneObservation','ObservedChildText','ObservedWindowMetadata','ObservationState','ImeVisibility',
-                  'ObservationCaptureEvidence','NativeCtripFormObservation','NativeActionSnapshotCheck','NativeAppEvidence')
+                  'ObservationCaptureEvidence','NativeCtripFormObservation','NativeXiaomiSearchInputObservation', 'NativeActionSnapshotCheck','NativeAppEvidence')
     files += [pkg/(x+'.java') for x in actual_names]
     files=module('probe_legacy_unused_grammar',source/'tests/native-app/legacy-boundary/prepare_search_pure.py').add(source,files)
     def extract(path,signature):

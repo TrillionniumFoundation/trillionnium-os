@@ -74,9 +74,10 @@ public final class PublicProfileBusinessRecoveryMain {
                     .put("business_dispatch_absent_in_original_receipts",request.retainedBeforeFirstModel)
                     .put("foreign_dormant_history_preserved",true)
                     .put("cleanup_known",true).put("automatic_resume",false).put("broker_release_response",false);
-            proof.put("historical_broker_release_observed",!request.retainedBeforeFirstModel).put("historical_model_exit_verified",!request.retainedBeforeFirstModel).put("business_steps",request.steps)
+            proof.put("historical_broker_release_observed",!request.retainedCurrentAbsenceRequired()).put("historical_model_exit_verified",!request.retainedBeforeFirstModel).put("business_steps",request.steps)
                     .put("model_requests",request.modelRequests).put("model_generation",request.modelGeneration)
                     .put("recorded_owned_identity",request.recordedOwnedIdentity()).put("rewrites_business_outcome",false).put("acknowledges_control_session",false);
+            if(request.retainedAfterBusiness)proof.put("original_history_refusal",request.originalHistoryRefusal()).put("historical_broker_process",request.historicalBrokerProcess());
             PublicProfileBusinessAbsenceRecovery.validate(proof,request,SystemClock.elapsedRealtime(),boot);
             emit(emitted,proof);exit=0;
         }catch(Throwable failed){String code=failed.getMessage();if(code==null||!code.matches("[A-Z0-9_]{1,96}"))code="PUBLIC_RECOVERY_UNAVAILABLE";failure(emitted,request,code);}
@@ -98,7 +99,7 @@ public final class PublicProfileBusinessRecoveryMain {
                 .put("recents",new JSONObject(recents.evidence()))
                 .put("displays",displays).put("physical",new JSONObject().put("0",physical.get(0)).put("1",physical.get(1)))
                 .put("target_sha256",installation.target.sha256);
-        if(r.retainedBeforeFirstModel)sample.put("firmware_fingerprint_sha256",RecoveryControllerIdentity.firmwareFingerprintSha256());
+        if(r.retainedCurrentAbsenceRequired())sample.put("firmware_fingerprint_sha256",RecoveryControllerIdentity.firmwareFingerprintSha256());
         return sample;
     }
     private static JSONObject processes(AndroidProc proc,PublicProfileBusinessAbsenceRecovery.Request r)throws Exception{
@@ -118,7 +119,8 @@ public final class PublicProfileBusinessRecoveryMain {
         return result;
     }
     private static JSONObject displays(DisplayManager dm,PublicProfileBusinessAbsenceRecovery.Request r)throws Exception{
-        Display[] all=dm.getDisplays();need(all!=null&&all.length>=2&&all.length<=256,"PUBLIC_RECOVERY_DISPLAY_CENSUS");
+        Display[] all=r.retainedAfterBusiness?dm.getDisplays((String)DisplayManager.class.getField("DISPLAY_CATEGORY_ALL_INCLUDING_DISABLED").get(null)):dm.getDisplays();
+        need(all!=null&&all.length>=2&&all.length<=256,"PUBLIC_RECOVERY_DISPLAY_CENSUS");
         Set<Integer> ids=new HashSet<Integer>();TreeMap<Integer,String> facts=new TreeMap<Integer,String>();
         for(Display display:all){need(display!=null&&display.isValid(),"PUBLIC_RECOVERY_DISPLAY_UNKNOWN");int id=display.getDisplayId();String name=display.getName();
             need(id>=0&&ids.add(id)&&name!=null&&name.length()<=512&&name.indexOf('\0')<0,"PUBLIC_RECOVERY_DISPLAY_IDENTITY");
@@ -129,7 +131,8 @@ public final class PublicProfileBusinessRecoveryMain {
             facts.put(id,id+":"+name+":"+unique+":"+display.getFlags()+":"+display.getState());}
         need(ids.contains(0)&&ids.contains(1),"PUBLIC_RECOVERY_PHYSICAL_DISPLAYS_MISSING");StringBuilder raw=new StringBuilder();for(String row:facts.values())raw.append(row).append('\n');
         JSONObject result=new JSONObject().put("complete",true).put("count",facts.size()).put("snapshot_sha256",ProfileIdentity.sha(raw.toString())).put("exact_name_absent",true);
-        if(r.postlaunch)result.put("recorded_id_absent",true);return result;
+        if(r.postlaunch)result.put("recorded_id_absent",true);
+        if(r.retainedAfterBusiness)result.put("including_disabled",true);return result;
     }
     /** Descriptor-bound private reads, used only by this newly owned root process. */
     private static final class OriginalReader {

@@ -246,7 +246,7 @@ def prepare(source, output, entries):
     service_path.write_bytes(service_after)
     paths = [p for p in paths if p not in (legacy_input, config_path.resolve())]
     actual = [package / (name + ".java") for name in
-              ('ObservationCaptureEvidence', "NativeAppSession", "NativeActionSnapshotCheck", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
+              ('NativeXiaomiSearchInputObservation', 'ObservationCaptureEvidence', "NativeAppSession", "NativeActionSnapshotCheck", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths += [generated_config, *actual, *calendar_sources]
     paths = list(dict.fromkeys(p.resolve() for p in paths))
     require(sum(p.name == "NativeAppSession.java" for p in paths) == 1

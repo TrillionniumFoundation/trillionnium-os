@@ -16,6 +16,13 @@ final class ProfileDisplayCustody {
             throw new IllegalStateException("PROFILE_RETAINED_FINAL_PROOF_MISSING");
         retainedObservedAbsent=true;
     }
+    synchronized void retainedCleanupObservedAbsent(ProfileOwnedTask original,ProfileOwnedTask.RetainedCleanupProof proof){
+        if(!attempted||!unknown||original==null||!original.ownsRetainedCleanupProof(proof))
+            throw new IllegalStateException("PROFILE_RETAINED_CLEANUP_PROOF_MISSING");
+        // Unknown is the immutable business result. This only ends live custody
+        // after a distinct cleanup interval has proved current absence.
+        retainedObservedAbsent=true;
+    }
     synchronized boolean retain(){return attempted&&!displayAbsent&&!retainedObservedAbsent;}
     synchronized boolean known(){return (tasksClear&&displayAbsent&&!unknown)||retainedObservedAbsent;}
 }

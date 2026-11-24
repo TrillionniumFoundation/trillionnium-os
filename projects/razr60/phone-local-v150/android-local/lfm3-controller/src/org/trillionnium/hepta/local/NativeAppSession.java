@@ -903,6 +903,8 @@ final class NativeAppSession {
             f.capture.requireBinding(bound);
             if(f.capture.formHistory())need(NativeCtripFlightPage.supported(goal)&&installed.profileTarget!=null,
                     "historical form requires the supported installed Ctrip profile");
+            if(f.capture.inputHistory())need(goal.readsXiaomiProduct()&&NativeAppGoal.PRODUCT_MODEL.equals(goal.productModel)
+                    &&installed.profileTarget!=null,"historical empty input requires the supported installed Xiaomi profile");
         }
         NativeAppEvidence.requireProfileTarget(installed.profileTarget,f.profileWindow);
         if(f.profileWindow!=null)f.profileWindow.requireMatches(installed.profileTarget,generation,displayId,f.windowId,
@@ -925,6 +927,8 @@ final class NativeAppSession {
         if(frame.capture!=null&&frame.capture.formHistory())need(flight!=null&&NativeCtripFlightPage.FORM.equals(flight.phase),
                 "historical form cannot become results, calendar, login or business evidence");
         product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
+        if(frame.capture!=null&&frame.capture.inputHistory())need(product!=null&&"search_input".equals(product.phase)
+                &&product.quote==null,"historical empty input cannot become results, login, submit or business evidence");
         observeSearchNavigation(frame);
         if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
             productHomeLoadingSince=frame.capturedElapsedMs;
@@ -1456,8 +1460,19 @@ final class NativeAppSession {
         if(a.before.frame.capture!=null&&a.before.frame.capture.formHistory()&&!java.util.Arrays.asList("wait","done").contains(action.action))need("click".equals(action.action)
                 &&(NativeActionSnapshotCheck.YEAR.equals(a.purpose)||NativeActionSnapshotCheck.QUERY.equals(a.purpose)),
                 "history effect requires the original date/query native Guard");
-        if(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
-                NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose))return null;
+        boolean emptyInput="type".equals(action.action)&&NativeActionSnapshotCheck.SET_QUERY.equals(a.purpose)
+                &&a.before.frame.capture!=null&&a.before.frame.capture.nativeText()
+                &&goal.readsXiaomiProduct()&&NativeAppGoal.PRODUCT_MODEL.equals(goal.productModel)
+                &&installed.profileTarget!=null&&a.before.frame.profileWindow!=null&&"search_input".equals(a.before.phase)
+                &&a.before.frame.byId.get(action.nodeId)!=null
+                &&"0/1".equals(a.before.frame.byId.get(action.nodeId).path)
+                &&"android.widget.FrameLayout".equals(a.before.frame.byId.get(action.nodeId).parentClass)
+                &&a.before.frame.byId.get(action.nodeId).text.isEmpty()
+                &&goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16).equals(action.text);
+        if(a.before.frame.capture!=null&&a.before.frame.capture.inputHistory())need(emptyInput,
+                "historical empty input requires the original exact literal type Guard");
+        if(!emptyInput&&(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
+                NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose)))return null;
         need(action.toolChildOrigin==null&&a.guard==null&&deadline>issued&&deadline-issued<=8000,
                 "one original native action worker budget required");
         current.requireCurrent(action);requireFrame(a.before.frame);
@@ -1874,11 +1889,11 @@ final class NativeAppSession {
         }
     }
     boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&!flightLoginReturnedToForm&&current!=null&&current.resultReady
-            &&(current.frame.capture==null||!current.frame.capture.formHistory())&&frame!=null
+            &&(current.frame.capture==null||!current.frame.capture.planningHistory())&&frame!=null
             &&current.frame.observationId.equals(frame.observationId)&&current.frame.completionFrameSha.equals(TaskCompletionGate.webFrameSha(frame))&&pending==null&&inFlight==null;}
     SuccessClaim acceptSuccess(int step,String run,NotesCompletionEvidence.Frame frame,boolean finalWholeTreeStable){
         live();acceptedClaim=null;
-        if(flightLoginReturnedToForm||current!=null&&current.frame.capture!=null&&current.frame.capture.formHistory())return null;
+        if(flightLoginReturnedToForm||current!=null&&current.frame.capture!=null&&current.frame.capture.planningHistory())return null;
         if(!finalWholeTreeStable||!ready(frame)||lastDone==null||lastDone.step!=step||!lastDone.run.equals(run)
                 ||!"success".equals(lastDone.action.status)||!lastDone.before.resultReady
                 ||!lastDone.before.frame.treeSha.equals(current.frame.treeSha)||lastDone.before.frame.windowId!=current.frame.windowId

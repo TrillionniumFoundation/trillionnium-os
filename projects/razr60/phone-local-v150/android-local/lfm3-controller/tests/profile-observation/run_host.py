@@ -20,7 +20,7 @@ parts=[body(session,"    static boolean profileCleanupBound("),body(session,"   
 projection=o/"ProfileCleanupProjection.java"
 projection.write_text("package org.trillionnium.hepta.local;\nimport java.util.*;\nimport org.trillionnium.hepta.background.*;\n/** Exact production method only; no Controller/Session lifecycle/Android qualification. */\nfinal class ProfileCleanupProjection {\n"+"\n".join(parts)+"\n}\n")
 inputs=[background/(name+".java") for name in ("ProfileIdentity","ProfileTarget","WindowOwnership")]
-inputs += [local/(name+".java") for name in ('NativeCtripFormObservation', 'ObservedTargetLabels', 'ObservationCaptureEvidence', "NativeAppEvidence","NativeActionSnapshotCheck","ObservedChildText","ObservedScrollActions","ObservedImeEnter")]
+inputs += [local/(name+".java") for name in ('NativeCtripFormObservation', 'ObservedTargetLabels', 'ObservationCaptureEvidence', "NativeAppEvidence",'NativeXiaomiSearchInputObservation', "NativeActionSnapshotCheck","ObservedChildText","ObservedScrollActions","ObservedImeEnter")]
 inputs += [s/"tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",s/"tests/profile-observation/ProfileObservationHostTest.java",projection]
 pins={str(x):sha(x) for x in inputs}
 env=dict(os.environ);env["PATH"]=str(j/"bin")+":"+env.get("PATH","")

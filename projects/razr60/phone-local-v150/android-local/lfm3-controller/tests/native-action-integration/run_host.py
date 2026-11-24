@@ -24,6 +24,7 @@ METHODS={
  'guard':'    private void requireNativeActionGuard(',
  'snapshot':'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(',
  'search_entry_guard':'    private static boolean nativeSearchEntryGuard(',
+ 'search_input_guard':'    private static boolean nativeSearchInputGuard(',
  'flight_open_guard':'    private static boolean nativeFlightOpenGuard(',
  'search_entry_defer':'    private boolean deferNativeSearchEntrySignature(',
  'background_precheck':'    private void backgroundBeforeDispatch(',
@@ -190,7 +191,7 @@ def sources(source,out):
         'loading_read_retry_proof_minted':False, 'no_effect_successor_proof_constructor_and_methods_always_throw':True, 'no_effect_successor_proof_minted':False}
     bgfiles=[p for p in bgfiles if not(p.parent.name=='json' and p.parent.parent.name=='org') and 'terminal' not in p.parts]
     paths=[source/p for p in query.PURE_PATHS if p not in ('tests/web-flight/WebFlightQueryHostTest.java','tests/native-app/legacy-boundary/NativeAppSession.java')]+bgfiles
-    names=['ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',
+    names=['NativeXiaomiSearchInputObservation', 'ObservationCaptureEvidence', 'PromptActionDomain','NativeAppEvidence','NativeAppDomain','NativeAppSession','NativeAppObservation',
       'NativeCtripFlightPage','NativeXiaomiProductPage','NativeActionSnapshotCheck','ActionExecutionState',
       'NativeSearchRole','NativeSearchPlanning','NativeSearchDecision','NativeSearchSession',
       'ObservationDiagnostics','ActionPolicy','PersistentActionPolicy']

@@ -138,12 +138,15 @@ public final class BackgroundDisplayBroker {
     private volatile java.util.Map<String,Object> profileCleanupReadback;
     private volatile java.util.Map<String,Object> profilePersonalAudit;
     private final ProfileDisplayCustody profileCustody=new ProfileDisplayCustody();
+    private final AtomicBoolean retainedCleanupServerStarted=new AtomicBoolean();
+    private final RetainedProfileCleanupAttempt retainedCleanupAttempt;
     private final Set<String> fixedToolsConsumed=new HashSet<String>();
     private final java.util.Map<String,JSONObject> fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
     private final java.util.Map<String,JSONObject> taskLaunchPolicies=new java.util.LinkedHashMap<String,JSONObject>();
 
     private BackgroundDisplayBroker(BrokerProtocol.Config config) throws BrokerProtocol.Refusal {
         this.config = config;
+        retainedCleanupAttempt=new RetainedProfileCleanupAttempt(config,SystemClock::elapsedRealtime);
         if (config.expiresElapsedMs <= started) throw new BrokerProtocol.Refusal("START_EXPIRED");
         if(config.publicOwnGroupScope!=null&&config.publicOwnGroupScope.createdElapsedMs>started)
             throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_CREATED_IN_FUTURE");
@@ -1807,9 +1810,118 @@ public final class BackgroundDisplayBroker {
         // enabled; removing that flag would allow main-display migration instead. Unexpected
         // SIGKILL, OS process death or power loss is still UNKNOWN, never a cleanup proof.
         while(config.profileTarget!=null&&profileCustody.retain()){
-            recheckRetainedEmptyDisplay();
+            if(config.retainedCleanupTokenSha256==null)recheckRetainedEmptyDisplay();
+            else startRetainedCleanupServer();
             try{Thread.sleep(250);}catch(InterruptedException ignored){}
         }
+    }
+    /** A distinct retired-state endpoint. It never sets serve, clears closing,
+     * reopens the business socket, resets expiry, or prints another old terminal. */
+    private void startRetainedCleanupServer(){
+        if(config.retainedCleanupTokenSha256==null||config.publicOwnGroupScope==null||config.profileTarget==null
+                ||!publicAdmissionRetired.get()||!closing.get()||serve||createInFlight||effectInFlight
+                ||cleanupDone.getCount()!=0||!retainedWatchdogHoldPublished||profileDisplayReleaseAttempted
+                ||!publicSurfaceRetirement.originalDetachCompleted()||!profileCustody.retain()
+                ||!retainedCleanupServerStarted.compareAndSet(false,true))return;
+        Thread thread=new Thread(()->{
+            try(LocalServerSocket cleanupServer=new LocalServerSocket(BrokerProtocol.retainedCleanupSocket(config.generation))){
+                while(profileCustody.retain()&&!retainedCleanupAttempt.claimed()){
+                    LocalSocket accepted=cleanupServer.accept();
+                    try(LocalSocket peer=accepted){
+                        android.net.Credentials credentials=peer.getPeerCredentials();
+                        if(credentials==null||credentials.getUid()!=config.ownerUid)continue;
+                        peer.setSoTimeout((int)SOCKET_MS);
+                        BrokerProtocol.RetainedCleanupRequest request;
+                        try{
+                            request=BrokerProtocol.RetainedCleanupRequest.parse(BrokerProtocol.readFrame(peer.getInputStream()));
+                            retainedCleanupAttempt.claim(request,credentials.getUid());
+                        }catch(Exception invalid){continue;}
+                        final LocalSocket exactPeer=peer;final long deadline=request.deadline;final AtomicBoolean replyDone=new AtomicBoolean();
+                        Thread closer=new Thread(()->{
+                            while(SystemClock.elapsedRealtime()<deadline&&!replyDone.get()){
+                                try{Thread.sleep(Math.min(50,Math.max(1,deadline-SystemClock.elapsedRealtime())));}
+                                catch(InterruptedException ignored){}
+                            }
+                            if(!replyDone.get())try{exactPeer.close();}catch(IOException ignored){}
+                        },"HeptaRetainedCleanupReplyDeadline");closer.setDaemon(true);closer.start();
+                        ProfileOwnedTask original=profileOwnedTask;
+                        try{
+                            retainedCleanupAttempt.run(this::cleanupRetainedProfile);
+                        }catch(Throwable refused){/* The independent reply records failure. No second attempt. */}
+                        try{
+                            long remaining=deadline-SystemClock.elapsedRealtime();
+                            if(remaining<=0)throw new IOException("RETAINED_CLEANUP_REPLY_DEADLINE");
+                            peer.setSoTimeout((int)Math.min(SOCKET_MS,remaining));
+                            BrokerProtocol.writeFrame(peer.getOutputStream(),new JSONObject(retainedCleanupAttempt.evidence())
+                                    .toString().getBytes(StandardCharsets.UTF_8));
+                        }finally{
+                            // Flush/close precedes custody exit, so main's original
+                            // exit(70) cannot kill an otherwise complete reply.
+                            try{peer.close();}catch(IOException ignored){}
+                            replyDone.set(true);
+                            ProfileOwnedTask.RetainedCleanupProof proof=retainedCleanupAttempt.completedProof();
+                            if(proof!=null)profileCustody.retainedCleanupObservedAbsent(original,proof);
+                        }
+                    }catch(Exception refused){/* Keep the original unknown state and original handles. */}
+                }
+            }catch(Exception unavailable){/* No fallback socket, no loss of live custody. */}
+        },"HeptaRetainedCleanupOnly");thread.setDaemon(true);thread.start();
+    }
+    private ProfileOwnedTask.RetainedCleanupProof cleanupRetainedProfile(final long deadline)throws Exception{
+        retainedReadDeadline.set(deadline);
+        try{
+            synchronized(dispatchGate){
+                final ProfileOwnedTask original=profileOwnedTask;final VirtualDisplay exact=virtual;
+                if(!publicAdmissionRetired.get()||!closing.get()||serve||createInFlight||effectInFlight
+                        ||cleanupDone.getCount()!=0||!retainedWatchdogHoldPublished||!profileCustody.retain()
+                        ||!publicSurfaceRetirement.originalDetachCompleted()||profileDisplayReleaseAttempted
+                        ||original==null||exact==null||exact!=publicCreateReturnedHandle||publicOwnGroupFramework==null
+                        ||!publicOwnGroupFramework.hasFrozenIdentity()||SystemClock.elapsedRealtime()>=deadline)
+                    throw new IOException("RETAINED_CLEANUP_ORIGINAL_CUSTODY_UNAVAILABLE");
+                return original.cleanupRetained(deadline,new ProfileOwnedTask.RetiredDisplay(){
+                    private java.util.Map<Integer,String> physical;
+                    public void beginFreshSample(long began,long sampleDeadline)throws Exception{
+                        long now=SystemClock.elapsedRealtime();
+                        if(now<began||now>=sampleDeadline||sampleDeadline>deadline||sampleDeadline-began>1500)
+                            throw new IOException("RETAINED_CLEANUP_SAMPLE_DEADLINE");
+                        retainedReadDeadline.set(sampleDeadline);
+                    }
+                    public void requireState(boolean before)throws Exception{
+                        if(SystemClock.elapsedRealtime()>=deadline||original!=profileOwnedTask||exact!=virtual
+                                ||exact!=publicCreateReturnedHandle||!publicAdmissionRetired.get()||!closing.get()
+                                ||serve||createInFlight||effectInFlight||cleanupDone.getCount()!=0)
+                            throw new IOException("RETAINED_CLEANUP_OWNER_CHANGED");
+                        if(before)publicOwnGroupFramework.requireRetiredDestroyHandle(displayId,displayName);
+                        else if(!publicOwnedDisplayAbsent())throw new IOException("RETAINED_CLEANUP_DISPLAY_PRESENT");
+                        final long readDeadline=Math.min(deadline,profileDeadline());
+                        java.util.Map<Integer,String> actual=PublicOwnGroupPhysicalReader.read(windowManager,displays,
+                                config.profileTarget.profile.userId,()->readDeadline);
+                        if(physical==null)physical=actual;
+                        else if(!physical.equals(actual))throw new IOException("RETAINED_CLEANUP_PHYSICAL_CHANGED");
+                        if(SystemClock.elapsedRealtime()>=deadline)throw new IOException("RETAINED_CLEANUP_DEADLINE");
+                    }
+                    public void releaseOriginalHandle()throws Exception{throw new IOException("RETAINED_CLEANUP_CENSUS_START_REQUIRED");}
+                    public void releaseOriginalHandle(long observedStarted,long expectedDeadline)throws Exception{
+                        if(profileDisplayReleaseAttempted||exact!=virtual||exact!=publicCreateReturnedHandle
+                                ||original!=profileOwnedTask||createInFlight||effectInFlight||expectedDeadline!=deadline||SystemClock.elapsedRealtime()>=deadline)
+                            throw new IOException("RETAINED_CLEANUP_RELEASE_ALREADY_ATTEMPTED");
+                        publicOwnGroupFramework.requireRetiredDestroyHandle(displayId,displayName);
+                        long now=SystemClock.elapsedRealtime();
+                        if(now<observedStarted||now>=deadline||now-observedStarted>=1500)
+                            throw new IOException("RETAINED_CLEANUP_CENSUS_STALE");
+                        profileDisplayReleaseAttempted=true;exact.release();
+                        if(surfaceReader!=null)surfaceReader.close();
+                        if(displayThread!=null)displayThread.quitSafely();
+                    }
+                    public void awaitAbsent()throws Exception{
+                        while(!publicOwnedDisplayAbsent()){
+                            if(SystemClock.elapsedRealtime()>=deadline)throw new IOException("RETAINED_CLEANUP_DISPLAY_PRESENT");
+                            Thread.sleep(20);
+                        }
+                    }
+                });
+            }
+        }finally{retainedReadDeadline.remove();}
     }
     private void awaitCleanup(long millis) {
         try { cleanupDone.await(Math.max(1, millis), TimeUnit.MILLISECONDS); }

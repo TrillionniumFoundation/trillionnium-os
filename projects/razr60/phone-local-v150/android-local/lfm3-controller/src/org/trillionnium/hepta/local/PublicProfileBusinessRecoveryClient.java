@@ -83,6 +83,57 @@ final class PublicProfileBusinessRecoveryClient {
         return relative;
     }
 
+    /** Immutable historical input pinning for the separate retained-broker cleanup
+     * protocol. A complete model disposition and Request are validated before any
+     * cleanup effect. This object grants no model, input, task or display action. */
+    static final class PreparedRetainedCleanup {
+        final PublicProfileBusinessAbsenceRecovery.Request request;
+        private final Context context;
+        private final Inputs inputs;
+        private final BackgroundSession.BusinessReconciliationCheck check;
+        private PreparedRetainedCleanup(Context context,Inputs inputs,PublicProfileBusinessAbsenceRecovery.Request request,
+                BackgroundSession.BusinessReconciliationCheck check){this.context=context;this.inputs=inputs;this.request=request;this.check=check;}
+        byte[] archiveBytes()throws Exception{return request.archiveBytes();}
+        void beforeEffect()throws Exception{
+            check.checkBusiness(request.taskId,request.ownerSha256);LocalProbeApplication.requirePermissionPreparationIdle(context);
+            inputs.unchanged(true);request.requireFence(SystemClock.elapsedRealtime(),boot(context));
+            if(!request.retainedCurrentAbsenceRequired())throw new IOException("独立清理入口需要原始未确认退出的保留租约");
+        }
+        void afterEffect()throws Exception{
+            // This program does not rewrite the old records. The app may itself
+            // observe the old process's failed exit; a new collect re-reads that
+            // actual current state, preserving this separate before-effect archive.
+            check.checkBusiness(request.taskId,request.ownerSha256);inputs.root.unchanged(context);
+            LocalProbeApplication.requirePermissionPreparationIdle(context);
+            HeptaAccessibilityService service=HeptaAccessibilityService.connected();
+            if(service==null)throw new IOException("独立清理后实际服务已断开");
+            BackgroundSession retained=service.retiredBusinessBackgroundForCleanup(request.taskId,request.generation,request.ownerSha256);
+            if(retained!=null)retained.awaitRetainedBrokerExit(request.taskId,request.generation,request.ownerSha256,request.deadline);
+            check.checkBusiness(request.taskId,request.ownerSha256);inputs.root.unchanged(context);
+            LocalProbeApplication.requirePermissionPreparationIdle(context);
+        }
+    }
+    static PreparedRetainedCleanup prepareRetainedCleanup(Context context,MobiMindPrivateFiles.Read journal,
+            BackgroundSession.BusinessReconciliationCheck check)throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("保留租约原件核验必须在后台执行");
+        if(check==null||workPending())throw new IOException("保留租约清理缺少独立队列预约或检查器尚未排空");
+        check.check();LocalProbeApplication.requirePermissionPreparationIdle(context);
+        Inputs inputs=new Inputs(context,journal);check.checkBusiness(inputs.taskId,inputs.ownerSha);inputs.readAll();requireModelGeneration(inputs);
+        JSONObject controller=RecoveryControllerIdentity.read(context,android.os.Process.myUid(),SystemClock.elapsedRealtime()+PublicProfileBusinessAbsenceRecovery.LIMIT_MS);
+        if(!new File(context.getApplicationInfo().sourceDir).getCanonicalPath().equals(string(controller,"source_path")))
+            throw new IOException("保留租约清理的当前代码与实际安装身份不一致");
+        inputs.unchanged(true);check.checkBusiness(inputs.taskId,inputs.ownerSha);
+        PublicProfileBusinessAbsenceRecovery.Request request=requestForInputs(context,inputs,controller);
+        return new PreparedRetainedCleanup(context,inputs,request,check);
+    }
+    private static PublicProfileBusinessAbsenceRecovery.Request requestForInputs(Context context,Inputs inputs,JSONObject controller)throws Exception{
+        long started=SystemClock.elapsedRealtime();JSONObject value=new JSONObject().put("schema",PublicProfileBusinessAbsenceRecovery.REQUEST_SCHEMA)
+                .put("owner_uid",android.os.Process.myUid()).put("request_id",UUID.randomUUID().toString()).put("task_id",inputs.taskId).put("started_elapsed_ms",started)
+                .put("boot_count",boot(context)).put("current_controller",controller).put("origin_summary",inputs.origin)
+                .put("files",inputs.descriptors()).put("task_membership",new JSONArray(inputs.taskFiles));
+        return PublicProfileBusinessAbsenceRecovery.request(PublicProfileBusinessAbsenceRecovery.manifest(value),inputs.bytes());
+    }
+
     static final class Receipt {
         final PublicProfileBusinessAbsenceRecovery.Request request;
         private final Context context;
@@ -141,7 +192,7 @@ final class PublicProfileBusinessRecoveryClient {
         }
         String receiptSha256(){return savedSha256;}
         JSONObject evidence()throws Exception{
-            requirePersisted();return new JSONObject().put("schema","hepta.background-reconcile.v1").put("generation",request.generation)
+            requirePersisted();JSONObject out=new JSONObject().put("schema","hepta.background-reconcile.v1").put("generation",request.generation)
                     .put("cleanup_known",true).put("broker_released",false).put("broker_response",JSONObject.NULL)
                     .put("reconciliation_source",request.source()).put("public_profile_business_absence",proof())
                     .put("business_receipt_path",savedReceipt.path.getPath()).put("business_receipt_sha256",savedSha256)
@@ -149,6 +200,9 @@ final class PublicProfileBusinessRecoveryClient {
                     .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true).put("display_absence_observed",true)
                     .put("business_steps",request.steps).put("model_requests",request.modelRequests).put("rewrites_original_task_result",false)
                     .put("acknowledges_control_session",false).put("automatic_resume",false);
+            if(request.retainedAfterBusiness)out.put("historical_model_exit_verified",true).put("historical_broker_release_observed",false)
+                    .put("original_history_refusal",request.originalHistoryRefusal()).put("historical_broker_process",request.historicalBrokerProcess());
+            return out;
         }
     }
 
@@ -162,11 +216,7 @@ final class PublicProfileBusinessRecoveryClient {
         File apk=new File(context.getApplicationInfo().sourceDir).getCanonicalFile();
         if(!apk.getPath().equals(string(controller,"source_path")))throw new IOException("业务恢复当前代码与实际安装身份不一致");
         inputs.unchanged(true);check.checkBusiness(inputs.taskId,inputs.ownerSha);
-        long started=SystemClock.elapsedRealtime();JSONObject value=new JSONObject().put("schema",PublicProfileBusinessAbsenceRecovery.REQUEST_SCHEMA)
-                .put("owner_uid",uid).put("request_id",UUID.randomUUID().toString()).put("task_id",inputs.taskId).put("started_elapsed_ms",started)
-                .put("boot_count",boot(context)).put("current_controller",controller).put("origin_summary",inputs.origin)
-                .put("files",inputs.descriptors()).put("task_membership",new JSONArray(inputs.taskFiles));
-        PublicProfileBusinessAbsenceRecovery.Request request=PublicProfileBusinessAbsenceRecovery.request(PublicProfileBusinessAbsenceRecovery.manifest(value),inputs.bytes());
+        PublicProfileBusinessAbsenceRecovery.Request request=requestForInputs(context,inputs,controller);
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / org.trillionnium.hepta.background.PublicProfileBusinessRecoveryMain --request "+quote(request.wire());
         if(command.getBytes(StandardCharsets.UTF_8).length>=60000)throw new IOException("业务恢复命令超过原完整进程读取上限");
         check.checkBusiness(request.taskId,request.ownerSha256);request.requireFence(SystemClock.elapsedRealtime(),boot(context));
@@ -186,7 +236,7 @@ final class PublicProfileBusinessRecoveryClient {
                 throw new IOException("后台状态检查未能确认空间已释放（退出码 "+exit+"）");
             }
             JSONObject verified=PublicProfileBusinessAbsenceRecovery.validate(object(capture.bytes),request,SystemClock.elapsedRealtime(),boot(context));
-            if(request.retainedBeforeFirstModel&&!RecoveryControllerIdentity.firmwareFingerprintSha256()
+            if(request.retainedCurrentAbsenceRequired()&&!RecoveryControllerIdentity.firmwareFingerprintSha256()
                     .equals(string(verified.getJSONObject("before"),"firmware_fingerprint_sha256")))throw new IOException("清理期间的系统固件身份不一致");
             if(!PublicProfileBusinessAbsenceRecovery.same(controller,RecoveryControllerIdentity.read(context,uid,request.deadline)))throw new IOException("业务恢复期间安装代码发生变化");
             check.checkBusiness(request.taskId,request.ownerSha256);inputs.unchanged(true);request.requireFence(SystemClock.elapsedRealtime(),boot(context));

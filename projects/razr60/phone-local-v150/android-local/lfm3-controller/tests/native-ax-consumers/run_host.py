@@ -22,7 +22,7 @@ def main():
  helper=(a.capture_helper or src/PKG/'ObservationCaptureEvidence.java').resolve()
  need(src.is_dir() and not out.exists() and src not in out.parents,'fresh output outside source required')
  need(jar.stat().st_size==78332 and sha(jar.read_bytes())==JSON_SHA,'pinned actual JSON jar required')
- paths=[src/PKG/(x+'.java') for x in ['NativeAppEvidence','NativeActionSnapshotCheck','NativeCtripFormObservation','ObservedChildText','ObservedTargetLabels']]
+ paths=[src/PKG/(x+'.java') for x in ['NativeAppEvidence','NativeXiaomiSearchInputObservation', 'NativeActionSnapshotCheck','NativeCtripFormObservation','ObservedChildText','ObservedTargetLabels']]
  paths += [src/BG/(x+'.java') for x in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  paths += [helper,src/TEST/'NativeAxConsumersHostTest.java']
  tools=[jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar]

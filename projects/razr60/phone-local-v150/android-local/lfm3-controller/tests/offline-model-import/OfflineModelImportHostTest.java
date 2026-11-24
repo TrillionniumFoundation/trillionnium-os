@@ -182,8 +182,8 @@ public final class OfflineModelImportHostTest {
             reject(()->LocalModelImportFile.ready(f.toFile(),pin(),LIVE));reject(()->LocalModelImportFile.begin(f.toFile(),pin()));unchangedOld(f);
         });
         run("fixed-registry-matches-real-model-and-projector-pins",()->{
-            check(LocalModelImportAsset.all().size()==6,"four models plus two projectors only");
-            for(ModelProfile model:new ModelProfile[]{ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B}){
+            check(LocalModelImportAsset.all().size()==7,"five models plus two projectors only");
+            for(ModelProfile model:new ModelProfile[]{ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B}){
                 LocalModelImportFile.Pin modelPin=LocalModelImportAsset.named(model.id+"/model").pin;
                 check(modelPin.filename.equals(model.fileName)&&modelPin.bytes==model.bytes&&modelPin.sha256.equals(model.sha256),"model pin from existing allowlist");
                 if(model.visual()){VlmResultContract.Profile visual=VlmResultContract.named(model.id);LocalModelImportFile.Pin projector=LocalModelImportAsset.named(model.id+"/projector").pin;

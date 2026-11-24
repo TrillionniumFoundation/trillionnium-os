@@ -216,6 +216,18 @@ public final class PublicProfileRecentHistory {
             originalIds=Collections.unmodifiableSet(new LinkedHashSet<Integer>(admitted.census.allIds));originalTokens=Collections.unmodifiableSet(new HashSet<String>(admitted.tokens.values()));}
         public synchronized Set<Integer> originalIds(){return originalIds;}
         public synchronized Set<Integer> observedIds(){return Collections.unmodifiableSet(new LinkedHashSet<Integer>(last.census.allIds));}
+        @Override public synchronized ProfileOwnedTask.RetainedRecentHistory beginRetainedCleanup(String raw,ProfileTarget target,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            need(first.target.same(target)&&root!=null&&leaf!=null&&display>1&&elapsed>=lastAt,"PUBLIC_RETAINED_HISTORY_SCOPE");
+            // Read-only access to the original admissions. Neither failed nor the
+            // old baseline/current observations are cleared or advanced here.
+            for(BackgroundOwnedSingleTask.Task task:new BackgroundOwnedSingleTask.Task[]{root,leaf}){
+                BackgroundOwnedSingleTask.Task pinned=retained.get(task.id);
+                need(pinned!=null&&pinned.user==task.user&&pinned.uid==task.uid&&pinned.parent==task.parent
+                        &&pinned.display==display&&Objects.equals(pinned.token,task.token),"PUBLIC_RETAINED_ORIGINAL_BINDER_MISSING");
+            }
+            return new CleanupHistory(raw,target,root,leaf,display,elapsed,ownedTokens);
+        }
         public synchronized void requireTargetAbsent(String raw,ProfileTarget target,long elapsed)throws Exception{
             try{requireCurrent(elapsed);Snapshot next=absence(raw,target);observeHistory(next,NONE,elapsed);}
             catch(Exception error){failed=true;failure=error.getMessage();throw error;}
@@ -273,5 +285,63 @@ public final class PublicProfileRecentHistory {
             out.put("nonowned_history_sha256",ProfileIdentity.sha(first.history(retained.keySet())));
             out.put("baseline_task_ids",new ArrayList<Integer>(originalIds));out.put("owned_task_ids",new ArrayList<Integer>(retained.keySet()));
             out.put("owned_target_absent",ownedAbsent());out.put("serialized_task_ids_grant_authority",false);return Collections.unmodifiableMap(out);}
+    }
+    /** Independent strict interval for cleanup, including unchanged physical
+     * recents. A prior business refusal remains latched in its original Baseline. */
+    private static final class CleanupHistory implements ProfileOwnedTask.RetainedRecentHistory {
+        private final ProfileTarget target;private final int display;
+        private final Map<Integer,BackgroundOwnedSingleTask.Task> owned=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
+        private final Map<Integer,String> tokens;
+        private final Set<Integer> ids;
+        private final Snapshot first;private Snapshot last;
+        private final long firstAt;private long lastAt;
+        private int samples;
+        CleanupHistory(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+                int display,long now,Map<Integer,String> originalTokens)throws Exception{
+            this.target=target;this.display=display;firstAt=lastAt=now;
+            need(root.parent==-1&&root.user==0&&root.display==display&&root.token!=null&&leaf.parent==root.id
+                    &&leaf.user==target.profile.userId&&leaf.uid==target.fullUid&&leaf.display==display
+                    &&leaf.token!=null&&!Objects.equals(root.token,leaf.token),"PUBLIC_RETAINED_OWNED_SCOPE");
+            owned.put(root.id,root);owned.put(leaf.id,leaf);ids=Collections.unmodifiableSet(new LinkedHashSet<Integer>(owned.keySet()));
+            tokens=Collections.unmodifiableMap(new LinkedHashMap<Integer,String>(originalTokens));
+            first=checked(raw);last=first;samples=1;
+        }
+        private Snapshot checked(String raw)throws Exception{
+            Snapshot next=new Snapshot(raw,target);
+            for(Map.Entry<Integer,BackgroundOwnedSingleTask.Task> entry:owned.entrySet()){
+                int id=entry.getKey();BackgroundOwnedSingleTask.Task task=entry.getValue();
+                PublicOwnGroupPhysicalFence.RecentRecord row=next.census.records.get(id);
+                // Android's WCT REMOVE_TASK rejects !isAttached(). A detached
+                // recent Task is not silently waited out or deleted by numeric ID.
+                if(row!=null&&task.parent>0&&row.root==task.id)
+                    throw new IllegalArgumentException("PUBLIC_RETAINED_DETACHED_RECENT_REQUIRES_MAINTENANCE");
+                if(row!=null){need(row.user==task.user&&row.uid==task.uid&&row.display==display
+                        &&row.root==(task.parent<0?task.id:task.parent),"PUBLIC_RETAINED_RECENT_TUPLE");
+                    if(task.user==target.profile.userId)need(targetPackage(row.base,target)&&targetPackage(row.activity,target),"PUBLIC_RETAINED_RECENT_PACKAGE");
+                }
+                String token=next.tokens.get(id);
+                if(token!=null)need(tokens.containsKey(id)&&tokens.get(id).equals(token),"PUBLIC_RETAINED_RECENT_TOKEN_CHANGED");
+            }
+            for(PublicOwnGroupPhysicalFence.RecentRecord row:next.census.records.values())if(!ids.contains(row.task))
+                need(row.display!=display&&!ids.contains(row.root),"PUBLIC_RETAINED_FOREIGN_DISPLAY_RECENT");
+            for(Map.Entry<Integer,String> token:next.tokens.entrySet())if(!ids.contains(token.getKey()))
+                need(!tokens.containsValue(token.getValue()),"PUBLIC_RETAINED_TOKEN_REUSED");
+            next.requireForeign(ids);return next;
+        }
+        @Override public void observe(String raw,long elapsed)throws Exception{
+            need(elapsed>=lastAt,"PUBLIC_RETAINED_CLOCK_REVERSED");Snapshot next=checked(raw);
+            first.sameHistory(next,ids,(elapsed-firstAt)/1000+2);last.sameHistory(next,ids,(elapsed-lastAt)/1000+2);
+            last=next;lastAt=elapsed;samples++;
+        }
+        @Override public Set<Integer> observedIds(){return Collections.unmodifiableSet(new LinkedHashSet<Integer>(last.census.allIds));}
+        @Override public Map<String,Object> evidence(){
+            Map<String,Object> value=new LinkedHashMap<String,Object>();value.put("schema","hepta.retained-profile-fresh-history.v1");
+            value.put("target_sha256",target.sha256);value.put("display_id",display);value.put("owned_task_ids",new ArrayList<Integer>(ids));
+            value.put("started_elapsed_ms",firstAt);value.put("finished_elapsed_ms",lastAt);value.put("samples",samples);
+            value.put("before_raw_sha256",first.census.rawSha256);value.put("after_raw_sha256",last.census.rawSha256);
+            value.put("foreign_history_sha256",ProfileIdentity.sha(first.history(ids)));value.put("all_foreign_history_unchanged",true);
+            value.put("original_history_reset",false);value.put("serialized_task_ids_grant_authority",false);
+            return Collections.unmodifiableMap(value);
+        }
     }
 }

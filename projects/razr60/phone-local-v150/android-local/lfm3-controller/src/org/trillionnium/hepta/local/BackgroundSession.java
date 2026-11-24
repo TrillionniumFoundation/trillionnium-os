@@ -12,6 +12,7 @@ import android.system.Os;
 import android.view.Display;
 import org.trillionnium.hepta.background.BrokerProtocol;
 import org.trillionnium.hepta.background.PublicOwnGroupPolicy;
+import org.trillionnium.hepta.background.PublicProfileBusinessAbsenceRecovery;
 import org.trillionnium.hepta.background.ProfileTarget;
 import org.trillionnium.hepta.background.ProfilePrelaunchRecovery;
 import org.trillionnium.hepta.background.ProfilePostlaunchRecovery;
@@ -199,6 +200,7 @@ final class BackgroundSession {
     private final PublicOwnGroupPolicy.Scope publicOwnGroupScope;
     private final Object publicScopeOwner=new Object(),publicScopeIo=new Object();
     private final PublicOwnGroupPolicy.LiveLease publicScopeLease;
+    private final RetainedProfileCleanupClient.Bootstrap retainedCleanup;
     private volatile PublicOwnGroupPolicy.Readback publicScopeReadback;
     private volatile String state="INITIAL";
     private volatile int displayId=-1;
@@ -242,6 +244,7 @@ final class BackgroundSession {
         publicOwnGroupScope=publicOwnGroup?new PublicOwnGroupPolicy.Scope(taskId,ownerSha256,generation,android.os.Process.myUid(),
                 profileTarget(),createdElapsed,expiresElapsed,bootCount):null;
         publicScopeLease=publicOwnGroupScope==null?null:new PublicOwnGroupPolicy.LiveLease(publicScopeOwner,publicOwnGroupScope);
+        retainedCleanup=RetainedProfileCleanupClient.create(publicOwnGroupScope);
     }
     boolean allows(String pkg){return selection.allowedPackages.contains(pkg);}
     ProfileTarget profileTarget(){return selection.profileTarget;}
@@ -621,7 +624,42 @@ final class BackgroundSession {
     synchronized boolean publicProfileBusinessRecoveryEligible(){
         return publicProfileRecoveryEligible()||publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
                 &&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state)
-                &&!brokerExitObserved&&brokerExitCode==null&&(brokerProcess==null||!brokerProcess.isAlive());
+                &&(brokerProcess==null||!brokerProcess.isAlive())
+                &&(!brokerExitObserved&&brokerExitCode==null||brokerExitObserved&&brokerExitCode!=null
+                &&brokerExitCode.intValue()>0&&brokerExitCode.intValue()<=255);
+    }
+    /** Cleanup-only admission for the original live broker. Final acceptance still
+     * requires the independent absence receipt and actual broker termination. */
+    synchronized boolean publicProfileBusinessCleanupEntryEligible(){
+        return publicProfileBusinessRecoveryEligible()||retainedCleanup!=null&&publicOwnGroupScope!=null&&profileTarget()!=null
+                &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
+                &&"CLEANUP_UNKNOWN".equals(state)&&!brokerExitObserved&&brokerExitCode==null
+                &&brokerProcess!=null&&brokerProcess.isAlive();
+    }
+    /** Wait only for this already-owned process and reader; no signal or release
+     * is issued here. A failed old exit remains a failed historical exit. */
+    void awaitRetainedBrokerExit(String task,String expectedGeneration,String owner,long deadline)throws Exception{
+        if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IOException("保留进程等待不得阻塞主线程");
+        final Process owned;final Thread reader;
+        synchronized(this){
+            if(!taskId.equals(task)||!generation.equals(expectedGeneration)||!ownerSha256.equals(owner)
+                    ||!publicProfileBusinessCleanupEntryEligible()||retainedCleanup==null)
+                throw new IOException("保留清理进程不属于原任务");
+            owned=brokerProcess;reader=brokerOutputThread;
+        }
+        if(owned==null)throw new IOException("原实例未持有保留进程对象");
+        long remaining=deadline-SystemClock.elapsedRealtime();
+        if(remaining<=0||!owned.waitFor(remaining,TimeUnit.MILLISECONDS))throw new IOException("保留清理进程尚未实际退出");
+        remaining=deadline-SystemClock.elapsedRealtime();
+        if(reader!=null&&reader.isAlive()&&remaining>0)reader.join(remaining);
+        synchronized(this){
+            if(SystemClock.elapsedRealtime()>=deadline||brokerProcess!=owned||brokerOutputThread!=reader
+                    ||owned.isAlive()||reader!=null&&reader.isAlive()||!retired||!"CLEANUP_UNKNOWN".equals(state))
+                throw new IOException("保留清理进程或原输出读取器尚未排空");
+            int exit=owned.exitValue();
+            if(exit<=0||exit>255)throw new IOException("保留清理必须保留原失败退出");
+            brokerExitObserved=true;brokerExitCode=exit;
+        }
     }
     /** Read-only absence recovery for a stopped personal Notes lease. The original
      * broker exit/release remains unknown; only a new opaque receipt can close it.
@@ -634,7 +672,7 @@ final class BackgroundSession {
         if(result.businessRecovery!=null){
             PublicProfileBusinessRecoveryClient.Receipt receipt=result.businessRecovery;
             if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null||result.personalNotesRecovery!=null
-                    ||!result.known||!(receipt.request.retainedBeforeFirstModel?publicProfileBusinessRecoveryEligible():publicProfileRecoveryEligible())||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                    ||!result.known||!(receipt.request.retainedCurrentAbsenceRequired()?publicProfileBusinessRecoveryEligible():publicProfileRecoveryEligible())||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
                     ||!generation.equals(result.evidence.getString("generation"))||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
                     ||!receipt.receiptSha256().equals(result.evidence.getString("business_receipt_sha256")))
                 throw new IOException("业务恢复凭据不属于当前原始停止租约");
@@ -744,6 +782,7 @@ final class BackgroundSession {
         if(profileTarget()!=null)value.put("profile_target_wire",profileTarget().wire()).put("profile_target_sha256",profileTarget().sha256)
                 .put("profile_isolation_required",true).put("profile_launch_attempted",profileLaunchAttempted);
         if(profileCleanupEvidence!=null)value.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
+        if(retainedCleanup!=null)retainedCleanup.addJournalFields(value);
         return value;
     }
 
@@ -762,6 +801,7 @@ final class BackgroundSession {
         if(publicOwnGroupScope==null)requireUnlocked();else requireNoPositiveAppCredential();
         filesRoot.unchanged(context);
         if(profileTarget()!=null)ProfileCatalogueClient.requireCurrent(context,profileTarget());
+        if(retainedCleanup!=null)retainedCleanup.persist(context,filesRoot);
         MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，后台空间未启动");
         File apk=new File(context.getApplicationInfo().sourceDir).getCanonicalFile();
@@ -772,6 +812,7 @@ final class BackgroundSession {
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
                 +(profileTarget()==null?"":" --profile-target "+quote(profileTarget().wire()))
                 +(publicOwnGroupScope==null?"":" --public-own-group-scope "+quote(publicOwnGroupScope.wire()))
+                +(retainedCleanup==null?"":" --retained-cleanup-token-sha256 "+quote(retainedCleanup.tokenSha256))
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
         File taskRoot=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
         File taskDirectory=MobiMindPrivateFiles.directory(new File(taskRoot,taskId),false);
@@ -1592,6 +1633,27 @@ final class BackgroundSession {
                 ||readBootCount(context)!=boot||expiry>=Long.MAX_VALUE-2000||SystemClock.elapsedRealtime()<=expiry+2000)
             throw new IOException("业务恢复仅适用于同一启动内已到期的已支持公共资料租约");
         check.checkBusiness(task,owner);root.unchanged(context);original.unchangedPath();
+        if(RetainedProfileCleanupClient.configured(old)){
+            PublicProfileBusinessRecoveryClient.PreparedRetainedCleanup prepared=
+                    PublicProfileBusinessRecoveryClient.prepareRetainedCleanup(context,original,check);
+            RetainedProfileCleanupClient.cleanupIfConfigured(context,original,check,prepared);
+            // The live App may now observe the old broker's nonzero exit. Preserve
+            // the pre-effect archive and validate the resulting records afresh;
+            // neither observation is a historical normal-release claim.
+            check.checkBusiness(task,owner);root.unchanged(context);
+            MobiMindPrivateFiles.Read fresh=MobiMindPrivateFiles.read(path,16384,true);
+            JSONObject next=parseJournal(fresh.bytes);
+            String[] immutable={"schema","task_id","app_uid","owner_sha256","generation","socket","display_name","display_id",
+                    "created_elapsed_ms","expires_elapsed_ms","boot_count","selection","public_own_group_scope_wire",
+                    "public_own_group_scope_sha256","profile_target_wire","profile_target_sha256","retained_cleanup_schema",
+                    "retained_cleanup_token_sha256","retained_cleanup_socket","retained_cleanup_key_path"};
+            for(String key:immutable)if(!PublicProfileBusinessAbsenceRecovery.canonical(new JSONObject().put("value",old.get(key)))
+                    .equals(PublicProfileBusinessAbsenceRecovery.canonical(new JSONObject().put("value",next.get(key)))))
+                throw new IOException("独立清理后原租约身份发生变化："+key);
+            if(!"CLEANUP_UNKNOWN".equals(next.getString("state"))||!Boolean.TRUE.equals(next.get("profile_launch_attempted")))
+                throw new IOException("独立清理不能把旧租约改写为正常释放");
+            original=fresh;
+        }
         PublicProfileBusinessRecoveryClient.Receipt receipt=PublicProfileBusinessRecoveryClient.collect(context,original,check);
         receipt.persist();JSONObject evidence=receipt.evidence();
         check.checkBusiness(task,owner);root.unchanged(context);receipt.requireOriginals(true);original.unchangedPath();
@@ -1794,6 +1856,7 @@ final class BackgroundSession {
         if(created<0||expiry<=created||expiry-created!=TTL_MS)throw new IOException("后台租约截止时间无效");
         journalProfileTarget(value);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(value);
         journalRequiresPersonalNotes(value,publicScope);
+        RetainedProfileCleanupClient.configured(value);
         return value;
     }
     private static boolean displayAbsent(Context context,int id,String name){

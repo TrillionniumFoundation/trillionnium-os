@@ -31,6 +31,7 @@ def generate(source,out,h,snap):
  goal_kind=re.findall(r'FLIGHT_RESULTS\s*=\s*"([^"]+)"',goal)
  if len(goal_kind)!=1:raise RuntimeError('actual native flight goal boundary')
  supported=h.body(provider,'    static boolean supported(NativeAppGoal goal){')
+ product_supported=h.body(goal,'    public boolean readsXiaomiProduct(){')
  constants=[]
  for marker in ['static final String PACKAGE=', 'static final long VERSION_CODE=', 'static final String BASE_APK_SHA256=', 'static final String HOME=']:
   matches=[line.strip() for line in provider.splitlines() if marker in line]
@@ -40,7 +41,9 @@ def generate(source,out,h,snap):
  '''    static final class NativeAppGoal {
         static final String PRODUCT_PRICE="native_product_price",XIAOMI_PACKAGE="com.xiaomi.shop";
         static final String CTRIP_PACKAGE="ctrip.android.view",FLIGHT_RESULTS="native_flight_results";
-        String ownerSha256,packageName,kind,fromCity,toCity;int adults,children,infants;
+        static final String PRODUCT_ORDER_PREVIEW="native_product_order_preview",PRODUCT_MODEL="AX3000T";
+        String ownerSha256,packageName,kind,fromCity,toCity,productModel;int adults,children,infants;Object orderPreview;
+        ACTUAL_XIAOMI_PROVIDER_VALUE_PREDICATE
     }
     static final class NativeCtripFlightPage { ACTUAL_CTRIP_PROVIDER_VALUE_PREDICATE }
     static final class LocalInference {final boolean visual;LocalInference(boolean v){visual=v;}boolean acceptsObservedImage(){return visual;}}
@@ -73,6 +76,7 @@ def generate(source,out,h,snap):
         }
     }''')
  s=once(s,'ACTUAL_CTRIP_PROVIDER_VALUE_PREDICATE','\n'.join(constants)+'\n'+supported)
+ s=once(s,'ACTUAL_XIAOMI_PROVIDER_VALUE_PREDICATE',product_supported)
  s=once(s,'FLIGHT_RESULTS="native_flight_results"','FLIGHT_RESULTS="'+goal_kind[0]+'"')
  s=once(s,'        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.',
      '        ProfileTarget observedProfileTarget;ProfileTarget profileTarget(){return observedProfileTarget;} // Explicit synthetic profile transport; no phone permission.')
@@ -111,7 +115,7 @@ def main():
  snap=load(source/'tests/native-observation-snapshot/run_host.py','ax_snapshot')
  java=a.java_home/'bin/java';javac=a.java_home/'bin/javac';jar=a.json_jar.resolve()
  if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
- deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
+ deps=[source/PKG/n for n in snap.JAVA]+[source/PKG/n for n in ['NativeXiaomiSearchInputObservation.java','NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']]
  profiles=[source/'src/org/trillionnium/hepta/background'/(n+'.java') for n in ['ProfileIdentity','ProfileTarget','WindowOwnership']]
  rect=source/'tests/qualification-scope/fixtures/android/graphics/Rect.java'
  fixtures=[source/'tests/native-observation-snapshot'/n for n in ['SnapshotChecks.java','ObservationEvidenceHost.java']]+[HERE/'ActualAxPhoneChecks.java']

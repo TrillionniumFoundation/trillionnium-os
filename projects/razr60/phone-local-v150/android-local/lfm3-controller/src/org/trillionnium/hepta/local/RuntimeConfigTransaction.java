@@ -122,9 +122,10 @@ final class RuntimeConfigTransaction {
         return LocalRuntimeConfig.fromFields(fields);
     }
     static void requireText(LocalRuntimeConfig config)throws IOException{
-        if(config==null||(config.profile!=ModelProfile.LFM3&&config.profile!=ModelProfile.LFM25_8B_A1B)
+        if(config==null||(config.profile!=ModelProfile.LFM3&&config.profile!=ModelProfile.LFM25_8B_A1B
+                &&config.profile!=ModelProfile.QWEN35_4B)
                 ||config.visualObservationOnly||(!"npu".equals(config.compute)&&!"gpu".equals(config.compute)))
-            throw new IOException("settings admit only the two pinned text models and explicit NPU/GPU");
+            throw new IOException("settings admit only the three pinned text models and explicit NPU/GPU");
     }
     static byte[] selected(String profile,String compute)throws Exception{
         ModelProfile model=ModelProfile.named(profile);

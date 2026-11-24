@@ -36,7 +36,7 @@ def prepare(source,output,*,include_terminal=True):
  'android/view/Display.java':'''package android.view;public final class Display {public static final int DEFAULT_DISPLAY=0;public final int id;public final String name;public boolean valid=true;public int flags=6272;public Display(int id,String name){this.id=id;this.name=name;}public String getName(){return name;}public int getDisplayId(){return id;}public int getFlags(){return flags;}public boolean isValid(){return valid;}}''',
  'android/hardware/display/DisplayManager.java':'''package android.hardware.display;public final class DisplayManager {public final java.util.Map<Integer,android.view.Display> displays=new java.util.LinkedHashMap<Integer,android.view.Display>();public android.view.Display getDisplay(int id){return displays.get(id);}public android.view.Display[] getDisplays(){return displays.values().toArray(new android.view.Display[0]);}}''',
  'android/content/Context.java':'''package android.content;public final class Context {public static final String DISPLAY_SERVICE="display",KEYGUARD_SERVICE="keyguard";public final android.hardware.display.DisplayManager displays=new android.hardware.display.DisplayManager();public android.app.KeyguardManager keyguard=new android.app.KeyguardManager();private final java.io.File files;public Context(java.io.File f){files=f;}public Context getApplicationContext(){return this;}public java.io.File getFilesDir(){return files;}public Object getSystemService(String s){return DISPLAY_SERVICE.equals(s)?displays:keyguard;}public Object getContentResolver(){return this;}public android.content.pm.ApplicationInfo getApplicationInfo(){android.content.pm.ApplicationInfo a=new android.content.pm.ApplicationInfo();a.sourceDir=new java.io.File(files,"fake.apk").getPath();return a;}}''',
- 'android/net/Credentials.java':'''package android.net;public final class Credentials {private final int uid;public Credentials(int value){uid=value;}public int getUid(){return uid;}}''',
+ 'android/net/Credentials.java':'''package android.net;public final class Credentials {private final int uid;public Credentials(int value){uid=value;}public int getUid(){return uid;}public int getPid(){return -1;}}''',
  'android/net/LocalSocketAddress.java':'''package android.net;public final class LocalSocketAddress {public enum Namespace {ABSTRACT}public final String name;public final Namespace namespace;public LocalSocketAddress(String name,Namespace namespace){this.name=name;this.namespace=namespace;}}''',
  'android/net/LocalSocket.java':'''package android.net;import java.io.*;import java.util.*;
 public final class LocalSocket implements Closeable {
@@ -62,6 +62,10 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  'org/trillionnium/hepta/local/ProfileCatalogueClient.java':'''package org.trillionnium.hepta.local;import org.trillionnium.hepta.background.ProfileTarget;final class ProfileCatalogueClient {static ProfileTarget actual;static void requireCurrent(android.content.Context c,ProfileTarget expected){if(actual==null||!expected.same(actual))throw new IllegalStateException("synthetic privileged catalogue identity unavailable");}}''',
  'org/trillionnium/hepta/local/LocalProbeApplication.java':'package org.trillionnium.hepta.local;final class LocalProbeApplication {static boolean permissionBusy;static void requirePermissionPreparationIdle(android.content.Context c){if(permissionBusy)throw new IllegalStateException("permission preparation active");}}',
  'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}
+    static HeptaAccessibilityService connected(){return null;}
+    BackgroundSession retiredBusinessBackgroundForCleanup(String task,String generation,String owner)throws java.io.IOException{
+        throw new java.io.IOException("No live cleanup service authority in generic host fixture");
+    }
     /** Type-only old host boundary: no private action attempt can be constructed. */
     static final class CalendarInputAttempt {
         final String operationId=null;
@@ -135,11 +139,11 @@ final class NativeAppSession {
  for name,text in code.items():
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(text);files.append(dst)
  files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope',
- 'BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
+ 'RetainedProfileCleanupClient','BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker','WorkerGenerationProof')]
  files += [pkg/(name+'.java') for name in ('RecoveryJournalStore','RecoveryJournalTransaction','RecoveryQuiescence','SessionRecovery')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory','RetainedProfileCleanupAttempt')]
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PublicPersonalNotesAbsenceRecovery','PublicPersonalNotesHistory','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
  files.append(source/'src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java')
  # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.

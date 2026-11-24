@@ -16,7 +16,7 @@ final class NativeActionSnapshotCheck {
     static final int MAX_NODES=1536, MAX_TEXT=32768, MAX_BYTES=1048576;
     static final int MAX_REJECTION_DIAGNOSTIC_BYTES=262144;
     static final String CTRIP="ctrip.android.view", XIAOMI="com.xiaomi.shop";
-    static final String OPEN="open_flight_form", YEAR="inspect_departure_year", QUERY="query_observed_form", SEARCH="open_search", SEARCH_ICON="open_search_icon";
+    static final String OPEN="open_flight_form", YEAR="inspect_departure_year", QUERY="query_observed_form", SEARCH="open_search", SEARCH_ICON="open_search_icon", SET_QUERY="set_product_query";
     static final String CP=CTRIP+":id/";
     static final Set<String> NK=keys("path,parent_class,package,window_id,class,view_id,text,description,label,ref_signature_sha256,bounds,visible,enabled,clickable,editable,scrollable,focused,password,selected,checkable,checked,children,scroll_actions,ime_enter,input_sha256,action_click");
     static final Set<String> EK=keys("task_id,owner_sha256,target_sha256,authorization_sha256,selection_sha256,installed_set_sha256,goal_sha256,background_generation,origin_observation_id,package,display_id,window_id,rotation,width,height,root_bounds,window_metadata_sha256,reported_windows_sha256,reported_windows_complete,ime_visibility,captured_elapsed_ms,full_native_complete,visited,pending,node_omissions,text_omissions,child_omissions");
@@ -57,8 +57,8 @@ final class NativeActionSnapshotCheck {
         final Map<String,Object> identity; final long started,deadline;
         Intent(String purpose,String pkg,String path,String label,String refSha256,String run,String node,
                String actionSha,String historySha,Map<String,Object> identity,long started,long deadline){
-            need(Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose),"unsupported purpose");
-            need(((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose))?XIAOMI:CTRIP).equals(pkg),"purpose/package mismatch");
+            need(Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose)||SET_QUERY.equals(purpose)&&XIAOMI.equals(pkg),"unsupported purpose");
+            need(((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose)||SET_QUERY.equals(purpose))?XIAOMI:CTRIP).equals(pkg),"purpose/package mismatch");
             need(path(path)&&label!=null&&label.length()<=4096&&sha(refSha256)&&id(run)&&node!=null&&node.matches("n[0-9]{1,4}")&&sha(actionSha),"original action identity");
             need(identity!=null&&(identity.keySet().equals(IDENTITY)||identity.keySet().equals(PROFILE_AUTHORITY)),"exact authority identity");
             profileIdentity(identity);
@@ -122,6 +122,7 @@ final class NativeActionSnapshotCheck {
         Map<String,Object> a=new TreeMap<String,Object>(old.env),z=new TreeMap<String,Object>(fresh.env);
         for(String k:Arrays.asList("captured_elapsed_ms","visited")){a.remove(k);z.remove(k);}
         need(a.equals(z),"window/display/IME/authority differs");
+        if(SET_QUERY.equals(in.purpose))return compareEmptySearchInput(in,old,fresh);
         Node target=old.node(in.path),newTarget=fresh.node(in.path);
         need(target.click()&&newTarget.click()&&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original target/ref/label");
         need(searchEntryTarget(in,old)
@@ -158,6 +159,33 @@ final class NativeActionSnapshotCheck {
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
         out.put("grants_dispatch",false);out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
         out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
+    }
+    /** Only the original model-issued literal input may use this separate
+     * proof. Ordinary comparison purposes and their click predicates are unchanged. */
+    private static Map<String,Object> compareEmptySearchInput(Intent in,Snapshot old,Snapshot fresh){
+        Node target=old.node(in.path);
+        need(NativeXiaomiSearchInputObservation.QUERY_PATH.equals(in.path)&&target.usable()&&b(target.v,"editable")
+                &&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original empty-query target/ref/label");
+        Map<String,Object> out=new TreeMap<String,Object>(NativeXiaomiSearchInputObservation.compare(old,fresh));
+        out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");out.put("purpose",in.purpose);
+        out.put("target_path",in.path);out.put("model_run_id",in.run);out.put("original_node_id",in.node);
+        out.put("original_action_sha256",in.actionSha);out.put("original_observation_id",in.identity.get("origin_observation_id"));
+        out.put("fresh_snapshot_sha256",fresh.sha);out.put("query_history_binding_sha256",in.historySha);
+        out.put("query_history_proved_by_comparator",false);out.put("grants_dispatch",false);
+        out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
+        out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
+    }
+    /** Recompute an actual retained reference from the complete raw node tree.
+     * Hidden/clipped nodes have no retained reference; their coordinates are
+     * checked separately and never normalized into an actionable rectangle. */
+    static void requireSearchInputReference(Snapshot snapshot,Node node){
+        if(!node.visible()){need(node.label==null&&node.v.get("ref_signature_sha256")==null,"hidden input-region node has no retained reference");return;}
+        ObservedChildText.Result child=searchHintChildren(snapshot.nodes,node);
+        String label=ObservedTargetLabels.project(!node.text.isEmpty()?node.text:!node.desc.isEmpty()?node.desc:child.text);
+        need(label.equals(node.label),"input-region projected label differs");
+        String full=child.bind(searchHintBase(node))+"\nscroll_actions="+s(node.v,"scroll_actions")
+                +"\nime_enter="+s(node.v,"ime_enter")+"|focused="+b(node.v,"focused")+"|full_input="+node.v.get("input_sha256");
+        need(hash(full).equals(node.v.get("ref_signature_sha256")),"input-region complete reference differs");
     }
     /** Complete private diagnostic of a rejected comparison. No screenshot is
      * acquired here and no predicate, action permission or original refusal changes. */

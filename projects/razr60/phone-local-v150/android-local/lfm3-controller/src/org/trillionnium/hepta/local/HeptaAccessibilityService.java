@@ -466,8 +466,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return task!=null&&task.matches("[0-9a-f]{32}")&&owner!=null&&owner.matches("[0-9a-f]{64}")
                 &&live==this&&ownedController==expected&&(expected==null||!expected.isRunning()&&task.equals(expected.currentTaskId()))
                 &&activeObservation==null&&activeNativeSearchObservation==null&&!capturePending&&!observationIoBusy.get()&&!actionWorkPending()&&!nativeCancellationWorkPending()
-                &&(taskBackground==null||taskBackground.publicProfileBusinessRecoveryEligible()&&task.equals(taskBackground.taskId)&&owner.equals(taskBackground.ownerSha256))
+                &&(taskBackground==null||taskBackground.publicProfileBusinessCleanupEntryEligible()&&task.equals(taskBackground.taskId)&&owner.equals(taskBackground.ownerSha256))
                 &&(taskWeb==null||taskWeb.released())&&(lease==null||lease.equals(task));
+    }
+    /** Recovery may wait for its original Process outside this service lock.
+     * This read-only reference grants neither business nor cleanup authority. */
+    synchronized BackgroundSession retiredBusinessBackgroundForCleanup(String task,String generation,String owner){
+        if(!publicProfileBusinessReconciliationIdle(ownedController,task,owner)
+                ||taskBackground!=null&&!taskBackground.generation.equals(generation))
+            throw new IllegalStateException("独立清理的原后台实例或队列预约已变化");
+        return taskBackground;
     }
     /** Personal Notes receipt admission has its own type and eligibility; it grants no action authority. */
     synchronized boolean personalNotesReconciliationIdle(LocalTaskController expected){
@@ -3681,7 +3689,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final CaptureIdentity identity;final Graph original;final String id=UUID.randomUUID().toString().replace("-","");
         final Object mode;final int publicationRecheckCount;final Map<String,Object> previousPair;
         ObservationPairSeal seal;ObservationCaptureEvidence capture;File path;
-        Map<String,Object> first,second,formHistory;String firstIme,secondIme;
+        Map<String,Object> first,second,formHistory,inputHistory;String firstIme,secondIme;
+        boolean historical(){return formHistory!=null||inputHistory!=null;}
         ObservationEventWatermark publicationWatermark;
         ObservationEventWatermark completed;long completedAt=-1,persistedAt=-1,windowStarted=-1,windowCompleted=-1;
         boolean windowChecked,windowMatched,published;String stage="ax_seal_graph";
@@ -3727,7 +3736,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         Map<String,Object> evidence(long at){
             Map<String,Object> e=new java.util.LinkedHashMap<String,Object>(capture.evidence());
-            e.put("schema",capture.metadataSchema());e.put("mode",capture.formHistory()?"complete_native_ax_form_history":"complete_native_ax_pair");
+            e.put("schema",capture.metadataSchema());e.put("mode",capture.inputHistory()?"complete_native_ax_empty_search_input_history":
+                    capture.formHistory()?"complete_native_ax_form_history":"complete_native_ax_pair");
             e.put("capture_requested_elapsed_ms",identity.capturedAt);e.put("published_elapsed_ms",at);
             e.put("capture_age_at_publication_ms",at-identity.capturedAt);
             e.put("sample_graph_started_elapsed_ms",identity.graphStartedAt);e.put("sample_graph_completed_elapsed_ms",identity.graphCompletedAt);
@@ -3747,6 +3757,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 e.put("publication_event_watermark",nativeAxWatermark(publicationWatermark));
                 e.put("events_after_complete_census_admitted",publicationWatermark.events!=completed.events);
                 e.put("post_census_events_use","historical_form_planning_only");e.put("publication_window_matched",windowMatched);
+                e.put("events_after_complete_census_admitted_endpoint","recorded_publication_watermark");
+            }
+            if(capture.inputHistory()){
+                e.put("historical_empty_input_planning_only",true);e.put("published_pair_is_current_tree_claimed",false);
+                e.put("input_history",capture.inputHistoryEvidence());
+                e.put("publication_event_watermark",nativeAxWatermark(publicationWatermark));
+                e.put("events_after_complete_census_admitted",publicationWatermark.events!=completed.events);
+                e.put("post_census_events_use","historical_empty_input_planning_only");e.put("publication_window_matched",windowMatched);
                 e.put("events_after_complete_census_admitted_endpoint","recorded_publication_watermark");
             }
             e.put("fresh_action_validation_required",true);return e;
@@ -3828,8 +3846,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return ObservationCaptureEvidence.freezeMap(value);
         }catch(IllegalArgumentException unclassified){return null;}
     }
+    /** Only a complete installed-profile empty-input pair may be published as
+     * explicit planning history. It grants no type or selected-node freshness. */
+    private Map<String,Object> nativeAxInputHistory(ObservationRequest request,NativeAxProduct product,Graph after){
+        if(!nativeTextObservationAllowed(request,product.original)||!nativeTextObservationAllowed(request,after)
+                ||request.captured!=product.original||request.nativeAxMode!=product.mode
+                ||request.background==null||product.identity.frozenWindow==null
+                ||!product.identity.frozenWindow.matches(frozenObservationWindow(after)))return null;
+        ProfileTarget target=request.background.profileTarget();BackgroundTaskTarget task=request.background.selection.taskTarget;
+        if(target==null||task==null||task.nativeGoal==null||!task.nativeGoal.readsXiaomiProduct()
+                ||!NativeAppGoal.PRODUCT_MODEL.equals(task.nativeGoal.productModel)
+                ||!NativeXiaomiSearchInputObservation.PACKAGE.equals(target.packageName)
+                ||target.versionCode!=NativeXiaomiSearchInputObservation.VERSION_CODE
+                ||!NativeXiaomiSearchInputObservation.BASE_APK_SHA256.equals(target.apkHashes.get("base")))return null;
+        requireObservationWork(request);
+        try{
+            Map<String,Object> binding=new java.util.LinkedHashMap<String,Object>(nativeAxIdentity(product.original));
+            binding.put("observation_id",product.id);binding.put("profile_action_identity",product.first.get("profile_owner"));
+            binding.put("profile_window",product.first.get("profile_window"));
+            Map<String,Object> proof=NativeXiaomiSearchInputObservation.compareAxCensuses(product.first,product.second,binding,target.apkSetSha256);
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            value.put("phase",NativeXiaomiSearchInputObservation.PHASE);value.put("installed_set_sha256",target.apkSetSha256);
+            value.put("provider_version_code",target.versionCode);value.put("provider_base_apk_sha256",target.apkHashes.get("base"));
+            value.put("comparison",proof);requireObservationWork(request);return ObservationCaptureEvidence.freezeMap(value);
+        }catch(IllegalArgumentException unclassified){return null;}
+    }
     private static boolean nativeAxPublicationCovered(NativeAxProduct product,ObservationEventWatermark now){
-        return product.formHistory==null?sameAxWatermark(product.completed,now):
+        return !product.historical()?sameAxWatermark(product.completed,now):
                 product.completed!=null&&now!=null&&now.onlyContentSince(product.completed)
                 &&now.onlyContentSince(product.identity.eventWatermark);
     }
@@ -3870,7 +3913,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     boolean equal=request.captured==product.original&&identity.matches(after)&&nativeObservationRecheckAllowed(request,after)
                             &&identity.frozenWindow!=null&&identity.frozenWindow.matches(frozenObservationWindow(after))
                             &&nativeAxEqual(product.first,product.second);
-                    if(!equal&&product.formHistory==null){request.note(ObservationDiagnostics.Event.AX_GRAPH_CHANGED);retry=true;
+                    if(!equal&&product.formHistory==null)product.inputHistory=nativeAxInputHistory(request,product,after);
+                    if(!equal&&!product.historical()){request.note(ObservationDiagnostics.Event.AX_GRAPH_CHANGED);retry=true;
                         product.reject(product.stage,"graph_changed",request.eventWatermark(),SystemClock.elapsedRealtime());
                         recordNativeFullGraphChange(request,product.stage,product.original,after);}
                 }
@@ -3893,10 +3937,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     binding.put("profile_window",product.original.profileWindow==null?null:product.original.profileWindow.evidence());
                     binding.put("profile_action_identity",product.original.profileWindow==null?null:NativeAppEvidence.profileActionIdentity(product.original.profileWindow));
                     Map<String,Object> receipt=new java.util.LinkedHashMap<String,Object>();
-                    receipt.put("schema",product.formHistory==null?"hepta.native-ax-capture.v1":"hepta.native-ax-form-history.v1");
-                    receipt.put("kind",product.formHistory==null?ObservationCaptureEvidence.NATIVE_AX:ObservationCaptureEvidence.NATIVE_AX_FORM_HISTORY);
+                    receipt.put("schema",product.inputHistory!=null?"hepta.native-ax-empty-search-input-history.v1":
+                            product.formHistory==null?"hepta.native-ax-capture.v1":"hepta.native-ax-form-history.v1");
+                    receipt.put("kind",product.inputHistory!=null?ObservationCaptureEvidence.NATIVE_AX_INPUT_HISTORY:
+                            product.formHistory==null?ObservationCaptureEvidence.NATIVE_AX:ObservationCaptureEvidence.NATIVE_AX_FORM_HISTORY);
                     if(product.formHistory!=null){
                         receipt.put("form_history",product.formHistory);receipt.put("historical_form_planning_only",true);
+                        receipt.put("published_pair_is_current_tree_claimed",false);
+                    }
+                    if(product.inputHistory!=null){
+                        receipt.put("input_history",product.inputHistory);receipt.put("historical_empty_input_planning_only",true);
                         receipt.put("published_pair_is_current_tree_claimed",false);
                     }
                     receipt.put("binding",binding);receipt.put("first",product.first);receipt.put("second",product.second);
@@ -3906,7 +3956,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     receipt.put("second_completed_watermark",nativeAxWatermark(product.completed));receipt.put("complete_census_endpoint_frozen",true);
                     receipt.put("visual_model",false);receipt.put("screenshot_present",false);receipt.put("publication_refreshes_capture_age",false);
                     receipt.put("grants_action_authority",false);receipt.put("business_completion_verified",false);
-                    byte[] bytes=product.formHistory==null?ObservationCaptureEvidence.nativeAxBytes(receipt):
+                    byte[] bytes=product.inputHistory!=null?ObservationCaptureEvidence.nativeAxInputHistoryBytes(receipt):
+                            product.formHistory==null?ObservationCaptureEvidence.nativeAxBytes(receipt):
                             ObservationCaptureEvidence.nativeAxFormHistoryBytes(receipt);requireObservationWork(request);
                     if(!nativeAxPublicationCovered(product,request.eventWatermark())){
                         retry=true;product.reject(product.stage,"event_before_persistence",request.eventWatermark(),SystemClock.elapsedRealtime());
@@ -3916,7 +3967,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         MobiMindPrivateFiles.writeNew(path,bytes);product.path=path;
                         requireObservationWork(request);
                         MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(path,ObservationCaptureEvidence.MAX_RECEIPT_BYTES,true);
-                        product.capture=product.formHistory==null?
+                        product.capture=product.inputHistory!=null?
+                                ObservationCaptureEvidence.fromSealedNativeAxInputHistory(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes)):
+                                product.formHistory==null?
                                 ObservationCaptureEvidence.fromSealedNativeAx(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes)):
                                 ObservationCaptureEvidence.fromSealedNativeAxFormHistory(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes));
                         read.unchangedPath();product.persistedAt=SystemClock.elapsedRealtime();requireObservationWork(request);
@@ -3963,7 +4016,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Only a genuinely persisted equal pair and a successful actual window check
      * can enter one complete A/C recheck for later typed-content events. */
     private boolean recheckNativeAxPublication(ObservationRequest request,NativeAxProduct product){
-        if(product.formHistory!=null||request.nativeAxPublicationRecheckAttempted||product.publicationRecheckCount!=0
+        if(product.historical()||request.nativeAxPublicationRecheckAttempted||product.publicationRecheckCount!=0
                 ||!observationActive(request)||!request.nativeSample||request.captured!=product.original
                 ||!nativeTextObservationAllowed(request,request.captured)||request.nativeAxMode!=product.mode
                 ||product.seal==null||product.seal.identity!=product.identity
@@ -4039,7 +4092,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             ObservationEventWatermark transferred=request.eventWatermark();
             // History may include typed content already recorded before DTO construction.
             // Any later event still refuses this publication rather than hiding its watermark.
-            if(!sameAxWatermark(product.formHistory==null?product.completed:product.publicationWatermark,transferred)){
+            if(!sameAxWatermark(!product.historical()?product.completed:product.publicationWatermark,transferred)){
                 product.reject("ax_before_transfer",nativeAxLateEventReason(product,transferred),transferred,SystemClock.elapsedRealtime());
                 recordNativeAxPublicationRejection(request,product,"ax_before_transfer");
                 request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
@@ -5407,7 +5460,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||!original.ownerSha.equals(background.ownerSha256)||!original.packageName.equals(frame.packageName)
                 ||!original.selectionSha.equals(NativeAppObservation.selectionSha(background.selection))
                 ||!frame.backgroundAllowedPackages.equals(java.util.Collections.singletonList(original.packageName))
-                ||!original.packageName.equals(frame.backgroundBootstrapPackage)||!"click".equals(action.action)
+                ||!original.packageName.equals(frame.backgroundBootstrapPackage)
+                ||!(nativeSearchInputGuard(work)?"type".equals(action.action):"click".equals(action.action))
+                ||nativeSearchInputGuard(work)&&(!original.packageName.equals(NativeAppGoal.XIAOMI_PACKAGE)
+                    ||!guard.goal.readsXiaomiProduct()||!NativeAppGoal.PRODUCT_MODEL.equals(guard.goal.productModel)
+                    ||!guard.goal.immutableOwner.substring(guard.goal.modelStartUtf16,guard.goal.modelEndUtf16).equals(action.text)
+                    ||!guard.targetNode.text.isEmpty()||!"0/1".equals(guard.targetNode.path))
                 ||!original.observationId.equals(action.observationId)||!guard.targetNode.id.equals(action.nodeId))
             throw new StaleObservation("原生动作原观察、目标或任务身份变化");
         background.requireActive();actionCheck(work);
@@ -5519,6 +5577,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static boolean nativeSearchEntryGuard(ActionWork work){
         return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SEARCH.equals(work.nativeGuard.purpose)
+                &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
+    }
+    private static boolean nativeSearchInputGuard(ActionWork work){
+        return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SET_QUERY.equals(work.nativeGuard.purpose)
                 &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
     }
     /** Equal-tree Ctrip OPEN still needs the existing full final checker and
@@ -5715,6 +5777,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)))
                 return "stale:历史表单只能经本次日期或查询原生Guard重新完整校验";
         }
+        if(expected.capture!=null&&expected.capture.inputHistory()&&!"wait".equals(action.action)&&!"done".equals(action.action)){
+            if(!nativeSearchInputGuard(work)||!"type".equals(action.action))
+                return "stale:历史空搜索框只能经原生Guard重新完整校验同一原文输入";
+        }
         String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
@@ -5734,7 +5800,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 requireLiveFlightNativeStability(taskId,expected,action,permit,now,cancel,work));
                         actionCheck(work);
                     }catch(Exception mismatch){throw new StaleObservation("stale:首页目标局部复核失败："+message(mismatch));}
-                }else if(expected.capture!=null&&expected.capture.formHistory()||!graph.digest.equals(now.digest)){
+                }else if(expected.capture!=null&&expected.capture.planningHistory()||!graph.digest.equals(now.digest)){
                     if(work!=null&&work.nativeGuard!=null){
                         try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
                         catch(ProfileOwnershipViolation identityChanged){throw identityChanged;}
@@ -5867,6 +5933,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 Bundle args=new Bundle();args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,action.text);
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                if(nativeSearchInputGuard(work)||expected.capture!=null&&expected.capture.inputHistory()){
+                    finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
+                }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,args);actionEffectReturned(work,Boolean.valueOf(accepted));
                 if(!accepted){callback.onResult(new ActionOutcome(false,false,false,"文本写入未被接受"));return;}
                 afterActionDelay(work,new Runnable(){public void run(){

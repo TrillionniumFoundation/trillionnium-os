@@ -42,6 +42,16 @@ public final class ProfileOwnedTask {
                 BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception;
         Set<Integer> observedIds();
         Map<String,Object> evidence();
+        default RetainedRecentHistory beginRetainedCleanup(String raw,ProfileTarget target,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            throw new IllegalStateException("PROFILE_RETAINED_HISTORY_UNAVAILABLE");
+        }
+    }
+    /** Fresh cleanup observations have their own baseline; the business latch is never reset. */
+    interface RetainedRecentHistory {
+        void observe(String raw,long elapsed)throws Exception;
+        Set<Integer> observedIds();
+        Map<String,Object> evidence();
     }
     private final Platform platform;
     private final ProfileTarget target;
@@ -59,7 +69,7 @@ public final class ProfileOwnedTask {
     private String leafTokenId;
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
     private boolean identityUnknown,foreignTasks,cleanupKnown,liveAbsent,recentsAbsent;
-    private boolean retainedReleaseChecked,rootDeleteAttempted;
+    private boolean retainedReleaseChecked,rootDeleteAttempted,leafRemoveAttempted,retainedCleanupClaimed;
     private String recentsBeforeSha,recentsAfterSha;
     public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display)throws Exception{
         this(platform,target,generation,requestId,display,null);
@@ -279,7 +289,7 @@ public final class ProfileOwnedTask {
                     requireRecentOnlyOwned(readRecents(),leaf.id);
                     if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
-                    platform.removeLeaf(leaf.token);leafRemoved=true;
+                    leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;
                 }else{
                     requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
@@ -341,10 +351,146 @@ public final class ProfileOwnedTask {
     }
     /** Owned by this broker only; the callback has no task launch, remove or input operation. */
     interface RetiredDisplay {
+        default void beginFreshSample(long started,long deadline)throws Exception{}
         void requireState(boolean beforeRelease)throws Exception;
         void awaitAbsent()throws Exception;
         void releaseOriginalHandle()throws Exception;
+        default void releaseOriginalHandle(long observedStarted,long deadline)throws Exception{releaseOriginalHandle();}
     }
+    /** A private-construction proof for a separate cleanup interval. It does not
+     * change the original task's cleanupKnown/identityUnknown/history fields. */
+    static final class RetainedCleanupProof {
+        private final ProfileOwnedTask owner;
+        private final Map<String,Object> facts;
+        private RetainedCleanupProof(ProfileOwnedTask owner,Map<String,Object> facts){
+            this.owner=owner;this.facts=Collections.unmodifiableMap(new LinkedHashMap<String,Object>(facts));
+        }
+        Map<String,Object> evidence(){return facts;}
+    }
+    private static final class RetainedSample {
+        final boolean rootLive,leafLive,rootRecent,leafRecent;
+        final List<List<?>> outside;
+        final long started;
+        RetainedSample(boolean rootLive,boolean leafLive,boolean rootRecent,boolean leafRecent,List<List<?>> outside,long started){
+            this.rootLive=rootLive;this.leafLive=leafLive;this.rootRecent=rootRecent;this.leafRecent=leafRecent;this.outside=outside;this.started=started;
+        }
+        boolean tasksAbsent(){return !rootLive&&!leafLive&&!rootRecent&&!leafRecent;}
+        boolean leafAbsent(){return !leafLive&&!leafRecent;}
+    }
+    /** Cleanup-only access to this object's originally retained Binder capabilities.
+     * Serialized IDs are never accepted. Each original or new effect is attempted
+     * at most once, including a call that threw before its result was observed. */
+    synchronized RetainedCleanupProof cleanupRetained(long deadline,RetiredDisplay handle)throws Exception{
+        need(!retainedCleanupClaimed&&!retainedReleaseChecked&&publicHistory!=null&&retiring&&identityUnknown
+                &&root!=null&&leaf!=null&&prepared&&dispatchMarked&&startAccepted&&handle!=null,
+                "PROFILE_RETAINED_CLEANUP_NOT_ELIGIBLE");
+        retainedCleanupClaimed=true;
+        need(platform.now()<deadline&&deadline-platform.now()<=10000,"PROFILE_RETAINED_CLEANUP_DEADLINE");
+        Map<String,Object> historical=new LinkedHashMap<String,Object>(publicHistory.evidence());
+        long began=platform.now();
+        handle.beginFreshSample(began,Math.min(deadline,began+1500));
+        RetainedRecentHistory fresh=publicHistory.beginRetainedCleanup(platform.publicRecentsDump(),target,root,leaf,display,platform.now());
+        requireRetainedFresh(began,deadline);
+        RetainedSample current=retainedCleanupSample(fresh,null,deadline,handle,true);
+        final List<List<?>> outside=current.outside;
+        platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,true);
+        boolean leafAttempted=false,rootAttemptedNow=false,releaseAttempted=false;
+        need(current.leafLive||!current.leafRecent,"PROFILE_RETAINED_RECENT_ONLY_REQUIRES_MAINTENANCE");
+        if(current.leafLive){
+            need(!leafRemoveAttempted,"PROFILE_RETAINED_LEAF_EFFECT_ALREADY_ATTEMPTED");
+            retainedCleanupFinalPair(true,outside,current.started,deadline);
+            requireRetainedFresh(current.started,deadline);
+            leafAttempted=true;
+            platform.removeLeaf(leaf.token);
+        }
+        while(!current.leafAbsent()){
+            platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,true);
+        }
+        // A second complete absence read excludes a detached, retained recent leaf.
+        platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,true);
+        need(current.leafAbsent(),"PROFILE_RETAINED_LEAF_REAPPEARED");
+        if(current.rootLive){
+            need(!rootDeleteAttempted,"PROFILE_RETAINED_ROOT_EFFECT_ALREADY_ATTEMPTED");
+            retainedCleanupFinalPair(false,outside,current.started,deadline);
+            requireRetainedFresh(current.started,deadline);
+            rootAttemptedNow=true;
+            need(platform.deleteRoot(root.token),"PROFILE_RETAINED_ROOT_DELETE_NOT_ACCEPTED");
+        }
+        while(!current.tasksAbsent()){
+            platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,true);
+        }
+        platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,true);
+        need(current.tasksAbsent(),"PROFILE_RETAINED_TASK_REAPPEARED");
+        handle.requireState(true);requireRetainedFresh(current.started,deadline);
+        releaseAttempted=true;handle.releaseOriginalHandle(current.started,deadline);handle.awaitAbsent();
+        for(int i=0;i<2;i++){
+            platform.pause();current=retainedCleanupSample(fresh,outside,deadline,handle,false);
+            need(current.tasksAbsent(),"PROFILE_RETAINED_POST_TASK_PRESENT");
+        }
+        need(historical.equals(publicHistory.evidence()),"PROFILE_RETAINED_ORIGINAL_HISTORY_CHANGED");
+        Map<String,Object> facts=new LinkedHashMap<String,Object>();
+        facts.put("schema","hepta.retained-profile-cleanup-interval.v1");facts.put("generation",generation);
+        facts.put("target_sha256",target.sha256);facts.put("display_id",display);facts.put("root_task_id",root.id);facts.put("leaf_task_id",leaf.id);
+        facts.put("started_elapsed_ms",began);facts.put("finished_elapsed_ms",platform.now());facts.put("deadline_elapsed_ms",deadline);
+        facts.put("maximum_census_to_effect_age_ms",1500);facts.put("detached_recent_task_removal_supported",false);
+        facts.put("leaf_remove_attempted",leafAttempted);facts.put("root_delete_attempted",rootAttemptedNow);
+        facts.put("original_display_release_attempted",releaseAttempted);facts.put("current_tasks_absent",true);
+        facts.put("current_display_absent",true);facts.put("outside_live_tasks_unchanged",true);
+        facts.put("original_cleanup_known",cleanupKnown());facts.put("original_identity_unknown",identityUnknown);
+        facts.put("original_history",Collections.unmodifiableMap(historical));facts.put("fresh_cleanup_history",fresh.evidence());
+        facts.put("business_admission_restored",false);facts.put("old_failure_rewritten",false);facts.put("serialized_tokens_grant_authority",false);
+        return new RetainedCleanupProof(this,facts);
+    }
+    private RetainedSample retainedCleanupSample(RetainedRecentHistory history,List<List<?>> baseline,long deadline,
+            RetiredDisplay handle,boolean beforeRelease)throws Exception{
+        long began=platform.now();need(began<deadline,"PROFILE_RETAINED_CLEANUP_DEADLINE");
+        handle.beginFreshSample(began,Math.min(deadline,began+1500));actual(false);
+        ProfileTaskPolicy.Snapshot all=platform.snapshot();List<BackgroundOwnedSingleTask.Task> roots=beforeRelease?
+                checked(platform.roots()):Collections.<BackgroundOwnedSingleTask.Task>emptyList();
+        boolean rootLive=!roots.isEmpty(),leafLive=false;
+        if(rootLive){
+            need(roots.size()==1,"PROFILE_RETAINED_FOREIGN_ROOT");BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);
+            requireRootIdentity(currentRoot);List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
+            need(children.size()<=1,"PROFILE_RETAINED_FOREIGN_CHILD");
+            if(!children.isEmpty()){
+                BackgroundOwnedSingleTask.Task currentLeaf=children.get(0);
+                need(sameTask(leaf,currentLeaf)&&leaf.uid==currentLeaf.uid,"PROFILE_RETAINED_LEAF_TOKEN_CHANGED");
+                ProfilePermissionTransient.Proof permission=permissionForOwnedPair(currentRoot,currentLeaf,all);
+                if(permission==null){requireRoot(currentRoot,true);requireLeaf(currentLeaf,all);}
+                all.requireOnlyOwned(target,display,root.id,leaf.id);leafLive=true;
+            }else{requireRoot(currentRoot,false);all.requireOnlyOwned(target,display,root.id,-1);all.requireDedicatedEmpty(target);
+                need(!all.allIds.contains(leaf.id),"PROFILE_RETAINED_LEAF_MOVED");}
+        }else{
+            all.requireDedicatedEmpty(target);need(!all.allIds.contains(root.id)&&!all.allIds.contains(leaf.id),"PROFILE_RETAINED_TASK_MOVED");
+            for(ProfileTaskPolicy.Root row:all.roots)need(row.display!=display,"PROFILE_RETAINED_FOREIGN_DISPLAY_TASK");
+        }
+        List<List<?>> outside=all.excludingRoot(root.id);
+        need(baseline==null||baseline.equals(outside),"PROFILE_RETAINED_OUTSIDE_TASK_CHANGED");
+        history.observe(platform.publicRecentsDump(),platform.now());Set<Integer> ids=history.observedIds();
+        handle.requireState(beforeRelease);requireRetainedFresh(began,deadline);
+        return new RetainedSample(rootLive,leafLive,ids.contains(root.id),ids.contains(leaf.id),outside,began);
+    }
+    private void retainedCleanupFinalPair(boolean requireLeafNow,List<List<?>> baseline,long observedStarted,long deadline)throws Exception{
+        requireRetainedFresh(observedStarted,deadline);actual(false);
+        ProfileTaskPolicy.Snapshot all=platform.snapshot();
+        need(baseline.equals(all.excludingRoot(root.id)),"PROFILE_RETAINED_FINAL_OUTSIDE_CHANGED");
+        List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());need(roots.size()==1,"PROFILE_RETAINED_FINAL_ROOT_MISSING");
+        requireRootIdentity(roots.get(0));List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
+        if(requireLeafNow){
+            need(children.size()==1&&sameTask(leaf,children.get(0))&&leaf.uid==children.get(0).uid,"PROFILE_RETAINED_FINAL_LEAF_CHANGED");
+            ProfilePermissionTransient.Proof permission=permissionForOwnedPair(roots.get(0),children.get(0),all);
+            if(permission==null){requireRoot(roots.get(0),true);requireLeaf(children.get(0),all);}
+            all.requireOnlyOwned(target,display,root.id,leaf.id);
+        }else{
+            need(children.isEmpty(),"PROFILE_RETAINED_FINAL_ROOT_NOT_EMPTY");requireRoot(roots.get(0),false);
+            all.requireDedicatedEmpty(target);all.requireOnlyOwned(target,display,root.id,-1);
+        }
+        requireRetainedFresh(observedStarted,deadline);
+    }
+    private void requireRetainedFresh(long observedStarted,long deadline)throws Exception{
+        long now=platform.now();need(now>=observedStarted&&now<deadline&&now-observedStarted<1500,"PROFILE_RETAINED_CENSUS_STALE_OR_DEADLINE");
+    }
+    synchronized boolean ownsRetainedCleanupProof(RetainedCleanupProof proof){return proof!=null&&proof.owner==this&&retainedCleanupClaimed;}
     synchronized void closeRetainedEmptyDisplay(long deadline,RetiredDisplay displayHandle)throws Exception{
         need(!retainedReleaseChecked&&publicHistory!=null&&retiring&&identityUnknown&&!foreignTasks
                 &&root!=null&&leaf!=null&&startAccepted&&dispatchMarked&&!rootDeleteAttempted,

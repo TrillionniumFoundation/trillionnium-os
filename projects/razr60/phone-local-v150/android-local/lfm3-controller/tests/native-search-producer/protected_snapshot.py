@@ -43,7 +43,26 @@ BANNER_INVERSE = (
     ),
 )
 
+INPUT_CURRENT = '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf'
+
+# Proof-copy inverse only; current sources compile in every caller below.
 def predecessor(raw):
+    if hashlib.sha256(raw).hexdigest() == INPUT_CURRENT:
+        start=b"    /** Only the original model-issued literal input may use this separate"
+        end=b"    /** Complete private diagnostic of a rejected comparison."
+        if raw.count(start)!=1 or raw.count(end)!=1:
+            raise ValueError("empty-input helper boundaries must be unique")
+        raw=raw[:raw.index(start)]+raw[raw.index(end):]
+        for revised,prior in (
+            (b'SEARCH_ICON="open_search_icon", SET_QUERY="set_product_query";',b'SEARCH_ICON="open_search_icon";'),
+            (b"Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose)||SET_QUERY.equals(purpose)&&XIAOMI.equals(pkg)",b"Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose)"),
+            (b"((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose)||SET_QUERY.equals(purpose))?XIAOMI:CTRIP)",b"((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose))?XIAOMI:CTRIP)"),
+            (b"        if(SET_QUERY.equals(in.purpose))return compareEmptySearchInput(in,old,fresh);\n",b""),
+        ):
+            if raw.count(revised)!=1:raise ValueError("empty-input inverse must attach exactly once")
+            raw=raw.replace(revised,prior,1)
+        if hashlib.sha256(raw).hexdigest()!=BANNER_CURRENT:
+            raise ValueError("empty-input changes must reverse to the complete prior banner comparator")
     if hashlib.sha256(raw).hexdigest() == BANNER_CURRENT:
         for revised, previous in BANNER_INVERSE:
             if raw.count(revised) != 1:

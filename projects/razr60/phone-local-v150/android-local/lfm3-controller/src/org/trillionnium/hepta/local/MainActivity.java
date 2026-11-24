@@ -426,10 +426,15 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             "LFM2.5-8B-A1B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
             "LFM2.5-8B-A1B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
             "GUI-Owl 4B · 语言 NPU + 图像 GPU（实验）\nQ4_0 + F16 视觉投影 · 可用内存门槛 6 GiB",
-            "LFM3-VL 2B · 语言 NPU + 图像 GPU（仅观察）\nQAD Q4_0 + F16 视觉投影 · 可用内存门槛 4 GiB"};
+            "LFM3-VL 2B · 语言 NPU + 图像 GPU（仅观察）\nQAD Q4_0 + F16 视觉投影 · 可用内存门槛 4 GiB",
+            "Qwen3.5 4B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 5 GiB",
+            "Qwen3.5 4B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 5 GiB"};
+        final ModelProfile[] profiles={ModelProfile.LFM3,ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.LFM25_8B_A1B,
+                ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.QWEN35_4B};
+        final String[] computes={"npu","gpu","npu","gpu","npu","npu","npu","gpu"};
         int current=0;
-        try{LocalRuntimeConfig config=engine.configuration();current=config.profile==ModelProfile.LFM3_VL_2B?5:config.profile==ModelProfile.GUI_OWL_4B?4:
-                (config.profile==ModelProfile.LFM25_8B_A1B?2:0)+("gpu".equals(config.compute)?1:0);}
+        try{LocalRuntimeConfig config=engine.configuration();
+            for(int i=0;i<profiles.length;i++)if(config.profile==profiles[i]&&config.compute.equals(computes[i])){current=i;break;}}
         catch(Exception unavailable){/* The actual apply still rejects an unreadable prior configuration. */}
         final int[] selected={current};
         new AlertDialog.Builder(this).setTitle("选择本地模型 · 8192 上下文 / 4 线程")
@@ -439,9 +444,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     try{
                         if(choice<0||choice>=labels.length||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
                             throw new IllegalStateException("设置范围或当前空闲状态已变化");
-                        modelSettings.start((choice==5?ModelProfile.LFM3_VL_2B:choice==4?ModelProfile.GUI_OWL_4B:
-                                (choice<2?ModelProfile.LFM3:ModelProfile.LFM25_8B_A1B)).id,
-                                choice>=4||choice%2==0?"npu":"gpu",false);refresh();
+                        modelSettings.start(profiles[choice].id,computes[choice],false);refresh();
                     }catch(Exception error){localModelSettingsState.setText("未更改配置："+HeptaAccessibilityService.message(error));}
                 }).show();
     }

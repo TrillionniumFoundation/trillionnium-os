@@ -85,20 +85,24 @@ public final class BrokerProtocol {
         public final long expiresElapsedMs;
         public final ProfileTarget profileTarget;
         public final PublicOwnGroupPolicy.Scope publicOwnGroupScope;
+        /** Commitment only. The preimage stays in the controller's private key file. */
+        public final String retainedCleanupTokenSha256;
         public int protocolVersion(){return publicOwnGroupScope==null?(profileTarget==null?VERSION:PROFILE_VERSION)
                 :(profileTarget==null?PUBLIC_OWN_GROUP_VERSION:PUBLIC_OWN_GROUP_PROFILE_VERSION);}
         private Config(String socket, int owner, String generation, Set<String> packages,
-                       long ttl, long expiry, ProfileTarget profileTarget,PublicOwnGroupPolicy.Scope publicOwnGroupScope) {
+                       long ttl, long expiry, ProfileTarget profileTarget,PublicOwnGroupPolicy.Scope publicOwnGroupScope,String retainedCleanupTokenSha256) {
             socketName = socket; ownerUid = owner; this.generation = generation;
             this.packages = Collections.unmodifiableSet(new LinkedHashSet<String>(packages));
             ttlMs = ttl; expiresElapsedMs = expiry; this.profileTarget=profileTarget; this.publicOwnGroupScope=publicOwnGroupScope;
+            this.retainedCleanupTokenSha256=retainedCleanupTokenSha256;
         }
         public static Config parse(String[] args) throws Refusal {
-            if (args==null||(args.length != 12 && args.length != 14 && args.length != 16)) throw new Refusal("INVALID_ARGUMENTS");
+            if (args==null||(args.length != 12 && args.length != 14 && args.length != 16 && args.length != 18)) throw new Refusal("INVALID_ARGUMENTS");
             Map<String,String> a = new HashMap<String,String>();
             Set<String> keys = new LinkedHashSet<String>(Arrays.asList("--socket", "--owner-uid",
                 "--generation", "--allowed-packages", "--ttl-ms", "--expires-elapsed-ms"));
             keys.add("--profile-target");keys.add("--public-own-group-scope");
+            keys.add("--retained-cleanup-token-sha256");
             for (int i = 0; i < args.length; i += 2) {
                 if (!keys.contains(args[i]) || a.put(args[i], args[i + 1]) != null)
                     throw new Refusal("INVALID_ARGUMENTS");
@@ -138,8 +142,58 @@ public final class BrokerProtocol {
                     if(!socket.equals("hepta-bg-"+gen)||expiry-scope.createdElapsedMs!=ttl)throw new IllegalArgumentException("scope lifetime/socket");}
                 catch(IllegalArgumentException invalid){throw new Refusal("PUBLIC_SCOPE_CONFIG_INVALID");}
             }
-            return new Config(socket, (int) uid, gen, packages, ttl, expiry,target,scope);
+            String cleanup=a.get("--retained-cleanup-token-sha256");
+            if(a.containsKey("--retained-cleanup-token-sha256")&&(!ProfileIdentity.hash(cleanup)
+                    ||scope==null||target==null||target.profile.userId!=10))throw new Refusal("RETAINED_CLEANUP_CONFIG_INVALID");
+            return new Config(socket, (int) uid, gen, packages, ttl, expiry,target,scope,cleanup);
         }
+    }
+
+    /** A separate cleanup socket vocabulary. It is not accepted by Request.parse
+     * and cannot renew the business expiry or grant launch/window/input authority. */
+    public static final class RetainedCleanupRequest {
+        public static final long LIMIT_MS=10000;
+        public final String requestId,generation,taskId,scopeSha256,targetSha256;
+        public final long started,deadline;
+        private final String nonce;
+        private RetainedCleanupRequest(Map<String,Object> m)throws Refusal{
+            if(!m.keySet().equals(new LinkedHashSet<String>(Arrays.asList("version","op","request_id","generation",
+                    "task_id","display_scope_sha256","profile_target_sha256","nonce","started_elapsed_ms","deadline_elapsed_ms"))))
+                throw new Refusal("RETAINED_CLEANUP_REQUEST_FIELDS");
+            if(number(m,"version")!=1||!"cleanup_retained_profile".equals(string(m,"op")))throw new Refusal("RETAINED_CLEANUP_OPERATION");
+            requestId=string(m,"request_id");generation=string(m,"generation");taskId=string(m,"task_id");
+            scopeSha256=string(m,"display_scope_sha256");targetSha256=string(m,"profile_target_sha256");nonce=string(m,"nonce");
+            started=number(m,"started_elapsed_ms");deadline=number(m,"deadline_elapsed_ms");
+            if(!uuid(requestId)||!uuid(generation)||!taskId.matches("[0-9a-f]{32}")||!ProfileIdentity.hash(scopeSha256)
+                    ||!ProfileIdentity.hash(targetSha256)||!ProfileIdentity.hash(nonce)||started<0||deadline<=started
+                    ||deadline-started>LIMIT_MS)throw new Refusal("RETAINED_CLEANUP_REQUEST_INVALID");
+        }
+        public static RetainedCleanupRequest parse(byte[] bytes)throws Refusal{
+            if(bytes==null||bytes.length==0||bytes.length>4096)throw new Refusal("RETAINED_CLEANUP_REQUEST_SIZE");
+            try{return new RetainedCleanupRequest(new FlatJson(StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes)).toString()).parse());}
+            catch(CharacterCodingException bad){throw new Refusal("INVALID_UTF8");}
+        }
+        public void authenticate(Config config,int peerUid,long now)throws Refusal{
+            if(config==null||config.retainedCleanupTokenSha256==null||config.publicOwnGroupScope==null||config.profileTarget==null
+                    ||peerUid!=config.ownerUid||!generation.equals(config.generation)||!taskId.equals(config.publicOwnGroupScope.taskId)
+                    ||!scopeSha256.equals(config.publicOwnGroupScope.sha256)||!targetSha256.equals(config.profileTarget.sha256)
+                    ||!java.security.MessageDigest.isEqual(ProfileIdentity.sha(nonce).getBytes(StandardCharsets.US_ASCII),
+                            config.retainedCleanupTokenSha256.getBytes(StandardCharsets.US_ASCII)))
+                throw new Refusal("RETAINED_CLEANUP_AUTHENTICATION_FAILED");
+            if(now<started||now>=deadline||config.expiresElapsedMs>Long.MAX_VALUE-2000||now<=config.expiresElapsedMs+2000)
+                throw new Refusal("RETAINED_CLEANUP_DEADLINE_OR_BUSINESS_NOT_EXPIRED");
+        }
+        public Map<String,Object> evidence(){
+            Map<String,Object> value=new LinkedHashMap<String,Object>();value.put("request_id",requestId);value.put("generation",generation);
+            value.put("task_id",taskId);value.put("display_scope_sha256",scopeSha256);value.put("profile_target_sha256",targetSha256);
+            value.put("started_elapsed_ms",started);value.put("deadline_elapsed_ms",deadline);return Collections.unmodifiableMap(value);
+        }
+    }
+    public static String retainedCleanupSocket(String generation){
+        if(!uuid(generation))throw new IllegalArgumentException("RETAINED_CLEANUP_GENERATION_INVALID");
+        return "hepta-rc-"+generation;
     }
 
     /**

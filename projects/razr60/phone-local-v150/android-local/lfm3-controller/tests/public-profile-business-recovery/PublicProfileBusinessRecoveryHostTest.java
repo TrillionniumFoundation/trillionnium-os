@@ -129,7 +129,8 @@ public final class PublicProfileBusinessRecoveryHostTest {
             .put("recents",new JSONObject(PublicProfileRecentHistory.absence(syntheticRecents(),r.target).evidence()))
             .put("displays",new JSONObject().put("complete",true).put("count",2).put("snapshot_sha256",HASH).put("exact_name_absent",true).put("recorded_id_absent",true))
             .put("physical",new JSONObject().put("0",HASH).put("1",HASH));
-        if(r.retainedBeforeFirstModel)sample.put("firmware_fingerprint_sha256",ProfileIdentity.sha("host-recovery-fixture"));return sample;
+        if(r.retainedCurrentAbsenceRequired())sample.put("firmware_fingerprint_sha256",ProfileIdentity.sha("host-recovery-fixture"));
+        if(r.retainedAfterBusiness)sample.getJSONObject("displays").put("including_disabled",true);return sample;
     }
     private static String syntheticRecents(){
         return "ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)\nmRecentsUid=1000\n"
@@ -146,7 +147,7 @@ public final class PublicProfileBusinessRecoveryHostTest {
     }
     /** Host-only fake root samples; never a device proof or mutation authority. */
     public static JSONObject syntheticProof(PublicProfileBusinessAbsenceRecovery.Request r)throws Exception{
-        return new JSONObject().put("schema",r.proofSchema()).put("source",r.source()).put("request_id",r.requestId).put("task_id",r.taskId)
+        JSONObject proof=new JSONObject().put("schema",r.proofSchema()).put("source",r.source()).put("request_id",r.requestId).put("task_id",r.taskId)
             .put("generation",r.generation).put("owner_uid",r.ownerUid).put("owner_sha256",r.ownerSha256).put("journal_sha256",r.journalSha256)
             .put("manifest_sha256",r.manifest.sha256).put("originals_sha256",r.originalsSha256).put("public_scope_wire",r.publicScope.wire())
             .put("public_scope_sha256",r.publicScope.sha256).put("profile_target_wire",r.target.wire()).put("target_sha256",r.target.sha256)
@@ -156,8 +157,10 @@ public final class PublicProfileBusinessRecoveryHostTest {
             .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true).put("foreign_dormant_history_preserved",true)
             .put("cleanup_known",true).put("automatic_resume",false).put("broker_release_response",false).put("business_steps",r.steps)
             .put("model_requests",r.modelRequests).put("model_generation",r.modelGeneration).put("historical_model_exit_verified",!r.retainedBeforeFirstModel)
-            .put("historical_broker_release_observed",!r.retainedBeforeFirstModel).put("business_dispatch_absent_in_original_receipts",r.retainedBeforeFirstModel)
+            .put("historical_broker_release_observed",!r.retainedCurrentAbsenceRequired()).put("business_dispatch_absent_in_original_receipts",r.retainedBeforeFirstModel)
             .put("recorded_owned_identity",r.recordedOwnedIdentity()).put("rewrites_business_outcome",false).put("acknowledges_control_session",false);
+        if(r.retainedAfterBusiness)proof.put("original_history_refusal",r.originalHistoryRefusal()).put("historical_broker_process",r.historicalBrokerProcess());
+        return proof;
     }
     private static void proofReject(String name,String code,Edit edit)throws Exception{
         reject(name,code,()->{PublicProfileBusinessAbsenceRecovery.Request r=ORIGINAL.copy().request();JSONObject p=syntheticProof(r);edit.run(p);

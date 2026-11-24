@@ -220,7 +220,7 @@ def main():
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in
               ('NativeCtripFormObservation', 'ObservationCaptureEvidence', "NativeSearchRole", "NativeSearchPlanning", "NativeSearchDecision", "NativeSearchSession", "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
-               "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
+               'NativeXiaomiSearchInputObservation', "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths.append(Path(__file__).resolve().with_name("NativeProfileIdentityHostTest.java"))
     actual_calendar_files={p.name for p in calendar_paths if source in p.parents}
     paths=[p for p in paths if not (p.parent==service_port.parent and (p.name in actual_calendar_files or p.name=="NativeAppSession.java"))]

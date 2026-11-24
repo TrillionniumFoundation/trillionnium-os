@@ -6,7 +6,7 @@ JSON_SHA="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
 ACTUAL={"before":"06ddd840988567bb2660be38ed80aac86cc843f364ff4d14e1dd2446d6d125c5",
         "after":"a6d3b9701a829f6657a5c9d2b954044b09df3f473d73c021d1eeb2328c2982f3"}
 EXPECTED_RED=["actual_before_phase","actual_after_phase","actual_prompt_blocker","actual_terminal_ui"]
-EXTRA=['ObservationCaptureEvidence', "PromptActionDomain","NativeAppEvidence","NativeAppDomain","NativeAppSession","NativeActionSnapshotCheck","NativeAppObservation","NativeCtripFlightPage","NativeXiaomiProductPage"]
+EXTRA=['ObservationCaptureEvidence', "PromptActionDomain","NativeAppEvidence","NativeAppDomain","NativeAppSession",'NativeXiaomiSearchInputObservation', "NativeActionSnapshotCheck","NativeAppObservation","NativeCtripFlightPage","NativeXiaomiProductPage"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def need(value,message):
     if not value:raise RuntimeError(message)

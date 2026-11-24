@@ -2143,6 +2143,14 @@ public final class LocalTaskController implements AutoCloseable {
                     ||!domain.frame.sameCapture(before.capture,null)||domain.resultReady)
                 throw new IllegalStateException("历史表单与实际当前原生规划域不一致");
         }
+        if(before!=null&&before.capture!=null&&before.capture.inputHistory()){
+            if(!nativeApp||activeNativeTask==null||runtime.profile.visual()||inference.acceptsObservedImage())
+                throw new IllegalStateException("历史空搜索框只能进入同一非视觉原生模型任务");
+            NativeAppDomain domain=activeNativeTask.domain();
+            if(!"search_input".equals(domain.phase)||!before.id.equals(domain.frame.observationId)
+                    ||!domain.frame.sameCapture(before.capture,null)||domain.resultReady)
+                throw new IllegalStateException("历史空搜索框与实际当前原生规划域不一致");
+        }
         if(searchProtocol){
             NativeSearchSession search=activeNativeSearch;
             if(!nativeApp||before!=null||search==null||search.nativeTask!=activeNativeTask||search.background!=background

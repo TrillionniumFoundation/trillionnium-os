@@ -81,7 +81,7 @@ public final class VisualSettingsHostTest {
         }
         void choose(int choice)throws Exception{
             AlertDialog.last=null;ui.choose();check(AlertDialog.last!=null,"actual ordinary selection button opened");
-            check(AlertDialog.last.labels.length==6,"four original text choices, original GUI tools and one restricted LFM3 observation choice");
+            check(AlertDialog.last.labels.length==8,"six text choices and two existing restricted visual choices");
             AlertDialog.last.choose(choice);AlertDialog.last.confirm();awaitSettings();
         }
         void restored()throws Exception{
@@ -468,22 +468,82 @@ public final class VisualSettingsHostTest {
             ActivityManager.low=false;lease.requireOwned();engine.finishSettings(lease,true);check(!engine.isBusy(),"memory test releases owned reservation");
         });
     }
+
+    /** Additional text qualification-entry checks; no positive model or device claim. */
+    private static void qwenTextSettings()throws Exception{
+        for(int choice:new int[]{6,7}){
+            final int selected=choice;
+            run("ordinary-qwen-text-choice-"+(choice==6?"npu":"gpu"),()->{
+                Env e=new Env("qwen-"+selected);byte[] original=e.config();e.choose(selected);
+                LocalRuntimeConfig config=e.engine.configuration();
+                check(config.profile==ModelProfile.QWEN35_4B,"ordinary button selects exact pinned Qwen 4B");
+                check(config.compute.equals(selected==6?"npu":"gpu"),"ordinary button preserves explicit compute");
+                check(config.contextTokens==8192&&config.threads==4&&!config.visualObservationOnly,"fixed text configuration");
+                check(config.profile.minimumAvailableBytes==(5L<<30),"Qwen engineering admission remains five GiB");
+                JSONObject raw=new JSONObject(new String(e.config(),StandardCharsets.UTF_8));
+                check(raw.length()==5&&"hepta.local-runtime.v2".equals(raw.getString("schema")),"text schema contains no visual or external fields");
+                check(!raw.has("visual_mode"),"no projector or visual route");
+                AlertDialog.last=null;e.ui.choose();
+                check(AlertDialog.last.checked==selected,"ordinary menu selects saved Qwen backend");
+                check(AlertDialog.last.labels[selected].contains("实验"),"unqualified entry is visibly experimental");
+                e.restored();check(Arrays.equals(original,e.config()),"ordinary Restore preserves exact original bytes");
+                check(e.engine.configuration().profile==ModelProfile.LFM3,"restore returns baseline profile");
+            });
+        }
+        run("qwen-selection-does-not-qualify-runtime",()->{
+            Path files=fresh("qwen-transaction");
+            RuntimeConfigTransaction tx=RuntimeConfigTransaction.prepare(files.toFile(),
+                    RuntimeConfigTransaction.selected(ModelProfile.QWEN35_4B.id,"npu"),true);
+            tx.apply();tx.commit();
+            JSONObject receipt=new JSONObject(new String(Files.readAllBytes(tx.directory.toPath().resolve("committed.json")),StandardCharsets.UTF_8));
+            check(!receipt.getBoolean("inference_executed")&&!receipt.getBoolean("backend_qualified"),"saving remains configuration only");
+            check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3&&"npu".equals(LocalRuntimeConfig.defaults().compute),"factory default unchanged");
+            check(ModelProfile.QWEN35_4B.bytes==2583221408L
+                    &&"298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb".equals(ModelProfile.QWEN35_4B.sha256),
+                    "exact weight identity retained");
+        });
+        run("qwen-entry-retains-closed-text-allowlist",()->{
+            for(String device:new String[]{"cpu","auto","NPU","","https://external"})
+                reject(()->RuntimeConfigTransaction.selected(ModelProfile.QWEN35_4B.id,device));
+            for(ModelProfile model:new ModelProfile[]{ModelProfile.QWEN35_9B,ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.MINICPM5})
+                reject(()->RuntimeConfigTransaction.selected(model.id,"npu"));
+            reject(()->RuntimeConfigTransaction.selectedVisualTools("gpu"));
+        });
+        run("qwen-real-engine-memory-and-size-refusals",()->{
+            Path files=fresh("qwen-memory");LocalModelEngine engine=new LocalModelEngine(new LocalProbeApplication(files.toFile()));
+            realEngines.add(engine);LocalModelEngine.SettingsReservation lease=engine.reserveSettings(false);
+            LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.QWEN35_4B,"npu",8192,4);
+            MemoryAvailability below=MemoryAvailability.fromText(0,12L<<30,false,"MemTotal: 12582912 kB\nMemAvailable: 5242879 kB\n");
+            MemoryAvailability exact=MemoryAvailability.fromText(0,12L<<30,false,"MemTotal: 12582912 kB\nMemAvailable: 5242880 kB\n");
+            check(!below.admits(config.profile.minimumAvailableBytes),"production kernel parser refuses below five GiB");
+            check(exact.admits(config.profile.minimumAvailableBytes),"production kernel parser admits exact five GiB before independent asset checks");
+            ActivityManager.available=12L<<30;ActivityManager.low=true;
+            check(failure(()->engine.verifySettingsModel(lease,config)).contains("available memory"),"system lowMemory still refuses");
+            ActivityManager.low=false;write(files.resolve("model").resolve(ModelProfile.QWEN35_4B.fileName),new byte[]{1,2,3});
+            check(failure(()->engine.verifySettingsModel(lease,config)).contains("size differs"),"actual Engine refuses the wrong pinned weight size");
+            check(!RuntimeConfigTransaction.pending(files.toFile()),"failed model admission changes no settings");
+            lease.requireOwned();engine.finishSettings(lease,true);check(!engine.isBusy(),"owned settings reservation drained");
+        });
+    }
+
     public static void main(String[] args)throws Exception{
+        final boolean qwen=args.length==2&&"--qwen-text".equals(args[1]);
+        if(args.length!=1&&!qwen)throw new IllegalArgumentException("output plus optional --qwen-text required");
         output=Paths.get(args[0]);Files.createDirectory(output);boolean passed=false;Throwable error=null;
-        try{settings();routing();assets();lfmObserveSettings();passed=true;}
+        try{if(qwen)qwenTextSettings();else{settings();routing();assets();lfmObserveSettings();}passed=true;}
         catch(Throwable failure){error=failure;failure.printStackTrace();}
         finally{
             for(Env e:environments)try{e.close();}catch(Exception failure){passed=false;if(error==null)error=failure;failure.printStackTrace();}
             for(LocalModelEngine engine:realEngines)try{engine.close();if(!executor(engine).awaitTermination(3,TimeUnit.SECONDS))throw new IllegalStateException("real engine did not exit");}
                 catch(Exception failure){passed=false;if(error==null)error=failure;failure.printStackTrace();}
         }
-        JSONObject report=new JSONObject().put("schema","hepta.local-model-settings-visual-cases.v1").put("passed",passed)
+        JSONObject report=new JSONObject().put("schema",qwen?"hepta.local-model-settings-qwen-cases.v1":"hepta.local-model-settings-visual-cases.v1").put("passed",passed)
                 .put("cases",cases).put("assertions",assertions).put("case_results",rows)
                 .put("actual_owner_button_methods",true).put("actual_application_idle_methods",true)
                 .put("actual_service_controller_factory",true).put("actual_settings_transaction_and_engine",true)
                 .put("actual_runtime_generation_binding",true).put("same_service_and_controller_roundtrip",true)
                 .put("positive_weight_verification_is_host_boundary",true).put("vlm_model_loading_is_host_boundary",true)
-                .put("actual_negative_asset_and_hash_checks",true).put("android_view_and_inventory_are_host_boundaries",true)
+                .put("actual_negative_asset_and_hash_checks",!qwen).put("actual_negative_qwen_memory_and_size_checks",qwen).put("android_view_and_inventory_are_host_boundaries",true)
                 .put("phone_operations",0).put("native_model_executed",false).put("positive_backend_qualified",false)
                 .put("error",error==null?JSONObject.NULL:error.toString());
         Files.write(output.resolve("RESULT.json"),(report.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);

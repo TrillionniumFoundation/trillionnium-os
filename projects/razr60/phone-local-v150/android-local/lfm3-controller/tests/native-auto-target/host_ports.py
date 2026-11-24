@@ -164,6 +164,11 @@ def prepare(source, fixture, java_block):
     for path,text in PORTS.items():emit(path,text)
     # Preserve the entire old refusing service/calendar shapes; add only idle/visibility IO.
     service=fixture/'org/trillionnium/hepta/local/HeptaAccessibilityService.java';raw=service.read_text()
+    # Replace the generic refusing port with this existing UI fixture's controlled LIVE port.
+    disconnected='static HeptaAccessibilityService connected(){return null;}'
+    if raw.count(disconnected)!=1:raise RuntimeError('one generic disconnected service port required')
+    raw=raw.replace(disconnected,'')
+
     extension='''
  static final HeptaAccessibilityService LIVE=new HeptaAccessibilityService();static boolean idle=true;
  static HeptaAccessibilityService connected(){return LIVE;}boolean modelSettingsIdle(){return idle;}

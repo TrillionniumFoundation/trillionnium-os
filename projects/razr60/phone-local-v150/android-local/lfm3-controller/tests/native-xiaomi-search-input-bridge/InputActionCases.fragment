@@ -1,0 +1,143 @@
+    // Explicit host transport only. The production Session, ActionGuard,
+    // comparator, target refresh, final claim and type branch are unchanged.
+    boolean inputMode,apiAccepts=true;ProfileTarget inputTarget;
+    WindowOwnership inputWindow;Graph inputFrameGraph;
+    AccessibilityNodeInfo inputEffectReference;NodeData inputEffectData;
+    Runnable inputReadback;String inputRefusal;
+    static final class Bundle {
+        final Map<String,CharSequence> values=new HashMap<String,CharSequence>();
+        void putCharSequence(String key,CharSequence value){values.put(key,value);}
+        CharSequence getCharSequence(String key){return values.get(key);}
+    }
+    static ObservedScrollActions inputScroll(String value){
+        String prefix="hepta.observed-scroll-actions.v1|observed";
+        if(!value.startsWith(prefix))throw new AssertionError("explicit recorded scroll endpoint required");
+        return ObservedScrollActions.observed(value.equals(prefix)?Collections.<String>emptyList():
+                Arrays.asList(value.substring(prefix.length()+1).split("\\|")));
+    }
+    WindowOwnership inputProfileWindow(){
+        if(!inputMode||inputTarget==null||!background.active)throw new StaleObservation("host profile unavailable");
+        return new WindowOwnership(inputTarget,background.generation,7,96,1234,1200,
+                "22222222-2222-4222-8222-222222222222",UUID.randomUUID().toString(),
+                inputTarget.profile.userId,inputTarget.profile.serial,inputTarget.fullUid,
+                SystemClock.now-1,SystemClock.now+1000);
+    }
+    void requireInputProfile(BackgroundSession selected,WindowOwnership proof,int window,int task,long captured){
+        if(!inputMode||selected!=background||selected.selection.profileTarget!=inputTarget||proof==null
+                ||!NativeAppEvidence.sameProfileOwner(inputWindow,proof)||window!=96||task!=1234
+                ||proof.observedElapsedMs>captured||captured>=proof.expiresElapsedMs)
+            throw new StaleObservation("host actual profile tuple changed");
+    }
+    void afterActionDelay(ActionWork work,Runnable completion,long delay){
+        if(!inputMode||inputReadback!=null)throw new AssertionError("one explicit deferred type readback");
+        actionCheck(work);inputReadback=completion;
+    }
+    static Map<String,Object> inputWatermark(){
+        Map<String,Object> out=new TreeMap<String,Object>();
+        for(String k:Arrays.asList("events","content","unknown","boundary"))out.put(k,0L);return out;
+    }
+    static Map<String,Object> inputCensus(Map<String,Object> binding,Graph graph,long start,long end){
+        Map<String,Object> c=new TreeMap<String,Object>(),identity=new TreeMap<String,Object>(binding);
+        for(String k:Arrays.asList("observation_id","captured_elapsed_ms","profile_window","profile_action_identity","original_census_captured_elapsed_ms"))identity.remove(k);
+        c.put("identity",identity);List<Object> nodes=new ArrayList<Object>();
+        for(NativeActionSnapshotCheck.Node n:graph.nativeActionNodes)nodes.add(n.v);
+        c.put("nodes",nodes);c.put("reported_windows",graph.nativeActionWindows);
+        Map<String,Object> window=new TreeMap<String,Object>();
+        for(String k:Arrays.asList("package","display_id","window_id","rotation","width","height","left","top","right","bottom"))window.put(k,binding.get(k));
+        window.put("metadata",graph.windowMetadata.bindFreshness(""));c.put("window",window);
+        c.put("complete",true);c.put("truncated",false);c.put("visited",nodes.size());
+        for(String k:Arrays.asList("pending","child_slots_omitted","node_budget_omissions","text_budget_omissions"))c.put(k,0);
+        c.put("profile_window",graph.profileWindow.evidence());c.put("profile_owner",NativeAppEvidence.profileActionIdentity(graph.profileWindow));
+        c.put("census_captured_elapsed_ms",graph.nativeActionCapturedAt);
+        c.put("read_started_elapsed_ms",start);c.put("read_completed_elapsed_ms",end);return c;
+    }
+    NativeAppEvidence.Frame inputFrame(Fixture f,List<NativeAppEvidence.Node> nodes,String tree)throws Exception{
+        final long captured=SystemClock.now;String obs=id(f.task+":input:"+(++f.observations));
+        Map<String,Object> b=new TreeMap<String,Object>();
+        b.put("task_id",f.task);b.put("owner_sha256",f.selection.taskTarget.ownerSha256);b.put("execution_target_sha256",f.selection.taskTarget.targetSha256);
+        b.put("task_authorization_sha256",f.authorization.sha256);b.put("actual_selection_sha256",NativeAppObservation.selectionSha(f.selection));
+        b.put("native_goal_sha256",f.session.goal.contractSha256);b.put("observation_id",obs);b.put("package",f.raw.pkg);b.put("background_generation",background.generation);
+        b.put("app_tree_sha256",tree);b.put("observation_state_sha256",hash("host-state:"+tree));
+        b.put("display_id",7);b.put("window_id",96);b.put("rotation",0);b.put("width",1224);b.put("height",2992);
+        b.put("left",0);b.put("top",0);b.put("right",1224);b.put("bottom",2992);b.put("captured_elapsed_ms",captured);
+        b.put("original_census_captured_elapsed_ms",inputFrameGraph.nativeActionCapturedAt);
+        b.put("profile_window",inputFrameGraph.profileWindow.evidence());b.put("profile_action_identity",NativeAppEvidence.profileActionIdentity(inputFrameGraph.profileWindow));
+        Map<String,Object> receipt=new TreeMap<String,Object>();receipt.put("schema","hepta.native-ax-capture.v1");receipt.put("kind","native_ax");receipt.put("binding",b);
+        for(String k:Arrays.asList("visual_model","screenshot_present","publication_refreshes_capture_age","grants_action_authority","business_completion_verified"))receipt.put(k,false);
+        receipt.put("first",inputCensus(b,inputFrameGraph,captured-1,captured));receipt.put("second",inputCensus(b,inputFrameGraph,captured+1,captured+2));
+        receipt.put("request_started_elapsed_ms",captured-10);receipt.put("request_deadline_elapsed_ms",captured+1000);receipt.put("sealed_elapsed_ms",captured+3);
+        for(String k:Arrays.asList("capture_watermark","second_start_watermark","second_completed_watermark"))receipt.put(k,inputWatermark());
+        receipt.put("complete_census_endpoint_frozen",true);byte[] bytes=ObservationCaptureEvidence.nativeAxBytes(receipt);
+        ObservationCaptureEvidence capture=ObservationCaptureEvidence.fromSealedNativeAx(receipt,bytes,ObservationCaptureEvidence.hash(bytes));
+        SystemClock.now+=3;
+        return new NativeAppEvidence.Frame(f.task,f.selection.taskTarget.ownerSha256,f.selection.taskTarget.targetSha256,f.authorization.sha256,
+                NativeAppObservation.selectionSha(f.selection),obs,f.raw.pkg,background.generation,tree,(String)b.get("observation_state_sha256"),null,
+                hash("host-record:"+obs),hash("host-completion:"+obs),7,96,0,1224,2992,0,0,1224,2992,captured,false,true,nodes,1,true,inputFrameGraph.profileWindow,capture);
+    }
+    static NativeActionSnapshotCheckHostTest.Fixture inputRaw(JSONObject census){
+        NativeActionSnapshotCheckHostTest.Fixture out=new NativeActionSnapshotCheckHostTest.Fixture(NativeActionSnapshotCheck.SET_QUERY,NativeAppGoal.XIAOMI_PACKAGE);
+        JSONArray rows=census.getJSONArray("nodes");
+        for(int i=0;i<rows.length();i++){
+            Map<String,Object> n=new TreeMap<String,Object>(rows.getJSONObject(i).toMap());
+            n.put("window_id",96);out.nodes.put((String)n.get("path"),n);
+        }
+        out.target="0/1";out.label="";return out;
+    }
+    static JSONObject inputRecording(java.nio.file.Path source)throws Exception{
+        byte[] raw=java.nio.file.Files.readAllBytes(source.resolve("tests/native-xiaomi-search-input/real-censuses.json"));
+        yes(sha(raw).equals("a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"),"immutable d7 complete input census fixture");
+        return new JSONObject(new String(raw,StandardCharsets.UTF_8));
+    }
+    static Fixture inputSetup(java.nio.file.Path source,String name)throws Exception{
+        NativeActionBridgeHost service=new NativeActionBridgeHost();return service.new Fixture(inputRecording(source),name);
+    }
+    static void inputCases(java.nio.file.Path source)throws Exception{
+        sourceRoot=source;
+        one("actual_input_original_NodeRef_final_refresh_and_same_object_ACTION_SET_TEXT",()->{
+            Fixture f=inputSetup(source,"same-node");NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+            int refreshed=original.node.data.refreshes;long deadline=f.work.state.deadlineElapsed;
+            yes(f.dispatchInput(),"recorded recommendation churn passes actual Service and original Guard: "+f.service.inputRefusal);
+            yes(f.service.inputEffectReference==original.node&&f.service.inputEffectData==original.node.data,"same original live object performs actual extracted type branch");
+            yes(original.node.data.refreshes>refreshed&&f.effects()==1,"original target was refreshed before exactly one effect");
+            yes(!f.service.callbackAccepted&&f.service.inputReadback!=null,"type completion waits for deferred readback");
+            JSONObject proof=new JSONObject(f.work.nativeActionProof);
+            yes(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("original_node_ref_and_actual_ancestor_chain"),"actual final private guard proof");
+            yes(!proof.getBoolean("all_nodes_simultaneous_or_pixels_stable_claimed")&&f.work.state.deadlineElapsed==deadline,"no atomic graph or renewed deadline claim");
+            f.service.inputReadback.run();yes(f.service.callbackAccepted,"same original node exact literal readback");
+            try{f.service.typeBranch(f.task,f.service.current,f.action,f.work);}catch(IllegalStateException|IllegalArgumentException refused){yes(true,"claimed input explicitly refused");}
+            yes(f.effects()==1,"claimed input may report stale by callback but never performs a second input");
+        });
+        one("actual_input_equal_tree_still_final_checks_and_claims",()->{
+            Fixture f=inputSetup(source,"equal");f.fresh=f.raw.copy();yes(f.dispatchInput(),"equal raw input succeeds");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.effects()==1,"equal input cannot skip final complete census");
+        });
+        one("actual_input_foreign_NodeRef_replacement_before_final_census_is_refused",()->{
+            Fixture f=inputSetup(source,"foreign-node");NodeData old=f.data.get("0/1");
+            f.service.scopeMutation=()->{NodeData other=new NodeData(old.values);f.data.put("0/1",other);};
+            IntegrationChecks.rejects(()->f.dispatchInput(),"same fields with another Binder identity must refuse");
+            yes(old.effects==0&&f.effects()==0&&!f.work.state.effectEntered(),"neither old nor replacement object receives input");
+        });
+        one("actual_input_target_change_after_complete_census_is_refused",()->{
+            Fixture f=inputSetup(source,"late-target");f.service.afterFinalCensus=()->f.data.get("0/1").values.put("focused",true);
+            IntegrationChecks.rejects(()->f.dispatchInput(),"last original target refresh catches changed state");f.noEffect("late target never types");
+        });
+        for(final String fault:Arrays.asList("cancel","deadline","owner","installed","closed"))one("actual_input_pre_effect_"+fault+"_refused",()->{
+            Fixture f=inputSetup(source,fault);
+            if("cancel".equals(fault))f.service.cancelled=true;
+            if("deadline".equals(fault))SystemClock.now=f.work.state.deadlineElapsed;
+            if("owner".equals(fault))f.service.owned=false;
+            if("installed".equals(fault))f.installedCurrent=false;
+            if("closed".equals(fault))f.work.nativeGuard.close();
+            try{yes(!f.dispatchInput(),"unavailable input refused");}catch(IllegalStateException|IllegalArgumentException refused){yes(true,"explicit refusal");}
+            f.noEffect("unavailable input has no effect");
+        });
+        one("actual_input_unclassified_fixed_subtree_change_remains_whole_guard_refusal",()->{
+            Fixture f=inputSetup(source,"unclassified");f.fresh.nodes.get("0/6/14").put("selected",true);
+            yes(!f.dispatchInput(),"unclassified recommendation subtree is rejected");f.noEffect("outside narrow input allowance no effect");
+        });
+        one("actual_input_false_API_return_is_single_attempt_without_readback_or_retry",()->{
+            Fixture f=inputSetup(source,"api-false");f.service.apiAccepts=false;
+            yes(f.dispatchInput()&&f.effects()==1&&!f.service.callbackAccepted&&f.service.inputReadback==null,"one failed API return, no readback queued");
+            IntegrationChecks.rejects(()->f.service.typeBranch(f.task,f.service.current,f.action,f.work),"failed platform return cannot replay claimed input");yes(f.effects()==1,"false return still one attempted effect");
+        });
+    }
