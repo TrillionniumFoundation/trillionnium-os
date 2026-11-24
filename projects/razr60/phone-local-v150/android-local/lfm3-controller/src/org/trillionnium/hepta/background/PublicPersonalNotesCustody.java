@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-/** Read-only Notes task accounting around release of this session's actual VD.
- * No task deletion, task-id action, permission change, or replay exists here.
+/** Notes accounting around release of this session's actual VD.
+ * A private once-only plan can retire original attached leaf tokens. No task-id
+ * action, permission change, replay, or detached-recent removal exists here.
  * Normal Notes NEW_TASK/MULTIPLE_TASK/NEW_DOCUMENT policy remains unchanged.
  * Unknown pre-release ownership retains the VD owner with admission retired.
  * Proven own residue may be polled within the existing cleanup deadline; any
@@ -57,6 +58,7 @@ final class PublicPersonalNotesCustody {
     private boolean bootstrapReadUsed;
     private long bootstrapUntil;
     private String finalRecentsSha="",failure="",releaseHistory="",releaseRecentsSha="";
+    private TokenPlan tokenPlan;
 
     PublicPersonalNotesCustody(String generation,String scopeSha,int uid,ProfileTaskPolicy.Snapshot initial,
             PublicOwnGroupPhysicalFence.RecentCensus recents){
@@ -216,7 +218,114 @@ final class PublicPersonalNotesCustody {
         }
     }
     synchronized void retireAdmission(){retiring=true;}
-    synchronized void enterRelease(){need(releasePrepared&&!unknown&&!releaseAttempted,"NOTES_RELEASE_NOT_ADMITTED");releaseAttempted=true;}
+    /** No public constructor, wire representation, numeric-ID lookup or reset.
+     * Only this original custodian can mint the closed set, before VD release. */
+    static final class TokenPlan {
+        private final PublicPersonalNotesCustody owner;
+        final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;
+        final Set<Integer> ids;
+        final int display,uid;
+        final long deadline;
+        private final Set<Integer> attempts=new LinkedHashSet<Integer>(),returns=new LinkedHashSet<Integer>();
+        private int absenceReads;
+        private long lastAbsence=-1;
+        private TokenPlan(PublicPersonalNotesCustody owner,long deadline){
+            this.owner=owner;this.deadline=deadline;display=owner.display;uid=owner.uid;
+            tasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(owner.observed));
+            ids=Collections.unmodifiableSet(new LinkedHashSet<Integer>(tasks.keySet()));
+        }
+        void verify(Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){
+            synchronized(owner){owner.verifyTokenPlan(this,frame,recents,now);}
+        }
+        TokenEntry entry(int id){synchronized(owner){
+            owner.requirePlan(this);need(tasks.containsKey(id)&&!attempts.contains(id),"NOTES_TOKEN_ALREADY_ATTEMPTED");
+            return new TokenEntry(this,tasks.get(id));
+        }}
+        void absent(Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){synchronized(owner){
+            owner.verifyTokenPlan(this,frame,recents,now);
+            need(frame.begin>lastAbsence&&frame.roots.isEmpty(),"NOTES_TOKEN_ABSENCE_READ_INVALID");
+            for(int id:ids)need(!frame.global.allIds.contains(id)&&!recents.allIds.contains(id),"NOTES_TOKEN_RESIDUE_PRESENT");
+            lastAbsence=frame.end;absenceReads++;
+        }}
+        boolean attempted(int id){synchronized(owner){return attempts.contains(id);}}
+        private Map<String,Object> evidence(){Map<String,Object> value=new LinkedHashMap<String,Object>();
+            value.put("schema","hepta.personal-notes-token-retirement.v1");value.put("deadline_elapsed_ms",deadline);
+            value.put("attempted_task_ids",new ArrayList<Integer>(attempts));value.put("returned_task_ids",new ArrayList<Integer>(returns));
+            value.put("pre_release_absence_reads",absenceReads);value.put("framework_process_cleanup_possible",true);
+            value.put("numeric_task_id_authority",false);value.put("detached_recent_removal_supported",false);
+            return Collections.unmodifiableMap(value);
+        }
+    }
+    static final class TokenEntry {
+        private final TokenPlan plan;
+        private final BackgroundOwnedSingleTask.Task original;
+        private boolean entered,returned;
+        private TokenEntry(TokenPlan plan,BackgroundOwnedSingleTask.Task original){this.plan=plan;this.original=original;}
+        Object token(){return original.token;}
+        int id(){return original.id;}
+        void beforeCall(Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){synchronized(plan.owner){
+            plan.owner.verifyTokenPlan(plan,frame,recents,now);
+            boolean present=false;for(Node root:frame.roots)if(root.task.id==original.id){
+                need(root.children.isEmpty()&&sameTokenIdentity(original,root.task),"NOTES_TOKEN_FINAL_IDENTITY_CHANGED");present=true;
+            }
+            need(present&&!entered&&plan.attempts.add(original.id),"NOTES_TOKEN_ALREADY_ATTEMPTED_OR_ABSENT");
+            // Durable for the lifetime of the original owner. A Binder throw
+            // consumes this bit as surely as a return; no later plan can reset it.
+            entered=true;
+        }}
+        void returned(){synchronized(plan.owner){need(entered&&!returned,"NOTES_TOKEN_RETURN_UNBOUND");returned=true;plan.returns.add(original.id);}}
+    }
+    private static boolean sameTokenIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return a!=null&&b!=null&&a.id==b.id&&Objects.equals(a.token,b.token)&&a.display==b.display&&a.user==b.user
+                &&a.uid==b.uid&&a.parent==b.parent&&a.cookies.equals(b.cookies)&&Objects.equals(a.intentComponent,b.intentComponent)
+                &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private void requirePlan(TokenPlan plan){need(plan!=null&&plan==tokenPlan&&plan.owner==this&&retiring&&!unknown
+            &&releasePrepared&&!releaseAttempted,"NOTES_TOKEN_PLAN_NOT_ACTIVE");}
+    synchronized TokenPlan prepareTokenRetirement(Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now,long deadline){
+        need(tokenPlan==null&&deadline>now&&deadline-now<=1500,"NOTES_TOKEN_PLAN_ALREADY_MINTED_OR_EXPIRED");
+        for(Node node:frame.roots){BackgroundOwnedSingleTask.Task prior=observed.get(node.task.id);
+            need(prior==null||sameTokenIdentity(prior,node.task),"NOTES_TOKEN_ORIGINAL_IDENTITY_CHANGED");}
+        prepareRelease(frame,recents,now);
+        tokenPlan=new TokenPlan(this,deadline);
+        try{verifyTokenPlan(tokenPlan,frame,recents,now);return tokenPlan;}
+        catch(RuntimeException error){unresolved(error.getMessage());throw error;}
+    }
+    private void verifyTokenPlan(TokenPlan plan,Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){
+        requirePlan(plan);need(frame!=null&&recents!=null&&now>=frame.end&&now-frame.begin<=1500&&now<plan.deadline,
+                "NOTES_TOKEN_PLAN_DEADLINE_OR_FRAME");
+        Set<Integer> current=new LinkedHashSet<Integer>();
+        for(Node root:frame.roots){BackgroundOwnedSingleTask.Task task=root.task,original=plan.tasks.get(task.id);
+            need(root.children.isEmpty()&&task.parent<0&&task.cookies.isEmpty()&&sameTokenIdentity(original,task)
+                    &&task.display==display&&task.user==0&&task.uid==uid&&current.add(task.id),"NOTES_TOKEN_ATTACHED_LEAF_REQUIRED");
+            boolean valid=(task.topUid==uid&&task.activities>0&&pkg(task.intentComponent)&&pkg(task.base)&&pkg(task.real)
+                    &&nullablePkg(task.top)&&nullablePkg(task.orig))||emptyActivityLeaf(task,uid);
+            need(valid,"NOTES_TOKEN_LEAF_PACKAGE_CHANGED");
+            ProfileTaskPolicy.Leaf leaf=frame.global.leaves.get(task.id);
+            need(leaf!=null&&leaf.parent==task.id&&leaf.display==display&&leaf.user==0,"NOTES_TOKEN_NOT_SOLE_ROOT_LEAF");
+            int count=0;for(ProfileTaskPolicy.Leaf item:frame.global.leaves.values())if(item.parent==task.id)count++;
+            need(count==1,"NOTES_TOKEN_NONLEAF_REMOVAL_FORBIDDEN");
+        }
+        for(ProfileTaskPolicy.Root root:frame.global.roots)if(root.display==display)need(current.contains(root.id),"NOTES_TOKEN_FOREIGN_ROOT");
+        for(ProfileTaskPolicy.Leaf leaf:frame.global.leaves.values())if(leaf.display==display)need(current.contains(leaf.id),"NOTES_TOKEN_FOREIGN_CHILD");
+        for(int id:plan.ids){
+            need(!frame.global.allIds.contains(id)||current.contains(id),"NOTES_TOKEN_ESCAPED");
+            if(recents.allIds.contains(id)){
+                PublicOwnGroupPhysicalFence.RecentRecord row=recents.records.get(id),old=releaseRecents.get(id);
+                need(row!=null&&old!=null&&old.identity.equals(row.identity),"NOTES_TOKEN_RECENT_IDENTITY_CHANGED");
+                requireOwnedRecent(row);
+                String hidden=recents.hiddenLabels.get(id);need(hidden==null||old.label.equals(hidden),"NOTES_TOKEN_HIDDEN_IDENTITY_CHANGED");
+                need(current.contains(id)||plan.attempts.contains(id),"NOTES_TOKEN_DETACHED_RECENT_REQUIRES_MAINTENANCE");
+            }
+        }
+        requireUnownedRecents(recents);requireHiddenBaseline(recents);
+    }
+    synchronized void enterRelease(){need(tokenPlan==null,"NOTES_TOKEN_RELEASE_TIME_REQUIRED");enterReleaseChecked();}
+    synchronized void enterRelease(long now){
+        requirePlan(tokenPlan);need(tokenPlan.absenceReads>=2&&now>=tokenPlan.lastAbsence&&now-tokenPlan.lastAbsence<=1500
+                &&now<tokenPlan.deadline,"NOTES_TOKEN_RELEASE_DEADLINE_OR_ABSENCE");enterReleaseChecked();
+    }
+    private void enterReleaseChecked(){need(releasePrepared&&!unknown&&!releaseAttempted,"NOTES_RELEASE_NOT_ADMITTED");releaseAttempted=true;}
     synchronized void releaseReturned(){need(releaseAttempted&&!unknown,"NOTES_RELEASE_RETURN_UNBOUND");releaseReturned=true;}
     /** A private-constructor snapshot of actual released custody, never a wire
      * capability or an absence proof. The reader may only discard disappearing
@@ -322,6 +431,7 @@ final class PublicPersonalNotesCustody {
         }
         out.put("actual_observed_tasks",Collections.unmodifiableList(tasks));out.put("arbitrary_task_removal_used",false);
         out.put("force_stop_used",false);out.put("caller_flag_is_cleanup_proof",false);
+        if(tokenPlan!=null)out.put("token_retirement",tokenPlan.evidence());
         return Collections.unmodifiableMap(out);
     }
 }

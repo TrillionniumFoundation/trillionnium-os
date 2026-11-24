@@ -1597,6 +1597,8 @@ public final class BackgroundDisplayBroker {
         Thread cleanup=new Thread(()->{
             try{
                 PublicPersonalNotesCustody custody=publicNotesCustody;
+                PublicPersonalNotesRetirementAdapter retirementAdapter;
+                PublicPersonalNotesRetirement retirement;
                 synchronized(dispatchGate){
                     if(!custody.createAttempted()){
                         if(virtual!=null||createInFlight||effectInFlight)throw new IOException("NOTES_CREATE_STATE_UNKNOWN");
@@ -1605,26 +1607,31 @@ public final class BackgroundDisplayBroker {
                     PublicPersonalNotesReader reader=publicNotesReader;
                     if(reader==null||virtual==null||virtual!=publicCreateReturnedHandle||createInFlight||effectInFlight)
                         throw new IOException("NOTES_OWNED_DISPLAY_OR_READER_UNKNOWN");
-                    PublicPersonalNotesCustody.Frame before=reader.frame();
-                    PublicOwnGroupPhysicalFence.RecentCensus beforeRecents=reader.recents();
-                    custody.prepareRelease(before,beforeRecents,SystemClock.elapsedRealtime());
+                    long originalDeadline=cleanupAt+CLEANUP_MS-100;
+                    retirementAdapter=new PublicPersonalNotesRetirementAdapter(shell,activityTasks,windowManager,displays,
+                            reader,publicOwnGroupFramework,displayId,displayName,custody.expectedUid(),originalDeadline,()->{
+                        if(!closing.get()||!publicAdmissionRetired.get()||!cleanupStarted.get()||virtual==null
+                                ||virtual!=publicCreateReturnedHandle||createInFlight||effectInFlight)
+                            throw new IOException("NOTES_RETIRED_ORIGINAL_HANDLE_REQUIRED");
+                    });
+                    retirement=new PublicPersonalNotesRetirement(custody,retirementAdapter,originalDeadline);
+                    retirement.retire();
                     // Only this session's actual create-returned VD handle is released.
-                    // No per-task remove, reparent, caller-supplied id or process kill.
+                    // Original attached leaf tokens have two complete absences first.
+                    // No detached recent, numerical task id or broad root is removed.
                     if(virtual!=publicCreateReturnedHandle)throw new IOException("NOTES_OWNED_DISPLAY_CHANGED");
-                    custody.enterRelease();virtual.release();custody.releaseReturned();
+                    retirement.beforeRelease(SystemClock.elapsedRealtime());
+                    custody.enterRelease(SystemClock.elapsedRealtime());virtual.release();custody.releaseReturned();
                     ImageReader images=surfaceReader;if(images!=null)images.close();
                     HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
                 }
                 long end=cleanupAt+CLEANUP_MS-100;
                 while(SystemClock.elapsedRealtime()<end){
                     if(!publicOwnedDisplayAbsent()){Thread.sleep(25);continue;}
-                    long begin=SystemClock.elapsedRealtime();
-                    ProfileTaskPolicy.Snapshot live=publicNotesReader.global();
-                    PublicPersonalNotesCustody.Frame remaining=null;
-                    if(custody.needsActualTasks(live)){remaining=publicNotesReader.frameAfterRelease(custody.releasedRead());live=remaining.global;}
-                    PublicOwnGroupPhysicalFence.RecentCensus recents=publicNotesReader.recents();
-                    long finish=SystemClock.elapsedRealtime();
-                    custody.observeAbsence(live,recents,remaining,publicOwnedDisplayAbsent(),begin,finish,SystemClock.elapsedRealtime());
+                    PublicPersonalNotesRetirement.Sample sample=retirementAdapter.readReleased(custody.releasedRead());
+                    retirement.afterRelease(sample,SystemClock.elapsedRealtime());
+                    custody.observeAbsence(sample.frame.global,sample.recents,null,publicOwnedDisplayAbsent(),
+                            sample.begin,sample.end,SystemClock.elapsedRealtime());
                     if(custody.known()){state=releasedState();return;}
                     Thread.sleep(50);
                 }
@@ -1637,12 +1644,7 @@ public final class BackgroundDisplayBroker {
         }catch(Throwable scheduling){quarantinePublicNotes("NOTES_CLEANUP_WORKER_UNAVAILABLE");cleanupDone.countDown();}
     }
     private boolean publicOwnedDisplayAbsent()throws Exception{
-        DisplayManager manager=displays;
-        if(manager==null)return false;
-        if(displayId>0&&manager.getDisplay(displayId)!=null)return false;
-        Display[] all=manager.getDisplays();if(all==null)return false;
-        for(Display value:all)if(value==null||displayName.equals(value.getName()))return false;
-        return true;
+        return PublicPersonalNotesRetirementAdapter.displayAbsent(displayId,displayName);
     }
     private void quarantinePublicNotes(String reason){
         retirePublicScreenLease();

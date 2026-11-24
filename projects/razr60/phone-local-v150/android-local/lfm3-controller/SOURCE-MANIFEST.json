@@ -3,15 +3,20 @@
   "base_head": "8df11cd248c8b9258ffd1351f7b44785c536a228",
   "base_manifest_sha256": "c178d14d1f677819c363925420f0cdd2a8a59aa1b22effa8854f5e3110d6a6d1",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_notes_cancelled_jsonarray_fixture_successor",
-  "complete_source_files": 2546,
+  "candidate_status": "reviewed_personal_notes_token_retirement_successor",
+  "complete_source_files": 2550,
   "current_successor_delta": {
-    "baseline": "7370629ec461eed44cdabfc3044a498dd0fe4732",
+    "baseline": "c4274d3041c1574b1ccab360406c3b4adfc29b18",
     "reviewed_paths": [
-      "tests/background-session/prepare_fixture.py"
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+      "tests/notes-token-retirement/run_host.py"
     ],
-    "scope": "Test fixture only: add standard strict JSONArray typed accessors getJSONArray/getString to the existing background-session host port. All production bytes, previous cases, assertions and Android behavior remain unchanged. Preserve the original 7370629 failed host reports; obtain new complete host and SDK qualification for this successor.",
-    "production_changed": false,
+    "scope": "Retire personal Notes attached owned root-as-leaf tasks once through their original Binder tokens before releasing the virtual display. Require complete fresh task, ancestor, owner, physical-screen and foreign-history checks; retain unknown on detached, ambiguous, changed, late or failed outcomes. Preserve historical cancelled task/model facts and all original authority and deadline limits. No numeric task-ID effect fallback, force-stop or model/runtime changes.",
+    "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
     "automatic_default_model_unchanged": true
@@ -6189,8 +6194,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 154378,
-      "sha256": "67a4f7b9300735304bc0b38da76fe58c10709444047c4a12ee2f064ffe7d8301"
+      "bytes": 154720,
+      "sha256": "8bfa10290ef6d2aaf15f41412abbe631a3571192ed38856c70f384c82878bb46"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6379,8 +6384,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "bytes": 24116,
-      "sha256": "61b21582c5fbc147a3e67e5d81df0ce186ce9eb765b88c5d374d39d001fa9bd1"
+      "bytes": 32438,
+      "sha256": "9bc1a7b676e6c9d8c46ce8d6c9de7a197f487df0b530feaba3c4a28aa6af70b5"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
@@ -6391,6 +6396,16 @@
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
       "bytes": 23984,
       "sha256": "d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "bytes": 15137,
+      "sha256": "ac9454bd8f3584142a2a9f83a6cf63e674bbc17f782c2879e5852fee46843e15"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "bytes": 20265,
+      "sha256": "4c1ef91b3f20c5e3b32475386e1ef1a190479c86c17539768b51644467183fc4"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
@@ -10003,6 +10018,16 @@
       "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
     },
     {
+      "path": "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+      "bytes": 26699,
+      "sha256": "438d0dc04633fcc44c969b020caf9f4f34d7ad095a3ba030e24e27ae2b4d7071"
+    },
+    {
+      "path": "tests/notes-token-retirement/run_host.py",
+      "bytes": 8665,
+      "sha256": "73153109b2463849330df573b9cb28e5691ebc5a4852fd2265bed715829b57b1"
+    },
+    {
       "path": "tests/notes-workflow-close-recovery/NotesWorkflowCloseRecoveryHostTest.java",
       "bytes": 21773,
       "sha256": "4503ad8614025fefd460ed849adaa985641b308b40c89f78a57b583b3707db7f"
@@ -12744,37 +12769,32 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "dec0080731246a6bfa5c15ec0de7241a3581b2b0",
-    "previous_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
+    "previous_component_git_tree_sha1": "370327690686b9d80c295cba0634d4deb85c2327",
+    "previous_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "/home/alex/hepta-razr-notes-fixture-followup-20261124-r1/validation/background-client-r1/VALIDATION.json",
-        "bytes": 29154,
-        "sha256": "5353b55b1b99430c027200a96a82501517ccee11dd1ef20cea33a42b762b62ef"
-      },
-      {
-        "path": "/home/alex/hepta-razr-notes-fixture-followup-20261124-r1/validation/sealed-retained-r1/RESULT.json",
-        "bytes": 80473,
-        "sha256": "ff8856a1de22867449f50030b90775ef2df9730641875f3e3c317841d72da329"
+        "path": "/home/alex/hepta-razr-notes-token-cleanup-followup-20261124-r1/validation/focused-r3/RESULT.json",
+        "bytes": 51318,
+        "sha256": "7c880f7c15d67131f4bd9f2faec4f9b9e3e714957eeab91d40b581e6781037e9"
       }
     ],
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false
   },
-  "main_java_sources": 217,
+  "main_java_sources": 219,
   "phone_qualified": false,
-  "production_build_inputs_count": 394,
-  "production_input_map_sha256": "d8da1c5ff21e042dd184c23dd4c437c18b55bd65eb436443236337dcf21b1aca",
+  "production_build_inputs_count": 396,
+  "production_input_map_sha256": "e2927e21c44307880c0fcf8499c610b583f053c5707958e14538d241fbdcbfcd",
   "schema": "hepta.local-source.v3",
-  "scope": "Test fixture only: add standard strict JSONArray typed accessors getJSONArray/getString to the existing background-session host port. All production bytes, previous cases, assertions and Android behavior remain unchanged. Preserve the original 7370629 failed host reports; obtain new complete host and SDK qualification for this successor.",
-  "source_parent_head": "7370629ec461eed44cdabfc3044a498dd0fe4732",
-  "source_parent_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
-  "source_snapshot_predecessor_manifest_sha256": "222b5a192aa65310660256efa3b370335ebf29a92c075c0bdf0243bcc479dd83",
+  "scope": "Retire personal Notes attached owned root-as-leaf tasks once through their original Binder tokens before releasing the virtual display. Require complete fresh task, ancestor, owner, physical-screen and foreign-history checks; retain unknown on detached, ambiguous, changed, late or failed outcomes. Preserve historical cancelled task/model facts and all original authority and deadline limits. No numeric task-ID effect fallback, force-stop or model/runtime changes.",
+  "source_parent_head": "c4274d3041c1574b1ccab360406c3b4adfc29b18",
+  "source_parent_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
+  "source_snapshot_predecessor_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12799,5 +12819,24 @@
     "historical_model_receipt_valid_remains": false,
     "historical_business_and_cleanup_success_not_claimed": true,
     "archive_and_deadline_limits_unchanged": true
+  },
+  "current_personal_notes_token_retirement": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+      "tests/notes-token-retirement/run_host.py"
+    ],
+    "previous_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
+    "original_attached_binder_tokens_only": true,
+    "each_effect_attempt_consumed_once": true,
+    "complete_fresh_foreign_and_physical_checks_required": true,
+    "retire_owned_tasks_before_display_release": true,
+    "detached_task_refused": true,
+    "historical_cancelled_and_unknown_results_preserved": true,
+    "deadline_and_authority_limits_unchanged": true,
+    "framework_process_impact_not_claimed_absent": true
   }
 }
