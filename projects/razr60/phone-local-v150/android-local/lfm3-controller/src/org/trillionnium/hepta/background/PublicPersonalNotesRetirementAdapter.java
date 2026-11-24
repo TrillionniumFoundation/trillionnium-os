@@ -101,7 +101,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                     &&PublicPersonalNotesRetirement.sameTask(root.task,actual.get(root.task.id)),"NOTES_RETIREMENT_FINAL_TASKINFO_CHANGED");
         }
         guard(after);long end=now();need(end-begin<=1500,"NOTES_RETIREMENT_SAMPLE_AGE");
-        return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual,physical.hashes,begin,end);
+        return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual,physical.hashes,begin,end,display,uid);
     }
     private Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks(ProfileTaskPolicy.Snapshot expected)throws Exception{
         time();Object raw=allRoots.invoke(activities);time();
@@ -122,6 +122,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
             Set<Integer> expectedLeaves=new LinkedHashSet<Integer>();boolean missing=false;
             for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(leaf.parent==root.id){
                 expectedLeaves.add(leaf.id);BackgroundOwnedSingleTask.Task node=out.get(leaf.id);Set<Integer> chain=new LinkedHashSet<Integer>();
+                if(PublicPersonalNotesRetirement.ordinaryForeignRootMember(global,out,leaf,display,uid))continue;
                 while(node!=null&&node.id!=root.id){
                     need(chain.size()<8&&chain.add(node.id)&&node.parent>0,"NOTES_RETIREMENT_RUNNING_ANCESTRY_INVALID");
                     node=out.get(node.parent);
@@ -162,8 +163,14 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         Object intent=field(row,"baseIntent");need(intent instanceof Intent,"NOTES_RETIREMENT_BASE_INTENT");
         String top=component(field(row,"topActivity"));Object rawInfo=field(row,"topActivityInfo");int topUid=-1;
         if(rawInfo!=null){need(rawInfo instanceof ActivityInfo,"NOTES_RETIREMENT_TOP_INFO");ActivityInfo info=(ActivityInfo)rawInfo;
+            // RootTaskInfo exposes the original Intent component; RunningTaskInfo
+            // exposes ActivityRecord's resolved component. An actual ActivityInfo
+            // alias binds both names to the same package and application UID.
             need(info.applicationInfo!=null&&info.packageName!=null&&info.name!=null&&info.packageName.equals(info.applicationInfo.packageName)
-                    &&(info.packageName+"/"+info.name).equals(top),"NOTES_RETIREMENT_TOP_IDENTITY");topUid=info.applicationInfo.uid;
+                    &&((info.packageName+"/"+info.name).equals(top)
+                        ||(info.targetActivity!=null&&!info.targetActivity.isEmpty()
+                            &&(info.packageName+"/"+info.targetActivity).equals(top))),
+                    "NOTES_RETIREMENT_TOP_IDENTITY");topUid=info.applicationInfo.uid;
         }else need(top==null,"NOTES_RETIREMENT_TOP_UID_MISSING");
         BackgroundOwnedSingleTask.Task task=new BackgroundOwnedSingleTask.Task(integer(row,"taskId"),integer(row,"displayId"),integer(row,"userId"),
                 integer(row,"parentTaskId"),integer(row,"effectiveUid"),topUid,integer(row,"numActivities"),binder,cookies,

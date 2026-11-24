@@ -1,0 +1,562 @@
+{
+  "schema": "hepta.notes-taskinfo-recorded-fields.v1",
+  "case_id": "c6722bc62eb84ac68abc258d91949fa3",
+  "actual_raw_sha256": "cf131e884b40fd9bff7463c0b04f36497fc1a6944629760727e088e1b80f9795",
+  "actual_report_sha256": "7b785b3c581504c999c10b8050426f16144f5b2604a5ef44aefeda9aac5a0bc2",
+  "original_binder_authority": false,
+  "host_binder_wrappers_and_missing_child_arrays_authored": true,
+  "rows": [
+    {
+      "query": "all_roots",
+      "taskId": 1865,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10269,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "baseActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "topActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "realActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.ccc.ota",
+        "name": "com.motorola.ccc.ota.ui.BaseActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.ccc.ota",
+        "applicationInfo_uid": 10269,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 1,
+        "identity_hash_code": 75736917,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [],
+      "childTaskIds": [
+        1865
+      ]
+    },
+    {
+      "query": "all_roots",
+      "taskId": 1,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 0,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.launcher3/com.android.launcher3.CustomizationPanelLauncher",
+      "baseActivity": "com.motorola.launcher3/com.android.launcher3.uioverrides.QuickstepLauncher",
+      "topActivity": "com.motorola.launcher3/com.android.launcher3.CustomizationPanelLauncher",
+      "realActivity": null,
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.launcher3",
+        "name": "com.android.launcher3.CustomizationPanelLauncher",
+        "targetActivity": "com.android.launcher3.uioverrides.QuickstepLauncher",
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.launcher3",
+        "applicationInfo_uid": 10282,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 2,
+        "identity_hash_code": 164124010,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [],
+      "childTaskIds": [
+        1095
+      ]
+    },
+    {
+      "query": "all_roots",
+      "taskId": 1727,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10143,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "baseActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "topActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "realActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.android.messaging",
+        "name": "com.android.messaging.ui.conversationlist.ConversationListActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.android.messaging",
+        "applicationInfo_uid": 10143,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 3,
+        "identity_hash_code": 240048731,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [
+        {
+          "local_index": 4,
+          "identity_hash_code": 192733944,
+          "class": "android.os.BinderProxy",
+          "is_ibinder": true,
+          "authority": false,
+          "cross_process_identity": false
+        }
+      ],
+      "childTaskIds": [
+        1727
+      ]
+    },
+    {
+      "query": "all_roots",
+      "taskId": 3,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 0,
+      "numActivities": 0,
+      "isRunning": false,
+      "isVisible": false,
+      "base_intent_component": null,
+      "baseActivity": null,
+      "topActivity": null,
+      "realActivity": null,
+      "origActivity": null,
+      "topActivityInfo": null,
+      "token_binder": {
+        "local_index": 5,
+        "identity_hash_code": 86270929,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [
+        {
+          "local_index": 6,
+          "identity_hash_code": 193879606,
+          "class": "android.os.BinderProxy",
+          "is_ibinder": true,
+          "authority": false,
+          "cross_process_identity": false
+        }
+      ],
+      "childTaskIds": [
+        4,
+        5
+      ]
+    },
+    {
+      "query": "all_roots",
+      "taskId": 1093,
+      "displayId": 1,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 0,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "baseActivity": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "topActivity": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "realActivity": null,
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.launcher.secondarydisplay",
+        "name": "com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.launcher.secondarydisplay",
+        "applicationInfo_uid": 10280,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 7,
+        "identity_hash_code": 1491255,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [],
+      "childTaskIds": [
+        1094
+      ]
+    },
+    {
+      "query": "all_roots",
+      "taskId": 1909,
+      "displayId": 574,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10382,
+      "numActivities": 2,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "baseActivity": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "topActivity": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+      "realActivity": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.stylus",
+        "name": "com.motorola.stylus.note.text.TextNoteActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.stylus",
+        "applicationInfo_uid": 10382,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 8,
+        "identity_hash_code": 1652388,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [],
+      "childTaskIds": [
+        1909
+      ]
+    },
+    {
+      "query": "running_tasks",
+      "taskId": 1865,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10269,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "baseActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "topActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "realActivity": "com.motorola.ccc.ota/com.motorola.ccc.ota.ui.BaseActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.ccc.ota",
+        "name": "com.motorola.ccc.ota.ui.BaseActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.ccc.ota",
+        "applicationInfo_uid": 10269,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 1,
+        "identity_hash_code": 75736917,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": []
+    },
+    {
+      "query": "running_tasks",
+      "taskId": 1095,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10282,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.launcher3/com.android.launcher3.CustomizationPanelLauncher",
+      "baseActivity": "com.motorola.launcher3/com.android.launcher3.uioverrides.QuickstepLauncher",
+      "topActivity": "com.motorola.launcher3/com.android.launcher3.uioverrides.QuickstepLauncher",
+      "realActivity": "com.motorola.launcher3/com.android.launcher3.uioverrides.QuickstepLauncher",
+      "origActivity": "com.motorola.launcher3/com.android.launcher3.CustomizationPanelLauncher",
+      "topActivityInfo": {
+        "packageName": "com.motorola.launcher3",
+        "name": "com.android.launcher3.CustomizationPanelLauncher",
+        "targetActivity": "com.android.launcher3.uioverrides.QuickstepLauncher",
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.launcher3",
+        "applicationInfo_uid": 10282,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": false
+        },
+        "target_component_equal": true
+      },
+      "token_binder": {
+        "local_index": 9,
+        "identity_hash_code": 3828749,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": []
+    },
+    {
+      "query": "running_tasks",
+      "taskId": 1727,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10143,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "baseActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "topActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "realActivity": "com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.android.messaging",
+        "name": "com.android.messaging.ui.conversationlist.ConversationListActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.android.messaging",
+        "applicationInfo_uid": 10143,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 3,
+        "identity_hash_code": 240048731,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [
+        {
+          "local_index": 4,
+          "identity_hash_code": 192733944,
+          "class": "android.os.BinderProxy",
+          "is_ibinder": true,
+          "authority": false,
+          "cross_process_identity": false
+        }
+      ]
+    },
+    {
+      "query": "running_tasks",
+      "taskId": 1094,
+      "displayId": 1,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10280,
+      "numActivities": 1,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "baseActivity": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "topActivity": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "realActivity": "com.motorola.launcher.secondarydisplay/com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.launcher.secondarydisplay",
+        "name": "com.motorola.launcher.secondarydisplay.SecondaryDisplayLauncher",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.launcher.secondarydisplay",
+        "applicationInfo_uid": 10280,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 10,
+        "identity_hash_code": 81405890,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": []
+    },
+    {
+      "query": "running_tasks",
+      "taskId": 1909,
+      "displayId": 574,
+      "userId": 0,
+      "parentTaskId": -1,
+      "effectiveUid": 10382,
+      "numActivities": 2,
+      "isRunning": true,
+      "isVisible": false,
+      "base_intent_component": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "baseActivity": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "topActivity": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+      "realActivity": "com.motorola.stylus/com.motorola.stylus.manager.NoteManagerActivity",
+      "origActivity": null,
+      "topActivityInfo": {
+        "packageName": "com.motorola.stylus",
+        "name": "com.motorola.stylus.note.text.TextNoteActivity",
+        "targetActivity": null,
+        "applicationInfo_present": true,
+        "applicationInfo_packageName": "com.motorola.stylus",
+        "applicationInfo_uid": 10382,
+        "current_predicate_parts": {
+          "app_present": true,
+          "package_present": true,
+          "name_present": true,
+          "activity_application_package_equal": true,
+          "name_component_equal": true
+        },
+        "target_component_equal": false
+      },
+      "token_binder": {
+        "local_index": 8,
+        "identity_hash_code": 1652388,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": []
+    },
+    {
+      "query": "actual_root_3_children",
+      "taskId": 5,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": 3,
+      "effectiveUid": 0,
+      "numActivities": 0,
+      "isRunning": false,
+      "isVisible": false,
+      "base_intent_component": null,
+      "baseActivity": null,
+      "topActivity": null,
+      "realActivity": null,
+      "origActivity": null,
+      "topActivityInfo": null,
+      "token_binder": {
+        "local_index": 11,
+        "identity_hash_code": 185350611,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [
+        {
+          "local_index": 12,
+          "identity_hash_code": 168106256,
+          "class": "android.os.BinderProxy",
+          "is_ibinder": true,
+          "authority": false,
+          "cross_process_identity": false
+        }
+      ]
+    },
+    {
+      "query": "actual_root_3_children",
+      "taskId": 4,
+      "displayId": 0,
+      "userId": 0,
+      "parentTaskId": 3,
+      "effectiveUid": 0,
+      "numActivities": 0,
+      "isRunning": false,
+      "isVisible": false,
+      "base_intent_component": null,
+      "baseActivity": null,
+      "topActivity": null,
+      "realActivity": null,
+      "origActivity": null,
+      "topActivityInfo": null,
+      "token_binder": {
+        "local_index": 13,
+        "identity_hash_code": 70171657,
+        "class": "android.os.BinderProxy",
+        "is_ibinder": true,
+        "authority": false,
+        "cross_process_identity": false
+      },
+      "launch_cookies": [
+        {
+          "local_index": 14,
+          "identity_hash_code": 220659214,
+          "class": "android.os.BinderProxy",
+          "is_ibinder": true,
+          "authority": false,
+          "cross_process_identity": false
+        }
+      ]
+    }
+  ]
+}

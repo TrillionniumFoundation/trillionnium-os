@@ -1,19 +1,23 @@
 {
   "android_qualified": false,
-  "base_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
-  "base_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+  "base_head": "446de9223acede61ef2ae07b99ac54356ba41237",
+  "base_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_native_xiaomi_price_domain_successor",
-  "complete_source_files": 2553,
+  "candidate_status": "reviewed_notes_taskinfo_alias_parentage_and_workflow_retirement_refusal_successor",
+  "complete_source_files": 2558,
   "current_successor_delta": {
-    "baseline": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
+    "baseline": "446de9223acede61ef2ae07b99ac54356ba41237",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
-      "tests/native-xiaomi-budget-preview/run_host.py"
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+      "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+      "tests/notes-token-retirement/run_host.py",
+      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+      "tests/notes-workflow-retirement-refusal/run_host.py"
     ],
-    "scope": "Preserve every positive canonical amount already supported by native Xiaomi detail quotes in terminal explanations, including sub-yuan and eight-digit prices. Reuse the provider normalization and reject zero, unsupported raw formats, and noncanonical terminal amount records. Checkout preview stages and authority remain unchanged.",
+    "scope": "Accept Android 16 TaskInfo activity aliases through their exact ActivityInfo target while preserving package and UID checks. Read ordinary foreign leaf membership from complete unique root child arrays without rewriting parentTaskId=-1 or granting owned effects. Add a separate bounded v7 current-absence recovery request for a completed Notes workflow whose original retirement refused identity before any release; retain original failures, authority, deadlines, and explicit ordinary acknowledgement.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -2666,16 +2670,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -2714,6 +2708,16 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -5776,11 +5780,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -5889,6 +5888,11 @@
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "bytes": 3372,
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
@@ -6377,8 +6381,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 133411,
-      "sha256": "d1d1b423f1a33979373bab4652ae02e7c068119d78602440f2fd1fbc4cc4e797"
+      "bytes": 142554,
+      "sha256": "3a84994c61e4485ea76e959551eaf8707a523d6cbb5b817b11082dc702854b8f"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
@@ -6397,13 +6401,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "bytes": 15137,
-      "sha256": "ac9454bd8f3584142a2a9f83a6cf63e674bbc17f782c2879e5852fee46843e15"
+      "bytes": 17633,
+      "sha256": "f8e2e02cee744d4eb4b7de58b4d9efaeb96bc05da913ae4e18b318ee76dbbd6d"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "bytes": 20265,
-      "sha256": "4c1ef91b3f20c5e3b32475386e1ef1a190479c86c17539768b51644467183fc4"
+      "bytes": 20830,
+      "sha256": "a987a8d6afa5d1762ed56fc0fc32e7b192c4f976c256b75082a6044afb59f64d"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
@@ -7831,16 +7835,6 @@
       "sha256": "9727c15d205c9b1d7f87af534b7ac232049f49698fa59202c2dcfbe35c1dfb66"
     },
     {
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "bytes": 29532,
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "bytes": 148856,
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
-    },
-    {
       "path": "tests/completion/NotesNamedReopenTest.java",
       "bytes": 4298,
       "sha256": "c4462a30fffbe8ae96208f4c087f431643a71147d02be67c8332694ac7cbbfb6"
@@ -7894,6 +7888,16 @@
       "path": "tests/completion/test_notes_completion.py",
       "bytes": 22278,
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "bytes": 29532,
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "bytes": 148856,
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "path": "tests/exact-admission/ObservationHintsHostTest.java",
@@ -8091,46 +8095,6 @@
       "sha256": "6a73c6a91dca0841e4331b84a5e10ac9cf06b2d4bec2a138461c4e010ea3ec0a"
     },
     {
-      "path": "tests/local-model-settings-qwen/README.md",
-      "bytes": 1676,
-      "sha256": "38d391302a5ba38f8a635288bee941fbf0044ce7b07065d711c8f5ba09b2f8ac"
-    },
-    {
-      "path": "tests/local-model-settings-qwen/run_host.py",
-      "bytes": 4714,
-      "sha256": "49b9b9e4da904d13da42d703238bedbdd2d25e1f81cf328c4fb7b6e9a225193b"
-    },
-    {
-      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
-      "bytes": 1562,
-      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
-    },
-    {
-      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
-      "bytes": 698,
-      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
-    },
-    {
-      "path": "tests/local-model-settings-visual/README.md",
-      "bytes": 1927,
-      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
-    },
-    {
-      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
-      "bytes": 9165,
-      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
-    },
-    {
-      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "bytes": 47387,
-      "sha256": "e2b865d416be72e5afa489b35c80cd6aa540bfa1828ad0e61da1df2e19442b41"
-    },
-    {
-      "path": "tests/local-model-settings-visual/run_host.py",
-      "bytes": 15454,
-      "sha256": "71acaef1592ae7a06524652614bceac48657d5b11c24006e58e02c30f6a43fa3"
-    },
-    {
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
       "bytes": 3794,
       "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
@@ -8229,6 +8193,46 @@
       "path": "tests/local-model-settings/run_host.py",
       "bytes": 12158,
       "sha256": "9b9d4c44b18bef99c69543140a1dc7dbde0fb7edec3016b9b2ac4cdacc8eaf6f"
+    },
+    {
+      "path": "tests/local-model-settings-qwen/README.md",
+      "bytes": 1676,
+      "sha256": "38d391302a5ba38f8a635288bee941fbf0044ce7b07065d711c8f5ba09b2f8ac"
+    },
+    {
+      "path": "tests/local-model-settings-qwen/run_host.py",
+      "bytes": 4714,
+      "sha256": "49b9b9e4da904d13da42d703238bedbdd2d25e1f81cf328c4fb7b6e9a225193b"
+    },
+    {
+      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
+      "bytes": 1562,
+      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
+    },
+    {
+      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
+      "bytes": 698,
+      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+    },
+    {
+      "path": "tests/local-model-settings-visual/README.md",
+      "bytes": 1927,
+      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+    },
+    {
+      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
+      "bytes": 9165,
+      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
+    },
+    {
+      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "bytes": 47387,
+      "sha256": "e2b865d416be72e5afa489b35c80cd6aa540bfa1828ad0e61da1df2e19442b41"
+    },
+    {
+      "path": "tests/local-model-settings-visual/run_host.py",
+      "bytes": 15454,
+      "sha256": "71acaef1592ae7a06524652614bceac48657d5b11c24006e58e02c30f6a43fa3"
     },
     {
       "path": "tests/main-ui-permission/MainActivityLocatorHostTest.java",
@@ -8354,6 +8358,46 @@
       "path": "tests/native-action-integration/run_host.py",
       "bytes": 35330,
       "sha256": "8239614c94460f3b5d4912ea2028377db96ffa7d862318b9fe032a69edec82c9"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
+      "bytes": 1091,
+      "sha256": "4341eca0c3e5f4e81eee05e2a89f7bb1070475a59d5e5ff28c8c70016ec70e08"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "bytes": 6744,
+      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
+      "bytes": 663,
+      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
+      "bytes": 697,
+      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
+      "bytes": 1925,
+      "sha256": "ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "bytes": 1506,
+      "sha256": "bfc170c4e4a7e623ab7702f9ad0b25f2d3f590709ca8e91e7dca2189533205f4"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
+      "bytes": 3996,
+      "sha256": "538ca69c03981e1e29799c1fcaf2d5e1160f20afe2ca5900f0eef03bcef46114"
+    },
+    {
+      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
+      "bytes": 566,
+      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
@@ -8674,46 +8718,6 @@
       "path": "tests/native-app-routing/run_host.py",
       "bytes": 23472,
       "sha256": "37c0e9b2c5eda2c8607a04ec990dd926909ed0b19d29c85ca901e59d716ad462"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
-      "bytes": 1091,
-      "sha256": "4341eca0c3e5f4e81eee05e2a89f7bb1070475a59d5e5ff28c8c70016ec70e08"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "bytes": 6744,
-      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
-      "bytes": 663,
-      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
-      "bytes": 697,
-      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
-      "bytes": 1925,
-      "sha256": "ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "bytes": 1506,
-      "sha256": "bfc170c4e4a7e623ab7702f9ad0b25f2d3f590709ca8e91e7dca2189533205f4"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "bytes": 3996,
-      "sha256": "538ca69c03981e1e29799c1fcaf2d5e1160f20afe2ca5900f0eef03bcef46114"
-    },
-    {
-      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
-      "bytes": 566,
-      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "path": "tests/native-auto-target/AutomaticTargetHostTest.java",
@@ -9741,6 +9745,21 @@
       "sha256": "275dd04b104cd0a784807658b46ea76038783104a933e50c997cb95852174acf"
     },
     {
+      "path": "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
+      "bytes": 34653,
+      "sha256": "416ff522f52b14898d44e3986472b9a658216ded42008bf4d8275c20980419c3"
+    },
+    {
+      "path": "tests/native-xiaomi-search-input/real-censuses.json",
+      "bytes": 703748,
+      "sha256": "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
+    },
+    {
+      "path": "tests/native-xiaomi-search-input/run_host.py",
+      "bytes": 6602,
+      "sha256": "29213760b3435e74460b3a98b5427cb1bce5c187f35dda81ab2f9fba0e0e82ff"
+    },
+    {
       "path": "tests/native-xiaomi-search-input-bridge/InputActionCases.fragment",
       "bytes": 12952,
       "sha256": "e2129e54d877a2795d131fb001a8096fbb91e54dc366e5999b8470a55372d741"
@@ -9759,21 +9778,6 @@
       "path": "tests/native-xiaomi-search-input-bridge/run_observer_host.py",
       "bytes": 5787,
       "sha256": "566a8029aba339dc996122ea5a11c3413f7eb4dcd417156a80fe9f8fa53550bc"
-    },
-    {
-      "path": "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
-      "bytes": 34653,
-      "sha256": "416ff522f52b14898d44e3986472b9a658216ded42008bf4d8275c20980419c3"
-    },
-    {
-      "path": "tests/native-xiaomi-search-input/real-censuses.json",
-      "bytes": 703748,
-      "sha256": "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
-    },
-    {
-      "path": "tests/native-xiaomi-search-input/run_host.py",
-      "bytes": 6602,
-      "sha256": "29213760b3435e74460b3a98b5427cb1bce5c187f35dda81ab2f9fba0e0e82ff"
     },
     {
       "path": "tests/native-xiaomi-single-toolbar/NativeXiaomiSingleToolbarHostTest.java",
@@ -10031,14 +10035,29 @@
       "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
     },
     {
+      "path": "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+      "bytes": 16074,
+      "sha256": "417725fd93eef4e92c849acfbbe7192c9171f6c36463d16571cf409992a7f191"
+    },
+    {
       "path": "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
       "bytes": 26699,
       "sha256": "438d0dc04633fcc44c969b020caf9f4f34d7ad095a3ba030e24e27ae2b4d7071"
     },
     {
+      "path": "tests/notes-token-retirement/TASKINFO-RECOVERY-VALIDATION.json",
+      "bytes": 11396,
+      "sha256": "1c6d7e2e0845a8887f67ef8ebae36abaac38560b771f7c2d330e50f302f030ec"
+    },
+    {
+      "path": "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+      "bytes": 19641,
+      "sha256": "13f9f003b206e8b07403700a1abe41032f889bb8019bd49189406f5a1409f680"
+    },
+    {
       "path": "tests/notes-token-retirement/run_host.py",
-      "bytes": 8665,
-      "sha256": "73153109b2463849330df573b9cb28e5691ebc5a4852fd2265bed715829b57b1"
+      "bytes": 8916,
+      "sha256": "f180e9051981fdca92ed9b69fcd3a1c1ea0b09e0292b361de3e5406decba480c"
     },
     {
       "path": "tests/notes-workflow-close-recovery/NotesWorkflowCloseRecoveryHostTest.java",
@@ -10059,6 +10078,16 @@
       "path": "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
       "bytes": 15653,
       "sha256": "89ca89db8824a067ca08ff3abd3d257ea32f043c290ee657ac661722f8365d0d"
+    },
+    {
+      "path": "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+      "bytes": 24299,
+      "sha256": "d88a16121017b7c2ece50f23f1a54e56be0e04eab1815d1433c6ad2deb5b003b"
+    },
+    {
+      "path": "tests/notes-workflow-retirement-refusal/run_host.py",
+      "bytes": 8958,
+      "sha256": "2112b6e63ddc88b88e132b34059480c671b93393ca49931127c41b4e0150783a"
     },
     {
       "path": "tests/observation-collection/ObservationCollectionHostTest.java",
@@ -10671,6 +10700,36 @@
       "sha256": "d8696b940d62d69be2afaaa7c18b87e59c1f55e6cd06d5fd76dd5b208d443f9b"
     },
     {
+      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
+      "bytes": 2271,
+      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
+    },
+    {
+      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
+      "bytes": 12421,
+      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
+    },
+    {
+      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
+      "bytes": 7006,
+      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
+    },
+    {
+      "path": "tests/profile-recovery/RecoveryProofFixture.java",
+      "bytes": 326,
+      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
+    },
+    {
+      "path": "tests/profile-recovery/run_host.py",
+      "bytes": 3372,
+      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
+    },
+    {
+      "path": "tests/profile-recovery/run_session_host.py",
+      "bytes": 5291,
+      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
+    },
+    {
       "path": "tests/profile-recovery-census/BusinessRecoveryCensusHostTest.java",
       "bytes": 7075,
       "sha256": "010f083be0e1a17ae0a9f8894ae248b9dfd2565d8499338f1d6ebca5e00b076d"
@@ -10714,36 +10773,6 @@
       "path": "tests/profile-recovery-platform/run_fd_host.py",
       "bytes": 11077,
       "sha256": "53c59e8588c358fed5847e82ced456255c8c273433bfb848d1847780d389a31a"
-    },
-    {
-      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
-      "bytes": 2271,
-      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
-    },
-    {
-      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
-      "bytes": 12421,
-      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
-    },
-    {
-      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
-      "bytes": 7006,
-      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
-    },
-    {
-      "path": "tests/profile-recovery/RecoveryProofFixture.java",
-      "bytes": 326,
-      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
-    },
-    {
-      "path": "tests/profile-recovery/run_host.py",
-      "bytes": 3372,
-      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
-    },
-    {
-      "path": "tests/profile-recovery/run_session_host.py",
-      "bytes": 5291,
-      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
     },
     {
       "path": "tests/profile-terminal-evidence/ProfileTerminalEvidenceHostTest.java",
@@ -12782,25 +12811,40 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "0eaf752ae72360befddf99457390ac89ac592ffc",
-    "previous_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+    "previous_component_git_tree_sha1": "9cb0fb111d9b5b481f52264a120762f96c0de8a5",
+    "previous_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "tests/native-xiaomi-budget-preview/PRICE-DOMAIN-VALIDATION.json",
-        "bytes": 35150,
-        "sha256": "55097f4751c96eff45eceda747149a5ef1439294f679c17074b62578e78d37ae"
+        "path": "tests/notes-token-retirement/TASKINFO-RECOVERY-VALIDATION.json",
+        "bytes": 11396,
+        "sha256": "1c6d7e2e0845a8887f67ef8ebae36abaac38560b771f7c2d330e50f302f030ec"
       }
     ],
-    "targeted_cases": 11,
-    "targeted_assertions": 260,
-    "tested_source_inputs_pinned": 118,
-    "compiled_inputs_pinned": 152,
-    "external_dependency_inputs_pinned": 1,
-    "generated_host_fixture_inputs_pinned": 33,
+    "targeted_case_groups": {
+      "token-cases": {
+        "cases": 28,
+        "assertions": 519
+      },
+      "taskinfo-semantics": {
+        "cases": 18,
+        "assertions": 208
+      },
+      "original-custody": {
+        "cases": 27,
+        "assertions": 51
+      },
+      "original-physical-parser": {
+        "cases": 29,
+        "assertions": 35
+      }
+    },
+    "recovery_cases": 176,
+    "recovery_assertions": 302,
+    "tested_source_inputs_pinned": 24,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false,
@@ -12810,12 +12854,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "60b3f027d81d482ad3d0534eed7484bb8e37a29062c94e1b443f223599d1f828",
+  "production_input_map_sha256": "8d3d83c1edb38154093443d32c41cd8c94c039842959282903d0813cde37e821",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve every positive canonical amount already supported by native Xiaomi detail quotes in terminal explanations, including sub-yuan and eight-digit prices. Reuse the provider normalization and reject zero, unsupported raw formats, and noncanonical terminal amount records. Checkout preview stages and authority remain unchanged.",
-  "source_parent_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
-  "source_parent_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
-  "source_snapshot_predecessor_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+  "scope": "Accept Android 16 TaskInfo activity aliases through their exact ActivityInfo target while preserving package and UID checks. Read ordinary foreign leaf membership from complete unique root child arrays without rewriting parentTaskId=-1 or granting owned effects. Add a separate bounded v7 current-absence recovery request for a completed Notes workflow whose original retirement refused identity before any release; retain original failures, authority, deadlines, and explicit ordinary acknowledgement.",
+  "source_parent_head": "446de9223acede61ef2ae07b99ac54356ba41237",
+  "source_parent_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+  "source_snapshot_predecessor_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12885,5 +12929,27 @@
     "canonical_terminal_amount_required": true,
     "checkout_completion_not_claimed": true,
     "deadline_and_authority_limits_unchanged": true
+  },
+  "current_notes_taskinfo_and_workflow_refusal": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+      "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+      "tests/notes-token-retirement/run_host.py",
+      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+      "tests/notes-workflow-retirement-refusal/run_host.py"
+    ],
+    "previous_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+    "alias_target_exact": true,
+    "parent_field_not_rewritten": true,
+    "ordinary_membership_foreign_only": true,
+    "root3_children_actual_read_observed": true,
+    "original_task_failed_preserved": true,
+    "request_v3_and_v6_unchanged": true,
+    "new_v7_requires_fresh_current_absence_and_ack": true,
+    "deadline_and_authority_limits_unchanged": true,
+    "old_resident_shutdown_not_implemented": true
   }
 }

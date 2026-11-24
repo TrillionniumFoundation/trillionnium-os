@@ -28,8 +28,9 @@ final class PublicPersonalNotesRetirement {
         final Map<Integer,String> physical;
         final long begin,end;
         Sample(PublicPersonalNotesCustody.Frame frame,String rawRecents,
-                Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks,Map<Integer,String> physical,long begin,long end){
-            need(frame!=null&&actualTasks!=null&&physical!=null&&physical.size()==2
+                Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks,Map<Integer,String> physical,long begin,long end,
+                int ownedDisplay,int ownedUid){
+            need(ownedDisplay>1&&ownedUid>=10000&&frame!=null&&actualTasks!=null&&physical!=null&&physical.size()==2
                     &&physical.containsKey(0)&&physical.containsKey(1)&&begin>=0&&end>=begin&&end-begin<=1500
                     &&frame.begin>=begin&&frame.end<=end,"NOTES_RETIREMENT_SAMPLE_INCOMPLETE");
             for(String hash:physical.values())need(ProfileIdentity.hash(hash),"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
@@ -51,6 +52,9 @@ final class PublicPersonalNotesRetirement {
             }
             for(ProfileTaskPolicy.Leaf leaf:frame.global.leaves.values()){
                 BackgroundOwnedSingleTask.Task node=actualTasks.get(leaf.id);Set<Integer> chain=new LinkedHashSet<Integer>();
+                if(ordinaryForeignRootMember(frame.global,actualTasks,leaf,ownedDisplay,ownedUid)){
+                    traversed.add(node.id);traversed.add(leaf.parent);continue;
+                }
                 while(node.id!=leaf.parent){
                     need(chain.size()<8&&chain.add(node.id)&&node.parent>0&&node.display==leaf.display,
                             "NOTES_RETIREMENT_ACTUAL_ANCESTRY");traversed.add(node.id);node=actualTasks.get(node.parent);
@@ -142,6 +146,36 @@ final class PublicPersonalNotesRetirement {
     }
     private Map<Integer,List<?>> foreignActual(Sample sample){Map<Integer,List<?>> values=new LinkedHashMap<Integer,List<?>>();
         for(BackgroundOwnedSingleTask.Task task:sample.actualTasks.values())if(!plan.ids.contains(task.id))values.put(task.id,taskFields(task));return values;
+    }
+    /** TaskInfo exposes parentTaskId only for organizer-created parents. For a
+     * foreign running leaf, the complete RootTaskInfo child arrays still give a
+     * unique root membership. Keep its actual parent=-1; this is a read-only
+     * census relation and can never admit an owned task or grant an effect. */
+    static boolean ordinaryForeignRootMember(ProfileTaskPolicy.Snapshot global,
+            Map<Integer,BackgroundOwnedSingleTask.Task> actual,ProfileTaskPolicy.Leaf leaf,int ownedDisplay,int ownedUid){
+        BackgroundOwnedSingleTask.Task node=actual.get(leaf.id);
+        if(node==null||node.id==leaf.parent||node.parent>=0)return false;
+        need(node.parent==-1&&ownedDisplay>1&&ownedUid>=10000&&global.leaves.get(leaf.id)==leaf,
+                "NOTES_RETIREMENT_ORDINARY_MEMBERSHIP_UNKNOWN");
+        ProfileTaskPolicy.Root declared=null;
+        for(ProfileTaskPolicy.Root root:global.roots){
+            need(root.id!=leaf.id,"NOTES_RETIREMENT_ORDINARY_LEAF_IS_ROOT");
+            if(root.id==leaf.parent){need(declared==null,"NOTES_RETIREMENT_ORDINARY_ROOT_AMBIGUOUS");declared=root;}
+        }
+        BackgroundOwnedSingleTask.Task root=actual.get(leaf.parent);
+        need(declared!=null&&root!=null&&root.id==declared.id&&root.parent==-1
+                &&node.id==leaf.id&&root.token!=null&&node.token!=null&&!Objects.equals(root.token,node.token)
+                &&root.display==declared.display&&root.user==declared.user
+                &&node.display==leaf.display&&node.user==leaf.user
+                &&root.display==node.display&&root.user==node.user
+                &&root.display!=ownedDisplay&&node.display!=ownedDisplay
+                &&root.uid>=0&&node.uid>=0&&root.uid!=ownedUid&&node.uid!=ownedUid
+                &&root.topUid!=ownedUid&&node.topUid!=ownedUid&&node.activities>0&&node.running,
+                "NOTES_RETIREMENT_ORDINARY_FOREIGN_IDENTITY");
+        for(BackgroundOwnedSingleTask.Task task:java.util.Arrays.asList(root,node))
+            need(!notes(task.intentComponent)&&!notes(task.base)&&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),
+                    "NOTES_RETIREMENT_ORDINARY_NOTES_MEMBER_FORBIDDEN");
+        return true;
     }
     static List<?> taskFields(BackgroundOwnedSingleTask.Task task){return java.util.Arrays.asList(task.id,task.display,task.user,task.parent,
             task.uid,task.topUid,task.activities,task.token,task.cookies,task.intentComponent,task.base,task.top,task.real,task.orig,task.running,task.visible);}

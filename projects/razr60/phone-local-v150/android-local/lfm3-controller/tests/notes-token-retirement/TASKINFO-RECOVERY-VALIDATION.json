@@ -1,0 +1,267 @@
+{
+  "schema": "hepta.notes-taskinfo-recovery-source-validation.v1",
+  "source_parent_head": "446de9223acede61ef2ae07b99ac54356ba41237",
+  "source_parent_component_tree": "9cb0fb111d9b5b481f52264a120762f96c0de8a5",
+  "source_parent_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+  "status": "TARGETED_HOST_REGRESSIONS_PASSED_FULL_HOST_AND_ANDROID_PENDING",
+  "candidate_head_embedded": false,
+  "identity_binding": "Exact candidate Git identity is the containing commit; these pins bind the tested source bytes.",
+  "scope": "Accept Android 16 TaskInfo activity aliases through their exact ActivityInfo target while preserving package and UID checks. Read ordinary foreign leaf membership from complete unique root child arrays without rewriting parentTaskId=-1 or granting owned effects. Add a separate bounded v7 current-absence recovery request for a completed Notes workflow whose original retirement refused identity before any release; retain original failures, authority, deadlines, and explicit ordinary acknowledgement.",
+  "changed_files": [
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "bytes": 142554,
+      "sha256": "3a84994c61e4485ea76e959551eaf8707a523d6cbb5b817b11082dc702854b8f",
+      "base_sha256": "d1d1b423f1a33979373bab4652ae02e7c068119d78602440f2fd1fbc4cc4e797"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "bytes": 17633,
+      "sha256": "f8e2e02cee744d4eb4b7de58b4d9efaeb96bc05da913ae4e18b318ee76dbbd6d",
+      "base_sha256": "ac9454bd8f3584142a2a9f83a6cf63e674bbc17f782c2879e5852fee46843e15"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "bytes": 20830,
+      "sha256": "a987a8d6afa5d1762ed56fc0fc32e7b192c4f976c256b75082a6044afb59f64d",
+      "base_sha256": "4c1ef91b3f20c5e3b32475386e1ef1a190479c86c17539768b51644467183fc4"
+    },
+    {
+      "path": "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+      "bytes": 16074,
+      "sha256": "417725fd93eef4e92c849acfbbe7192c9171f6c36463d16571cf409992a7f191",
+      "base_sha256": null
+    },
+    {
+      "path": "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+      "bytes": 19641,
+      "sha256": "13f9f003b206e8b07403700a1abe41032f889bb8019bd49189406f5a1409f680",
+      "base_sha256": null
+    },
+    {
+      "path": "tests/notes-token-retirement/run_host.py",
+      "bytes": 8916,
+      "sha256": "f180e9051981fdca92ed9b69fcd3a1c1ea0b09e0292b361de3e5406decba480c",
+      "base_sha256": "73153109b2463849330df573b9cb28e5691ebc5a4852fd2265bed715829b57b1"
+    },
+    {
+      "path": "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+      "bytes": 24299,
+      "sha256": "d88a16121017b7c2ece50f23f1a54e56be0e04eab1815d1433c6ad2deb5b003b",
+      "base_sha256": null
+    },
+    {
+      "path": "tests/notes-workflow-retirement-refusal/run_host.py",
+      "bytes": 8958,
+      "sha256": "2112b6e63ddc88b88e132b34059480c671b93393ca49931127c41b4e0150783a",
+      "base_sha256": null
+    }
+  ],
+  "focus_source_inputs": [
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
+      "bytes": 25279,
+      "sha256": "c11744cde9daad3723388b44ea3bcc600ca64fe525aba994278e2a62ce168269"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
+      "bytes": 6083,
+      "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java",
+      "bytes": 29736,
+      "sha256": "70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
+      "bytes": 31772,
+      "sha256": "f2a137bde87ba56891ce165d354c240be48a3c08aafbf29f116abe6e8514cb97"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "bytes": 2998,
+      "sha256": "d5316cd9330cb260b7f1ac080e86753d0aaec87ff0cec09b5b5067d0bf90b384"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "bytes": 4137,
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/ProfileIdentity.java",
+      "bytes": 2811,
+      "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/ProfileTarget.java",
+      "bytes": 6796,
+      "sha256": "268dc50e7d3205cc8fb35883843fbdf8a10cc517f773867a9aae6d00fe07f2fd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
+      "bytes": 15390,
+      "sha256": "97bf188bfc08591a33a06a89393a1b1445b11efcaa44ba31ef40e94657484eb6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
+      "bytes": 28478,
+      "sha256": "3b63a9370426984025cb9c5e5815300c992960bb0e42e40b468cd99818f6e79b"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java",
+      "bytes": 18987,
+      "sha256": "f959004a176c61752c694d7d77927ee5b2fff908ee2d1b1780297bdaef1dd7a0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicOwnGroupTaskFence.java",
+      "bytes": 7201,
+      "sha256": "35c3e86088e11c389eac7493e8e130cf6fa71e21ad83795ef062b9a4f1b7d1cf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPermissionControllerUi.java",
+      "bytes": 8894,
+      "sha256": "878ef7a5662d54e2ac3f92889b5870c46f9d145ed868e76fdf3e4a38bb84c247"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+      "bytes": 32438,
+      "sha256": "9bc1a7b676e6c9d8c46ce8d6c9de7a197f487df0b530feaba3c4a28aa6af70b5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
+      "bytes": 23984,
+      "sha256": "d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "bytes": 17633,
+      "sha256": "f8e2e02cee744d4eb4b7de58b4d9efaeb96bc05da913ae4e18b318ee76dbbd6d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "bytes": 20830,
+      "sha256": "a987a8d6afa5d1762ed56fc0fc32e7b192c4f976c256b75082a6044afb59f64d"
+    },
+    {
+      "path": "tests/notes-task-info-reader/prepare_fixture.py",
+      "bytes": 9017,
+      "sha256": "884478f84b67f4c8679f60997d96ad6ea5389a657d2e39585854f078f453686d"
+    },
+    {
+      "path": "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+      "bytes": 16074,
+      "sha256": "417725fd93eef4e92c849acfbbe7192c9171f6c36463d16571cf409992a7f191"
+    },
+    {
+      "path": "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+      "bytes": 26699,
+      "sha256": "438d0dc04633fcc44c969b020caf9f4f34d7ad095a3ba030e24e27ae2b4d7071"
+    },
+    {
+      "path": "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+      "bytes": 19641,
+      "sha256": "13f9f003b206e8b07403700a1abe41032f889bb8019bd49189406f5a1409f680"
+    },
+    {
+      "path": "tests/notes-token-retirement/run_host.py",
+      "bytes": 8916,
+      "sha256": "f180e9051981fdca92ed9b69fcd3a1c1ea0b09e0292b361de3e5406decba480c"
+    },
+    {
+      "path": "tests/public-own-group-policy/PersonalNotesCustodyHostTest.java",
+      "bytes": 11682,
+      "sha256": "77abc60b1dcf4ba3736f46fb66c9d03f83355e42857933f3be026b1cf54955c9"
+    },
+    {
+      "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
+      "bytes": 11669,
+      "sha256": "f5e1c8699e39f22fbb13eb7d2a007f85f38a4feeb34941556e6b6182f736fa72"
+    }
+  ],
+  "targeted_host": {
+    "report_sha256": "7efc5e24c5eba76df3c4aa6d72a8ee2d66d6d0c24b19e5b28825db2658f3481f",
+    "cases": {
+      "token-cases": {
+        "cases": 28,
+        "assertions": 519
+      },
+      "taskinfo-semantics": {
+        "cases": 18,
+        "assertions": 208
+      },
+      "original-custody": {
+        "cases": 27,
+        "assertions": 51
+      },
+      "original-physical-parser": {
+        "cases": 29,
+        "assertions": 35
+      }
+    },
+    "inputs_unchanged": true,
+    "actual_taskinfo_field_rows": 13,
+    "host_io_and_Binders_synthetic": true,
+    "raw_parent_preserved": true
+  },
+  "recovery_host": {
+    "report_sha256": "ac93cfd5ea88d32187cf21e67be094c464b313df91921cb7e784cd35001837fe",
+    "cases": 176,
+    "assertions": 302,
+    "actual_private_originals": 23,
+    "current_control_additional": true,
+    "normal_model_generation_validator_passed": true,
+    "old_cancelled_v6_actual_receipt_passed": true,
+    "private_inputs_required_at_execution": true,
+    "private_input_map_not_published": true,
+    "current_absence_proven": false,
+    "app_recovery_completed": false
+  },
+  "actual_diagnostic": {
+    "installed_source_head": "3360fa7b3ed8e6193330a3ff8fe87cb52404aa18",
+    "installed_apk_sha256": "c45dc256839daadba2765e891e24602f50bdba9315c124d7c146a1412457ed6d",
+    "raw_fields_sha256": "cf131e884b40fd9bff7463c0b04f36497fc1a6944629760727e088e1b80f9795",
+    "report_sha256": "7b785b3c581504c999c10b8050426f16144f5b2604a5ef44aefeda9aac5a0bc2",
+    "only_identity_mismatch_task": 1095,
+    "display": 0,
+    "uid": 10282,
+    "alias": "com.android.launcher3.CustomizationPanelLauncher",
+    "target": "com.android.launcher3.uioverrides.QuickstepLauncher",
+    "root3_child_query_verified": true,
+    "observed_empty_children": [
+      5,
+      4
+    ],
+    "input_events": 0,
+    "cleanup_calls": 0,
+    "new_candidate_phone_qualification": false
+  },
+  "aosp_android16_sources": [
+    {
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/services/core/java/com/android/server/wm/Task.java",
+      "sha256": "c47c71ec7f5a24e03766ef8428ee6bbf46379a394b17acf86103d56df52556ed",
+      "meaning": "Resolved top component; parentTaskId exposed only for organizer-created parents."
+    },
+    {
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/services/core/java/com/android/server/wm/RootWindowContainer.java",
+      "sha256": "084fed47859933bf56b1c9768ca032c94022667c586bd722e5d31aa49d8b8f49",
+      "meaning": "RootTaskInfo topActivity uses original Intent component."
+    },
+    {
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/services/core/java/com/android/server/wm/ActivityRecord.java",
+      "sha256": "95d8a97aecd769663852035869aa4b7566fb989148f55ca1a55a71c2226e12e8",
+      "meaning": "Activity alias target determines resolved ActivityRecord component."
+    }
+  ],
+  "full_current_host_suite_completed": false,
+  "android_sdk_compile_passed": false,
+  "phone_qualified": false,
+  "current_resident_broker_replaced": false,
+  "current_resident_custody_retired": false,
+  "historical_failure_preserved": true,
+  "cleanup_authority_expanded": false,
+  "model_weights_changed": false,
+  "native_runtime_changed": false,
+  "phone_operations": 0,
+  "old_checks_and_phone_results_not_current_qualification": true
+}
