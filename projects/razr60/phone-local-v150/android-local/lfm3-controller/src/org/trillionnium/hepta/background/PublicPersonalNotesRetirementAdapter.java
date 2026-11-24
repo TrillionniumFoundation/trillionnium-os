@@ -84,6 +84,39 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
     @Override public PublicPersonalNotesRetirement.Sample read()throws Exception{
         need(!releasedRead,"NOTES_RETIREMENT_ACTION_AFTER_RELEASE");return read(null);
     }
+    @Override public PublicPersonalNotesRetirement.Sample readAfter(PublicPersonalNotesRetirement.Effect effect)throws Exception{
+        need(effect!=null&&!releasedRead,"NOTES_RETIREMENT_RETURNED_EFFECT_REQUIRED");
+        return readPending(effect.pendingRead());
+    }
+    private PublicPersonalNotesRetirement.Sample readPending(PublicPersonalNotesRetirement.PendingRead pending)throws Exception{
+        for(int attempt=1;attempt<=3;attempt++){
+            long begin=now();guard(false);
+            PublicPersonalNotesReader.RetirementFrames before=reader.frameDuringRetirement(pending);
+            PublicPersonalNotesCustody.Frame first=before.last();
+            ActualRead actual=actualTasks(first.global,pending);
+            Physical physical=physical();
+            PublicPersonalNotesReader.RetirementFrames after=reader.frameDuringRetirement(pending);
+            PublicPersonalNotesCustody.Frame ending=after.last();
+            guard(false);long end=now();
+            List<PublicPersonalNotesCustody.Frame> frames=new ArrayList<PublicPersonalNotesCustody.Frame>(before.frames);frames.addAll(after.frames);
+            boolean settle=pending.facts(frames,physical.recents,physical.hashes,begin,end);
+            String mismatch=actual.changed?"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED":null;
+            if(!before.stable||!after.stable)mismatch="NOTES_RETIREMENT_FRAME_CHANGED_DURING_READ";
+            if(!first.global.excludingRoot(-1).equals(ending.global.excludingRoot(-1)))mismatch="NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ";
+            else if(first.roots.size()!=ending.roots.size())mismatch="NOTES_RETIREMENT_ROOTS_CHANGED_DURING_READ";
+            else for(int i=0;i<ending.roots.size();i++){
+                PublicPersonalNotesCustody.Node root=ending.roots.get(i),old=first.roots.get(i);
+                if(!(old.children.isEmpty()&&root.children.isEmpty()&&PublicPersonalNotesRetirement.sameTask(old.task,root.task)
+                        &&PublicPersonalNotesRetirement.sameTask(root.task,actual.tasks.get(root.task.id))))
+                    mismatch="NOTES_RETIREMENT_FINAL_TASKINFO_CHANGED";
+            }
+            if(settle&&mismatch==null)mismatch="NOTES_RETIREMENT_PENDING_DETACHED_RECENT";
+            if(mismatch==null)return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual.tasks,physical.hashes,begin,end,display,uid);
+            if(attempt==3)throw pending.refusal(mismatch,"complete_post_returned_read_bound",first.global,ending.global,actual.tasks);
+            awaitRead();
+        }
+        throw new IOException("NOTES_RETIREMENT_PENDING_READ_BOUND");
+    }
     PublicPersonalNotesRetirement.Sample readReleased(PublicPersonalNotesCustody.ReleasedRead authority)throws Exception{
         need(authority!=null,"NOTES_RETIREMENT_RELEASED_READ_REQUIRED");releasedRead=true;return read(authority);
     }
@@ -103,10 +136,18 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         guard(after);long end=now();need(end-begin<=1500,"NOTES_RETIREMENT_SAMPLE_AGE");
         return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual,physical.hashes,begin,end,display,uid);
     }
+    private static final class ActualRead{
+        final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;final boolean changed;
+        ActualRead(Map<Integer,BackgroundOwnedSingleTask.Task> tasks,boolean changed){this.tasks=tasks;this.changed=changed;}
+    }
     private Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks(ProfileTaskPolicy.Snapshot expected)throws Exception{
+        return actualTasks(expected,null).tasks;
+    }
+    private ActualRead actualTasks(ProfileTaskPolicy.Snapshot expected,PublicPersonalNotesRetirement.PendingRead pending)throws Exception{
         time();Object raw=allRoots.invoke(activities);time();
         ProfileTaskPolicy.Snapshot global=(ProfileTaskPolicy.Snapshot)rootProjection.invoke(null,raw);
-        need(global.excludingRoot(-1).equals(expected.excludingRoot(-1)),"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED");
+        boolean changed=!global.excludingRoot(-1).equals(expected.excludingRoot(-1));
+        if(pending==null)need(!changed,"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED");
         need(raw instanceof List&&((List<?>)raw).size()<=ProfileTaskPolicy.MAX_ROOTS,"NOTES_RETIREMENT_ROOT_QUERY");
         Map<Integer,BackgroundOwnedSingleTask.Task> out=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
         wrappers.clear();for(Object row:(List<?>)raw)put(out,row,false);
@@ -117,7 +158,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         Object leaves=runningTasks.invoke(activities,ProfileTaskPolicy.MAX_LEAVES+1,false,true,-1);time();
         need(leaves instanceof List&&((List<?>)leaves).size()<=ProfileTaskPolicy.MAX_LEAVES,"NOTES_RETIREMENT_LEAF_QUERY_BOUND");
         Set<Integer> unique=new LinkedHashSet<Integer>();
-        for(Object row:(List<?>)leaves){int id=integer(row,"taskId");need(unique.add(id),"NOTES_RETIREMENT_LEAF_DUPLICATE");put(out,row,true);}
+        for(Object row:(List<?>)leaves){int id=integer(row,"taskId");need(unique.add(id),"NOTES_RETIREMENT_LEAF_DUPLICATE");changed|=put(out,row,true,pending);}
         for(ProfileTaskPolicy.Root root:global.roots){
             Set<Integer> expectedLeaves=new LinkedHashSet<Integer>();boolean missing=false;
             for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(leaf.parent==root.id){
@@ -134,7 +175,8 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                 need(found.equals(expectedLeaves),"NOTES_RETIREMENT_CHILD_CENSUS_INCOMPLETE");
             }
         }
-        need(out.keySet().containsAll(global.allIds),"NOTES_RETIREMENT_ACTUAL_UID_CENSUS_INCOMPLETE");return out;
+        need(out.keySet().containsAll(global.allIds),"NOTES_RETIREMENT_ACTUAL_UID_CENSUS_INCOMPLETE");
+        if(pending!=null)pending.actual(global,out);return new ActualRead(out,changed);
     }
     private void readChildren(BackgroundOwnedSingleTask.Task parent,Map<Integer,BackgroundOwnedSingleTask.Task> out,
             Set<Integer> expectedLeaves,Set<Integer> found,Set<Integer> visited,int depth)throws Exception{
@@ -155,6 +197,10 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         }
     }
     private void put(Map<Integer,BackgroundOwnedSingleTask.Task> out,Object row,boolean duplicateRootAllowed)throws Exception{
+        put(out,row,duplicateRootAllowed,null);
+    }
+    private boolean put(Map<Integer,BackgroundOwnedSingleTask.Task> out,Object row,boolean duplicateRootAllowed,
+            PublicPersonalNotesRetirement.PendingRead pending)throws Exception{
         need(row!=null,"NOTES_RETIREMENT_NULL_TASKINFO");Object wrapper=field(row,"token");
         need(tokenType.isInstance(wrapper),"NOTES_RETIREMENT_TOKEN_WRAPPER_UNKNOWN");Object binder=tokenBinder.invoke(wrapper);
         need(binder instanceof IBinder,"NOTES_RETIREMENT_BINDER_UNKNOWN");
@@ -177,12 +223,16 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                 component(((Intent)intent).getComponent()),component(field(row,"baseActivity")),top,component(field(row,"realActivity")),
                 component(field(row,"origActivity")),bool(row,"isRunning"),bool(row,"isVisible"));
         BackgroundOwnedSingleTask.Task old=out.put(task.id,task);
-        need(old==null||(duplicateRootAllowed&&PublicPersonalNotesRetirement.sameTask(old,task)),"NOTES_RETIREMENT_DUPLICATE_TASKINFO_CHANGED");
+        boolean changed=old!=null&&!PublicPersonalNotesRetirement.sameTask(old,task);
+        if(changed&&duplicateRootAllowed&&pending!=null)pending.pair(old,task);
+        else need(old==null||(duplicateRootAllowed&&!changed),"NOTES_RETIREMENT_DUPLICATE_TASKINFO_CHANGED");
         Object prior=wrappers.put(binder,wrapper);need(prior==null||binder.equals(tokenBinder.invoke(prior)),"NOTES_RETIREMENT_WRAPPER_CHANGED");
+        return changed;
     }
     @Override public void remove(PublicPersonalNotesRetirement.Effect effect)throws Exception{
         need(effect!=null&&!releasedRead,"NOTES_RETIREMENT_PRIVATE_EFFECT_REQUIRED");
-        PublicPersonalNotesRetirement.Sample finalRead=read();
+        PublicPersonalNotesRetirement.Sample finalRead=effect.finalRead(this);
+        if(effect.skipAbsent(finalRead,now()))return;
         Object wrapper=wrappers.get(effect.token());need(tokenType.isInstance(wrapper)&&effect.token().equals(tokenBinder.invoke(wrapper)),"NOTES_RETIREMENT_ORIGINAL_BINDER_NOT_FRESH");
         BackgroundOwnedSingleTask.Task row=finalRead.actualTasks.get(effect.id());
         need(row!=null&&Objects.equals(row.token,effect.token()),"NOTES_RETIREMENT_FINAL_WRAPPER_SUBSTITUTED");

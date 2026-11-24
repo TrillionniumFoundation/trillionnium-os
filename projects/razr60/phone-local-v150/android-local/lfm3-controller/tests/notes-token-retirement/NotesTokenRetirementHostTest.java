@@ -58,7 +58,8 @@ public final class NotesTokenRetirementHostTest {
         int calls,handleChecks,forbidden,actualReads,deadlineAdvance,childQueries;
         boolean throwBefore,throwAfter,pending,originalHandle=true,missingRunningLeaf,skipRoot;
         String physicalSuffix="",historySuffix="";
-        Consumer<World> beforeEffect;
+        Consumer<World> beforeEffect,beforeRootRead,beforeRunningRead,afterEffect;
+        PublicPersonalNotesRetirement.Effect observedEffect;
         boolean nullChildren;
         long deadline;
         final ITaskOrganizerController organizer=new ITaskOrganizerController(){
@@ -83,6 +84,7 @@ public final class NotesTokenRetirementHostTest {
                 if(throwBefore)throw new IllegalStateException("fixture Binder before-effect ambiguity");
                 if(!pending){live.remove(selected);recent.remove(selected);}
                 if(deadlineAdvance>0)SystemClock.now+=deadlineAdvance;
+                if(afterEffect!=null)afterEffect.accept(World.this);
                 if(throwAfter)throw new IllegalStateException("fixture Binder after-effect ambiguity");
             }
         };
@@ -108,8 +110,9 @@ public final class NotesTokenRetirementHostTest {
             ApplicationInfo app=new ApplicationInfo();app.packageName=info.packageName;app.uid=uid;app.sourceDir="/fixture/app.apk";app.enabled=true;info.applicationInfo=app;row.topActivityInfo=info;
             row.childTaskIds=new int[]{id};row.childTaskUserIds=new int[]{0};row.childTaskNames=new String[]{comp};row.childTaskBounds=new android.graphics.Rect[]{new android.graphics.Rect(0,0,100,100)};return row;
         }
-        @Override public Object getAllRootTaskInfos(){actualReads++;List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();for(RootTaskInfo row:live.values())if(row.parentTaskId<0)rows.add(row);if(skipRoot&&!rows.isEmpty())rows.remove(rows.size()-1);return rows;}
+        @Override public Object getAllRootTaskInfos(){actualReads++;if(beforeRootRead!=null)beforeRootRead.accept(this);List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();for(RootTaskInfo row:live.values())if(row.parentTaskId<0)rows.add(row);if(skipRoot&&!rows.isEmpty())rows.remove(rows.size()-1);return rows;}
         @Override public Object getTasks(int max,boolean visible,boolean extras,int display){
+            if(beforeRunningRead!=null)beforeRunningRead.accept(this);
             yes(max==2049&&!visible&&extras&&display==-1);List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();
             for(RootTaskInfo row:live.values())if(row.numActivities>0&&row.childTaskIds.length==1&&row.childTaskIds[0]==row.taskId&&!(missingRunningLeaf&&row.taskId==100))rows.add(row);return rows;
         }
@@ -140,8 +143,9 @@ public final class NotesTokenRetirementHostTest {
         void run()throws Exception{
             PublicPersonalNotesRetirement.Port port=new PublicPersonalNotesRetirement.Port(){
                 public PublicPersonalNotesRetirement.Sample read()throws Exception{return adapter.read();}
+                public PublicPersonalNotesRetirement.Sample readAfter(PublicPersonalNotesRetirement.Effect effect)throws Exception{return adapter.readAfter(effect);}
                 public long now(){return adapter.now();}public void awaitRead()throws Exception{adapter.awaitRead();}
-                public void remove(PublicPersonalNotesRetirement.Effect effect)throws Exception{if(beforeEffect!=null)beforeEffect.accept(World.this);adapter.remove(effect);}
+                public void remove(PublicPersonalNotesRetirement.Effect effect)throws Exception{observedEffect=effect;if(beforeEffect!=null)beforeEffect.accept(World.this);adapter.remove(effect);}
             };
             retirement=new PublicPersonalNotesRetirement(custody,port,deadline);retirement.retire();yes(forbidden==0);
         }

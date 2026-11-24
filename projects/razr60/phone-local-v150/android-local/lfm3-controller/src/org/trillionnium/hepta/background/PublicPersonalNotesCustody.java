@@ -248,6 +248,12 @@ final class PublicPersonalNotesCustody {
             lastAbsence=frame.end;absenceReads++;
         }}
         boolean attempted(int id){synchronized(owner){return attempts.contains(id);}}
+        void requirePendingRead(long now){synchronized(owner){
+            owner.requirePlan(this);need(!returns.isEmpty()&&now<deadline,"NOTES_TOKEN_PENDING_READ_UNAVAILABLE");
+        }}
+        boolean verifyPendingRead(Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){synchronized(owner){
+            requirePendingRead(now);return owner.verifyTokenPlan(this,frame,recents,now,true);
+        }}
         private Map<String,Object> evidence(){Map<String,Object> value=new LinkedHashMap<String,Object>();
             value.put("schema","hepta.personal-notes-token-retirement.v1");value.put("deadline_elapsed_ms",deadline);
             value.put("attempted_task_ids",new ArrayList<Integer>(attempts));value.put("returned_task_ids",new ArrayList<Integer>(returns));
@@ -275,7 +281,7 @@ final class PublicPersonalNotesCustody {
         }}
         void returned(){synchronized(plan.owner){need(entered&&!returned,"NOTES_TOKEN_RETURN_UNBOUND");returned=true;plan.returns.add(original.id);}}
     }
-    private static boolean sameTokenIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+    static boolean sameTokenIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
         return a!=null&&b!=null&&a.id==b.id&&Objects.equals(a.token,b.token)&&a.display==b.display&&a.user==b.user
                 &&a.uid==b.uid&&a.parent==b.parent&&a.cookies.equals(b.cookies)&&Objects.equals(a.intentComponent,b.intentComponent)
                 &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
@@ -292,6 +298,10 @@ final class PublicPersonalNotesCustody {
         catch(RuntimeException error){unresolved(error.getMessage());throw error;}
     }
     private void verifyTokenPlan(TokenPlan plan,Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now){
+        verifyTokenPlan(plan,frame,recents,now,false);
+    }
+    private boolean verifyTokenPlan(TokenPlan plan,Frame frame,PublicOwnGroupPhysicalFence.RecentCensus recents,long now,boolean pendingReadOnly){
+        boolean pendingDetached=false;
         requirePlan(plan);need(frame!=null&&recents!=null&&now>=frame.end&&now-frame.begin<=1500&&now<plan.deadline,
                 "NOTES_TOKEN_PLAN_DEADLINE_OR_FRAME");
         Set<Integer> current=new LinkedHashSet<Integer>();
@@ -315,10 +325,13 @@ final class PublicPersonalNotesCustody {
                 need(row!=null&&old!=null&&old.identity.equals(row.identity),"NOTES_TOKEN_RECENT_IDENTITY_CHANGED");
                 requireOwnedRecent(row);
                 String hidden=recents.hiddenLabels.get(id);need(hidden==null||old.label.equals(hidden),"NOTES_TOKEN_HIDDEN_IDENTITY_CHANGED");
-                need(current.contains(id)||plan.attempts.contains(id),"NOTES_TOKEN_DETACHED_RECENT_REQUIRES_MAINTENANCE");
+                if(!current.contains(id)&&!plan.attempts.contains(id)){
+                    need(pendingReadOnly&&!plan.returns.isEmpty(),"NOTES_TOKEN_DETACHED_RECENT_REQUIRES_MAINTENANCE");
+                    pendingDetached=true;
+                }
             }
         }
-        requireUnownedRecents(recents);requireHiddenBaseline(recents);
+        requireUnownedRecents(recents);requireHiddenBaseline(recents);return pendingDetached;
     }
     synchronized void enterRelease(){need(tokenPlan==null,"NOTES_TOKEN_RELEASE_TIME_REQUIRED");enterReleaseChecked();}
     synchronized void enterRelease(long now){

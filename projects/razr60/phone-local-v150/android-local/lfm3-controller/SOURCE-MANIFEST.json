@@ -1,18 +1,26 @@
 {
   "android_qualified": false,
-  "base_head": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
-  "base_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+  "base_head": "dd645088478b80c168b14096a10275a2b8bbaf74",
+  "base_manifest_sha256": "c35b7f87a9491a9110b4d42d81f5dd6ec94538b326c5e7f6bd7e19fb342e76ce",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_bounded_empty_cmdline_complete_row_successor",
-  "complete_source_files": 2561,
+  "candidate_status": "reviewed_pending_notes_retirement_and_v8_partial_recovery_successor",
+  "complete_source_files": 2566,
   "current_successor_delta": {
-    "baseline": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
+    "baseline": "dd645088478b80c168b14096a10275a2b8bbaf74",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
-      "tests/profile-recovery-census/run_host.py"
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+      "tests/notes-token-retirement/NotesPendingRetirementReadHostTest.java",
+      "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+      "tests/notes-token-retirement/run_host.py",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "tests/notes-workflow-partial-retirement/NotesWorkflowPartialRetirementHostTest.java",
+      "tests/notes-workflow-partial-retirement/run_host.py",
+      "tests/notes-workflow-partial-retirement/VALIDATION.json"
     ],
-    "scope": "Reobserve only an inspected non-kernel process row with an empty command line, using at most three complete stat/status/command/directory observations of the same pinned identity within the original deadline. Reject persistent empty data, identity changes, positive broker/generation evidence, and all other errors. Preserve native positive-disappearance handling, full census closing waves, self pins, and independent display/task/recents absence requirements.",
+    "scope": "Observe asynchronous retirement of the original Notes tasks only after a private token-removal call has returned. Reobserve at most three complete batches under the original deadline after validating all six raw frames, original task tokens/UIDs, foreign-task identities, physical-screen hashes, and complete recents history. Add a separate v8 absence-recovery request for a preserved normal workflow that recorded exactly one returned token retirement and never entered display release. Require the existing fresh absence proof and explicit acknowledgement; no change to old recovery guards, model runtime, or application input authority.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6376,13 +6384,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 143218,
-      "sha256": "47281d774fe8aa7f26643bf548a7269dc1da2fb571f84d3fec97c31dd77c2ce2"
+      "bytes": 154837,
+      "sha256": "c672c4710aaf5f21e2707ca6d66ef845e86185b67fbffbcfdf7f0d0a01f5f7b7"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "bytes": 32438,
-      "sha256": "9bc1a7b676e6c9d8c46ce8d6c9de7a197f487df0b530feaba3c4a28aa6af70b5"
+      "bytes": 33249,
+      "sha256": "c369d89fd467fd07f2375f37a9bce073240ad3484012074830849b0c37c1ec00"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
@@ -6391,18 +6399,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-      "bytes": 23984,
-      "sha256": "d988d18616fee3759aad614a8c246caad1e2e61189416be534cd6d898d9c92e4"
+      "bytes": 28676,
+      "sha256": "f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "bytes": 17633,
-      "sha256": "f8e2e02cee744d4eb4b7de58b4d9efaeb96bc05da913ae4e18b318ee76dbbd6d"
+      "bytes": 30219,
+      "sha256": "fff04ca5f7ae56e9a894ad41688fb7d128ef0f0b01ed69f9251294f2a7f0a34d"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "bytes": 20830,
-      "sha256": "a987a8d6afa5d1762ed56fc0fc32e7b192c4f976c256b75082a6044afb59f64d"
+      "bytes": 24540,
+      "sha256": "5acc49e88696f4c5d4f53898045b87a0ce16440f9c3a8693f4e398b30513ddd8"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
@@ -10030,14 +10038,24 @@
       "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
     },
     {
+      "path": "tests/notes-token-retirement/NotesPendingRetirementReadHostTest.java",
+      "bytes": 14055,
+      "sha256": "891f1009f51abdd00efc7910807b5c654f31e34b5224c81f1f9ee4d8c961f086"
+    },
+    {
       "path": "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
       "bytes": 16074,
       "sha256": "417725fd93eef4e92c849acfbbe7192c9171f6c36463d16571cf409992a7f191"
     },
     {
       "path": "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
-      "bytes": 26699,
-      "sha256": "438d0dc04633fcc44c969b020caf9f4f34d7ad095a3ba030e24e27ae2b4d7071"
+      "bytes": 27185,
+      "sha256": "32df62f32870200d1b1efe4bca19682cf3ec84eb895d55484c59df6ba23056a0"
+    },
+    {
+      "path": "tests/notes-token-retirement/PENDING-RETIREMENT-VALIDATION.json",
+      "bytes": 5928,
+      "sha256": "c2a37641cbae174c499da0540dca82819977ed2bf30acf4f783336a4e2d9f441"
     },
     {
       "path": "tests/notes-token-retirement/TASKINFO-RECOVERY-VALIDATION.json",
@@ -10051,8 +10069,8 @@
     },
     {
       "path": "tests/notes-token-retirement/run_host.py",
-      "bytes": 8916,
-      "sha256": "f180e9051981fdca92ed9b69fcd3a1c1ea0b09e0292b361de3e5406decba480c"
+      "bytes": 9097,
+      "sha256": "56f06430ceecb158e0614c0d377332d80acf254333087e13e49b478a450b8587"
     },
     {
       "path": "tests/notes-workflow-close-recovery/NotesWorkflowCloseRecoveryHostTest.java",
@@ -10073,6 +10091,21 @@
       "path": "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
       "bytes": 15653,
       "sha256": "89ca89db8824a067ca08ff3abd3d257ea32f043c290ee657ac661722f8365d0d"
+    },
+    {
+      "path": "tests/notes-workflow-partial-retirement/NotesWorkflowPartialRetirementHostTest.java",
+      "bytes": 30890,
+      "sha256": "405362a93adf6223f42b1752084542a339e7b7adfcf4843ae55ee88e29bff313"
+    },
+    {
+      "path": "tests/notes-workflow-partial-retirement/VALIDATION.json",
+      "bytes": 1534,
+      "sha256": "87a59d3d068a33b361415b842fdaa307fee6c565c596156c220c99eaaff1a89a"
+    },
+    {
+      "path": "tests/notes-workflow-partial-retirement/run_host.py",
+      "bytes": 8958,
+      "sha256": "f55730a96bc8a31998505b5a646eb463d4243ca27076f6e46305a8442155cc28"
     },
     {
       "path": "tests/notes-workflow-retirement-refusal/EOF-SUCCESSOR-VALIDATION.json",
@@ -12821,22 +12854,28 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "3812d40efe67ecb100a21a1cd017ee408b3e56fa",
-    "previous_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+    "previous_component_git_tree_sha1": "444ef129507ceb49201b1a9fb5983c24480e3c1d",
+    "previous_manifest_sha256": "c35b7f87a9491a9110b4d42d81f5dd6ec94538b326c5e7f6bd7e19fb342e76ce",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "tests/profile-recovery-census/EMPTY-COMMAND-VALIDATION.json",
-        "bytes": 3353,
-        "sha256": "4c41f8d3bc3c4353faa688172b887311405ba2c84007988aed2c80a63bf79a71"
+        "path": "tests/notes-token-retirement/PENDING-RETIREMENT-VALIDATION.json",
+        "bytes": 5928,
+        "sha256": "c2a37641cbae174c499da0540dca82819977ed2bf30acf4f783336a4e2d9f441"
+      },
+      {
+        "path": "tests/notes-workflow-partial-retirement/VALIDATION.json",
+        "bytes": 1534,
+        "sha256": "87a59d3d068a33b361415b842fdaa307fee6c565c596156c220c99eaaff1a89a"
       }
     ],
-    "empty_command_cases": 28,
-    "empty_command_assertions": 57,
-    "tested_source_inputs_pinned": 19,
+    "pending_cases": 38,
+    "pending_checks": 132,
+    "v8_cases": 198,
+    "v8_assertions": 334,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false,
@@ -12846,12 +12885,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "415907b42e5e9496477cbf5fbd0b9f575033c3cfec71154ffac7be017440f277",
+  "production_input_map_sha256": "c4e7dea28a019293e4222590531ee27eb45dbfe9b0b798c2ebee39a92d8d7b11",
   "schema": "hepta.local-source.v3",
-  "scope": "Reobserve only an inspected non-kernel process row with an empty command line, using at most three complete stat/status/command/directory observations of the same pinned identity within the original deadline. Reject persistent empty data, identity changes, positive broker/generation evidence, and all other errors. Preserve native positive-disappearance handling, full census closing waves, self pins, and independent display/task/recents absence requirements.",
-  "source_parent_head": "793b902303ffbf92c828dff6eddb1e88dadf97ae",
-  "source_parent_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
-  "source_snapshot_predecessor_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+  "scope": "Observe asynchronous retirement of the original Notes tasks only after a private token-removal call has returned. Reobserve at most three complete batches under the original deadline after validating all six raw frames, original task tokens/UIDs, foreign-task identities, physical-screen hashes, and complete recents history. Add a separate v8 absence-recovery request for a preserved normal workflow that recorded exactly one returned token retirement and never entered display release. Require the existing fresh absence proof and explicit acknowledgement; no change to old recovery guards, model runtime, or application input authority.",
+  "source_parent_head": "dd645088478b80c168b14096a10275a2b8bbaf74",
+  "source_parent_manifest_sha256": "c35b7f87a9491a9110b4d42d81f5dd6ec94538b326c5e7f6bd7e19fb342e76ce",
+  "source_snapshot_predecessor_manifest_sha256": "c35b7f87a9491a9110b4d42d81f5dd6ec94538b326c5e7f6bd7e19fb342e76ce",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12975,5 +13014,16 @@
     "original_capture_and_closing_preserved": true,
     "current_display_task_recents_absence_and_ack_still_required": true,
     "original_failing_process_row_identified": false
+  },
+  "current_notes_pending_retirement_and_partial_recovery": {
+    "normal_maximum_complete_batches": 3,
+    "no_reader_nested_retry": true,
+    "original_deadline_unchanged": true,
+    "whole_batch_fences_required": true,
+    "failed_intermediate_phone_frames_available": false,
+    "single_returned_token_effect_required_for_v8": true,
+    "no_repeated_effect": true,
+    "old_recovery_methods_unchanged": 62,
+    "phone_cleanup_or_business_claim": false
   }
 }

@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.notes-workflow-partial-retirement-source-validation.v1",
+  "source_parent_head": "dd645088478b80c168b14096a10275a2b8bbaf74",
+  "status": "TARGETED_HOST_PASSED_FULL_HOST_AND_ANDROID_PENDING",
+  "production_source": {
+    "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+    "bytes": 154837,
+    "sha256": "c672c4710aaf5f21e2707ca6d66ef845e86185b67fbffbcfdf7f0d0a01f5f7b7",
+    "base_sha256": "47281d774fe8aa7f26643bf548a7269dc1da2fb571f84d3fec97c31dd77c2ce2"
+  },
+  "test_source": {
+    "path": "tests/notes-workflow-partial-retirement/NotesWorkflowPartialRetirementHostTest.java",
+    "bytes": 30890,
+    "sha256": "405362a93adf6223f42b1752084542a339e7b7adfcf4843ae55ee88e29bff313"
+  },
+  "new_v8_actual_original_roles": 23,
+  "new_v8_cases": 198,
+  "new_v8_assertions": 334,
+  "new_v8_wire_chars": 53200,
+  "new_v8_complete_command_bytes": 53417,
+  "old_v7_actual_cases": 182,
+  "old_v6_actual_receipt_passed": true,
+  "fresh_absence_and_old_expiry_fence_unchanged": true,
+  "client_and_absence_main_unchanged": true,
+  "historical_partial_effect_is_not_cleanup_proof": true,
+  "controller_and_clock_are_explicit_host_fixtures": true,
+  "private_originals_required_at_execution": true,
+  "private_input_map_published": false,
+  "all_actual_originals_unchanged": true,
+  "phone_operations": 0,
+  "current_absence_proven": false,
+  "app_recovery_completed": false,
+  "old_custodian_retired": false,
+  "full_host_completed": false,
+  "android_sdk_compile_completed": false
+}

@@ -22,6 +22,11 @@ final class PublicPersonalNotesReader {
     static class TaskInfoReadFailure extends IOException {
         private static final long serialVersionUID=1L;
         final Map<String,Object> evidence;
+        TaskInfoReadFailure(String code,String stage,Map<String,Object> detail){
+            super(code);Map<String,Object> row=new LinkedHashMap<String,Object>(detail);
+            row.put("stage",stage);row.put("reason",code);row.put("diagnostics_grant_authority",false);
+            evidence=Collections.unmodifiableMap(row);
+        }
         TaskInfoReadFailure(String code,String stage,BackgroundOwnedSingleTask.Task task,int uid,int display){
             this(code,stage,task,uid,display,null,0,null);
         }
@@ -215,6 +220,70 @@ final class PublicPersonalNotesReader {
         }
         need(roots==(present?1:0)&&leaves==roots,"NOTES_BOOTSTRAP_GLOBAL_CONFLICT");
         if(present)requireSoleLeaf(census,task);
+    }
+    /** Only the original post-returned coordinator supplies this read-only
+     * context. It is distinct from ReleasedRead and grants no VD-release proof. */
+    interface RetirementRead {
+        void requireScope(int display,int uid)throws Exception;
+        void observeCensus(ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> rows,String stage)throws Exception;
+    }
+    static final class RetirementFrames {
+        final List<PublicPersonalNotesCustody.Frame> frames;
+        final boolean stable;
+        private RetirementFrames(List<PublicPersonalNotesCustody.Frame> frames,boolean stable){
+            this.frames=Collections.unmodifiableList(new ArrayList<PublicPersonalNotesCustody.Frame>(frames));this.stable=stable;
+        }
+        PublicPersonalNotesCustody.Frame first(){return frames.get(0);}
+        PublicPersonalNotesCustody.Frame last(){return frames.get(frames.size()-1);}
+    }
+    /** No retry is performed here. Even an owned-only transition is returned
+     * to the adapter, which must collect the full UID/Binder, physical and
+     * recents fences for this batch before it can discard and repeat it. */
+    synchronized RetirementFrames frameDuringRetirement(RetirementRead pending)throws Exception{
+        long begin=SystemClock.elapsedRealtime();check();
+        need(pending!=null,"NOTES_RETIREMENT_PENDING_READ_REQUIRED");pending.requireScope(display,uid);
+        List<PublicPersonalNotesCustody.Frame> frames=new ArrayList<PublicPersonalNotesCustody.Frame>();
+        Map<Integer,BackgroundOwnedSingleTask.Task> previous=null;boolean stable=true;
+        for(int part=0;part<3;part++){
+            check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+            long partBegin=SystemClock.elapsedRealtime();
+            BackgroundTaskOrganizer.ReadOnlyRootCensus census=reader.readOnlyRootCensus();
+            Map<Integer,BackgroundOwnedSingleTask.Task> rows=index(census.displayRoots,"retirement_triple_"+part);
+            pending.observeCensus(census.global,rows,"retirement_triple_"+part);
+            List<PublicPersonalNotesCustody.Node> nodes=new ArrayList<PublicPersonalNotesCustody.Node>();
+            for(BackgroundOwnedSingleTask.Task task:rows.values()){
+                requirePendingSoleLeaf(census.global,task);
+                nodes.add(new PublicPersonalNotesCustody.Node(task,Collections.<PublicPersonalNotesCustody.Node>emptyList()));
+            }
+            if(previous!=null){
+                if(!previous.keySet().equals(rows.keySet()))stable=false;
+                else for(BackgroundOwnedSingleTask.Task task:rows.values()){
+                    try{sameActualTask(previous.get(task.id),task,"retirement_triple",part+1);}
+                    catch(ActivityStateChanged changed){stable=false;}
+                }
+            }
+            check();frames.add(new PublicPersonalNotesCustody.Frame(census.global,nodes,partBegin,SystemClock.elapsedRealtime()));previous=rows;
+        }
+        pending.requireScope(display,uid);return new RetirementFrames(frames,stable);
+    }
+    private void requirePendingSoleLeaf(ProfileTaskPolicy.Snapshot global,BackgroundOwnedSingleTask.Task task)throws Exception{
+        need(global!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
+        ProfileTaskPolicy.Root actualRoot=null;
+        for(ProfileTaskPolicy.Root root:global.roots)if(root.id==task.id){
+            need(actualRoot==null,"NOTES_GLOBAL_ROOT_DUPLICATE");actualRoot=root;
+        }
+        need(actualRoot!=null&&actualRoot.display==display&&actualRoot.user==0
+                &&actualRoot.activities==task.activities&&Objects.equals(actualRoot.base,task.base)
+                &&Objects.equals(actualRoot.top,task.top),"NOTES_GLOBAL_ROOT_DISAGREES");
+        int leaves=0;
+        for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(leaf.parent==task.id){
+            leaves++;String expected=task.orig!=null?task.orig:task.real;
+            need(leaf.id==task.id&&leaf.display==display&&leaf.user==0
+                    &&((expected!=null&&expected.equals(leaf.name))
+                    ||(PublicPersonalNotesCustody.emptyActivityLeaf(task,uid)&&"unknown".equals(leaf.name))),
+                    "NOTES_ROOT_IS_NOT_PROVEN_SOLE_LEAF");
+        }
+        need(leaves==1,"NOTES_ROOT_IS_NOT_PROVEN_SOLE_LEAF");
     }
     /** Post-release sampling keeps the actual custody snapshot. Missing display
      * organizer calls are never made, and no failed/partial read becomes absence.

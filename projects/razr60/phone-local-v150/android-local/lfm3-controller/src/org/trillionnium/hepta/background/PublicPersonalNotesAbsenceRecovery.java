@@ -25,6 +25,9 @@ public final class PublicPersonalNotesAbsenceRecovery {
     public static final String REQUEST_SCHEMA="hepta.personal-notes-absence-request.v1";
     public static final String DRAINED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v2";
     public static final String WORKFLOW_CLOSE_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v3";
+    private static final String WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v8-workflow-partial-retirement";
+    private static final String WORKFLOW_PARTIAL_RETIREMENT_SOURCE="fresh_workflow_partial_retirement_personal_notes_absence_with_preserved_failure";
+    private static final String WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA="hepta.personal-notes-workflow-partial-retirement-current-absence.v1";
     private static final String WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v7-workflow-retirement-refused";
     private static final String WORKFLOW_RETIREMENT_REFUSED_SOURCE="fresh_workflow_retirement_refused_personal_notes_absence_with_preserved_failure";
     private static final String WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA="hepta.personal-notes-workflow-retirement-refused-current-absence.v1";
@@ -59,7 +62,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final String requestId,taskId,generation,ownerSha256,displayName,journalSha256,originalsSha256,currentControlSha256;
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final java.util.Set<Integer> recordedTaskIds;
-        public final boolean postModelDrained,workflowCloseFailed,workflowRetirementRefused,cancelledAfterActions;
+        public final boolean postModelDrained,workflowCloseFailed,workflowRetirementRefused,workflowPartialRetirement,cancelledAfterActions;
         private final boolean prelaunchCreateFailure;
         private final boolean releasedTerminal;
         public final boolean releasedBeforeModel;
@@ -107,6 +110,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
             // Derived only from the immutable original close failure, never a caller mode.
             workflowRetirementRefused=workflowCloseFailed&&"NOTES_RETIREMENT_TOP_IDENTITY".equals(
                     string(cleanup.getJSONObject("last_broker_response").getJSONObject("personal_notes_cleanup"),"failure"));
+            workflowPartialRetirement=workflowCloseFailed&&"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ".equals(
+                    string(cleanup.getJSONObject("last_broker_response").getJSONObject("personal_notes_cleanup"),"failure"));
             // Derive the prelaunch shape from the original records, never from a
             // caller's recovery flag. A create response may be dispatched even
             // though the application launch and every model request were not.
@@ -123,6 +128,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     ||(Boolean.TRUE.equals(exited)&&(exit instanceof Integer||exit instanceof Long)&&((Number)exit).longValue()>=0&&((Number)exit).longValue()<=255)),"NOTES_OLD_EXIT_TYPE");
             JSONObject broker=object(originals.get("broker_receipt"));requireBroker(broker);
             if(cancelledAfterActions)requireCancelledBrokerReceipt(cleanup.getJSONObject("broker_output"),broker);
+            else if(workflowPartialRetirement)requireWorkflowRetirementBrokerReceipt(cleanup.getJSONObject("broker_output"),broker);
             else if(workflowRetirementRefused)requireWorkflowRetirementBrokerReceipt(cleanup.getJSONObject("broker_output"),broker);
             else need(same(broker,cleanup.getJSONObject("broker_output"))&&Boolean.TRUE.equals(broker.get("persisted")),"NOTES_BROKER_RECEIPT_CHANGED");
             byte[] output=originals.get("broker_output");
@@ -189,6 +195,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         &&Boolean.TRUE.equals(launch.get("activity_info_rechecked_before_dispatch")),"NOTES_ORIGINAL_LAUNCH_TARGET");
             }
             if(cancelledAfterActions)requireCancelledBootstrap(bootstrap.getJSONObject("last_broker_response"),last,terminal,ids);
+            else if(workflowPartialRetirement)requireWorkflowPartialRetirementBootstrap(bootstrap.getJSONObject("last_broker_response"),
+                    object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
             else if(workflowRetirementRefused)requireWorkflowRetirementRefusalBootstrap(bootstrap.getJSONObject("last_broker_response"),
                     object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
             else if(workflowCloseFailed)requireWorkflowBootstrap(bootstrap.getJSONObject("last_broker_response"),
@@ -762,6 +770,96 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(ProfileIdentity.uuid(string(last,"request_id"))&&number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")<=started,
                     "NOTES_WORKFLOW_CLOSE_CLOCK");
         }
+        /** Independent preserved-history branch for a workflow whose final close
+         * submitted one token retirement before its following complete read failed. */
+        private void requireWorkflowPartialRetirementBootstrap(JSONObject early,JSONObject createdResponse,JSONObject last,JSONObject terminal,
+                java.util.Set<Integer> ids)throws Exception{
+            need(!prelaunchCreateFailure&&!releasedTerminal&&"close".equals(string(last,"operation"))
+                    &&"CLEANUP_UNKNOWN".equals(string(last,"state"))&&"client_close".equals(string(last,"terminal_reason"))
+                    &&"CLEANUP_NOT_CONFIRMED".equals(string(last,"error")),"NOTES_WORKFLOW_CLOSE_PHASE");
+            no(last,"ok","dispatched");yes(last,"public_scope_admission_retired","public_scope_closing");
+            JSONObject finalCustody=last.getJSONObject("personal_notes_cleanup");
+            need(same(finalCustody,terminal.getJSONObject("personal_notes_cleanup")),"NOTES_WORKFLOW_CLOSE_CUSTODY");
+            // Preserve the actual partial effect. It neither grants another task
+            // mutation nor proves any task, creator, recent or display absent.
+            no(finalCustody,"release_api_entered","release_api_returned",
+                    "cleanup_known","display_absence_verified","live_tasks_absent","all_recents_sections_absent",
+                    "arbitrary_task_removal_used","force_stop_used","caller_flag_is_cleanup_proof");
+            yes(finalCustody,"pre_release_tasks_verified","identity_unknown","custodian_retained");
+            need("NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ".equals(string(finalCustody,"failure"))
+                    &&number(finalCustody,"absence_reads")==0&&number(finalCustody,"pending_owned_reads")==0,
+                    "NOTES_WORKFLOW_PARTIAL_RETIREMENT");
+            JSONObject diagnostics=last.getJSONObject("personal_notes_task_info_diagnostics");
+            need(same(diagnostics,terminal.getJSONObject("personal_notes_task_info_diagnostics"))
+                    &&"hepta.notes-taskinfo-diagnostics.v1".equals(string(diagnostics,"schema"))
+                    &&diagnostics.get("first_runtime_failure")==JSONObject.NULL,"NOTES_WORKFLOW_RETIREMENT_DIAGNOSTICS");
+            no(diagnostics,"diagnostics_grant_authority","provides_cleanup_proof");
+            JSONObject refusal=diagnostics.getJSONObject("first_cleanup_failure");
+            need("cleanup".equals(string(refusal,"phase"))&&"java.io.IOException".equals(string(refusal,"exception_class"))
+                    &&"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ".equals(string(refusal,"reason"))
+                    &&refusal.get("actual_root_read_failure")==JSONObject.NULL
+                    &&number(refusal,"observed_elapsed_ms")>=number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")
+                    &&number(refusal,"observed_elapsed_ms")<=number(object(originals.get("result")),"terminal_decided_elapsed_ms"),
+                    "NOTES_WORKFLOW_RETIREMENT_DIAGNOSTICS");
+            need("hepta.public-personal-notes-cleanup.v2".equals(string(finalCustody,"schema"))
+                    &&ProfileIdentity.hash(string(finalCustody,"initial_recents_sha256"))
+                    &&ProfileIdentity.hash(string(finalCustody,"pre_release_recents_sha256"))
+                    &&string(finalCustody,"final_recents_sha256").isEmpty(),"NOTES_WORKFLOW_PARTIAL_CUSTODY");
+            no(finalCustody,"prior_hidden_history_preserved","no_display_create_attempted");
+            JSONObject retirement=finalCustody.getJSONObject("token_retirement");
+            need("hepta.personal-notes-token-retirement.v1".equals(string(retirement,"schema"))
+                    &&number(retirement,"pre_release_absence_reads")==0,"NOTES_WORKFLOW_PARTIAL_RETIREMENT_RECORD");
+            yes(retirement,"framework_process_cleanup_possible");
+            no(retirement,"numeric_task_id_authority","detached_recent_removal_supported");
+            JSONArray attempted=retirement.getJSONArray("attempted_task_ids"),returned=retirement.getJSONArray("returned_task_ids");
+            need(attempted.length()==1&&returned.length()==1,"NOTES_WORKFLOW_PARTIAL_EFFECT_COUNT");
+            long attemptedId=numberAt(attempted,0);
+            need(attemptedId>0&&attemptedId<=Integer.MAX_VALUE&&ids.contains((int)attemptedId)
+                    &&numberAt(returned,0)==attemptedId,"NOTES_WORKFLOW_PARTIAL_EFFECT_IDENTITY");
+            long retirementDeadline=number(retirement,"deadline_elapsed_ms");
+            need(retirementDeadline>number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")
+                    &&retirementDeadline<=expires&&number(refusal,"observed_elapsed_ms")<retirementDeadline,
+                    "NOTES_WORKFLOW_PARTIAL_EFFECT_CLOCK");
+            java.util.Set<String> requests=new TreeSet<String>();requests.add(string(last,"request_id"));
+            long prior=created;
+            for(int stage=0;stage<2;stage++){
+                JSONObject response=stage==0?early:createdResponse;
+                need(number(response,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION&&generation.equals(string(response,"generation"))
+                        &&number(response,"display_id")==displayId&&publicScope.sha256.equals(string(response,"display_scope_sha256"))
+                        &&"ACTIVE".equals(string(response,"state"))&&(stage==0?"launch":"notes.create").equals(string(response,"operation"))
+                        &&ProfileIdentity.uuid(string(response,"request_id"))&&requests.add(string(response,"request_id")),"NOTES_WORKFLOW_RESPONSE");
+                yes(response,"ok","dispatched");no(response,"public_scope_admission_retired","public_scope_closing");
+                JSONObject custody=response.getJSONObject("personal_notes_cleanup"),location=response.getJSONObject("public_task_location");
+                need(notesCustody(custody,false)==targetUid,"NOTES_TARGET_UID_CHANGED");
+                no(custody,"identity_unknown","pre_release_tasks_verified","release_api_entered","release_api_returned");
+                need(string(custody,"failure").isEmpty(),"NOTES_WORKFLOW_RESPONSE_CUSTODY");
+                need("hepta.public-own-group.task-location.v1".equals(string(location,"schema"))&&generation.equals(string(location,"generation"))
+                        &&number(location,"display_id")==displayId&&number(location,"target_user_id")==0
+                        &&number(location,"observed_elapsed_ms")>=prior&&number(location,"observed_elapsed_ms")<=number(last.getJSONObject("public_task_location"),"observed_elapsed_ms"),
+                        "NOTES_WORKFLOW_RESPONSE_LOCATION");
+                no(location,"task_mutation_authority","retired","physical_user_activity_frozen","recents_unchanged_claimed");
+                prior=number(location,"observed_elapsed_ms");
+                JSONArray oldRows=custody.getJSONArray("actual_observed_tasks"),finalRows=finalCustody.getJSONArray("actual_observed_tasks");
+                need(oldRows.length()>0&&oldRows.length()<=32&&(stage==0||oldRows.length()==finalRows.length()),"NOTES_WORKFLOW_TASK_SET");
+                java.util.Set<Integer> oldIds=new TreeSet<Integer>();
+                for(int i=0;i<oldRows.length();i++){JSONObject row=oldRows.getJSONObject(i);long task=number(row,"task_id");boolean found=false;
+                    need(task>0&&task<=Integer.MAX_VALUE&&oldIds.add((int)task),"NOTES_WORKFLOW_TASK_SET");
+                    for(int n=0;n<finalRows.length();n++)if(task==number(finalRows.getJSONObject(n),"task_id")){
+                        need(!found&&same(row,finalRows.getJSONObject(n)),"NOTES_WORKFLOW_OWNED_IDENTITY_CHANGED");found=true;}
+                    need(found,"NOTES_WORKFLOW_OWNED_IDENTITY_LOST");}
+                JSONArray located=location.getJSONArray("observed_owned_task_ids");java.util.Set<Integer> locations=new TreeSet<Integer>();
+                for(int i=0;i<located.length();i++){long task=numberAt(located,i);
+                    need(task>0&&task<=Integer.MAX_VALUE&&locations.add((int)task),"NOTES_WORKFLOW_TASK_SET");}
+                need(locations.equals(oldIds)&&ids.containsAll(oldIds)&&(stage==0||ids.equals(oldIds)),"NOTES_WORKFLOW_TASK_SET");
+                JSONObject launch=response.getJSONObject("task_launch_policy");
+                need("hepta.background-task-launch-policy.v1".equals(string(launch,"schema"))&&generation.equals(string(launch,"generation"))
+                        &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
+                        &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(response,"request_id")),
+                        "NOTES_WORKFLOW_LAUNCH_TARGET");yes(launch,"activity_info_rechecked_before_dispatch");
+            }
+            need(ProfileIdentity.uuid(string(last,"request_id"))&&number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")<=started,
+                    "NOTES_WORKFLOW_CLOSE_CLOCK");
+        }
         private void requireWorkflowModel(JSONObject result,JSONObject owner,JSONObject projection,JSONObject response)throws Exception{
             JSONObject step=object(originals.get("step_model")),action=object(originals.get("step_action")),attempt=object(originals.get("fixed_intent_attempt"));
             JSONObject fixed=result.getJSONArray("fixed_intent_attempts").getJSONObject(0),work=action.getJSONObject("action_execution");
@@ -1093,7 +1191,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public byte[] original(String name)throws IOException{
             if("current_control".equals(name))return currentControl.clone();byte[] b=originals.get(name);need(b!=null,"NOTES_INPUT_NAME");return b.clone();
         }
-        public String source(){return cancelledAfterActions?CANCELLED_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
+        public String source(){return cancelledAfterActions?CANCELLED_SOURCE:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
         public JSONObject recordedOwnedIdentity()throws Exception{
             JSONObject value=new JSONObject().put("display_id",displayId).put("display_name",displayName)
                 .put("task_ids",new JSONArray(recordedTaskIds)).put("user_id",0).put("full_uid",targetUid).put("package",PACKAGE)
@@ -1105,6 +1203,17 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     .put("historical_notes_workflow_verified",true).put("historical_business_success",false)
                     .put("historical_background_cleanup_known",false).put("historical_retirement_release_entered",false)
                     .put("historical_retirement_failure","NOTES_RETIREMENT_TOP_IDENTITY");
+            if(workflowPartialRetirement){
+                JSONObject retirement=object(originals.get("cleanup")).getJSONObject("last_broker_response")
+                        .getJSONObject("personal_notes_cleanup").getJSONObject("token_retirement");
+                value.put("historical_model_exit_code",0).put("historical_model_receipt_valid",true)
+                        .put("historical_notes_workflow_verified",true).put("historical_business_success",false)
+                        .put("historical_background_cleanup_known",false).put("historical_retirement_release_entered",false)
+                        .put("historical_pre_release_tasks_verified",true).put("historical_partial_task_retirement_observed",true)
+                        .put("historical_attempted_task_ids",retirement.getJSONArray("attempted_task_ids"))
+                        .put("historical_returned_task_ids",retirement.getJSONArray("returned_task_ids"))
+                        .put("historical_retirement_failure","NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
+            }
             if(releasedBeforeModel)value.put("historical_broker_terminal_state","RELEASED").put("broker_launch_dispatched",true)
                     .put("app_observed_launch_response",false).put("model_process_started",false);
             return value;
@@ -1120,7 +1229,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
             out.put(name,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
         public String wire()throws Exception{
             ByteArrayOutputStream bytes=new ByteArrayOutputStream();DataOutputStream out=new DataOutputStream(bytes);
-            out.writeUTF(cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
+            out.writeUTF(cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
             put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);
             if(cancelledAfterActions){out.writeInt(originals.size());for(String name:originals.keySet()){out.writeUTF(name);put(out,originals.get(name));}}
             else for(String name:originals.keySet())put(out,originals.get(name));out.flush();
@@ -1178,13 +1287,13 @@ public final class PublicPersonalNotesAbsenceRecovery {
         ByteArrayOutputStream decoded=new ByteArrayOutputStream();try(GZIPInputStream in=new GZIPInputStream(new ByteArrayInputStream(zipped))){
             byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){need(decoded.size()+n<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");decoded.write(b,0,n);}}
         DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));String schema=in.readUTF();
-        need(CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
+        need(CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
         int uid=in.readInt();String id=in.readUTF();long now=in.readLong();int boot=in.readInt();JSONObject controller=object(take(in,8192));byte[] control=take(in,MAX_ORIGINAL);
         Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();
         if(CANCELLED_REQUEST_SCHEMA.equals(schema)){
             int count=in.readInt();need(count>=14&&count<=60,"NOTES_CANCELLED_INPUT_COUNT");
             for(int i=0;i<count;i++){String name=in.readUTF();need(name.matches("[a-z_0-9]{1,48}")&&inputs.put(name,take(in,MAX_ORIGINAL))==null,"NOTES_CANCELLED_INPUT_NAME");}
-        }else for(String name:LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)?LOST_LAUNCH_STARTUP_INPUTS:RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
+        }else for(String name:LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)?LOST_LAUNCH_STARTUP_INPUTS:RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
         Request r=new Request(inputs,control,controller,uid,id,now,boot);need(r.wire().equals(wire),"NOTES_WIRE_NONCANONICAL");return r;
     }
     public static JSONObject validate(JSONObject value,Request r,long now,int boot)throws Exception{
