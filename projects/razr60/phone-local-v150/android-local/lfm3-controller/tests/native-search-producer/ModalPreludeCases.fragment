@@ -61,6 +61,100 @@
         check(!s.nativeSearchAllowsLegacyObservation(s.lease)&&f.effects==0,"callback alone grants no old Frame or input");
         return old;
     }
+    /** The ordinary AX endpoint deliberately stops before fabricating any Frame.
+     * runAll, callback, await/finally, outer catch, Service handoff and record()
+     * are the unchanged production bodies extracted by run_producer.py. */
+    static final class ModalFreshObservationReached extends RuntimeException {
+        private static final long serialVersionUID=1L;
+    }
+    static void modalControllerCases()throws Exception{
+        one("modal_controller_consumes_actual_handoff_before_waiter_finally_then_archives_once",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);modalNodes(f,false);
+                final NativeSearchRequest[] old={null};final int[] fresh={0};
+                f.graphHook=()->{old[0]=s.activeNativeSearchObservation;};
+                controller.beforeFreshAx=()->{
+                    fresh[0]++;
+                    check(old[0]!=null&&old[0].cancel.isCancelled(),"original unconditional waiter finally ran before fresh AX");
+                    check(!controller.cancelled.get(),"waiter retirement is distinct from actual task cancellation");
+                    throw new ModalFreshObservationReached();
+                };
+                long taskDeadline=f.base.search.taskDeadlineElapsed,chainDeadline=f.base.search.chainDeadlineElapsed;
+                Throwable failure=pumpController(controller,f);
+                check(failure instanceof ModalFreshObservationReached,
+                        "actual callback -> consume -> finally -> outer archive must reach fresh AX: "+failure);
+                File saved=new File(f.directory,"native-search-image-modal-prelude.json");
+                JSONObject receipt=new JSONObject(new String(Files.readAllBytes(saved.toPath()),StandardCharsets.UTF_8));
+                check(old[0].id.equals(receipt.getString("failed_request_id"))
+                        &&f.base.search.taskId.equals(receipt.getString("task_id"))
+                        &&receipt.getString("failed_request_diagnostic_leaf").equals(old[0].id+"-failed-native-search-planning.json"),
+                        "outer consumer archives the exact actual request receipt");
+                check(receipt.getLong("read_queue_drained_elapsed_ms")>=old[0].failureElapsed
+                        &&receipt.getLong("original_chain_deadline_elapsed_ms")==chainDeadline
+                        &&receipt.getInt("read_admissions_preserved")==1,"actual drain/admission/deadline preserved");
+                check(receipt.getBoolean("fresh_ordinary_observation_required")&&!receipt.getBoolean("old_pair_executable")
+                        &&!receipt.getBoolean("model_requested")&&!receipt.getBoolean("action_dispatched"),"handoff is only read routing");
+                check(fresh[0]==1&&controller.oldAxCalls==0&&controller.modelCalls==0&&controller.completedSteps==0
+                        &&f.graphReads==2&&f.effects==0,"one fresh AX entry, no fabricated Frame, model or input");
+                check(old[0].finished&&old[0].workerDrained&&!old[0].published&&old[0].callbackDelivered.get()
+                        &&old[0].lastCompletePair==null&&old[0].publishedPlanning==null,"original failed read is not promoted to planning");
+                check(s.nativeSearchModalPending==null&&s.nativeSearchRetryPending==null
+                        &&!f.base.search.imageModalPreludeUnused()&&s.taskObservationAdmissions==1,"one actual consumed handoff");
+                check(f.base.search.taskDeadlineElapsed==taskDeadline&&f.base.search.chainDeadlineElapsed==chainDeadline,
+                        "no renewed overall or search deadline");
+                byte[] savedBytes=Files.readAllBytes(saved.toPath());
+                old[0].callback.onImageModalReadAvailable("late duplicate callback");
+                rejected(()->s.beginNativeSearchImageModalPrelude(controller,f.base.search,f.directory,taskDeadline));
+                check(Arrays.equals(savedBytes,Files.readAllBytes(saved.toPath()))&&fresh[0]==1
+                        &&f.graphReads==2&&f.effects==0,"late callback or second consume cannot repeat receipt/read/effect");
+            }
+        });
+        for(String kind:Arrays.asList("cancel","request_deadline","owner","boundary_event")){
+            one("modal_controller_"+kind+"_at_actual_consume_rejects_before_receipt_and_fresh_AX",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+                try(Fixture f=s.new Fixture(controller)){
+                    controller.bind(f);modalNodes(f,false);final NativeSearchRequest[] old={null};final boolean[] injected={false};
+                    f.graphHook=()->{old[0]=s.activeNativeSearchObservation;};
+                    SystemClock.beforeRead=()->{
+                        if(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","beginNativeSearchImageModalPrelude")){
+                            SystemClock.beforeRead=null;injected[0]=true;
+                            check(old[0]!=null&&old[0].callbackDelivered.get()&&old[0].workerDrained,
+                                    "injection is after the real callback and physical drain");
+                            if("cancel".equals(kind))controller.cancelled.set(true);
+                            else if("request_deadline".equals(kind))SystemClock.now=old[0].deadline;
+                            else if("owner".equals(kind))s.ownedController=new Object();
+                            else s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+                        }
+                    };
+                    Throwable failure=pumpController(controller,f);
+                    check(injected[0]&&failure instanceof IllegalStateException
+                            &&"actual image-modal read handoff unavailable".equals(failure.getMessage()),"actual original Service predicate refuses: "+failure);
+                    check(!new File(f.directory,"native-search-image-modal-prelude.json").exists()
+                            &&controller.oldAxCalls==0&&controller.modelCalls==0&&f.effects==0,"refused handoff never archives success or observes/acts");
+                    check(old[0].cancel.isCancelled()&&f.base.search.imageModalPreludeUnused()
+                            &&s.taskObservationAdmissions==1&&f.graphReads==2,"unchanged finally still retires failed waiter; no extra admission");
+                }
+            });
+        }
+        one("modal_controller_journal_failure_after_consume_keeps_waiter_retired_without_fresh_AX",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);modalNodes(f,false);final NativeSearchRequest[] old={null};
+                f.graphHook=()->{old[0]=s.activeNativeSearchObservation;};
+                android.system.Os.beforeChmod=path->{
+                    if(path.endsWith("/native-search-image-modal-prelude.json"))throw new IllegalStateException("synthetic actual record chmod failure");
+                };
+                Throwable failure=pumpController(controller,f);
+                check(failure!=null&&failure.getMessage().contains("synthetic actual record chmod failure"),
+                        "actual outer record failure remains terminal: "+failure);
+                check(old[0].cancel.isCancelled()&&!f.base.search.imageModalPreludeUnused()
+                        &&s.nativeSearchModalPending==null&&s.nativeSearchRetryPending==null,"actual receipt consumption is not refunded");
+                check(controller.oldAxCalls==0&&controller.modelCalls==0&&f.effects==0&&f.graphReads==2,
+                        "failed record never enters fresh AX or replay");
+            }
+        });
+    }
     static void modalPreludeCases()throws Exception{
         String path=System.getProperty("hepta.test.imageModalCensuses");
         check(path!=null,"explicit real modal fixture property required");
@@ -196,5 +290,6 @@
                 check(result.callbacks==0&&!observationIoBusy.get()&&f.callbackCount==1&&f.effects==0,"real later drain cannot republish successful modal terminal");
             }
         });
+        modalControllerCases();
         one("modal_producer_keeps_recorded_fixture_byte_exact",()->check(Arrays.equals(bytes,Files.readAllBytes(Paths.get(path))),"no raw evidence mutation"));
     }

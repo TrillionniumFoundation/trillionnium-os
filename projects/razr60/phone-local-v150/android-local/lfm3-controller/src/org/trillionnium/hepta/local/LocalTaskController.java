@@ -630,7 +630,7 @@ public final class LocalTaskController implements AutoCloseable {
                     observation=initialSearch.observation;
                 }catch(NativeSearchImageModalReadFailure modal){
                     record(evidence,"native-search-image-modal-prelude.json",new JSONObject(
-                            service.beginNativeSearchImageModalPrelude(this,search,evidence,deadline)).put("original_read_detail",modal.getMessage()));
+                            modal.prelude).put("original_read_detail",modal.getMessage()));
                     emit("正在重新观察图片窗口，交由手机本地模型决定返回…");
                     observation=awaitObservation(taskId,evidence,authorization,deadline);
                 }finally{steps=initialSearch.steps;}
@@ -1592,7 +1592,10 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static final class NativeSearchImageModalReadFailure extends IllegalStateException {
         private static final long serialVersionUID=1L;
-        NativeSearchImageModalReadFailure(String detail){super(detail);}
+        final java.util.Map<String,Object> prelude;
+        NativeSearchImageModalReadFailure(String detail,java.util.Map<String,Object> prelude){
+            super(detail);if(prelude==null)throw new IllegalArgumentException("actual consumed image-modal handoff receipt required");this.prelude=prelude;
+        }
     }
     private void runNativeSearchChain(String taskId,String instruction,File evidence,TaskAuthorization.Gate authorization,
             BackgroundSession background,long deadline,NativeSearchChainResult result,JSONArray history)throws Exception{
@@ -1700,7 +1703,8 @@ public final class LocalTaskController implements AutoCloseable {
             checkActive(deadline);session.requireLive(SystemClock.elapsedRealtime());
             if(SystemClock.elapsedRealtime()>=requestDeadline)throw new IllegalStateException("原生搜索规划回执迟到");
             if(error.get()!=null){
-                if(imageModalAvailable.get())throw new NativeSearchImageModalReadFailure(error.get());
+                if(imageModalAvailable.get())throw new NativeSearchImageModalReadFailure(error.get(),
+                        service.beginNativeSearchImageModalPrelude(this,session,directory,deadline));
                 if(samplingAvailable.get()!=null){samplingHandedOff=true;throw new NativeSearchSamplingReadFailure(error.get(),samplingAvailable.get());}
                 if(retryAvailable.get()!=null)throw new NativeSearchLoadingReadFailure(error.get(),retryAvailable.get());
                 throw new IllegalStateException(error.get());

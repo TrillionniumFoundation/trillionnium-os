@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.native-search-modal-handoff-validation.v1",
+  "parent_head": "3ced0fcfccd9fef1d47b01c6a23aec0da2414064",
+  "problem": "The original image-modal callback escaped the planning waiter; its unconditional finally abandoned the request before the outer consumer called the actual Service handoff, whose unchanged cancellation predicate then rejected it.",
+  "fix": "Consume the real same-owner drained handoff inside the planning waiter after its original active/live/request deadline checks and before its unchanged finally; carry only the returned immutable receipt in the private exception and archive it in the outer consumer.",
+  "reviewed_production_patch_sha256": "0b8edb6fcdfddfc3f76027169584ee2b1c122e45fb450e4ecfeb8ca16bbee159",
+  "controller_sha256": "2651cdc0497a7bf6690825ab0d94fcff10232d1ed783246b30fc97f00dc49277",
+  "service_sha256": "091ce587909ed61c5a810e14f86dbdcb6cdecdf6033ae32c463a35eae93ffc34",
+  "service_and_session_bytes_unchanged": true,
+  "waiter_finally_unchanged": true,
+  "existing_producer_runner_and_harness_unchanged": true,
+  "targeted": {
+    "cases": 337,
+    "assertions": 3332,
+    "all_pass": true,
+    "report_sha256": "2019eba01e8142133d8492dfcff5d9438905416f72ffc6ac9789a27724edb993",
+    "cases_sha256": "a7af07c06ae042605c5abddad7d66758110811e5b3c4ef4c586c0621757d00d9",
+    "new_case_names": [
+      "modal_controller_consumes_actual_handoff_before_waiter_finally_then_archives_once",
+      "modal_controller_cancel_at_actual_consume_rejects_before_receipt_and_fresh_AX",
+      "modal_controller_request_deadline_at_actual_consume_rejects_before_receipt_and_fresh_AX",
+      "modal_controller_owner_at_actual_consume_rejects_before_receipt_and_fresh_AX",
+      "modal_controller_boundary_event_at_actual_consume_rejects_before_receipt_and_fresh_AX",
+      "modal_controller_journal_failure_after_consume_keeps_waiter_retired_without_fresh_AX"
+    ]
+  },
+  "exact_parent_negative_control": {
+    "controller_sha256": "3bb778d01eb0ae1f4a727023048b07fc9e3160a3d29907288b84ce1525648b1c",
+    "all_331_old_cases_pass": true,
+    "expected_failures": [
+      {
+        "name": "modal_controller_consumes_actual_handoff_before_waiter_finally_then_archives_once",
+        "failure": "java.lang.AssertionError: actual callback -> consume -> finally -> outer archive must reach fresh AX: java.lang.IllegalStateException: actual image-modal read handoff unavailable"
+      },
+      {
+        "name": "modal_controller_journal_failure_after_consume_keeps_waiter_retired_without_fresh_AX",
+        "failure": "java.lang.AssertionError: actual outer record failure remains terminal: java.lang.IllegalStateException: actual image-modal read handoff unavailable"
+      }
+    ],
+    "report_sha256": "833d14f0f6d9a0c35196eaece5924a36bfcf58e590e91dfe943ce856c726cdbb",
+    "same_test_bytes": true
+  },
+  "actual_failed_task": {
+    "task_id": "3b3ad9fc4cf04d64af91e96f4f5aa2a0",
+    "diagnostic_sha256": "dc8721bb893b54afe070c84c015913a0c57a87e00810f5c9e97e2ddf19ba49c1",
+    "result_sha256": "52a43c66d54a3c4340c1795b34de6092b8b3624de996ef84b881c2456b8551c2",
+    "status": "failed",
+    "steps": 0,
+    "cleanup_known": true,
+    "model_process_started": false,
+    "external_model": false,
+    "complete_pair_available": true,
+    "planning_published": false,
+    "action_permission": false,
+    "fixture_shape_all_nonidentity_fields_equal": true,
+    "fixture_comparison_excluded_fields": [
+      "window_id",
+      "ref_signature_sha256"
+    ],
+    "current_originals_are_not_committed": true
+  },
+  "scope": {
+    "phone_operations": 0,
+    "android_runtime_tested": false,
+    "model_inference_tested": false,
+    "business_verified": false,
+    "fresh_observation_endpoint_stops_before_synthetic_frame": true,
+    "automatic_Back": false,
+    "deadline_extended": false,
+    "current_full_host_completed_at_preparation": false,
+    "current_android_build_completed_at_preparation": false
+  }
+}

@@ -1,17 +1,19 @@
 {
   "android_qualified": false,
-  "base_head": "9d1547ea4ac05000cfba13c05c10b054a5739533",
-  "base_manifest_sha256": "fbb607c9e96da2d3d7f9b9bb433d0178623e868aa92b1115b936b0da002bfec0",
+  "base_head": "3ced0fcfccd9fef1d47b01c6a23aec0da2414064",
+  "base_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_exact_legacy_reader_pin_successor",
-  "complete_source_files": 2566,
+  "candidate_status": "reviewed_xiaomi_modal_handoff_order_successor",
+  "complete_source_files": 2567,
   "current_successor_delta": {
-    "baseline": "9d1547ea4ac05000cfba13c05c10b054a5739533",
+    "baseline": "3ced0fcfccd9fef1d47b01c6a23aec0da2414064",
     "reviewed_paths": [
-      "tests/notes-task-info-reader/run_host.py"
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "tests/native-search-producer/ModalPreludeCases.fragment",
+      "tests/native-search-producer/MODAL-HANDOFF-VALIDATION.json"
     ],
-    "scope": "Update the legacy Notes reader host runner to the exact reviewed Reader source SHA. Retain the equality guard, all archived fixtures and behavioral assertions, all production source bytes, and the failed predecessor full-host report. No phone or business qualification is inherited.",
-    "production_changed": false,
+    "scope": "Fix the Xiaomi text-search image-modal handoff order using the actual Service receipt before the old waiter retires. Preserve all Service/Session identity, cancellation, deadline, drain and once-only guards and unconditional waiter finally. Add six real controller/Service chain regressions to the existing producer gate. No phone or business qualification is inherited.",
+    "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
     "automatic_default_model_unchanged": true
@@ -6624,8 +6626,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 300454,
-      "sha256": "3bb778d01eb0ae1f4a727023048b07fc9e3160a3d29907288b84ce1525648b1c"
+      "bytes": 300735,
+      "sha256": "2651cdc0497a7bf6690825ab0d94fcff10232d1ed783246b30fc97f00dc49277"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -9358,9 +9360,14 @@
       "sha256": "ac25b236a5aacc1a29af0e8c410b3f818a7d9cfd446f4fde998e09140dfb4085"
     },
     {
+      "path": "tests/native-search-producer/MODAL-HANDOFF-VALIDATION.json",
+      "bytes": 3945,
+      "sha256": "d4c69a7cc8dbb56d28b5ed7e1c482d981e10f2c408fa5a2f7284bc74ffd9fbd2"
+    },
+    {
       "path": "tests/native-search-producer/ModalPreludeCases.fragment",
-      "bytes": 17383,
-      "sha256": "45d7f05bf8dbf436eea6605d6ba26da6d1afc0f3466956d6786bdbebd20a9cea"
+      "bytes": 25520,
+      "sha256": "a175b32d3f7ea9441db5c0e01a7f367ea43839b3659b7c7fa5bb7c28ff8ef2f3"
     },
     {
       "path": "tests/native-search-producer/NavigationWindowCases.fragment",
@@ -12844,15 +12851,17 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "69ffd914d5ca22b668a2bd6f42e32d1adbc5adbc",
-    "previous_manifest_sha256": "fbb607c9e96da2d3d7f9b9bb433d0178623e868aa92b1115b936b0da002bfec0",
+    "previous_component_git_tree_sha1": "a9e86c4d65b9ad30bdb7d53ceb6ea965a8f0db2a",
+    "previous_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_full_host_passed": false
+    "previous_full_host_passed": true
   },
   "host_validation_at_preparation": {
-    "current_targeted_host_execution": false,
-    "production_input_map_unchanged": true,
-    "old_targeted_results_refer_to_identical_production_source": true,
+    "current_targeted_host_execution": true,
+    "targeted_cases": 337,
+    "targeted_assertions": 3332,
+    "exact_parent_negative_control_observed": true,
+    "production_input_map_unchanged": false,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false,
@@ -12862,12 +12871,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "c4e7dea28a019293e4222590531ee27eb45dbfe9b0b798c2ebee39a92d8d7b11",
+  "production_input_map_sha256": "bbf04d7b7fa90afb3215a908f7680e9e4b59c2c37da01268223a2bd54d427825",
   "schema": "hepta.local-source.v3",
-  "scope": "Update the legacy Notes reader host runner to the exact reviewed Reader source SHA. Retain the equality guard, all archived fixtures and behavioral assertions, all production source bytes, and the failed predecessor full-host report. No phone or business qualification is inherited.",
-  "source_parent_head": "9d1547ea4ac05000cfba13c05c10b054a5739533",
-  "source_parent_manifest_sha256": "fbb607c9e96da2d3d7f9b9bb433d0178623e868aa92b1115b936b0da002bfec0",
-  "source_snapshot_predecessor_manifest_sha256": "fbb607c9e96da2d3d7f9b9bb433d0178623e868aa92b1115b936b0da002bfec0",
+  "scope": "Fix the Xiaomi text-search image-modal handoff order using the actual Service receipt before the old waiter retires. Preserve all Service/Session identity, cancellation, deadline, drain and once-only guards and unconditional waiter finally. Add six real controller/Service chain regressions to the existing producer gate. No phone or business qualification is inherited.",
+  "source_parent_head": "3ced0fcfccd9fef1d47b01c6a23aec0da2414064",
+  "source_parent_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
+  "source_snapshot_predecessor_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -13002,5 +13011,20 @@
     "no_repeated_effect": true,
     "old_recovery_methods_unchanged": 62,
     "phone_cleanup_or_business_claim": false
+  },
+  "current_native_xiaomi_modal_handoff_order": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "tests/native-search-producer/ModalPreludeCases.fragment",
+      "tests/native-search-producer/MODAL-HANDOFF-VALIDATION.json"
+    ],
+    "previous_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
+    "real_service_receipt_required": true,
+    "consume_before_unconditional_waiter_retirement": true,
+    "outer_does_not_consume_twice": true,
+    "original_service_session_and_deadlines_unchanged": true,
+    "new_full_controller_chain_cases": 6,
+    "actual_old_failure_preserved": true,
+    "no_automatic_Back_or_business_success": true
   }
 }
