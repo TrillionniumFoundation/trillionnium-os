@@ -133,6 +133,20 @@ public final class NotesWorkflowRetirementRefusalHostTest {
    check(request.originalsSha256.equals(decoded.originalsSha256)&&request.currentControlSha256.equals(decoded.currentControlSha256),"decoded hashes");
    for(String role:captured.paths.keySet())check(Arrays.equals(request.original(role),decoded.original(role)),"decoded bytes");
   });
+  test("actual_broker_eof_successor_keeps_original_cleanup_result_and_bin",()->{
+   Inputs value=captured.copy();JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",true);value.set("broker_receipt",broker);
+   PublicPersonalNotesAbsenceRecovery.Request after=value.request();
+   check(after.workflowRetirementRefused&&after.workflowCloseFailed&&after.postModelDrained&&!after.cancelledAfterActions,"same normal v7 kind after actual EOF");
+   for(String role:new String[]{"cleanup","result","broker_output"})check(Arrays.equals(after.original(role),captured.input.get(role)),"historical bytes preserved after EOF: "+role);
+   check(!PublicPersonalNotesAbsenceRecovery.object(after.original("cleanup")).getBoolean("broker_process_exit_observed"),"historical broker exit remains unknown");
+   check(!after.recordedOwnedIdentity().getBoolean("historical_business_success"),"EOF is not business success");
+   check(after.wire().equals(PublicPersonalNotesAbsenceRecovery.fromWire(after.wire()).wire()),"EOF successor exact wire roundtrip");
+  });
+  reject("eof_successor_changed_process_reference",value->{JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",true).put("process_reference",broker.getLong("process_reference")+1);value.set("broker_receipt",broker);});
+  reject("eof_successor_changed_command_hash",value->{JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",true).put("command_sha256",new String(new char[64]).replace('\0','a'));value.set("broker_receipt",broker);});
+  reject("eof_successor_changed_stored_bytes",value->{JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",true).put("stored_bytes",broker.getLong("stored_bytes")+1);value.set("broker_receipt",broker);});
+  reject("eof_successor_changed_numeric_type",value->{JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",true).put("process_reference",broker.getString("process_reference"));value.set("broker_receipt",broker);});
+  reject("eof_successor_boolean_type_required",value->{JSONObject broker=value.json("broker_receipt");broker.put("eof_seen",1);value.set("broker_receipt",broker);});
   test("actual_history_remains_failed_and_exit_unknown",()->{
    JSONObject result=captured.json("result"),cleanup=captured.json("cleanup"),broker=captured.json("broker_receipt");
    check("blocked".equals(result.getString("status"))&&!result.getBoolean("cleanup_known")&&!result.getBoolean("completion_verified")

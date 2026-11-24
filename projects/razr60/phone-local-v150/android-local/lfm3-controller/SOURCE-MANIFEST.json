@@ -1,23 +1,17 @@
 {
   "android_qualified": false,
-  "base_head": "446de9223acede61ef2ae07b99ac54356ba41237",
-  "base_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+  "base_head": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
+  "base_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_notes_taskinfo_alias_parentage_and_workflow_retirement_refusal_successor",
-  "complete_source_files": 2558,
+  "candidate_status": "reviewed_v7_monotone_broker_eof_successor",
+  "complete_source_files": 2559,
   "current_successor_delta": {
-    "baseline": "446de9223acede61ef2ae07b99ac54356ba41237",
+    "baseline": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
     "reviewed_paths": [
       "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
-      "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
-      "tests/notes-token-retirement/run_host.py",
-      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
-      "tests/notes-workflow-retirement-refusal/run_host.py"
+      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java"
     ],
-    "scope": "Accept Android 16 TaskInfo activity aliases through their exact ActivityInfo target while preserving package and UID checks. Read ordinary foreign leaf membership from complete unique root child arrays without rewriting parentTaskId=-1 or granting owned effects. Add a separate bounded v7 current-absence recovery request for a completed Notes workflow whose original retirement refused identity before any release; retain original failures, authority, deadlines, and explicit ordinary acknowledgement.",
+    "scope": "For the separate v7 completed-workflow retirement-refusal request only, admit a current producer receipt whose only difference from the immutable historical receipt is the typed monotone eof_seen boolean. Keep historical EOF=false, persisted=true, and exact equality of every other field; preserve legacy v3/v6 validation and fresh current absence/ordinary ACK requirements.",
     "production_changed": true,
     "native_runtime_changed": false,
     "model_weights_changed": false,
@@ -6381,8 +6375,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 142554,
-      "sha256": "3a84994c61e4485ea76e959551eaf8707a523d6cbb5b817b11082dc702854b8f"
+      "bytes": 143218,
+      "sha256": "47281d774fe8aa7f26643bf548a7269dc1da2fb571f84d3fec97c31dd77c2ce2"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
@@ -10080,9 +10074,14 @@
       "sha256": "89ca89db8824a067ca08ff3abd3d257ea32f043c290ee657ac661722f8365d0d"
     },
     {
+      "path": "tests/notes-workflow-retirement-refusal/EOF-SUCCESSOR-VALIDATION.json",
+      "bytes": 3259,
+      "sha256": "1794ee19a8847c7c5f002dd52d84101950204b02a9ebb5eb9e2d8c70c4e80daf"
+    },
+    {
       "path": "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
-      "bytes": 24299,
-      "sha256": "d88a16121017b7c2ece50f23f1a54e56be0e04eab1815d1433c6ad2deb5b003b"
+      "bytes": 26444,
+      "sha256": "e8902b7b5487af8b5d4c12028aea0eb797b2372d669ec783aaa4bc4fa66d91f5"
     },
     {
       "path": "tests/notes-workflow-retirement-refusal/run_host.py",
@@ -12811,40 +12810,22 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "9cb0fb111d9b5b481f52264a120762f96c0de8a5",
-    "previous_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+    "previous_component_git_tree_sha1": "79fcbc0771d4281037cffaeedb0f9345d4f52fb7",
+    "previous_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
     "previous_host_and_phone_results_are_not_current_qualification": true
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
     "targeted_reports": [
       {
-        "path": "tests/notes-token-retirement/TASKINFO-RECOVERY-VALIDATION.json",
-        "bytes": 11396,
-        "sha256": "1c6d7e2e0845a8887f67ef8ebae36abaac38560b771f7c2d330e50f302f030ec"
+        "path": "tests/notes-workflow-retirement-refusal/EOF-SUCCESSOR-VALIDATION.json",
+        "bytes": 3259,
+        "sha256": "1794ee19a8847c7c5f002dd52d84101950204b02a9ebb5eb9e2d8c70c4e80daf"
       }
     ],
-    "targeted_case_groups": {
-      "token-cases": {
-        "cases": 28,
-        "assertions": 519
-      },
-      "taskinfo-semantics": {
-        "cases": 18,
-        "assertions": 208
-      },
-      "original-custody": {
-        "cases": 27,
-        "assertions": 51
-      },
-      "original-physical-parser": {
-        "cases": 29,
-        "assertions": 35
-      }
-    },
-    "recovery_cases": 176,
-    "recovery_assertions": 302,
-    "tested_source_inputs_pinned": 24,
+    "recovery_cases": 182,
+    "recovery_assertions": 314,
+    "tested_source_inputs_pinned": 3,
     "full_current_host_suite_completed_at_preparation": false,
     "android_sdk_compile_passed_for_this_candidate_at_preparation": false,
     "phone_qualified": false,
@@ -12854,12 +12835,12 @@
   "main_java_sources": 219,
   "phone_qualified": false,
   "production_build_inputs_count": 396,
-  "production_input_map_sha256": "8d3d83c1edb38154093443d32c41cd8c94c039842959282903d0813cde37e821",
+  "production_input_map_sha256": "c2f325b9929a798f6c0d5e81e58bcc0dd68dd2b8dac8430e7091c28effa79217",
   "schema": "hepta.local-source.v3",
-  "scope": "Accept Android 16 TaskInfo activity aliases through their exact ActivityInfo target while preserving package and UID checks. Read ordinary foreign leaf membership from complete unique root child arrays without rewriting parentTaskId=-1 or granting owned effects. Add a separate bounded v7 current-absence recovery request for a completed Notes workflow whose original retirement refused identity before any release; retain original failures, authority, deadlines, and explicit ordinary acknowledgement.",
-  "source_parent_head": "446de9223acede61ef2ae07b99ac54356ba41237",
-  "source_parent_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
-  "source_snapshot_predecessor_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+  "scope": "For the separate v7 completed-workflow retirement-refusal request only, admit a current producer receipt whose only difference from the immutable historical receipt is the typed monotone eof_seen boolean. Keep historical EOF=false, persisted=true, and exact equality of every other field; preserve legacy v3/v6 validation and fresh current absence/ordinary ACK requirements.",
+  "source_parent_head": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
+  "source_parent_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+  "source_snapshot_predecessor_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "current_notes_create_and_cancelled_recovery": {
@@ -12951,5 +12932,20 @@
     "new_v7_requires_fresh_current_absence_and_ack": true,
     "deadline_and_authority_limits_unchanged": true,
     "old_resident_shutdown_not_implemented": true
+  },
+  "current_notes_workflow_retirement_broker_eof": {
+    "changed_paths": [
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java"
+    ],
+    "previous_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+    "request_v7_only": true,
+    "historical_eof_false_required": true,
+    "current_eof_boolean_required": true,
+    "only_eof_field_can_differ": true,
+    "original_cleanup_result_and_bin_unchanged": true,
+    "request_v3_and_v6_unchanged": true,
+    "fresh_current_absence_and_ack_still_required": true,
+    "actual_post_shutdown_eof_captured": false
   }
 }

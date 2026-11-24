@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.notes-workflow-retirement-eof-source-validation.v1",
+  "source_parent_head": "866df90533b7a9ebfe4b1e58f23385ef145135a8",
+  "source_parent_component_tree": "79fcbc0771d4281037cffaeedb0f9345d4f52fb7",
+  "source_parent_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+  "status": "TARGETED_HOST_REGRESSIONS_PASSED_FULL_HOST_AND_ANDROID_PENDING",
+  "candidate_head_embedded": false,
+  "identity_binding": "Exact candidate Git identity is the containing commit; these pins bind the tested source bytes.",
+  "scope": "For the separate v7 completed-workflow retirement-refusal request only, admit a current producer receipt whose only difference from the immutable historical receipt is the typed monotone eof_seen boolean. Keep historical EOF=false, persisted=true, and exact equality of every other field; preserve legacy v3/v6 validation and fresh current absence/ordinary ACK requirements.",
+  "changed_files": [
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "bytes": 143218,
+      "sha256": "47281d774fe8aa7f26643bf548a7269dc1da2fb571f84d3fec97c31dd77c2ce2",
+      "base_sha256": "3a84994c61e4485ea76e959551eaf8707a523d6cbb5b817b11082dc702854b8f"
+    },
+    {
+      "path": "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+      "bytes": 26444,
+      "sha256": "e8902b7b5487af8b5d4c12028aea0eb797b2372d669ec783aaa4bc4fa66d91f5",
+      "base_sha256": "d88a16121017b7c2ece50f23f1a54e56be0e04eab1815d1433c6ad2deb5b003b"
+    }
+  ],
+  "unchanged_runner": {
+    "path": "tests/notes-workflow-retirement-refusal/run_host.py",
+    "bytes": 8958,
+    "sha256": "2112b6e63ddc88b88e132b34059480c671b93393ca49931127c41b4e0150783a"
+  },
+  "targeted_host": {
+    "report_sha256": "624743c0d5e92359ef0a80aaabaa9c925d86b14abfa178532944f69b81c5611c",
+    "cases": 182,
+    "assertions": 314,
+    "actual_private_originals": 23,
+    "current_control_additional": true,
+    "after_eof_case_is_derived_fixture": true,
+    "actual_post_shutdown_eof_captured": false,
+    "derivation": "Only current broker_receipt.eof_seen is changed from false to true in a copy of actual captured inputs; historical cleanup/result/bin remain byte-identical.",
+    "old_cancelled_v6_actual_receipt_passed": true,
+    "private_inputs_required_at_execution": true,
+    "private_input_map_not_published": true,
+    "all_original_bytes_unchanged": true
+  },
+  "unchanged_guards": {
+    "legacy_v3_and_v6": true,
+    "request_limits": true,
+    "normal_model_exit_and_generation": true,
+    "historical_failure": true,
+    "original_cleanup_result_and_bin": true,
+    "typed_broker_metadata": true,
+    "stored_bytes_and_hash": true,
+    "process_reference": true,
+    "command_sha256": true,
+    "fresh_absence": true,
+    "ordinary_ack": true,
+    "cleanup_authority": true
+  },
+  "full_current_host_suite_completed": false,
+  "android_sdk_compile_passed": false,
+  "phone_qualified": false,
+  "current_absence_proven": false,
+  "app_recovery_completed": false,
+  "current_resident_broker_replaced": false,
+  "current_resident_custody_retired": false,
+  "phone_operations": 0,
+  "old_checks_and_phone_results_not_current_qualification": true
+}

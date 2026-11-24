@@ -123,6 +123,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     ||(Boolean.TRUE.equals(exited)&&(exit instanceof Integer||exit instanceof Long)&&((Number)exit).longValue()>=0&&((Number)exit).longValue()<=255)),"NOTES_OLD_EXIT_TYPE");
             JSONObject broker=object(originals.get("broker_receipt"));requireBroker(broker);
             if(cancelledAfterActions)requireCancelledBrokerReceipt(cleanup.getJSONObject("broker_output"),broker);
+            else if(workflowRetirementRefused)requireWorkflowRetirementBrokerReceipt(cleanup.getJSONObject("broker_output"),broker);
             else need(same(broker,cleanup.getJSONObject("broker_output"))&&Boolean.TRUE.equals(broker.get("persisted")),"NOTES_BROKER_RECEIPT_CHANGED");
             byte[] output=originals.get("broker_output");
             need(number(broker,"stored_bytes")==output.length&&number(broker,"observed_bytes")==output.length
@@ -314,6 +315,12 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     &&"NOTES_CLEANUP_ABSENCE_DEADLINE".equals(string(a,"failure"))
                     &&"NOTES_CLEANUP_DEADLINE".equals(string(b,"failure")),"NOTES_CANCELLED_TERMINAL_SUCCESSOR");
             return last;
+        }
+        private void requireWorkflowRetirementBrokerReceipt(JSONObject historical,JSONObject current)throws Exception{
+            requireBroker(historical);no(historical,"eof_seen");yes(historical,"persisted");yes(current,"persisted");
+            // The recorded pre-release refusal remains immutable. A subsequently
+            // observed stream EOF changes only this current producer metadata bit.
+            need(same(without(historical,"eof_seen"),without(current,"eof_seen")),"NOTES_WORKFLOW_BROKER_SUCCESSOR");
         }
         private void requireCancelledBrokerReceipt(JSONObject historical,JSONObject current)throws Exception{
             requireBroker(historical);yes(historical,"persisted");yes(current,"persisted");
