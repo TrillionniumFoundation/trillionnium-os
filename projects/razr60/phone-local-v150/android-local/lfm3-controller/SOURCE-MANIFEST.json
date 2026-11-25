@@ -1,34 +1,19 @@
 {
   "android_qualified": false,
-  "base_head": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
-  "base_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
+  "base_head": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
+  "base_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_merge_with_concurrent_installed_source",
-  "complete_source_files": 2606,
+  "candidate_status": "reviewed_native_ax_canonical_reuse_successor",
+  "complete_source_files": 2610,
   "current_successor_delta": {
-    "baseline": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
+    "baseline": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
-      "tests/native-action-integration/run_host.py",
-      "tests/native-ax-consumers/run_host.py",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
-      "tests/native-form-history-actions/run_host.py",
-      "tests/native-observation-screenshot-seed/run_host.py",
-      "tests/native-stale-recovery/run_budget.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/native-xiaomi-query-stability/NativeXiaomiQueryStabilityHostTest.java",
-      "tests/native-xiaomi-query-stability/QueryBridgeCases.fragment",
-      "tests/native-xiaomi-query-stability/README.md",
-      "tests/native-xiaomi-query-stability/bridge_adapters.py",
-      "tests/native-xiaomi-query-stability/protected_filled_query.py",
-      "tests/native-xiaomi-query-stability/real-censuses.json",
-      "tests/native-xiaomi-query-stability/run_host.py",
-      "tests/native-xiaomi-query-stability/run_integration_host.py",
-      "tests/observation-diagnostics/run_host.py"
+      "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
+      "tests/native-ax-canonical-reuse/AxCanonicalReuseHost.java",
+      "tests/native-ax-canonical-reuse/README.md",
+      "tests/native-ax-canonical-reuse/protected_canonical_reuse.py",
+      "tests/native-ax-canonical-reuse/run_host.py",
+      "tests/native-xiaomi-product/run_host.py"
     ],
     "model_weights_changed": false,
     "native_runtime_changed": false,
@@ -6819,8 +6804,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
-      "bytes": 26842,
-      "sha256": "e7f5ba2bf975f5a39ab47909176912ec1e825c32fb51ac778ee6a76e4abcf39d"
+      "bytes": 26752,
+      "sha256": "b3c99f53c94b662ee35ffa26054f22f647fd2744d34edbc67d847afe9a05e651"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
@@ -8848,6 +8833,26 @@
       "sha256": "496ce8d38e882a6c9a3b8d08d565f60c22b0e8b7109f9fd6163d5a02d6654dc9"
     },
     {
+      "path": "tests/native-ax-canonical-reuse/AxCanonicalReuseHost.java",
+      "bytes": 10500,
+      "sha256": "13dd2cc0576ef47fe4e3edfd60ed9cc8d1864940238f644db53eb1f9e96ab28c"
+    },
+    {
+      "path": "tests/native-ax-canonical-reuse/README.md",
+      "bytes": 3251,
+      "sha256": "d76a2fb8c76c47d45058c3cfac47b86a9f1630d2d1b55122a166ed23ba78ce7b"
+    },
+    {
+      "path": "tests/native-ax-canonical-reuse/protected_canonical_reuse.py",
+      "bytes": 2154,
+      "sha256": "6ed37756f8af1c075e863bc888f3150d060bb715c6a8718a90a81a34a1b5cbfd"
+    },
+    {
+      "path": "tests/native-ax-canonical-reuse/run_host.py",
+      "bytes": 10869,
+      "sha256": "79954205890179e78fadd0962d622c5d2af62ed6da2a7d542009b3c23f8010a0"
+    },
+    {
       "path": "tests/native-ax-consumers/NativeAxConsumersHostTest.java",
       "bytes": 19879,
       "sha256": "723d07a42666768d0b9c2cbda94b922414376e2bfe2f213d212d083c6c5330a2"
@@ -9829,8 +9834,8 @@
     },
     {
       "path": "tests/native-xiaomi-product/run_host.py",
-      "bytes": 11185,
-      "sha256": "4b986f83662ed0ccfddf4cd498fdc07b6256b688b59121d8412bce13447dc877"
+      "bytes": 11924,
+      "sha256": "1c3cbc8583dd74ba92569482aa378733fdae7a3c547ce29ab7e639443bd712b4"
     },
     {
       "path": "tests/native-xiaomi-query-stability/NativeXiaomiQueryStabilityHostTest.java",
@@ -13076,9 +13081,9 @@
   },
   "host_validation_at_preparation": {
     "targeted_review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r4/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 8303,
-      "sha256": "3501b2de3d10db58a78cf5020dfd76946f952e0536110b22640f8e65ef9c069d"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r5/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 2419,
+      "sha256": "3fe4841675a7ba09be26504ab85d59d22043d17a7ef627724cbb7fbfac048835"
     },
     "full_current_host_suite_completed_at_preparation": false,
     "android_build_completed_at_preparation": false,
@@ -13089,12 +13094,12 @@
   "main_java_sources": 220,
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "034c16fccb1066eff256cce37248a53d300be0d1d073e6a4b4d1daaea0e16691",
+  "production_input_map_sha256": "765bff83c41047393d7cd556af56a5bac0880a1167957414a10056c3e0d0a9d5",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility.",
-  "source_parent_head": "6fdbf00cf8b1d05c1023c35616433c7f1980238f",
-  "source_parent_manifest_sha256": "1a439fe4b79966658d04f2b3c02ce7ec9aba4bf6020a94ad75d91fb23fcc1be3",
-  "source_snapshot_predecessor_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
+  "scope": "Reuse the exact canonical native AX bytes already produced during full validation, preserving all evidence, durability, publication fences and original deadlines.",
+  "source_parent_head": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
+  "source_parent_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
+  "source_snapshot_predecessor_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "inherited_source_behavior_metadata": {
@@ -13374,5 +13379,18 @@
       "sha256": "3501b2de3d10db58a78cf5020dfd76946f952e0536110b22640f8e65ef9c069d"
     },
     "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility."
+  },
+  "current_published_parent_heads": [
+    "eb1e89ac6112a5ef35f19be2285f5f9ec905b372"
+  ],
+  "current_native_ax_canonical_reuse": {
+    "review_inputs": {
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r5/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 2419,
+      "sha256": "3fe4841675a7ba09be26504ab85d59d22043d17a7ef627724cbb7fbfac048835"
+    },
+    "scope": "Reuse the exact canonical native AX bytes already produced during full validation, preserving all evidence, durability, publication fences and original deadlines.",
+    "phone_speedup_measured": false,
+    "publication_and_durability_guards_preserved": true
   }
 }

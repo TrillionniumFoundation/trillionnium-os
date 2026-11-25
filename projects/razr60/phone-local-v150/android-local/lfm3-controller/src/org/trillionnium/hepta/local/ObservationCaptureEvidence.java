@@ -29,8 +29,8 @@ final class ObservationCaptureEvidence {
     private final byte[] raw;
     private ObservationCaptureEvidence(Map<String,Object> receipt,byte[] persisted,String digest,String kind){
         need(NATIVE_AX.equals(kind)||NATIVE_AX_FORM_HISTORY.equals(kind)||NATIVE_AX_INPUT_HISTORY.equals(kind),"explicit native capture constructor");
-        this.kind=kind;this.receipt=freezeMap(receipt);binding=map(this.receipt,"binding");validate(this.receipt,kind);
-        byte[] expected=canonicalBytes(this.receipt);
+        this.kind=kind;this.receipt=freezeMap(receipt);binding=map(this.receipt,"binding");
+        byte[] expected=validate(this.receipt,kind);
         need(persisted!=null&&persisted.length>0&&persisted.length<=MAX_RECEIPT_BYTES
                 &&Arrays.equals(expected,persisted),"canonical persisted AX receipt bytes required");
         need(sha(digest)&&digest.equals(hash(persisted)),"actual persisted AX receipt hash differs");
@@ -41,19 +41,19 @@ final class ObservationCaptureEvidence {
     }
     /** Called before private create-only persistence; actual readback is still required. */
     static byte[] nativeAxBytes(Map<String,Object> receipt){
-        Map<String,Object> frozen=freezeMap(receipt);validate(frozen,NATIVE_AX);return canonicalBytes(frozen);
+        Map<String,Object> frozen=freezeMap(receipt);return validate(frozen,NATIVE_AX);
     }
     static ObservationCaptureEvidence fromSealedNativeAxFormHistory(Map<String,Object> receipt,byte[] persisted,String digest){
         return new ObservationCaptureEvidence(receipt,persisted,digest,NATIVE_AX_FORM_HISTORY);
     }
     static byte[] nativeAxFormHistoryBytes(Map<String,Object> receipt){
-        Map<String,Object> frozen=freezeMap(receipt);validate(frozen,NATIVE_AX_FORM_HISTORY);return canonicalBytes(frozen);
+        Map<String,Object> frozen=freezeMap(receipt);return validate(frozen,NATIVE_AX_FORM_HISTORY);
     }
     static ObservationCaptureEvidence fromSealedNativeAxInputHistory(Map<String,Object> receipt,byte[] persisted,String digest){
         return new ObservationCaptureEvidence(receipt,persisted,digest,NATIVE_AX_INPUT_HISTORY);
     }
     static byte[] nativeAxInputHistoryBytes(Map<String,Object> receipt){
-        Map<String,Object> frozen=freezeMap(receipt);validate(frozen,NATIVE_AX_INPUT_HISTORY);return canonicalBytes(frozen);
+        Map<String,Object> frozen=freezeMap(receipt);return validate(frozen,NATIVE_AX_INPUT_HISTORY);
     }
     boolean formHistory(){return NATIVE_AX_FORM_HISTORY.equals(kind);}
     boolean inputHistory(){return NATIVE_AX_INPUT_HISTORY.equals(kind);}
@@ -156,7 +156,7 @@ final class ObservationCaptureEvidence {
         e.put("grants_action_authority",false);e.put("business_completion_verified",false);
         return Collections.unmodifiableMap(e);
     }
-    private static void validate(Map<String,Object> r,String kind){
+    private static byte[] validate(Map<String,Object> r,String kind){
         final boolean form=NATIVE_AX_FORM_HISTORY.equals(kind),input=NATIVE_AX_INPUT_HISTORY.equals(kind),history=form||input;
         need((input?INPUT_SCHEMA:form?FORM_SCHEMA:SCHEMA).equals(r.get("schema"))&&kind.equals(r.get("kind")),"explicit native AX receipt kind/schema required");
         need(Boolean.FALSE.equals(r.get("visual_model"))&&Boolean.FALSE.equals(r.get("screenshot_present"))
@@ -235,7 +235,7 @@ final class ObservationCaptureEvidence {
         }else need(!r.containsKey("form_history")&&!r.containsKey("input_history")
                 &&!Boolean.TRUE.equals(r.get("historical_form_planning_only"))&&!Boolean.TRUE.equals(r.get("historical_empty_input_planning_only")),
                 "ordinary equal AX cannot hide history semantics");
-        canonicalBytes(r); // UTF-8, including real Chinese text and JSON escapes, is the byte limit.
+        return canonicalBytes(r); // Reuse these exact UTF-8 bytes; the full byte-limit check remains here.
     }
     private static void validateCensus(Map<String,Object> c){
         need(Boolean.TRUE.equals(c.get("complete"))&&Boolean.FALSE.equals(c.get("truncated")),"complete AX census required");
