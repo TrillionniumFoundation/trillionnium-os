@@ -3869,7 +3869,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&nativeAxMode.background==request.background&&nativeObservationRecheckAllowed(request,graph);
     }
     private static final class NativeAxProduct {
-        final CaptureIdentity identity;final Graph original;final String id=UUID.randomUUID().toString().replace("-","");
+        final CaptureIdentity identity;final Graph original;final String id;
         final Object mode;final int publicationRecheckCount;final Map<String,Object> previousPair;
         ObservationPairSeal seal;ObservationCaptureEvidence capture;File path;
         Map<String,Object> first,second,formHistory,inputHistory;String firstIme,secondIme;
@@ -3878,10 +3878,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         ObservationEventWatermark completed;long completedAt=-1,persistedAt=-1,windowStarted=-1,windowCompleted=-1;
         boolean windowChecked,windowMatched,published;String stage="ax_seal_graph";
         final List<Map<String,Object>> rejections=new ArrayList<Map<String,Object>>();
-        NativeAxProduct(CaptureIdentity identity,Graph original,Object mode){this(identity,original,mode,0,null);}
-        NativeAxProduct(CaptureIdentity identity,Graph original,Object mode,int count,Map<String,Object> previous){
-            this.identity=identity;this.original=original;this.mode=mode;publicationRecheckCount=count;
-            previousPair=previous==null?null:ObservationCaptureEvidence.freezeMap(previous);
+        NativeAxProduct(CaptureIdentity identity,Graph original,Object mode){
+            this.identity=identity;this.original=original;this.mode=mode;
+            id=UUID.randomUUID().toString().replace("-","");publicationRecheckCount=0;previousPair=null;
+        }
+        NativeAxProduct(NativeAxProduct previous,Map<String,Object> evidence){
+            identity=previous.identity;original=previous.original;mode=previous.mode;id=previous.id;
+            publicationRecheckCount=1;previousPair=ObservationCaptureEvidence.freezeMap(evidence);
+            seal=previous.seal;capture=previous.capture;persistedAt=previous.persistedAt;
         }
         void reject(String at,String reason,ObservationEventWatermark watermark,long now){
             if(rejections.size()>=6)return;
@@ -3931,9 +3935,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("publication_full_graph_recheck_reason",publicationRecheckCount==0?null:"late_typed_content");
             e.put("publication_original_pair",previousPair);
             e.put("event_fence_complete_census_endpoint_elapsed_ms",completedAt);
-            e.put("events_after_complete_census_admitted_endpoint","final_published_complete_census");
+            e.put("events_after_complete_census_admitted_endpoint",publicationRecheckCount==0?
+                    "final_published_complete_census":"post_persistence_complete_census");
             e.put("screenshot_observed",false);e.put("screenshot_path",null);
             e.put("screenshot_is_diagnostic_only",true);e.put("events_after_complete_census_admitted",false);
+            if(publicationRecheckCount!=0){
+                e.put("publication_event_watermark",nativeAxWatermark(publicationWatermark));
+                e.put("publication_window_matched",windowMatched);
+            }
             if(capture.formHistory()){
                 e.put("historical_form_planning_only",true);e.put("published_pair_is_current_tree_claimed",false);
                 e.put("form_history",capture.formHistoryEvidence());
@@ -4074,9 +4083,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void submitNativeAxPair(final ObservationRequest request,final NativeAxProduct product){
         final CaptureIdentity identity=product.identity;
         try{observationIo.execute(new Runnable(){public void run(){
-            Graph after=null;boolean retry=false;String error=null;
+            Graph after=null;MobiMindPrivateFiles.Read persisted=null;boolean retry=false;String error=null;
             try{
                 requireObservationWork(request);
+                if(product.publicationRecheckCount!=0){
+                    product.stage="ax_publication_receipt_verify";request.phase(product.stage);
+                    persisted=MobiMindPrivateFiles.read(product.path,ObservationCaptureEvidence.MAX_RECEIPT_BYTES,true);
+                    product.capture.requirePersistedBytes(persisted.bytes);persisted.unchangedPath();
+                    requireObservationWork(request);
+                }
                 product.stage=product.publicationRecheckCount==0?"ax_seal_graph":"ax_publication_graph_recheck";
                 request.phase(product.stage);
                 final ObservationEventWatermark start=request.eventWatermark();
@@ -4092,11 +4107,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.first=nativeAxCensus(product.original);product.second=nativeAxCensus(after);
                     product.firstIme=product.original.state.imeVisibility.name().toLowerCase(java.util.Locale.ROOT);
                     product.secondIme=after.state.imeVisibility.name().toLowerCase(java.util.Locale.ROOT);
-                    product.formHistory=nativeAxFormHistory(request,product,after);
+                    if(product.publicationRecheckCount==0)product.formHistory=nativeAxFormHistory(request,product,after);
                     boolean equal=request.captured==product.original&&identity.matches(after)&&nativeObservationRecheckAllowed(request,after)
                             &&identity.frozenWindow!=null&&identity.frozenWindow.matches(frozenObservationWindow(after))
                             &&nativeAxEqual(product.first,product.second);
-                    if(!equal&&product.formHistory==null)product.inputHistory=nativeAxInputHistory(request,product,after);
+                    if(!equal&&product.formHistory==null&&product.publicationRecheckCount==0)
+                        product.inputHistory=nativeAxInputHistory(request,product,after);
                     if(!equal&&!product.historical()){request.note(ObservationDiagnostics.Event.AX_GRAPH_CHANGED);retry=true;
                         product.reject(product.stage,"graph_changed",request.eventWatermark(),SystemClock.elapsedRealtime());
                         recordNativeFullGraphChange(request,product.stage,product.original,after);}
@@ -4111,6 +4127,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(!nativeTextObservationAllowed(request,request.captured)||request.nativeAxMode!=product.mode
                             ||request.captured!=product.original)
                         throw new StaleObservation("文本AX观察的模型或任务绑定已退休");
+                    if(product.publicationRecheckCount!=0){
+                        product.capture=product.capture.withPublicationRecheck(product.second,nativeAxWatermark(start),
+                                nativeAxWatermark(product.completed),product.persistedAt,product.completedAt);
+                    }else{
                     final long sealed=SystemClock.elapsedRealtime();
                     product.seal=new ObservationPairSeal(identity,request.readAuthorization,after.readStartedElapsedMs,
                             after.readCompletedElapsedMs,sealed,product.completed.events,product.completed.unknownEvents);
@@ -4150,15 +4170,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         MobiMindPrivateFiles.writeNew(path,bytes);product.path=path;
                         requireObservationWork(request);
                         MobiMindPrivateFiles.Read read=MobiMindPrivateFiles.read(path,ObservationCaptureEvidence.MAX_RECEIPT_BYTES,true);
+                        persisted=read;
                         product.capture=product.inputHistory!=null?
                                 ObservationCaptureEvidence.fromSealedNativeAxInputHistory(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes)):
                                 product.formHistory==null?
                                 ObservationCaptureEvidence.fromSealedNativeAx(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes)):
                                 ObservationCaptureEvidence.fromSealedNativeAxFormHistory(receipt,read.bytes,ObservationCaptureEvidence.hash(read.bytes));
                         read.unchangedPath();product.persistedAt=SystemClock.elapsedRealtime();requireObservationWork(request);
+                    }
+                    }
+                    if(!retry){
                         product.stage="ax_publication_window";request.phase(product.stage);product.windowStarted=SystemClock.elapsedRealtime();
                         FrozenObservationWindow liveWindow=readFrozenObservationWindow(request,identity);
                         product.windowCompleted=SystemClock.elapsedRealtime();requireObservationWork(request);
+                        persisted.unchangedPath();
                         product.windowChecked=true;product.windowMatched=identity.frozenWindow.matches(liveWindow);
                         if(!product.windowMatched){retry=true;
                             product.reject(product.stage,"window_mismatch",request.eventWatermark(),SystemClock.elapsedRealtime());}
@@ -4223,9 +4248,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // No other refusal (including a window mismatch) is creditable as content.
         for(Map<String,Object> row:product.rejections)
             if(!"late_content".equals(row.get("reason")))return false;
-        final NativeAxProduct replacement=new NativeAxProduct(product.identity,product.original,product.mode,1,
-                product.previousEvidence(now,admission));
+        final NativeAxProduct replacement=new NativeAxProduct(product,product.previousEvidence(now,admission));
         if(!observationIoBusy.compareAndSet(false,true))return false;
+        // Transfer the one already verified A/B file, never delete/rewrite it as C.
+        replacement.path=product.path;product.path=null;
         request.nativeAxPublicationRecheckAttempted=true;
         request.note(ObservationDiagnostics.Event.AX_PUBLICATION_RECHECK_STARTED);request.worker(true);
         product.close();submitNativeAxPair(request,replacement);return true;
@@ -4261,6 +4287,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(product.seal==null||product.seal.identity!=product.identity
                     ||product.seal.authorization!=taskAuthorization||product.seal.authorization!=request.readAuthorization
                     ||product.capture==null||product.path==null||!product.windowChecked||!product.windowMatched
+                    ||product.capture.publicationRechecked()!=(product.publicationRecheckCount!=0)
                     ||product.windowCompleted<product.windowStarted
                     ||product.windowStarted<product.persistedAt||product.persistedAt<product.seal.sealedAt)
                 throw new IllegalStateException("AX完整封存或发布窗口证据缺失");

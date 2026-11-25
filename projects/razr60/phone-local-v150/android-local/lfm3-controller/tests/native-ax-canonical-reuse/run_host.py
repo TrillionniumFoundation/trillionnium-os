@@ -18,8 +18,8 @@ PKG = Path("src/org/trillionnium/hepta/local")
 TEST = Path("tests/native-ax-canonical-reuse")
 JSON_SHA = "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
 FIXTURE_SHA = "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
-BASE_SHA = "e7f5ba2bf975f5a39ab47909176912ec1e825c32fb51ac778ee6a76e4abcf39d"
-CURRENT_SHA = "b3c99f53c94b662ee35ffa26054f22f647fd2744d34edbc67d847afe9a05e651"
+BASE_SHA = "96a0099759222c59b78950230eae842ebd274e42035746ece4b9e0cf50e94a19"
+CURRENT_SHA = "9a1677456b4f1435416649fe01d2d4690af9ffe072946f8688a54bce81fc8d86"
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -70,13 +70,13 @@ def main():
     args = ap.parse_args()
     source, out, jdk, jar = [getattr(args, k).resolve() for k in ("source", "output", "java_home", "json_jar")]
     need(not out.exists() and source != out and source not in out.parents, "fresh output outside source")
-    helper = source / TEST / "protected_canonical_reuse.py"
+    helper = source / "tests/native-ax-observation/protected_publication.py"
     capture = source / PKG / "ObservationCaptureEvidence.java"
     fixture = source / "tests/native-xiaomi-search-input/real-censuses.json"
     need(meta(capture)["sha256"] == CURRENT_SHA, "exact reviewed current capture source")
     need(meta(jar)["sha256"] == JSON_SHA and meta(jar)["bytes"] == 78332, "actual JSON dependency pin")
     need(meta(fixture)["sha256"] == FIXTURE_SHA, "exact existing non-private recorded fixture")
-    predecessor = runpy.run_path(str(helper))["predecessor"]
+    predecessor = runpy.run_path(str(helper))["without_canonical"]
     current = capture.read_bytes()
     baseline = predecessor(current)
     need(sha(baseline) == BASE_SHA and predecessor(baseline) == baseline, "complete baseline inverse")

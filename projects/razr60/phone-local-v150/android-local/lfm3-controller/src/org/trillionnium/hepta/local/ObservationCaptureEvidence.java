@@ -25,16 +25,76 @@ final class ObservationCaptureEvidence {
             +"native_goal_sha256 observation_id package background_generation app_tree_sha256 observation_state_sha256 "
             +"display_id window_id rotation width height left top right bottom captured_elapsed_ms profile_window profile_action_identity original_census_captured_elapsed_ms");
     final String kind,receiptSha256;
-    private final Map<String,Object> receipt,binding;
+    private final Map<String,Object> receipt,binding,publicationRecheck;
     private final byte[] raw;
     private ObservationCaptureEvidence(Map<String,Object> receipt,byte[] persisted,String digest,String kind){
         need(NATIVE_AX.equals(kind)||NATIVE_AX_FORM_HISTORY.equals(kind)||NATIVE_AX_INPUT_HISTORY.equals(kind),"explicit native capture constructor");
-        this.kind=kind;this.receipt=freezeMap(receipt);binding=map(this.receipt,"binding");
+        this.kind=kind;this.receipt=freezeMap(receipt);binding=map(this.receipt,"binding");publicationRecheck=null;
         byte[] expected=validate(this.receipt,kind);
         need(persisted!=null&&persisted.length>0&&persisted.length<=MAX_RECEIPT_BYTES
                 &&Arrays.equals(expected,persisted),"canonical persisted AX receipt bytes required");
         need(sha(digest)&&digest.equals(hash(persisted)),"actual persisted AX receipt hash differs");
         raw=persisted.clone();receiptSha256=digest;
+    }
+    /** Retain the already persisted A/B bytes. C proves publication currentness only;
+     * it cannot replace the original observation ID, capture clock or action checks. */
+    private ObservationCaptureEvidence(ObservationCaptureEvidence original,Map<String,Object> recheck){
+        kind=original.kind;receipt=original.receipt;binding=original.binding;raw=original.raw;
+        receiptSha256=original.receiptSha256;publicationRecheck=freezeMap(recheck);
+    }
+    void requirePersistedBytes(byte[] persisted){
+        need(persisted!=null&&Arrays.equals(raw,persisted)&&receiptSha256.equals(hash(persisted)),
+                "original persisted AX receipt changed before publication recheck");
+    }
+    boolean publicationRechecked(){return publicationRecheck!=null;}
+    ObservationCaptureEvidence withPublicationRecheck(Map<String,Object> current,Map<String,Object> start,
+            Map<String,Object> completed,long persistedAt,long endpoint){
+        need(NATIVE_AX.equals(kind)&&publicationRecheck==null,"one ordinary AX publication recheck required");
+        Map<String,Object> census=freezeMap(current),first=map(receipt,"first");validateCensus(census);
+        for(String key:new String[]{"identity","nodes","reported_windows","window","profile_owner"})
+            need(canonical(first.get(key)).equals(canonical(census.get(key))),"complete publication census differs: "+key);
+        long began=num(census,"read_started_elapsed_ms"),ended=num(census,"read_completed_elapsed_ms");
+        need(persistedAt>=num(receipt,"sealed_elapsed_ms")&&began>=persistedAt&&ended>=began
+                &&endpoint>=ended&&endpoint<num(receipt,"request_deadline_elapsed_ms"),
+                "publication recheck must be a fresh complete read within the original deadline");
+        onlyContent(map(receipt,"second_completed_watermark"),start);onlyContent(start,completed);
+        onlyContent(map(receipt,"capture_watermark"),completed);
+        Map<String,Object> proof=new TreeMap<String,Object>();
+        proof.put("schema","hepta.native-ax-publication-recheck.v1");
+        proof.put("original_receipt_sha256",receiptSha256);proof.put("original_observation_id",binding.get("observation_id"));
+        proof.put("original_captured_elapsed_ms",binding.get("captured_elapsed_ms"));
+        proof.put("receipt_persisted_elapsed_ms",persistedAt);
+        proof.put("graph_started_elapsed_ms",began);proof.put("graph_completed_elapsed_ms",ended);
+        proof.put("complete_census_endpoint_elapsed_ms",endpoint);
+        proof.put("start_watermark",start);proof.put("completed_watermark",completed);
+        proof.put("complete_census_sha256",hash(canonicalBytes(census)));
+        proof.put("full_identity_nodes_windows_profile_owner_equal",true);
+        proof.put("receipt_rewritten",false);proof.put("grants_action_authority",false);
+        return new ObservationCaptureEvidence(this,proof);
+    }
+    private void requirePublicationRecheck(Map<String,Object> e){
+        if(publicationRecheck==null){
+            need(!e.containsKey("publication_recheck"),"unsealed publication recheck metadata");return;
+        }
+        need(canonical(publicationRecheck).equals(canonical(e.get("publication_recheck")))
+                &&num(e,"publication_full_graph_recheck_count")==1
+                &&"post_persistence_complete_census".equals(e.get("events_after_complete_census_admitted_endpoint"))
+                &&Boolean.FALSE.equals(e.get("events_after_complete_census_admitted"))
+                &&Boolean.TRUE.equals(e.get("publication_window_matched")),"actual publication recheck proof differs");
+        need(canonical(publicationRecheck.get("completed_watermark")).equals(canonical(e.get("publication_event_watermark"))),
+                "publication event watermark differs from the complete recheck");
+        long endpoint=num(publicationRecheck,"complete_census_endpoint_elapsed_ms");
+        long windowStart=num(e,"publication_check_started_elapsed_ms"),windowEnd=num(e,"publication_check_completed_elapsed_ms");
+        long published=num(e,"published_elapsed_ms");
+        need(num(e,"capture_requested_elapsed_ms")==num(binding,"captured_elapsed_ms")
+                &&num(e,"capture_age_at_publication_ms")==published-num(binding,"captured_elapsed_ms")
+                &&num(e,"pair_graph_started_elapsed_ms")==num(map(receipt,"second"),"read_started_elapsed_ms")
+                &&num(e,"pair_graph_completed_elapsed_ms")==num(map(receipt,"second"),"read_completed_elapsed_ms")
+                &&num(e,"pair_sealed_elapsed_ms")==num(receipt,"sealed_elapsed_ms")
+                &&num(e,"receipt_persisted_and_hashed_elapsed_ms")==num(publicationRecheck,"receipt_persisted_elapsed_ms")
+                &&num(e,"event_fence_complete_census_endpoint_elapsed_ms")==endpoint
+                &&windowStart>=endpoint&&windowEnd>=windowStart&&published>=windowEnd
+                &&published<num(receipt,"request_deadline_elapsed_ms"),"publication recheck clocks or original pair changed");
     }
     static ObservationCaptureEvidence fromSealedNativeAx(Map<String,Object> receipt,byte[] persisted,String digest){
         return new ObservationCaptureEvidence(receipt,persisted,digest,NATIVE_AX);
@@ -115,6 +175,7 @@ final class ObservationCaptureEvidence {
         need(protectedTarget,"history cannot expose a recommendation or unrelated target");
     }
     void requireHistoricalPublication(Map<String,Object> e){
+        requirePublicationRecheck(e);
         if(inputHistory()){requireInputHistoryPublication(e);return;}
         if(!formHistory())return;
         need(metadataSchema().equals(e.get("schema"))&&"complete_native_ax_form_history".equals(e.get("mode"))
@@ -151,6 +212,7 @@ final class ObservationCaptureEvidence {
         e.put("receipt_sha256",receiptSha256);e.put("receipt_bytes",raw.length);
         e.put("screenshot_present",false);e.put("screen_sha256",null);
         e.put("full_two_censuses",true);e.put("publication_refreshes_capture_age",false);
+        if(publicationRecheck!=null)e.put("publication_recheck",publicationRecheck);
         if(formHistory()){e.put("historical_form_planning_only",true);e.put("published_pair_is_current_tree_claimed",false);e.put("form_history",formHistoryEvidence());}
         if(inputHistory()){e.put("historical_empty_input_planning_only",true);e.put("published_pair_is_current_tree_claimed",false);e.put("input_history",inputHistoryEvidence());}
         e.put("grants_action_authority",false);e.put("business_completion_verified",false);
