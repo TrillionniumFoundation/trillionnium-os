@@ -25,6 +25,9 @@ public final class PublicPersonalNotesAbsenceRecovery {
     public static final String REQUEST_SCHEMA="hepta.personal-notes-absence-request.v1";
     public static final String DRAINED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v2";
     public static final String WORKFLOW_CLOSE_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v3";
+    private static final String WORKFLOW_RELEASED_REPLY_LOST_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v12-workflow-released-reply-lost";
+    private static final String WORKFLOW_RELEASED_REPLY_LOST_SOURCE="fresh_workflow_released_reply_lost_personal_notes_absence_with_preserved_failure";
+    private static final String WORKFLOW_RELEASED_REPLY_LOST_PROOF_SCHEMA="hepta.personal-notes-workflow-released-reply-lost-current-absence.v1";
     private static final String WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v11-workflow-foreign-history";
     private static final String WORKFLOW_FOREIGN_HISTORY_SOURCE="fresh_workflow_foreign_history_personal_notes_absence_with_preserved_failure";
     private static final String WORKFLOW_FOREIGN_HISTORY_PROOF_SCHEMA="hepta.personal-notes-workflow-foreign-history-current-absence.v1";
@@ -69,7 +72,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final String requestId,taskId,generation,ownerSha256,displayName,journalSha256,originalsSha256,currentControlSha256;
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final java.util.Set<Integer> recordedTaskIds;
-        public final boolean postModelDrained,workflowCloseFailed,workflowRetirementRefused,workflowPartialRetirement,workflowForeignHistoryRetirement,cancelledAfterActions;
+        public final boolean postModelDrained,workflowCloseFailed,workflowRetirementRefused,workflowPartialRetirement,workflowForeignHistoryRetirement,workflowReleasedReplyLost,cancelledAfterActions;
         private final boolean prelaunchCreateFailure;
         private final boolean releasedTerminal;
         public final boolean releasedBeforeModel,initializationFailed;
@@ -154,11 +157,20 @@ public final class PublicPersonalNotesAbsenceRecovery {
             // still requires the complete one-step drained model proof and fresh
             // independent absence. It never promotes the failed business result.
             releasedTerminal="RELEASED".equals(string(terminal,"state"));
+            workflowReleasedReplyLost=workflowCloseFailed&&releasedTerminal
+                    &&"后台响应提前结束".equals(cleanup.opt("cleanup_error"))
+                    &&Boolean.FALSE.equals(cleanup.get("broker_process_exit_observed"))&&cleanup.get("broker_process_exit_code")==JSONObject.NULL
+                    &&"ACTIVE".equals(cleanup.getJSONObject("last_broker_response").opt("state"))
+                    &&"state".equals(cleanup.getJSONObject("last_broker_response").opt("operation"));
             need((!releasedTerminal||postModelDrained||releasedBeforeModel||initializationFailed)&&(!releasedBeforeModel||releasedTerminal),"NOTES_RELEASED_MODEL_STATE");
             need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))&&generation.equals(string(terminal,"generation"))
                     &&number(terminal,"display_id")==displayId&&(releasedTerminal||"CLEANUP_UNKNOWN".equals(string(terminal,"state")))
                     &&publicScope.sha256.equals(string(terminal,"display_scope_sha256")),"NOTES_BROKER_TERMINAL_BINDING");
-            if(releasedTerminal){
+            if(workflowReleasedReplyLost){
+                yes(terminal,"release_confirmed");yes(broker,"eof_seen");
+                no(cleanup,"broker_process_exit_observed");
+                need(cleanup.get("broker_process_exit_code")==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_OLD_EXIT");
+            }else if(releasedTerminal){
                 yes(terminal,"release_confirmed");yes(cleanup,"broker_process_exit_observed");yes(broker,"eof_seen");
                 need(number(cleanup,"broker_process_exit_code")== (initializationFailed?70:0),"NOTES_RELEASED_BROKER_EXIT");
             }else no(terminal,"release_confirmed");
@@ -174,8 +186,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(generation.equals(string(last,"generation"))&&number(last,"display_id")==displayId
                     &&publicScope.sha256.equals(string(last,"display_scope_sha256"))&&number(last,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION,
                     "NOTES_LAST_RESPONSE_BINDING");
-            need(notesCustody(last.getJSONObject("personal_notes_cleanup"),releasedTerminal&&!releasedBeforeModel)==targetUid,"NOTES_TARGET_UID_CHANGED");
-            if(releasedTerminal&&!releasedBeforeModel){
+            need(notesCustody(last.getJSONObject("personal_notes_cleanup"),releasedTerminal&&!releasedBeforeModel&&!workflowReleasedReplyLost)==targetUid,"NOTES_TARGET_UID_CHANGED");
+            if(releasedTerminal&&!releasedBeforeModel&&!workflowReleasedReplyLost){
                 need(same(custody,last.getJSONObject("personal_notes_cleanup")),"NOTES_RELEASED_CUSTODY_CHANGED");
                 yes(last,"public_scope_closing");
             }
@@ -212,6 +224,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         &&Boolean.TRUE.equals(launch.get("activity_info_rechecked_before_dispatch")),"NOTES_ORIGINAL_LAUNCH_TARGET");
             }
             if(cancelledAfterActions)requireCancelledBootstrap(bootstrap.getJSONObject("last_broker_response"),last,terminal,ids);
+            else if(workflowReleasedReplyLost)requireWorkflowReleasedReplyLostBootstrap(bootstrap.getJSONObject("last_broker_response"),
+                    object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
             else if(workflowForeignHistoryRetirement)requireWorkflowForeignHistoryBootstrap(bootstrap.getJSONObject("last_broker_response"),
                     object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
             else if(workflowPartialRetirement)requireWorkflowPartialRetirementBootstrap(bootstrap.getJSONObject("last_broker_response"),
@@ -1113,6 +1127,136 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(ProfileIdentity.uuid(string(last,"request_id"))&&number(last.getJSONObject("public_task_location"),"observed_elapsed_ms")<=started,
                     "NOTES_WORKFLOW_CLOSE_CLOCK");
         }
+        /** A released broker terminal is only historical output when the App lost
+         * the authenticated close reply. Keep its old unknown exit and ACTIVE
+         * response intact; only validate() can accept independent current absence. */
+        private void requireWorkflowReleasedReplyLostBootstrap(JSONObject early,JSONObject createdResponse,JSONObject last,
+                JSONObject terminal,java.util.Set<Integer> ids)throws Exception{
+            JSONObject cleanup=object(originals.get("cleanup")),result=object(originals.get("result"));
+            need(workflowReleasedReplyLost&&!prelaunchCreateFailure&&releasedTerminal
+                    &&!workflowRetirementRefused&&!workflowPartialRetirement&&!workflowForeignHistoryRetirement
+                    &&"后台响应提前结束".equals(string(cleanup,"cleanup_error"))
+                    &&cleanup.get("broker_process_exit_code")==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_KIND");
+            no(cleanup,"broker_process_exit_observed","cleanup_known");
+            need("client_close".equals(string(terminal,"reason"))&&ids.size()==2,"NOTES_WORKFLOW_LOST_CLOSE_TERMINAL");
+            for(String key:new String[]{"boot_count_read_retirement_failure","owned_single_task","profile_cleanup",
+                    "profile_last_leaf_validation","profile_first_root_refusal","profile_permission_first_read_mismatch"})
+                need(terminal.get(key)==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_PROFILE_STATE");
+            no(terminal,"profile_custody_retained");
+            JSONObject profileDiagnostics=terminal.getJSONObject("profile_cleanup_diagnostics");
+            need("hepta.profile-cleanup-diagnostics.v1".equals(string(profileDiagnostics,"schema"))
+                    &&profileDiagnostics.get("first_failure")==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_PROFILE_STATE");
+            no(profileDiagnostics,"diagnostics_grant_authority","provides_cleanup_proof","allows_input_or_model_resumption");
+            JSONObject finalCustody=terminal.getJSONObject("personal_notes_cleanup");
+            need(number(finalCustody,"absence_reads")==2&&number(finalCustody,"pending_owned_reads")==0,
+                    "NOTES_WORKFLOW_LOST_CLOSE_CUSTODY");
+            JSONArray finalRows=finalCustody.getJSONArray("actual_observed_tasks");
+            need(finalRows.length()==2,"NOTES_WORKFLOW_LOST_CLOSE_TASK_SET");
+            JSONObject retirement=finalCustody.getJSONObject("token_retirement");
+            need("hepta.personal-notes-token-retirement.v1".equals(string(retirement,"schema"))
+                    &&number(retirement,"pre_release_absence_reads")==2,"NOTES_WORKFLOW_LOST_CLOSE_RETIREMENT");
+            yes(retirement,"framework_process_cleanup_possible");
+            no(retirement,"numeric_task_id_authority","detached_recent_removal_supported");
+            JSONArray attempted=retirement.getJSONArray("attempted_task_ids"),returned=retirement.getJSONArray("returned_task_ids");
+            JSONArray initialRows=early.getJSONObject("personal_notes_cleanup").getJSONArray("actual_observed_tasks");
+            need(attempted.length()==1&&returned.length()==1&&initialRows.length()==1
+                    &&numberAt(attempted,0)==numberAt(returned,0)&&numberAt(attempted,0)==number(initialRows.getJSONObject(0),"task_id"),
+                    "NOTES_WORKFLOW_LOST_CLOSE_RETIREMENT_TARGET");
+            long terminalAt=number(result,"terminal_decided_elapsed_ms"),lastAt=number(last.getJSONObject("public_task_location"),"observed_elapsed_ms");
+            long retirementDeadline=number(retirement,"deadline_elapsed_ms");
+            need(retirementDeadline>lastAt&&retirementDeadline<=expires&&terminalAt<=retirementDeadline,
+                    "NOTES_WORKFLOW_LOST_CLOSE_RETIREMENT_CLOCK");
+            JSONObject surface=terminal.getJSONObject("public_surface_detach");
+            need("hepta.public-own-group.surface-retirement.v1".equals(string(surface,"schema"))
+                    &&"API_RETURNED_UNVERIFIED".equals(string(surface,"state"))
+                    &&"FROZEN_FRAMEWORK_IDENTITY".equals(string(surface,"identity_source"))
+                    &&string(surface,"failure_type").isEmpty(),"NOTES_WORKFLOW_LOST_CLOSE_SURFACE");
+            yes(surface,"admission_irrevocably_retired","worker_claimed","identity_read_completed","adapter_entered",
+                    "api_attempted","api_returned","worker_finished");
+            no(surface,"late_create_worker_claimed","deadline_exceeded","surface_stopped_verified",
+                    "provides_task_or_display_cleanup_proof","allows_input_or_model_resumption","shutdown_depends_on_fresh_display_binder_query");
+            long retiredAt=number(surface,"began_elapsed_ms"),surfaceEnd=number(surface,"ended_elapsed_ms");
+            need(retiredAt>=lastAt&&surfaceEnd>=retiredAt&&surfaceEnd<=terminalAt,"NOTES_WORKFLOW_LOST_CLOSE_SURFACE_CLOCK");
+            JSONObject screen=terminal.getJSONObject("public_screen_lease");
+            need("hepta.public-own-group.screen-lease.v1".equals(string(screen,"schema"))
+                    &&generation.equals(string(screen,"generation"))&&number(screen,"display_id")==displayId
+                    &&number(screen,"expires_elapsed_ms")==expires&&number(screen,"display_group_id")>1
+                    &&number(screen,"wake_lock_flags")==10&&"PUBLIC_SCREEN_LEASE_RETIRED".equals(string(screen,"failure")),
+                    "NOTES_WORKFLOW_LOST_CLOSE_SCREEN");
+            yes(screen,"acquire_entered","acquire_returned","admission_retired","release_entered","release_returned");
+            no(screen,"grants_cleanup_or_business_success");
+            need(number(screen,"acquired_elapsed_ms")>=created&&number(screen,"acquired_elapsed_ms")<=lastAt
+                    &&number(screen,"released_elapsed_ms")>=retiredAt&&number(screen,"released_elapsed_ms")<=terminalAt,
+                    "NOTES_WORKFLOW_LOST_CLOSE_SCREEN_CLOCK");
+            JSONObject policy=terminal.getJSONObject("public_policy_diagnostics"),notes=terminal.getJSONObject("personal_notes_task_info_diagnostics");
+            need("hepta.public-policy-diagnostics.v1".equals(string(policy,"schema"))
+                    &&"hepta.notes-taskinfo-diagnostics.v1".equals(string(notes,"schema"))
+                    &&notes.get("first_cleanup_failure")==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_DIAGNOSTICS");
+            no(policy,"diagnostics_grant_authority","provides_cleanup_proof");no(notes,"diagnostics_grant_authority","provides_cleanup_proof");
+            JSONObject policyFailure=policy.getJSONObject("first_failure"),runtimeFailure=notes.getJSONObject("first_runtime_failure");
+            need("SCREEN_LEASE".equals(string(policyFailure,"phase"))
+                    &&"java.io.IOException".equals(string(policyFailure,"exception_class"))
+                    &&"java.io.IOException".equals(string(policyFailure,"cause_class"))
+                    &&number(policyFailure,"reflection_wrapper_count")==0
+                    &&"PUBLIC_SCREEN_LEASE_RETIRED".equals(string(policyFailure,"category"))
+                    &&"runtime_policy_check".equals(string(runtimeFailure,"phase"))
+                    &&"java.io.IOException".equals(string(runtimeFailure,"exception_class"))
+                    &&"PUBLIC_SCREEN_LEASE_RETIRED".equals(string(runtimeFailure,"reason"))
+                    &&runtimeFailure.get("actual_root_read_failure")==JSONObject.NULL,"NOTES_WORKFLOW_LOST_CLOSE_DIAGNOSTICS");
+            need(number(policyFailure,"observed_elapsed_ms")>=retiredAt&&number(policyFailure,"observed_elapsed_ms")<=terminalAt
+                    &&number(runtimeFailure,"observed_elapsed_ms")>=retiredAt&&number(runtimeFailure,"observed_elapsed_ms")<=terminalAt,
+                    "NOTES_WORKFLOW_LOST_CLOSE_DIAGNOSTIC_CLOCK");
+            java.util.Set<String> requests=new TreeSet<String>();long prior=created;
+            for(int stage=0;stage<3;stage++){
+                JSONObject response=stage==0?early:stage==1?createdResponse:last;
+                need(number(response,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION&&generation.equals(string(response,"generation"))
+                        &&number(response,"display_id")==displayId&&publicScope.sha256.equals(string(response,"display_scope_sha256"))
+                        &&"ACTIVE".equals(string(response,"state"))&&(stage==0?"launch":stage==1?"notes.create":"state").equals(string(response,"operation"))
+                        &&ProfileIdentity.uuid(string(response,"request_id"))&&requests.add(string(response,"request_id"))
+                        &&!response.has("error")&&!response.has("terminal_reason"),"NOTES_WORKFLOW_LOST_CLOSE_RESPONSE");
+                yes(response,"ok");if(stage<2)yes(response,"dispatched");else no(response,"dispatched");
+                no(response,"public_scope_admission_retired","public_scope_closing");
+                JSONObject custody=response.getJSONObject("personal_notes_cleanup"),location=response.getJSONObject("public_task_location");
+                need(notesCustody(custody,false)==targetUid&&"hepta.public-personal-notes-cleanup.v2".equals(string(custody,"schema")),
+                        "NOTES_WORKFLOW_LOST_CLOSE_ACTIVE_CUSTODY");
+                yes(custody,"custodian_retained");
+                no(custody,"identity_unknown","pre_release_tasks_verified","release_api_entered","release_api_returned",
+                        "display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved","no_display_create_attempted");
+                need(number(custody,"absence_reads")==0&&number(custody,"pending_owned_reads")==0&&string(custody,"failure").isEmpty()
+                        &&string(custody,"pre_release_recents_sha256").isEmpty()&&string(custody,"final_recents_sha256").isEmpty()
+                        &&string(custody,"initial_recents_sha256").equals(string(finalCustody,"initial_recents_sha256")),
+                        "NOTES_WORKFLOW_LOST_CLOSE_ACTIVE_CUSTODY");
+                JSONObject oldPolicy=response.getJSONObject("public_policy_diagnostics"),oldNotes=response.getJSONObject("personal_notes_task_info_diagnostics");
+                need("hepta.public-policy-diagnostics.v1".equals(string(oldPolicy,"schema"))&&oldPolicy.get("first_failure")==JSONObject.NULL
+                        &&"hepta.notes-taskinfo-diagnostics.v1".equals(string(oldNotes,"schema"))
+                        &&oldNotes.get("first_runtime_failure")==JSONObject.NULL&&oldNotes.get("first_cleanup_failure")==JSONObject.NULL,
+                        "NOTES_WORKFLOW_LOST_CLOSE_ACTIVE_DIAGNOSTICS");
+                no(oldPolicy,"diagnostics_grant_authority","provides_cleanup_proof");no(oldNotes,"diagnostics_grant_authority","provides_cleanup_proof");
+                need("hepta.public-own-group.task-location.v1".equals(string(location,"schema"))&&generation.equals(string(location,"generation"))
+                        &&number(location,"display_id")==displayId&&number(location,"target_user_id")==0
+                        &&number(location,"observed_elapsed_ms")>=prior&&number(location,"observed_elapsed_ms")<=lastAt,
+                        "NOTES_WORKFLOW_LOST_CLOSE_RESPONSE_CLOCK");
+                no(location,"task_mutation_authority","retired","physical_user_activity_frozen","recents_unchanged_claimed");
+                prior=number(location,"observed_elapsed_ms");JSONArray oldRows=custody.getJSONArray("actual_observed_tasks");
+                need(oldRows.length()==(stage==0?1:2),"NOTES_WORKFLOW_LOST_CLOSE_TASK_SET");
+                java.util.Set<Integer> oldIds=new TreeSet<Integer>();
+                for(int i=0;i<oldRows.length();i++){JSONObject row=oldRows.getJSONObject(i);long task=number(row,"task_id");boolean found=false;
+                    need(task>0&&task<=Integer.MAX_VALUE&&oldIds.add((int)task),"NOTES_WORKFLOW_LOST_CLOSE_TASK_SET");
+                    for(int n=0;n<finalRows.length();n++)if(task==number(finalRows.getJSONObject(n),"task_id")){
+                        need(!found&&same(row,finalRows.getJSONObject(n)),"NOTES_WORKFLOW_LOST_CLOSE_IDENTITY_CHANGED");found=true;}
+                    need(found,"NOTES_WORKFLOW_LOST_CLOSE_IDENTITY_LOST");}
+                JSONArray located=location.getJSONArray("observed_owned_task_ids");java.util.Set<Integer> locations=new TreeSet<Integer>();
+                for(int i=0;i<located.length();i++){long task=numberAt(located,i);
+                    need(task>0&&task<=Integer.MAX_VALUE&&locations.add((int)task),"NOTES_WORKFLOW_LOST_CLOSE_TASK_SET");}
+                need(locations.equals(oldIds)&&ids.containsAll(oldIds)&&(stage==0||ids.equals(oldIds)),"NOTES_WORKFLOW_LOST_CLOSE_TASK_SET");
+                if(stage<2){JSONObject launch=response.getJSONObject("task_launch_policy");
+                    need("hepta.background-task-launch-policy.v1".equals(string(launch,"schema"))&&generation.equals(string(launch,"generation"))
+                            &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
+                            &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(response,"request_id")),
+                            "NOTES_WORKFLOW_LOST_CLOSE_LAUNCH_TARGET");yes(launch,"activity_info_rechecked_before_dispatch");}
+                else need(!response.has("task_launch_policy"),"NOTES_WORKFLOW_LOST_CLOSE_LAST_STATE");
+            }
+        }
         private void requireWorkflowModel(JSONObject result,JSONObject owner,JSONObject projection,JSONObject response)throws Exception{
             JSONObject step=object(originals.get("step_model")),action=object(originals.get("step_action")),attempt=object(originals.get("fixed_intent_attempt"));
             JSONObject fixed=result.getJSONArray("fixed_intent_attempts").getJSONObject(0),work=action.getJSONObject("action_execution");
@@ -1444,7 +1588,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public byte[] original(String name)throws IOException{
             if("current_control".equals(name))return currentControl.clone();byte[] b=originals.get(name);need(b!=null,"NOTES_INPUT_NAME");return b.clone();
         }
-        public String source(){return initializationFailed?INITIALIZATION_SOURCE:cancelledAfterActions?CANCELLED_SOURCE:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_SOURCE:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return initializationFailed?INITIALIZATION_PROOF_SCHEMA:cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_PROOF_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
+        public String source(){return initializationFailed?INITIALIZATION_SOURCE:cancelledAfterActions?CANCELLED_SOURCE:workflowReleasedReplyLost?WORKFLOW_RELEASED_REPLY_LOST_SOURCE:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_SOURCE:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return initializationFailed?INITIALIZATION_PROOF_SCHEMA:cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowReleasedReplyLost?WORKFLOW_RELEASED_REPLY_LOST_PROOF_SCHEMA:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_PROOF_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
         public JSONObject recordedOwnedIdentity()throws Exception{
             JSONObject value=new JSONObject().put("display_id",displayId).put("display_name",displayName)
                 .put("task_ids",new JSONArray(recordedTaskIds)).put("user_id",0).put("full_uid",targetUid).put("package",PACKAGE)
@@ -1478,6 +1622,12 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         .put("historical_returned_task_ids",retirement.getJSONArray("returned_task_ids"))
                         .put("historical_retirement_failure","NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
             }
+            if(workflowReleasedReplyLost)value.put("historical_model_exit_code",0).put("historical_model_receipt_valid",true)
+                    .put("historical_notes_workflow_verified",true).put("historical_business_success",false)
+                    .put("historical_background_cleanup_known",false).put("historical_broker_terminal_state","RELEASED")
+                    .put("historical_broker_process_exit_observed",false).put("historical_broker_exit_code",JSONObject.NULL)
+                    .put("historical_app_close_response_observed",false).put("historical_last_response_state","ACTIVE")
+                    .put("historical_output_is_cleanup_proof",false).put("historical_cleanup_error","后台响应提前结束");
             if(initializationFailed)value.put("historical_broker_terminal_state","RELEASED").put("historical_broker_exit_code",70)
                     .put("historical_background_cleanup_known",false).put("historical_output_is_cleanup_proof",false)
                     .put("app_bootstrap_dispatched",false).put("model_process_started",false);
@@ -1496,7 +1646,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
             out.put(name,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
         public String wire()throws Exception{
             ByteArrayOutputStream bytes=new ByteArrayOutputStream();DataOutputStream out=new DataOutputStream(bytes);
-            out.writeUTF(initializationFailed?(interruptedLostLaunch?INITIALIZATION_STARTUP_SCHEMA:INITIALIZATION_REQUEST_SCHEMA):cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
+            out.writeUTF(initializationFailed?(interruptedLostLaunch?INITIALIZATION_STARTUP_SCHEMA:INITIALIZATION_REQUEST_SCHEMA):cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowReleasedReplyLost?WORKFLOW_RELEASED_REPLY_LOST_REQUEST_SCHEMA:workflowForeignHistoryRetirement?WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
             put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);
             if(cancelledAfterActions){out.writeInt(originals.size());for(String name:originals.keySet()){out.writeUTF(name);put(out,originals.get(name));}}
             else for(String name:originals.keySet())put(out,originals.get(name));out.flush();
@@ -1554,13 +1704,13 @@ public final class PublicPersonalNotesAbsenceRecovery {
         ByteArrayOutputStream decoded=new ByteArrayOutputStream();try(GZIPInputStream in=new GZIPInputStream(new ByteArrayInputStream(zipped))){
             byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){need(decoded.size()+n<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");decoded.write(b,0,n);}}
         DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));String schema=in.readUTF();
-        need(INITIALIZATION_REQUEST_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema)||CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
+        need(INITIALIZATION_REQUEST_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema)||CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RELEASED_REPLY_LOST_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
         int uid=in.readInt();String id=in.readUTF();long now=in.readLong();int boot=in.readInt();JSONObject controller=object(take(in,8192));byte[] control=take(in,MAX_ORIGINAL);
         Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();
         if(CANCELLED_REQUEST_SCHEMA.equals(schema)){
             int count=in.readInt();need(count>=14&&count<=60,"NOTES_CANCELLED_INPUT_COUNT");
             for(int i=0;i<count;i++){String name=in.readUTF();need(name.matches("[a-z_0-9]{1,48}")&&inputs.put(name,take(in,MAX_ORIGINAL))==null,"NOTES_CANCELLED_INPUT_NAME");}
-        }else for(String name:(LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema))?LOST_LAUNCH_STARTUP_INPUTS:(RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||INITIALIZATION_REQUEST_SCHEMA.equals(schema))?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
+        }else for(String name:(LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema))?LOST_LAUNCH_STARTUP_INPUTS:(RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||INITIALIZATION_REQUEST_SCHEMA.equals(schema))?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||WORKFLOW_FOREIGN_HISTORY_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RELEASED_REPLY_LOST_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
         Request r=new Request(inputs,control,controller,uid,id,now,boot);need(r.wire().equals(wire),"NOTES_WIRE_NONCANONICAL");return r;
     }
     public static JSONObject validate(JSONObject value,Request r,long now,int boot)throws Exception{

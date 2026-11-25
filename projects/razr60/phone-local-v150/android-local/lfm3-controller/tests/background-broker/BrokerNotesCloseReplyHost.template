@@ -1,0 +1,346 @@
+package org.trillionnium.hepta.background;
+
+import android.os.SystemClock;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Actual broker admission/policy/deadline fragments and actual BrokerProtocol.
+ * Android peer credentials, cleanup/custody completion and elapsedRealtime are
+ * explicit synthetic host IO. No display, App receipt or phone authority exists.
+ */
+final class BrokerNotesCloseReplyHost {
+    CONSTANTS
+    private static final String G="11111111-2222-4333-8444-555555555555";
+    private static final String OTHER="22222222-3333-4444-8555-666666666666";
+    private static final String ID="33333333-4444-4555-8666-777777777777";
+    private static final String TASK="abababababababababababababababab";
+    private static final String HASH=String.join("",Collections.nCopies(64,"a"));
+    private static final List<String> passed=new ArrayList<String>();
+    private static int checks;
+    interface Check {void run() throws Exception;}
+    private static void check(boolean v){if(!v)throw new AssertionError("check "+checks);checks++;}
+    private static void test(String name,Check c)throws Exception{c.run();passed.add(name);}
+    private static byte[] bytes(String s){return s.getBytes(StandardCharsets.UTF_8);}
+
+    private static final class Credentials {
+        final int uid;
+        Credentials(int uid){this.uid=uid;}
+        int getUid(){return uid;}
+        int getPid(){return 700;}
+    }
+    private static final class LocalSocket implements Closeable {
+        final Credentials credentials;
+        final ByteArrayInputStream request;
+        final PipedInputStream client=new PipedInputStream();
+        final PipedOutputStream peer;
+        int inputReads;
+        Runnable beforeOutput;
+        boolean callbackRun;
+        LocalSocket(int uid,byte[] requestBytes)throws Exception{
+            credentials=new Credentials(uid);
+            ByteArrayOutputStream framed=new ByteArrayOutputStream();
+            BrokerProtocol.writeFrame(framed,requestBytes);
+            request=new ByteArrayInputStream(framed.toByteArray());
+            peer=new PipedOutputStream(client);
+        }
+        Credentials getPeerCredentials(){return credentials;}
+        InputStream getInputStream(){inputReads++;return request;}
+        OutputStream getOutputStream(){
+            if(beforeOutput!=null&&!callbackRun){callbackRun=true;beforeOutput.run();}
+            return peer;
+        }
+        public void close()throws IOException{request.close();peer.close();}
+        void dispose()throws IOException{close();client.close();}
+    }
+    private static final class Custody {
+        boolean released,retained;
+        boolean known(){return released;}
+        boolean retain(){return retained;}
+    }
+    private static final class HaltObserved extends Error {
+        private static final long serialVersionUID=1L;
+        final int status;
+        HaltObserved(int status){this.status=status;}
+    }
+    private static final class Fixture {
+        final BrokerProtocol.Config config;
+        final BrokerProtocol.Receipts receipts=new BrokerProtocol.Receipts();
+        final Custody profileCustody=new Custody();
+        final Custody publicNotesCustody;
+        final CountDownLatch cleanupDone=new CountDownLatch(1);
+        final AtomicBoolean closing=new AtomicBoolean();
+        final AtomicBoolean cleanupStarted=new AtomicBoolean();
+        final CountDownLatch policyEntered=new CountDownLatch(1),policyMayFail=new CountDownLatch(1);
+        volatile LocalSocket connection,authenticatedProfileClosePeer;
+        volatile boolean serve=true;
+        volatile String state="ACTIVE";
+        long requestDeadline,connectionDeadline,cleanupAt;
+        final long expires;
+        int activeRequestPeerPid=-1;
+        int performCalls,closeSocketsCalls;
+        long awaitBudget;
+        long policyFailureAt=1001;
+        boolean registrationObserved,wrongCurrentPeer;
+        boolean retainedWatchdogHoldPublished,quarantinedProfile,quarantinedNotes;
+        boolean knownCleanup=true;
+        LocalSocket foreignPeer;
+        Thread policy;
+        String lastError="";
+        int haltStatus=-1;
+        Fixture(boolean notes,boolean profile,boolean ownGroup,long expiry)throws Exception{
+            SystemClock.now=1000;SystemClock.step=0;expires=expiry;
+            publicNotesCustody=notes?new Custody():null;
+            ProfileTarget target=null;
+            if(profile){
+                target=new ProfileTarget(new ProfileIdentity(10,20,0,ProfileIdentity.MANAGED),
+                    1010382,ProfileTarget.XIAOMI,ProfileTarget.XIAOMI+"/MainActivity",1,
+                    Collections.singletonMap("base",HASH),Collections.singleton(HASH));
+            }
+            List<String> args=new ArrayList<String>(Arrays.asList("--socket","hepta-bg-"+G,
+                "--owner-uid","10481","--generation",G,"--allowed-packages",
+                target==null?"com.motorola.stylus":target.packageName,
+                "--ttl-ms",Long.toString(expiry-1000),"--expires-elapsed-ms",Long.toString(expiry)));
+            if(target!=null){args.add("--profile-target");args.add(target.wire());}
+            if(ownGroup){
+                PublicOwnGroupPolicy.Scope scope=new PublicOwnGroupPolicy.Scope(TASK,HASH,G,10481,target,1000,expiry,83);
+                args.add("--public-own-group-scope");args.add(scope.wire());
+            }
+            config=BrokerProtocol.Config.parse(args.toArray(new String[0]));
+        }
+        byte[] request(String operation,long deadline,String generation,boolean badScope){
+            String s="{\"version\":"+config.protocolVersion()+",\"request_id\":\""+ID
+                +"\",\"generation\":\""+generation+"\",\"deadline_elapsed_ms\":"+deadline
+                +",\"op\":\""+operation+"\"";
+            if(config.profileTarget!=null)s+=",\"target_sha256\":\""+config.profileTarget.sha256+"\"";
+            if(config.publicOwnGroupScope!=null)s+=",\"display_scope_sha256\":\""
+                +(badScope?HASH:config.publicOwnGroupScope.sha256)+"\"";
+            return bytes(s+"}");
+        }
+        void currentAccepted(LocalSocket accepted)throws Exception{
+            do {
+                UID_GATE
+                CURRENT_ADMISSION
+                FRAME_WRITE
+            } while(false);
+        }
+        void parentAccepted(LocalSocket accepted)throws Exception{
+            do {
+                UID_GATE
+                PARENT_ADMISSION
+                FRAME_WRITE
+            } while(false);
+        }
+        void admitted(LocalSocket accepted,boolean parent)throws Exception{
+            connection=accepted;
+            connectionDeadline=SystemClock.elapsedRealtime()+SOCKET_MS;
+            requestDeadline=0;
+            try{
+                if(parent)parentAccepted(accepted);else currentAccepted(accepted);
+            }finally{
+                PEER_FINALLY
+            }
+        }
+        byte[] perform(BrokerProtocol.Request r)throws Exception{
+            performCalls++;
+            registrationObserved=authenticatedProfileClosePeer==connection;
+            CLOSE_PERFORM
+            // The non-close case only observes admission; this host port never
+            // implements launch/window/input or any Android business operation.
+            return response(r,true,null,false);
+        }
+        byte[] response(BrokerProtocol.Request r,boolean ok,String error,boolean dispatched){
+            if(error!=null)lastError=error;
+            return bytes("synthetic-host-frame|"+(r==null?"null":r.requestId)+"|"+ok+"|"+error+"|"+dispatched);
+        }
+        void beginCleanup(String reason){
+            closing.set(true);
+            if(cleanupStarted.compareAndSet(false,true)){cleanupAt=SystemClock.elapsedRealtime();state="CLOSING";}
+        }
+        void awaitCleanup(long budget)throws Exception{
+            awaitBudget=budget;
+            if(wrongCurrentPeer){
+                foreignPeer=new LocalSocket(10481,bytes("{}"));connection=foreignPeer;
+            }
+            if(policy!=null){
+                SystemClock.now=policyFailureAt;
+                policyMayFail.countDown();
+                policy.join(2000);
+                check(!policy.isAlive());
+            }
+            if(knownCleanup){
+                state="RELEASED";
+                profileCustody.released=config.profileTarget!=null;
+                if(publicNotesCustody!=null)publicNotesCustody.released=true;
+                cleanupDone.countDown();
+            }
+        }
+        void requireUnlocked()throws Exception{
+            policyEntered.countDown();
+            if(!policyMayFail.await(2,TimeUnit.SECONDS))throw new AssertionError("host policy barrier timed out");
+            throw new IOException("PUBLIC_SCREEN_LEASE_RETIRED");
+        }
+        Thread startPolicy(){
+            POLICY_MONITOR
+            return locks;
+        }
+        void closeSockets(){
+            closeSocketsCalls++;
+            LocalSocket peer=connection;
+            if(peer!=null)try{peer.close();}catch(IOException bad){throw new AssertionError(bad);}
+        }
+        String code(Throwable error){
+            return error instanceof BrokerProtocol.Refusal?((BrokerProtocol.Refusal)error).code:error.getMessage();
+        }
+        SHUTDOWN
+        CLOSE_METHODS
+        void watchdogOnce(long now){
+            WATCHDOG_CLEANUP
+        }
+        String releasedState(){return "RELEASED";}
+        void haltAfterBootRead(int status){
+            haltStatus=status;closeSockets();throw new HaltObserved(status);
+        }
+        void quarantineProfile(String reason){quarantinedProfile=true;closeSockets();}
+        void quarantinePublicNotes(String reason){quarantinedNotes=true;closeSockets();}
+        void printTerminal(){/* A host port records no App terminal or phone proof. */}
+    }
+    private static LocalSocket socket(Fixture f,String op,long deadline,int uid)throws Exception{
+        return new LocalSocket(uid,f.request(op,deadline,G,false));
+    }
+    private static void completeFrame(LocalSocket s)throws Exception{
+        DataInputStream in=new DataInputStream(s.client);
+        int length=in.readInt();check(length>0&&length<1024);
+        byte[] payload=new byte[length];in.readFully(payload);
+        check(new String(payload,StandardCharsets.UTF_8).startsWith("synthetic-host-frame|"+ID+"|true|"));
+        check(in.read()==-1);
+    }
+    private static void lateRace(boolean parent,boolean notes,boolean ownGroup,boolean wrongPeer,
+                                 long deadline,long failureAt,boolean expectedProtected)throws Exception{
+        Fixture f=new Fixture(notes,false,ownGroup,541000);
+        LocalSocket s=socket(f,"close",deadline,10481);
+        f.wrongCurrentPeer=wrongPeer;f.policyFailureAt=failureAt;
+        f.policy=f.startPolicy();
+        check(f.policyEntered.await(2,TimeUnit.SECONDS));
+        IOException transport=null;
+        try{f.admitted(s,parent);}catch(IOException failure){transport=failure;}
+        check(f.performCalls==1);
+        check(f.awaitBudget==Math.min(CLEANUP_MS,deadline-1000));
+        check(f.closeSocketsCalls==0 || !expectedProtected);
+        if(expectedProtected){
+            check(f.registrationObserved);check(f.closeSocketsCalls==0);check(transport==null);completeFrame(s);
+        }else if(wrongPeer){
+            check(f.registrationObserved);check(f.closeSocketsCalls==1);
+            check(transport==null);completeFrame(s);
+        }else{
+            check(f.closeSocketsCalls==1);check(transport!=null);check(s.client.read()==-1);
+        }
+        check(f.authenticatedProfileClosePeer==null&&f.connection==null&&f.requestDeadline==0);
+        if(f.foreignPeer!=null)f.foreignPeer.dispose();
+        s.dispose();
+    }
+    private static void reject(String kind,String expected)throws Exception{
+        Fixture f=new Fixture(true,false,true,541000);
+        String gen="generation".equals(kind)?OTHER:G;
+        boolean badScope="scope".equals(kind);
+        long deadline="expired".equals(kind)?1000:("long".equals(kind)?11001:4000);
+        LocalSocket s=new LocalSocket(10481,f.request("close",deadline,gen,badScope));
+        f.admitted(s,false);
+        check(f.performCalls==0);check(!f.registrationObserved);check(expected.equals(f.lastError));
+        check(f.authenticatedProfileClosePeer==null&&!f.closing.get());
+        s.dispose();
+    }
+    private static void boundary(boolean profile,long offset,int expectedHalt,long requestDeadline,
+                                 boolean unknown)throws Exception{
+        Fixture f=new Fixture(!profile,profile,true,541000);
+        f.knownCleanup=!unknown;
+        LocalSocket s=socket(f,"close",requestDeadline,10481);
+        s.beforeOutput=()->{
+            SystemClock.now=f.cleanupAt+offset;
+            check(f.registrationObserved);
+            try{f.watchdogOnce(SystemClock.now);}
+            catch(HaltObserved h){check(h.status==expectedHalt);}
+            check(f.haltStatus==expectedHalt);
+        };
+        IOException transport=null;
+        try{f.admitted(s,false);}catch(IOException failure){transport=failure;}
+        check(f.awaitBudget==Math.min(CLEANUP_MS,requestDeadline-1000));
+        if(expectedHalt>=0){check(transport!=null);check(s.client.read()==-1);}
+        else {check(transport==null);completeFrame(s);}
+        check(f.authenticatedProfileClosePeer==null&&f.connection==null);
+        s.dispose();
+    }
+    public static void main(String[] ignored)throws Exception{
+        test("notes_authenticated_close_late_policy_keeps_complete_original_frame",
+            ()->lateRace(false,true,true,false,4000,1001,true));
+        test("parent_registration_same_notes_race_reproduces_eof",
+            ()->lateRace(true,true,true,false,4000,1001,false));
+        test("late_policy_wrong_current_peer_not_protected",
+            ()->lateRace(false,true,true,true,4000,1001,false));
+        test("late_policy_missing_notes_and_profile_custody_not_protected",
+            ()->lateRace(false,false,true,false,4000,1001,false));
+        test("late_policy_no_public_scope_not_protected",
+            ()->lateRace(false,true,false,false,4000,1001,false));
+        test("late_policy_at_original_request_deadline_not_protected",
+            ()->lateRace(false,true,true,false,2500,2500,false));
+        test("wrong_peer_uid_never_parses_or_registers",()->{
+            Fixture f=new Fixture(true,false,true,541000);
+            LocalSocket s=socket(f,"close",4000,2000);f.admitted(s,false);
+            check(s.inputReads==0&&f.performCalls==0&&!f.registrationObserved);
+            check(s.client.read()==-1&&!f.closing.get());s.dispose();
+        });
+        test("foreign_generation_never_registers",()->reject("generation","GENERATION_MISMATCH"));
+        test("foreign_scope_never_registers",()->reject("scope","PUBLIC_SCOPE_MISMATCH"));
+        test("expired_request_never_registers",()->reject("expired","REQUEST_EXPIRED"));
+        test("request_above_original_limit_never_registers",()->reject("long","REQUEST_DEADLINE_TOO_LONG"));
+        test("authenticated_nonclose_does_not_register_or_begin_cleanup",()->{
+            Fixture f=new Fixture(true,false,true,541000);
+            LocalSocket s=socket(f,"state",4000,10481);f.admitted(s,false);
+            check(f.performCalls==1&&!f.registrationObserved&&!f.closing.get());
+            completeFrame(s);s.dispose();
+        });
+        test("notes_cleanup_at_1499_may_flush",()->boundary(false,1499,-1,5000,false));
+        test("notes_cleanup_at_1500_halts_without_profile_extension",()->boundary(false,1500,0,5000,false));
+        test("notes_cleanup_at_2249_still_halts",()->boundary(false,2249,0,5000,false));
+        test("notes_unknown_cleanup_at_1500_is_not_success",()->boundary(false,1500,70,5000,true));
+        test("profile_verified_release_at_1500_retains_original_exception",()->boundary(true,1500,-1,5000,false));
+        test("profile_verified_release_at_2249_may_flush",()->boundary(true,2249,-1,5000,false));
+        test("profile_verified_release_at_2250_halts",()->boundary(true,2250,0,5000,false));
+        test("profile_exception_stops_at_original_request_deadline",()->boundary(true,1600,0,2600,false));
+        test("shorter_close_request_keeps_original_wait_budget",()->{
+            Fixture f=new Fixture(true,false,true,541000);
+            LocalSocket s=socket(f,"close",1300,10481);f.admitted(s,false);
+            check(f.awaitBudget==300);completeFrame(s);s.dispose();
+        });
+        test("session_expiry_bounds_pending_close_peer",()->{
+            Fixture f=new Fixture(true,false,true,2000);
+            LocalSocket s=socket(f,"close",4000,10481);f.policyFailureAt=2000;
+            f.policy=f.startPolicy();check(f.policyEntered.await(2,TimeUnit.SECONDS));
+            IOException failed=null;try{f.admitted(s,false);}catch(IOException failure){failed=failure;}
+            check(f.registrationObserved&&f.closeSocketsCalls==1&&failed!=null&&s.client.read()==-1);
+            s.dispose();
+        });
+        StringBuilder names=new StringBuilder();
+        for(String name:passed){if(names.length()>0)names.append(',');names.append('"').append(name).append('"');}
+        System.out.println("{\"schema\":\"hepta.notes-close-reply-host-cases.v1\",\"all_pass\":true,"
+            +"\"cases\":"+passed.size()+",\"checks\":"+checks+",\"case_names\":["+names+"],"
+            +"\"host_synthetic_clock_and_custody\":true,\"real_protocol_and_pipe_framing\":true,"
+            +"\"android_runtime\":false,\"phone_operations\":0}");
+    }
+}

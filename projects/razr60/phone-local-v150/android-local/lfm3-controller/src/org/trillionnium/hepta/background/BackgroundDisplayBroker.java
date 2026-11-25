@@ -105,7 +105,7 @@ public final class BackgroundDisplayBroker {
     private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
     private volatile LocalSocket connection;
-    // Only the authenticated, already admitted work-profile close RPC can own this peer.
+    // Only an authenticated, already admitted profile or personal Notes close RPC owns this peer.
     private volatile LocalSocket authenticatedProfileClosePeer;
     private volatile LocalServerSocket server;
     private volatile Context shell;
@@ -328,7 +328,7 @@ public final class BackgroundDisplayBroker {
                         request.checkDeadline(SystemClock.elapsedRealtime(), expires);
                         requestDeadline = Math.min(request.deadline, expires);
                         connectionDeadline = requestDeadline;
-                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))
+                        if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)&&"close".equals(request.operation))
                             authenticatedProfileClosePeer=accepted;
                         response = perform(request);
                         receipts.remember(request, response);
