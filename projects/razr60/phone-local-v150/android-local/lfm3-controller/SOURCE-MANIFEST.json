@@ -1,9 +1,9 @@
 {
   "android_qualified": false,
-  "base_head": "4c0f31680b37b5c11e01d8fad31a91f3c8dd90ac",
-  "base_manifest_sha256": "b82abe0fdd4eb5092ddb4dabfc2694de8b5bfa02aeaad53e1e76f6adba1a0b21",
+  "base_head": "55343648040295750f33b33bea1456d7a2cc1731",
+  "base_manifest_sha256": "66386092be58254e04337d718e3992597e1c8446306208caa7b0cc0c39d12702",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_recents_and_initialization_recovery_pending_current_head_qualification",
+  "candidate_status": "reviewed_recents_recovery_with_canonical_map_pending_current_head_qualification",
   "complete_source_files": 2627,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
@@ -79,6 +79,13 @@
       "sha256": "cfe533f19fb53cca7dc2f07ecd44ca99355313b7bc9ad2bb5f36a0e8fac78480"
     },
     "predecessor_failures_preserved": true
+  },
+  "current_manifest_map_serialization": {
+    "exact_canonical_producer": "tests/native-observation-screenshot-seed/run_host.py:packed",
+    "first_failed_qualification_preserved": true,
+    "no_runtime_or_test_source_change": true,
+    "original_strict_guard_unchanged": true,
+    "same_397_production_records": true
   },
   "current_native_ax_canonical_reuse": {
     "phone_speedup_measured": false,
@@ -179,27 +186,13 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "4c0f31680b37b5c11e01d8fad31a91f3c8dd90ac",
+    "baseline": "55343648040295750f33b33bea1456d7a2cc1731",
     "model_weights_unchanged": true,
     "native_unchanged": true,
-    "new_tests": [
-      "tests/personal-notes-initialization-recovery/PersonalNotesInitializationActualHostTest.java",
-      "tests/personal-notes-initialization-recovery/PersonalNotesInitializationClientHostTest.java",
-      "tests/personal-notes-initialization-recovery/PersonalNotesInitializationHostTest.java",
-      "tests/personal-notes-initialization-recovery/run_host.py",
-      "tests/empty-visible-recents/run_host.py",
-      "tests/empty-visible-recents/EmptyVisibleRecentsHostTest.java"
-    ],
+    "new_tests": [],
+    "only_manifest_map_serialization_corrected": true,
     "phone_success_claimed": false,
-    "production_changes": [
-      "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java"
-    ]
+    "production_changes": []
   },
   "current_xiaomi_query_reservation": {
     "actual_original_failure_preserved": true,
@@ -13350,9 +13343,11 @@
   ],
   "historical_provenance": {
     "exact_cleanup_started_time_unavailable": true,
-    "immediate_parent_component_tree": "c9d9324fa3227ab47bd735bb01de410bc9149cc1",
-    "immediate_parent_head": "4c0f31680b37b5c11e01d8fad31a91f3c8dd90ac",
-    "immediate_parent_manifest_sha256": "b82abe0fdd4eb5092ddb4dabfc2694de8b5bfa02aeaad53e1e76f6adba1a0b21",
+    "immediate_parent_component_tree": "896cc0c89d57977c92a21629ee4deda040bd86fc",
+    "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
+    "immediate_parent_head": "55343648040295750f33b33bea1456d7a2cc1731",
+    "immediate_parent_manifest_sha256": "66386092be58254e04337d718e3992597e1c8446306208caa7b0cc0c39d12702",
+    "immediate_parent_qualification_failed": true,
     "immediate_parent_qualifications_are_historical": true,
     "original_e7ef24_business_status": "blocked",
     "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
@@ -13603,12 +13598,12 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "f666982cfb10b0b9747da5535a41f80d81186ee100f16a40c3336380ac42099b",
+  "production_input_map_sha256": "8b5836fd0134b8aeb23fb0f76a278b2dbf0ec1c9721292b2276f2d2593ad10bc",
   "schema": "hepta.local-source.v3",
   "scope": "Retain the complete 4c0f source including e30 query, AX, Ctrip form and direct-card changes; parse the observed empty Visible recent-task presentation without discarding internal history, and permit strictly bound current-absence recovery for Notes initialization failures.",
-  "source_parent_head": "4c0f31680b37b5c11e01d8fad31a91f3c8dd90ac",
-  "source_parent_manifest_sha256": "b82abe0fdd4eb5092ddb4dabfc2694de8b5bfa02aeaad53e1e76f6adba1a0b21",
-  "source_snapshot_predecessor_manifest_sha256": "b82abe0fdd4eb5092ddb4dabfc2694de8b5bfa02aeaad53e1e76f6adba1a0b21",
+  "source_parent_head": "55343648040295750f33b33bea1456d7a2cc1731",
+  "source_parent_manifest_sha256": "66386092be58254e04337d718e3992597e1c8446306208caa7b0cc0c39d12702",
+  "source_snapshot_predecessor_manifest_sha256": "66386092be58254e04337d718e3992597e1c8446306208caa7b0cc0c39d12702",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
