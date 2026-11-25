@@ -92,6 +92,8 @@ final class NativeCtripFormObservation {
             need(before.nodes.containsKey(p)&&after.nodes.containsKey(p)&&before.node(p).v.equals(after.node(p).v),
                     "complete protected form subtree changed: "+p);
         Set<String> regions=anchors(before,after,left);List<String> changed=new ArrayList<String>();
+        NativeActionSnapshotCheck.CtripFormRegion actionRegion=NativeActionSnapshotCheck.ctripFormRegions(before,after,left.roots);
+        regions.addAll(actionRegion.roots);
         for(String p:all){
             Node x=before.nodes.get(p),y=after.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
             String region=null;for(String root:regions)if(p.equals(root)||under(p,root)){
@@ -108,12 +110,49 @@ final class NativeCtripFormObservation {
         out.put("variable_branch_anchors",new ArrayList<String>(regions));out.put("changed_paths",changed);
         out.put("changed_paths_truncated",false);out.put("full_census_compared",true);
         out.put("literal_form_facts",left.facts);out.put("year_inferred",false);
+        if(!actionRegion.roots.isEmpty())out.put("ctrip_form_action_region",actionRegion.evidence);
         out.put("whole_graph_equal",changed.isEmpty());out.put("same_instant_pixels_and_ax_claimed",false);
         out.put("published_pair_is_current_tree_claimed",false);out.put("fully_unoccluded_claimed",false);
         out.put("fresh_action_validation_required",true);out.put("grants_action_authority",false);
         out.put("query_history_proved",false);out.put("business_completion_verified",false);
         return freeze(out);
     }
+
+    /** Compact transport only. The complete proof is preserved in a new immutable
+     * task-side artifact; this digest/ref grants no authority and changes no facts. */
+    static Map<String,Object> captureSummary(Map<String,Object> proof,String artifact,int bytes,String digest,String part){
+        need(proof!=null&&"hepta.ctrip-native-form-observation-pair.v1".equals(proof.get("schema"))
+                &&Boolean.FALSE.equals(proof.get("grants_action_authority")),"complete readonly form proof");
+        need(artifact!=null&&artifact.matches("[0-9a-f]{32}-form-history\\.json")&&bytes>0&&bytes<=786432
+                &&digest!=null&&digest.matches("[0-9a-f]{64}")
+                &&Arrays.asList("sampling","pre_encoding","post_encoding").contains(part),"complete proof artifact binding");
+        Map<String,Object> out=new TreeMap<String,Object>(proof);
+        Object facts=out.remove("literal_form_facts");
+        out.put("schema","hepta.ctrip-native-form-capture-summary.v1");
+        out.put("complete_comparison_sha256",axFingerprint(proof));
+        out.put("literal_form_facts_sha256",axFingerprint(facts));
+        out.put("literal_form_facts_in_complete_artifact",true);
+        out.put("literal_departure_date",axObject(facts).get("literal_departure_date"));
+        Object entered=out.get("entered_open_read_permit");
+        if(entered!=null){Map<String,Object> full=axObject(entered),small=new TreeMap<String,Object>();
+            small.put("schema","hepta.native-post-effect-read-permit-summary.v1");
+            for(String key:Arrays.asList("original_observation_id","original_model_run_id","original_action_sha256","purpose",
+                    "effect_entered","worker_drained","action_replayed"))if(full.containsKey(key))small.put(key,full.get(key));
+            small.put("complete_permit_sha256",axFingerprint(entered));small.put("grants_action_authority",false);
+            out.put("entered_open_read_permit",small);
+        }
+        Object region=out.get("ctrip_form_action_region");
+        if(region!=null){Map<String,Object> small=new TreeMap<String,Object>();Map<String,Object> full=axObject(region);
+            small.put("schema",full.get("schema"));small.put("scope_sha256",axFingerprint(region));
+            small.put("form_purpose_target_paths",full.get("form_purpose_target_paths"));
+            small.put("fresh_same_scope_comparison_required",true);small.put("grants_action_authority",false);
+            out.put("ctrip_form_action_region",small);
+        }
+        Map<String,Object> ref=new TreeMap<String,Object>();ref.put("file",artifact);ref.put("bytes",bytes);
+        ref.put("sha256",digest);ref.put("part",part);out.put("complete_comparison_artifact",ref);
+        return freeze(out);
+    }
+
     private static final class Scope {
         final Set<String> roots=new TreeSet<String>(),ancestors=new TreeSet<String>();final Map<String,Object> facts=new TreeMap<String,Object>();
         void protect(Snapshot s,String path){Node n=s.node(path);need(n.usable(),"visible actual semantic container");roots.add(path);String p=path;

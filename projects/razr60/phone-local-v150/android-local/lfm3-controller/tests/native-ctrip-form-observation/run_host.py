@@ -12,13 +12,14 @@ def main():
     for key in ("source","output","java-home","json-jar"):ap.add_argument("--"+key,required=True,type=Path)
     a=ap.parse_args();source=a.source.resolve();out=a.output.absolute();out.mkdir(parents=True,exist_ok=False)
     h=load(source/"tests/observation-diagnostics/run_host.py","ctrip_form_combined_helpers")
-    scripts=[HERE/"run_pure_host.py",HERE/"run_observer_host.py"];before=[meta(p) for p in scripts+[Path(__file__).resolve()]]
+    scripts=[HERE/"run_pure_host.py",HERE/"run_observer_host.py",HERE/"run_phone_host.py"];before=[meta(p) for p in scripts+[Path(__file__).resolve()]]
     report={"schema":"hepta.ctrip-form-observation-host.v1","all_pass":False,"stages":[],"source_root":str(source),"scripts_before":before,
         "phone_execution":False,"android_execution":False,"model_executed":False,"business_completion_verified":False}
     try:
-        for name,script in zip(("pure","observer"),scripts):
+        for name,script in zip(("pure","observer","phone"),scripts):
             child=out/name
             argv=[sys.executable,"-B",str(script),"--source",str(source),"--output",str(child),"--java-home",str(a.java_home),"--json-jar",str(a.json_jar)]
+            if name=="phone":argv += ["--evidence-cases",str(out/"observer/CASES.json")]
             stage=h.stage(name,argv,out);report["stages"].append(stage)
             if stage["exit_code"]!=0:raise RuntimeError("contract gate failed: "+name)
             result=json.loads((child/"RESULT.json").read_text())

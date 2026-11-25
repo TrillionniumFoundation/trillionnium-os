@@ -1245,6 +1245,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         int postEffectPublicationRechecks;
         ObservationPairSeal seal;NativeResampleSeed seed;
         Map<String,Object> formPair,postEncodingFormPair; // Complete read-only comparisons; never whole-tree equality.
+        File formHistoryPath;String formHistoryDigest;int formHistoryBytes;
         long formPairCompletedEvents=-1; // Frozen immediately after the complete census, before comparison.
         boolean contentPairSealed,postEncodingCompleteNativeRechecked;
         ObservationEventWatermark pairCompletedWatermark,postEncodingStartWatermark,postEncodingCompletedWatermark;
@@ -1273,13 +1274,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 e.put("historical_pair_after_known_target_event",true);
             }
             if(formPair!=null){
-                e.put("form_pair_comparison",formPair);
+                e.put("form_pair_comparison",NativeCtripFormObservation.captureSummary(formPair,formHistoryPath.getName(),formHistoryBytes,formHistoryDigest,"pre_encoding"));
                 e.put("form_pair_target_events_at_read_start",pairEvents);
                 e.put("form_pair_target_events_at_census_completion",formPairCompletedEvents);
                 e.put("form_pair_events_after_census_completion_admitted",false);
             }
             if(postEncodingFormPair!=null){
-                e.put("post_encoding_form_pair_comparison",postEncodingFormPair);
+                e.put("post_encoding_form_pair_comparison",NativeCtripFormObservation.captureSummary(postEncodingFormPair,formHistoryPath.getName(),formHistoryBytes,formHistoryDigest,"post_encoding"));
                 e.put("form_pair_events_after_census_completion_admitted",false);
             }
             e.put("native_content_pair_sealed",contentPairSealed);
@@ -1303,6 +1304,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(bitmap!=null){bitmap.recycle();bitmap=null;}
             // Best effort removal of this request's unpublished evidence, not a claim of durable deletion.
             if(path!=null&&!published){path.delete();path=null;}
+            if(formHistoryPath!=null&&!published){formHistoryPath.delete();formHistoryPath=null;}
         }
     }
     /** Legacy untyped events retain their original gates; they cannot enter new content coverage. */
@@ -2241,10 +2243,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     request.phase("saved_graph");
                     product.checkedEvents=request.events;product.publicationCheckStartedAt=SystemClock.elapsedRealtime();
                     ObservationEventWatermark persistedEvents=request.eventWatermark();
+                    boolean scopedContentCheck=product.formPair!=null&&product.formPair.containsKey("ctrip_form_action_region")
+                            &&product.seal!=null&&persistedEvents.events!=product.seal.events
+                            &&persistedEvents.onlyContentSince(product.pairCompletedWatermark)
+                            &&persistedEvents.onlyContentSince(identity.eventWatermark);
                     if(request.postEffectController!=null&&product.formPair!=null&&product.seal!=null
-                            &&persistedEvents.events!=product.seal.events)retry=true;
-                    boolean completeContentCheck=product.seal!=null&&product.formPair==null&&identity.nativeRecheck
-                            &&persistedEvents.contentEvents>identity.eventWatermark.contentEvents;
+                            &&persistedEvents.events!=product.seal.events&&!scopedContentCheck)retry=true;
+                    boolean completeContentCheck=product.seal!=null&&identity.nativeRecheck
+                            &&(product.formPair==null?persistedEvents.contentEvents>identity.eventWatermark.contentEvents:scopedContentCheck);
                     if(completeContentCheck){
                         // Typed content events never advance a window-only watermark. Encoding is
                         // already finished: reread the COMPLETE actual graph and window census.
@@ -2262,7 +2268,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 &&complete.onlyContentSince(identity.eventWatermark)&&complete.events==request.events;
                         // Pixels already match A and B. A later, complete C may establish a
                         // historical first form only for the already-entered OPEN's read permit.
-                        if(!equal&&eventsCovered&&request.postEffectController!=null)
+                        if(!equal&&eventsCovered&&(request.postEffectController!=null||scopedContentCheck))
                             product.postEncodingFormPair=nativeCtripFormPair(request,identity,after);
                         boolean formCovered=product.postEncodingFormPair!=null&&complete.events==request.events;
                         boolean covered=equal&&eventsCovered;
@@ -2308,6 +2314,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.publicationCheckCompletedAt=SystemClock.elapsedRealtime();
                 }
                 requireObservationWork(request);
+                if(!retry)persistCtripFormHistory(request,product);
             }catch(Exception failure){error="观察失败："+message(failure);}
             finally{
                 if(!copyEntered)result.getHardwareBuffer().close();
@@ -2320,6 +2327,35 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             request.worker(false);observationIoBusy.set(false);result.getHardwareBuffer().close();failObservation(request,"屏幕观察队列不可用："+message(unavailable));
         }
     }
+
+    /** Preserve full readonly comparisons once; compact capture metadata never
+     * substitutes a reconstructed proof or raises PhoneObservation's byte cap. */
+    private void persistCtripFormHistory(ObservationRequest request,ObservationProduct product)throws Exception{
+        if(product.formPair==null&&product.postEncodingFormPair==null)return;
+        requireObservationWork(request);
+        if(product.formHistoryPath!=null||product.id==null||product.digest==null)
+            throw new IllegalStateException("form evidence ownership changed");
+        Map<String,Object> evidence=new java.util.LinkedHashMap<String,Object>();
+        evidence.put("schema","hepta.ctrip-form-capture-history.v1");
+        evidence.put("observation_id",product.id);evidence.put("png_sha256",product.digest);
+        evidence.put("captured_elapsed_ms",product.capturedAt);evidence.put("request_id",request.requestId);
+        evidence.put("original_deadline_elapsed_ms",request.deadline);
+        if(product.formPair!=null)evidence.put("pre_encoding",product.formPair);
+        if(product.postEncodingFormPair!=null)evidence.put("post_encoding",product.postEncodingFormPair);
+        evidence.put("grants_action_authority",false);evidence.put("business_completion_verified",false);
+        byte[] bytes=new JSONObject(evidence).toString().getBytes(StandardCharsets.UTF_8);
+        if(bytes.length<1||bytes.length>786432)throw new IllegalStateException("complete form evidence byte bound");
+        File path=new File(request.directory,product.id+"-form-history.json");
+        if(!path.getAbsoluteFile().equals(path.getCanonicalFile())||!path.createNewFile())
+            throw new IllegalStateException("new canonical form evidence required");
+        product.formHistoryPath=path; // Only this invocation's new file may be removed.
+        try(FileOutputStream stream=new FileOutputStream(path)){stream.write(bytes);requireObservationWork(request);stream.getFD().sync();}
+        path.setReadable(false,false);path.setReadable(true,true);path.setWritable(false,false);path.setWritable(true,true);
+        product.formHistoryDigest=fileSha256(path);product.formHistoryBytes=bytes.length;
+        if(!product.formHistoryDigest.equals(sha(bytes)))throw new IllegalStateException("form evidence bytes changed");
+        requireObservationWork(request);
+    }
+
     /** Read-failure classification only. The unpublished pair is still discarded.
      * A known target-display event after the current-window check's watermark is
      * distinct from missing/changed identity, unknown events or an unsealed pair. */

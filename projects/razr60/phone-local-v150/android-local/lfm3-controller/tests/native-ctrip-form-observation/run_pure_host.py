@@ -15,8 +15,8 @@ def main():
     tools=[java,javac,java.parent.parent/"lib/modules",java.parent.parent/"lib/ct.sym",jar]
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed":raise RuntimeError("JSON pin")
     names=['ObservationCaptureEvidence.java', "NativeCtripFormObservation.java","NativeXiaomiSearchInputObservation.java","NativeActionSnapshotCheck.java","ObservedChildText.java","ObservedTargetLabels.java","ObservedScrollActions.java","ObservedImeEnter.java"]
-    paths=[source/PKG/n for n in names]+[source/"tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",HERE/"FormPairHostTest.java"]
-    inputs=paths+[Path(__file__).resolve(),source/"tests/observation-diagnostics/run_host.py"]
+    paths=[source/PKG/n for n in names]+[source/"tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",HERE/"FormPairHostTest.java",HERE/"ActualCtripRegionHostTest.java"]
+    inputs=paths+[Path(__file__).resolve(),source/"tests/observation-diagnostics/run_host.py",HERE/"form-region-nodes.json"]
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
     result={"schema":"hepta.ctrip-form-observation-pure-run.v1","all_pass":False,"stages":[],"input_before":before,"tools_before":tool_before,
         "android_execution":False,"phone_operations":0,"model_executed":False,"business_completion_verified":False}
@@ -28,7 +28,11 @@ def main():
         if result["stages"][-1]["exit_code"]!=0:raise RuntimeError("cases failed")
         case=json.loads((out/"CASES.json").read_text())
         if case["all_pass"] is not True or case["cases"]!=len(case["case_names"]) or len(set(case["case_names"]))!=case["cases"]:raise RuntimeError("case accounting")
-        result.update(all_pass=True,cases=case,cases_file=h.meta(out/"CASES.json"))
+        result["stages"].append(h.stage("actual-region-cases",[str(java),"-cp",str(classes)+os.pathsep+str(jar),"org.trillionnium.hepta.local.ActualCtripRegionHostTest",str(HERE/"form-region-nodes.json"),str(out/"REGION-CASES.json")],out))
+        if result["stages"][-1]["exit_code"]!=0:raise RuntimeError("actual region cases failed")
+        region=json.loads((out/"REGION-CASES.json").read_text())
+        if region["all_pass"] is not True or region["cases"]!=len(region["case_names"]):raise RuntimeError("region case accounting")
+        result.update(all_pass=True,cases=case,cases_file=h.meta(out/"CASES.json"),region_cases=region,region_cases_file=h.meta(out/"REGION-CASES.json"))
     except Exception as e:result["error"]={"type":type(e).__name__,"message":str(e)}
     finally:
         result["input_after"]=[h.meta(p) for p in inputs];result["tools_after"]=[h.meta(p) for p in tools]

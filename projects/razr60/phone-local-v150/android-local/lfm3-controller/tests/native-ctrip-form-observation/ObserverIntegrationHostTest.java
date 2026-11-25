@@ -30,16 +30,26 @@ public final class ObserverIntegrationHostTest {
             require(number(result,"captured_at")==number(result,"actual_capture_requested_at"),scenario+": original capture age");
             Map<String,Object> evidence=(Map<String,Object>)result.get("capture_evidence");
             require(Boolean.FALSE.equals(evidence.get("grants_action_authority")),scenario+": no authority");
+            require(number(result,"capture_evidence_bytes")<=8192,scenario+": unchanged PhoneObservation metadata bound");
+            require(number(result,"full_form_artifact_count")==(form?1:0),scenario+": one complete form artifact only when needed");
             require(Boolean.FALSE.equals(evidence.get("business_completion_verified")),scenario+": no business success");
             require(Boolean.FALSE.equals(evidence.get("same_instant_pixels_and_ax_claimed")),scenario+": no simultaneity");
             require(Boolean.TRUE.equals(evidence.get("fresh_action_validation_required")),scenario+": final action validation");
             require(Boolean.FALSE.equals(evidence.get("post_encoding_whole_graph_rechecked")),scenario+": no whole graph claim");
-            boolean late=scenario.startsWith("post_late");
+            boolean late=scenario.startsWith("post_late")||scenario.equals("post_region_content");
             require((late?"post_encoding_form_pair_history":form?"pre_encoding_form_pair_history":"pre_encoding_paired_history").equals(evidence.get("mode")),scenario+": correct mode");
             require(number(result,"new_window_checks")== (late?0:1),scenario+": expected full graph or window publication check");
             if(form){
                 Map<String,Object> comparison=(Map<String,Object>)evidence.get(late?"post_encoding_form_pair_comparison":"form_pair_comparison");
-                require(comparison!=null,scenario+": full comparison recorded");
+                require(comparison!=null,scenario+": compact comparison recorded");
+                Map<String,Object> artifact=(Map<String,Object>)result.get("full_form_artifact");
+                Map<String,Object> full=(Map<String,Object>)artifact.get(late?"post_encoding":"pre_encoding");
+                Map<String,Object> reference=(Map<String,Object>)comparison.get("complete_comparison_artifact");
+                require(full!=null&&full.get("literal_form_facts") instanceof Map,scenario+": complete original form facts retained");
+                require(result.get("full_form_artifact_sha256").equals(reference.get("sha256")),scenario+": actual artifact bytes digest");
+                require(number(result,"full_form_artifact_bytes")==number(reference,"bytes"),scenario+": complete artifact size");
+                require(number(artifact,"captured_elapsed_ms")==number(result,"captured_at"),scenario+": original image age bound");
+                require(Boolean.FALSE.equals(artifact.get("grants_action_authority")),scenario+": artifact grants no authority");
                 if(scenario.startsWith("post_")){
                     Map<String,Object> permit=(Map<String,Object>)comparison.get("entered_open_read_permit");
                     require(permit!=null&&result.get("original_frame_id").equals(permit.get("original_observation_id")),scenario+": private entered original frame");
@@ -49,7 +59,8 @@ public final class ObserverIntegrationHostTest {
                 require(Boolean.FALSE.equals(comparison.get("changed_paths_truncated")),scenario+": all differences");
                 require(Boolean.FALSE.equals(comparison.get("query_history_proved")),scenario+": no query history");
                 require(Boolean.FALSE.equals(comparison.get("grants_action_authority")),scenario+": readonly comparison");
-                require(Collections.singletonList("0/0/7/0").equals(comparison.get("changed_paths")),scenario+": exact changed path");
+                if(scenario.startsWith("post_region"))require(((List<?>)comparison.get("changed_paths")).size()==21,scenario+": all actual 21 differences");
+                else require(Collections.singletonList("0/0/7/0").equals(comparison.get("changed_paths")),scenario+": exact changed path");
                 require(Boolean.FALSE.equals(evidence.get("form_pair_events_after_census_completion_admitted")),scenario+": closed event interval");
                 if(late){
                     require(number(evidence,"post_encoding_complete_native_graph_completed_event_watermark")==number(evidence,"publication_check_event_watermark"),scenario+": closure matches publication");
@@ -67,6 +78,12 @@ public final class ObserverIntegrationHostTest {
         System.out.println("PASS "+scenario);
     }
     public static void main(String[] args)throws Exception{
+        run("post_region_early",true,true);
+        run("post_region_content",true,true);
+        run("post_region_margin",true,true);
+        for(String fault:Arrays.asList("post_region_c_unknown","post_region_c_boundary","post_region_c_after",
+                "post_region_c_date","post_region_c_overlap","post_region_c_deadline","post_region_encode_expiry",
+                "post_region_proof_unknown","post_region_proof_content","post_region_proof_corrupt"))run(fault,false,false);
         run("post_early_classified",true,true);
         run("post_late_classified",true,true);
         for(String fault:Arrays.asList("post_late_retired","post_late_after_completion","post_late_protected","post_late_foreign",

@@ -148,6 +148,9 @@ final class NativeActionSnapshotCheck {
                 throw new CurrentnessChanged(CurrentnessReason.PROTECTED_SUBTREE_CHANGED,"complete protected subtree changed: "+p);
         }
         Set<String> anchors=anchors(in,old,fresh,before);List<String> changed=new ArrayList<String>();
+        CtripFormRegion formRegion=(YEAR.equals(in.purpose)||QUERY.equals(in.purpose))
+                ?ctripFormRegions(old,fresh,before.roots):new CtripFormRegion(Collections.<String>emptySet(),Collections.<String,Object>emptyMap());
+        anchors.addAll(formRegion.roots);
         Set<String> classified=union(anchors,homeVariations.keySet());
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
             Node x=old.nodes.get(p),y=fresh.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
@@ -162,6 +165,7 @@ final class NativeActionSnapshotCheck {
         out.put("protected_subtrees",new ArrayList<String>(before.roots));out.put("checked_ancestors",new ArrayList<String>(before.ancestors));
         out.put("variable_branch_anchors",new ArrayList<String>(anchors));out.put("changed_paths",changed);out.put("changed_paths_truncated",false);
         out.put("xiaomi_search_home_variations",homeVariations);out.put("fully_unoccluded_claimed",false);
+        if(!formRegion.roots.isEmpty())out.put("ctrip_form_action_region",formRegion.evidence);
         if(searchIconTarget(in,old)||searchEntryTarget(in,old))out.put("navigation_semantics_device_verified",false);
         if(searchEntryTarget(in,old))out.put("search_entry_original_reference_retained_fresh_signature_required",true);
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
@@ -749,6 +753,131 @@ final class NativeActionSnapshotCheck {
         Map<String,Object> x=new TreeMap<String,Object>(a.v),y=new TreeMap<String,Object>(z.v);
         for(String field:fields){x.remove(field);y.remove(field);}return x.equals(y);
     }
+
+    /** A narrowly identified passive banner may overlap the trip-tab strip outside the two supported action targets.
+     * The complete form is still compared field for field by both callers.  All form
+     * body rectangles, and every current date/query hit rectangle, remain protected.
+     * No clipping, alpha, drawing order, pixel equality or dispatch is inferred. */
+    static final class CtripFormRegion {
+        final Set<String> roots;final Map<String,Object> evidence;
+        CtripFormRegion(Set<String> roots,Map<String,Object> evidence){
+            this.roots=Collections.unmodifiableSet(new TreeSet<String>(roots));this.evidence=freeze(evidence);
+        }
+    }
+    static CtripFormRegion ctripFormRegions(Snapshot before,Snapshot after,Set<String> protectedRoots){
+        Set<String> regions=new TreeSet<String>();Map<String,Object> proof=new TreeMap<String,Object>();
+        if(!CTRIP.equals(s(before.env,"package"))||!CTRIP.equals(s(after.env,"package"))
+                ||!before.env.containsKey("profile_target_sha256")||!after.env.containsKey("profile_target_sha256"))
+            return new CtripFormRegion(regions,proof);
+        List<Node> forms=findId(before,CP+"view_flight_plant_home_tab"),later=findId(after,CP+"view_flight_plant_home_tab");
+        if(forms.size()!=1||later.size()!=1)return new CtripFormRegion(regions,proof);
+        Node form=forms.get(0),next=later.get(0);
+        if(!protectedRoots.equals(Collections.singleton(form.path))||!form.v.equals(next.v))
+            return new CtripFormRegion(regions,proof);
+        try{
+            Node scroll=before.node(parent(form.path)),nextScroll=after.node(parent(form.path));
+            need("android.widget.ScrollView".equals(scroll.cls)&& (CP+"plant_home_scroll_root").equals(scroll.view)
+                    &&scroll.v.equals(nextScroll.v)&&form.within(scroll),"same actual form ScrollView");
+            Node tabs=oneId(before,CP+"tl_inquire_view"),nextTabs=oneId(after,CP+"tl_inquire_view");
+            need(parent(tabs.path).equals(form.path)&&tabs.v.equals(nextTabs.v)&&tabs.within(form)
+                    &&"android.widget.HorizontalScrollView".equals(tabs.cls),"unchanged actual trip tabs");
+            Node date=oneId(before,CP+"tv_depart_date"),query=oneId(before,CP+"bt_submit_inquire");
+            need(date.click()&&query.click()&&date.children==0&&query.children==0
+                    &&date.within(form)&&query.within(form)
+                    &&date.v.equals(after.node(date.path).v)&&query.v.equals(after.node(query.path).v),
+                    "unchanged leaf date/query controls");
+            // Current model/native domain supports exactly these form purposes.
+            // The action comparator additionally checks purpose -> exact path.
+            for(Snapshot snap:Arrays.asList(before,after)){
+                for(Node target:Arrays.asList(snap.node(date.path),snap.node(query.path))){
+                    for(Node node:snap.nodes.values())if(node.visible()&&intersects(node.bounds,target.bounds)){
+                        need(node.path.equals(target.path)||under(target.path,node.path),
+                                "foreign or sibling rectangle crosses a date/query hit region");
+                        need(contains(node.bounds,target.bounds),"actual target ancestry clips hit region");
+                    }
+                }
+                for(Node node:snap.nodes.values())if(node.path.equals(form.path)||under(node.path,form.path))
+                    need(before.nodes.containsKey(node.path)&&after.nodes.containsKey(node.path)
+                            &&before.node(node.path).v.equals(after.node(node.path).v),
+                            "entire protected form must remain exact");
+            }
+            List<Node> pagers=new ArrayList<Node>();
+            for(Node node:before.nodes.values())if(parentOrEmpty(node.path).equals(scroll.path)
+                    &&"androidx.viewpager.widget.ViewPager".equals(node.cls))pagers.add(node);
+            need(pagers.size()==1,"one actual sibling banner pager");
+            Node banner=pagers.get(0),nextBanner=after.node(banner.path);
+            need(banner.v.equals(nextBanner.v)&&banner.usable()&&banner.children==3
+                    &&banner.view.isEmpty()&&banner.text.isEmpty()&&banner.desc.isEmpty()
+                    &&b(banner.v,"scrollable")&&passiveBannerFlags(banner,true)
+                    &&"hepta.observed-scroll-actions.v1|observed|forward|backward".equals(s(banner.v,"scroll_actions"))
+                    &&contains(scroll.bounds,banner.bounds),"exact passive three-page banner");
+            Set<String> paths=new TreeSet<String>();
+            for(int page=0;page<3;page++){
+                String p=banner.path+"/"+page;Node a=before.node(p),z=after.node(p);
+                need("android.widget.RelativeLayout".equals(a.cls)&&a.children==2
+                        &&a.view.isEmpty()&&a.text.isEmpty()&&a.desc.isEmpty(),"actual passive banner page");
+                paths.add(p);
+                for(int child=0;child<2;child++){
+                    String q=p+"/"+child;Node x=before.node(q);paths.add(q);
+                    need(x.children==0,"banner leaves cannot hide descendants");
+                    if(child==0)need("android.widget.ImageView".equals(x.cls)&&x.view.isEmpty()
+                            &&x.text.isEmpty()&&"广告素材".equals(x.desc),"actual passive banner image");
+                    else need("android.widget.TextView".equals(x.cls)&&(CP+"label_text").equals(x.view)
+                            &&"活动".equals(x.text)&&x.desc.isEmpty(),"actual passive activity label");
+                }
+                need(after.nodes.containsKey(p)&&z.children==2,"same complete banner page");
+            }
+            for(Snapshot snap:Arrays.asList(before,after)){
+                Node current=snap.node(banner.path);
+                for(Node node:snap.nodes.values())if(node.path.equals(banner.path)||under(node.path,banner.path)){
+                    need(node.path.equals(banner.path)||paths.contains(node.path),"no extra banner node");
+                    need(passiveBannerFlags(node,node.path.equals(banner.path)),"banner has input/focus/unknown capability");
+                    if(!node.path.equals(banner.path)){
+                        Node a=before.node(node.path),z=after.node(node.path);
+                        need(sameBannerNodeFacts(a,z)&&a.bounds.get(1).equals(z.bounds.get(1))
+                                &&a.bounds.get(3).equals(z.bounds.get(3)),"only observed horizontal banner movement");
+                    }
+                    if(node.visible()){
+                        // Use the raw reported bounds.  A child is never clipped to a
+                        // smaller parent to manufacture a clear target rectangle.
+                        need(contains(current.bounds,node.bounds),"visible raw banner child exceeds fixed banner");
+                        for(Node body:snap.nodes.values())if(under(body.path,form.path)
+                                &&!body.path.equals(tabs.path)&&!under(body.path,tabs.path)&&body.visible())
+                            need(!intersects(node.bounds,body.bounds),"banner crosses actual form body");
+                    }
+                }
+            }
+            regions.add(banner.path);
+            proof.put("schema","hepta.ctrip-form-action-region.v1");
+            proof.put("form_path",form.path);proof.put("whole_form_exact",true);
+            proof.put("banner_root",banner.path);proof.put("raw_visible_bounds_used",true);
+            proof.put("parent_clipping_assumed",false);proof.put("alpha_or_z_order_assumed",false);
+            proof.put("overlap_with_trip_tabs_admitted",intersects(banner.bounds,tabs.bounds));
+            Map<String,Object> allowed=new TreeMap<String,Object>();allowed.put(YEAR,date.path);allowed.put(QUERY,query.path);
+            proof.put("form_purpose_target_paths",allowed);
+            proof.put("date_bounds",date.bounds);proof.put("query_bounds",query.bounds);
+            proof.put("foreign_visible_hit_rectangles",0);proof.put("grants_action_authority",false);
+            proof.put("whole_screen_pixels_stable",false);proof.put("fresh_same_scope_comparison_required",true);
+        }catch(IllegalArgumentException rejected){
+            // Not a generic region exemption.  The unchanged all-node loop below
+            // refuses every otherwise-unclassified change.
+            regions.clear();proof.clear();
+        }
+        return new CtripFormRegion(regions,proof);
+    }
+    private static String parentOrEmpty(String path){return "0".equals(path)?"":parent(path);}
+    private static boolean passiveBannerFlags(Node node,boolean pager){
+        if(!b(node.v,"enabled")||b(node.v,"clickable")||b(node.v,"action_click")
+                ||b(node.v,"scrollable")!=pager||!neutralFlags(node)||node.v.get("input_sha256")!=null
+                ||!"hepta.observed-ime-enter.v1|true|false|null".equals(s(node.v,"ime_enter")))return false;
+        return pager||"hepta.observed-scroll-actions.v1|observed".equals(s(node.v,"scroll_actions"));
+    }
+    private static boolean sameBannerNodeFacts(Node a,Node z){
+        Map<String,Object> left=new TreeMap<String,Object>(a.v),right=new TreeMap<String,Object>(z.v);
+        for(String key:Arrays.asList("bounds","visible","label","ref_signature_sha256")){left.remove(key);right.remove(key);}
+        return left.equals(right);
+    }
+
     /** Roots are derived from complete, real ancestry and sibling relationships.
      * No numeric path (including 0/0/7) is whitelisted. All changed/new/deleted
      * descendants must be fully present in one of these fixed disjoint regions. */

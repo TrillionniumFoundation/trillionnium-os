@@ -205,6 +205,13 @@ def generate(source,output,h):
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
+        if name=='NativeActionSnapshotCheck.java' and actual=='400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593':
+            prior=runpy.run_path(str(source/'tests/native-ctrip-form-observation/scope_predecessor.py'))['predecessor'](current)
+            prior=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,prior)
+            proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](prior)
+            if h.sha(proof)!=r32_provider_pins[name]:raise RuntimeError('complete Ctrip scope inverse to R32')
+            protected_files[name]=actual
+            continue
         if name=='NativeCtripFlightPage.java' and actual=='8f848806d0761d1ba33c9a1f8030bb2bacb385c7ae534992daa88349705821cb':
             # This added reader is independent of the earlier form observer.
             # Removing its sole block must reproduce every byte of its original provider.
@@ -224,8 +231,6 @@ def generate(source,output,h):
                 'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac',
                 '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf',
                 'b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2'):
-            # Proof copies only: preserve the complete prior Ctrip comparator.
-            # The unchanged current production file still enters javac below.
             predecessor_input=current
             if actual=='b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2':
                 predecessor_input=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,current)
@@ -307,6 +312,9 @@ def generate(source,output,h):
 ''')
     template=once(template,'            if(profile!=null)throw new AssertionError("legacy observer cannot publish profile authority");',
                   '            // Profile is a synthetic value carrier here, not a phone ownership assertion.')
+    template=once(template,'        expect(!isMain(),"hash on main");if(hashHook!=null)hashHook.run();MessageDigest digest=MessageDigest.getInstance("SHA-256");\n        digest.update(Files.readAllBytes(file.toPath()));return Arrays.toString(digest.digest());',
+                  '        expect(!isMain(),"hash on main");\n        if(file.getName().endsWith("-form-history.json")){if(formHistoryHashHook!=null)formHistoryHashHook.run();}\n        else if(hashHook!=null)hashHook.run();return sha(Files.readAllBytes(file.toPath()));')
+
     template=once(template,'        JSONObject(String raw){throw new AssertionError("observer scheduling fixture cannot construct Selection provenance");}',
                   '        JSONObject(){value=new org.json.JSONObject();}\n        JSONObject put(String key,Object object)throws JSONException{value.put(key,object);return this;}\n        JSONObject(String raw)throws JSONException{value=new org.json.JSONObject(raw);}')
     template=once(template,'    Object taskScope,taskAuthorization,taskNotesPhase,taskCalculatorInput,taskSubmitAttempts,taskFixedIntentAttempts,appDiscovery;Runnable stopListener;',
@@ -356,7 +364,7 @@ def main():
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':
         raise RuntimeError('pinned JSON jar required')
     inputs=[source/PKG/n for n in JAVA+READ]+[source/PROFILE/n for n in PROFILE_NAMES]
-    inputs += [source/TEST/n for n in ('ObserverIntegrationHostTest.java','run_observer_host.py','FormPairHostTest.java')]
+    inputs += [source/TEST/n for n in ('ObserverIntegrationHostTest.java','run_observer_host.py','FormPairHostTest.java','scope_predecessor.py','form-region-nodes.json')]
     inputs += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
     inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
@@ -376,7 +384,7 @@ def main():
         compiled += h.png_sources(source)
         report['stages'].append(h.stage('compile',[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+[str(p) for p in compiled],output))
         if report['stages'][-1]['exit_code']!=0:raise RuntimeError('actual observer extraction compilation failed')
-        report['stages'].append(h.stage('observer-cases',[str(java),'-cp',str(classes)+os.pathsep+str(jar),
+        report['stages'].append(h.stage('observer-cases',[str(java),'-Dhepta.ctrip.form.fixture='+str(source/TEST/'form-region-nodes.json'),'-cp',str(classes)+os.pathsep+str(jar),
                 'org.trillionnium.hepta.local.ObserverIntegrationHostTest',str(output/'CASES.json')],output))
         if report['stages'][-1]['exit_code']!=0:raise RuntimeError('actual observer integration cases failed')
         cases=json.loads((output/'CASES.json').read_text())
@@ -409,7 +417,7 @@ BRIDGE = r'''
         }
     }
     static final class NodeRef {String appTreeSignature;NodeRef(String value){appTreeSignature=value;}}
-    volatile Runnable selectionHook,afterReadHook,windowHook;
+    volatile Runnable selectionHook,afterReadHook,windowHook,formHistoryHashHook;
     volatile boolean selectionCheckedFailure;
     volatile FrozenObservationWindow windowValue;
     final AtomicInteger windowChecks=new AtomicInteger();
@@ -505,6 +513,13 @@ BRIDGE = r'''
                 g.nativeActionNodes.set(i,new NativeActionSnapshotCheck.Node(raw));return;}
         }throw new AssertionError("synthetic mutation node absent");
     }
+    static NativeActionSnapshotCheckHostTest.Fixture regionFixture(boolean after)throws Exception{
+        org.json.JSONObject input=new org.json.JSONObject(new String(Files.readAllBytes(Paths.get(System.getProperty("hepta.ctrip.form.fixture"))),StandardCharsets.UTF_8));
+        org.json.JSONArray rows=input.getJSONArray(after?"after":"before");
+        NativeActionSnapshotCheckHostTest.Fixture value=FormPairHostTest.managedForm();value.nodes.clear();
+        for(int i=0;i<rows.length();i++){Map<String,Object> node=rows.getJSONObject(i).toMap();value.nodes.put((String)node.get("path"),node);}
+        return value;
+    }
     static ObserverPipelineHost formFixture(final String scenario)throws Exception{
         ObserverPipelineHost f=new ObserverPipelineHost();f.lease=TEST_TASK;f.taskAuthorization=new AuthorizationGate();
         String pkg="xiaomi_scope".equals(scenario)?NativeAppGoal.XIAOMI_PACKAGE:NativeAppGoal.CTRIP_PACKAGE;
@@ -520,16 +535,29 @@ BRIDGE = r'''
         task.ownerSha256=bg.ownerSha256;task.packageName=pkg;task.nativeGoal=goal;task.targetSha256=TEST_SHA;
         bg.selection.taskTarget=task;bg.selection.initialPackage=pkg;bg.selection.allowedPackages=Collections.singletonList(pkg);bg.selection.sha=TEST_SHA;
         f.taskBackground=bg;
-        final NativeActionSnapshotCheckHostTest.Fixture before=FormPairHostTest.managedForm();
-        final NativeActionSnapshotCheckHostTest.Fixture after=FormPairHostTest.changedForm(before);
+        final boolean region=scenario.startsWith("post_region");
+        final NativeActionSnapshotCheckHostTest.Fixture before=region?regionFixture(false):FormPairHostTest.managedForm();
+        final NativeActionSnapshotCheckHostTest.Fixture after=region?regionFixture(true):FormPairHostTest.changedForm(before);
         boolean post=scenario.startsWith("post_")||scenario.equals("ordinary_late_change");
         boolean late=scenario.startsWith("post_late")||scenario.equals("ordinary_late_change");
         f.readHook=(graph,n)->{
             int changeAt=late?7:6;
-            boolean changed=n==changeAt&&!"unchanged_pair_keeps_legacy_mode".equals(scenario);
+            boolean changed=(region?n>=6:n==changeAt)&&!"unchanged_pair_keeps_legacy_mode".equals(scenario);
             populate(f,graph,changed?after:before,post?"post_fixture":scenario,n);
             if(post){
                 graph.digest=changed?"changed-form":"original-form";
+                if(region&&n==7){
+                    if(scenario.endsWith("c_unknown"))f.noteObservationEvent(-1);
+                    if(scenario.endsWith("c_boundary"))f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,false);
+                    if(scenario.endsWith("c_after"))f.afterReadHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+                    if(scenario.endsWith("c_date"))replaceNode(graph,"0/0/2/5","text","11月27日后天");
+                    if(scenario.endsWith("c_overlap")){replaceNode(graph,"0/6","visible",true);replaceNode(graph,"0/6","bounds",Arrays.asList(79,793,415,937));}
+                    if(scenario.endsWith("c_deadline"))SystemClock.now=f.activeObservation.deadline;
+                }
+                if(region&&(scenario.endsWith("margin")||scenario.endsWith("encode_expiry"))){
+                    if(n==5)SystemClock.now=f.activeObservation.started+9959;
+                    if(n==6)SystemClock.now=f.activeObservation.started+11374;
+                }
                 if(changed){
                     if(scenario.endsWith("protected"))replaceNode(graph,"0/0/2/5","text","11月18日周三");
                     if(scenario.endsWith("omitted"))graph.collectionStats=counters(graph,graph.nativeActionNodes.size(),0,1,0);
@@ -571,7 +599,7 @@ BRIDGE = r'''
         ObserverPipelineHost f=formFixture(scenario);Map<String,Object> out=new LinkedHashMap<String,Object>();
         try{
             f.captureFormRead();f.finish();expect(f.delivered.size()==1,"actual initial complete pair must publish: "+f.errors);
-            PhoneObservation before=f.current;int filesBefore=f.directory.list().length,readsBefore=f.reads.get(),windowsBefore=f.windowChecks.get();
+            PhoneObservation before=f.current;int filesBefore=f.directory.list((parent,name)->name.endsWith(".png")).length,readsBefore=f.reads.get(),windowsBefore=f.windowChecks.get();
             f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;SystemClock.now+=400;
             if("encoding_delay_keeps_original_capture_age".equals(scenario))Bitmap.encodeHook=()->SystemClock.now+=600;
             if("known_event_during_publication_check".equals(scenario))f.windowHook=()->f.noteObservationEvent(15);
@@ -585,6 +613,17 @@ BRIDGE = r'''
             }
             if(scenario.startsWith("post_late")||scenario.equals("ordinary_late_change")||scenario.equals("post_early_event_after_pair"))
                 Bitmap.encodeHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+            if(scenario.equals("post_region_content")||scenario.contains("post_region_c_"))
+                Bitmap.encodeHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+            if(scenario.equals("post_region_margin"))Bitmap.encodeHook=()->SystemClock.now+=200; // explicitly synthetic new encoding cost
+            if(scenario.equals("post_region_encode_expiry"))Bitmap.encodeHook=()->SystemClock.now+=700;
+            if(scenario.equals("post_region_proof_unknown"))f.formHistoryHashHook=()->f.noteObservationEvent(-1);
+            if(scenario.equals("post_region_proof_content"))f.formHistoryHashHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+            if(scenario.equals("post_region_proof_corrupt"))f.formHistoryHashHook=()->{
+                try{File[] files=f.directory.listFiles((parent,name)->name.endsWith("-form-history.json"));
+                    Files.write(files[0].toPath(),"corrupted".getBytes(StandardCharsets.UTF_8));
+                }catch(Exception failure){throw new AssertionError(failure);}
+            };
             ObservationRequest request=f.captureFormRead();long captureAt=f.lastScreenshotAt;
             await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"after-capture worker drain");
             if("post_late_retired".equals(scenario))f.submitted.valid=false;
@@ -596,11 +635,22 @@ BRIDGE = r'''
             out.put("scenario",scenario);out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
             out.put("original_deadline_preserved",request.deadline==request.started+12000);
             out.put("new_full_reads",f.reads.get()-readsBefore);out.put("new_window_checks",f.windowChecks.get()-windowsBefore);
-            out.put("new_png_files",f.directory.list().length-filesBefore);
+            out.put("new_png_files",f.directory.list((parent,name)->name.endsWith(".png")).length-filesBefore);
             out.put("original_observation_retained",f.current==before||"read_before_replaced".equals(scenario)&&f.current==null);
             out.put("actual_capture_requested_at",captureAt);
             out.put("captured_at",f.delivered.isEmpty()?-1L:f.delivered.get(0).capturedElapsedMillis);
-            if(!f.delivered.isEmpty())out.put("capture_evidence",f.delivered.get(0).captureEvidence);
+            if(!f.delivered.isEmpty()){
+                Map<String,Object> capture=f.delivered.get(0).captureEvidence;
+                out.put("capture_evidence",capture);
+                out.put("capture_evidence_bytes",new org.json.JSONObject(capture).toString().getBytes(StandardCharsets.UTF_8).length);
+                File[] histories=f.directory.listFiles((parent,name)->name.endsWith("-form-history.json"));
+                out.put("full_form_artifact_count",histories.length);
+                if(histories.length==1){
+                    byte[] raw=Files.readAllBytes(histories[0].toPath());
+                    out.put("full_form_artifact_sha256",sha(raw));out.put("full_form_artifact_bytes",raw.length);
+                    out.put("full_form_artifact",new org.json.JSONObject(new String(raw,StandardCharsets.UTF_8)).toMap());
+                }
+            }
             out.put("no_action_work",!f.actionWorkPending()&&!f.nativeCancellationWorkPending());
         }finally{
             SystemClock.nextElapsedHook=null;f.selectionHook=null;f.afterReadHook=null;f.windowHook=null;
