@@ -246,14 +246,41 @@ public final class PublicOwnGroupPhysicalFence {
         long out=(long)n(m.group(1))*100000+("a".equals(m.group(2))?10000:"ai".equals(m.group(2))?90000:"i".equals(m.group(2))?99000:0)+n(m.group(3));
         need(out<=Integer.MAX_VALUE,"PHYSICAL_RECENT_UID_INVALID");return (int)out;
     }
+    /** Presentation-only compatibility for the observed AOSP16 empty Visible list.
+     * Every internal/hidden ID and original byte remains in the census. These
+     * labels never prove live attachment, ownership, release, or absence. */
+    private static boolean omittedVisibleRow(Recent row,String body){
+        for(String line:body.split("\\n",-1))need(line.trim().isEmpty()||line.startsWith("    "),
+                "PHYSICAL_OMITTED_VISIBLE_PARTIAL_SECTION");
+        int kind=n(one("^    autoRemoveRecents=(?:true|false) isPersistable=(?:true|false) activityType=([0-9]+)$",
+                body,"PHYSICAL_OMITTED_VISIBLE_TYPE").group(1));
+        if(kind==2){
+            need(row.user==0&&(row.display==0||row.display==1)
+                    &&!"null".equals(row.base)&&!"null".equals(row.activity),"PHYSICAL_OMITTED_VISIBLE_HOME");
+            return false;
+        }
+        String main=CONTROLLER+"/"+CONTROLLER+".MainActivity";
+        need(kind==1&&row.user==0&&row.uid==10481&&row.root==row.task&&row.display>1
+                &&(row.uid+":"+CONTROLLER).equals(row.affinity)&&main.equals(row.base)&&main.equals(row.activity)
+                &&"18800000".equals(row.flags),"PHYSICAL_OMITTED_VISIBLE_NON_HOME");
+        Matcher activity=one("^    Activities=\\[ActivityRecord\\{([0-9a-f]+) u0 ([A-Za-z0-9_.$]+/[A-Za-z0-9_.$]+) t([0-9]+)\\}\\]$",
+                body,"PHYSICAL_OMITTED_VISIBLE_CONTROLLER_ACTIVITY");
+        need(component(activity.group(2)).equals(main)&&n(activity.group(3))==row.task,
+                "PHYSICAL_OMITTED_VISIBLE_CONTROLLER_ACTIVITY");
+        return true;
+    }
     private static RecentCensus recents(String raw,int targetUser){
         String text=checked(raw,"ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)");
         // Reuse the existing complete recent-task membership parser as an
         // independent fence before the richer stable-identity projection.
         try{ProfileTaskPolicy.Recents.parse(text);}catch(Exception e){throw new IllegalArgumentException("PHYSICAL_RECENTS_MEMBERSHIP_INVALID",e);}
         String a="  Recent tasks:\n",b="  Visible recent tasks (most recent first):\n";
-        need(text.indexOf(a)>=0&&text.indexOf(a)==text.lastIndexOf(a)&&text.indexOf(b)>text.indexOf(a)&&text.indexOf(b)==text.lastIndexOf(b),"PHYSICAL_RECENTS_SECTIONS_INCOMPLETE");
-        String pre=text.substring(0,text.indexOf(a)),internal=text.substring(text.indexOf(a)+a.length(),text.indexOf(b)),visible=text.substring(text.indexOf(b)+b.length());
+        int begin=text.indexOf(a),end=text.indexOf(b);boolean omitted=end<0;
+        need(begin>=0&&begin==text.lastIndexOf(a)&&(omitted||end>begin&&end==text.lastIndexOf(b)),"PHYSICAL_RECENTS_SECTIONS_INCOMPLETE");
+        if(omitted)need(text.endsWith("\n")&&!Pattern.compile("(?i)visible recent|recenttaskinfo").matcher(text).find(),
+                "PHYSICAL_OMITTED_VISIBLE_PARTIAL_SECTION");
+        String pre=text.substring(0,begin),internal=text.substring(begin+a.length(),omitted?text.length():end),visible=omitted?"":text.substring(end+b.length());
+        int omittedControllers=0;
         String[] lines=pre.split("\n");need(lines.length==5||lines.length==6,"PHYSICAL_RECENTS_PREAMBLE_INVALID");
         need(lines[1].matches("mRecentsUid=[0-9]+")&&lines[2].matches("mRecentsComponent=ComponentInfo\\{[^{}\\r\\n]+\\}")
                 &&lines[3].matches("mFreezeTaskListReordering=(true|false)")&&lines[4].matches("mFreezeTaskListReorderingPendingTimeout=(true|false)"),"PHYSICAL_RECENTS_PREAMBLE_INVALID");
@@ -272,11 +299,12 @@ public final class PublicOwnGroupPhysicalFence {
             r.activity="null".equals(activity)?"null":component(activity);
             r.display=n(one("^    lastDisplayId=(-?[0-9]+)[ \\t\\r\\n]*\\z",body,"PHYSICAL_RECENT_DISPLAY_MISSING").group(1));
             String[] in=intent(one("^    intent=(\\{[^\\r\\n]*\\}|null)$",body,"PHYSICAL_RECENT_INTENT_MISSING").group(1));r.base=in[0];r.flags=in[1];
+            if(omitted&&omittedVisibleRow(r,body))need(++omittedControllers==1,"PHYSICAL_OMITTED_VISIBLE_MULTIPLE_CONTROLLERS");
             need(rows.put(r.task,r)==null,"PHYSICAL_RECENT_DUPLICATE");if(targetUser==0||r.user!=targetUser){
                 String fact="internal|"+r.data();append(out,fact);facts.add(new RecentFact(r.task,fact));}
         }
-        Set<Integer> seen=new HashSet<Integer>();heads=visibleRecentHeaders(visible);
-        need(!heads.isEmpty()&&visible.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_VISIBLE_RECENTS_MISSING");
+        Set<Integer> seen=new HashSet<Integer>();heads=omitted?Collections.<Matcher>emptyList():visibleRecentHeaders(visible);
+        need(omitted||!heads.isEmpty()&&visible.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_VISIBLE_RECENTS_MISSING");
         for(int i=0;i<heads.size();i++){
             Matcher h=heads.get(i);need(n(h.group(1))==i,"PHYSICAL_VISIBLE_INDICES_INCOMPLETE");
             String body=visible.substring(h.end(),i+1<heads.size()?heads.get(i+1).start():visible.length());

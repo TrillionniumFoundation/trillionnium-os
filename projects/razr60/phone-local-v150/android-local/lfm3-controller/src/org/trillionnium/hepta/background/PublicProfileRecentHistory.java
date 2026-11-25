@@ -83,11 +83,12 @@ public final class PublicProfileRecentHistory {
             byte[] bytes=raw==null?null:raw.getBytes(StandardCharsets.UTF_8);
             need(bytes!=null&&bytes.length>0&&bytes.length<=BackgroundOwnedSingleTask.MAX_DUMP_BYTES,"PUBLIC_HISTORY_RAW_BOUND");
             this.raw=raw;this.target=target;census=PublicOwnGroupPhysicalFence.inspectRecents(raw);
-            int begin=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);
-            need(begin>=0&&end>begin&&begin==raw.lastIndexOf(INTERNAL)&&end==raw.lastIndexOf(VISIBLE),"PUBLIC_HISTORY_SECTIONS");
+            int begin=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);boolean omitted=end<0;
+            // The full census above has already validated the narrow omitted-Visible shape.
+            need(begin>=0&&begin==raw.lastIndexOf(INTERNAL)&&(omitted||end>begin&&end==raw.lastIndexOf(VISIBLE)),"PUBLIC_HISTORY_SECTIONS");
             String prefix=raw.substring(0,begin);hiddenField=prefix.contains("\nmHiddenTasks=");
             preamble=prefix.replaceAll("(?m)^mHiddenTasks=\\[[^\\r\\n]*\\]\\n","");
-            String internal=raw.substring(begin+INTERNAL.length(),end),vis=raw.substring(end+VISIBLE.length());
+            String internal=raw.substring(begin+INTERNAL.length(),omitted?raw.length():end),vis=omitted?"":raw.substring(end+VISIBLE.length());
             List<Matcher> heads=matches(HEAD,internal);Map<Integer,Row> parsed=new LinkedHashMap<Integer,Row>();
             Map<Integer,String> ts=new LinkedHashMap<Integer,String>();Map<String,Integer> tokenOwners=new HashMap<String,Integer>();
             need(!heads.isEmpty()&&heads.size()<=ProfileTaskPolicy.MAX_LEAVES,"PUBLIC_HISTORY_ROW_BOUND");
@@ -98,7 +99,7 @@ public final class PublicProfileRecentHistory {
                 Row row=new Row(f,body);need(parsed.put(id,row)==null,"PUBLIC_HISTORY_DUPLICATE_ID");putToken(ts,tokenOwners,id,f.token);
             }
             need(parsed.keySet().equals(census.records.keySet()),"PUBLIC_HISTORY_MEMBERSHIP");
-            List<VisibleRow> visibleRows=new ArrayList<VisibleRow>();List<Matcher> visibleHeads=PublicOwnGroupPhysicalFence.visibleRecentHeaders(vis);
+            List<VisibleRow> visibleRows=new ArrayList<VisibleRow>();List<Matcher> visibleHeads=omitted?Collections.<Matcher>emptyList():PublicOwnGroupPhysicalFence.visibleRecentHeaders(vis);
             for(int i=0;i<visibleHeads.size();i++){
                 Matcher h=visibleHeads.get(i);need(decimal(h.group(1))==i,"PUBLIC_HISTORY_VISIBLE_ORDER");
                 String body=vis.substring(h.end(),i+1<visibleHeads.size()?visibleHeads.get(i+1).start():vis.length());

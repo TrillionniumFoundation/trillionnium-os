@@ -31,6 +31,10 @@ public final class PublicPersonalNotesAbsenceRecovery {
     private static final String WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v7-workflow-retirement-refused";
     private static final String WORKFLOW_RETIREMENT_REFUSED_SOURCE="fresh_workflow_retirement_refused_personal_notes_absence_with_preserved_failure";
     private static final String WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA="hepta.personal-notes-workflow-retirement-refused-current-absence.v1";
+    private static final String INITIALIZATION_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v9-initialization";
+    private static final String INITIALIZATION_STARTUP_SCHEMA="hepta.personal-notes-absence-request.v10-initialization-startup";
+    private static final String INITIALIZATION_PROOF_SCHEMA="hepta.personal-notes-initialization-current-absence.v1";
+    private static final String INITIALIZATION_SOURCE="fresh_initialization_failure_personal_notes_absence_with_preserved_failure";
     private static final String RELEASED_BEFORE_MODEL_SCHEMA="hepta.personal-notes-absence-request.v4";
     private static final String[] RELEASED_BEFORE_MODEL_INPUTS={"journal","owner","bootstrap","cleanup","result","broker_receipt","broker_output",
             "initial_binding","scope_binding","completion_identity"};
@@ -65,7 +69,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final boolean postModelDrained,workflowCloseFailed,workflowRetirementRefused,workflowPartialRetirement,cancelledAfterActions;
         private final boolean prelaunchCreateFailure;
         private final boolean releasedTerminal;
-        public final boolean releasedBeforeModel;
+        public final boolean releasedBeforeModel,initializationFailed;
         private final boolean interruptedLostLaunch;
         private final Map<String,byte[]> originals;
         private final byte[] currentControl;
@@ -74,13 +78,13 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(uid>=10000&&uid<90000&&ProfileIdentity.uuid(id)&&now>=0&&boot>=0,"NOTES_REQUEST_IDENTITY");
             need(input!=null,"NOTES_INPUT_SET");
             cancelledAfterActions=input.containsKey("cancelled_history");
-            interruptedLostLaunch=input.keySet().equals(new TreeSet<String>(Arrays.asList(LOST_LAUNCH_STARTUP_INPUTS)));
-            releasedBeforeModel=interruptedLostLaunch||input.keySet().equals(new TreeSet<String>(Arrays.asList(RELEASED_BEFORE_MODEL_INPUTS)));
+            boolean startupInputs=input.keySet().equals(new TreeSet<String>(Arrays.asList(LOST_LAUNCH_STARTUP_INPUTS)));
+            boolean beforeModelInputs=startupInputs||input.keySet().equals(new TreeSet<String>(Arrays.asList(RELEASED_BEFORE_MODEL_INPUTS)));
             workflowCloseFailed=input.keySet().equals(new TreeSet<String>(Arrays.asList(WORKFLOW_CLOSE_INPUTS)));
             postModelDrained=workflowCloseFailed||input.keySet().equals(new TreeSet<String>(Arrays.asList(DRAINED_INPUTS)));
-            need(cancelledAfterActions||releasedBeforeModel||postModelDrained||input.keySet().equals(new TreeSet<String>(Arrays.asList(INPUTS))),"NOTES_INPUT_SET");
+            need(cancelledAfterActions||beforeModelInputs||postModelDrained||input.keySet().equals(new TreeSet<String>(Arrays.asList(INPUTS))),"NOTES_INPUT_SET");
             LinkedHashMap<String,byte[]> copy=new LinkedHashMap<String,byte[]>();int total=0;
-            String[] names=cancelledAfterActions?cancelledNames(object(input.get("cancelled_history"))):interruptedLostLaunch?LOST_LAUNCH_STARTUP_INPUTS:releasedBeforeModel?RELEASED_BEFORE_MODEL_INPUTS:workflowCloseFailed?WORKFLOW_CLOSE_INPUTS:postModelDrained?DRAINED_INPUTS:INPUTS;
+            String[] names=cancelledAfterActions?cancelledNames(object(input.get("cancelled_history"))):startupInputs?LOST_LAUNCH_STARTUP_INPUTS:beforeModelInputs?RELEASED_BEFORE_MODEL_INPUTS:workflowCloseFailed?WORKFLOW_CLOSE_INPUTS:postModelDrained?DRAINED_INPUTS:INPUTS;
             need(input.keySet().equals(new TreeSet<String>(Arrays.asList(names))),"NOTES_INPUT_SET");
             for(String name:names){byte[] raw=input.get(name);need(raw!=null&&raw.length>0&&raw.length<=MAX_ORIGINAL,"NOTES_INPUT_BOUND");
                 total+=raw.length;need(total<=MAX_BUNDLE,"NOTES_INPUT_BOUND");copy.put(name,raw.clone());}
@@ -90,7 +94,10 @@ public final class PublicPersonalNotesAbsenceRecovery {
             taskId=string(j,"task_id");generation=string(j,"generation");ownerSha256=string(j,"owner_sha256");displayName=string(j,"display_name");
             need(taskId.matches("[0-9a-f]{32}")&&ProfileIdentity.uuid(generation)&&ProfileIdentity.hash(ownerSha256)
                     &&("hepta-bg-"+generation).equals(displayName)&&displayName.equals(string(j,"socket")),"NOTES_JOURNAL_IDENTITY");
-            long d=number(j,"display_id");need(d>1&&d<=Integer.MAX_VALUE,"NOTES_RECORDED_DISPLAY");displayId=(int)d;
+            long d=number(j,"display_id");
+            initializationFailed=beforeModelInputs&&d==-1;interruptedLostLaunch=startupInputs;
+            releasedBeforeModel=beforeModelInputs&&!initializationFailed;
+            need(initializationFailed||(d>1&&d<=Integer.MAX_VALUE),"NOTES_RECORDED_DISPLAY");displayId=(int)d;
             need("CLEANUP_UNKNOWN".equals(string(j,"state")),"NOTES_JOURNAL_PHASE");
             yes(j,"owned_task_retirement_required","personal_notes_retirement_required","public_own_group_experimental");
             no(j,"public_scope_serialization_grants_authority");
@@ -135,24 +142,29 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(number(broker,"stored_bytes")==output.length&&number(broker,"observed_bytes")==output.length
                     &&ProfileIdentity.sha(output).equals(string(broker,"stored_sha256")),"NOTES_BROKER_OUTPUT_BYTES");
             requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
-            JSONObject terminal=cancelledAfterActions?cancelledTerminal(output):object(output);
+            JSONObject terminal=initializationFailed?initializationTerminal(output):cancelledAfterActions?cancelledTerminal(output):object(output);
             // A failed action can complete its owned retirement before returning
             // ok=false. Derive this shape from the preserved terminal bytes; it
             // still requires the complete one-step drained model proof and fresh
             // independent absence. It never promotes the failed business result.
             releasedTerminal="RELEASED".equals(string(terminal,"state"));
-            need((!releasedTerminal||postModelDrained||releasedBeforeModel)&&(!releasedBeforeModel||releasedTerminal),"NOTES_RELEASED_MODEL_STATE");
+            need((!releasedTerminal||postModelDrained||releasedBeforeModel||initializationFailed)&&(!releasedBeforeModel||releasedTerminal),"NOTES_RELEASED_MODEL_STATE");
             need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))&&generation.equals(string(terminal,"generation"))
                     &&number(terminal,"display_id")==displayId&&(releasedTerminal||"CLEANUP_UNKNOWN".equals(string(terminal,"state")))
                     &&publicScope.sha256.equals(string(terminal,"display_scope_sha256")),"NOTES_BROKER_TERMINAL_BINDING");
             if(releasedTerminal){
                 yes(terminal,"release_confirmed");yes(cleanup,"broker_process_exit_observed");yes(broker,"eof_seen");
-                need(number(cleanup,"broker_process_exit_code")==0,"NOTES_RELEASED_BROKER_EXIT");
+                need(number(cleanup,"broker_process_exit_code")== (initializationFailed?70:0),"NOTES_RELEASED_BROKER_EXIT");
             }else no(terminal,"release_confirmed");
             yes(terminal,"public_scope_admission_retired");
+            java.util.Set<Integer> ids=new TreeSet<Integer>();JSONObject last=null;
+            if(initializationFailed){
+                targetUid=initializationTargetUid();
+                requireInitializationRecords(bootstrap,cleanup,broker,terminal,owner,result);
+            }else{
             JSONObject custody=terminal.getJSONObject("personal_notes_cleanup");
             targetUid=notesCustody(custody,releasedTerminal);
-            JSONObject last=cleanup.getJSONObject("last_broker_response");
+            last=cleanup.getJSONObject("last_broker_response");
             need(generation.equals(string(last,"generation"))&&number(last,"display_id")==displayId
                     &&publicScope.sha256.equals(string(last,"display_scope_sha256"))&&number(last,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION,
                     "NOTES_LAST_RESPONSE_BINDING");
@@ -161,7 +173,6 @@ public final class PublicPersonalNotesAbsenceRecovery {
                 need(same(custody,last.getJSONObject("personal_notes_cleanup")),"NOTES_RELEASED_CUSTODY_CHANGED");
                 yes(last,"public_scope_closing");
             }
-            java.util.Set<Integer> ids=new TreeSet<Integer>();
             for(JSONObject c:new JSONObject[]{custody,last.getJSONObject("personal_notes_cleanup")}){
                 JSONArray observed=c.getJSONArray("actual_observed_tasks");need(observed.length()<=32,"NOTES_RECORDED_TASK_BOUND");
                 for(int i=0;i<observed.length();i++){JSONObject row=observed.getJSONObject(i);long task=number(row,"task_id");
@@ -203,6 +214,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     object(originals.get("step_action")).getJSONObject("background_session").getJSONObject("last_broker_response"),last,terminal,ids);
             else if(postModelDrained)requireDrainedBootstrap(bootstrap.getJSONObject("last_broker_response"),last,ids);
             else need(same(bootstrap.getJSONObject("last_broker_response"),last),"NOTES_ORIGINAL_RESPONSE_CHANGED");
+            }
             recordedTaskIds=Collections.unmodifiableSet(ids);
             if(cancelledAfterActions)requireCancelledResult(result,owner,last);
             else {
@@ -251,11 +263,145 @@ public final class PublicPersonalNotesAbsenceRecovery {
             JSONObject current=object(control);need("hepta.local-session.v1".equals(string(current,"schema"))&&number(current,"app_uid")==uid,
                     "NOTES_CURRENT_CONTROL_OWNER");no(current,"pending","running","automatic_resume");yes(current,"blocked");
             need(taskId.equals(string(current,"task_id"))&&ownerSha256.equals(string(current,"instruction_sha256")),"NOTES_CURRENT_CONTROL_BINDING");
-            if(releasedBeforeModel)requireLostControl(current,owner,result);
+            if(releasedBeforeModel||initializationFailed)requireLostControl(current,owner,result);
             if(cancelledAfterActions)requireCancelledControl(current,owner,result);
             currentControl=control.clone();currentControlSha256=ProfileIdentity.sha(control);
             journalSha256=ProfileIdentity.sha(originals.get("journal"));originalsSha256=ProfileIdentity.sha(canonical(inputHashes()));requireFence(now,boot);
         }
+
+        /** A diagnostic INITIAL failure followed by a final terminal line is not
+         * cleanup proof. Original expiry, an exited owned Process and the fresh
+         * complete double census are still required before journal retirement. */
+        private JSONObject initializationTerminal(byte[] raw)throws Exception{
+            String text=new String(raw,StandardCharsets.UTF_8);
+            need(Arrays.equals(raw,text.getBytes(StandardCharsets.UTF_8))&&text.endsWith("\n")
+                    &&text.indexOf('\r')<0,"NOTES_INITIALIZATION_OUTPUT_FRAMING");
+            String[] lines=text.split("\n",-1);
+            need(lines.length==3&&!lines[0].isEmpty()&&!lines[1].isEmpty()&&lines[2].isEmpty(),"NOTES_INITIALIZATION_OUTPUT_FRAMING");
+            JSONObject first=object(lines[0].getBytes(StandardCharsets.UTF_8)),last=object(lines[1].getBytes(StandardCharsets.UTF_8));
+            keys(first,"schema","error","state");
+            need("hepta.background-broker-terminal.v1".equals(string(first,"schema"))
+                    &&"FRAMEWORK_OPERATION_FAILED".equals(string(first,"error"))&&"INITIAL".equals(string(first,"state")),
+                    "NOTES_INITIALIZATION_FAILURE_SEQUENCE");
+            keys(last,"schema","generation","state","display_id","reason","release_confirmed","boot_count_read_retirement_failure",
+                    "owned_single_task","profile_cleanup","profile_cleanup_diagnostics","profile_last_leaf_validation",
+                    "profile_first_root_refusal","profile_permission_first_read_mismatch","profile_custody_retained",
+                    "display_scope_sha256","public_scope_admission_retired","public_surface_detach","public_screen_lease","public_policy_diagnostics");
+            need("process_finally".equals(string(last,"reason"))&&"RELEASED".equals(string(last,"state"))
+                    &&number(last,"display_id")==-1,"NOTES_INITIALIZATION_FINAL_SEQUENCE");
+            for(String key:new String[]{"boot_count_read_retirement_failure","owned_single_task","profile_cleanup",
+                    "profile_last_leaf_validation","profile_first_root_refusal","profile_permission_first_read_mismatch"})
+                need(last.get(key)==JSONObject.NULL,"NOTES_INITIALIZATION_NO_CUSTODY");
+            no(last,"profile_custody_retained");
+            return last;
+        }
+        private int initializationTargetUid()throws Exception{
+            JSONObject identity=object(originals.get("completion_identity"));
+            long uid=number(identity,"uid");
+            need(uid>=10000&&uid<90000&&uid!=ownerUid,"NOTES_INITIALIZATION_TARGET_UID");
+            return (int)uid;
+        }
+        private void requireInitializationRecords(JSONObject bootstrap,JSONObject cleanup,JSONObject broker,
+                JSONObject terminal,JSONObject owner,JSONObject result)throws Exception{
+            need(displayId==-1&&!releasedBeforeModel&&!postModelDrained&&!cancelledAfterActions
+                    &&number(result,"steps")==0,"NOTES_INITIALIZATION_SHAPE");
+            JSONObject initial=object(originals.get("initial_binding")),scope=object(originals.get("scope_binding"));
+            JSONObject journal=object(originals.get("journal"));
+            Iterator<String> fields=journal.keys();
+            while(fields.hasNext()){
+                String key=fields.next();
+                if(!"state".equals(key))need(same(journal.get(key),initial.get(key)),"NOTES_INITIALIZATION_BINDING_CHANGED");
+            }
+            need("INITIAL".equals(string(initial,"state"))&&"INITIAL".equals(string(bootstrap,"state"))
+                    &&initial.get("broker_output")==JSONObject.NULL&&initial.get("broker_process_exit_code")==JSONObject.NULL
+                    &&bootstrap.get("broker_process_exit_code")==JSONObject.NULL,"NOTES_INITIALIZATION_INITIAL_RECORD");
+            no(initial,"retired","spawn_attempted","bootstrap_dispatched","bootstrap_model_issued","broker_process_exit_observed");
+            no(bootstrap,"retired","bootstrap_dispatched","bootstrap_model_issued","broker_process_exit_observed");
+            yes(bootstrap,"spawn_attempted");yes(cleanup,"retired","spawn_attempted","broker_process_exit_observed");
+            no(cleanup,"bootstrap_dispatched","bootstrap_model_issued","cleanup_known");
+            need(number(cleanup,"broker_process_exit_code")==70&&same(bootstrap.getJSONObject("broker_output"),broker),
+                    "NOTES_INITIALIZATION_OWNED_EXIT");
+            for(JSONObject record:new JSONObject[]{initial,bootstrap,cleanup})
+                need(record.get("app_display_readback")==JSONObject.NULL&&record.get("last_broker_response")==JSONObject.NULL,
+                        "NOTES_INITIALIZATION_RESPONSE_OBSERVED");
+            keys(broker,"schema","task_id","generation","app_uid","app_pid","process_binding","process_reference",
+                    "command_sha256","started_elapsed_ms","output_file","receipt_file","output_limit_bytes","observed_bytes",
+                    "stored_bytes","stored_sha256","overflow","eof_seen","read_failed","merged_stdout_stderr","model_input",
+                    "release_evidence","capture_reason","persisted");
+            need("stream_terminal".equals(string(broker,"capture_reason")),"NOTES_INITIALIZATION_CAPTURE_REASON");
+            yes(broker,"eof_seen","persisted");no(broker,"release_evidence");
+            JSONObject target=owner.getJSONObject("task_authorization").getJSONObject("execution_target");
+            for(JSONObject record:new JSONObject[]{initial,bootstrap,cleanup})
+                need(same(target,record.getJSONObject("execution_target")),"NOTES_INITIALIZATION_TARGET_CHANGED");
+            need(ownerSha256.equals(string(target,"owner_sha256"))&&PACKAGE.equals(string(target,"effective_initial_package"))
+                    &&same(owner.getJSONObject("background_request").getJSONArray("allowed_packages"),target.getJSONArray("effective_allowed_packages")),
+                    "NOTES_INITIALIZATION_TARGET");
+            no(target,"owner_rewritten","package_from_model_or_screen","grants_tool_authority","business_verified");
+            need(same(scope,owner.getJSONObject("qualification_scope"))&&same(scope,result.getJSONObject("qualification_scope"))
+                    &&taskId.equals(string(scope,"task_id"))&&scope.get("expected_scope_sha256")==JSONObject.NULL
+                    &&scope.get("actual_scope_sha256")==JSONObject.NULL,"NOTES_INITIALIZATION_ORDINARY_SCOPE");
+            no(scope,"restricted","scope_refused","scope_loaded");
+            JSONObject identity=object(originals.get("completion_identity"));
+            need("ordinary_package_manager_and_full_apk_hash".equals(string(identity,"source"))&&PACKAGE.equals(string(identity,"package"))
+                    &&number(identity,"uid")==targetUid&&number(identity,"version_code")>0,"NOTES_INITIALIZATION_TARGET_INSTALLATION");
+            JSONObject hashes=identity.getJSONObject("apk_hashes");java.util.TreeMap<String,String> sorted=new java.util.TreeMap<String,String>();
+            need(hashes.has("base")&&hashes.length()<=32,"NOTES_INITIALIZATION_TARGET_INSTALLATION");
+            Iterator<String> parts=hashes.keys();while(parts.hasNext()){
+                String part=parts.next(),hash=string(hashes,part);
+                need(("base".equals(part)||part.matches("split:[A-Za-z0-9_.-]+"))&&ProfileIdentity.hash(hash),"NOTES_INITIALIZATION_TARGET_INSTALLATION");
+                sorted.put(part,hash);
+            }
+            StringBuilder rows=new StringBuilder();
+            for(Map.Entry<String,String> row:sorted.entrySet())rows.append(row.getKey()).append('\t').append(row.getValue()).append('\n');
+            need(ProfileIdentity.sha(rows.toString()).equals(string(identity,"apk_set_sha256")),"NOTES_INITIALIZATION_APK_SET");
+            JSONObject profile=terminal.getJSONObject("profile_cleanup_diagnostics"),policy=terminal.getJSONObject("public_policy_diagnostics");
+            keys(profile,"schema","first_failure","diagnostics_grant_authority","provides_cleanup_proof","allows_input_or_model_resumption");
+            keys(policy,"schema","first_failure","diagnostics_grant_authority","provides_cleanup_proof");
+            need("hepta.profile-cleanup-diagnostics.v1".equals(string(profile,"schema"))&&profile.get("first_failure")==JSONObject.NULL
+                    &&"hepta.public-policy-diagnostics.v1".equals(string(policy,"schema"))&&policy.get("first_failure")==JSONObject.NULL,
+                    "NOTES_INITIALIZATION_DIAGNOSTICS");
+            no(profile,"diagnostics_grant_authority","provides_cleanup_proof","allows_input_or_model_resumption");
+            no(policy,"diagnostics_grant_authority","provides_cleanup_proof");
+            JSONObject detach=terminal.getJSONObject("public_surface_detach");
+            keys(detach,"schema","admission_irrevocably_retired","state","worker_claimed","late_create_worker_claimed",
+                    "identity_read_completed","adapter_entered","identity_source","api_attempted","api_returned","began_elapsed_ms",
+                    "ended_elapsed_ms","worker_finished","deadline_exceeded","failure_type","surface_stopped_verified",
+                    "provides_task_or_display_cleanup_proof","allows_input_or_model_resumption","shutdown_depends_on_fresh_display_binder_query");
+            long end=number(result,"terminal_decided_elapsed_ms"),begin=number(detach,"began_elapsed_ms"),finished=number(detach,"ended_elapsed_ms");
+            need("hepta.public-own-group.surface-retirement.v1".equals(string(detach,"schema"))
+                    &&"IDENTITY_UNAVAILABLE_UNVERIFIED".equals(string(detach,"state"))&&"NONE".equals(string(detach,"identity_source"))
+                    &&"java.io.IOException".equals(string(detach,"failure_type"))&&created<=begin&&begin<=finished&&finished<=end,
+                    "NOTES_INITIALIZATION_SURFACE_DIAGNOSTIC");
+            yes(detach,"admission_irrevocably_retired","worker_claimed","worker_finished");
+            // Detach-adapter diagnostics do not establish whether display creation
+            // was attempted. Current absence requires the fresh complete census.
+            no(detach,"late_create_worker_claimed","identity_read_completed","adapter_entered","api_attempted","api_returned",
+                    "deadline_exceeded","surface_stopped_verified","provides_task_or_display_cleanup_proof",
+                    "allows_input_or_model_resumption","shutdown_depends_on_fresh_display_binder_query");
+            JSONObject screen=terminal.getJSONObject("public_screen_lease");
+            keys(screen,"schema","generation","display_id","display_group_id","wake_lock_flags","expires_elapsed_ms",
+                    "acquire_entered","acquire_returned","acquired_elapsed_ms","admission_retired","release_entered","release_returned",
+                    "released_elapsed_ms","failure","initial_readiness_started_elapsed_ms","initial_readiness_deadline_elapsed_ms",
+                    "initial_readiness_census_count","initial_first_display_state","initial_last_display_state","initial_on_observed_elapsed_ms",
+                    "grants_cleanup_or_business_success");
+            need("hepta.public-own-group.screen-lease.v1".equals(string(screen,"schema"))&&generation.equals(string(screen,"generation"))
+                    &&number(screen,"display_id")==-1&&number(screen,"display_group_id")==-1&&number(screen,"wake_lock_flags")==10
+                    &&number(screen,"expires_elapsed_ms")==expires&&screen.get("failure")==JSONObject.NULL
+                    &&number(screen,"initial_first_display_state")==-1&&number(screen,"initial_last_display_state")==-1,
+                    "NOTES_INITIALIZATION_SCREEN_IDENTITY");
+            for(String key:new String[]{"acquired_elapsed_ms","released_elapsed_ms","initial_readiness_started_elapsed_ms",
+                    "initial_readiness_deadline_elapsed_ms","initial_readiness_census_count","initial_on_observed_elapsed_ms"})
+                need(number(screen,key)==0,"NOTES_INITIALIZATION_SCREEN_NOT_ACQUIRED");
+            yes(screen,"admission_retired");
+            no(screen,"acquire_entered","acquire_returned","release_entered","release_returned","grants_cleanup_or_business_success");
+            JSONObject evidence=result.getJSONObject("completion_evidence");
+            need(same(owner.getJSONObject("completion_contract"),evidence.getJSONObject("contract"))
+                    &&taskId.equals(string(evidence,"task_id"))&&ownerSha256.equals(string(evidence,"owner_sha256"))
+                    &&evidence.getJSONArray("proofs").length()==0&&evidence.getJSONArray("model_success_claims").length()==0,
+                    "NOTES_INITIALIZATION_BUSINESS_STATE");
+            no(evidence,"notes_launch_observed","completion_verified","model_done_synthesized","controller_completion_requested","grants_tool_authority");
+        }
+
         private JSONObject cancelledHistory()throws Exception{return object(originals.get("cancelled_history"));}
         public int cancelledActionCount()throws Exception{need(cancelledAfterActions,"NOTES_NOT_CANCELLED_KIND");return (int)number(cancelledHistory(),"completed_actions");}
         private JSONArray cancelledTaskRow(String file)throws Exception{
@@ -1191,7 +1337,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public byte[] original(String name)throws IOException{
             if("current_control".equals(name))return currentControl.clone();byte[] b=originals.get(name);need(b!=null,"NOTES_INPUT_NAME");return b.clone();
         }
-        public String source(){return cancelledAfterActions?CANCELLED_SOURCE:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
+        public String source(){return initializationFailed?INITIALIZATION_SOURCE:cancelledAfterActions?CANCELLED_SOURCE:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_SOURCE:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_SOURCE:SOURCE;}public String proofSchema(){return initializationFailed?INITIALIZATION_PROOF_SCHEMA:cancelledAfterActions?CANCELLED_PROOF_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_PROOF_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_PROOF_SCHEMA:SCHEMA;}
         public JSONObject recordedOwnedIdentity()throws Exception{
             JSONObject value=new JSONObject().put("display_id",displayId).put("display_name",displayName)
                 .put("task_ids",new JSONArray(recordedTaskIds)).put("user_id",0).put("full_uid",targetUid).put("package",PACKAGE)
@@ -1214,6 +1360,9 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         .put("historical_returned_task_ids",retirement.getJSONArray("returned_task_ids"))
                         .put("historical_retirement_failure","NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
             }
+            if(initializationFailed)value.put("historical_broker_terminal_state","RELEASED").put("historical_broker_exit_code",70)
+                    .put("historical_background_cleanup_known",false).put("historical_output_is_cleanup_proof",false)
+                    .put("app_bootstrap_dispatched",false).put("model_process_started",false);
             if(releasedBeforeModel)value.put("historical_broker_terminal_state","RELEASED").put("broker_launch_dispatched",true)
                     .put("app_observed_launch_response",false).put("model_process_started",false);
             return value;
@@ -1229,7 +1378,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
             out.put(name,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
         public String wire()throws Exception{
             ByteArrayOutputStream bytes=new ByteArrayOutputStream();DataOutputStream out=new DataOutputStream(bytes);
-            out.writeUTF(cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
+            out.writeUTF(initializationFailed?(interruptedLostLaunch?INITIALIZATION_STARTUP_SCHEMA:INITIALIZATION_REQUEST_SCHEMA):cancelledAfterActions?CANCELLED_REQUEST_SCHEMA:interruptedLostLaunch?LOST_LAUNCH_STARTUP_SCHEMA:releasedBeforeModel?RELEASED_BEFORE_MODEL_SCHEMA:workflowPartialRetirement?WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA:workflowRetirementRefused?WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA:workflowCloseFailed?WORKFLOW_CLOSE_REQUEST_SCHEMA:postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
             put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);
             if(cancelledAfterActions){out.writeInt(originals.size());for(String name:originals.keySet()){out.writeUTF(name);put(out,originals.get(name));}}
             else for(String name:originals.keySet())put(out,originals.get(name));out.flush();
@@ -1287,13 +1436,13 @@ public final class PublicPersonalNotesAbsenceRecovery {
         ByteArrayOutputStream decoded=new ByteArrayOutputStream();try(GZIPInputStream in=new GZIPInputStream(new ByteArrayInputStream(zipped))){
             byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){need(decoded.size()+n<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");decoded.write(b,0,n);}}
         DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));String schema=in.readUTF();
-        need(CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
+        need(INITIALIZATION_REQUEST_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema)||CANCELLED_REQUEST_SCHEMA.equals(schema)||REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema)||RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||LOST_LAUNCH_STARTUP_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
         int uid=in.readInt();String id=in.readUTF();long now=in.readLong();int boot=in.readInt();JSONObject controller=object(take(in,8192));byte[] control=take(in,MAX_ORIGINAL);
         Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();
         if(CANCELLED_REQUEST_SCHEMA.equals(schema)){
             int count=in.readInt();need(count>=14&&count<=60,"NOTES_CANCELLED_INPUT_COUNT");
             for(int i=0;i<count;i++){String name=in.readUTF();need(name.matches("[a-z_0-9]{1,48}")&&inputs.put(name,take(in,MAX_ORIGINAL))==null,"NOTES_CANCELLED_INPUT_NAME");}
-        }else for(String name:LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)?LOST_LAUNCH_STARTUP_INPUTS:RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
+        }else for(String name:(LOST_LAUNCH_STARTUP_SCHEMA.equals(schema)||INITIALIZATION_STARTUP_SCHEMA.equals(schema))?LOST_LAUNCH_STARTUP_INPUTS:(RELEASED_BEFORE_MODEL_SCHEMA.equals(schema)||INITIALIZATION_REQUEST_SCHEMA.equals(schema))?RELEASED_BEFORE_MODEL_INPUTS:(WORKFLOW_CLOSE_REQUEST_SCHEMA.equals(schema)||WORKFLOW_RETIREMENT_REFUSED_REQUEST_SCHEMA.equals(schema)||WORKFLOW_PARTIAL_RETIREMENT_REQUEST_SCHEMA.equals(schema))?WORKFLOW_CLOSE_INPUTS:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
         Request r=new Request(inputs,control,controller,uid,id,now,boot);need(r.wire().equals(wire),"NOTES_WIRE_NONCANONICAL");return r;
     }
     public static JSONObject validate(JSONObject value,Request r,long now,int boot)throws Exception{

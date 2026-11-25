@@ -44,7 +44,7 @@ final class PublicPersonalNotesRecoveryClient {
         JSONObject proof()throws Exception{return PublicPersonalNotesAbsenceRecovery.object(proofText.getBytes(StandardCharsets.UTF_8));}
         void requireOriginals(boolean journalPresent)throws Exception{
             if(cancelled!=null)cancelled.requireUnchanged(request);
-            if(request.releasedBeforeModel)requireLostLaunchEntries(originals.get("result").path.getParentFile(),request.generation);
+            if(request.releasedBeforeModel||request.initializationFailed)requireLostLaunchEntries(originals.get("result").path.getParentFile(),request.generation);
             if(request.postModelDrained)requireTaskEntries(originals.get("result").path.getParentFile(),true,request.workflowCloseFailed);
             for(Map.Entry<String,MobiMindPrivateFiles.Read> item:originals.entrySet()){
                 // The typed receipt already persisted both CAS inputs before unlink. The
@@ -141,9 +141,10 @@ final class PublicPersonalNotesRecoveryClient {
         boolean postModel=PublicPersonalNotesAbsenceRecovery.number(failed,"steps")==1;
         CancelledArchive cancelled=isCancelledHistory(failed)?new CancelledArchive(root.path,task,failed,actual):null;
         boolean workflowClose=postModel&&Boolean.TRUE.equals(failed.get("controller_completion_requested"));
-        boolean lostLaunch=!postModel&&Boolean.FALSE.equals(PublicPersonalNotesAbsenceRecovery.object(actual.get("cleanup").bytes).get("bootstrap_dispatched"))
+        boolean initialization=PublicPersonalNotesAbsenceRecovery.number(old,"display_id")==-1;
+        boolean lostLaunch=!initialization&&!postModel&&Boolean.FALSE.equals(PublicPersonalNotesAbsenceRecovery.object(actual.get("cleanup").bytes).get("bootstrap_dispatched"))
                 &&"RELEASED".equals(PublicPersonalNotesAbsenceRecovery.object(actual.get("broker_output").bytes).optString("state"));
-        if(lostLaunch){
+        if(lostLaunch||initialization){
             requireLostLaunchEntries(task,generation);
             for(String[] item:new String[][]{{"initial_binding","background-binding.json"},{"scope_binding","scope-binding.json"},{"completion_identity","completion-installed-identity.json"}})
                 actual.put(item[0],MobiMindPrivateFiles.read(new File(task,item[1]),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
@@ -159,7 +160,7 @@ final class PublicPersonalNotesRecoveryClient {
         if(!apk.getPath().equals(PublicPersonalNotesAbsenceRecovery.string(controller,"source_path")))throw new IOException("备忘录独立缺席恢复的当前代码与安装身份不一致");
         MobiMindPrivateFiles.Read currentControl=MobiMindPrivateFiles.read(new File(root.path,"control-session.json"),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true);
         JSONObject control=PublicPersonalNotesAbsenceRecovery.object(currentControl.bytes);
-        if((lostLaunch||cancelled!=null)&&"interrupted".equals(control.optString("status"))){
+        if((lostLaunch||initialization||cancelled!=null)&&"interrupted".equals(control.optString("status"))){
             String relative=PublicPersonalNotesAbsenceRecovery.lostLaunchOriginArchive(control);
             File recovery=existingDirectory(new File(root.path,"session-recovery"));
             for(String[] item:new String[][]{{"origin_control",relative},{"interruption_latch","control-session.interrupted.json"}}){
@@ -180,7 +181,7 @@ final class PublicPersonalNotesRecoveryClient {
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / org.trillionnium.hepta.background.PublicPersonalNotesAbsenceMain --request "+quote(request.wire());
         // The complete command must also fit the unchanged root proc-census bound.
         if(command.getBytes(StandardCharsets.UTF_8).length>=60000)throw new IOException("备忘录独立缺席恢复命令超过完整进程核验上限");
-        check.check();if(cancelled==null)requireTaskEntries(task,postModel,workflowClose);else cancelled.requireUnchanged(request);if(lostLaunch)requireLostLaunchEntries(task,generation);for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
+        check.check();if(cancelled==null)requireTaskEntries(task,postModel,workflowClose);else cancelled.requireUnchanged(request);if(lostLaunch||initialization)requireLostLaunchEntries(task,generation);for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
         final Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         final Capture capture=new Capture(process.getInputStream());Thread reader=new Thread(capture,"hepta-personal-notes-recovery-read");reader.setDaemon(true);reader.start();
         boolean exited=false;

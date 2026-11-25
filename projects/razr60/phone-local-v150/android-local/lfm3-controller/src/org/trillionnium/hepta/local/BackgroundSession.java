@@ -666,7 +666,8 @@ final class BackgroundSession {
      * A failed display create can precede bootstrap launch. Eligibility admits
      * the strict original-record check; it does not itself retire the lease. */
     synchronized boolean personalNotesRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()==null
-            &&requiresPersonalNotesRetirement()&&retired&&(bootstrapDispatched||spawnAttempted)&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
+            &&requiresPersonalNotesRetirement()&&retired&&(bootstrapDispatched||spawnAttempted)
+            &&(displayId>1||displayId==-1&&spawnAttempted&&!bootstrapDispatched)&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
         if(result.businessRecovery!=null){
@@ -1700,7 +1701,7 @@ final class BackgroundSession {
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
             return new Cleanup(true,verifiedEvidence,null,null,receipt);
         }
-        if(publicScope!=null&&target==null&&prelaunchCheck!=null&&id>1
+        if(publicScope!=null&&target==null&&prelaunchCheck!=null&&(id>1||id==-1)
                 &&journalRequiresPersonalNotes(old,publicScope)&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
                 &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
                 &&SystemClock.elapsedRealtime()>expiry+2000){

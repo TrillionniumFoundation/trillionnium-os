@@ -365,8 +365,9 @@ final class PublicPersonalNotesRetirement {
         private final Map<Integer,Long> ages=new LinkedHashMap<Integer,Long>();
         History(String raw){
             census=PublicOwnGroupPhysicalFence.inspectRecents(raw);
-            int start=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);
-            need(start>=0&&end>start&&start==raw.lastIndexOf(INTERNAL)&&end==raw.lastIndexOf(VISIBLE),"NOTES_RETIREMENT_HISTORY_SECTIONS");
+            int start=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);boolean omitted=end<0;
+            need(start>=0&&start==raw.lastIndexOf(INTERNAL)&&(omitted||(end>start&&end==raw.lastIndexOf(VISIBLE))),"NOTES_RETIREMENT_HISTORY_SECTIONS");
+            if(omitted)end=raw.length();
             String prefix=raw.substring(0,start);
             preamble=prefix.replaceAll("(?m)^mHiddenTasks=\\[[^\\r\\n]*\\]\\n","")+"\nhidden_field="+prefix.contains("\nmHiddenTasks=");
             String rows=raw.substring(start+INTERNAL.length(),end);List<Matcher> heads=matches(HEAD,rows);
@@ -379,7 +380,7 @@ final class PublicPersonalNotesRetirement {
                 need(internal.put(id,fact.label+"\n"+normalized)==null,"NOTES_RETIREMENT_HISTORY_DUPLICATE");
             }
             need(internal.keySet().equals(census.records.keySet()),"NOTES_RETIREMENT_HISTORY_MEMBERSHIP");
-            String vis=raw.substring(end+VISIBLE.length());List<Matcher> vh=PublicOwnGroupPhysicalFence.visibleRecentHeaders(vis);
+            String vis=omitted?"":raw.substring(end+VISIBLE.length());List<Matcher> vh=omitted?Collections.<Matcher>emptyList():PublicOwnGroupPhysicalFence.visibleRecentHeaders(vis);
             Pattern identity=Pattern.compile("(?m)^    id=([0-9]+) userId=([0-9]+) hasTask=(true|false) lastActiveTime=([0-9]+)$");
             for(int i=0;i<vh.size();i++){
                 Matcher h=vh.get(i);need(Integer.parseInt(h.group(1))==i,"NOTES_RETIREMENT_VISIBLE_ORDER");
