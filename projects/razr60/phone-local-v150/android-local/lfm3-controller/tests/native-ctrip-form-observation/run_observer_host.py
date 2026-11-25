@@ -167,9 +167,13 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        if anchor=='    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{' and actual=='7d3081cd37094ce85757e7b3bc649f1294f0a380f4e3d6cdbe65b624523b6ed9':
+            proof=once(proof,'        if(original.formPurposeGeometry!=null)original.requireFormPurposeTarget(guard.purpose,guard.targetNode);\n','')
+            if h.sha(proof.encode())!='0fbffdc34dc59df1828d928c70c7514d9732d8cb6afedaf2f2c308918a321d01':
+                raise RuntimeError('purpose guard must restore complete preceding actual guard')
         # Reverse only the reviewed Xiaomi original-literal type guard for the
         # historical body proof. Actual production extraction stays current.
-        if anchor=='    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{' and actual=='0fbffdc34dc59df1828d928c70c7514d9732d8cb6afedaf2f2c308918a321d01':
+        if anchor=='    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{' and h.sha(proof.encode())=='0fbffdc34dc59df1828d928c70c7514d9732d8cb6afedaf2f2c308918a321d01':
             proof=once(proof,'                ||!original.packageName.equals(frame.backgroundBootstrapPackage)\n                ||!(nativeSearchInputGuard(work)?"type".equals(action.action):"click".equals(action.action))\n                ||nativeSearchInputGuard(work)&&(!original.packageName.equals(NativeAppGoal.XIAOMI_PACKAGE)\n                    ||!guard.goal.readsXiaomiProduct()||!NativeAppGoal.PRODUCT_MODEL.equals(guard.goal.productModel)\n                    ||!guard.goal.immutableOwner.substring(guard.goal.modelStartUtf16,guard.goal.modelEndUtf16).equals(action.text)\n                    ||!guard.targetNode.text.isEmpty()||!"0/1".equals(guard.targetNode.path))\n','                ||!original.packageName.equals(frame.backgroundBootstrapPackage)||!"click".equals(action.action)\n')
             if h.sha(proof.encode())!='4ff4399af8965f25601a0c494a97d5101d41d4f5031dc4413dc57cdb2baa5bab':
                 raise RuntimeError('empty-input type guard must reverse to exact prior action guard')
@@ -202,6 +206,9 @@ def generate(source,output,h):
                            'reviewed_sampling_inverse_verified':sampling_inverse,
                            'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
+    purpose_inverse=source/'tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py'
+    if h.sha(purpose_inverse.read_bytes())!='5316f04448deb3523076e4c0ccc7ac7dd1cc929f1ff7593034738ddb66a446fe':raise RuntimeError('exact Ctrip purpose proof inverse required')
+    purpose_predecessor=runpy.run_path(str(purpose_inverse))['restore_w5_form_purpose']
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
@@ -223,12 +230,15 @@ def generate(source,output,h):
         if name=='NativeActionSnapshotCheck.java' and actual in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
                 'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac',
                 '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf',
-                'b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2'):
+                'b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2',
+                '296dbc220298cbc564b2cef7d2b51dfa1145ab68b8f2298c3e3419a071753b28'):
             # Proof copies only: preserve the complete prior Ctrip comparator.
             # The unchanged current production file still enters javac below.
             predecessor_input=current
-            if actual=='b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2':
-                predecessor_input=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,current)
+            if actual=='296dbc220298cbc564b2cef7d2b51dfa1145ab68b8f2298c3e3419a071753b28':
+                predecessor_input=purpose_predecessor(str(PKG/name),predecessor_input)
+            if h.sha(predecessor_input)=='b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2':
+                predecessor_input=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,predecessor_input)
             proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](predecessor_input)
             if h.sha(proof)!=r32_provider_pins[name]:raise RuntimeError('full prior comparator required')
             protected_files[name]=actual
@@ -330,8 +340,31 @@ def generate(source,output,h):
         if name=='provider_constants':continue
         compiled_raw=compiled_parts.get(name,raw)
         if template.count(compiled_raw)!=1:raise RuntimeError('actual production body or explicit calendar type boundary was altered or duplicated: '+name)
+    adapter=(source/PKG/'NativeAppObservation.java').read_text()
+    codec_markers={
+      'encode':'    static Map<String,Object> pixelFormPair(',
+      'bytes':'    static byte[] pixelFormPairBytes(',
+      'decode':'    static JSONObject decodePixelFormPair(',
+      'schema':'    private static void requirePixelFormSchema(',
+      'value':'    private static Object value('}
+    codec_parts={name:h.body(adapter,mark) for name,mark in codec_markers.items()}
+    codec_constants=h.section(adapter,'    private static final int PIXEL_FORM_BYTES=','    static Map<String,Object> pixelFormPair(')
+    codec_source=('package org.trillionnium.hepta.local;\nimport java.util.*;\nimport java.nio.charset.StandardCharsets;\n'
+        'import java.security.MessageDigest;\nimport java.security.NoSuchAlgorithmException;\nimport org.json.*;\n'
+        'import org.trillionnium.hepta.background.ProfileTarget;\nimport org.trillionnium.hepta.background.WindowOwnership;\n'
+        'final class NativeFormPairCodecHost {\n'+codec_constants+'\n'+'\n'.join(codec_parts.values())
+        +'\n    static final class NativeAppEvidence {\n'+'\n'.join(evidence_parts)+'\n    }\n'
+        +'    @SuppressWarnings("unchecked") static Map<String,Object> decodedEvidence(Map<String,Object> wire)throws Exception {'
+        'return NativeAppEvidence.immutableMap((Map<String,Object>)value(decodePixelFormPair(new org.json.JSONObject(wire))));}\n}\n')
+    h.write(output/'NativeFormPairCodecHost.java',codec_source)
+    template=once(template,'    static final class NativeAppObservation {',
+        '    static final class NativeAppObservation {\n'
+        '        static Map<String,Object> pixelFormPair(Map<String,Object> proof){return NativeFormPairCodecHost.pixelFormPair(proof); }')
     h.write(output/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.ctrip-form-observer-extraction.v1',
+            'codec_extraction':{'source':h.meta(source/PKG/'NativeAppObservation.java'),'generated':h.meta(output/'NativeFormPairCodecHost.java'),
+                'methods':{k:{'bytes':len(v.encode()),'sha256':h.sha(v.encode())} for k,v in codec_parts.items()},
+                'constants_sha256':h.sha(codec_constants.encode()),'actual_methods_verbatim':True},
             'typed_child_port_inverse':{'current_complete_sha256':'1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2',
                 'prior_complete_sha256':prior_template_sha,'exact_current_block_sha256':h.sha(typed_child_port.encode()),
                 'proof_copy_only':True,'actual_compilation_uses_current_template':True},
@@ -356,10 +389,12 @@ def main():
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':
         raise RuntimeError('pinned JSON jar required')
     inputs=[source/PKG/n for n in JAVA+READ]+[source/PROFILE/n for n in PROFILE_NAMES]
+    inputs += [source/PKG/'NativeAppObservation.java']
     inputs += [source/TEST/n for n in ('ObserverIntegrationHostTest.java','run_observer_host.py','FormPairHostTest.java')]
     inputs += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
-    inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
+    inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py',
+               source/'tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],
@@ -372,7 +407,7 @@ def main():
         classes=output/'classes';classes.mkdir()
         compiled=[source/PKG/n for n in JAVA]+[source/PROFILE/n for n in PROFILE_NAMES]
         compiled += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
-                     source/TEST/'FormPairHostTest.java',source/TEST/'ObserverIntegrationHostTest.java',generated/'ObserverPipelineHost.java']
+                     source/TEST/'FormPairHostTest.java',source/TEST/'ObserverIntegrationHostTest.java',generated/'ObserverPipelineHost.java',generated/'NativeFormPairCodecHost.java']
         compiled += h.png_sources(source)
         report['stages'].append(h.stage('compile',[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+[str(p) for p in compiled],output))
         if report['stages'][-1]['exit_code']!=0:raise RuntimeError('actual observer extraction compilation failed')

@@ -25,7 +25,7 @@ final class NativeCtripFormObservation {
      * This adapter grants nothing and does not discard or rewrite any node. */
     static Map<String,Object> compareAxCensuses(Map<String,Object> first,Map<String,Object> second,
             Map<String,Object> binding,String installedSet){
-        return compare(axSnapshot(first,binding,installedSet),axSnapshot(second,binding,installedSet));
+        return compareForTargetPlanning(axSnapshot(first,binding,installedSet),axSnapshot(second,binding,installedSet));
     }
     private static Snapshot axSnapshot(Map<String,Object> census,Map<String,Object> binding,String installedSet){
         Map<String,Object> id=axMap(census,"identity"),window=axMap(census,"window"),profile=axMap(census,"profile_owner");
@@ -73,7 +73,20 @@ final class NativeCtripFormObservation {
         throw new IllegalArgumentException("actual AX window scalar type");
     }
 
+    /** The unchanged whole-form spatial rule remains the first qualification. */
     static Map<String,Object> compare(Snapshot before,Snapshot after){
+        return compareComplete(before,after,false);
+    }
+    /** Separate history for the two named native targets. A failed new predicate
+     * preserves the strict refusal; it never relaxes an earlier identity or fact check. */
+    static Map<String,Object> compareForTargetPlanning(Snapshot before,Snapshot after){
+        try{return compare(before,after);}
+        catch(IllegalArgumentException strict){
+            try{return compareComplete(before,after,true);}
+            catch(IllegalArgumentException purposeRefusal){throw strict;}
+        }
+    }
+    private static Map<String,Object> compareComplete(Snapshot before,Snapshot after,boolean purposeOnly){
         need(before!=null&&after!=null,"two complete actual form censuses");
         need(before.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE)
                 &&after.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE),"managed profile form only");
@@ -92,6 +105,12 @@ final class NativeCtripFormObservation {
             need(before.nodes.containsKey(p)&&after.nodes.containsKey(p)&&before.node(p).v.equals(after.node(p).v),
                     "complete protected form subtree changed: "+p);
         Set<String> regions=anchors(before,after,left);List<String> changed=new ArrayList<String>();
+        Map<String,Object> purposeGeometry=null;
+        if(purposeOnly){
+            need(left.roots.size()==1,"one complete purpose form");
+            purposeGeometry=NativeActionSnapshotCheck.ctripFormPurposeGeometry(before,after,left.roots.iterator().next());
+            regions.add((String)purposeGeometry.get("header_path"));
+        }
         for(String p:all){
             Node x=before.nodes.get(p),y=after.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
             String region=null;for(String root:regions)if(p.equals(root)||under(p,root)){
@@ -100,14 +119,21 @@ final class NativeCtripFormObservation {
             need(region!=null,"unclassified complete census change: "+p);changed.add(p);
         }
         Map<String,Object> out=new TreeMap<String,Object>();
-        out.put("schema","hepta.ctrip-native-form-observation-pair.v1");
+        out.put("schema",purposeOnly?"hepta.ctrip-native-form-purpose-pair.v1":"hepta.ctrip-native-form-observation-pair.v1");
         out.put("before_snapshot_sha256",before.sha);out.put("after_snapshot_sha256",after.sha);
         out.put("before_visited_nodes",before.nodes.size());out.put("after_visited_nodes",after.nodes.size());
         out.put("protected_subtrees",new ArrayList<String>(left.roots));
         out.put("checked_ancestors",new ArrayList<String>(left.ancestors));
         out.put("variable_branch_anchors",new ArrayList<String>(regions));out.put("changed_paths",changed);
         out.put("changed_paths_truncated",false);out.put("full_census_compared",true);
-        out.put("literal_form_facts",left.facts);out.put("year_inferred",false);
+        if(purposeGeometry==null)out.put("literal_form_facts",left.facts);
+        else{
+            // The exact same full form maps were compared above. The compact
+            // new certificate fits the existing pixel-metadata byte bound.
+            out.put("literal_form_facts_sha256",axFingerprint(left.facts));
+            out.put("form_purpose_geometry",purposeGeometry);
+        }
+        out.put("year_inferred",false);
         out.put("whole_graph_equal",changed.isEmpty());out.put("same_instant_pixels_and_ax_claimed",false);
         out.put("published_pair_is_current_tree_claimed",false);out.put("fully_unoccluded_claimed",false);
         out.put("fresh_action_validation_required",true);out.put("grants_action_authority",false);

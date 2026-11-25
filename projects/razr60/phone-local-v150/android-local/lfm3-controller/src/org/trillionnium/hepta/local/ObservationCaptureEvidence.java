@@ -103,9 +103,27 @@ final class ObservationCaptureEvidence {
         e.put("first_snapshot_sha256",proof.get("before_snapshot_sha256"));e.put("second_snapshot_sha256",proof.get("after_snapshot_sha256"));
         e.put("comparison_sha256",hash(canonicalBytes(proof)));e.put("changed_path_count",((List<?>)proof.get("changed_paths")).size());
         e.put("protected_subtrees",proof.get("protected_subtrees"));
+        if(proof.containsKey("form_purpose_geometry"))e.put("form_purpose_geometry",formPurposeGeometry());
         e.put("complete_census_endpoint_elapsed_ms",receipt.get("complete_census_endpoint_elapsed_ms"));
         e.put("grants_action_authority",false);e.put("query_history_proved",false);e.put("business_completion_verified",false);
         return Collections.unmodifiableMap(e);
+    }
+    Map<String,Object> formPurposeGeometry(){
+        if(!formHistory())return null;
+        Map<String,Object> proof=map(map(receipt,"form_history"),"comparison");
+        if(!proof.containsKey("form_purpose_geometry"))return null;
+        Map<String,Object> bound=new TreeMap<String,Object>(map(proof,"form_purpose_geometry"));
+        need(!bound.containsKey("planning_observation_id"),"raw form proof cannot supply a second observation binding");
+        bound.put("planning_observation_id",binding.get("observation_id"));return freezeMap(bound);
+    }
+    void requireFormHistoryTarget(String path,String purpose){
+        requireFormHistoryTarget(path);
+        Map<String,Object> qualification=formPurposeGeometry();
+        if(qualification!=null){
+            Map<String,Object> targets=map(qualification,"targets");
+            need(targets.containsKey(purpose)&&path!=null&&path.equals(map(targets,purpose).get("path")),
+                    "purpose-specific history requires its exact date/query purpose and path");
+        }
     }
     void requireFormHistoryTarget(String path){
         if(!formHistory())return;
@@ -113,6 +131,12 @@ final class ObservationCaptureEvidence {
         boolean protectedTarget=false;for(Object root:(List<?>)roots)
             if(path!=null&&(path.equals(root)||path.startsWith((String)root+"/")))protectedTarget=true;
         need(protectedTarget,"history cannot expose a recommendation or unrelated target");
+        Map<String,Object> qualification=formPurposeGeometry();
+        if(qualification!=null){
+            Map<String,Object> targets=map(qualification,"targets");boolean exact=false;
+            for(Object target:targets.values())if(target instanceof Map&&path.equals(((Map<?,?>)target).get("path")))exact=true;
+            need(exact,"purpose-specific history cannot expose a trip tab or other form node");
+        }
     }
     void requireHistoricalPublication(Map<String,Object> e){
         if(inputHistory()){requireInputHistoryPublication(e);return;}

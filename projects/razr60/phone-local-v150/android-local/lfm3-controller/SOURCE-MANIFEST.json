@@ -1,18 +1,54 @@
 {
   "android_qualified": false,
-  "base_head": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
-  "base_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
+  "base_head": "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
+  "base_manifest_sha256": "3b383412d533001069d19a793f590f6d8ebadb509529bf3615a1d06179cbdc7a",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_native_ax_canonical_reuse_successor",
-  "complete_source_files": 2610,
+  "candidate_status": "reviewed_native_app_form_and_card_successor",
+  "complete_source_files": 2632,
   "current_successor_delta": {
-    "baseline": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
+    "baseline": "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
     "reviewed_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+      "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
+      "src/org/trillionnium/hepta/local/NativeAppObservation.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
       "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
-      "tests/native-ax-canonical-reuse/AxCanonicalReuseHost.java",
-      "tests/native-ax-canonical-reuse/README.md",
-      "tests/native-ax-canonical-reuse/protected_canonical_reuse.py",
+      "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/run_host.py",
       "tests/native-ax-canonical-reuse/run_host.py",
+      "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-ctrip-purpose-geometry/CtripPurposeConsumersHost.java",
+      "tests/native-ctrip-purpose-geometry/CtripPurposeGeometryHost.java",
+      "tests/native-ctrip-purpose-geometry/PurposeBridgeCases.fragment",
+      "tests/native-ctrip-purpose-geometry/README.md",
+      "tests/native-ctrip-purpose-geometry/bridge_adapters.py",
+      "tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py",
+      "tests/native-ctrip-purpose-geometry/recorded-060c-pair.json",
+      "tests/native-ctrip-purpose-geometry/run_consumers.py",
+      "tests/native-ctrip-purpose-geometry/run_host.py",
+      "tests/native-ctrip-purpose-geometry/run_service.py",
+      "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
+      "tests/native-form-history-actions/run_host.py",
+      "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-direct-card/FIXTURE-MANIFEST.json",
+      "tests/native-xiaomi-direct-card/NativeXiaomiDirectCardHostTest.java",
+      "tests/native-xiaomi-direct-card/fixtures/56f9d4f20b0044ac93059628dd9f3913-native-ax.json",
+      "tests/native-xiaomi-direct-card/fixtures/572304edf78a4ba89228579022176658-native-ax.json",
+      "tests/native-xiaomi-direct-card/fixtures/aeff5d24618b4a2f9ec9ff9ad3392e67-native-ax.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-frame-56f9d4f20b0044ac93059628dd9f3913.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-frame-572304edf78a4ba89228579022176658.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-frame-aeff5d24618b4a2f9ec9ff9ad3392e67.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-page-0003.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-page-0004.json",
+      "tests/native-xiaomi-direct-card/fixtures/native-app-page-0005.json",
+      "tests/native-xiaomi-direct-card/run_host.py",
       "tests/native-xiaomi-product/run_host.py"
     ],
     "model_weights_changed": false,
@@ -6574,8 +6610,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 663547,
-      "sha256": "ed5cddc2e8310e387e57818e243c8231fb0e1eb7e120f4bdaab69f2390cb7553"
+      "bytes": 664759,
+      "sha256": "31d8416db83848cae7eb9bc1c66e94710970c48e91d75b5ecdd551dfacc11e66"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6694,18 +6730,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "bytes": 77651,
-      "sha256": "b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2"
+      "bytes": 91698,
+      "sha256": "296dbc220298cbc564b2cef7d2b51dfa1145ab68b8f2298c3e3419a071753b28"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "bytes": 15512,
-      "sha256": "3223404d1d7554c0b407061efe2443d538655f8a45bccd1248e883ac979cc028"
+      "bytes": 16034,
+      "sha256": "6a81220444a60091ee3b5fbb9aeca48d7cf7141e302c9e59369d5c2f497abe84"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
-      "bytes": 21731,
-      "sha256": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14"
+      "bytes": 27945,
+      "sha256": "d9d01fc8c740bbb1ad1c5c331ef12cc8b54f58f4c28a6a169259a64422cc59ec"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
@@ -6714,13 +6750,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppObservation.java",
-      "bytes": 6445,
-      "sha256": "42b69f8d7fbdf31ac3f2064f6910bad0f1dad8270f9bcdb240dff0052557f2dc"
+      "bytes": 15160,
+      "sha256": "c186300bd66ea612c341ef8159816b7b49647fa7bbeb373ce9a7e60717b99b91"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "bytes": 176183,
-      "sha256": "48c3802e762baabc170056645f060df779be12ae6c9344ce4972ef55448091e4"
+      "bytes": 176478,
+      "sha256": "ce873439e562f8d811020eca8075a2c8ab2e99fce02130cbb5aef2f13a0038ae"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -6749,8 +6785,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java",
-      "bytes": 22905,
-      "sha256": "1fbedb6ffed519a402e265640fab241cfee655ea47863769cc1538cf53ddd983"
+      "bytes": 24420,
+      "sha256": "7ffa5c66d556c26578b5474f6a62e571952fe2019c8433323b0fcbf125f7f0fd"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeSearchDecision.java",
@@ -6774,8 +6810,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "bytes": 58258,
-      "sha256": "831bae5f1181eacf2873167afe9f0add0ad72e974e36103651b6e5b83068319f"
+      "bytes": 61156,
+      "sha256": "5e1a70f5a3b5b394723df834f8567cfb2679cfb3506ef7107599a92e89e23a2c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
@@ -6804,8 +6840,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
-      "bytes": 26752,
-      "sha256": "b3c99f53c94b662ee35ffa26054f22f647fd2744d34edbc67d847afe9a05e651"
+      "bytes": 28325,
+      "sha256": "86567ef7b0e14fb80cb34e5240bf1ea7ef39f3c6e8d20aa1554f6e1fb8a12fa5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
@@ -6884,8 +6920,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "bytes": 37535,
-      "sha256": "d97a57ded9023e5b01a4eb5f6ae06a9747e915878b9c3ba398f133049a9628d1"
+      "bytes": 37763,
+      "sha256": "84a1586897399df76b3b7ad2f98f2b79da601a94351f7c6e44f79b3101ca2440"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
@@ -8294,8 +8330,8 @@
     },
     {
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "bytes": 38296,
-      "sha256": "ac635e74b7ab666a6e5f9fb3833f816158521d5c3c158bc00fa6d016a56214dc"
+      "bytes": 38479,
+      "sha256": "5da1bcab04d975f4fc3f041a9b629362c0ae9dc5c49828c9e62f6d908829b24e"
     },
     {
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
@@ -8359,8 +8395,8 @@
     },
     {
       "path": "tests/native-action-integration/run_host.py",
-      "bytes": 35514,
-      "sha256": "e6f049e0f15de4180b066fd24c4a5671f08f516c6664c19b17d73d8e77a1e8b2"
+      "bytes": 36514,
+      "sha256": "70b39418fa6662ccaaf89b53d4497a3dae0472a376f0e96802b03574e677d336"
     },
     {
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
@@ -8849,8 +8885,8 @@
     },
     {
       "path": "tests/native-ax-canonical-reuse/run_host.py",
-      "bytes": 10869,
-      "sha256": "79954205890179e78fadd0962d622c5d2af62ed6da2a7d542009b3c23f8010a0"
+      "bytes": 11526,
+      "sha256": "5df4c1c74bfebeebac809b32fbd8351adefbe38710cd315318e055dbfc79309c"
     },
     {
       "path": "tests/native-ax-consumers/NativeAxConsumersHostTest.java",
@@ -9074,8 +9110,8 @@
     },
     {
       "path": "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
-      "bytes": 9127,
-      "sha256": "9548bd7690348e0f8b10fef482ca61b313f0e999036ba3ad9942e62f198b4f10"
+      "bytes": 9399,
+      "sha256": "3eaebb8ca1c88f433b2b91626858d9a7f112dcc67a44853f7aae23075bf0efd0"
     },
     {
       "path": "tests/native-ctrip-form-observation/README.md",
@@ -9089,8 +9125,8 @@
     },
     {
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "bytes": 71853,
-      "sha256": "43a466b9fa886698897decbf773f12cb425d2b42b9e237fe2ac93f879a4f99c7"
+      "bytes": 75425,
+      "sha256": "a0d237a7f4f1e4864716cff3939ee06036770cab6eb615aaf6593cbfb9810608"
     },
     {
       "path": "tests/native-ctrip-form-observation/run_pure_host.py",
@@ -9143,14 +9179,64 @@
       "sha256": "7d7b29e85b92844bbc2a1ad9ea9e415a59b58fb88db3b3104e2ebd4a2a4cc9e9"
     },
     {
+      "path": "tests/native-ctrip-purpose-geometry/CtripPurposeConsumersHost.java",
+      "bytes": 21277,
+      "sha256": "e500c73df85a60a62c65cd5529da84c751528e0ade7687815f46d9195f968970"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/CtripPurposeGeometryHost.java",
+      "bytes": 14939,
+      "sha256": "e9291ea46ba1e980ab5c6efeecd3f798a4daeb3da39f0bdade75adae7dc7d37b"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/PurposeBridgeCases.fragment",
+      "bytes": 26830,
+      "sha256": "8943c67fcf846f3030d86d51338a8678f5b535ede2b61f1726875f554b49360c"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/README.md",
+      "bytes": 5830,
+      "sha256": "83c544d848c1765efcdde9129c4896196a7d0e346de3336810d6e28e0a01ec20"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/bridge_adapters.py",
+      "bytes": 977,
+      "sha256": "b8141662429048e6b52d988d778ddcb6202e4c091ccee3ea7a5c88afe45c68df"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py",
+      "bytes": 51700,
+      "sha256": "5316f04448deb3523076e4c0ccc7ac7dd1cc929f1ff7593034738ddb66a446fe"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/recorded-060c-pair.json",
+      "bytes": 360309,
+      "sha256": "4aca80d1be86363a5af1d9ab67b383387b958371fde2b5db3c2e873dd430c074"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/run_consumers.py",
+      "bytes": 9493,
+      "sha256": "dd194f05315ccfaa2f0e60ffd1a011e06799a80c3f808bf010a27915b87eb8d6"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/run_host.py",
+      "bytes": 5629,
+      "sha256": "9e1a6aa9b30cd73e46ce7c2929884b9955d1865a94a39a28c519472443585018"
+    },
+    {
+      "path": "tests/native-ctrip-purpose-geometry/run_service.py",
+      "bytes": 9112,
+      "sha256": "4d9512689330f55e4feeaeee8c98f7d663daa98d36d506b4c674007f3f03b573"
+    },
+    {
       "path": "tests/native-form-history-actions/86b343-departure-year-refusals.json",
       "bytes": 3582,
       "sha256": "ee385d37512221fa85363aa87702265ec409d3fb74c836b27b233ad21a70c975"
     },
     {
       "path": "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
-      "bytes": 28461,
-      "sha256": "ff56de97a1127ca8bc8abd5e16685346b04a0ca7af303803e77d745285c2444f"
+      "bytes": 29207,
+      "sha256": "d767c1d2f1ddffad5872b6b8dd50d0fb040cf934da8dca666b20fc46feba2ab5"
     },
     {
       "path": "tests/native-form-history-actions/d1e685-query-refusals.json",
@@ -9159,13 +9245,13 @@
     },
     {
       "path": "tests/native-form-history-actions/run_host.py",
-      "bytes": 10232,
-      "sha256": "c907b0f4e4a4622a46760b21aa786e640a86d04f6d9435f61a7053dcdb107eb8"
+      "bytes": 10453,
+      "sha256": "85a2d22f23bbfda6c5604c8f5dd441b8cfbc9898485efeb02f46df619f81f0de"
     },
     {
       "path": "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
-      "bytes": 33038,
-      "sha256": "be8c62124513a24fef2c6be0f4a5944f460ab0d65cb9c207b7a524f617c703c1"
+      "bytes": 34228,
+      "sha256": "06b91d007670c93e729df01dfde5ebb5dae16c3ab5abda761eeb99bf321bb39e"
     },
     {
       "path": "tests/native-form-history-consumers/run_host.py",
@@ -9604,8 +9690,8 @@
     },
     {
       "path": "tests/native-stale-recovery/run_budget.py",
-      "bytes": 16142,
-      "sha256": "c8d176de3a98b1380e4fee48de5a9e520289b7fcdbfa1046308b43db04cf54e4"
+      "bytes": 16727,
+      "sha256": "5fd558f57d401037153e07dde78ebe62ddd6e1d12c7faa44617587ec92addc1f"
     },
     {
       "path": "tests/native-stale-recovery/run_host.py",
@@ -9626,6 +9712,66 @@
       "path": "tests/native-xiaomi-budget-preview/run_host.py",
       "bytes": 5136,
       "sha256": "4a0340408e1cb7e8e80ed80329f6ea8b10a11c6b58744ad4608bc4c9c1e15309"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/FIXTURE-MANIFEST.json",
+      "bytes": 7239,
+      "sha256": "78b3224557707d2645c0a6a0c50620475ea9ff3856f34d0c7423a07a66dbcc04"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/NativeXiaomiDirectCardHostTest.java",
+      "bytes": 25667,
+      "sha256": "14e9814b0bc9b432a4119df7b6330ad731d53089dcfc949e6f48671389189f46"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/56f9d4f20b0044ac93059628dd9f3913-native-ax.json",
+      "bytes": 100096,
+      "sha256": "7702f976a6806dc574b4852362fe7ef20c68c6e10143c8fb1f82508b1bdd5477"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/572304edf78a4ba89228579022176658-native-ax.json",
+      "bytes": 100102,
+      "sha256": "3307b70efd29c46762c3f5e3cb7be9e973f105d54e3d754f55821bbd3412f525"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/aeff5d24618b4a2f9ec9ff9ad3392e67-native-ax.json",
+      "bytes": 100096,
+      "sha256": "bfa1906d4b2badcbef1dcb393dc28312ca75bc699237487fa757b610f2f9053d"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-frame-56f9d4f20b0044ac93059628dd9f3913.json",
+      "bytes": 85470,
+      "sha256": "6802c83207b53027d9ef746b6427a53353c8bbd98b38b06b95e67bc0243a71fe"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-frame-572304edf78a4ba89228579022176658.json",
+      "bytes": 85469,
+      "sha256": "95a276dd5dd01df6016da8e6f24c7281784b668fe27b8fd4e0ee2944f27383c5"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-frame-aeff5d24618b4a2f9ec9ff9ad3392e67.json",
+      "bytes": 85469,
+      "sha256": "1924ef0d02e02a8bf6f6e31daa64c066e770d432748f2ccbcd544106f88627ba"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-page-0003.json",
+      "bytes": 337097,
+      "sha256": "4af2580bc868472215dd74124d36bf25100d5682f0f61f5ce482a02600a272c4"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-page-0004.json",
+      "bytes": 337097,
+      "sha256": "a349c1e15ee3fc094779f443e5f8e876c9b1801cbbd6de743319a47304440e43"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/fixtures/native-app-page-0005.json",
+      "bytes": 337097,
+      "sha256": "d70a1b983ad8674ebde0c0c84f5bb83a26a8072f2a4f5fc1126e264d0578b6ab"
+    },
+    {
+      "path": "tests/native-xiaomi-direct-card/run_host.py",
+      "bytes": 9564,
+      "sha256": "d88c7147978d39c11b42737197b9c75357d538d731c69498932cc055e9729686"
     },
     {
       "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
@@ -9834,8 +9980,8 @@
     },
     {
       "path": "tests/native-xiaomi-product/run_host.py",
-      "bytes": 11924,
-      "sha256": "1c3cbc8583dd74ba92569482aa378733fdae7a3c547ce29ab7e639443bd712b4"
+      "bytes": 12857,
+      "sha256": "1847842fc2aff7fc18d5c17fa756f6b91f16e0237e506ee351a19f55b346da70"
     },
     {
       "path": "tests/native-xiaomi-query-stability/NativeXiaomiQueryStabilityHostTest.java",
@@ -13081,9 +13227,9 @@
   },
   "host_validation_at_preparation": {
     "targeted_review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r5/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 2419,
-      "sha256": "3fe4841675a7ba09be26504ab85d59d22043d17a7ef627724cbb7fbfac048835"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r6/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 18091,
+      "sha256": "57b048d8f98c1abc66a0ddc702c82dfb44c9fbaab0c3091855cdcf2ead3fd266"
     },
     "full_current_host_suite_completed_at_preparation": false,
     "android_build_completed_at_preparation": false,
@@ -13094,12 +13240,12 @@
   "main_java_sources": 220,
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "765bff83c41047393d7cd556af56a5bac0880a1167957414a10056c3e0d0a9d5",
+  "production_input_map_sha256": "e0791ae64a1638137cee06f37d9a76a795bc052f14bd3542a3424abda1a02fed",
   "schema": "hepta.local-source.v3",
-  "scope": "Reuse the exact canonical native AX bytes already produced during full validation, preserving all evidence, durability, publication fences and original deadlines.",
-  "source_parent_head": "eb1e89ac6112a5ef35f19be2285f5f9ec905b372",
-  "source_parent_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
-  "source_snapshot_predecessor_manifest_sha256": "d6ff0161b9f436f44fa5b7e38aac738f593da4824812bbd335b6f393c29c1303",
+  "scope": "Recognize the observed direct-child Xiaomi product card and preserve complete Ctrip form proof in bounded lossless transport, with target-specific date/query qualification and unchanged ownership, final-use and deadline guards.",
+  "source_parent_head": "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
+  "source_parent_manifest_sha256": "3b383412d533001069d19a793f590f6d8ebadb509529bf3615a1d06179cbdc7a",
+  "source_snapshot_predecessor_manifest_sha256": "3b383412d533001069d19a793f590f6d8ebadb509529bf3615a1d06179cbdc7a",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "inherited_source_behavior_metadata": {
@@ -13381,7 +13527,7 @@
     "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility."
   },
   "current_published_parent_heads": [
-    "eb1e89ac6112a5ef35f19be2285f5f9ec905b372"
+    "e30c32969f20b1fb996bdfde00b6f2d32af69d01"
   ],
   "current_native_ax_canonical_reuse": {
     "review_inputs": {
@@ -13391,6 +13537,16 @@
     },
     "scope": "Reuse the exact canonical native AX bytes already produced during full validation, preserving all evidence, durability, publication fences and original deadlines.",
     "phone_speedup_measured": false,
+    "publication_and_durability_guards_preserved": true
+  },
+  "current_native_app_form_and_card": {
+    "review_inputs": {
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r6/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 18091,
+      "sha256": "57b048d8f98c1abc66a0ddc702c82dfb44c9fbaab0c3091855cdcf2ead3fd266"
+    },
+    "scope": "Recognize the observed direct-child Xiaomi product card and preserve complete Ctrip form proof in bounded lossless transport, with target-specific date/query qualification and unchanged ownership, final-use and deadline guards.",
+    "phone_business_completion_verified": false,
     "publication_and_durability_guards_preserved": true
   }
 }

@@ -924,7 +924,7 @@ final class NativeAppSession {
         if(current!=null)need(frame.capturedElapsedMs>=current.frame.capturedElapsedMs,"native observation clock moved backwards");
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
-        if(frame.capture!=null&&frame.capture.formHistory())need(flight!=null&&NativeCtripFlightPage.FORM.equals(flight.phase),
+        if(frame.capture!=null&&frame.capture.formHistory()||frame.formPurposeGeometry!=null)need(flight!=null&&NativeCtripFlightPage.FORM.equals(flight.phase),
                 "historical form cannot become results, calendar, login or business evidence");
         product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
         if(frame.capture!=null&&frame.capture.inputHistory())need(product!=null&&"search_input".equals(product.phase)
@@ -1461,9 +1461,11 @@ final class NativeAppSession {
         need(a!=null&&a.journaled&&a.action==action&&a.run.equals(run)&&a.before==current
                 &&a.before.frame.observationId.equals(observation)&&a.started<=issued,
                 "guard requires the same journaled in-flight original Attempt");
-        if(a.before.frame.capture!=null&&a.before.frame.capture.formHistory()&&!java.util.Arrays.asList("wait","done").contains(action.action))need("click".equals(action.action)
+        if((a.before.frame.capture!=null&&a.before.frame.capture.formHistory()||a.before.frame.formPurposeGeometry!=null)&&!java.util.Arrays.asList("wait","done").contains(action.action))need("click".equals(action.action)
                 &&(NativeActionSnapshotCheck.YEAR.equals(a.purpose)||NativeActionSnapshotCheck.QUERY.equals(a.purpose)),
                 "history effect requires the original date/query native Guard");
+        if(a.before.frame.formPurposeGeometry!=null&&!"wait".equals(action.action)&&!"done".equals(action.action))
+            a.before.frame.requireFormPurposeTarget(a.purpose,a.before.frame.byId.get(action.nodeId));
         boolean emptyInput="type".equals(action.action)&&NativeActionSnapshotCheck.SET_QUERY.equals(a.purpose)
                 &&a.before.frame.capture!=null&&a.before.frame.capture.nativeText()
                 &&goal.readsXiaomiProduct()&&NativeAppGoal.PRODUCT_MODEL.equals(goal.productModel)

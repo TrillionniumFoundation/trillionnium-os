@@ -5729,6 +5729,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||!guard.targetNode.text.isEmpty()||!"0/1".equals(guard.targetNode.path))
                 ||!original.observationId.equals(action.observationId)||!guard.targetNode.id.equals(action.nodeId))
             throw new StaleObservation("原生动作原观察、目标或任务身份变化");
+        if(original.formPurposeGeometry!=null)original.requireFormPurposeTarget(guard.purpose,guard.targetNode);
         background.requireActive();actionCheck(work);
     }
     /** Read-only fallback for one already-observed managed Ctrip form.
@@ -5761,7 +5762,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||identity.graphCompletedAt>identity.capturedAt||after.readStartedElapsedMs<identity.capturedAt
                 ||after.readCompletedElapsedMs<after.readStartedElapsedMs||after.readCompletedElapsedMs>now)return null;
         try{
-            Map<String,Object> proof=NativeCtripFormObservation.compare(
+            Map<String,Object> proof=NativeCtripFormObservation.compareForTargetPlanning(
                     nativeCtripFormSnapshot(request,request.captured,target),nativeCtripFormSnapshot(request,after,target));
             if(postEffect){
                 Map<String,Object> bound=new java.util.LinkedHashMap<String,Object>(proof);
@@ -5769,8 +5770,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 proof=java.util.Collections.unmodifiableMap(bound);
             }
             if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144)return null;
+            Map<String,Object> transport=NativeAppObservation.pixelFormPair(proof);
             requireObservationWork(request);
-            return postEffect&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)?null:proof;
+            return postEffect&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)?null:transport;
         }catch(IllegalArgumentException unclassified){return null;}
     }
     /** Actual ownership and complete raw rows are copied; expected facts never
@@ -5855,6 +5857,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.OPEN.equals(work.nativeGuard.purpose)
                 &&NativeCtripFlightPage.supported(work.nativeGuard.goal);
     }
+    private static boolean nativeFormPurposeGuard(ActionWork work){
+        return work!=null&&work.nativeGuard!=null&&work.nativeGuard.frame.formPurposeGeometry!=null;
+    }
     /** Read-only precheck deferral. No reference, action, label or observation is
      * replaced and no signature is declared current. This exact private SEARCH
      * guard must still pass finalNativeActionCheck even if the tree is equal. */
@@ -5883,6 +5888,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             throw new StaleObservation("原始NodeRef与同路径新节点不是同一目标");
         NativeActionSnapshotCheck.Snapshot oldSnapshot=nativeActionSnapshot(original,guard);
         NativeActionSnapshotCheck.Snapshot newSnapshot=nativeActionSnapshot(fresh,guard);
+        if(guard.frame.formPurposeGeometry!=null)
+            NativeActionSnapshotCheck.requireCtripPurposeSource(guard.frame.formPurposeGeometry,guard.purpose,guard.targetNode.path,oldSnapshot);
         NativeActionSnapshotCheck.Intent intent=guard.intent(before.signature);long comparedAt=SystemClock.elapsedRealtime();
         Map<String,Object> proof;
         try{proof=NativeActionSnapshotCheck.compare(intent,oldSnapshot,newSnapshot,comparedAt);}
@@ -6073,11 +6080,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(locked(work.background))return "当前显示范围的锁状态或后台显示凭据不可用";
         try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
         if(expected!=current||graph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
-        if(expected.capture!=null&&expected.capture.formHistory()&&!"wait".equals(action.action)&&!"done".equals(action.action)){
+        final Map<String,Object> formPurposeGeometry;
+        try{formPurposeGeometry=NativeAppObservation.formPurposeGeometry(expected);}
+        catch(Exception invalid){return "stale:原生表单用途约束不可用";}
+        if((expected.capture!=null&&expected.capture.formHistory()||formPurposeGeometry!=null)&&!"wait".equals(action.action)&&!"done".equals(action.action)){
             if(work==null||work.nativeGuard==null||!"click".equals(action.action)
                     ||!(NativeActionSnapshotCheck.YEAR.equals(work.nativeGuard.purpose)
                     ||NativeActionSnapshotCheck.QUERY.equals(work.nativeGuard.purpose)))
                 return "stale:历史表单只能经本次日期或查询原生Guard重新完整校验";
+            if(formPurposeGeometry!=null&&(!nativeFormPurposeGuard(work)
+                    ||!NativeAppEvidence.fingerprint(formPurposeGeometry).equals(NativeAppEvidence.fingerprint(work.nativeGuard.frame.formPurposeGeometry))))
+                return "stale:本次原生Guard未绑定相同表单用途约束";
         }
         if(expected.capture!=null&&expected.capture.inputHistory()&&!"wait".equals(action.action)&&!"done".equals(action.action)){
             if(!nativeSearchInputGuard(work)||!"type".equals(action.action))
@@ -6102,7 +6115,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 requireLiveFlightNativeStability(taskId,expected,action,permit,now,cancel,work));
                         actionCheck(work);
                     }catch(Exception mismatch){throw new StaleObservation("stale:首页目标局部复核失败："+message(mismatch));}
-                }else if(expected.capture!=null&&expected.capture.planningHistory()||!graph.digest.equals(now.digest)){
+                }else if(expected.capture!=null&&expected.capture.planningHistory()||formPurposeGeometry!=null||!graph.digest.equals(now.digest)){
                     if(work!=null&&work.nativeGuard!=null){
                         try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
                         catch(ProfileOwnershipViolation identityChanged){throw identityChanged;}
@@ -6225,7 +6238,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
                 if(expected.capture!=null&&expected.capture.formHistory()
-                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work))){
+                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work)||nativeFormPurposeGuard(work))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));

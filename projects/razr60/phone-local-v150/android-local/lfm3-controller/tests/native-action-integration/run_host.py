@@ -26,6 +26,7 @@ METHODS={
  'search_entry_guard':'    private static boolean nativeSearchEntryGuard(',
  'search_input_guard':'    private static boolean nativeSearchInputGuard(',
  'product_query_guard':'    private static boolean nativeProductQueryGuard(',
+ 'form_purpose_guard':'    private static boolean nativeFormPurposeGuard(',
  'product_query_field':'    private void refreshNativeProductQueryField(',
  'flight_open_guard':'    private static boolean nativeFlightOpenGuard(',
  'search_entry_defer':'    private boolean deferNativeSearchEntrySignature(',
@@ -96,6 +97,16 @@ def generate(source,out):
     methods={}
     for name,signature in METHODS.items():methods[name]=body(service,signature)
     text=replace(text,'    // ACTUAL_METHODS','\n'.join(methods.values()))
+    adapter=(source/PKG/'NativeAppObservation.java').read_text()
+    adapter_methods={name:body(adapter,sig) for name,sig in {
+        'form_purpose_geometry':'    static Map<String,Object> formPurposeGeometry(',
+        'adapter_value':'    private static Object value('}.items()}
+    wrapper=('    static final class NativeAppObservation {\n'
+        '        static String selectionSha(org.trillionnium.hepta.local.BackgroundSession.Selection s)throws Exception{return org.trillionnium.hepta.local.NativeAppObservation.selectionSha(s); }\n'
+        '        static JSONObject decodePixelFormPair(JSONObject p)throws Exception{return org.trillionnium.hepta.local.NativeAppObservation.decodePixelFormPair(p); }\n'
+        +'\n'.join(adapter_methods.values())+'\n    }\n')
+    text=replace(text,'    // MORE_DECLARATIONS',wrapper+'    // MORE_DECLARATIONS')
+    methods.update(adapter_methods)
     bridge=(source/TEST/'BridgeCases.fragment').read_text()
     bridge=replace(bridge,'        signatureCases();rejectionCases();effectCases();equalOpenCases();',
         '        signatureCases();rejectionCases();effectCases();equalOpenCases();publicationActionCases();')
@@ -110,7 +121,7 @@ def generate(source,out):
       'open_await_action':body(controller,'    private HeptaAccessibilityService.ActionOutcome awaitAction('),
       'open_legacy_selected_refresh':parts['selected_refresh']}
     legacy_open=replace(parts['click_branch'],
-      'if(expected.capture!=null&&expected.capture.formHistory()\n                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work)))',
+      'if(expected.capture!=null&&expected.capture.formHistory()\n                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work)||nativeFormPurposeGuard(work)))',
       'if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)))')
     need(sha(legacy_open.encode())=='0a8533a8c582e714df4777b5ddc1ed7acb40e1ee99007f95095b5c9f4be1c742','old 1079 OPEN branch must match retained actual bytes')
     open_parts['open_legacy_click_branch']=legacy_open
