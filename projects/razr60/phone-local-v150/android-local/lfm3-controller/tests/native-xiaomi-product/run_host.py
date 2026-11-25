@@ -41,6 +41,9 @@ SHARED.update({
   "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf",
   "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java": "8d1b531b7161d925b71079edffd33fd37b7f720d6fe372f82b8d22ff872e1914"
 })
+# Retain the preceding exact capture pin; compile the independently reviewed AX C-witness carrier.
+PRE_AX_PUBLICATION_SHARED=dict(SHARED)
+SHARED["src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java"]="96a0099759222c59b78950230eae842ebd274e42035746ece4b9e0cf50e94a19"
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -85,7 +88,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):
