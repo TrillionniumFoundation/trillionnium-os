@@ -25,6 +25,8 @@ METHODS={
  'snapshot':'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(',
  'search_entry_guard':'    private static boolean nativeSearchEntryGuard(',
  'search_input_guard':'    private static boolean nativeSearchInputGuard(',
+ 'product_query_guard':'    private static boolean nativeProductQueryGuard(',
+ 'product_query_field':'    private void refreshNativeProductQueryField(',
  'flight_open_guard':'    private static boolean nativeFlightOpenGuard(',
  'search_entry_defer':'    private boolean deferNativeSearchEntrySignature(',
  'background_precheck':'    private void backgroundBeforeDispatch(',
@@ -108,7 +110,7 @@ def generate(source,out):
       'open_await_action':body(controller,'    private HeptaAccessibilityService.ActionOutcome awaitAction('),
       'open_legacy_selected_refresh':parts['selected_refresh']}
     legacy_open=replace(parts['click_branch'],
-      'if(expected.capture!=null&&expected.capture.formHistory()\n                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)))',
+      'if(expected.capture!=null&&expected.capture.formHistory()\n                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work)))',
       'if(work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)))')
     need(sha(legacy_open.encode())=='0a8533a8c582e714df4777b5ddc1ed7acb40e1ee99007f95095b5c9f4be1c742','old 1079 OPEN branch must match retained actual bytes')
     open_parts['open_legacy_click_branch']=legacy_open

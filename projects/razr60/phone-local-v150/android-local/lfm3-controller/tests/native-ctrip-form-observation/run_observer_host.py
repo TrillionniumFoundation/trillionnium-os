@@ -222,8 +222,14 @@ def generate(source,output,h):
             continue
         if name=='NativeActionSnapshotCheck.java' and actual in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
                 'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac',
-                '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf'):
-            proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](current)
+                '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf',
+                'b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2'):
+            # Proof copies only: preserve the complete prior Ctrip comparator.
+            # The unchanged current production file still enters javac below.
+            predecessor_input=current
+            if actual=='b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2':
+                predecessor_input=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,current)
+            proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](predecessor_input)
             if h.sha(proof)!=r32_provider_pins[name]:raise RuntimeError('full prior comparator required')
             protected_files[name]=actual
             continue
@@ -353,6 +359,7 @@ def main():
     inputs += [source/TEST/n for n in ('ObserverIntegrationHostTest.java','run_observer_host.py','FormPairHostTest.java')]
     inputs += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
+    inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],

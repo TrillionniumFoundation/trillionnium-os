@@ -1125,6 +1125,9 @@ final class NativeAppSession {
                 else{back=true;purposes.put("back","return_to_owned_product_search");missing.add("actual_model_query_and_same_card_detail_navigation_required");}
             }
             if(product.quote!=null&&"search_card".equals(product.quote.kind)&&productQueryProof==null){back=true;purposes.put("back","return_to_owned_product_search");}
+            // Provider facts must describe the same current targets as the actual domain.
+            view.put("click_node_ids",new ArrayList<String>(clicks));view.put("edit_values",new TreeMap<String,String>(edits));
+            view.put("purposes",new TreeMap<String,String>(purposes));
             missing.addAll(product.missing);
         }
         Map<String,Object> recovery=recoverableStaleView(frame,phase,clicks,purposes);
@@ -1398,7 +1401,8 @@ final class NativeAppSession {
         // Hash the actual composite signature, including scroll/IME/input freshness.
         NativeActionSnapshotCheck.Intent intent(String originalFullSignature){
             return new NativeActionSnapshotCheck.Intent(purpose,goal.packageName,targetNode.path,targetNode.label,
-                    NativeAppEvidence.hash(originalFullSignature),run,action.nodeId,actionSha,historySha,identity,issued,deadline);
+                    NativeAppEvidence.hash(originalFullSignature),run,action.nodeId,actionSha,historySha,identity,issued,deadline,
+                    NativeActionSnapshotCheck.SUBMIT_QUERY.equals(purpose)?goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16):null);
         }
         void claim(ActionDecision expected,String expectedRun,long now){
             need(action==expected&&run.equals(expectedRun)&&now>=issued&&now<deadline
@@ -1471,7 +1475,15 @@ final class NativeAppSession {
                 &&goal.immutableOwner.substring(goal.modelStartUtf16,goal.modelEndUtf16).equals(action.text);
         if(a.before.frame.capture!=null&&a.before.frame.capture.inputHistory())need(emptyInput,
                 "historical empty input requires the original exact literal type Guard");
-        if(!emptyInput&&(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
+        boolean filledQuery="click".equals(action.action)&&NativeActionSnapshotCheck.SUBMIT_QUERY.equals(a.purpose)
+                &&a.before.frame.capture!=null&&a.before.frame.capture.nativeText()
+                &&goal.readsXiaomiProduct()&&NativeAppGoal.PRODUCT_MODEL.equals(goal.productModel)
+                &&optionalLocationInstallation()&&a.before.frame.profileWindow!=null&&"search_submit".equals(a.before.phase)
+                &&a.before.frame.byId.get(action.nodeId)!=null
+                &&"0/2".equals(a.before.frame.byId.get(action.nodeId).path)
+                &&"android.widget.FrameLayout".equals(a.before.frame.byId.get(action.nodeId).parentClass)
+                &&"搜索".equals(a.before.frame.byId.get(action.nodeId).label);
+        if(!emptyInput&&!filledQuery&&(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
                 NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose)))return null;
         need(action.toolChildOrigin==null&&a.guard==null&&deadline>issued&&deadline-issued<=8000,
                 "one original native action worker budget required");
@@ -1571,12 +1583,14 @@ final class NativeAppSession {
                 &&productLoginExitReserved&&a.guard==null&&provedUnenteredAction(a,actionExecution,finished)
                 &&actionExecution.get("native_action_guard")==null;
         boolean dateRelease=!accepted&&!dispatched&&stale&&provedUnenteredDateNavigation(a,actionExecution,finished);
+        boolean productRelease=!accepted&&!dispatched&&stale&&provedUnenteredProductQuery(a,actionExecution,finished,recovery);
         if(a.guard!=null)a.guard.close();
         Map<String,Object> outcome=NativeAppEvidence.map();outcome.put("accepted",accepted);outcome.put("dispatched",dispatched);outcome.put("stale",stale);
         outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);
         outcome.put("query_reservation_released",release);
         outcome.put("login_exit_reservation_released",loginRelease);
         outcome.put("date_reservation_released",dateRelease);
+        outcome.put("product_query_reservation_released",productRelease);
         outcome.put("pre_effect_stale_recovery_available",recovery);
         if(postEffect){
             outcome.put("post_effect_read_recovery_available",true);
@@ -1617,6 +1631,15 @@ final class NativeAppSession {
             proof.put("query_or_result_proof_created",false);proof.put("business_verified",false);
             outcome.put("date_reservation_release",proof);
         }
+        if(productRelease){
+            Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-product-query-reservation-release.v1");
+            proof.put("purpose",a.purpose);proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+            proof.put("original_observation_id",a.before.frame.observationId);proof.put("original_model_run_id",a.run);
+            proof.put("operation_id",actionExecution.get("operation_id"));proof.put("worker_drained",true);proof.put("effect_entered",false);
+            proof.put("fresh_observation_and_new_model_decision_required",true);proof.put("automatic_redispatch",false);
+            proof.put("query_or_result_proof_created",false);proof.put("business_verified",false);
+            outcome.put("product_query_reservation_release",proof);
+        }
         a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
         Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);a.outcomeJournaled=true;inFlight=null;
         // Only the durable receipt above releases a reservation. The old frame
@@ -1624,6 +1647,7 @@ final class NativeAppSession {
         if(release){queryAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
         if(loginRelease){productLoginExitReserved=false;requireReobservationAfterReleasedReservation(a,finished);}
         if(dateRelease){dateAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
+        if(productRelease){productQueryAttempted=false;requireReobservationAfterReleasedReservation(a,finished);}
         if(recovery){recoverableStaleAttempt=a;requireReobservationAfterReleasedReservation(a,finished);}
         if(stale&&!dispatched)return;
         if(!accepted||stale){invalidate("native_action_receipt_not_accepted");return;}
@@ -1697,10 +1721,23 @@ final class NativeAppSession {
                 &&a.date.equals(a.flight.resolvedDates(lastQueryDate).get(a.action.nodeId))
                 &&provedUnenteredAction(a,x,finished)&&x.get("native_action_guard")==null;
     }
+    /** The actual filled search button can be proposed again only after the
+     * original serial worker proves it never entered an effect. The action budget
+     * remains spent; the caller persists this outcome and requires a fresh frame. */
+    private boolean provedUnenteredProductQuery(Attempt a,Map<String,Object> x,long finished,boolean guardedRecovery){
+        return a.product!=null&&"search_submit".equals(a.product.phase)
+                &&"submit_product_query".equals(a.purpose)&&"click".equals(a.action.action)&&a.action.toolChildOrigin==null
+                &&NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)&&productQueryAttempted
+                &&productQueryProof==null&&productOpenProof==null&&a.before.clickIds.contains(a.action.nodeId)
+                &&a.purpose.equals(a.before.purposes.get(a.action.nodeId))
+                &&(a.guard==null&&provedUnenteredAction(a,x,finished)&&x.get("native_action_guard")==null
+                    ||a.guard!=null&&guardedRecovery);
+    }
     private boolean provedUnenteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
         ActionGuard g=a.guard;
         if(!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,
-                NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose)
+                NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON,
+                NativeActionSnapshotCheck.SUBMIT_QUERY).contains(a.purpose)
                 ||g==null||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
         if(executionNumber(x,"queued_elapsed_ms")<g.issued||executionNumber(x,"deadline_elapsed_ms")!=g.deadline)return false;
         Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;

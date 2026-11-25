@@ -2,7 +2,7 @@
 """Execute the actual pure parser against public native App XML fixtures with explicitly recorded redactions.
 This is not an Android/installed-App/dispatch/completion test."""
 from pathlib import Path
-import argparse, hashlib, json, os, stat, subprocess, time, traceback
+import argparse, hashlib, json, os, runpy, stat, subprocess, time, traceback
 SCHEMA="hepta.native-xiaomi-product-compiled-gate.v1"
 ORIGINAL_SHARED={
 "src/org/trillionnium/hepta/local/NativeAppGoal.java":"c266f1e3e6ca3d86ad2e8f94c78a4263138822e004b5eab64dafdda5fcb653d5",
@@ -41,6 +41,14 @@ SHARED.update({
   "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf",
   "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java": "8d1b531b7161d925b71079edffd33fd37b7f720d6fe372f82b8d22ff872e1914"
 })
+# Keep the complete pre-filled-query closure and verify its exact inverse below.
+# Actual javac inputs remain the unchanged current files; parser fixtures stay exact.
+PRE_FILLED_QUERY_SHARED=dict(SHARED)
+FILLED_QUERY_SHARED={
+  "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java": "b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2",
+  "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java": "ecf6a9ccf173dc78c6c167435dc745b4080aa85a4fb77b22c3d442b7674254c3"
+}
+SHARED.update(FILLED_QUERY_SHARED)
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -58,9 +66,15 @@ def main():
     originals={}
     def read(path):v=bound(path);originals[path]=v;return v[0]
     read(Path(__file__).resolve())
+    inverse_helper=a.source/"tests/native-xiaomi-query-stability/protected_filled_query.py"
+    read(inverse_helper)
+    filled_predecessor=runpy.run_path(str(inverse_helper))["predecessor"]
     for rel in PATHS:
         raw=read(a.source/rel)
         if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
+        if rel in FILLED_QUERY_SHARED:
+            need(sha(filled_predecessor(Path(rel).name,raw))==PRE_FILLED_QUERY_SHARED[rel],
+                 "filled-query proof copy must reproduce the complete prior shared source")
     provenance_path=a.source/"tests/native-xiaomi-product/fixtures/PROVENANCE.json"
     provenance=json.loads(read(provenance_path))
     need(provenance["schema"]=="hepta.native-xiaomi-public-fixtures.v2"
@@ -85,7 +99,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

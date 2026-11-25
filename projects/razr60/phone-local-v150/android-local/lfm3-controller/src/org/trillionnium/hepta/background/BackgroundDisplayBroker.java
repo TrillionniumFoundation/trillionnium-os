@@ -81,6 +81,7 @@ public final class BackgroundDisplayBroker {
     private volatile long connectionDeadline;
     private volatile long lastUnlockedCheck;
     private volatile long cleanupAt;
+    private final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
     private volatile int displayId = -1;
     private volatile int displayFlags;
     private volatile JSONObject displayPolicyReadback;
@@ -1666,14 +1667,17 @@ public final class BackgroundDisplayBroker {
                 synchronized(dispatchGate){
                     ProfileOwnedTask tasks=profileOwnedTask;
                     if(tasks!=null){
+                        profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.TASK_RETIRE);
                         tasks.retire(cleanupAt+CLEANUP_MS-100);
                         refreshProfileTaskEvidence();
                         if(!tasks.cleanupKnown())throw new IOException("PROFILE_TASK_RETIRE_UNCONFIRMED");
                     }else{
+                        profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.UNLAUNCHED_PROFILE);
                         recheckProfile(false,cleanupAt+CLEANUP_MS-100);
                         requireUnlaunchedProfileEmpty();
                         profileCleanupReadback=emptyProfileCleanup(true);
                     }
+                    profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_RELEASE);
                     profileCustody.tasksVerified();
                     // The watchdog can mark uncertainty while a Binder call is in flight. It is
                     // monotonic: an observed quarantine refuses a new release call. A release
@@ -1684,6 +1688,7 @@ public final class BackgroundDisplayBroker {
                     ImageReader reader=surfaceReader;if(reader!=null)reader.close();
                     HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
                 }
+                profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_ABSENCE);
                 if(createInFlight||effectInFlight)throw new IOException("PROFILE_EFFECT_UNRESOLVED");
                 boolean gone=false;
                 while(SystemClock.elapsedRealtime()<cleanupAt+CLEANUP_MS-100){
@@ -1696,8 +1701,11 @@ public final class BackgroundDisplayBroker {
                 }
                 if(!gone)throw new IOException("PROFILE_DISPLAY_ABSENCE_UNCONFIRMED");
                 if(publicProfileHistory!=null){
+                    profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PROFILE_IDENTITY);
                     recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                    profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_GLOBAL_TASKS);
                     BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(config.profileTarget);
+                    profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PUBLIC_RECENTS);
                     publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->cleanupAt+CLEANUP_MS-100),
                             config.profileTarget,SystemClock.elapsedRealtime());
                 }
@@ -1728,6 +1736,10 @@ public final class BackgroundDisplayBroker {
         return java.util.Collections.unmodifiableMap(out);
     }
     private void quarantineProfile(String reason){
+        // Keep the first cleanup refusal separate from the original close/Stop reason.
+        // Diagnostics never change custody, deadlines, or the cleanup outcome.
+        try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}
+        catch(Throwable unavailable){/* Original quarantine remains authoritative. */}
         retirePublicScreenLease();
         profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
         java.util.Map<String,Object> previous=profileCleanupReadback;
@@ -1993,6 +2005,7 @@ public final class BackgroundDisplayBroker {
                     .put("profile_current_identity_verified",ok&&"ACTIVE".equals(state)&&actual!=null
                             &&config.profileTarget.same(actual.target))
                     .put("profile_cleanup",new JSONObject(cleanup))
+                    .put("profile_cleanup_diagnostics",new JSONObject(profileCleanupFailures.evidence()))
                     .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                             new JSONObject(profileOwnedTask.lastLeafValidation()))
                     .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
@@ -2029,6 +2042,7 @@ public final class BackgroundDisplayBroker {
             .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))
             .put("profile_cleanup",config.profileTarget==null?JSONObject.NULL:new JSONObject(
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
+            .put("profile_cleanup_diagnostics",new JSONObject(profileCleanupFailures.evidence()))
             .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                     new JSONObject(profileOwnedTask.lastLeafValidation()))
             .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
@@ -2049,6 +2063,31 @@ public final class BackgroundDisplayBroker {
     private static int fields(Class<?> type, String... names) throws Exception {
         int result = 0; for (String name : names) result |= type.getField(name).getInt(null); return result;
     }
+    /** First cleanup failure only; fixed phases and bounded codes are diagnostic, never authority. */
+    static final class ProfileCleanupFailureAudit {
+        enum Phase {NOT_STARTED,TASK_RETIRE,UNLAUNCHED_PROFILE,DISPLAY_RELEASE,DISPLAY_ABSENCE,
+            FINAL_PROFILE_IDENTITY,FINAL_GLOBAL_TASKS,FINAL_PUBLIC_RECENTS}
+        private volatile Phase phase=Phase.NOT_STARTED;
+        private java.util.Map<String,Object> first;
+        void phase(Phase value){phase=value==null?Phase.NOT_STARTED:value;}
+        synchronized void record(String reason,long started,long deadline,long now){
+            if(first!=null)return;
+            String code="cleanup_deadline".equals(reason)?"PROFILE_CLEANUP_DEADLINE":reason;
+            if(code==null||!code.matches("[A-Z][A-Z0-9_]{0,127}"))code="PROFILE_CLEANUP_FAILURE_UNCLASSIFIED";
+            java.util.Map<String,Object> row=new java.util.LinkedHashMap<String,Object>();
+            row.put("phase",phase.name());row.put("code",code);row.put("observed_elapsed_ms",now);
+            row.put("cleanup_started_elapsed_ms",started);row.put("task_reads_deadline_elapsed_ms",deadline);
+            first=java.util.Collections.unmodifiableMap(row);
+        }
+        synchronized java.util.Map<String,Object> evidence(){
+            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();
+            out.put("schema","hepta.profile-cleanup-diagnostics.v1");out.put("first_failure",first);
+            out.put("diagnostics_grant_authority",false);out.put("provides_cleanup_proof",false);
+            out.put("allows_input_or_model_resumption",false);
+            return java.util.Collections.unmodifiableMap(out);
+        }
+    }
+
     /** First unexpected policy failure only. This evidence never changes admission or cleanup. */
     static final class PublicPolicyFailureAudit {
         enum Phase {

@@ -16,7 +16,7 @@ final class NativeActionSnapshotCheck {
     static final int MAX_NODES=1536, MAX_TEXT=32768, MAX_BYTES=1048576;
     static final int MAX_REJECTION_DIAGNOSTIC_BYTES=262144;
     static final String CTRIP="ctrip.android.view", XIAOMI="com.xiaomi.shop";
-    static final String OPEN="open_flight_form", YEAR="inspect_departure_year", QUERY="query_observed_form", SEARCH="open_search", SEARCH_ICON="open_search_icon", SET_QUERY="set_product_query";
+    static final String OPEN="open_flight_form", YEAR="inspect_departure_year", QUERY="query_observed_form", SEARCH="open_search", SEARCH_ICON="open_search_icon", SET_QUERY="set_product_query", SUBMIT_QUERY="submit_product_query";
     static final String CP=CTRIP+":id/";
     static final Set<String> NK=keys("path,parent_class,package,window_id,class,view_id,text,description,label,ref_signature_sha256,bounds,visible,enabled,clickable,editable,scrollable,focused,password,selected,checkable,checked,children,scroll_actions,ime_enter,input_sha256,action_click");
     static final Set<String> EK=keys("task_id,owner_sha256,target_sha256,authorization_sha256,selection_sha256,installed_set_sha256,goal_sha256,background_generation,origin_observation_id,package,display_id,window_id,rotation,width,height,root_bounds,window_metadata_sha256,reported_windows_sha256,reported_windows_complete,ime_visibility,captured_elapsed_ms,full_native_complete,visited,pending,node_omissions,text_omissions,child_omissions");
@@ -53,19 +53,26 @@ final class NativeActionSnapshotCheck {
      * refSha256 is SHA-256 of the full Service NodeRef.signature UTF-8 string,
      * including scroll/IME/focus/input bindings; it is not appTreeSignature. */
     static final class Intent {
-        final String purpose,pkg,path,label,refSha256,run,node,actionSha,historySha;
+        final String purpose,pkg,path,label,refSha256,run,node,actionSha,historySha,productQuery;
         final Map<String,Object> identity; final long started,deadline;
         Intent(String purpose,String pkg,String path,String label,String refSha256,String run,String node,
                String actionSha,String historySha,Map<String,Object> identity,long started,long deadline){
-            need(Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose)||SET_QUERY.equals(purpose)&&XIAOMI.equals(pkg),"unsupported purpose");
-            need(((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose)||SET_QUERY.equals(purpose))?XIAOMI:CTRIP).equals(pkg),"purpose/package mismatch");
+            this(purpose,pkg,path,label,refSha256,run,node,actionSha,historySha,identity,started,deadline,null);
+        }
+        Intent(String purpose,String pkg,String path,String label,String refSha256,String run,String node,
+               String actionSha,String historySha,Map<String,Object> identity,long started,long deadline,String productQuery){
+            need(Arrays.asList(OPEN,YEAR,QUERY,SEARCH,SEARCH_ICON).contains(purpose)
+                    ||(SET_QUERY.equals(purpose)||SUBMIT_QUERY.equals(purpose))&&XIAOMI.equals(pkg),"unsupported purpose");
+            need(((SEARCH.equals(purpose)||SEARCH_ICON.equals(purpose)||SET_QUERY.equals(purpose)||SUBMIT_QUERY.equals(purpose))?XIAOMI:CTRIP).equals(pkg),"purpose/package mismatch");
+            need(SUBMIT_QUERY.equals(purpose)?"AX3000T".equalsIgnoreCase(productQuery)&&historySha==null:productQuery==null,"original supported product literal required");
             need(path(path)&&label!=null&&label.length()<=4096&&sha(refSha256)&&id(run)&&node!=null&&node.matches("n[0-9]{1,4}")&&sha(actionSha),"original action identity");
             need(identity!=null&&(identity.keySet().equals(IDENTITY)||identity.keySet().equals(PROFILE_AUTHORITY)),"exact authority identity");
             profileIdentity(identity);
             need(!QUERY.equals(purpose)||sha(historySha)&&!hash("").equals(historySha),"real query history binding missing");
             need(started>=0&&deadline>started&&deadline-started<=8000,"original action deadline");
             this.purpose=purpose;this.pkg=pkg;this.path=path;this.label=label;this.refSha256=refSha256;this.run=run;this.node=node;
-            this.actionSha=actionSha;this.historySha=historySha;this.identity=freeze(identity);this.started=started;this.deadline=deadline;
+            this.actionSha=actionSha;this.historySha=historySha;this.productQuery=productQuery;
+            this.identity=freeze(identity);this.started=started;this.deadline=deadline;
         }
     }
     static final class Node {
@@ -123,6 +130,7 @@ final class NativeActionSnapshotCheck {
         for(String k:Arrays.asList("captured_elapsed_ms","visited")){a.remove(k);z.remove(k);}
         need(a.equals(z),"window/display/IME/authority differs");
         if(SET_QUERY.equals(in.purpose))return compareEmptySearchInput(in,old,fresh);
+        if(SUBMIT_QUERY.equals(in.purpose))return compareFilledSearchQuery(in,old,fresh);
         Node target=old.node(in.path),newTarget=fresh.node(in.path);
         need(target.click()&&newTarget.click()&&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original target/ref/label");
         need(searchEntryTarget(in,old)
@@ -167,6 +175,23 @@ final class NativeActionSnapshotCheck {
         need(NativeXiaomiSearchInputObservation.QUERY_PATH.equals(in.path)&&target.usable()&&b(target.v,"editable")
                 &&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original empty-query target/ref/label");
         Map<String,Object> out=new TreeMap<String,Object>(NativeXiaomiSearchInputObservation.compare(old,fresh));
+        out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");out.put("purpose",in.purpose);
+        out.put("target_path",in.path);out.put("model_run_id",in.run);out.put("original_node_id",in.node);
+        out.put("original_action_sha256",in.actionSha);out.put("original_observation_id",in.identity.get("origin_observation_id"));
+        out.put("fresh_snapshot_sha256",fresh.sha);out.put("query_history_binding_sha256",in.historySha);
+        out.put("query_history_proved_by_comparator",false);out.put("grants_dispatch",false);
+        out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
+        out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
+    }
+    /** The same already-journaled model click may tolerate only the complete
+     * recommendation-chip variation below the exact filled toolbar. The query
+     * literal comes from the private Session goal, never from a changed tree. */
+    private static Map<String,Object> compareFilledSearchQuery(Intent in,Snapshot old,Snapshot fresh){
+        Node target=old.node(in.path),current=fresh.node(in.path);
+        need("0/2".equals(in.path)&&target.click()&&current.click()&&"搜索".equals(in.label)
+                &&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256"))
+                &&target.v.equals(current.v),"original filled-query button/ref/label changed");
+        Map<String,Object> out=new TreeMap<String,Object>(NativeXiaomiSearchInputObservation.compareFilledQuery(old,fresh,in.productQuery));
         out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");out.put("purpose",in.purpose);
         out.put("target_path",in.path);out.put("model_run_id",in.run);out.put("original_node_id",in.node);
         out.put("original_action_sha256",in.actionSha);out.put("original_observation_id",in.identity.get("origin_observation_id"));

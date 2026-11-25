@@ -1,0 +1,215 @@
+
+    // New product cases use actual production methods with the explicitly
+    // synthetic profile/AX/Android ports declared by bridge_adapters.py.
+    static JSONObject productRecorded;
+    static final List<Map<String,Object>> productServiceCases=new ArrayList<Map<String,Object>>();
+    static final List<Map<String,Object>> productSessionCases=new ArrayList<Map<String,Object>>();
+    static int productAssertions;
+    interface ProductTest {void run()throws Exception;}
+    interface ProductMutation {void change(Fixture f)throws Exception;}
+    static void productCheck(boolean value,String why){productAssertions++;if(!value)throw new AssertionError(why);}
+    static void productDenied(ProductTest test)throws Exception{
+        boolean refused=false;try{test.run();}catch(IllegalArgumentException|IllegalStateException|ActionDecision.InvalidActionException expected){refused=true;}
+        productCheck(refused,"actual production branch must refuse");
+    }
+    static void productOne(List<Map<String,Object>> rows,String name,ProductTest test){
+        Map<String,Object> row=new TreeMap<String,Object>();row.put("name",name);
+        try{test.run();row.put("passed",true);}catch(Throwable failure){
+            row.put("passed",false);row.put("failure",failure.toString());
+            java.io.StringWriter sw=new java.io.StringWriter();failure.printStackTrace(new java.io.PrintWriter(sw));row.put("stack",sw.toString());
+        }rows.add(row);
+    }
+    static ProfileTarget productProfile(){
+        return new ProfileTarget(new org.trillionnium.hepta.background.ProfileIdentity(10,10,0,org.trillionnium.hepta.background.ProfileIdentity.MANAGED),
+                1010485,NativeAppGoal.XIAOMI_PACKAGE,"com.xiaomi.shop/com.xiaomi.shop2.activity.MainActivity",20261010L,
+                Collections.singletonMap("base","95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373"),
+                Collections.singleton("c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"));
+    }
+    static NativeAppEvidence.Frame productFrame(Fixture f,List<NativeAppEvidence.Node> nodes,String tree,String obs)throws Exception{
+        Graph g=f.productCapturedGraph;long at=SystemClock.now;
+        Map<String,Object> b=new TreeMap<String,Object>();
+        b.put("task_id",f.task);b.put("owner_sha256",f.selection.taskTarget.ownerSha256);b.put("execution_target_sha256",f.selection.taskTarget.targetSha256);
+        b.put("task_authorization_sha256",f.authorization.sha256);b.put("actual_selection_sha256",NativeAppObservation.selectionSha(f.selection));
+        b.put("native_goal_sha256",f.selection.taskTarget.nativeGoal.contractSha256);b.put("observation_id",obs);b.put("package",f.raw.pkg);
+        b.put("background_generation",f.service.background.generation);b.put("app_tree_sha256",tree);b.put("observation_state_sha256",hash("host-state:"+tree));
+        b.put("display_id",7);b.put("window_id",96);b.put("rotation",0);b.put("width",1224);b.put("height",2992);
+        b.put("left",0);b.put("top",0);b.put("right",1224);b.put("bottom",2992);b.put("captured_elapsed_ms",at);
+        b.put("profile_window",f.productWindow.evidence());b.put("profile_action_identity",NativeAppEvidence.profileActionIdentity(f.productWindow));
+        b.put("original_census_captured_elapsed_ms",at);
+        Map<String,Object> identity=new TreeMap<String,Object>(b);
+        for(String k:Arrays.asList("observation_id","captured_elapsed_ms","profile_window","profile_action_identity","original_census_captured_elapsed_ms"))identity.remove(k);
+        Map<String,Object> window=new TreeMap<String,Object>();
+        for(String k:Arrays.asList("package","display_id","window_id","rotation","width","height","left","top","right","bottom"))window.put(k,b.get(k));
+        window.put("metadata",g.windowMetadata.bindFreshness(""));
+        Map<String,Object> census=new TreeMap<String,Object>();census.put("identity",identity);census.put("window",window);
+        census.put("profile_window",f.productWindow.evidence());census.put("profile_owner",NativeAppEvidence.profileActionIdentity(f.productWindow));
+        List<Map<String,Object>> rawNodes=new ArrayList<Map<String,Object>>();for(NativeActionSnapshotCheck.Node n:g.nativeActionNodes)rawNodes.add(n.v);
+        census.put("nodes",rawNodes);census.put("visited",rawNodes.size());census.put("complete",true);census.put("truncated",false);
+        for(String k:Arrays.asList("pending","child_slots_omitted","node_budget_omissions","text_budget_omissions"))census.put(k,0);
+        for(String k:Arrays.asList("read_started_elapsed_ms","read_completed_elapsed_ms","census_captured_elapsed_ms"))census.put(k,at);
+        census.put("reported_windows",g.nativeActionWindows);census.put("ime_visibility","hidden");
+        Map<String,Object> watermark=new TreeMap<String,Object>();for(String k:Arrays.asList("events","content","unknown","boundary"))watermark.put(k,0);
+        Map<String,Object> receipt=new TreeMap<String,Object>();receipt.put("schema","hepta.native-ax-capture.v1");receipt.put("kind","native_ax");
+        receipt.put("binding",b);receipt.put("first",census);receipt.put("second",census);
+        for(String k:Arrays.asList("visual_model","screenshot_present","publication_refreshes_capture_age","grants_action_authority","business_completion_verified"))receipt.put(k,false);
+        receipt.put("request_started_elapsed_ms",at);receipt.put("request_deadline_elapsed_ms",at+12000);receipt.put("sealed_elapsed_ms",at);
+        receipt.put("complete_census_endpoint_elapsed_ms",at);receipt.put("complete_census_endpoint_frozen",true);
+        for(String k:Arrays.asList("capture_watermark","second_start_watermark","second_completed_watermark"))receipt.put(k,watermark);
+        byte[] bytes=ObservationCaptureEvidence.nativeAxBytes(receipt);
+        ObservationCaptureEvidence capture=ObservationCaptureEvidence.fromSealedNativeAx(receipt,bytes,sha(bytes));
+        return new NativeAppEvidence.Frame(f.task,f.selection.taskTarget.ownerSha256,f.selection.taskTarget.targetSha256,f.authorization.sha256,
+                NativeAppObservation.selectionSha(f.selection),obs,f.raw.pkg,f.service.background.generation,tree,hash("host-state:"+tree),
+                null,hash("explicit-host-record:"+obs),hash("explicit-host-completion:"+obs),7,96,0,1224,2992,0,0,1224,2992,at,false,true,
+                nodes,1,true,f.productWindow,capture);
+    }
+    static NativeActionSnapshotCheckHostTest.Fixture productRaw(String side,String literal){
+        NativeActionSnapshotCheckHostTest.Fixture raw=new NativeActionSnapshotCheckHostTest.Fixture(NativeActionSnapshotCheck.SUBMIT_QUERY,NativeAppGoal.XIAOMI_PACKAGE);
+        JSONArray rows=productRecorded.getJSONObject(side).getJSONArray("nodes");
+        for(int i=0;i<rows.length();i++){Map<String,Object> n=new TreeMap<String,Object>(rows.getJSONObject(i).toMap());n.put("window_id",96);raw.nodes.put((String)n.get("path"),n);}
+        Map<String,Object> field=raw.nodes.get("0/1");field.put("text",literal);field.put("label",literal);field.put("input_sha256",ObservedImeEnter.completeTextHash(literal));
+        raw.env.put("visited",rows.length());raw.target="0/2";raw.label="搜索";return raw;
+    }
+    static Fixture productSetup(String label,String literal)throws Exception{
+        NativeProductQueryBridgeHost h=new NativeProductQueryBridgeHost();h.productOwner="在小米商城查询"+literal+"价格";
+        return h.new Fixture(NativeActionSnapshotCheck.SUBMIT_QUERY,label,productRaw("before",literal));
+    }
+    static Fixture productSetup(String label)throws Exception{return productSetup(label,"AX3000T");}
+    static void productHotwords(Fixture f){f.fresh=productRaw("after",f.selection.taskTarget.nativeGoal.immutableOwner.substring(
+            f.selection.taskTarget.nativeGoal.modelStartUtf16,f.selection.taskTarget.nativeGoal.modelEndUtf16));}
+    static void serviceRefusal(String name,ProductMutation change){
+        productOne(productServiceCases,name,()->{Fixture f=productSetup(name);change.change(f);
+            boolean refused=false;try{refused=!f.dispatch();}catch(IllegalArgumentException|IllegalStateException expected){refused=true;}
+            productCheck(refused,"actual Service must reject");f.noEffect("rejected query has no effect");});
+    }
+    static void productServiceTests(){
+        productOne(productServiceCases,"actual_Service_equal_tree_runs_final_census_live_original_field_and_one_claim",()->{
+            Fixture f=productSetup("equal");
+            productCheck(f.work.nativeGuard!=null&&f.frame.capture.nativeText()&&f.frame.profileWindow.userId==10,"real Session guard from explicit managed AX host port");
+            productCheck(f.work.graph.refs.size()==2,"owned action copy retains original button and original query field");
+            productCheck(f.dispatch()&&f.effects()==1,"exact actual click branch entered one host effect");
+            JSONObject proof=new JSONObject(f.work.nativeActionProof);
+            productCheck(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("exact_query_field_live_rechecked_before_claim"),"actual final/live-field branch executed");
+            productCheck(Collections.frequency(f.service.events,"full_census")==2,"equal tree still performs final census");
+            productDenied(()->f.service.clickBranch(f.task,f.service.current,f.action,f.work));productCheck(f.effects()==1,"second use cannot effect");
+        });
+        productOne(productServiceCases,"actual_Service_recorded_hotword_variation_reaches_one_original_button_effect",()->{
+            Fixture f=productSetup("hotwords");productHotwords(f);
+            productCheck(f.dispatch()&&f.effects()==1&&f.work.nativeActionRevalidated,"complete changed census accepted by actual bridge");
+            productCheck(new JSONObject(f.work.nativeActionProof).getJSONArray("changed_paths").length()==20,"all actual changed native paths retained");
+        });
+        productOne(productServiceCases,"actual_Service_preserves_lowercase_owner_literal_without_normalizing_query",()->{
+            Fixture f=productSetup("lower","ax3000t");productHotwords(f);
+            productCheck(f.dispatch()&&f.effects()==1,"existing lowercase goal stays usable");
+            productCheck("ax3000t".equals(new JSONObject(f.work.nativeActionProof).getString("query_literal")),"literal remains owner case");
+        });
+        serviceRefusal("actual_Service_claim_time_query_text_change_refused",f->f.service.afterFinalCensus=()->f.data.get("0/1").values.put("text","AX3000"));
+        serviceRefusal("actual_Service_claim_time_identical_query_node_replacement_refused",f->f.service.afterFinalCensus=()->{
+            NodeData root=f.data.get("0"),replacement=new NodeData(f.data.get("0/1").values);replacement.parent=root;root.children.set(1,replacement);});
+        serviceRefusal("actual_Service_query_sibling_reparented_to_different_root_refused",f->f.service.afterFinalCensus=()->{
+            f.data.get("0/1").parent=new NodeData(f.data.get("0").values);});
+        serviceRefusal("actual_Service_selected_button_identical_node_replacement_refused",f->f.service.afterFinalCensus=()->{
+            NodeData root=f.data.get("0"),replacement=new NodeData(f.data.get("0/2").values);replacement.parent=root;root.children.set(2,replacement);});
+        serviceRefusal("actual_Service_root_actual_parent_change_refused",f->f.service.afterFinalCensus=()->f.data.get("0").parent=new NodeData(f.data.get("0").values));
+        serviceRefusal("actual_Service_profile_task_token_change_refused",f->{
+            WindowOwnership w=f.frame.profileWindow;
+            f.service.current.profileWindow=new WindowOwnership(f.productProfile,w.generation,w.displayId,w.windowId,w.taskId,w.parentTaskId,
+                    "33333333-3333-4333-8333-333333333333",w.proofId,w.userId,w.userSerial,w.fullUid,w.observedElapsedMs,w.expiresElapsedMs);});
+        serviceRefusal("actual_Service_missing_original_query_clone_refused",f->{
+            String field=f.ids.get("0/1");NodeRef n=f.work.graph.refs.remove(field);n.node.recycle();});
+        serviceRefusal("actual_Service_final_new_overlay_refused",f->f.service.afterFinalCensus=()->{
+            AccessibilityWindowInfo overlay=new AccessibilityWindowInfo();overlay.id=99;overlay.layer=2;f.service.windowRows.add(overlay);});
+        serviceRefusal("actual_Service_cancel_before_claim_refused",f->f.service.afterFinalCensus=()->f.service.cancelled=true);
+        serviceRefusal("actual_Service_original_deadline_not_renewed",f->SystemClock.now=f.work.nativeGuard.deadline);
+        serviceRefusal("actual_Service_closed_guard_cannot_enter_effect",f->f.work.nativeGuard.close());
+    }
+    static Map<String,Object> productExecution(Fixture f){
+        NativeAppSession.ActionGuard g=f.work.nativeGuard;Map<String,Object> x=new TreeMap<String,Object>();
+        x.put("schema","hepta.action-execution.v1");x.put("execution_kind","serial_action_worker");x.put("operation_id",id("host-product-operation:"+f.task));
+        x.put("task_id",f.task);x.put("model_run_id",f.run);x.put("observation_id",f.frame.observationId);
+        x.put("authorization_sha256",f.authorization.sha256);x.put("window_id",96);x.put("display_id",7);x.put("background_generation",f.frame.generation);
+        x.put("retired",false);x.put("retirement_reason",null);x.put("effect_entered",false);x.put("effect_returned",false);x.put("api_accepted",null);
+        x.put("worker_drained",true);x.put("callback_published",true);x.put("callback_authority_current",true);x.put("automatic_redispatch",false);
+        x.put("queued_elapsed_ms",g.issued);x.put("deadline_elapsed_ms",g.deadline);x.put("worker_drained_elapsed_ms",SystemClock.now);
+        x.put("native_action_guard",g.evidence());return x;
+    }
+    static Map<?,?> productOutcome(Fixture f){
+        for(int i=f.journal.size()-1;i>=0;i--){Map<?,?> row=f.journal.get(i);
+            if(((String)row.get("leaf")).startsWith("native-app-outcome-")){
+                Map<?,?> value=(Map<?,?>)row.get("value");return(Map<?,?>)((Map<?,?>)value.get("attempt")).get("actual_action_receipt");}}
+        throw new AssertionError("no durable product outcome");
+    }
+    static void productStale(Fixture f,Map<String,Object> x,boolean seal)throws Exception{
+        if(seal)f.work.nativeGuard.closeAfterUnenteredAwait(x,new java.util.concurrent.atomic.AtomicBoolean(false));
+        f.session.modelActionOutcome(f.action,f.run,false,false,true,hash("explicit-host-durable-receipt:"+f.task),++SystemClock.now,x);
+    }
+    static void noRelease(String name,ProductMutation change){
+        productOne(productSessionCases,name,()->{Fixture f=productSetup(name);change.change(f);Map<String,Object> x=productExecution(f);
+            productStale(f,x,false);productCheck(Boolean.FALSE.equals(productOutcome(f).get("product_query_reservation_released")),"unsafe reservation remains consumed");
+            f.observeGraph(f.raw);productCheck(f.session.domain().clickIds.isEmpty(),"fresh observation cannot silently restore unsafe proposal");f.noEffect("no automatic action");});
+    }
+    static void executionNoRelease(String name,String key,Object value){
+        productOne(productSessionCases,name,()->{Fixture f=productSetup(name);Map<String,Object> x=productExecution(f);x.put(key,value);
+            productStale(f,x,true);productCheck(Boolean.FALSE.equals(productOutcome(f).get("product_query_reservation_released")),"unsafe execution projection never releases");
+            f.observeGraph(f.raw);productCheck(f.session.domain().clickIds.isEmpty(),"reservation remains consumed");f.noEffect("no automatic action");});
+    }
+    static void productSessionTests(){
+        productOne(productSessionCases,"actual_Session_drained_unentered_guard_releases_after_durable_outcome_requires_fresh_frame_and_new_run",()->{
+            Fixture f=productSetup("release");ActionDecision old=f.action;NativeAppEvidence.Frame oldFrame=f.frame;Map<String,Object> x=productExecution(f);
+            productStale(f,x,true);productCheck(Boolean.TRUE.equals(productOutcome(f).get("product_query_reservation_released")),"actual durable release proof");
+            productCheck(Boolean.TRUE.equals(productOutcome(f).get("pre_effect_stale_recovery_available")),"actual guard proof retained for bounded read recovery");
+            productDenied(()->f.session.beforeModelAction(2,old,id("new-run-old-frame"),++SystemClock.now));
+            productDenied(()->f.session.observed(oldFrame));f.observeGraph(f.raw);
+            ActionDecision next=f.click(f.ids.get("0/2"));productDenied(()->f.session.beforeModelAction(2,next,f.run,++SystemClock.now));
+            String freshRun=id("fresh-product-run");f.session.beforeModelAction(2,next,freshRun,++SystemClock.now);
+            NativeAppSession.ActionGuard nextGuard=f.session.actionGuard(next,freshRun,f.frame.observationId,SystemClock.now,SystemClock.now+8000);
+            productCheck(nextGuard!=null&&nextGuard!=f.work.nativeGuard,"new actual model Attempt receives a distinct guard");
+            Map<?,?> last=f.journal.get(f.journal.size()-1),v=(Map<?,?>)last.get("value"),a=(Map<?,?>)v.get("attempt");
+            productCheck(((Number)a.get("ordinal")).intValue()==2,"original action budget remains spent");
+            productCheck(!f.session.domain().resultReady&&f.session.resultRecord()==null,"release never creates query/business proof");f.noEffect("no automatic redispatch");
+        });
+        productOne(productSessionCases,"actual_Session_changed_sealed_execution_cannot_release",()->{
+            Fixture f=productSetup("sealed");Map<String,Object> x=productExecution(f);
+            f.work.nativeGuard.closeAfterUnenteredAwait(x,new java.util.concurrent.atomic.AtomicBoolean(false));
+            x.put("operation_id",id("substituted-operation"));productStale(f,x,false);
+            productCheck(Boolean.FALSE.equals(productOutcome(f).get("product_query_reservation_released")),"private seal binds exact projection");
+        });
+        noRelease("actual_Session_claimed_guard_never_releases",f->f.work.nativeGuard.claim(f.action,f.run,SystemClock.now));
+        noRelease("actual_Session_normally_closed_guard_never_releases",f->f.work.nativeGuard.close());
+        executionNoRelease("actual_Session_entered_effect_never_releases","effect_entered",true);
+        executionNoRelease("actual_Session_undrained_worker_never_releases","worker_drained",false);
+        executionNoRelease("actual_Session_retired_worker_never_releases","retired",true);
+        executionNoRelease("actual_Session_noncurrent_callback_never_releases","callback_authority_current",false);
+        executionNoRelease("actual_Session_replay_projection_never_releases","automatic_redispatch",true);
+        executionNoRelease("actual_Session_cross_display_projection_never_releases","display_id",8);
+        productOne(productSessionCases,"actual_Session_expired_original_budget_never_releases",()->{
+            Fixture f=productSetup("expired");Map<String,Object> x=productExecution(f);SystemClock.now=f.work.nativeGuard.deadline;
+            productStale(f,x,false);productCheck(Boolean.FALSE.equals(productOutcome(f).get("product_query_reservation_released")),"elapsed budget is not renewed");
+        });
+        productOne(productSessionCases,"actual_Session_outcome_journal_failure_keeps_reservation_and_blocks_next_attempt",()->{
+            Fixture f=productSetup("journal");Map<String,Object> x=productExecution(f);f.failActualOutcome=true;
+            boolean failed=false;try{productStale(f,x,true);}catch(java.io.IOException expected){failed=true;}
+            productCheck(failed,"actual outcome persistence failure injected");
+            productDenied(()->f.session.beforeModelAction(2,f.action,id("new-after-journal-fail"),++SystemClock.now));f.noEffect("failed journal has no replay");
+        });
+        productOne(productSessionCases,"actual_Session_duplicate_outcome_never_reuses_released_guard",()->{
+            Fixture f=productSetup("duplicate");Map<String,Object> x=productExecution(f);productStale(f,x,true);
+            productDenied(()->f.session.modelActionOutcome(f.action,f.run,false,false,true,hash("duplicate"),++SystemClock.now,x));
+            f.noEffect("duplicate outcome cannot dispatch");
+        });
+    }
+    static boolean productWrite(java.nio.file.Path path,List<Map<String,Object>> cases,String kind)throws Exception{
+        boolean pass=true;List<String> names=new ArrayList<String>();for(Map<String,Object> row:cases){pass&=Boolean.TRUE.equals(row.get("passed"));names.add((String)row.get("name"));}
+        JSONObject report=new JSONObject().put("schema","hepta.xiaomi-query-"+kind+"-host.v1").put("all_pass",pass)
+                .put("cases",cases.size()).put("case_names",names).put("results",cases).put("assertions_total",productAssertions)
+                .put("actual_production_service_methods",true).put("actual_production_session",true).put("explicit_android_profile_capture_ports",true)
+                .put("android_runtime",false).put("phone_operations",0).put("model_executed",false).put("business_completion_verified",false);
+        java.nio.file.Files.write(path,(report.toString(2)+"\n").getBytes(StandardCharsets.UTF_8));return pass;
+    }
+    public static void main(String[] args)throws Exception{
+        sourceRoot=java.nio.file.Paths.get(args[0]);
+        productRecorded=new JSONObject(new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(args[1])),StandardCharsets.UTF_8));
+        productServiceTests();productSessionTests();
+        boolean service=productWrite(java.nio.file.Paths.get(args[2]),productServiceCases,"service");
+        boolean session=productWrite(java.nio.file.Paths.get(args[3]),productSessionCases,"session");
+        if(!service||!session)throw new AssertionError("actual query Service/Session cases failed; full independent reports retained");
+    }

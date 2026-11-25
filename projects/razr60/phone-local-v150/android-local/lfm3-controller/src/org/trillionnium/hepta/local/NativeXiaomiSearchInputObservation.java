@@ -104,8 +104,15 @@ final class NativeXiaomiSearchInputObservation {
         throw new IllegalArgumentException("actual AX window scalar type");
     }
 
-    static Map<String,Object> compare(Snapshot before,Snapshot after){
-        need(before!=null&&after!=null,"two complete actual empty-input censuses");
+    static Map<String,Object> compare(Snapshot before,Snapshot after){return compare(before,after,null);}
+    /** Separate filled-button action predicate; never admits historical input
+     * publication or relaxes the existing empty-editor observation predicate. */
+    static Map<String,Object> compareFilledQuery(Snapshot before,Snapshot after,String literal){
+        need("AX3000T".equalsIgnoreCase(literal),"supported immutable product literal required");
+        return compare(before,after,literal);
+    }
+    private static Map<String,Object> compare(Snapshot before,Snapshot after,String literal){
+        need(before!=null&&after!=null,"two complete actual input censuses");
         need(before.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE)
                 &&after.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE),"managed-profile input only");
         need(PACKAGE.equals(s(before.env,"package"))&&PACKAGE.equals(s(after.env,"package")),"Xiaomi input only");
@@ -115,7 +122,7 @@ final class NativeXiaomiSearchInputObservation {
         a.remove("captured_elapsed_ms");b.remove("captured_elapsed_ms");
         need(a.equals(b),"input window/display/IME/owner/installation/profile differs");
         need(before.nodes.keySet().equals(after.nodes.keySet()),"complete input node membership changed");
-        Template left=template(before),right=template(after);
+        Template left=template(before,literal),right=template(after,literal);
         need(left.chips.equals(right.chips)&&left.carousel.equals(right.carousel),"recommendation membership changed");
         List<String> changed=new ArrayList<String>();
         for(String path:before.nodes.keySet()){
@@ -127,9 +134,11 @@ final class NativeXiaomiSearchInputObservation {
             need(old.equals(fresh),"recommendation capability/structure changed: "+path);changed.add(path);
         }
         Map<String,Object> out=new TreeMap<String,Object>();
-        out.put("schema","hepta.xiaomi-native-empty-search-input-pair.v1");out.put("phase",PHASE);
+        out.put("schema",literal==null?"hepta.xiaomi-native-empty-search-input-pair.v1":"hepta.xiaomi-native-filled-query-pair.v1");
+        out.put("phase",literal==null?PHASE:"search_submit");
         out.put("toolbar_shape","observed_frame_layout_direct_children.v1");out.put("query_path",QUERY_PATH);
-        out.put("empty_query",true);out.put("literal_goal_revalidated_by_session",false);
+        out.put("empty_query",literal==null);out.put("literal_goal_revalidated_by_session",false);
+        if(literal!=null){out.put("query_literal",literal);out.put("normal_search_path","0/2");}
         out.put("before_snapshot_sha256",before.sha);out.put("after_snapshot_sha256",after.sha);
         out.put("before_visited_nodes",before.nodes.size());out.put("after_visited_nodes",after.nodes.size());
         out.put("protected_subtrees",Arrays.asList("0/0","0/1","0/2","0/3","0/4","0/5"));
@@ -147,16 +156,18 @@ final class NativeXiaomiSearchInputObservation {
         final Set<String> chips;final String carousel;
         Template(Set<String> chips,String carousel){this.chips=chips;this.carousel=carousel;}
     }
-    private static Template template(Snapshot snapshot){
-        Node root=snapshot.node("0"),field=snapshot.node(QUERY_PATH),toggle=snapshot.node("0/0"),normal=snapshot.node("0/4");
+    private static Template template(Snapshot snapshot,String literal){
+        boolean filled=literal!=null;
+        Node root=snapshot.node("0"),field=snapshot.node(QUERY_PATH),toggle=snapshot.node("0/0"),normal=snapshot.node(filled?"0/2":"0/4");
         need(FRAME.equals(root.cls)&&root.parent.isEmpty()&&root.usable()&&root.children==7
                 &&root.text.isEmpty()&&root.desc.isEmpty()&&root.view.isEmpty()&&!b(root.v,"clickable")
                 &&!b(root.v,"action_click")&&passiveMetadata(root),"complete direct-root editor");
         need("android.widget.EditText".equals(field.cls)&&FRAME.equals(field.parent)&&field.usable()
-                &&field.children==0&&field.view.isEmpty()&&field.text.isEmpty()&&field.desc.isEmpty()
-                &&"".equals(field.label)&&b(field.v,"editable")&&b(field.v,"clickable")&&b(field.v,"action_click")
+                &&field.children==0&&field.view.isEmpty()&&(filled?literal.equals(field.text):field.text.isEmpty())&&field.desc.isEmpty()
+                &&(filled?literal:"").equals(field.label)&&b(field.v,"editable")&&b(field.v,"clickable")&&b(field.v,"action_click")
                 &&!b(field.v,"scrollable")&&SCROLL.equals(s(field.v,"scroll_actions"))&&IME.equals(s(field.v,"ime_enter"))
-                &&field.v.get("input_sha256")==null&&neutralSelection(field),"original unique empty query field");
+                &&(filled?ObservedImeEnter.completeTextHash(literal).equals(field.v.get("input_sha256")):field.v.get("input_sha256")==null)
+                &&neutralSelection(field),"original unique exact query field");
         NativeActionSnapshotCheck.requireSearchInputReference(snapshot,field);
         int edits=0,searchLabels=0;
         for(Node node:snapshot.nodes.values()){
@@ -177,10 +188,13 @@ final class NativeXiaomiSearchInputObservation {
                 &&s(enclosure.v,"scroll_actions").matches("hepta\\.observed-scroll-actions\\.v1\\|observed(?:\\|forward)?(?:\\|backward)?(?:\\|up)?(?:\\|down)?")
                 &&IME.equals(s(enclosure.v,"ime_enter"))&&enclosure.v.get("input_sha256")==null,"fixed complete recommendation ScrollView");
         int bottom=0;for(int i=0;i<6;i++){
-            Node n=snapshot.node("0/"+i);need(FRAME.equals(n.parent)&&coordinatesWithin(root,n),"actual toolbar containment");
-            bottom=Math.max(bottom,Math.max(n.bounds.get(1),n.bounds.get(3)));
+            Node n=snapshot.node("0/"+i);need(FRAME.equals(n.parent)&&coordinatesWithin(root,n),"actual root child containment");
+            // Filled search moves its two static suggestion panels to 0/4 and
+            // 0/5. They remain byte-exact protected subtrees; only 0/0..0/3
+            // form the actual query/action toolbar above the fixed enclosure.
+            if(!filled||i<4)bottom=Math.max(bottom,Math.max(n.bounds.get(1),n.bounds.get(3)));
         }
-        need(enclosure.bounds.get(1)>=bottom&&coordinatesWithin(root,enclosure),"recommendations disjoint from entire toolbar");
+        need(enclosure.bounds.get(1)>=bottom&&coordinatesWithin(root,enclosure),"recommendations disjoint from entire query/action toolbar");
         Node heading=snapshot.node("0/6/0"),refresh=snapshot.node("0/6/1");
         need(TEXT.equals(heading.cls)&&"android.widget.ScrollView".equals(heading.parent)&&heading.children==0
                 &&heading.usable()&&"猜你想搜".equals(heading.text)&&!b(heading.v,"clickable")

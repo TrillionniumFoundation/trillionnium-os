@@ -5844,6 +5844,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SET_QUERY.equals(work.nativeGuard.purpose)
                 &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
     }
+    private static boolean nativeProductQueryGuard(ActionWork work){
+        return work!=null&&work.nativeGuard!=null&&NativeActionSnapshotCheck.SUBMIT_QUERY.equals(work.nativeGuard.purpose)
+                &&NativeAppGoal.XIAOMI_PACKAGE.equals(work.nativeGuard.goal.packageName);
+    }
     /** Equal-tree Ctrip OPEN still needs the existing full final checker and
      * its real one-use claim before effect. That claim is also the prerequisite
      * for the unchanged Controller close-and-seal post-effect read handoff. */
@@ -5962,18 +5966,55 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(!fresh.nativeActionWindows.equals(windowsBefore))throw new StaleObservation("完整复核后原生窗口集合变化");
             NativeActionSnapshotCheck.Snapshot checked=nativeActionSnapshot(nativeSearchEntryGuard(work)?fresh:work.graph,guard);
             refreshNativeActionTargetChain(work.background,frame,work.graph.refs.get(action.nodeId),guard.targetNode.path,checked,work);
+            if(nativeProductQueryGuard(work))refreshNativeProductQueryField(work.background,frame,work.graph.refs.get(action.nodeId),checked,work);
             Map<String,Object> windowsAfter=readNativeActionWindows(fresh,work.budget());
             if(!windowsBefore.equals(windowsAfter))throw new StaleObservation("原生派发前窗口集合变化");
             requireNativeActionGuard(task,frame,action,work);authorizationBeforeDispatch(task,work.authorization,action,work.state.modelRunId);
             Map<String,Object> evidence=new java.util.TreeMap<String,Object>(proof);
             evidence.put("final_complete_census_compared",true);evidence.put("original_node_ref_and_actual_ancestor_chain",true);
             evidence.put("reported_windows_before_after_equal",true);evidence.put("all_nodes_simultaneous_or_pixels_stable_claimed",false);
+            if(nativeProductQueryGuard(work))evidence.put("exact_query_field_live_rechecked_before_claim",true);
             evidence.put("installed_identity_rechecked_before_final_census",true);evidence.put("checked_elapsed_ms",SystemClock.elapsedRealtime());
             String raw=new JSONObject(evidence).toString();
             if(raw.getBytes(StandardCharsets.UTF_8).length>262144)throw new StaleObservation("原生复核证明超出固定记录预算");
             work.nativeActionProof=raw;actionCheck(work);
             guard.claim(action,work.state.modelRunId,SystemClock.elapsedRealtime());guard.requireClaimed();actionCheck(work);
         }finally{if(fresh!=null)fresh.close();}
+    }
+    /** Re-read the exact query sibling through the original clicked node's
+     * actual root. No replacement action reference or query text is supplied. */
+    private void refreshNativeProductQueryField(BackgroundSession background,PhoneObservation frame,NodeRef clicked,
+            NativeActionSnapshotCheck.Snapshot snapshot,ActionWork work)throws Exception{
+        if(clicked==null)throw new StaleObservation("原生商品查询原点击引用缺失");
+        NodeRef originalField=null;
+        for(NativeAppEvidence.Node row:work.nativeGuard.frame.nodes)if("0/1".equals(row.path)){
+            if(originalField!=null)throw new StaleObservation("原生商品查询原字段路径不唯一");
+            originalField=work.graph.refs.get(row.id);
+        }
+        if(originalField==null)throw new StaleObservation("原生商品查询原字段引用缺失");
+        List<AccessibilityNodeInfo> temporary=new ArrayList<AccessibilityNodeInfo>();
+        try{
+            AccessibilityNodeInfo root=regionParent(work,clicked.node,temporary);
+            if(root==null||!refreshActionNode(work,root)||root.getChildCount()!=snapshot.node("0").children)
+                throw new StaleObservation("原生商品查询根节点变化");
+            requireBackgroundNodeWindow(background,frame,root);
+            AccessibilityNodeInfo target=regionChild(work,root,2,temporary),field=regionChild(work,root,1,temporary);
+            if(target==null||!refreshActionNode(work,target)||!target.equals(clicked.node)
+                    ||field==null||!refreshActionNode(work,field)||!field.equals(originalField.node))
+                throw new StaleObservation("原生商品查询同根节点关系变化");
+            requireBackgroundNodeWindow(background,frame,field);actionCheck(work);
+            NativeActionSnapshotCheck.Node expected=snapshot.node("0/1");
+            NativeActionSnapshotCheck.Node actual=snapshotNativeActionNode(field,"0/1",expected.parent,null,null);
+            Map<String,Object> before=new java.util.TreeMap<String,Object>(expected.v),now=new java.util.TreeMap<String,Object>(actual.v);
+            before.remove("label");before.remove("ref_signature_sha256");now.remove("label");now.remove("ref_signature_sha256");
+            if(!before.equals(now)||expected.v.get("ref_signature_sha256")==null
+                    ||!expected.v.get("ref_signature_sha256").equals(NativeAppEvidence.hash(originalField.signature))
+                    ||!expected.v.get("ref_signature_sha256").equals(NativeAppEvidence.hash(nodeSignature(field,observedChildText(field,true,work.budget())))))
+                throw new StaleObservation("原生商品查询原文字段变化");
+            AccessibilityNodeInfo parent=regionParent(work,field,temporary);
+            if(parent==null||!parent.equals(root))throw new StaleObservation("原生商品查询字段实际父节点变化");
+            actionCheck(work);
+        }finally{for(AccessibilityNodeInfo node:temporary)node.recycle();}
     }
     private void refreshNativeActionTargetChain(BackgroundSession background,PhoneObservation frame,NodeRef original,
             String targetPath,NativeActionSnapshotCheck.Snapshot snapshot,ActionWork work)throws Exception{
@@ -6184,7 +6225,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     web.beforeNativeClickInvocation(action,modelRunId);
                 }
                 if(expected.capture!=null&&expected.capture.formHistory()
-                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work))){
+                        ||work!=null&&(work.nativeActionRevalidated||nativeSearchEntryGuard(work)||nativeFlightOpenGuard(work)||nativeProductQueryGuard(work))){
                     finalNativeActionCheck(taskId,expected,action,work);work.nativeGuard.requireClaimed();
                 }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));
@@ -6470,7 +6511,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
         boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
         Graph copyForAction(String nodeId,WebRegionNativeBridge region){
-            // Main-looper handoff clones local references only: one selected node, or exactly four product roles plus their WebView.
+            // Main-looper handoff clones local references only: the selected node,
+            // its observed query sibling for a managed filled-search toolbar, or
+            // exactly four product roles plus their WebView.
             // No refresh, traversal, live-window query, or other IPC occurs during this bounded handoff.
             Graph copy=new Graph();copy.packageName=packageName;copy.digest=digest;copy.backgroundGeneration=backgroundGeneration;
             copy.backgroundBootstrapPackage=backgroundBootstrapPackage;copy.windowId=windowId;copy.rotation=rotation;
@@ -6488,6 +6531,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             copy.nativeActionSelectionSha=nativeActionSelectionSha;copy.nativeActionTargetSha=nativeActionTargetSha;copy.nativeActionGoalSha=nativeActionGoalSha;
             try{
                 NodeRef selected=nodeId==null?null:refs.get(nodeId);if(selected!=null)copy.refs.put(nodeId,new NodeRef(selected));
+                if(region==null&&selected!=null&&profileWindow!=null&&NativeAppGoal.XIAOMI_PACKAGE.equals(packageName)){
+                    boolean filledButton=false;String queryId=null;
+                    for(PhoneObservation.Node row:rows){
+                        if(nodeId.equals(row.id)&&"0/2".equals(row.nativeTreePath))filledButton=true;
+                        if("0/1".equals(row.nativeTreePath)&&"android.widget.EditText".equals(row.className)){
+                            if(queryId!=null)throw new StaleObservation("商品查询原字段路径不唯一");queryId=row.id;
+                        }
+                    }
+                    if(filledButton&&queryId!=null){
+                        NodeRef query=refs.get(queryId);
+                        if(query==null||copy.refs.containsKey(queryId))throw new StaleObservation("商品查询原字段引用缺失");
+                        copy.refs.put(queryId,new NodeRef(query));
+                    }
+                }
                 if(region!=null){
                     if(selected==null||!region.anchor.id.equals(nodeId)||region.roles().size()!=4)
                         throw new StaleObservation("商品动作缺少原始四角色快照");
