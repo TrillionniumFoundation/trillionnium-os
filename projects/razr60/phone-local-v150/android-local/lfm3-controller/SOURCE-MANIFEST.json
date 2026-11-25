@@ -1,163 +1,13 @@
 {
   "android_qualified": false,
-  "base_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
-  "base_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+  "base_head": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
+  "base_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_search_and_profile_cleanup_host_harness_successor",
-  "complete_source_files": 2595,
-  "current_native_xiaomi_modal_handoff_order": {
-    "actual_old_failure_preserved": true,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "tests/native-search-producer/ModalPreludeCases.fragment",
-      "tests/native-search-producer/MODAL-HANDOFF-VALIDATION.json"
-    ],
-    "consume_before_unconditional_waiter_retirement": true,
-    "new_full_controller_chain_cases": 6,
-    "no_automatic_Back_or_business_success": true,
-    "original_service_session_and_deadlines_unchanged": true,
-    "outer_does_not_consume_twice": true,
-    "previous_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
-    "real_service_receipt_required": true
-  },
-  "current_native_xiaomi_price_domain": {
-    "canonical_terminal_amount_required": true,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
-      "tests/native-xiaomi-budget-preview/run_host.py"
-    ],
-    "checkout_completion_not_claimed": true,
-    "deadline_and_authority_limits_unchanged": true,
-    "previous_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
-    "provider_amount_domain_unchanged": true
-  },
-  "current_notes_create_and_cancelled_recovery": {
-    "archive_and_deadline_limits_unchanged": true,
-    "cancelled_model_exit_code_remains": 143,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
-      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
-      "tests/notes-app-qualified-create/real-owner-50af.json",
-      "tests/notes-app-qualified-create/run_host.py",
-      "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
-      "tests/notes-cancelled-absence/README.md",
-      "tests/notes-cancelled-absence/run_host.py"
-    ],
-    "complete_owner_span_preserved": true,
-    "historical_business_and_cleanup_success_not_claimed": true,
-    "historical_model_receipt_valid_remains": false,
-    "previous_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
-    "unsupported_create_rejected_before_task_lease": true
-  },
-  "current_notes_pending_retirement_and_partial_recovery": {
-    "failed_intermediate_phone_frames_available": false,
-    "no_reader_nested_retry": true,
-    "no_repeated_effect": true,
-    "normal_maximum_complete_batches": 3,
-    "old_recovery_methods_unchanged": 62,
-    "original_deadline_unchanged": true,
-    "phone_cleanup_or_business_claim": false,
-    "single_returned_token_effect_required_for_v8": true,
-    "whole_batch_fences_required": true
-  },
-  "current_notes_taskinfo_and_workflow_refusal": {
-    "alias_target_exact": true,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
-      "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
-      "tests/notes-token-retirement/run_host.py",
-      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
-      "tests/notes-workflow-retirement-refusal/run_host.py"
-    ],
-    "deadline_and_authority_limits_unchanged": true,
-    "new_v7_requires_fresh_current_absence_and_ack": true,
-    "old_resident_shutdown_not_implemented": true,
-    "ordinary_membership_foreign_only": true,
-    "original_task_failed_preserved": true,
-    "parent_field_not_rewritten": true,
-    "previous_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
-    "request_v3_and_v6_unchanged": true,
-    "root3_children_actual_read_observed": true
-  },
-  "current_notes_workflow_retirement_broker_eof": {
-    "actual_post_shutdown_eof_captured": false,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java"
-    ],
-    "current_eof_boolean_required": true,
-    "fresh_current_absence_and_ack_still_required": true,
-    "historical_eof_false_required": true,
-    "only_eof_field_can_differ": true,
-    "original_cleanup_result_and_bin_unchanged": true,
-    "previous_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
-    "request_v3_and_v6_unchanged": true,
-    "request_v7_only": true
-  },
-  "current_personal_notes_recovery_routing": {
-    "actual_cancelled_startup_origin_regression_required": true,
-    "changed_paths": [
-      "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-      "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
-      "tests/notes-recovery-routing/run_host.py"
-    ],
-    "deadline_and_authority_limits_unchanged": true,
-    "genuine_profile_business_origin_required": true,
-    "historical_cancelled_and_unknown_results_preserved": true,
-    "personal_notes_existing_strict_recovery_path": true,
-    "previous_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4"
-  },
-  "current_personal_notes_token_retirement": {
-    "changed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
-      "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
-      "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
-      "tests/notes-token-retirement/run_host.py"
-    ],
-    "complete_fresh_foreign_and_physical_checks_required": true,
-    "deadline_and_authority_limits_unchanged": true,
-    "detached_task_refused": true,
-    "each_effect_attempt_consumed_once": true,
-    "framework_process_impact_not_claimed_absent": true,
-    "historical_cancelled_and_unknown_results_preserved": true,
-    "original_attached_binder_tokens_only": true,
-    "previous_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
-    "retire_owned_tasks_before_display_release": true
-  },
-  "current_process_empty_command_reobservation": {
-    "changed_paths": [
-      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
-      "tests/profile-recovery-census/run_host.py"
-    ],
-    "current_display_task_recents_absence_and_ack_still_required": true,
-    "maximum_complete_row_attempts": 3,
-    "no_zombie_or_dead_state_exception": true,
-    "only_empty_non_kernel_ambiguity_reobserved": true,
-    "original_capture_and_closing_preserved": true,
-    "original_deadline_unchanged": true,
-    "original_failing_process_row_identified": false,
-    "persistent_empty_rejected": true,
-    "previous_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
-    "same_identity_required": true
-  },
+  "candidate_status": "reviewed_merge_with_concurrent_installed_source",
+  "complete_source_files": 2606,
   "current_successor_delta": {
-    "baseline": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
+    "baseline": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
     "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
       "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
       "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
       "src/org/trillionnium/hepta/local/NativeAppSession.java",
@@ -178,12 +28,7 @@
       "tests/native-xiaomi-query-stability/real-censuses.json",
       "tests/native-xiaomi-query-stability/run_host.py",
       "tests/native-xiaomi-query-stability/run_integration_host.py",
-      "tests/observation-diagnostics/run_host.py",
-      "tests/profile-cleanup-sampling/ProfileCleanupDiagnosticsHostTest.java",
-      "tests/profile-cleanup-sampling/ProfileCleanupSamplingHostTest.java",
-      "tests/profile-cleanup-sampling/README.md",
-      "tests/profile-cleanup-sampling/run_host.py",
-      "tests/public-screen-lease/run_host.py"
+      "tests/observation-diagnostics/run_host.py"
     ],
     "model_weights_changed": false,
     "native_runtime_changed": false,
@@ -8638,6 +8483,11 @@
       "sha256": "5cab8b7717f6c9dbbe2336945e9788049f5cde8835494e89715d84ded7f6375a"
     },
     {
+      "path": "tests/native-app-provider/NativeXiaomiQueryReservationHostTest.java",
+      "bytes": 27254,
+      "sha256": "4221287c5ffe4846ce85bb29ed614b23c3725f4244497e08c9759f95f1569529"
+    },
+    {
       "path": "tests/native-app-provider/NativeXiaomiSearchHintWidthHostTest.java",
       "bytes": 22745,
       "sha256": "2c491534c65646ff70e842f1bdcdbb5a997f3bc49093b97a989d85e2808b0fca"
@@ -8813,6 +8663,46 @@
       "sha256": "9a0a0181927f0f9d2ed625b65fd2039e7cff1c2fb770b39d512810f3dc4a7107"
     },
     {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/92c4b25021fe4385b28eed28d9f583a2-native-ax.json",
+      "bytes": 244136,
+      "sha256": "1664ddee554790d25e05a8d30e5980debf007f2c5c6f2ea95598cf949fa518bb"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/PROVENANCE.json",
+      "bytes": 3731,
+      "sha256": "8d1b0e29033835dccc00bb43093a54d1776b33db8b85b71ad494c70862ce62a1"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/d32cf3d7573345f68183b18233b0c8ee-native-ax.json",
+      "bytes": 244662,
+      "sha256": "99a6807c218166128a8f9df56dd7466e0707c7be6685bf82baf979e58f1a00cb"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/native-app-binding.json",
+      "bytes": 4141,
+      "sha256": "d2f46d9e0086464fc9631c3d09c8fab2cbad7057ece5daac9f2836a1df1a7ec9"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/native-app-outcome-03.json",
+      "bytes": 5199,
+      "sha256": "d1270545e5e479b3938f45ae069e26f7801b3ec2b436934fccdedc37c7cecd22"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-03-action-derived.json",
+      "bytes": 10543,
+      "sha256": "ca7388cac3ea182fa018ebc52f00a29c01ba9d7b84e033e8a6b98d66f09d1923"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-03-before.json",
+      "bytes": 119709,
+      "sha256": "322dc4d0282177d8bbafe20daa34129e29d44e7ef7458f096cadc39e8189c751"
+    },
+    {
+      "path": "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-04-before.json",
+      "bytes": 128474,
+      "sha256": "6d280d169c3cc735087a732b70153cf719bbe99a8d34409ba7af8e91f08df3c1"
+    },
+    {
       "path": "tests/native-app-provider/fixtures/xiaomi-search-hint-width-r18/PROVENANCE.json",
       "bytes": 1668,
       "sha256": "7cb9f1bbd2bbdbf093b60f589b0777ba132f5b99cbce202e8c8b517b00133247"
@@ -8839,8 +8729,8 @@
     },
     {
       "path": "tests/native-app-provider/run_host.py",
-      "bytes": 66710,
-      "sha256": "279d06d5dbd135b8c005cdcceae869b75dc42aebbb9d7175e22ed53b03e41572"
+      "bytes": 70854,
+      "sha256": "abf266a102dba8da4428210bd4e11707caf228c4053f4729c52d13d97a49bf7a"
     },
     {
       "path": "tests/native-app-routing/InstalledIdentityFixture.template",
@@ -10794,8 +10684,18 @@
     },
     {
       "path": "tests/profile-cleanup-sampling/README.md",
-      "bytes": 2811,
-      "sha256": "6eef7effbee2754a8b07cb53d8ffd6e1ff2a3580d5432349f0e7f6cdc40f4135"
+      "bytes": 3396,
+      "sha256": "727a5dbe6c019ccff643b01a71d99c6b5c976663c197f9bca524fb42476bdd89"
+    },
+    {
+      "path": "tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt",
+      "bytes": 904,
+      "sha256": "b3a758e849b621bac4b21c508fa330dce03df38329b82ea260f01b635d44b0c9"
+    },
+    {
+      "path": "tests/profile-cleanup-sampling/run_candidate.py",
+      "bytes": 6725,
+      "sha256": "aa4de8602dd60836d323459ea9cc5b997c64a16ccf6c00b0696bd79099f85c11"
     },
     {
       "path": "tests/profile-cleanup-sampling/run_host.py",
@@ -11399,8 +11299,8 @@
     },
     {
       "path": "tests/public-screen-lease/run_host.py",
-      "bytes": 11280,
-      "sha256": "162f5c2263cf6cd4f8cf8eee5fe985deef4d99423f6c9a69fda298da0899cf38"
+      "bytes": 11656,
+      "sha256": "de834160d5ba4d8216da2832d4b3a6b5e97272d15b8f1ead7217f58745a8b1f0"
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
@@ -12954,8 +12854,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 67616,
-      "sha256": "d921a6407360decbe2596c37a084f811f603665dfb9873932f3c29a64abf0b98"
+      "bytes": 68950,
+      "sha256": "edb6cf41c27e9e274d09664e1f7f51d931bd5914a294338de0079a95b2ac7e24"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
@@ -13164,18 +13064,21 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "33334414991644eb372cb76db08a8e0f73b6eb52",
-    "previous_manifest_sha256": "95caa8ddd88f7b4d85d7f5a55b2ebeea4b92af220877686ecfeedb89ce801442",
+    "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+    "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
     "previous_host_and_phone_results_are_not_current_qualification": true,
     "previous_full_host_passed": false,
-    "previous_full_host_failure": "Exact current PNG closure source required: tests/native-observation-events/run_host.py",
-    "previous_failed_report_sha256": "63c852ce814c809566775b7a57262a66a91ae96540ff6df4156ccff8e546ca1e"
+    "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+    "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+    "original_e7ef24_business_status": "blocked",
+    "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+    "exact_cleanup_started_time_unavailable": true
   },
   "host_validation_at_preparation": {
     "targeted_review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r3/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10680,
-      "sha256": "82bfdff7ef9b85abb10e2cbbe57ddd0af043efba60f39290ae768c6e450e23de"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r4/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 8303,
+      "sha256": "3501b2de3d10db58a78cf5020dfd76946f952e0536110b22640f8e65ef9c069d"
     },
     "full_current_host_suite_completed_at_preparation": false,
     "android_build_completed_at_preparation": false,
@@ -13188,79 +13091,288 @@
   "production_build_inputs_count": 397,
   "production_input_map_sha256": "034c16fccb1066eff256cce37248a53d300be0d1d073e6a4b4d1daaea0e16691",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions.",
-  "source_parent_head": "264dd9cecd69d23d2d8bd62c9d3877ac9d666f1f",
-  "source_parent_manifest_sha256": "7b2fdbad3631a9ecc6c9561b736efbfa8b869a98c41f7513441201c3020cd6ab",
-  "source_snapshot_predecessor_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+  "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility.",
+  "source_parent_head": "6fdbf00cf8b1d05c1023c35616433c7f1980238f",
+  "source_parent_manifest_sha256": "1a439fe4b79966658d04f2b3c02ce7ec9aba4bf6020a94ad75d91fb23fcc1be3",
+  "source_snapshot_predecessor_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
-  "current_lossless_png_observation": {
-    "production_patch_sha256": "940f59b4c04ddae29a542da69f0257a2d257b97e91a4e7be3f5ceb2ad62d3af2",
-    "test_patch_sha256": "96ce1c9cfc226fb6cbe1c5b642e0478b69f4a8b5fde344ef8739374f956349bd",
-    "authoring_freeze_sha256": "c914d875bd393e8651a8ce76f2d4a9565e42b664145a313cba9465a79b2dfaba",
-    "targeted_review_sha256": "3aad479dba801ba6898a0f784473f64dd1b6d432bbbfb6714423a2e998c543ec",
-    "png_cases": 26,
-    "png_assertions": 6091,
-    "existing_observer_closure_groups": 9,
-    "exact_opaque_srgb_pixels_only": true,
-    "all_original_seal_and_deadline_checks_preserved": true,
-    "max_pixel_array_bytes": 16777216,
-    "max_encoded_output_bytes": 8388608,
-    "max_additional_memory_note": "pixel array plus ByteArrayOutputStream backing and returned byte[] may be approximately 32 MiB plus buffers and Deflater at the accepted limits; 8 MiB is only the encoded-output bound",
-    "device_speedup_verified": false,
-    "current_full_50_stage_suite_pending": true,
-    "current_exact_source_png_gate_pending": true,
-    "original_failure_records_preserved": true,
-    "excluded_legacy_calendar_runners": "Outside the maintained 50-stage gate; their observed pre-existing missing recovery stub compilation failures are retained and are not claimed passed."
+  "inherited_source_behavior_metadata": {
+    "baseline": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
+    "qualification_is_historical": true,
+    "metadata": {
+      "current_native_xiaomi_modal_handoff_order": {
+        "actual_old_failure_preserved": true,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "tests/native-search-producer/ModalPreludeCases.fragment",
+          "tests/native-search-producer/MODAL-HANDOFF-VALIDATION.json"
+        ],
+        "consume_before_unconditional_waiter_retirement": true,
+        "new_full_controller_chain_cases": 6,
+        "no_automatic_Back_or_business_success": true,
+        "original_service_session_and_deadlines_unchanged": true,
+        "outer_does_not_consume_twice": true,
+        "previous_manifest_sha256": "0f7415a2f66764d77b7f6cfc08e6f81f7d60c9e720e5b11dbafa19cdd52520a7",
+        "real_service_receipt_required": true
+      },
+      "current_native_xiaomi_price_domain": {
+        "canonical_terminal_amount_required": true,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "tests/native-xiaomi-budget-preview/NativeXiaomiBudgetPreviewHostTest.java",
+          "tests/native-xiaomi-budget-preview/run_host.py"
+        ],
+        "checkout_completion_not_claimed": true,
+        "deadline_and_authority_limits_unchanged": true,
+        "previous_manifest_sha256": "d6360d26c97f45561c09bd203dc4cbb79f9280b32b4962d377996b05436a2ba7",
+        "provider_amount_domain_unchanged": true
+      },
+      "current_notes_create_and_cancelled_recovery": {
+        "archive_and_deadline_limits_unchanged": true,
+        "cancelled_model_exit_code_remains": 143,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+          "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
+          "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+          "tests/notes-app-qualified-create/NotesAppQualifiedCreateHostTest.java",
+          "tests/notes-app-qualified-create/real-owner-50af.json",
+          "tests/notes-app-qualified-create/run_host.py",
+          "tests/notes-cancelled-absence/NotesCancelledAbsenceHostTest.java",
+          "tests/notes-cancelled-absence/README.md",
+          "tests/notes-cancelled-absence/run_host.py"
+        ],
+        "complete_owner_span_preserved": true,
+        "historical_business_and_cleanup_success_not_claimed": true,
+        "historical_model_receipt_valid_remains": false,
+        "previous_manifest_sha256": "e7669b802bfef43e091303a982625d131c638f11aa7bed65e5b08248290460ec",
+        "unsupported_create_rejected_before_task_lease": true
+      },
+      "current_notes_pending_retirement_and_partial_recovery": {
+        "failed_intermediate_phone_frames_available": false,
+        "no_reader_nested_retry": true,
+        "no_repeated_effect": true,
+        "normal_maximum_complete_batches": 3,
+        "old_recovery_methods_unchanged": 62,
+        "original_deadline_unchanged": true,
+        "phone_cleanup_or_business_claim": false,
+        "single_returned_token_effect_required_for_v8": true,
+        "whole_batch_fences_required": true
+      },
+      "current_notes_taskinfo_and_workflow_refusal": {
+        "alias_target_exact": true,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+          "tests/notes-token-retirement/NotesTaskInfoSemanticsHostTest.java",
+          "tests/notes-token-retirement/actual-c672-taskinfo-fields.json",
+          "tests/notes-token-retirement/run_host.py",
+          "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java",
+          "tests/notes-workflow-retirement-refusal/run_host.py"
+        ],
+        "deadline_and_authority_limits_unchanged": true,
+        "new_v7_requires_fresh_current_absence_and_ack": true,
+        "old_resident_shutdown_not_implemented": true,
+        "ordinary_membership_foreign_only": true,
+        "original_task_failed_preserved": true,
+        "parent_field_not_rewritten": true,
+        "previous_manifest_sha256": "403c73561f749b0a54422670a88966b2b9cd12c936743442dfdc3e76cfcd7653",
+        "request_v3_and_v6_unchanged": true,
+        "root3_children_actual_read_observed": true
+      },
+      "current_notes_workflow_retirement_broker_eof": {
+        "actual_post_shutdown_eof_captured": false,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+          "tests/notes-workflow-retirement-refusal/NotesWorkflowRetirementRefusalHostTest.java"
+        ],
+        "current_eof_boolean_required": true,
+        "fresh_current_absence_and_ack_still_required": true,
+        "historical_eof_false_required": true,
+        "only_eof_field_can_differ": true,
+        "original_cleanup_result_and_bin_unchanged": true,
+        "previous_manifest_sha256": "3da1ff025d4106718f4a0cf244387d1a2cd6ddf17f45f012fe949ebdb86af188",
+        "request_v3_and_v6_unchanged": true,
+        "request_v7_only": true
+      },
+      "current_personal_notes_recovery_routing": {
+        "actual_cancelled_startup_origin_regression_required": true,
+        "changed_paths": [
+          "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
+          "tests/notes-recovery-routing/NotesRecoveryRoutingHostTest.java",
+          "tests/notes-recovery-routing/run_host.py"
+        ],
+        "deadline_and_authority_limits_unchanged": true,
+        "genuine_profile_business_origin_required": true,
+        "historical_cancelled_and_unknown_results_preserved": true,
+        "personal_notes_existing_strict_recovery_path": true,
+        "previous_manifest_sha256": "491777b8496677392895c9751a7cd8d5cbba28b5dcab15607d940b3daba550f4"
+      },
+      "current_personal_notes_token_retirement": {
+        "changed_paths": [
+          "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirement.java",
+          "src/org/trillionnium/hepta/background/PublicPersonalNotesRetirementAdapter.java",
+          "tests/notes-token-retirement/NotesTokenRetirementHostTest.java",
+          "tests/notes-token-retirement/run_host.py"
+        ],
+        "complete_fresh_foreign_and_physical_checks_required": true,
+        "deadline_and_authority_limits_unchanged": true,
+        "detached_task_refused": true,
+        "each_effect_attempt_consumed_once": true,
+        "framework_process_impact_not_claimed_absent": true,
+        "historical_cancelled_and_unknown_results_preserved": true,
+        "original_attached_binder_tokens_only": true,
+        "previous_manifest_sha256": "262575934833fba90cee0d9b04490dde5a4e26d218e5eb53cfd095a738b52c9f",
+        "retire_owned_tasks_before_display_release": true
+      },
+      "current_process_empty_command_reobservation": {
+        "changed_paths": [
+          "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+          "tests/profile-recovery-census/EmptyCommandRowHostTest.java",
+          "tests/profile-recovery-census/run_host.py"
+        ],
+        "current_display_task_recents_absence_and_ack_still_required": true,
+        "maximum_complete_row_attempts": 3,
+        "no_zombie_or_dead_state_exception": true,
+        "only_empty_non_kernel_ambiguity_reobserved": true,
+        "original_capture_and_closing_preserved": true,
+        "original_deadline_unchanged": true,
+        "original_failing_process_row_identified": false,
+        "persistent_empty_rejected": true,
+        "previous_manifest_sha256": "cd20a7b903105a8af0cb0180be45246dfcbe1edf637a0ac761e6183054a0c7db",
+        "same_identity_required": true
+      },
+      "current_lossless_png_observation": {
+        "production_patch_sha256": "940f59b4c04ddae29a542da69f0257a2d257b97e91a4e7be3f5ceb2ad62d3af2",
+        "test_patch_sha256": "96ce1c9cfc226fb6cbe1c5b642e0478b69f4a8b5fde344ef8739374f956349bd",
+        "authoring_freeze_sha256": "c914d875bd393e8651a8ce76f2d4a9565e42b664145a313cba9465a79b2dfaba",
+        "targeted_review_sha256": "3aad479dba801ba6898a0f784473f64dd1b6d432bbbfb6714423a2e998c543ec",
+        "png_cases": 26,
+        "png_assertions": 6091,
+        "existing_observer_closure_groups": 9,
+        "exact_opaque_srgb_pixels_only": true,
+        "all_original_seal_and_deadline_checks_preserved": true,
+        "max_pixel_array_bytes": 16777216,
+        "max_encoded_output_bytes": 8388608,
+        "max_additional_memory_note": "pixel array plus ByteArrayOutputStream backing and returned byte[] may be approximately 32 MiB plus buffers and Deflater at the accepted limits; 8 MiB is only the encoded-output bound",
+        "device_speedup_verified": false,
+        "current_full_50_stage_suite_pending": true,
+        "current_exact_source_png_gate_pending": true,
+        "original_failure_records_preserved": true,
+        "excluded_legacy_calendar_runners": "Outside the maintained 50-stage gate; their observed pre-existing missing recovery stub compilation failures are retained and are not claimed passed."
+      },
+      "current_xiaomi_filled_toolbar": {
+        "freeze_sha256": "1c169cb1342f63c27571a11d845110613b8014fdea7cf1939f4726b0cab04548",
+        "review_sha256": "85c51b8f5b220b63e74f9e99897d36c6c7907e0058f72e449ecfadbf835f78ee",
+        "production_diff_sha256": "894bef87dfd3084d280660898efcde4c26427705be465dc0cf516969bad07a3e",
+        "new_cases": 36,
+        "new_assertions": 201,
+        "legacy_cases": 58,
+        "legacy_assertions": 87,
+        "immutable_owner_literal_required": true,
+        "empty_toolbar_preserved": true,
+        "complete_census_and_identity_guards_unchanged": true,
+        "original_first_input_refusal_preserved": true,
+        "business_completion_claimed": false
+      },
+      "current_ctrip_postcapture_settle": {
+        "freeze_sha256": "421f0afb8ba001e9868d93d4d9a440b6acdc82e726990ff61b21f2fb17f711fd",
+        "review_sha256": "c5078b4daa6cc8b70bb30b3f7bcab421e2e9f5c05e8a2c5a0bb4b7bdfc5b6c1f",
+        "production_diff_sha256": "df292622624c910cc9e49602f2f6dbea38290a46cd698a09c3aff2fe8cccbe85",
+        "new_cases": 10,
+        "observer_cases": 248,
+        "observer_assertions": 3841,
+        "legacy_form_cases": 55,
+        "legacy_form_assertions": 915,
+        "original_trace_terminal_still_failed": true,
+        "original_request_task_transition_deadlines_unchanged": true,
+        "new_private_retry_proof": false,
+        "input_replay": false,
+        "complete_graph_window_identity_unchanged": true,
+        "actual_cleanup_success_claimed": false
+      },
+      "current_seed_runner_closure": {
+        "changed_path": "tests/native-observation-screenshot-seed/run_host.py",
+        "original_238_cases_and_3671_assertions_preserved": true,
+        "new_postcapture_10_cases_and_170_assertions_separately_required": true,
+        "unknown_runner_rejected": true,
+        "production_changes": 0,
+        "prior_failed_combined_candidate_preserved": true,
+        "legacy_original_case_names_sha256": "92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5",
+        "authoring_freeze_sha256": "05542a97b0f7b41b4afba0a2a48337523920bad6a2f88d6c8ed3c5ee546cf6cb",
+        "targeted_review_sha256": "16f91df72b7fb6c04c2aaa075ce5cff10ab4b4a400938f1efd2a8c52a4f6a277",
+        "root_independent_review_completed": true
+      }
+    }
   },
-  "current_xiaomi_filled_toolbar": {
-    "freeze_sha256": "1c169cb1342f63c27571a11d845110613b8014fdea7cf1939f4726b0cab04548",
-    "review_sha256": "85c51b8f5b220b63e74f9e99897d36c6c7907e0058f72e449ecfadbf835f78ee",
-    "production_diff_sha256": "894bef87dfd3084d280660898efcde4c26427705be465dc0cf516969bad07a3e",
-    "new_cases": 36,
-    "new_assertions": 201,
-    "legacy_cases": 58,
-    "legacy_assertions": 87,
-    "immutable_owner_literal_required": true,
-    "empty_toolbar_preserved": true,
-    "complete_census_and_identity_guards_unchanged": true,
-    "original_first_input_refusal_preserved": true,
-    "business_completion_claimed": false
+  "current_xiaomi_query_reservation": {
+    "actual_original_failure_preserved": true,
+    "original_service_stale_refusal_preserved": true,
+    "no_effect_proof_required": true,
+    "durable_outcome_before_reservation_release": true,
+    "fresh_observation_and_new_model_run_required": true,
+    "no_automatic_redispatch": true,
+    "original_action_budget_unchanged": true,
+    "cases": 31,
+    "assertions": 415,
+    "targeted_report_sha256": "a77877d08ecb9c0826392363b172a7f5a4e211147e26dc9e18919112d13ad002",
+    "fixture_provenance_sha256": "8d1b0e29033835dccc00bb43093a54d1776b33db8b85b71ad494c70862ce62a1",
+    "unchanged_original_fixture_files": 6,
+    "labelled_derived_fixture_files": 1
   },
-  "current_ctrip_postcapture_settle": {
-    "freeze_sha256": "421f0afb8ba001e9868d93d4d9a440b6acdc82e726990ff61b21f2fb17f711fd",
-    "review_sha256": "c5078b4daa6cc8b70bb30b3f7bcab421e2e9f5c05e8a2c5a0bb4b7bdfc5b6c1f",
-    "production_diff_sha256": "df292622624c910cc9e49602f2f6dbea38290a46cd698a09c3aff2fe8cccbe85",
-    "new_cases": 10,
-    "observer_cases": 248,
-    "observer_assertions": 3841,
-    "legacy_form_cases": 55,
-    "legacy_form_assertions": 915,
-    "original_trace_terminal_still_failed": true,
-    "original_request_task_transition_deadlines_unchanged": true,
-    "new_private_retry_proof": false,
-    "input_replay": false,
-    "complete_graph_window_identity_unchanged": true,
-    "actual_cleanup_success_claimed": false
+  "current_profile_cleanup_sampling": {
+    "original_cleanup_ms": 1500,
+    "original_task_read_ms": 1400,
+    "mutation_before_and_after_samples_retained": true,
+    "fresh_package_identity_before_effect_retained": true,
+    "diagnostic_fields_grant_no_authority": true,
+    "exact_original_e7ef24_failure_unavailable": true,
+    "synthetic_case_count": 9,
+    "synthetic_sampling_assertions": 55,
+    "diagnostic_assertions": 14,
+    "portable_fixture": "tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt",
+    "actual_archive_host_validation_is_separate": true
   },
-  "current_seed_runner_closure": {
-    "changed_path": "tests/native-observation-screenshot-seed/run_host.py",
-    "original_238_cases_and_3671_assertions_preserved": true,
-    "new_postcapture_10_cases_and_170_assertions_separately_required": true,
-    "unknown_runner_rejected": true,
-    "production_changes": 0,
-    "prior_failed_combined_candidate_preserved": true,
-    "legacy_original_case_names_sha256": "92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5",
-    "authoring_freeze_sha256": "05542a97b0f7b41b4afba0a2a48337523920bad6a2f88d6c8ed3c5ee546cf6cb",
-    "targeted_review_sha256": "16f91df72b7fb6c04c2aaa075ce5cff10ab4b4a400938f1efd2a8c52a4f6a277",
-    "root_independent_review_completed": true
+  "installed_86d_production_delta": {
+    "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336",
+    "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
+    "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": "a4f8e3ea65e4ac70f0239b14426496af5fb80bb21ac6e793debf4062393dfc4a"
   },
+  "current_screen_lease_diagnostic_closure": {
+    "production_unchanged": true,
+    "complete_current_prefix_required": true,
+    "original_retirement_call_required": true,
+    "prefix_unique": true,
+    "old_failure_preserved": true,
+    "synthetic_negative_source_cases": [
+      "missing_diagnostic_record",
+      "missing_diagnostic_exception_isolation",
+      "missing_screen_retirement",
+      "early_return_skips_screen_retirement",
+      "screen_retirement_moved_before_diagnostic",
+      "duplicate_full_prefix"
+    ],
+    "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451",
+    "complete_prefix_sha256": "4f1905735c2994948f164d33cd2fe75299b6b7bc610e7f2337670bd75c8f04e0",
+    "projection_compiled": false
+  },
+  "merged_published_heads": [
+    "6fdbf00cf8b1d05c1023c35616433c7f1980238f",
+    "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4"
+  ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r3/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10680,
-      "sha256": "82bfdff7ef9b85abb10e2cbbe57ddd0af043efba60f39290ae768c6e450e23de"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r4/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 8303,
+      "sha256": "3501b2de3d10db58a78cf5020dfd76946f952e0536110b22640f8e65ef9c069d"
     },
-    "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions."
+    "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility."
   }
 }

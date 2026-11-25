@@ -1,0 +1,22 @@
+ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)
+mRecentsUid=10000
+mRecentsComponent=ComponentInfo{org.example.launcher/org.example.launcher.Recents}
+mFreezeTaskListReordering=false
+mFreezeTaskListReorderingPendingTimeout=false
+mHiddenTasks=[]
+  Recent tasks:
+  * Recent #0: Task{cc00009 #900 type=standard A=1010999:org.example.dormant}
+    userId=10 effectiveUid=u10a999 mCallingUid=0
+    affinity=1010999:org.example.dormant
+    intent={flg=0x10000000 cmp=org.example.dormant/.Main}
+    mActivityComponent=org.example.dormant/.Main
+    Activities=[]
+    taskId=900 rootTaskId=900
+    lastActiveTime=1000 (inactive for 0s)
+    lastDisplayId=-1
+  Visible recent tasks (most recent first):
+  * RecentTaskInfo #0:
+    id=900 userId=10 hasTask=false lastActiveTime=1000
+    isExcluded=false isAvailable=true
+    baseIntent=Intent {flg=0x10000000 cmp=org.example.dormant/.Main}
+    lastDisplayId=-1
