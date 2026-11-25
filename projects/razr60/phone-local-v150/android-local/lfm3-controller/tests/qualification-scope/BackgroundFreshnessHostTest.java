@@ -325,7 +325,7 @@ final class BackgroundFreshnessHostTest {
             check(new HashSet<String>(observations).size()==calls[0],"every retry invokes model with a genuinely new observation id");
             JSONObject rejected=new JSONObject(new String(Files.readAllBytes(result[0].evidenceDirectory.toPath().resolve("step-01-action.json")),StandardCharsets.UTF_8));
             check(rejected.getBoolean("stale")&&!rejected.getBoolean("dispatched")&&!rejected.getJSONObject("qualification_scope").getBoolean("scope_refused"),"actual task receipt preserves retry reason without scope poison");
-            if(continuous)check(calls[0]==3&&result[0].steps==3&&"failed".equals(result[0].status)&&result[0].summary.contains("连续变化"),"existing two-retry ceiling is unchanged");
+            if(continuous)check(calls[0]==3&&result[0].steps==3&&"failed".equals(result[0].status)&&result[0].summary.contains("页面或控件校验连续未通过"),"existing two-retry ceiling is unchanged");
             else check(calls[0]==2&&result[0].steps==2&&prompts.get(1).contains("fresh observation 1")&&prompts.get(1).contains("action_rejected"),"second inference sees new body and prior rejection, never a re-issued old action");
         }finally{BackgroundSession.controllerDisplay=-1;}
     }

@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
-  "base_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-  "base_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+  "base_head": "be441602eb84a689082917b03d85c06963252cc5",
+  "base_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
   "complete_source_files": 2642,
@@ -80,6 +80,12 @@
     "no_runtime_or_test_source_change": true,
     "original_strict_guard_unchanged": true,
     "same_397_production_records": true
+  },
+  "current_message_fixture_alignment": {
+    "only_expected_ui_message_literal_changed": true,
+    "original_failed_status_assertion_retained": true,
+    "original_retry_count_assertion_retained": true,
+    "original_steps_assertion_retained": true
   },
   "current_native_ax_canonical_reuse": {
     "phone_speedup_measured": false,
@@ -163,7 +169,7 @@
     "phone_latency_improvement_measured": false
   },
   "current_published_parent_heads": [
-    "1fab845554139604f5d5fb4d603d0ea4d4f1f51d"
+    "be441602eb84a689082917b03d85c06963252cc5"
   ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
@@ -206,29 +212,13 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
+    "baseline": "be441602eb84a689082917b03d85c06963252cc5",
     "model_weights_unchanged": true,
     "native_unchanged": true,
     "phone_success_claimed": false,
-    "production_changes": [
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
-      "src/org/trillionnium/hepta/local/QualificationScopeConfig.java"
-    ],
+    "production_changes": [],
     "test_changes": [
-      "tests/native-app-routing/InstalledIdentityFixture.template",
-      "tests/native-app-routing/prepare_native_entry.py",
-      "tests/native-profile-live-identity/LiveProfileIdentityHostTest.java",
-      "tests/native-profile-live-identity/run_host.py",
-      "tests/native-xiaomi-direct-card/run_host.py",
-      "tests/native-xiaomi-product/run_host.py",
-      "tests/native-xiaomi-search-history/CONTRACT.json",
-      "tests/native-xiaomi-search-history/HistoryInputCases.fragment",
-      "tests/native-xiaomi-search-history/NativeXiaomiSearchHistoryHostTest.java",
-      "tests/native-xiaomi-search-history/README.md",
-      "tests/native-xiaomi-search-history/protected_history_prefix.py",
-      "tests/native-xiaomi-search-history/run_host.py",
-      "tests/native-xiaomi-search-history/run_service.py"
+      "tests/qualification-scope/BackgroundFreshnessHostTest.java"
     ]
   },
   "current_xiaomi_protected_history_prefix": {
@@ -11700,9 +11690,9 @@
       "sha256": "de834160d5ba4d8216da2832d4b3a6b5e97272d15b8f1ead7217f58745a8b1f0"
     },
     {
-      "bytes": 42292,
+      "bytes": 42316,
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
-      "sha256": "ee86680748f3d3ad1ddcfc26568cc17e4fc8644e128f4bcd901eb019b66304ff"
+      "sha256": "2a92831ed25598c06960b3bb477ea307e3f21046dc00cfd92942d33bdc56a42c"
     },
     {
       "bytes": 4290,
@@ -13461,28 +13451,37 @@
     }
   ],
   "historical_provenance": {
-    "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
-    "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-    "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+    "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
+    "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
+    "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
     "old_failed_phone_and_host_records_preserved": true,
+    "original_parent_full_host_is_not_qualified": true,
+    "original_parent_full_host_stages_passed": 48,
+    "original_parent_full_host_stages_total": 50,
     "prior_provenance": {
-      "exact_cleanup_started_time_unavailable": true,
-      "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
-      "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
-      "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
-      "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
-      "immediate_parent_qualification_failed": true,
-      "immediate_parent_qualifications_are_historical": true,
-      "original_e7ef24_business_status": "blocked",
-      "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-      "original_notes_cleanup": "CLEANUP_UNKNOWN",
-      "original_notes_task_status": "blocked",
-      "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
-      "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
-      "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
-      "previous_full_host_passed": false,
-      "previous_host_and_phone_results_are_not_current_qualification": true,
-      "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+      "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
+      "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
+      "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+      "old_failed_phone_and_host_records_preserved": true,
+      "prior_provenance": {
+        "exact_cleanup_started_time_unavailable": true,
+        "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
+        "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
+        "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
+        "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
+        "immediate_parent_qualification_failed": true,
+        "immediate_parent_qualifications_are_historical": true,
+        "original_e7ef24_business_status": "blocked",
+        "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+        "original_notes_cleanup": "CLEANUP_UNKNOWN",
+        "original_notes_task_status": "blocked",
+        "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+        "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+        "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+        "previous_full_host_passed": false,
+        "previous_host_and_phone_results_are_not_current_qualification": true,
+        "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+      }
     }
   },
   "host_validation_at_preparation": {
@@ -13720,9 +13719,9 @@
   "production_input_map_sha256": "3a97d5a10c4579115fad469aa71a622539a89c591b95137d20f458a370d796e0",
   "schema": "hepta.local-source.v3",
   "scope": "Recognize one protected AX3000T history prefix and verify live profile installations through the same existing background session. Preserve all action freshness, authority, cleanup and physical-screen guards.",
-  "source_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-  "source_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
-  "source_snapshot_predecessor_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+  "source_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
+  "source_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
+  "source_snapshot_predecessor_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
