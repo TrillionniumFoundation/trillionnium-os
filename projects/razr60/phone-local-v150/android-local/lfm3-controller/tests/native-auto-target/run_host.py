@@ -27,7 +27,7 @@ def prepare(source, out):
     fixture=out/'generated';files,background=bg.prepare(source,fixture)
     files=[p for p in files if not (p.parent.name=='json' and p.parent.parent.name=='org')]
     actual=[source/p for p in query.PURE_PATHS if p!='tests/web-flight/WebFlightQueryHostTest.java']
-    names=['BackgroundUiPreferences','BackgroundAutoTargetPreferences','BackgroundAutoTargetResolver',
+    names=['BackgroundUiPreferences','BackgroundAutoTargetPreferences','BackgroundAutoTargetResolver','OwnerExplicitAppRoute',
            'LocalRuntimeConfig','ModelProfile','LocalModelSettings','RuntimeConfigTransaction','ModelFileVerifier',
            'MobiMindPrivateFiles','MobiMindContract','MobiMindPins','VlmPins','VlmResultContract']
     actual += [pkg/(n+'.java') for n in names]

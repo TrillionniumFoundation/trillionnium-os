@@ -954,7 +954,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         try{
             BackgroundAutoTargetResolver.Resolution resolution=currentAutomaticResolution();matches=resolution.matches.size();
             BackgroundAutoTargetPreferences.Entry item=resolution.choose(automaticInstanceChoice);
-            message="本次使用："+item.label()+"；首选 "+item.modelLabel()+"。手动起始应用保持不变。";
+            message="本次使用："+item.label()+"；首选 "+item.modelLabel()+"。手动起始应用保持不变。"
+                    +(resolution.hasCompletionContract(item)
+                    ?"\n此任务支持独立完成核对，结果以实际证据为准。"
+                    :"\n将尝试通用本地操作；此任务暂不支持独立完成验证，结束后请核对结果。");
         }catch(Exception error){message=HeptaAccessibilityService.message(error);}
         if(pickAutomaticInstance!=null)pickAutomaticInstance.setVisibility(matches>1?View.VISIBLE:View.GONE);
         backgroundChoiceState.setText(message+(automaticStartFeedback==null?"":"\n"+automaticStartFeedback));backgroundInitialLabel.setVisibility(View.GONE);initialBackgroundApp.setVisibility(View.GONE);

@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "fd0e8e4bc032e7a856f134af766955c025a4b58f",
-  "base_manifest_sha256": "a87981a5f0d640330eabe8aefe3851b2d3d4248bac932a361b512600166269c5",
+  "base_head": "ca19b306f99fe3362885c64d42941f22cde8b82d",
+  "base_manifest_sha256": "e4127eeabb96a242ed1f35c0cc2b061c8c3ac8491a7de9b015211f953ffabd09",
   "candidate_exact_git_head": null,
-  "candidate_status": "accepted_search_refresh_and_current_form_publication_pending_final_host_publication_and_phone",
-  "complete_source_files": 2663,
+  "candidate_status": "accepted_natural_command_route_pending_final_host_publication_and_phone",
+  "complete_source_files": 2666,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
     "early_sampling_draft_excluded": true,
@@ -153,6 +153,19 @@
     "post_observation_no_full_catalogue_io": true,
     "review_freeze_sha256": "7cb670cb04e04e6c4bc048fc7444db04818a688882fbc17f362af94b754be57a",
     "terminal_catalogue_unchanged": true
+  },
+  "current_natural_command_routing": {
+    "actual_phone_success_claimed": false,
+    "bounded_explicit_single_app_only": true,
+    "existing_exact_goal_priority_preserved": true,
+    "full_owner_preserved": true,
+    "no_single_saved_target_inference": true,
+    "source_freeze": {
+      "bytes": 8601,
+      "path": "/home/alex/hepta-razr-natural-command-routing-20261125-model-r1/SOURCE-FREEZE.json",
+      "sha256": "fd4a6fb60e05b962739d5e3153e7188e4a84a6ec42f191447293916980b93aab"
+    },
+    "unknown_business_does_not_gain_verified_done": true
   },
   "current_notes_foreign_history_recovery": {
     "existing_retained_display_shutdown_implemented": false,
@@ -8084,10 +8097,10 @@
       "sha256": "49305a21ae21914f0e2d86fdf4c6976c8921123599c0a0313bd879d4020cacab"
     },
     {
-      "bytes": 7264,
+      "bytes": 8538,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/BackgroundAutoTargetResolver.java",
-      "sha256": "3ebcd98f62b6241580422eb71352477366d8342a30050e3eb0c710cc10d87354"
+      "sha256": "e03e863048aa7346107ce78a0d78e960c85eb9225994da0dab736543f0665412"
     },
     {
       "bytes": 14507,
@@ -8276,10 +8289,10 @@
       "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
     },
     {
-      "bytes": 105197,
+      "bytes": 105476,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "3fb16dbeddc8deeda42609947c2edd4a51274d406bfcb00ffd41d13a45e59e23"
+      "sha256": "3692c6c34da7cbfdd45c969b3c5b1d3ac1d4d2ab7d8424f5c09a2dfe25e146cd"
     },
     {
       "bytes": 4417,
@@ -8562,6 +8575,12 @@
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java",
       "sha256": "67671d017c7059121afafb2c1f986103f02c7fbece09ee6a1f3f8c6017639f2d"
+    },
+    {
+      "bytes": 6328,
+      "mode": "100644",
+      "path": "src/org/trillionnium/hepta/local/OwnerExplicitAppRoute.java",
+      "sha256": "41e2a483ed6d0583774df076fefdd67cef7cd8396602141f5b924fb29ece5adf"
     },
     {
       "bytes": 5670,
@@ -10928,10 +10947,10 @@
       "sha256": "03b1399819b54b3032d8da2f37cca70b50ac63327e3c2fd07fa935b41fa199b9"
     },
     {
-      "bytes": 9365,
+      "bytes": 9389,
       "mode": "100644",
       "path": "tests/native-auto-target/run_host.py",
-      "sha256": "496ce8d38e882a6c9a3b8d08d565f60c22b0e8b7109f9fd6163d5a02d6654dc9"
+      "sha256": "876bc78f4e483d248a1eaddede47ba38a47a826867f9df3fd4addeacedab8ece"
     },
     {
       "bytes": 10500,
@@ -12468,6 +12487,18 @@
       "mode": "100644",
       "path": "tests/native-xiaomi-single-toolbar/run_host.py",
       "sha256": "baa1bd44727341401524cca1faec210923ae95b7124bc66aacf1a23b2ab99621"
+    },
+    {
+      "bytes": 23936,
+      "mode": "100644",
+      "path": "tests/natural-command-routing/NaturalCommandRoutingHostTest.java",
+      "sha256": "e0028c52edcbdadeb0a88e9362a38d57d09a31ff2828a78cc607a19605e5763c"
+    },
+    {
+      "bytes": 8525,
+      "mode": "100644",
+      "path": "tests/natural-command-routing/run_host.py",
+      "sha256": "1103791cd47c05970e6ea77036f2633c507c2c8037fdd02145958180f0078ce0"
     },
     {
       "bytes": 29195,
@@ -16556,16 +16587,16 @@
     "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
     "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336"
   },
-  "main_java_sources": 220,
+  "main_java_sources": 221,
   "merged_published_heads": [
     "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
     "ab8e25aab1c5fb6eff1272d91a08a6b4ff81257a"
   ],
   "phone_qualified": false,
-  "production_build_inputs_count": 397,
-  "production_input_map_sha256": "77ff24560666f6543cbb6ba8981ff15c63a0ce5669c1593dfba74afeca78f400",
+  "production_build_inputs_count": 398,
+  "production_input_map_sha256": "b75e5693c3ba12f7252013241ba3ad48d95edfc6f6331285054ea65f16ece88d",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve complete fd0 typed Notes coexistence/recovery, all ordinary text model entries, local model configuration, scoped native query/detail/form identities and 18 native libraries. Add one pre-effect same-attempt complete search census replacement after typed target refresh, and event-covered ordinary current-form post-encoding complete comparison with bounded latest diagnostics. No historical task or current device result reclassified.",
+  "scope": "Preserve the actual signed ca19 complete candidate. Add bounded explicit single-app natural owner routing and ordinary preview only, preserving exact Notes/NativeAppGoal priority, full owner text, original authorization/runtime/completion guards. No new device or business success claimed.",
   "source_head": null,
   "source_parent_head": "8d23b7584512fcf282096ece046eb041c01cf711",
   "source_parent_manifest_sha256": "2b7bc7e2a027b8439c8b74d779dc09ed3740f4cbe1e78c2883d9c7c67e07d03f",
