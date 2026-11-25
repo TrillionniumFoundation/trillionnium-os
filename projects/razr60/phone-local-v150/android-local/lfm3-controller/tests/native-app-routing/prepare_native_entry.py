@@ -183,7 +183,18 @@ def prepare(source, output, entries):
             "    /** APK-set hash = ")
     template = source / "tests/native-app-routing/InstalledIdentityFixture.template"
     replacement = template.read_bytes()
-    require(sha(replacement) == "c5f1d82d5d1726b4a5ca8368d662e54adeb2100fadb64e42fb28264a6e6e6dd1",
+    # Proof bytes only: preserve the original ordinary-only installed IO body.
+    # Profile capture in this fixture still always refuses; actual live-profile
+    # RPC behavior is covered by native-profile-live-identity, not this port.
+    proof_replacement = replacement
+    live_port = b"""        /** Ordinary-only legacy IO: profile capture above always refuses. */
+        void verifyLive(Context context)throws Exception{verify(context);}
+
+"""
+    if sha(replacement) == "f943bfa79d3c1c7223eabdfb1a9247b5ca3784acda28d7536a907683e0cbe947":
+        require(replacement.count(live_port) == 1, "one exact ordinary live verifier port required")
+        proof_replacement = replacement.replace(live_port, b"", 1)
+    require(sha(proof_replacement) == "c5f1d82d5d1726b4a5ca8368d662e54adeb2100fadb64e42fb28264a6e6e6dd1",
             "reviewed native installed IO fixture differs")
     projected = config.decode().replace(old_class, replacement.decode(), 1).encode()
     generated_config = output / "QualificationScopeConfig.java"

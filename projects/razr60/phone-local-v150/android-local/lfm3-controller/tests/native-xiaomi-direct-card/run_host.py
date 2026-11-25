@@ -26,8 +26,16 @@ def main():
     need(all(x.is_absolute() for x in [a.source,a.output,a.java_home,a.json_jar]+([a.actual_task] if a.actual_task else [])),"absolute paths")
     need(not a.output.exists() and a.source not in a.output.parents,"fresh output outside source")
     originals={}
+    history_helper=a.source/"tests/native-xiaomi-search-history/protected_history_prefix.py"
+    history_meta=info(history_helper)
+    need(history_meta["sha256"]=="90c3fbb3550ee110dd9f939aecf65ebad210694fa128e9371f7076c6d2ad08d5","exact reviewed history inverse helper")
+    originals[str(history_helper)]=history_meta
+    history_predecessor=runpy.run_path(str(history_helper))["predecessor"]
     for rel,pin in PIN_DATA.items():
-        meta=info(a.source/rel);need(meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"],"exact source/fixture pin: "+rel)
+        meta=info(a.source/rel)
+        proof_raw=history_predecessor((a.source/rel).read_bytes()) if rel==PKG+"NativeXiaomiSearchInputObservation.java" else None
+        need((len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"]) if proof_raw is not None
+             else (meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"]),"exact source/fixture predecessor pin: "+rel)
         originals[str(a.source/rel)]=meta
     originals[str(Path(__file__).resolve())]=info(Path(__file__).resolve())
     jar=info(a.json_jar);need(jar["bytes"]==78332 and jar["sha256"]==JSON_SHA,"JSON dependency pin")

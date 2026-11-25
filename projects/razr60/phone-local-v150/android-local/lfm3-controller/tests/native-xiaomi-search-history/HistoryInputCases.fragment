@@ -1,0 +1,80 @@
+    // Full recorded node values; managed-profile, clock and platform endpoints
+    // are the existing explicit host IO ports. No original device action replay.
+    static JSONObject historyInputRecording(JSONObject pair){
+        JSONObject published=new JSONObject().put("first",new JSONObject().put("nodes",pair.getJSONObject("before").getJSONArray("nodes")));
+        JSONObject failed=new JSONObject().put("before",new JSONObject().put("native_nodes",pair.getJSONObject("fresh").getJSONArray("nodes")));
+        return new JSONObject().put("source_files",new JSONObject()
+                .put("a57e1dedb06a4e739823379bd472f953-native-ax.json",new JSONObject().put("raw_utf8",published.toString()))
+                .put("failed-native-census.json",new JSONObject().put("raw_utf8",failed.toString())));
+    }
+    static Fixture historyInputSetup(JSONObject pair,String label)throws Exception{
+        NativeActionBridgeHost service=new NativeActionBridgeHost();
+        return service.new Fixture(historyInputRecording(pair),"recorded-history:"+label);
+    }
+    static void historyInputReject(Fixture f,String why)throws Exception{
+        try{yes(!f.dispatchInput(),why);}catch(IllegalArgumentException|IllegalStateException expected){yes(true,why);}
+        f.noEffect(why+" has zero input");
+        yes(f.data.get("0/6/1").effects==0,"history item never receives an effect");
+    }
+    static void historyInputCases(java.nio.file.Path source,java.nio.file.Path fixturePath)throws Exception{
+        sourceRoot=source;
+        JSONObject recording=new JSONObject(new String(java.nio.file.Files.readAllBytes(fixturePath),StandardCharsets.UTF_8));
+        JSONArray pairs=recording.getJSONArray("pairs");
+        for(int n=0;n<3;n++){final int index=n,step=n+2;
+            one("recorded_history_step_0"+step+"_actual_type_single_original_NodeRef",()->{
+                Fixture f=historyInputSetup(pairs.getJSONObject(index),"step-"+step);
+                NodeRef original=f.work.graph.refs.get(f.action.nodeId);
+                long deadline=f.work.state.deadlineElapsed;int refreshes=original.node.data.refreshes;
+                yes(f.dispatchInput(),"actual Service accepts complete stable history prefix: "+f.service.inputRefusal);
+                yes(f.service.inputEffectReference==original.node&&f.service.inputEffectData==original.node.data,"same original retained NodeRef receives type");
+                yes(f.effects()==1&&original.node.data.refreshes>refreshes,"one input after original live refresh");
+                yes(f.data.get("0/6/1").effects==0&&f.data.get("0/6/1/0").effects==0,"no history click or replacement action");
+                yes(f.service.inputReadback!=null&&!f.service.callbackAccepted,"completion awaits actual extracted delayed readback");
+                JSONObject proof=new JSONObject(f.work.nativeActionProof);
+                yes(proof.getBoolean("final_complete_census_compared")&&proof.getBoolean("original_node_ref_and_actual_ancestor_chain"),"actual final full census and original chain required");
+                yes(!proof.getBoolean("all_nodes_simultaneous_or_pixels_stable_claimed")&&f.work.state.deadlineElapsed==deadline,"original deadline retained, no atomic graph claim");
+                f.service.inputReadback.run();yes(f.service.callbackAccepted,"exact AX3000T readback");
+                try{f.service.typeBranch(f.task,f.service.current,f.action,f.work);}catch(IllegalArgumentException|IllegalStateException expected){yes(true,"second claim refused");}
+                yes(f.effects()==1,"no replay of the consumed effect");
+            });
+        }
+        one("history_equal_tree_still_checks_final_census",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"equal");f.fresh=f.raw.copy();
+            yes(f.dispatchInput(),"complete equal-tree history input");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.effects()==1,"equal tree retains two real full-census comparisons and one claim");
+        });
+        one("history_heading_change_before_effect_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"heading");f.fresh.nodes.get("0/6/0").put("text","其他历史");
+            historyInputReject(f,"changed protected history heading");
+        });
+        one("history_item_label_change_before_effect_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"label");f.fresh.nodes.get("0/6/1").put("description","other semantics");
+            historyInputReject(f,"changed protected history item");
+        });
+        one("history_child_change_before_effect_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"child");f.fresh.nodes.get("0/6/1/0").put("text","AX6000");
+            historyInputReject(f,"changed protected history child");
+        });
+        one("history_capability_change_before_effect_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"capability");f.fresh.nodes.get("0/6/1").put("editable",true);
+            historyInputReject(f,"changed protected history capability");
+        });
+        one("history_target_change_before_effect_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"target");f.fresh.nodes.get("0/1").put("focused",true);
+            historyInputReject(f,"original input target changed");
+        });
+        one("history_original_NodeRef_replacement_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"replacement");NodeData old=f.data.get("0/1");
+            f.service.scopeMutation=()->{NodeData other=new NodeData(old.values);f.data.put("0/1",other);};
+            IntegrationChecks.rejects(()->f.dispatchInput(),"same fields cannot substitute another original node object");
+            yes(old.effects==0&&f.effects()==0&&!f.work.state.effectEntered(),"neither original nor replacement typed");
+        });
+        one("history_original_deadline_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"deadline");SystemClock.now=f.work.state.deadlineElapsed;
+            historyInputReject(f,"original deadline expired");
+        });
+        one("history_owner_loss_refused",()->{
+            Fixture f=historyInputSetup(pairs.getJSONObject(0),"owner");f.service.owned=false;
+            historyInputReject(f,"owner binding lost");
+        });
+    }

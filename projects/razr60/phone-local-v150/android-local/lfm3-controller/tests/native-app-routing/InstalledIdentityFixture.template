@@ -90,6 +90,9 @@
             hostVerifiedRehashes.incrementAndGet();
         }
 
+        /** Ordinary-only legacy IO: profile capture above always refuses. */
+        void verifyLive(Context context)throws Exception{verify(context);}
+
         Map<String,Object> evidence(){
             Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
             value.put("source","synthetic_native_installed_io");

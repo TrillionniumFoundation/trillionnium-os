@@ -195,7 +195,12 @@ final class NativeXiaomiSearchInputObservation {
             if(!filled||i<4)bottom=Math.max(bottom,Math.max(n.bounds.get(1),n.bounds.get(3)));
         }
         need(enclosure.bounds.get(1)>=bottom&&coordinatesWithin(root,enclosure),"recommendations disjoint from entire query/action toolbar");
-        Node heading=snapshot.node("0/6/0"),refresh=snapshot.node("0/6/1");
+        int recommendationStart=0;
+        if("搜索历史".equals(snapshot.node("0/6/0").text)){
+            requireSingleHistoryPrefix(snapshot,enclosure);
+            recommendationStart=2;
+        }
+        Node heading=snapshot.node("0/6/"+recommendationStart),refresh=snapshot.node("0/6/"+(recommendationStart+1));
         need(TEXT.equals(heading.cls)&&"android.widget.ScrollView".equals(heading.parent)&&heading.children==0
                 &&heading.usable()&&"猜你想搜".equals(heading.text)&&!b(heading.v,"clickable")
                 &&!b(heading.v,"action_click")&&passiveMetadata(heading)&&coordinatesWithin(enclosure,heading),"actual recommendation section heading");
@@ -204,7 +209,7 @@ final class NativeXiaomiSearchInputObservation {
                 &&b(refresh.v,"clickable")&&b(refresh.v,"action_click")&&passiveMetadata(refresh)
                 &&coordinatesWithin(enclosure,refresh),"same observed recommendation refresh control");
         Set<String> chips=new TreeSet<String>();Node carousel=null;
-        for(int index=2;index<enclosure.children;index++){
+        for(int index=recommendationStart+2;index<enclosure.children;index++){
             Node chip=snapshot.node("0/6/"+index);
             if(!VIEW.equals(chip.cls)||chip.children!=1){carousel=chip;break;}
             need(index<34,"bounded complete recommendation chip run");
@@ -230,6 +235,29 @@ final class NativeXiaomiSearchInputObservation {
                 &&coordinatesWithin(enclosure,carousel),"fixed passive horizontal carousel leaf and known boundary directions");
         NativeActionSnapshotCheck.requireSearchInputReference(snapshot,carousel);
         return new Template(chips,carousel.path);
+    }
+    /** The recorded one-item history prefix is protected, never variable.
+     * It grants no history-item click or query submission. The complete pair
+     * comparison still requires every prefix node to be byte-for-byte equal. */
+    private static void requireSingleHistoryPrefix(Snapshot snapshot,Node enclosure){
+        Node heading=snapshot.node("0/6/0"),item=snapshot.node("0/6/1"),text=snapshot.node("0/6/1/0");
+        need(TEXT.equals(heading.cls)&&"android.widget.ScrollView".equals(heading.parent)&&heading.children==0
+                &&heading.usable()&&heading.view.isEmpty()&&heading.desc.isEmpty()
+                &&"搜索历史".equals(heading.text)&&"搜索历史".equals(heading.label)
+                &&!b(heading.v,"clickable")&&!b(heading.v,"action_click")&&passiveMetadata(heading)
+                &&coordinatesWithin(enclosure,heading),"complete observed search-history heading");
+        need(VIEW.equals(item.cls)&&"android.widget.ScrollView".equals(item.parent)&&item.children==1
+                &&item.click()&&item.view.isEmpty()&&item.text.isEmpty()&&item.desc.isEmpty()
+                &&"AX3000T".equals(item.label)&&passiveMetadata(item)
+                &&TEXT.equals(text.cls)&&VIEW.equals(text.parent)&&text.children==0&&text.usable()
+                &&text.view.isEmpty()&&text.desc.isEmpty()&&"AX3000T".equals(text.text)&&"AX3000T".equals(text.label)
+                &&!b(text.v,"clickable")&&!b(text.v,"action_click")&&passiveMetadata(text)
+                &&coordinatesWithin(enclosure,item)&&coordinatesWithin(item,text)
+                &&heading.bounds.get(3)<=item.bounds.get(1)
+                &&item.bounds.get(3)<=snapshot.node("0/6/2").bounds.get(1),"complete observed single search-history item");
+        NativeActionSnapshotCheck.requireSearchInputReference(snapshot,heading);
+        NativeActionSnapshotCheck.requireSearchInputReference(snapshot,item);
+        NativeActionSnapshotCheck.requireSearchInputReference(snapshot,text);
     }
     private static void toolbarButton(Snapshot s,Node button){
         Node label=s.node(button.path+"/0");

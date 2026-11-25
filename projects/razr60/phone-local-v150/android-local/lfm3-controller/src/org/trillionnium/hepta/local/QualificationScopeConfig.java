@@ -180,17 +180,22 @@ final class QualificationScopeConfig {
      * This exposes identity facts only; it does not install a scope or grant tools. */
     static final class CompletionInstalledIdentity {
         private final Installed installed;
+        private final BackgroundSession profileSession;
         final org.trillionnium.hepta.background.ProfileTarget profileTarget;
         final String packageName;final int uid;final long versionCode;final Map<String,String> apkHashes;
         private CompletionInstalledIdentity(Installed value){
-            installed=value;profileTarget=null;packageName=value.packageName;uid=value.uid;versionCode=value.version;
+            installed=value;profileTarget=null;profileSession=null;packageName=value.packageName;uid=value.uid;versionCode=value.version;
             Map<String,String> hashes=new TreeMap<String,String>();
             for(Map.Entry<String,Apk> e:value.apks.entrySet())hashes.put(e.getKey(),e.getValue().sha256);
             apkHashes=java.util.Collections.unmodifiableMap(hashes);
         }
         private CompletionInstalledIdentity(org.trillionnium.hepta.background.ProfileTarget target){
-            installed=null;profileTarget=target;packageName=target.packageName;uid=target.fullUid;
+            this(target,null);
+        }
+        private CompletionInstalledIdentity(org.trillionnium.hepta.background.ProfileTarget target,BackgroundSession session){
+            installed=null;profileTarget=target;profileSession=session;packageName=target.packageName;uid=target.fullUid;
             versionCode=target.versionCode;apkHashes=target.apkHashes;
+            QualificationScope.require(session==null||target.same(session.profileTarget()),"captured profile session target differs");
         }
         static CompletionInstalledIdentity captureNativeApp(Context context,NativeAppGoal goal,BackgroundSession background)throws Exception{
             if(background==null||background.profileTarget()==null)return captureNativeApp(context,goal);
@@ -199,7 +204,7 @@ final class QualificationScopeConfig {
             QualificationScope.require(goal!=null&&(NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName)
                     ||NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName))
                     &&goal.packageName.equals(target.packageName),"explicit profile native target differs");
-            return new CompletionInstalledIdentity(target);
+            return new CompletionInstalledIdentity(target,background);
         }
         static CompletionInstalledIdentity captureNotes(Context context)throws Exception{
             Installed value=Installed.capture(context,"com.motorola.stylus");
@@ -219,6 +224,16 @@ final class QualificationScopeConfig {
             return new CompletionInstalledIdentity(value);
         }
         void verify(Context context)throws Exception{if(profileTarget==null)installed.verify(context);else ProfileCatalogueClient.requireCurrent(context,profileTarget);}
+        /** Active-task checks use the exact captured broker, never a cached success.
+         * Its original RPC re-reads target-user PM/profile state and the complete
+         * APK identity. The independent post-cleanup verify above remains separate. */
+        void verifyLive(Context context)throws Exception{
+            if(profileTarget==null){installed.verify(context);return;}
+            QualificationScope.require(profileSession!=null&&profileTarget.same(profileSession.profileTarget()),
+                    "same captured live profile session required");
+            profileSession.verifyProfileInstallation();
+            QualificationScope.require(profileTarget.same(profileSession.profileTarget()),"live profile session target changed");
+        }
         Map<String,Object> evidence(){
             Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
             value.put("source",profileTarget==null?"ordinary_package_manager_and_full_apk_hash":"privileged_target_user_package_manager_and_full_apk_hash");

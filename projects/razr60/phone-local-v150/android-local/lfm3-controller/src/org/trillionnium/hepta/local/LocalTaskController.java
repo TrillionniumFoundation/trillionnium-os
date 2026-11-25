@@ -598,7 +598,7 @@ public final class LocalTaskController implements AutoCloseable {
                                 ?new NativeAppEvidence.Installed(nativeInstalled.packageName,nativeInstalled.uid,nativeInstalled.versionCode,nativeInstalled.apkHashes)
                                 :new NativeAppEvidence.Installed(nativeInstalled.profileTarget),
                         NativeAppObservation.selectionSha(backgroundSelection),background.generation,background.displayId(),
-                        new NativeAppSession.InstalledVerifier(){public void verify()throws Exception{nativeInstalled.verify(service);}},
+                        new NativeAppSession.InstalledVerifier(){public void verify()throws Exception{nativeInstalled.verifyLive(service);}},
                         new NativeAppSession.Journal(){public void write(String leaf,java.util.Map<String,Object> value)throws Exception{
                             record(nativeEvidence,leaf,new JSONObject(value));
                         }});
@@ -784,13 +784,13 @@ public final class LocalTaskController implements AutoCloseable {
                         HeptaAccessibilityService.sha(actionReceipt.toString(2).getBytes(StandardCharsets.UTF_8)),nativeDispatchEnded,nativeQueryExecution(outcome.actionExecution));
                 TaskAuthorization.require(outcome.taskAuthorization!=null,"动作回执缺少任务授权");
                 if(outcome.stale&&!outcome.dispatched){
-                    if(++staleRounds>2)throw new IllegalStateException("画面连续变化，已停止操作以免点错目标");
+                    if(++staleRounds>2)throw new IllegalStateException("页面或控件校验连续未通过，已停止操作以免点错目标");
                     JSONObject staleRow=new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
                             .put("before_package",before.packageName).put("model_issued",true).put("accepted",outcome.accepted)
                             .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("action_rejected",outcome.detail);
                     if(action.appLabel!=null)staleRow.put("app_label",action.appLabel);
                     history.put(staleRow);
-                    emit("画面发生变化，正在重新观察…");
+                    emit("页面或控件校验未通过，正在重新观察…");
                     observation=awaitAfterStaleNativeAction(taskId,evidence,authorization,deadline,action,decisionRunId,before);
                     lastTransition=observedTransition(steps,before,observation);continue;
                 }
@@ -871,7 +871,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toEvidenceJson());
-                if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
+                if(completionInstalled!=null)try{completionInstalled.verifyLive(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
                 completion.action(steps,decisionRunId,action,outcome.accepted,outcome.dispatched,outcome.stale,
                         completionFrame(before),completionFrame(observation),completionFixed(outcome.fixedIntent));
                 LastModelDecisionProjection dispatchedDecision=LastModelDecisionProjection.fromOutcome(taskId,steps,decisionRunId,before.id,action,
