@@ -56,6 +56,7 @@ public final class BackgroundDisplayBroker {
     private final ProfileRecoveryBootCount publicBootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);
     private volatile String bootReadRetirementFailure;
     private final PublicPersonalNotesReader.FailureAudit publicNotesReadFailures=new PublicPersonalNotesReader.FailureAudit();
+    private volatile Throwable publicNotesCleanupFailure;
     private final PublicPolicyFailureAudit publicPolicyFailures=new PublicPolicyFailureAudit();
     private final Object dispatchGate = new Object();
     private volatile WindowInfosCapture calendarWindowCapture;
@@ -1638,6 +1639,7 @@ public final class BackgroundDisplayBroker {
                 }
                 throw new IOException("NOTES_CLEANUP_ABSENCE_DEADLINE");
             }catch(Throwable error){
+                if(publicNotesCleanupFailure==null)publicNotesCleanupFailure=error;
                 publicNotesReadFailures.cleanup(error,SystemClock.elapsedRealtime());quarantinePublicNotes(error.getMessage());
             }
             finally{cleanupDone.countDown();}
@@ -2057,8 +2059,36 @@ public final class BackgroundDisplayBroker {
             if(!retainedRecheckOutcome.isEmpty())terminal.put("profile_retained_recheck_outcome",retainedRecheckOutcome);
             if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
                     .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
+            if(config.publicOwnGroupScope!=null)appendNotesHistoryDiagnostic(terminal,publicNotesCleanupFailure,
+                    config.publicOwnGroupScope.taskId,config.generation,config.publicOwnGroupScope.sha256,displayId);
             System.out.println(terminal); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
+    }
+    /** Diagnostic-only augmentation of the original single terminal object.
+     * No protocol/journal fields or cleanup decisions consume this field. */
+    static void appendNotesHistoryDiagnostic(JSONObject terminal,Throwable error,String task,String generation,String scope,int display){
+        try{
+            java.util.Map<String,Object> detail=PublicPersonalNotesRetirement.historyDiagnostic(error);
+            if(detail==null)return;
+            JSONObject value=new JSONObject(detail).put("task_id",task).put("generation",generation)
+                    .put("scope_sha256",scope).put("display_id",display).put("diagnostic_limit_bytes",4608)
+                    .put("terminal_record_limit_bytes",32767);
+            if(value.toString().getBytes(StandardCharsets.UTF_8).length>4608){
+                value.remove("raw_pair");value.put("raw_pair_complete",false)
+                        .put("raw_pair_omission_reason","serialized_diagnostic_bound");
+            }
+            JSONObject candidate=new JSONObject(terminal.toString()).put("personal_notes_history_diagnostic",value);
+            if(candidate.toString().getBytes(StandardCharsets.UTF_8).length>32767){
+                value.remove("raw_pair");value.put("raw_pair_complete",false)
+                        .put("raw_pair_omission_reason","serialized_terminal_bound");
+                candidate.put("personal_notes_history_diagnostic",value);
+            }
+            // The private diagnostic has its own smaller bound; no old bundle,
+            // output, protocol or original-terminal bound is increased.
+            if(value.toString().getBytes(StandardCharsets.UTF_8).length<=4608
+                    &&candidate.toString().getBytes(StandardCharsets.UTF_8).length<=32767)
+                terminal.put("personal_notes_history_diagnostic",value);
+        }catch(Throwable ignored){/* Original refusal, terminal and custody stay decisive. */}
     }
     private static int fields(Class<?> type, String... names) throws Exception {
         int result = 0; for (String name : names) result |= type.getField(name).getInt(null); return result;

@@ -64,7 +64,7 @@ final class PublicPersonalNotesRetirement {
                 traversed.add(node.id);
             }
             need(traversed.equals(actualTasks.keySet()),"NOTES_RETIREMENT_UNCLASSIFIED_ACTUAL_TASK");
-            this.frame=frame;history=new History(rawRecents);recents=history.census;
+            this.frame=frame;history=new History(rawRecents,begin,end);recents=history.census;
             this.actualTasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(actualTasks));
             this.physical=Collections.unmodifiableMap(new LinkedHashMap<Integer,String>(physical));this.begin=begin;this.end=end;
         }
@@ -205,7 +205,7 @@ final class PublicPersonalNotesRetirement {
                     "NOTES_RETIREMENT_DEADLINE_OR_STALE");
             need(owner.baseline.physical.equals(physical),"NOTES_RETIREMENT_PHYSICAL_CHANGED");
             need(frames!=null&&frames.size()==6,"NOTES_RETIREMENT_COMPLETE_BATCH_REQUIRED");
-            History history=new History(rawRecents);
+            History history=new History(rawRecents,begin,end);
             owner.baseline.history.requireSame(history,owner.plan.ids,Math.max(1,(end-owner.baseline.begin+999)/1000+1));
             boolean pending=false;
             for(PublicPersonalNotesCustody.Frame frame:frames){
@@ -353,6 +353,12 @@ final class PublicPersonalNotesRetirement {
             ||value.startsWith(PublicPersonalNotesCustody.PACKAGE+"/"));}
     private static void need(boolean ok,String code){if(!ok)throw new IllegalStateException(code);}
 
+    static Map<String,Object> historyDiagnostic(Throwable error){
+        return error!=null&&error.getClass()==IllegalStateException.class
+                &&"NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED".equals(error.getMessage())
+                &&error.getCause() instanceof History.Refusal?((History.Refusal)error.getCause()).evidence():null;
+    }
+
     /** Preserve every nonowned internal/visible/hidden body and its ordering.
      * Only the displayed relative inactivity age may advance naturally. */
     private static final class History {
@@ -360,10 +366,13 @@ final class PublicPersonalNotesRetirement {
         private static final Pattern HEAD=Pattern.compile("(?m)^  \\* Recent #([0-9]+): (Task\\{[0-9a-f]+ #([0-9]+) [^{}\\r\\n]+\\})$");
         private static final Pattern AGE=Pattern.compile("(?m)^    lastActiveTime=(0|[1-9][0-9]*) \\(inactive for (0|[1-9][0-9]*)s\\)$");
         final PublicOwnGroupPhysicalFence.RecentCensus census;
-        private final String preamble;
+        private final String preamble,raw;
+        private final long sampleBegin,sampleEnd;
         private final Map<Integer,String> internal=new LinkedHashMap<Integer,String>(),visible=new LinkedHashMap<Integer,String>();
         private final Map<Integer,Long> ages=new LinkedHashMap<Integer,Long>();
-        History(String raw){
+        History(String raw){this(raw,-1,-1);}
+        History(String raw,long sampleBegin,long sampleEnd){
+            this.raw=raw;this.sampleBegin=sampleBegin;this.sampleEnd=sampleEnd;
             census=PublicOwnGroupPhysicalFence.inspectRecents(raw);
             int start=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);boolean omitted=end<0;
             need(start>=0&&start==raw.lastIndexOf(INTERNAL)&&(omitted||(end>start&&end==raw.lastIndexOf(VISIBLE))),"NOTES_RETIREMENT_HISTORY_SECTIONS");
@@ -395,10 +404,116 @@ final class PublicPersonalNotesRetirement {
             for(Map.Entry<Integer,String> row:census.hiddenLabels.entrySet())if(!own.contains(row.getKey()))append(value,"hidden|"+row.getValue());return value.toString();
         }
         void requireSame(History after,Set<Integer> own,long ageBudget){
-            need(after!=null&&foreign(own).equals(after.foreign(own)),"NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
+            if(!(after!=null&&foreign(own).equals(after.foreign(own))))throw new IllegalStateException(
+                    "NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED",new Refusal(this,after,own,ageBudget));
             for(Map.Entry<Integer,Long> row:ages.entrySet())if(!own.contains(row.getKey())){
                 Long next=after.ages.get(row.getKey());need(next!=null&&next>=row.getValue()&&next-row.getValue()<=ageBudget,
                         "NOTES_RETIREMENT_HISTORY_AGE_CHANGED");}
+        }
+
+        /** Original rejected strings only. These records are diagnostics, never
+         * replayable history, task authority, or cleanup evidence. */
+        private static final class Refusal extends IllegalStateException {
+            private static final long serialVersionUID=1L;
+            private static final int MAX_PAIR_BYTES=32768;
+            private final History before,after;
+            private final Set<Integer> own;
+            private final long ageBudget;
+            Refusal(History before,History after,Set<Integer> own,long ageBudget){
+                super("NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
+                this.before=before;this.after=after;
+                this.own=Collections.unmodifiableSet(new LinkedHashSet<Integer>(own));this.ageBudget=ageBudget;
+            }
+            Map<String,Object> evidence(){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("schema","hepta.notes-retirement-history-diagnostic.v1");
+                out.put("reason",getMessage());out.put("diagnostics_grant_authority",false);
+                out.put("release_evidence",false);out.put("model_input",false);
+                out.put("owned_task_ids_excluded",new ArrayList<Integer>(own));
+                out.put("relative_age_budget_seconds",ageBudget);
+                byte[] left=bytes(before.raw),right=after==null?null:bytes(after.raw);
+                out.put("baseline",rawRef(before,left));out.put("current",after==null?null:rawRef(after,right));
+                out.put("baseline_foreign_sha256",sha(before.foreign(own)));
+                out.put("current_foreign_sha256",after==null?null:sha(after.foreign(own)));
+                out.put("first_difference",difference(before,after,own));
+                out.put("all_differences_enumerated",false);
+                boolean complete=right!=null&&left.length<=MAX_PAIR_BYTES
+                        &&right.length<=MAX_PAIR_BYTES-left.length;
+                out.put("raw_pair_limit_bytes",MAX_PAIR_BYTES);out.put("raw_pair_complete",complete);
+                out.put("raw_pair_omission_reason",complete?null:after==null?"current_history_unavailable":"raw_pair_byte_bound");
+                if(complete)try{out.put("raw_pair",packed(left,right));}
+                catch(java.io.IOException unavailable){
+                    out.put("raw_pair_complete",false);out.put("raw_pair_omission_reason","diagnostic_encoding_unavailable");
+                }
+                return out;
+            }
+            private static Map<String,Object> packed(byte[] left,byte[] right)throws java.io.IOException{
+                byte[] raw=new byte[left.length+right.length];
+                System.arraycopy(left,0,raw,0,left.length);System.arraycopy(right,0,raw,left.length,right.length);
+                java.io.ByteArrayOutputStream sink=new java.io.ByteArrayOutputStream();
+                try(java.util.zip.GZIPOutputStream gzip=new java.util.zip.GZIPOutputStream(sink)){gzip.write(raw);}
+                byte[] zipped=sink.toByteArray();Map<String,Object> pair=new LinkedHashMap<String,Object>();
+                pair.put("encoding","gzip-base64-concatenated-original-utf8");
+                pair.put("decoded_bytes",raw.length);pair.put("decoded_sha256",ProfileIdentity.sha(raw));
+                pair.put("compressed_bytes",zipped.length);pair.put("compressed_sha256",ProfileIdentity.sha(zipped));
+                pair.put("data",java.util.Base64.getEncoder().encodeToString(zipped));return pair;
+            }
+            private static Map<String,Object> rawRef(History value,byte[] raw){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("bytes",raw.length);out.put("sha256",value.census.rawSha256);
+                out.put("sample_begin_elapsed_ms",value.sampleBegin);out.put("sample_end_elapsed_ms",value.sampleEnd);
+                out.put("source","original_complete_retirement_recents_read");return out;
+            }
+            private static Map<String,Object> difference(History a,History b,Set<Integer> own){
+                if(b==null)return detail("history",null,"current_unavailable",null,null);
+                if(!a.preamble.equals(b.preamble))return detail("preamble",null,"body_changed",a.preamble,b.preamble);
+                Map<String,Object> found=section("internal",a.internal,b.internal,own);
+                if(found==null)found=section("visible",a.visible,b.visible,own);
+                if(found==null)found=section("hidden",a.census.hiddenLabels,b.census.hiddenLabels,own);
+                return found==null?detail("foreign_projection",null,"not_localized",a.foreign(own),b.foreign(own)):found;
+            }
+            private static Map<String,Object> section(String name,Map<Integer,String> a,Map<Integer,String> b,Set<Integer> own){
+                List<Integer> left=new ArrayList<Integer>(),right=new ArrayList<Integer>();
+                for(int id:a.keySet())if(!own.contains(id))left.add(id);
+                for(int id:b.keySet())if(!own.contains(id))right.add(id);
+                if(!left.equals(right)){
+                    Map<String,Object> out=detail(name,null,"membership_or_order_changed",left.toString(),right.toString());
+                    out.put("baseline_task_ids",new ArrayList<Integer>(left.subList(0,Math.min(32,left.size()))));
+                    out.put("current_task_ids",new ArrayList<Integer>(right.subList(0,Math.min(32,right.size()))));
+                    out.put("task_id_lists_complete",left.size()<=32&&right.size()<=32);
+                    out.put("baseline_task_count",left.size());out.put("current_task_count",right.size());return out;
+                }
+                for(int id:left)if(!Objects.equals(a.get(id),b.get(id)))
+                    return detail(name,id,"body_changed",a.get(id),b.get(id));
+                return null;
+            }
+            private static Map<String,Object> detail(String section,Integer id,String kind,String a,String b){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("section",section);out.put("task_id",id);out.put("kind",kind);
+                out.put("baseline_normalized_part_sha256",a==null?null:sha(a));
+                out.put("current_normalized_part_sha256",b==null?null:sha(b));
+                out.put("baseline_part_bytes",a==null?null:bytes(a).length);
+                out.put("current_part_bytes",b==null?null:bytes(b).length);
+                if(a!=null&&b!=null){
+                    String[] left=a.split("\\n",-1),right=b.split("\\n",-1);int line=0;
+                    while(line<left.length&&line<right.length&&left[line].equals(right[line]))line++;
+                    out.put("first_differing_line_zero_based",line);
+                    out.put("baseline_field_key",line<left.length?field(left[line]):"line_absent");
+                    out.put("current_field_key",line<right.length?field(right[line]):"line_absent");
+                    out.put("raw_values_in_summary",false);
+                }
+                return out;
+            }
+            private static String field(String line){
+                String value=line.trim();int equals=value.indexOf('=');
+                if(equals>0&&equals<=64){
+                    String key=value.substring(0,equals);
+                    if(key.matches("[A-Za-z][A-Za-z0-9_.]{0,63}"))return key;
+                }
+                return "unlabelled";
+            }
+            private static byte[] bytes(String value){return value.getBytes(java.nio.charset.StandardCharsets.UTF_8);}
+            private static String sha(String value){return ProfileIdentity.sha(bytes(value));}
         }
         private static Matcher one(Pattern pattern,String text){Matcher first=pattern.matcher(text),other=pattern.matcher(text);
             need(first.find()&&other.find()&&!other.find(),"NOTES_RETIREMENT_HISTORY_FIELD");return first;}
