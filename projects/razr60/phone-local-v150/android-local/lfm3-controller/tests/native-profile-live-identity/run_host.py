@@ -37,6 +37,19 @@ def require(value,reason):
 def once(raw,old,new):
  require(raw.count(old)==1,"exact unique source fragment required: "+old[:100])
  return raw.replace(old,new,1)
+def admitted_close_proof_copy(text):
+ # This copy proves only the exact two-line authenticated Notes-close change.
+ # All actual producer refs and compiled sources remain the current source.
+ if sha(text.encode())=="abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c":
+  text=once(text,
+   "    // Only an authenticated, already admitted profile or personal Notes close RPC owns this peer.\n",
+   "    // Only the authenticated, already admitted work-profile close RPC can own this peer.\n")
+  text=once(text,
+   '                        if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)&&"close".equals(request.operation))\n',
+   '                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))\n')
+  require(sha(text.encode())=="a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44",
+   "exact authenticated Notes close inverse must restore the entire profile identity producer")
+ return text
 def source_contract(source,output):
  config_path=source/"src/org/trillionnium/hepta/local/QualificationScopeConfig.java"
  controller_path=source/"src/org/trillionnium/hepta/local/LocalTaskController.java"
@@ -89,9 +102,15 @@ def source_contract(source,output):
  if ui:
   for new,old in ui_pairs: cp=once(cp,new,old)
  require(sha(cp.encode())==BASE_CONTROLLER,"Controller may differ only by two live callsites and exact sibling UI explanations")
- checks=[]
+ checks=[];close_proofs=[]
  for rel,digest in UNCHANGED.items():
-  row=record(source/rel);require(row["sha256"]==digest,"unchanged full identity/freshness producer differs: "+rel);checks.append(row)
+  row=record(source/rel)
+  if rel=="src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java" and row["sha256"]!=digest:
+   broker_proof=admitted_close_proof_copy((source/rel).read_text())
+   require(sha(broker_proof.encode())==digest,"exact authenticated close producer inverse differs")
+   close_proofs.append(dict(actual_source=row,original_whole_sha256=digest,proof_copy_only=True))
+  else:
+   require(row["sha256"]==digest,"unchanged full identity/freshness producer differs: "+rel);checks.append(row)
  bridge=output/"LiveIdentityControllerBridge.java"
  bridge.write_text("package org.trillionnium.hepta.local;\nfinal class LiveIdentityControllerBridge {\n"
   +"static NativeAppSession.InstalledVerifier verifier(QualificationScopeConfig.CompletionInstalledIdentity nativeInstalled,android.content.Context service){return "+callback+";}\n"
@@ -99,7 +118,7 @@ def source_contract(source,output):
  return bridge,dict(original_verify_preserved=True,whole_config_inverse_sha256=sha(proof.encode()),
   whole_controller_inverse_sha256=sha(cp.encode()),sibling_ui_explanation_patch=ui,live_callback_sha256=sha(callback.encode()),
   live_after_action_sha256=sha(after.encode()),terminal_callsite_sha256=sha(terminal.encode()),
-  actual_compiled_controller_bridge=record(bridge),unchanged_exact_producers=checks,
+  actual_compiled_controller_bridge=record(bridge),unchanged_exact_producers=checks,authenticated_close_inverse_proofs=close_proofs,
   freshness_ms=2000,live_state_rpc_budget_ms=1800,installed_verification_calls_removed=0,
   cached_success_added=False,root_process_or_phone_executed=False)
 def main():
