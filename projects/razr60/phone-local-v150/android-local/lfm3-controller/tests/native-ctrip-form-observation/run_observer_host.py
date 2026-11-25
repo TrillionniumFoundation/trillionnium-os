@@ -202,6 +202,7 @@ def generate(source,output,h):
                            'reviewed_sampling_inverse_verified':sampling_inverse,
                            'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
+    readonly_owner_inverse=None
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
@@ -220,6 +221,16 @@ def generate(source,output,h):
             if current.count(start)!=1 or current.count(end)!=1:raise RuntimeError('calendar minimum reader boundaries')
             prior=current[:current.index(start)]+current[current.index(end):]
             if h.sha(prior)!=r32_provider_pins[name]:raise RuntimeError('calendar minimum reader must reverse to R32 provider')
+            protected_files[name]=actual
+            continue
+        if name=='NativeAppGoal.java' and actual=='65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447':
+            helper=source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py'
+            if h.sha(helper.read_bytes())!='14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353':raise RuntimeError('exact reviewed read-only OWNER inverse helper')
+            prior=runpy.run_path(str(helper))['predecessor'](current)
+            if len(prior)!=21582 or h.sha(prior)!='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
+                raise RuntimeError('complete preceding OWNER source required')
+            readonly_owner_inverse={'current_sha256':actual,'predecessor_sha256':h.sha(prior),
+                'helper_sha256':'14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353','proof_copy_only':True,'actual_compilation_uses_current_source':True}
             protected_files[name]=actual
             continue
         if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
@@ -347,6 +358,7 @@ def generate(source,output,h):
             'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
             'parts':{name:{'bytes':len(raw.encode()),'sha256':h.sha(raw.encode())} for name,raw in parts.items()},
             'protected_production_bodies':protected,'protected_files':protected_files,
+            'readonly_owner_inverse':readonly_owner_inverse,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
             'legacy_fixture_only_fail_closed_port':True,'initial_current_frame_created_by_actual_observer':True,
             'pair_snapshot_uses_actual_full_node_and_snapshot_classes':True,
@@ -368,6 +380,7 @@ def main():
     inputs += [source/'tests/native-action-integration/NativeActionSnapshotCheckHostTest.java',
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
     inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
+    inputs += [source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],

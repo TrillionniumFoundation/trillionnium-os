@@ -105,7 +105,7 @@ public final class BackgroundDisplayBroker {
     private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
     private volatile LocalSocket connection;
-    // Only the authenticated, already admitted work-profile close RPC can own this peer.
+    // Only an authenticated public profile or personal-Notes close RPC can own this peer.
     private volatile LocalSocket authenticatedProfileClosePeer;
     private volatile LocalServerSocket server;
     private volatile Context shell;
@@ -328,7 +328,9 @@ public final class BackgroundDisplayBroker {
                         request.checkDeadline(SystemClock.elapsedRealtime(), expires);
                         requestDeadline = Math.min(request.deadline, expires);
                         connectionDeadline = requestDeadline;
-                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))
+                        // Both supported public custodians own only this authenticated close reply.
+                        if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)
+                                &&"close".equals(request.operation))
                             authenticatedProfileClosePeer=accepted;
                         response = perform(request);
                         receipts.remember(request, response);
@@ -1476,7 +1478,8 @@ public final class BackgroundDisplayBroker {
         // verified release may finish its reply on the original socket, within both
         // the original request deadline and a short independent write bound.
         return profileCloseReplyPending(now)&&cleanupDone.getCount()==0&&"RELEASED".equals(state)
-                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;
+                &&(config.profileTarget!=null?profileCustody.known():publicNotesCustody!=null&&publicNotesCustody.known())
+                &&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;
     }
 
     private void shutdown(String reason) {

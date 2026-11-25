@@ -2291,7 +2291,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         recordNativeFormPublicationDecision(request,product,after,equal,eventsCovered,!equal&&eventsCovered);
                         boolean covered=equal&&eventsCovered;
                         if(!retry&&!equal&&!formCovered){
-                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;
+                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);
+                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_SEALED_CONTENT_CHANGED);retry=true;
                             product.seed=nativeSavedGraphSeed(request,identity,after,complete.events,complete.unknownEvents);
                             recordSavedGraphChange(request,identity,after,product.seed);
                             recordNativeFullGraphChange(request,"saved_graph",request.captured,after);
@@ -2321,7 +2322,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final long completedEvents=request.events,completedUnknown=request.unknownEvents;
                         request.graph("saved_graph",after);
                         if(!retry&&!identity.matches(after)){
-                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;
+                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);
+                            request.note(ObservationDiagnostics.Event.SAVED_GRAPH_UNSEALED_CHANGED);retry=true;
                             product.seed=nativeSavedGraphSeed(request,identity,after,completedEvents,completedUnknown);
                             recordSavedGraphChange(request,identity,after,product.seed);
                             recordNativeFullGraphChange(request,"saved_graph",request.captured,after);

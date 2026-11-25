@@ -28,6 +28,7 @@ public final class NaturalCommandRoutingHostTest {
     private static final String TASK=String.join("",Collections.nCopies(32,"c"));
     private static final String NATURAL="请在携程查明天上海到北京的机票";
     private static final String FLIGHT="请在携程查询2099年11月17日北京到上海的单程机票，1名成人";
+    private static final String READONLY_FLIGHT="请在携程查询2099年11月17日北京到上海的单程机票，1名成人，读取真实航班和票价。只查询，不预订、不提交订单、不支付。";
     private static final String PRODUCT="在小米商城App中查询AX3000T的价格";
     private static final String PREVIEW="在小米商城买1台小米路由器AX3000T，预算不超过200元，核对商品、数量和总额后停在订单确认页，不提交，不支付";
     private static final String NOTE="请新建并保存一条笔记，正文为“在携程查机票，不要打开小米商城”，然后从笔记列表重新打开核对正文。";
@@ -308,6 +309,51 @@ public final class NaturalCommandRoutingHostTest {
             try(Env e=new Env("nonbutton",NATURAL,false)){
                 check(!e.ui.startForeign()&&e.app.tasks.schedules==0,"actual visible user-button origin still required");
             }
+        });
+        test("new_complete_readonly_flight_contract_precedes_generic_route",()->{
+            TaskAuthorization original=TaskAuthorization.parse(READONLY_FLIGHT);
+            BackgroundAutoTargetResolver.Resolution r=resolve(READONLY_FLIGHT,saved);
+            BackgroundAutoTargetPreferences.Entry item=r.choose(null);
+            BackgroundAutoTargetResolver.StartSelection start=confirm(r,item);
+            check(item==flight&&r.matches.size()==1,"new complete flight form selects the exact saved Ctrip instance");
+            check(r.hasCompletionContract(item)&&start.nativeGoal!=null,"complete read-only flight remains a NativeAppGoal, not generic UNKNOWN");
+            NativeAppGoal goal=start.nativeGoal;
+            check(NativeAppGoal.FLIGHT_RESULTS.equals(goal.kind)
+                    &&"complete_literal_native_flight_read_only_no_order.v1".equals(goal.recognition)
+                    &&goal.recognition.equals(start.recognition),"new complete OWNER recognition is retained through confirm");
+            check(goal.toolCeiling.equals(new java.util.TreeSet<String>(Arrays.asList(
+                    "open","click","type","scroll","back","wait","done"))),"literal read-only flight ceiling has exactly the seven supported tools");
+            check(!goal.toolCeiling.contains("submit"),"new no-order flight contract must not grant generic submit");
+            check(READONLY_FLIGHT.equals(start.owner)&&READONLY_FLIGHT.equals(goal.immutableOwner)
+                    &&original.instructionSha256.equals(start.ownerSha256)
+                    &&original.instructionSha256.equals(goal.ownerSha256),"original OWNER text and hash are preserved in both selection and business contract");
+            start.requireOwner(READONLY_FLIGHT);
+            goal.requireBinding(READONLY_FLIGHT,ProfileTarget.CTRIP);
+            BackgroundTaskTarget target=BackgroundTaskTarget.resolveAutomaticSelection(READONLY_FLIGHT,start);
+            BackgroundSession.Selection selection=new BackgroundSession.Selection(target,true,false);
+            TaskAuthorization bound=original.forExecutionSelection(selection);
+            selection.requireTaskTarget(READONLY_FLIGHT,bound);
+            check(goal.toolCeiling.containsAll(bound.allowedTools)&&!bound.allowedTools.contains("submit"),
+                    "execution authorization preserves the native ceiling and excludes submit");
+            check(start.entry==flight&&start.snapshot==saved&&HASH.equals(start.configurationSha256)
+                    &&TASK.equals(start.runtimeId),"confirm retains saved identity, snapshot and actual runtime binding");
+            rejects(()->start.requireOwner(READONLY_FLIGHT+" 然后打开其他页面"));
+            rejects(()->goal.requireBinding(READONLY_FLIGHT+" ",ProfileTarget.CTRIP));
+            rejects(()->goal.requireBinding(READONLY_FLIGHT,ProfileTarget.XIAOMI));
+        });
+        test("new_readonly_flight_with_neutral_append_cannot_downgrade",()->{
+            String owner=READONLY_FLIGHT+" 然后打开其他页面";
+            check(NativeAppGoal.parse(owner,ProfileTarget.CTRIP)==null,"unsupported neutral suffix is not stripped into a complete contract");
+            check(OwnerExplicitAppRoute.packageName(owner)==null,"recognized complete flight prefix refuses generic fallback even for a neutral appended action");
+            check(resolve(owner,saved).matches.isEmpty(),"neutral append cannot create an automatic generic saved-app match");
+            noRoute(owner,saved);
+        });
+        test("new_readonly_flight_with_payment_append_cannot_downgrade",()->{
+            String owner=READONLY_FLIGHT+"然后支付";
+            check(NativeAppGoal.parse(owner,ProfileTarget.CTRIP)==null,"unsupported payment suffix is not stripped into a complete contract");
+            check(OwnerExplicitAppRoute.packageName(owner)==null,"recognized read-only prefix refuses generic fallback with a payment append");
+            check(resolve(owner,saved).matches.isEmpty(),"payment append cannot create an automatic generic saved-app match");
+            noRoute(owner,saved);
         });
         boolean pass=true;for(JSONObject row:results)pass&=row.getBoolean("passed");
         JSONObject report=new JSONObject().put("schema","hepta.natural-command-routing-cases.v1")

@@ -123,9 +123,15 @@ public final class DisplayManager {
     begin=text.index('    private boolean profileCloseReplyPending(')
     finish=text.index('    private void shutdown(String reason)',begin)
     methods=text[begin:finish]
+    registration_legacy='if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))'
+    registration_current=('if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)\n'
+                          '                                &&"close".equals(request.operation))')
+    # The exact predecessor is accepted only to run the negative transport proof;
+    # its real Notes pipe must fail the added case, never qualify the candidate.
+    registration=registration_current if text.count(registration_current)==1 else registration_legacy
     checks=['request.authenticate(config, accepted.getPeerCredentials().getUid());',
             'request.checkDeadline(SystemClock.elapsedRealtime(), expires);',
-            'if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))',
+            registration,
             'authenticatedProfileClosePeer=accepted;', 'response = perform(request);',
             'BrokerProtocol.writeFrame(accepted.getOutputStream(), response);','authenticatedProfileClosePeer=null;']
     if any(text.count(h)!=1 for h in checks) or [text.index(h) for h in checks]!=sorted(text.index(h) for h in checks):
@@ -135,7 +141,19 @@ public final class DisplayManager {
         if text.count(fence)!=1:raise RuntimeError('normal close monitor/deadline integration changed')
     close_program=root/'tests/background-broker/BrokerCloseReplyHost.template'
     close_java=args.out/'BrokerCloseReplyHost.java'
-    close_java.write_text(close_program.read_text().replace('    METHODS',methods))
+    auth_begin=text.index('                    request.authenticate(config, accepted.getPeerCredentials().getUid());')
+    auth_end=text.index('                        response = perform(request);',auth_begin)
+    registration_prefix=text[auth_begin:auth_end]
+    shutdown=text[text.index('    private void shutdown(String reason)'):text.index('    private void retireBootRead()')]
+    socket_close=text[text.index('    private void closeSockets()'):text.index('    private byte[] response(')]
+    monitor='if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));'
+    replacements={'    METHODS':methods,'    SHUTDOWN_METHOD':shutdown,'    SOCKETS_METHOD':socket_close,
+                  '        REGISTRATION_PREFIX':registration_prefix,'        MONITOR_CONDITION':'        '+monitor}
+    generated=close_program.read_text()
+    for marker,actual in replacements.items():
+        if generated.count(marker)!=1:raise RuntimeError('close fixture marker changed: '+marker)
+        generated=generated.replace(marker,actual)
+    close_java.write_text(generated)
     files.append(close_java)
 
     compiler = [str(args.javac)] if args.javac else [str(args.java), '-m', 'jdk.compiler/com.sun.tools.javac.Main']
@@ -149,6 +167,13 @@ public final class DisplayManager {
                 'broker_sha256': hashlib.sha256(broker.read_bytes()).hexdigest(),
                 'snapshot_sha256': hashlib.sha256(part.encode()).hexdigest(),
                 'snapshot_boundary': 'Exact production method/row policy; Android ComponentName and RootTaskInfo fields are controlled host fixtures',
+                'close_reply_methods_sha256': hashlib.sha256(methods.encode()).hexdigest(),
+                'close_registration_prefix_sha256': hashlib.sha256(registration_prefix.encode()).hexdigest(),
+                'close_shutdown_sha256': hashlib.sha256(shutdown.encode()).hexdigest(),
+                'close_sockets_sha256': hashlib.sha256(socket_close.encode()).hexdigest(),
+                'close_monitor_sha256': hashlib.sha256(monitor.encode()).hexdigest(),
+                'close_template_sha256': hashlib.sha256(close_program.read_bytes()).hexdigest(),
+                'close_reply_boundary': 'Exact production registration call order, pending/flush predicates, late-monitor branch, shutdown and socket-close bodies; authentication result, clock, cleanup and Android socket identities are explicit host ports; real BrokerProtocol framing and Java pipe effects; no Android cleanup qualification',
                 'geometry_sha256': hashlib.sha256(geometry_part.encode()).hexdigest(),
                 'geometry_boundary': 'Exact production nested class; Display/DisplayManager logical metrics and elapsedRealtime are explicit host IO fixtures, not Android rendering qualification',
                 'java8_release_gate': not args.development_platform_only,

@@ -31,6 +31,9 @@ public final class NativeAppGoal {
 
     private static final Set<String> QUERY_TOOLS = Collections.unmodifiableSet(new TreeSet<String>(
             Arrays.asList("open", "click", "type", "submit", "scroll", "back", "wait", "done")));
+    private static final String READ_ACTUAL_FLIGHT_FORM = "complete_literal_native_flight_read_only_no_order.v1";
+    private static final Set<String> READ_ACTUAL_FLIGHT_TOOLS = Collections.unmodifiableSet(new TreeSet<String>(
+            Arrays.asList("open", "click", "type", "scroll", "back", "wait", "done")));
     private static final Set<String> PREVIEW_READ_TOOLS = Collections.unmodifiableSet(new TreeSet<String>(
             Arrays.asList("open","click","type","back","wait","done")));
     private static final String PREFIX = "(?:请)?(?:帮我)?";
@@ -76,6 +79,19 @@ public final class NativeAppGoal {
             + "([0-9]{4})年([0-9]{1,2})月([0-9]{1,2})日" + FIELD_SPACE + READ_FLIGHT_ROUTE);
     private static final Pattern READ_FLIGHT_ISO = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
             + "([0-9]{4})-([0-9]{2})-([0-9]{2})" + FIELD_SPACE + READ_FLIGHT_ROUTE);
+    // A complete additional Ctrip OWNER form. Its explicit no-order clause
+    // narrows the original tool mask; generic submit is unnecessary for the
+    // observed flight query button, which remains an independently guarded click.
+    private static final String READ_ACTUAL_FLIGHT_ROUTE = "(?:从" + FIELD_SPACE + ")?([\\p{IsHan}]{2,12}?)"
+            + FIELD_SPACE + "到" + FIELD_SPACE + "([\\p{IsHan}]{2,12}?)" + FIELD_SPACE
+            + "(?:的" + FIELD_SPACE + ")?单程" + FIELD_SPACE + "(?:机票|航班)" + FIELD_SPACE
+            + "[，,]" + FIELD_SPACE + "(?:1|一)" + FIELD_SPACE + "(?:名|位)" + FIELD_SPACE + "成人"
+            + "[，,]" + FIELD_SPACE + "读取真实航班和票价[。.]"
+            + FIELD_SPACE + "只查询[，,]不预订[、，,]不提交订单[、，,]不支付[。.]?";
+    private static final Pattern READ_ACTUAL_FLIGHT_ZH = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})年([0-9]{1,2})月([0-9]{1,2})日" + FIELD_SPACE + READ_ACTUAL_FLIGHT_ROUTE);
+    private static final Pattern READ_ACTUAL_FLIGHT_ISO = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})-([0-9]{2})-([0-9]{2})" + FIELD_SPACE + READ_ACTUAL_FLIGHT_ROUTE);
     private static final Pattern READ_PRODUCT = Pattern.compile(PREFIX
             + "(?:在|用)小米商城(?:APP|App|app|应用)?(?:里|中|上)?"
             + "(?:搜索|查询|查找)(?:小米|Xiaomi)[ ]?(?:路由器[ ]?)?([A-Za-z][A-Za-z0-9-]{1,31})"
@@ -139,7 +155,8 @@ public final class NativeAppGoal {
 
     private NativeAppGoal(String owner, String selectedPackage, Matcher match, LocalDate date, int suffix, String form) {
         kind = FLIGHT_RESULTS; orderPreview=null; packageName = selectedPackage; immutableOwner = owner; ownerSha256 = hash(owner);
-        recognition = form; toolCeiling = QUERY_TOOLS;
+        recognition = form;
+        toolCeiling = READ_ACTUAL_FLIGHT_FORM.equals(form) ? READ_ACTUAL_FLIGHT_TOOLS : QUERY_TOOLS;
         departureDate = date; fromCity = match.group(5); toCity = match.group(6); productModel = null;
         adults = 1; children = 0; infants = 0;
         dateStartUtf16 = match.start(2); dateEndUtf16 = match.end(4) + suffix;
@@ -184,12 +201,20 @@ public final class NativeAppGoal {
                     if (!match.matches()) {
                         match = FLIGHT_ISO_SPACED.matcher(owner); suffix = 0;
                         if (!match.matches()) {
+                            form = "complete_literal_native_flight_read_only_report.v2";
                             match = READ_FLIGHT_ZH.matcher(owner); suffix = 1;
                             if (!match.matches()) {
                                 match = READ_FLIGHT_ISO.matcher(owner); suffix = 0;
-                                if (!match.matches()) return null;
+                                if (!match.matches()) {
+                                    if (!CTRIP_PACKAGE.equals(explicitlySelectedPackage)) return null;
+                                    match = READ_ACTUAL_FLIGHT_ZH.matcher(owner); suffix = 1;
+                                    if (!match.matches()) {
+                                        match = READ_ACTUAL_FLIGHT_ISO.matcher(owner); suffix = 0;
+                                        if (!match.matches()) return null;
+                                    }
+                                    form = READ_ACTUAL_FLIGHT_FORM;
+                                }
                             }
-                            form = "complete_literal_native_flight_read_only_report.v2";
                         }
                     }
                 }

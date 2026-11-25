@@ -62,7 +62,15 @@ def extract_broker(source,out):
     # Only the exact reviewed full source can take this proof-only inverse.
     restored=text
     profile_diagnostic_parent=None
-    if hashlib.sha256(text.encode()).hexdigest()=="f05219808faa900e139f096fd7f4ba2c65190de697a44f71a632a7dc11875b22":
+    notes_close_reply_parent=None
+    if hashlib.sha256(text.encode()).hexdigest()=="7802d6910bbc16da6569fc4c876bea29e7b0d674a91d02a02da485902a638e7c":
+        # Full-source proof only; the actual formatter below is extracted before this inverse.
+        for before,after in [["    // Only the authenticated, already admitted work-profile close RPC can own this peer.\n","    // Only an authenticated public profile or personal-Notes close RPC can own this peer.\n"],["                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&\"close\".equals(request.operation))\n","                        // Both supported public custodians own only this authenticated close reply.\n                        if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)\n                                &&\"close\".equals(request.operation))\n"],["                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;\n","                &&(config.profileTarget!=null?profileCustody.known():publicNotesCustody!=null&&publicNotesCustody.known())\n                &&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;\n"]]:
+            restored=unique(restored,after,before)
+        notes_close_reply_parent="f05219808faa900e139f096fd7f4ba2c65190de697a44f71a632a7dc11875b22"
+        need(hashlib.sha256(restored.encode()).hexdigest()==notes_close_reply_parent,
+             "exact accepted Notes close-reply inverse required")
+    if hashlib.sha256(restored.encode()).hexdigest()=="f05219808faa900e139f096fd7f4ba2c65190de697a44f71a632a7dc11875b22":
         restored=unique(restored,'                    .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:\n                            new JSONObject(profileOwnedTask.retirementDiagnostics()))\n',"")
         restored=unique(restored,'            .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:\n                    new JSONObject(profileOwnedTask.retirementDiagnostics()))\n',"")
         profile_diagnostic_parent="a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44"
@@ -87,6 +95,7 @@ final class NotesHistoryBrokerOutputHost {
     target=out/"NotesHistoryBrokerOutputHost.java";target.write_text(body)
     return target,dict(source=ref(path),methods_sha256=hashlib.sha256(methods.encode()).hexdigest(),
                        actual_methods_byte_exact=True,profile_diagnostic_proof_parent=profile_diagnostic_parent,
+                       notes_close_reply_proof_parent=notes_close_reply_parent,
                        original_broker_whole_sha256=BROKER_PARENT,
                        original_broker_restored=True,full_android_broker_compiled=False,generated=ref(target))
 def decode_pair(value):

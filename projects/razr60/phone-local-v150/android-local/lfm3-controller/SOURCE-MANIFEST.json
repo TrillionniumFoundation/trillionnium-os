@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "ca19b306f99fe3362885c64d42941f22cde8b82d",
-  "base_manifest_sha256": "e4127eeabb96a242ed1f35c0cc2b061c8c3ac8491a7de9b015211f953ffabd09",
+  "base_head": "228308be13d1f86ccc2a11f33f3e172b2f173f3e",
+  "base_manifest_sha256": "d84fc26376489d943e2f4beb3654c1f3aba670f9d9d4ef162597a9e4952372d6",
   "candidate_exact_git_head": null,
-  "candidate_status": "accepted_natural_command_route_pending_final_host_publication_and_phone",
-  "complete_source_files": 2666,
+  "candidate_status": "accepted_readonly_flight_and_notes_close_pending_final_host_publication_and_phone",
+  "complete_source_files": 2669,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
     "early_sampling_draft_excluded": true,
@@ -249,6 +249,52 @@
       "sha256": "3501b2de3d10db58a78cf5020dfd76946f952e0536110b22640f8e65ef9c069d"
     },
     "scope": "Preserve the concurrently installed e86 reservation and cleanup code, fixtures and 133-check gates, and merge reviewed filled-query stability and current host compatibility."
+  },
+  "current_readonly_flight_consolidation": {
+    "actual_phone_success_claimed": false,
+    "base_signed_ready": {
+      "bytes": 23909,
+      "path": "/home/alex/hepta-razr-natural-routing-integration-20261125-models-r1/signed-candidate-r1/READY.json",
+      "sha256": "9e9ffc2fbd0be9994f8cdf1fab6ea8b652c2e7373a9d433fb05f4d225f8cb527"
+    },
+    "diagnostic_events_do_not_authorize": true,
+    "existing_i5_no_effect_successor_and_full_form_guards_unchanged": true,
+    "finite_observer_source_proof": {
+      "bytes": 2356,
+      "path": "/home/alex/hepta-razr-readonly-flight-consolidation-20261125-models-r1/finite-observer-compatibility-r2/DERIVATION.json",
+      "sha256": "ae74e120913d90d7df4138d22e51cfd802a4702c06a85e58a91cca6a1c7ab7c8"
+    },
+    "generic_submit_not_in_new_purpose_ceiling": true,
+    "legacy_goal_kinds_and_ceilings_unchanged": true,
+    "legacy_source_pin_proof": {
+      "bytes": 4299,
+      "path": "/home/alex/hepta-razr-readonly-flight-consolidation-20261125-models-r1/qualification-compatibility-r1/DERIVATION-r2.json",
+      "sha256": "86ca837bf4ffb67eb3368644962616a8f6dfae87334190ab7e580d79df18ee37"
+    },
+    "natural_regression_freeze": {
+      "bytes": 2249,
+      "path": "/home/alex/hepta-razr-natural-readonly-flight-contract-20261125-model-r1/SOURCE-FREEZE.json",
+      "sha256": "73872cd3e6a2f545577580cf3283ad3a8be561b695fd43422c88f48a3d789b8b"
+    },
+    "notes_close_reply_freeze": {
+      "bytes": 14148,
+      "path": "/home/alex/hepta-razr-notes-close-reply-4185-20261125-business-r1/FREEZE.json",
+      "sha256": "0af6624398bffc59aa4f0f36211abbd53f8ccb241ae3392835ab8c1b4fd3f530"
+    },
+    "notes_diagnostic_source_proof": {
+      "bytes": 34245,
+      "path": "/home/alex/hepta-razr-readonly-flight-consolidation-20261125-models-r1/notes-close-compatibility-r3/DERIVATION.json",
+      "sha256": "908dfca8cea31b761caa8205154b06acedbb16262129906f09c03df73baa67a0"
+    },
+    "original_authorization_source_unchanged": true,
+    "original_immutable_owner_retained": true,
+    "peer_after_target_sticky_successor_policy_not_adopted": true,
+    "peer_managed_form_read_precondition_not_adopted": true,
+    "peer_signed_ready": {
+      "bytes": 22890,
+      "path": "/home/alex/hepta-razr-r40-app-closure-integration-20261125-56dad1-model-r1/signed-candidate-r1/READY.json",
+      "sha256": "fde33710622ce3aa328e7da74df6020b9726c9aebb5f107bd18d10f49636ec44"
+    }
   },
   "current_rich_recents_presentation": {
     "actual_phone_business_claimed": false,
@@ -7755,10 +7801,10 @@
       "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
     },
     {
-      "bytes": 160469,
+      "bytes": 160731,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "f05219808faa900e139f096fd7f4ba2c65190de697a44f71a632a7dc11875b22"
+      "sha256": "7802d6910bbc16da6569fc4c876bea29e7b0d674a91d02a02da485902a638e7c"
     },
     {
       "bytes": 25279,
@@ -8211,10 +8257,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 672256,
+      "bytes": 672464,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "d7d759bc7ec3d8cddb7277c3f798dd0e220213fac2761c41785414d4eafe51db"
+      "sha256": "aeaaa73ecdd5f7d9c502779c120d2d0e78507479595655a7adc8466602a6badb"
     },
     {
       "bytes": 711,
@@ -8373,10 +8419,10 @@
       "sha256": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14"
     },
     {
-      "bytes": 21582,
+      "bytes": 23763,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "sha256": "9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4"
+      "sha256": "65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447"
     },
     {
       "bytes": 6445,
@@ -8493,10 +8539,10 @@
       "sha256": "e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f466947935f4c"
     },
     {
-      "bytes": 58108,
+      "bytes": 58181,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "a34a059b24ea64647eefbcbd3e784835ca3567980a8abd44b96c50b55425621e"
+      "sha256": "c7486f0c02b5fcd0dd0280062d625602615702c3e63e5b245d865ed9584a5fd9"
     },
     {
       "bytes": 5285,
@@ -9465,10 +9511,10 @@
       "sha256": "251696da23360e7212b7095763f088a7d3d09414de50286f1cf9aaa86f83879f"
     },
     {
-      "bytes": 4081,
+      "bytes": 15827,
       "mode": "100644",
       "path": "tests/background-broker/BrokerCloseReplyHost.template",
-      "sha256": "7e88c2b456a3bae20f29bbea0af1fc009b0a8231ffebf17343cd1a964d093d7d"
+      "sha256": "03e81f421cd4de2692033953a733150fea50f77d7a0048148dd7f152eb26a2cb"
     },
     {
       "bytes": 16222,
@@ -9483,10 +9529,10 @@
       "sha256": "59c0655e0eae7e1242eac2cc2f1ca3746f52797c6ca37873607fbc9bc66bd298"
     },
     {
-      "bytes": 13226,
+      "bytes": 15657,
       "mode": "100644",
       "path": "tests/background-broker/run_host_checks.py",
-      "sha256": "aa681d9786566f7a17db7ab9058ae4d1cbac8826ed28b80c2e02e0445ca3eb85"
+      "sha256": "59bf766e91c13e8d028554aa56877d39d89c3478db975c866cf2ece43e78d8d6"
     },
     {
       "bytes": 3268,
@@ -11283,10 +11329,10 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 76850,
+      "bytes": 78009,
       "mode": "100644",
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "bb0d7270d496149d517233baab212f0276143c150f26f5455934424728c26dcd"
+      "sha256": "73d267afb93ab25bdd53698b6a602dd099c6a9cbddf3f2937ca70d8b24d3ebf1"
     },
     {
       "bytes": 3535,
@@ -11319,10 +11365,10 @@
       "sha256": "1c4c48d93950b0873e19c69eadb0fb2f6c04437dff8180e7ee6ca65192545ba1"
     },
     {
-      "bytes": 15483,
+      "bytes": 18397,
       "mode": "100644",
       "path": "tests/native-ctrip-form-read-publication/run_host.py",
-      "sha256": "a9e5a1d354ba78332e56e19d90afc56caae4d20937e1fc73dcfd8c355ee1184d"
+      "sha256": "3857db81dfb4eeb02204e560f6fb24a3261e36cfe8710a869e782c37a0ab4ada"
     },
     {
       "bytes": 25791,
@@ -11377,6 +11423,24 @@
       "mode": "100644",
       "path": "tests/native-ctrip-promotion/run_host.py",
       "sha256": "7d7b29e85b92844bbc2a1ad9ea9e415a59b58fb88db3b3104e2ebd4a2a4cc9e9"
+    },
+    {
+      "bytes": 18647,
+      "mode": "100644",
+      "path": "tests/native-ctrip-readonly-owner/ReadOnlyFlightOwnerHostTest.java",
+      "sha256": "aafb25360c34d34f09b7f07eddcdfc7e5a9af5d6fca1bd5ee6ddbd37a750e1df"
+    },
+    {
+      "bytes": 8760,
+      "mode": "100644",
+      "path": "tests/native-ctrip-readonly-owner/protected_readonly_owner.py",
+      "sha256": "14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353"
+    },
+    {
+      "bytes": 12647,
+      "mode": "100644",
+      "path": "tests/native-ctrip-readonly-owner/run_host.py",
+      "sha256": "f84b6fa7b73e13010ebc3f00c9caeb67c8642d9420d00119949ef351adbe163b"
     },
     {
       "bytes": 3582,
@@ -12063,10 +12127,10 @@
       "sha256": "13715c8b38ab6abf5ed2a913b9869370e5690e15eaf21360b8400e52af3ce65a"
     },
     {
-      "bytes": 19029,
+      "bytes": 19723,
       "mode": "100644",
       "path": "tests/native-xiaomi-direct-card/run_host.py",
-      "sha256": "f9edb03eb4fc3ee36d2142324fedac26940129dbd416a2014dc29c7a6e47b9b7"
+      "sha256": "6ed73cf4c5060b16ab36b3de5ed3ea604809fc885ce2fab4969daabb9ced3746"
     },
     {
       "bytes": 12829,
@@ -12351,10 +12415,10 @@
       "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
     },
     {
-      "bytes": 15684,
+      "bytes": 16589,
       "mode": "100644",
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "517974b48fdb9b1b00845b4ce5bf3bfa52712b43c398de3dce43173f7089d2a2"
+      "sha256": "b907985ecbe93a685b9235a5335141a7c6acf56fb9a6203f7e0815bb8c18bc02"
     },
     {
       "bytes": 14737,
@@ -12489,10 +12553,10 @@
       "sha256": "baa1bd44727341401524cca1faec210923ae95b7124bc66aacf1a23b2ab99621"
     },
     {
-      "bytes": 23936,
+      "bytes": 28252,
       "mode": "100644",
       "path": "tests/natural-command-routing/NaturalCommandRoutingHostTest.java",
-      "sha256": "e0028c52edcbdadeb0a88e9362a38d57d09a31ff2828a78cc607a19605e5763c"
+      "sha256": "ed2a677c0a2972ba28b5efa8c69c4457349d02de53241c8f39c89c008103a9cb"
     },
     {
       "bytes": 8525,
@@ -12585,10 +12649,10 @@
       "sha256": "2955fce804f246739522a9ba74ff13bd942271ecab2dadbb75e951295da2566b"
     },
     {
-      "bytes": 20135,
+      "bytes": 21703,
       "mode": "100755",
       "path": "tests/notes-history-diagnostics/run_host.py",
-      "sha256": "4949a2aa976b998ca5fde602f7a0d77a55b8a081db9d4c9555f58659e34f7d05"
+      "sha256": "0a1a89935747e2a488a9490043459fcb5de787225d652e1e71099f433cebd64b"
     },
     {
       "bytes": 5966,
@@ -16359,7 +16423,7 @@
     "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
   },
   "host_validation_at_preparation": {
-    "accepted_stage_qualifications_are_historical": true,
+    "accepted_peer_qualifications_are_historical": true,
     "all_new_scope_root_reviewed": true,
     "current_android_build_qualified": false,
     "current_full_host_suite_completed": false,
@@ -16594,9 +16658,9 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 398,
-  "production_input_map_sha256": "b75e5693c3ba12f7252013241ba3ad48d95edfc6f6331285054ea65f16ece88d",
+  "production_input_map_sha256": "ab4518313d0daa1a2ca6b30279b9eac38b78152a0d6f3da5a80a6aff717a1dd6",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve the actual signed ca19 complete candidate. Add bounded explicit single-app natural owner routing and ordinary preview only, preserving exact Notes/NativeAppGoal priority, full owner text, original authorization/runtime/completion guards. No new device or business success claimed.",
+  "scope": "Preserve actual signed I5. Add the exact complete literal Ctrip read-only no-order contract and two non-authoritative saved-graph failure counters only. Keep I5 natural routing, typed physical coexistence, settings/default models, full form publication proof, and existing one-replacement plus drained no-effect successor policy. No device or business success is claimed.",
   "source_head": null,
   "source_parent_head": "8d23b7584512fcf282096ece046eb041c01cf711",
   "source_parent_manifest_sha256": "2b7bc7e2a027b8439c8b74d779dc09ed3740f4cbe1e78c2883d9c7c67e07d03f",

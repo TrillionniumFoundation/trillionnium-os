@@ -13,6 +13,21 @@ def module(p, name):
 def once(s,a,b):
     if s.count(a)!=1: raise RuntimeError("exact fixture anchor: "+a[:100])
     return s.replace(a,b,1)
+def checked_observer_source(path):
+    raw=path.read_bytes();current=sha(raw)
+    if current==BASE_RUNNER_SHA:
+        return {"current_sha256":current,"predecessor_sha256":BASE_RUNNER_SHA,"readonly_owner_inverse_proved":False}
+    if current!="73d267afb93ab25bdd53698b6a602dd099c6a9cbddf3f2937ca70d8b24d3ebf1":
+        raise RuntimeError("original observer source exact pin")
+    # Reverse only the reviewed OWNER proof adapter; execute the current generator.
+    text=raw.decode("utf-8")
+    changes=[["    protected_files={}\n","    protected_files={}\n    readonly_owner_inverse=None\n"],["        if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':\n","        if name=='NativeAppGoal.java' and actual=='65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447':\n            helper=source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py'\n            if h.sha(helper.read_bytes())!='14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353':raise RuntimeError('exact reviewed read-only OWNER inverse helper')\n            prior=runpy.run_path(str(helper))['predecessor'](current)\n            if len(prior)!=21582 or h.sha(prior)!='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':\n                raise RuntimeError('complete preceding OWNER source required')\n            readonly_owner_inverse={'current_sha256':actual,'predecessor_sha256':h.sha(prior),\n                'helper_sha256':'14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353','proof_copy_only':True,'actual_compilation_uses_current_source':True}\n            protected_files[name]=actual\n            continue\n        if name=='NativeAppGoal.java' and actual=='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':\n"],["            'protected_production_bodies':protected,'protected_files':protected_files,\n","            'protected_production_bodies':protected,'protected_files':protected_files,\n            'readonly_owner_inverse':readonly_owner_inverse,\n"],["    inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']\n","    inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']\n    inputs += [source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py']\n"]]
+    for before,after in reversed(changes):
+        text=once(text,after,before)
+    if sha(text.encode("utf-8"))!=BASE_RUNNER_SHA:
+        raise RuntimeError("complete preceding observer source exact pin")
+    return {"current_sha256":current,"predecessor_sha256":BASE_RUNNER_SHA,"readonly_owner_inverse_proved":True,
+            "proof_copy_only":True,"actual_generation_uses_current_source":True}
 def bridge(prior):
     s=prior
     s=once(s,"    static final String TEST_SHA=NativeActionSnapshotCheckHostTest.H;\n",
@@ -115,7 +130,7 @@ def main():
     ap.add_argument("--actual-census",type=Path);ap.add_argument("--actual-census-sha256")
     a=ap.parse_args();source=a.source.resolve();output=a.output.absolute();output.mkdir(parents=True,exist_ok=False)
     old=source/"tests/native-ctrip-form-observation/run_observer_host.py"
-    if sha(old.read_bytes())!=BASE_RUNNER_SHA:raise RuntimeError("original observer source exact pin")
+    observer_source_binding=checked_observer_source(old)
     m=module(old,"finite_form_observer");h=module(source/"tests/observation-diagnostics/run_host.py","finite_form_helpers")
     prior=m.BRIDGE;m.BRIDGE=bridge(prior)
     java=a.java_home/"bin/java";javac=a.java_home/"bin/javac";jar=a.json_jar
@@ -126,6 +141,8 @@ def main():
     inputs += [source/"tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",
         source/"tests/observation-pipeline/ObserverPipelineHost.template",source/"tests/observation-diagnostics/run_host.py",
         source/"tests/native-xiaomi-query-stability/protected_filled_query.py",HERE/"run_host.py",HERE/"FormReadPublicationHostTest.java"]
+    if observer_source_binding["readonly_owner_inverse_proved"]:
+        inputs += [source/"tests/native-ctrip-readonly-owner/protected_readonly_owner.py"]
     inputs += h.png_sources(source)
     tools=[java,javac,a.java_home/"lib/modules",a.java_home/"lib/ct.sym",jar]
     props=[]
@@ -155,7 +172,8 @@ def main():
         "stages":[],"source_inputs":before,"tools_before":tb,"actual_census":actual_meta,
         "fixture_bridge":{"original_sha256":sha(prior.encode()),"derived_sha256":sha(m.BRIDGE.encode())},
         "phone_operations":0,"android_execution":False,"model_executed":False,"business_completion_verified":False,
-        "historical_event_watermarks_reconstructed":False,"existing_68_cases_reexecuted":False}
+        "historical_event_watermarks_reconstructed":False,"existing_68_cases_reexecuted":False,
+        "observer_source_binding":observer_source_binding}
     try:
         generated=output/"generated";generated.mkdir();extraction=m.generate(source,generated,h)
         extraction["original_observer_methods_and_hooks_verbatim"]=False

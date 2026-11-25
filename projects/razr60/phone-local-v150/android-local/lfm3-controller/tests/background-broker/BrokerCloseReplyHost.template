@@ -12,7 +12,184 @@ final class BrokerCloseReplyHost {
     private final AtomicBoolean closing=new AtomicBoolean();
     private final Custody profileCustody=new Custody();
     private static final class Custody { boolean released;boolean known(){return released;} }
-    private static final class LocalSocket {}
+    private static final class Config {
+        Object publicOwnGroupScope,profileTarget;int ownerUid=12345;
+    }
+    private final Config config=new Config();
+    private Custody publicNotesCustody;
+    private static final class Credentials {
+        final int uid;Credentials(int uid){this.uid=uid;}
+        int getUid(){return uid;}int getPid(){return 5000;}
+    }
+    private static final class LocalSocket {
+        final OutputStream output;int uid=12345;boolean closed;
+        LocalSocket(){output=null;}LocalSocket(OutputStream output){this.output=output;}
+        Credentials getPeerCredentials(){return new Credentials(uid);}
+        void close()throws IOException{closed=true;if(output!=null)output.close();}
+    }
+    private static final class LocalServerSocket { boolean closed;void close()throws IOException{closed=true;} }
+    // Authentication, elapsed time, cleanup completion and socket identities are
+    // explicit host ports. Production call order and all decision bodies below
+    // are extracted unchanged; Android IPC/absence itself is not simulated proof.
+    private static final class Request {
+        String operation="close";long deadline=4500;boolean valid=true;
+        void authenticate(Config config,int uid)throws IOException{
+            if(!valid||uid!=config.ownerUid)throw new IOException("host authentication refusal");
+        }
+        void checkDeadline(long now,long expires)throws IOException{
+            if(deadline<=now||expires<=now)throw new IOException("host original deadline refusal");
+        }
+    }
+    private static final class Receipts {
+        boolean replay;byte[] replay(Request request){return replay?new byte[]{1}:null;}
+    }
+    private static final class SystemClock {
+        static long now;static long elapsedRealtime(){return now;}
+    }
+    private final Receipts receipts=new Receipts();
+    private LocalServerSocket server;
+    private boolean serve=true;
+    private int activeRequestPeerPid=-1,cleanupCalls;
+    private long expires=10000,connectionDeadline;
+    private static String code(Throwable error){return error.getMessage();}
+    private void beginCleanup(String reason){cleanupCalls++;closing.set(true);}
+    SHUTDOWN_METHOD
+    SOCKETS_METHOD
+    private void authenticateAndRegister(Request request,LocalSocket accepted)throws Exception{
+        byte[] response;
+        REGISTRATION_PREFIX
+        }
+    }
+    private void latePolicyFailure(Throwable error){
+        MONITOR_CONDITION
+    }
+    private static final java.util.List<String> cases=new java.util.ArrayList<String>();
+    private static void named(String name,boolean value){
+        cases.add(name);if(!value)throw new AssertionError(name);check(value);
+    }
+    private static BrokerCloseReplyHost context(boolean profile){
+        BrokerCloseReplyHost s=new BrokerCloseReplyHost();
+        s.config.publicOwnGroupScope=new Object();
+        if(profile)s.config.profileTarget=new Object();else s.publicNotesCustody=new Custody();
+        s.cleanupAt=1000;SystemClock.now=1000;s.server=new LocalServerSocket();
+        return s;
+    }
+    private static void transport(boolean profile)throws Exception{
+        BrokerCloseReplyHost s=context(profile);
+        try(PipedInputStream client=new PipedInputStream();PipedOutputStream output=new PipedOutputStream(client)){
+            LocalSocket exact=new LocalSocket(output);s.connection=exact;
+            Request request=new Request();s.authenticateAndRegister(request,exact);
+            long deadline=s.requestDeadline;
+            // Close has now retired admission/lease. An already entered monitor
+            // returns the observed retired-lease refusal before close writes.
+            s.closing.set(true);
+            Thread monitor=new Thread(()->s.latePolicyFailure(new IOException("PUBLIC_SCREEN_LEASE_RETIRED")));
+            monitor.start();monitor.join();
+            boolean eof=false,wrote=false;byte[] actual=null;
+            byte[] payload="synthetic same-request close reply after proven fixture absence".getBytes(StandardCharsets.UTF_8);
+            if(exact.closed){
+                eof=client.read()==-1;
+                try{BrokerProtocol.writeFrame(output,payload);}catch(IOException expected){/* actual closed pipe */}
+            }else{
+                s.state="RELEASED";s.cleanupDone.countDown();
+                if(profile)s.profileCustody.released=true;else s.publicNotesCustody.released=true;
+                BrokerProtocol.writeFrame(output,payload);wrote=true;
+                DataInputStream reader=new DataInputStream(client);actual=new byte[reader.readInt()];reader.readFully(actual);
+            }
+            boolean complete=!eof&&wrote&&Arrays.equals(payload,actual)&&s.cleanupCalls==0&&!exact.closed;
+            if(!complete)throw new AssertionError((profile?"PROFILE":"NOTES")+
+                    "_CLOSE_TRANSPORT_LOST eof="+eof+" wrote="+wrote+" closed="+exact.closed+
+                    " shutdown_cleanup_calls="+s.cleanupCalls);
+            named((profile?"profile":"notes")+"_actual_late_monitor_shutdown_pipe_frame",complete);
+            named((profile?"profile":"notes")+"_same_socket_original_request_deadline",
+                    s.authenticatedProfileClosePeer==exact&&s.connection==exact&&s.requestDeadline==deadline);
+        }
+    }
+    private static void notesMidFrame()throws Exception{
+        final BrokerCloseReplyHost s=context(false);
+        try(PipedInputStream client=new PipedInputStream();PipedOutputStream pipe=new PipedOutputStream(client)){
+            final LocalSocket exact=new LocalSocket(pipe);s.connection=exact;
+            s.authenticateAndRegister(new Request(),exact);s.closing.set(true);
+            OutputStream boundary=new OutputStream(){
+                int bytes;boolean fired;
+                private void before(int count)throws IOException{
+                    if(!fired&&bytes>=4){
+                        fired=true;
+                        Thread monitor=new Thread(()->s.latePolicyFailure(new IOException("PUBLIC_SCREEN_LEASE_RETIRED")));
+                        monitor.start();try{monitor.join();}catch(InterruptedException e){Thread.currentThread().interrupt();throw new IOException(e);}
+                    }
+                    bytes+=count;
+                }
+                public void write(int b)throws IOException{before(1);pipe.write(b);}
+                public void write(byte[] b,int off,int len)throws IOException{before(len);pipe.write(b,off,len);}
+            };
+            byte[] payload="synthetic full response payload".getBytes(StandardCharsets.UTF_8);
+            BrokerProtocol.writeFrame(boundary,payload);
+            DataInputStream reader=new DataInputStream(client);int size=reader.readInt();
+            byte[] actual=new byte[size];reader.readFully(actual);
+            named("notes_midframe_late_monitor_preserves_header_and_payload",
+                    Arrays.equals(payload,actual)&&s.cleanupCalls==0&&!exact.closed&&s.authenticatedProfileClosePeer==exact);
+        }
+    }
+    private static void refusedRegistration(String name,int variant)throws Exception{
+        BrokerCloseReplyHost s=context(false);Request r=new Request();LocalSocket exact=new LocalSocket();s.connection=exact;
+        boolean mustThrow=false;
+        switch(variant){
+            case 0:r.valid=false;mustThrow=true;break;
+            case 1:exact.uid=12346;mustThrow=true;break;
+            case 2:r.operation="state";break;
+            case 3:s.config.publicOwnGroupScope=null;break;
+            case 4:s.publicNotesCustody=null;break;
+            case 5:r.deadline=1000;mustThrow=true;break;
+            case 6:r.deadline=999;mustThrow=true;break;
+            case 7:s.expires=1000;mustThrow=true;break;
+            case 8:s.receipts.replay=true;break;
+            default:throw new AssertionError("unknown variant");
+        }
+        boolean threw=false;
+        try{s.authenticateAndRegister(r,exact);}catch(IOException rejected){threw=true;}
+        s.closing.set(true);
+        named(name,threw==mustThrow&&s.authenticatedProfileClosePeer==null&&!s.profileCloseReplyPending(1000));
+    }
+    private static void notesCases()throws Exception{
+        transport(true);transport(false);notesMidFrame();
+        String[] names={"unauthenticated_no_reply_peer","wrong_uid_no_reply_peer","nonclose_no_reply_peer",
+            "nonpublic_no_reply_peer","no_supported_custodian_no_reply_peer","request_deadline_equal_rejects",
+            "request_deadline_past_rejects","session_deadline_equal_rejects","replayed_request_does_not_register_new_peer"};
+        for(int i=0;i<names.length;i++)refusedRegistration(names[i],i);
+        BrokerCloseReplyHost s=context(false);LocalSocket exact=new LocalSocket();s.connection=exact;
+        s.authenticateAndRegister(new Request(),exact);
+        named("notes_not_closing_rejects_pending",!s.profileCloseReplyPending(1000));
+        s.closing.set(true);
+        named("notes_pending_same_socket",s.profileCloseReplyPending(1000));
+        named("notes_pending_can_wait_for_original_cleanup",!s.releasedProfileReplyMayFlush(1000));
+        s.state="RELEASED";s.publicNotesCustody.released=true;
+        named("notes_cleanup_latch_required",!s.releasedProfileReplyMayFlush(2500));
+        s.cleanupDone.countDown();
+        named("notes_known_release_flush_at_original_watchdog_boundary",s.releasedProfileReplyMayFlush(2500));
+        named("notes_flush_one_ms_before_existing_write_bound",s.releasedProfileReplyMayFlush(3249));
+        named("notes_flush_at_existing_write_bound_rejects",!s.releasedProfileReplyMayFlush(3250));
+        named("notes_flush_after_existing_write_bound_rejects",!s.releasedProfileReplyMayFlush(3251));
+        named("notes_negative_elapsed_rejects",!s.releasedProfileReplyMayFlush(999));
+        s.state="CLEANUP_UNKNOWN";named("notes_unknown_state_rejects_flush",!s.releasedProfileReplyMayFlush(2500));
+        s.state="RELEASED";s.publicNotesCustody.released=false;
+        named("notes_unknown_custody_rejects_flush",!s.releasedProfileReplyMayFlush(2500));
+        s.profileCustody.released=true;
+        named("notes_cannot_borrow_unrelated_profile_known",!s.releasedProfileReplyMayFlush(2500));
+        s.publicNotesCustody.released=true;s.profileCustody.released=false;s.config.profileTarget=new Object();
+        named("profile_cannot_borrow_unrelated_notes_known",!s.releasedProfileReplyMayFlush(2500));
+        s.config.profileTarget=null;s.requestDeadline=2500;
+        named("notes_original_request_deadline_equal_rejects_flush",!s.releasedProfileReplyMayFlush(2500));
+        named("notes_original_request_deadline_equal_rejects_pending",!s.profileCloseReplyPending(2500));
+        s.requestDeadline=4500;s.connection=new LocalSocket();
+        named("notes_changed_socket_rejects_flush",!s.releasedProfileReplyMayFlush(2500));
+        s.connection=exact;s.authenticatedProfileClosePeer=null;
+        named("notes_missing_authenticated_peer_rejects_flush",!s.releasedProfileReplyMayFlush(2500));
+        // Without the original authenticated socket, the real shutdown/close
+        // bodies still close the transport; there is no generic late-error bypass.
+        s.latePolicyFailure(new IOException("PUBLIC_SCREEN_LEASE_RETIRED"));
+        named("unqualified_late_monitor_still_closes",exact.closed&&s.cleanupCalls==1&&!s.serve);
+    }
     private LocalSocket connection,authenticatedProfileClosePeer;
     private long requestDeadline,cleanupAt;
     private String state="CLOSING";
@@ -23,6 +200,7 @@ final class BrokerCloseReplyHost {
     public static void main(String[] args)throws Exception{
         long screenOff=Long.parseLong(args[0]),lastAbsence=Long.parseLong(args[1]);
         BrokerCloseReplyHost s=new BrokerCloseReplyHost();
+        s.config.publicOwnGroupScope=new Object();s.config.profileTarget=new Object();
         s.connection=new LocalSocket();s.authenticatedProfileClosePeer=s.connection;
         s.cleanupAt=screenOff;s.requestDeadline=screenOff+3500;
         check(!s.profileCloseReplyPending(screenOff));
@@ -59,6 +237,12 @@ final class BrokerCloseReplyHost {
                 check(Arrays.equals(payload,frame));
             }
         }
-        System.out.println("{\"checks\":"+checks+",\"phone_operations\":0,\"old_reader_eof_reproduced\":true,\"original_pipe_framing_verified\":true}");
+        notesCases();
+        StringBuilder names=new StringBuilder("[");
+        for(String name:cases){if(names.length()>1)names.append(',');names.append('"').append(name).append('"');}
+        names.append(']');
+        System.out.println("{\"checks\":"+checks+",\"named_cases\":"+cases.size()+",\"case_names\":"+names+
+            ",\"phone_operations\":0,\"old_reader_eof_reproduced\":true,\"original_pipe_framing_verified\":true"+
+            ",\"notes_actual_extracted_monitor_transport_verified\":true}");
     }
 }

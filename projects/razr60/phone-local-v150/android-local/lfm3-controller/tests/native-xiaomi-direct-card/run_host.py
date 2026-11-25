@@ -52,11 +52,19 @@ def main():
         if isinstance(raw,bytes) and sha(raw)==semantic["CURRENT_SHA"]:
             raw=semantic["predecessor"](raw)
         return mirror_predecessor(raw)
+    owner_helper=a.source/"tests/native-ctrip-readonly-owner/protected_readonly_owner.py"
+    owner_meta=info(owner_helper)
+    need(owner_meta["bytes"]==8760 and owner_meta["sha256"]=="14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353","exact reviewed read-only OWNER inverse helper")
+    originals[str(owner_helper)]=owner_meta
+    owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
     for rel,pin in PIN_DATA.items():
         meta=info(a.source/rel)
         if rel==PKG+"NativeXiaomiProductPage.java":
             proof_raw=detail_predecessor((a.source/rel).read_bytes())
             need(len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"],"exact complete detail predecessor pin: "+rel)
+        elif rel==PKG+"NativeAppGoal.java":
+            proof_raw=owner_predecessor((a.source/rel).read_bytes())
+            need(len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"],"exact complete OWNER predecessor pin: "+rel)
         else:
             need(meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"],"exact source/fixture pin: "+rel)
         if rel in ("src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java","src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java"):
@@ -74,7 +82,7 @@ def main():
     a.output.mkdir(mode=0o755,parents=True);classes=a.output/"classes";classes.mkdir()
     result={"schema":"hepta.xiaomi-direct-card-compiled-gate.v1","all_pass":False,"steps":[],"phone_operations":0,
         "android_runtime":False,"dispatch_executed":False,"business_completion_verified":False,
-        "actual_replay_requested":bool(a.actual_task),"started_epoch":time.time()}
+        "actual_replay_requested":bool(a.actual_task),"readonly_owner_inverse_verified":True,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv,expected_failure=None):
