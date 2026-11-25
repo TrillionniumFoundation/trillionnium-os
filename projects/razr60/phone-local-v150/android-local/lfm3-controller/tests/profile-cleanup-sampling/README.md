@@ -1,0 +1,17 @@
+# Profile cleanup sampling follow-up
+
+This follow-up targets the ordinary, already-retired managed-profile cleanup path on baseline 86d73a3531c64846fa8e60bf9f3f6147ca0e988b. It changes two production files only. Model weights, native inference, active task authorization, retained cleanup and all original cleanup deadlines remain unchanged.
+
+The public path originally read complete recents, read root/children, then read complete recents again without any intervening mutation. The revised path reads root/children first and then one complete fresh raw recents inventory. That same final inventory must prove both the owned leaf's recents absence and preservation of protected unrelated history. Separate full samples before leaf removal, after root deletion, and after display release remain. Root actual Binder identity, complete global tasks, child emptiness, fresh package identity immediately before mutations and unknown-custody rules remain enforced.
+
+The broker now reports profile_cleanup_diagnostics separately from the original client_close/Stop reason. It latches the first bounded cleanup code and phase plus original cleanup timing. It grants no task, display, input or model authority and never converts unknown to success.
+
+The saved e7ef24 task has valid last-leaf evidence and owned recents absence, but the old broker discarded the internal cleanup refusal after terminalReason became client_close. Its last public history observation is about 1395 ms after surface retirement began, close to the ordinary 1400 ms task-read limit. Surface retirement is not an exact persisted cleanupAt timestamp. The original evidence cannot uniquely distinguish deadline exhaustion from every later root/display failure.
+
+run_host.py compiles both original and candidate production ownership/history code with strict Java 8 APIs. The baseline-red/candidate-green latency fixture assigns a synthetic 350 ms to each complete history read and 15 ms to each installed-identity read under the unchanged 1400 ms budget. These are explicit test costs, not measured device stage timings. Negative cases cover protected-history changes during child inspection, expired final history, changed package identity, changed root token, reappearing children, retained recents, a new global task after root deletion and a failed deletion. The complete nested diagnostic audit is extracted unchanged and tested separately; that extraction does not compile or qualify the full Android broker.
+
+Existing public-profile-history and private profile-broker tests remain unchanged. Host passes do not establish that e7ef24 has been recovered or that future phone cleanup is fixed. The integrated build still needs the complete required host/Android gates and a real isolated-screen close receipt with fresh post-release absence.
+
+## Portable CI entry
+
+run_candidate.py uses the explicitly synthetic complete public recents fixture in fixtures-synthetic. It compiles the same production ownership/history code and the same nine sampling cases plus the complete diagnostic audit. No private phone archive or baseline checkout is required. The synthetic dormant package, IDs, debug token and clock values have no phone provenance. The separate run_host.py entry retains the historical original-binding and baseline-red checks on the trusted host. Neither entry establishes Android execution or phone cleanup success.

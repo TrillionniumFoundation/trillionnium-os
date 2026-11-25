@@ -299,21 +299,32 @@ public final class ProfileOwnedTask {
                 while(platform.now()<deadline){
                     actual(false);
                     ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
+                    boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
+                    List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;
+                    if(publicHistory!=null&&liveLeafGone){
+                        // Read the retained root/children before the final complete public-history
+                        // sample. There is no mutation in this interval: one fresh raw dump then
+                        // proves both owned recents absence and preserved unrelated history.
+                        sampledRoots=checked(platform.roots());
+                        if(sampledRoots.size()==1){
+                            requireRootIdentity(sampledRoots.get(0));
+                            sampledChildren=checked(platform.children(root.token));
+                        }
+                    }
                     ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
                     requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);
                     boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
                     if(noLeaf){
                         current.requireDedicatedEmpty(target);requireRecentEmpty(recent);
-                        List<BackgroundOwnedSingleTask.Task> currentRoots=checked(platform.roots());
-                        need(currentRoots.size()==1,"PROFILE_ROOT_CHANGED_DURING_RETIRE");
-                        requireRoot(currentRoots.get(0),false);
-                        need(checked(platform.children(root.token)).isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
-                        if(publicHistory!=null)requireRecentEmpty(readRecents());
+                        List<BackgroundOwnedSingleTask.Task> currentRoots=sampledRoots==null?checked(platform.roots()):sampledRoots;
+                        need(currentRoots.size()==1,"PROFILE_ROOT_CHANGED_DURING_RETIRE");requireRoot(currentRoots.get(0),false);
+                        List<BackgroundOwnedSingleTask.Task> currentChildren=sampledChildren==null
+                                ?checked(platform.children(root.token)):sampledChildren;
+                        need(currentChildren.isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
                         rootDeleteAttempted=true;
                         need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
-                    boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
                     current.requireOnlyOwned(target,display,root.id,liveLeafGone?-1:leaf.id);
                     platform.pause();
                 }

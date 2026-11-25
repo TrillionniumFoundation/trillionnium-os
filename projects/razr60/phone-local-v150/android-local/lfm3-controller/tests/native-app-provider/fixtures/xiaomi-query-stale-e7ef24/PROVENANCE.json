@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.native-xiaomi-query-stale-fixtures.v1",
+  "task_id": "e7ef24e6fe004f4494a9363f5b27006b",
+  "source_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
+  "historical_business_status": "blocked",
+  "fixture_use": "historical_parser_and_session_regression_only",
+  "live_dispatch_authority": false,
+  "phone_operations": 0,
+  "files": [
+    {
+      "path": "native-app-binding.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/native-app-binding.json",
+      "bytes": 4141,
+      "sha256": "d2f46d9e0086464fc9631c3d09c8fab2cbad7057ece5daac9f2836a1df1a7ec9",
+      "original_bytes_preserved_in_fixture": true
+    },
+    {
+      "path": "step-03-before.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/step-03-before.json",
+      "bytes": 119709,
+      "sha256": "322dc4d0282177d8bbafe20daa34129e29d44e7ef7458f096cadc39e8189c751",
+      "original_bytes_preserved_in_fixture": true
+    },
+    {
+      "path": "step-04-before.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/step-04-before.json",
+      "bytes": 128474,
+      "sha256": "6d280d169c3cc735087a732b70153cf719bbe99a8d34409ba7af8e91f08df3c1",
+      "original_bytes_preserved_in_fixture": true
+    },
+    {
+      "path": "step-03-action-derived.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/step-03-action.json",
+      "bytes": 10543,
+      "sha256": "ca7388cac3ea182fa018ebc52f00a29c01ba9d7b84e033e8a6b98d66f09d1923",
+      "original_bytes": 40798,
+      "original_sha256": "783397e9ac165975a51f4f5af9100f8c7b7a42e24126398f94967b852550b15d",
+      "original_bytes_preserved_in_fixture": false,
+      "derivation": "Exact selected action/execution subtrees; unrelated background and authorization metadata omitted to remove encoded hardware display unique IDs."
+    },
+    {
+      "path": "native-app-outcome-03.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/native-app-outcome-03.json",
+      "bytes": 5199,
+      "sha256": "d1270545e5e479b3938f45ae069e26f7801b3ec2b436934fccdedc37c7cecd22",
+      "original_bytes_preserved_in_fixture": true
+    },
+    {
+      "path": "92c4b25021fe4385b28eed28d9f583a2-native-ax.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/92c4b25021fe4385b28eed28d9f583a2-native-ax.json",
+      "bytes": 244136,
+      "sha256": "1664ddee554790d25e05a8d30e5980debf007f2c5c6f2ea95598cf949fa518bb",
+      "original_bytes_preserved_in_fixture": true
+    },
+    {
+      "path": "d32cf3d7573345f68183b18233b0c8ee-native-ax.json",
+      "original_path": "/home/alex/hepta-razr-business-evidence-86d7-20261124-agent-r1/runs/xiaomi-e7ef24-86d-nov25-root-r1/task-unpacked/e7ef24e6fe004f4494a9363f5b27006b/d32cf3d7573345f68183b18233b0c8ee-native-ax.json",
+      "bytes": 244662,
+      "sha256": "99a6807c218166128a8f9df56dd7466e0707c7be6685bf82baf979e58f1a00cb",
+      "original_bytes_preserved_in_fixture": true
+    }
+  ],
+  "private_originals_preserved": true,
+  "unchanged_fixture_files": 6,
+  "derived_fixture_files": 1,
+  "full_action_record_published": false
+}

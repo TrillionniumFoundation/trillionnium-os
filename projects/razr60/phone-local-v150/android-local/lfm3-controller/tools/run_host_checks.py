@@ -61,6 +61,7 @@ def main():
         paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
         paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","OBSERVE-CASE-CONTRACT.json","README.md"))
         paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
+        paths.add(ROOT/"tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt")
         paths.add(ROOT/"tests/background-broker/535-close-reply.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
@@ -121,6 +122,20 @@ def main():
         if len(json_bytes)!=78332 or json_digest!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed":
             raise RuntimeError("Pinned org.json 20240303 host dependency differs")
         java_home=Path(java).resolve().parent.parent
+        run("profile-cleanup-sampling",[sys.executable,"-B",ROOT/"tests/profile-cleanup-sampling/run_candidate.py",
+            "--source",ROOT,"--output",out/"profile-cleanup-sampling","--java-home",java_home,"--json-jar",json_jar])
+        cleanup_sampling_raw=(out/"profile-cleanup-sampling/RESULT.json").read_bytes()
+        cleanup_sampling=json.loads(cleanup_sampling_raw)
+        if (cleanup_sampling.get("all_pass") is not True or cleanup_sampling.get("source_inputs_unchanged") is not True
+                or cleanup_sampling.get("fixture_kind")!="synthetic_complete_public_recents"
+                or cleanup_sampling.get("original_task_fixture_used") is not False
+                or cleanup_sampling.get("phone_operations")!=0
+                or cleanup_sampling.get("sampling",{}).get("assertions")!=55
+                or cleanup_sampling.get("diagnostics",{}).get("assertions")!=14):
+            raise RuntimeError("profile cleanup candidate regression contract differs")
+        report["profile_cleanup_sampling_gate"]={"bytes":len(cleanup_sampling_raw),
+            "sha256":hashlib.sha256(cleanup_sampling_raw).hexdigest(),
+            "sampling":cleanup_sampling["sampling"],"diagnostics":cleanup_sampling["diagnostics"]}
         if not (java_home/"bin/javac").is_file():
             raise RuntimeError("The selected Java runtime must have its full JDK javac for the mandatory audit gates")
         report["host_json_dependency"]={"path":str(json_jar),"bytes":len(json_bytes),"sha256":json_digest,

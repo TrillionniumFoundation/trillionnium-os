@@ -1,0 +1,320 @@
+{
+  "action": {
+    "action": "click",
+    "observation_id": "92c4b25021fe4385b28eed28d9f583a2",
+    "package": "com.xiaomi.shop",
+    "node_label": "搜索",
+    "node_id": "n2",
+    "reason": "Current screen shows native app 'com.xiaomi.shop' with node n1 text 'AX3000T' and node n2 for '搜"
+  },
+  "accepted": false,
+  "dispatched": false,
+  "stale": true,
+  "detail": "stale:目标窗口内容已变化",
+  "model_run_id": "5ddc3e1984e544018571f5db14d8156b",
+  "model_issued": true,
+  "action_execution": {
+    "operation_id": "422eea5aa811469ab3f0cf03b1d85e2f",
+    "task_id": "e7ef24e6fe004f4494a9363f5b27006b",
+    "model_run_id": "5ddc3e1984e544018571f5db14d8156b",
+    "observation_id": "92c4b25021fe4385b28eed28d9f583a2",
+    "authorization_sha256": "f37398da65cf7c52472bf095870f6218e1f913f1b7d1a50fb07c1053d2c01fc3",
+    "window_id": 2496,
+    "display_id": 604,
+    "background_generation": "ce4531f7-4a3e-456a-bff3-fbed6421625a",
+    "schema": "hepta.action-execution.v1",
+    "execution_kind": "serial_action_worker",
+    "clock_sampling": "state_monitor_before_mutation",
+    "queued_clock_sampling": "perform_entry_before_main_post",
+    "queued_elapsed_ms": 931590348,
+    "deadline_elapsed_ms": 931598348,
+    "retired": false,
+    "retirement_reason": null,
+    "effect_entered": false,
+    "effect_returned": false,
+    "api_accepted": null,
+    "worker_drained": true,
+    "worker_drained_elapsed_ms": 931590998,
+    "callback_published": true,
+    "callback_authority_current": true,
+    "phases": [
+      {
+        "phase": "queued",
+        "elapsed_ms": 931590348
+      },
+      {
+        "phase": "snapshot_cloned",
+        "elapsed_ms": 931590349
+      },
+      {
+        "phase": "worker_started",
+        "elapsed_ms": 931590349
+      },
+      {
+        "phase": "scope_read",
+        "elapsed_ms": 931590349
+      },
+      {
+        "phase": "scope_read",
+        "elapsed_ms": 931590421
+      },
+      {
+        "phase": "node_refresh",
+        "elapsed_ms": 931590424
+      },
+      {
+        "phase": "graph_read",
+        "elapsed_ms": 931590429
+      },
+      {
+        "phase": "worker_drained",
+        "elapsed_ms": 931590998
+      },
+      {
+        "phase": "callback_published",
+        "elapsed_ms": 931590999
+      }
+    ],
+    "phases_truncated": false,
+    "complete_phase_coverage": false,
+    "automatic_redispatch": false,
+    "freshness_diagnostic": {
+      "schema": "hepta.native-graph-difference.v1",
+      "package": "com.xiaomi.shop",
+      "background_generation": "ce4531f7-4a3e-456a-bff3-fbed6421625a",
+      "owner_sha256": "529d4a20339f49e781d93913b2bfc189c4af4689aa4b1521f4203bda7c625007",
+      "display_id": 604,
+      "window_id": 2496,
+      "before": {
+        "app_tree_sha256": "553f252c5cd0d9688822513a7a600a3dcb17aa306c3ba9bdb2b0cd9b4cda16f3",
+        "observation_state_sha256": "f38f76b9dffb646461df82421e42cf52b5b4bb3fde371c1336df7617bfd17db0",
+        "window_metadata_sha256": "44e23411b4af6effbd6199181d922fb30886d5d4fa5f243167b9e17cbcf96380",
+        "retained_nodes": 70,
+        "truncated": false
+      },
+      "after": {
+        "app_tree_sha256": "53f4a2b4e4818f1fa81bf53b150c023e1b16ad6421f37c2b1fb507c0cb4525fb",
+        "observation_state_sha256": "a6bf15c5745c40f86093d2a0ec4b4c04c015763d1ba4645f102470f820239971",
+        "window_metadata_sha256": "44e23411b4af6effbd6199181d922fb30886d5d4fa5f243167b9e17cbcf96380",
+        "retained_nodes": 75,
+        "truncated": false
+      },
+      "app_tree_equal": false,
+      "observation_state_equal": false,
+      "window_metadata_equal": true,
+      "selected_original_path": "0/2",
+      "selected_path_present_after": true,
+      "selected_stamp_equal": true,
+      "changed_retained_path_count": 19,
+      "node_differences": [
+        {
+          "native_path": "0/6/10",
+          "before": {
+            "signature_sha256": "7ebaf1b2210d80ff59afcacdeb4f081469f14b907aaf55ae8d8e169c5f322671",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              696,
+              854,
+              868,
+              860
+            ]
+          },
+          "after": {
+            "signature_sha256": "b09a5c2400017dd1a53db46ebddc2368e15666a94ab3e571144396162dbb3878",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              696,
+              739,
+              958,
+              827
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/10/0",
+          "before": null,
+          "after": {
+            "signature_sha256": "dd39497bfe694468fcf3e83c165a4b64ccdec3753cc7f3c66c6e33d2d4c781b3",
+            "state_flags_sha256": "f0b93bf2f09e7c13261d03acd5159e11ca09b569aa8b9245ec06a568a54f25ed",
+            "bounds": [
+              737,
+              756,
+              917,
+              810
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/11",
+          "before": null,
+          "after": {
+            "signature_sha256": "ea2d771091df18fe800f283c7333669f2b6597dab465c5ab29edce27e22b7442",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              54,
+              854,
+              361,
+              860
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/2",
+          "before": {
+            "signature_sha256": "8a807b6a6892432642a711bb539efda33e309b89ddf588801e8e1b7156add420",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              54,
+              624,
+              367,
+              712
+            ]
+          },
+          "after": {
+            "signature_sha256": "290d819b817188882121be8136d429651622b5db96dabd9c2e3f6470b8901a4e",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              54,
+              624,
+              271,
+              712
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/2/0",
+          "before": {
+            "signature_sha256": "ecc0d7c7a2f69e56f093ece49015c0c24b3ca3656c45873601e2fe7cab9e1c01",
+            "state_flags_sha256": "f0b93bf2f09e7c13261d03acd5159e11ca09b569aa8b9245ec06a568a54f25ed",
+            "bounds": [
+              95,
+              641,
+              275,
+              695
+            ]
+          },
+          "after": {
+            "signature_sha256": "d9fbaecbd8defed016e32414288d134ffdfb412fdf1840ca360bbfdc77b99b7c",
+            "state_flags_sha256": "f0b93bf2f09e7c13261d03acd5159e11ca09b569aa8b9245ec06a568a54f25ed",
+            "bounds": [
+              95,
+              641,
+              230,
+              695
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/3",
+          "before": {
+            "signature_sha256": "b2f0add8df82650781c2ebf7f555c5d34ca9e58ab4908a2a4ad9b41881e77fa9",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              394,
+              624,
+              659,
+              712
+            ]
+          },
+          "after": {
+            "signature_sha256": "df479c121bfc17310970acca1c595803574a0fc9ffc2ffe1c7f90f69158260ec",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              298,
+              624,
+              470,
+              712
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/3/0",
+          "before": {
+            "signature_sha256": "f2dfc01c9a8100bcc6db67e1764c4951e4baf2fbded0156ec3ba6f65a7ef0ec0",
+            "state_flags_sha256": "f0b93bf2f09e7c13261d03acd5159e11ca09b569aa8b9245ec06a568a54f25ed",
+            "bounds": [
+              435,
+              641,
+              567,
+              695
+            ]
+          },
+          "after": {
+            "signature_sha256": "03949041b581a3f175d0eae120d98c0f0b6bd2c0f1366860e6a19937f00ee6f5",
+            "state_flags_sha256": "f0b93bf2f09e7c13261d03acd5159e11ca09b569aa8b9245ec06a568a54f25ed",
+            "bounds": [
+              339,
+              641,
+              429,
+              695
+            ]
+          }
+        },
+        {
+          "native_path": "0/6/4",
+          "before": {
+            "signature_sha256": "3e4933b4402f291c77479989fcb59c830008f187077e515273d29b5de02a2f09",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              686,
+              624,
+              1089,
+              712
+            ]
+          },
+          "after": {
+            "signature_sha256": "edb75c4d537ed7f29ea2f5789bc39095d7993790d5709570bdf5c2b1727d67e8",
+            "state_flags_sha256": "fdb6405ee0a40c5dc513be171392da67cc79a2d438f0a4ba8d4de032e068ca04",
+            "bounds": [
+              497,
+              624,
+              714,
+              712
+            ]
+          }
+        }
+      ],
+      "node_difference_limit": 8,
+      "node_differences_truncated": true,
+      "complete_tree_claimed": false,
+      "node_text_recorded": false,
+      "fully_unoccluded_claimed": false,
+      "grants_action_authority": false,
+      "task_id": "e7ef24e6fe004f4494a9363f5b27006b",
+      "operation_id": "422eea5aa811469ab3f0cf03b1d85e2f",
+      "model_run_id": "5ddc3e1984e544018571f5db14d8156b",
+      "observation_id": "92c4b25021fe4385b28eed28d9f583a2",
+      "guard_result": "whole_graph_stale_rejected",
+      "guard_changed": false
+    }
+  },
+  "fixture_source": {
+    "schema": "hepta.actual-action-fixture-projection.v1",
+    "original_name": "step-03-action.json",
+    "original_bytes": 40798,
+    "original_sha256": "783397e9ac165975a51f4f5af9100f8c7b7a42e24126398f94967b852550b15d",
+    "kept_top_level_fields": [
+      "action",
+      "accepted",
+      "dispatched",
+      "stale",
+      "detail",
+      "model_run_id",
+      "model_issued",
+      "action_execution"
+    ],
+    "removed_top_level_fields": [
+      "background_session",
+      "done_success_eligible",
+      "fixed_intent",
+      "ime_submit",
+      "qualification_scope",
+      "task_authorization",
+      "task_authorization_sha256",
+      "task_phase"
+    ],
+    "private_original_unchanged": true,
+    "background_session_published": false,
+    "consumed_action_and_execution_values_unchanged": true
+  }
+}
