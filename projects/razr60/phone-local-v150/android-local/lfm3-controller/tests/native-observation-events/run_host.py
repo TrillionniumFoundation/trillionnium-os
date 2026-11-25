@@ -15,7 +15,9 @@ PKG=Path('src/org/trillionnium/hepta/local')
 TEST=Path('tests/native-observation-events')
 JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','ObservationDiagnostics.java',
       'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java',
-      'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java']
+      'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java',
+      'NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservationCaptureEvidence.java',
+      'NativeXiaomiSearchInputObservation.java','ObservedChildText.java','ObservedTargetLabels.java','ObservedImeEnter.java']
 OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment','PublicationRecheckCases.fragment','PostCaptureSettleCases.fragment']
 
 def helper(source):

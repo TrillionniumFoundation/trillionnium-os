@@ -19,7 +19,7 @@ TEST = Path("tests/native-ax-canonical-reuse")
 JSON_SHA = "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
 FIXTURE_SHA = "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
 BASE_SHA = "96a0099759222c59b78950230eae842ebd274e42035746ece4b9e0cf50e94a19"
-CURRENT_SHA = "9a1677456b4f1435416649fe01d2d4690af9ffe072946f8688a54bce81fc8d86"
+CURRENT_SHA = "e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f466947935f4c"
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -71,6 +71,7 @@ def main():
     source, out, jdk, jar = [getattr(args, k).resolve() for k in ("source", "output", "java_home", "json_jar")]
     need(not out.exists() and source != out and source not in out.parents, "fresh output outside source")
     helper = source / "tests/native-ax-observation/protected_publication.py"
+    direct_helper = source / "tests/native-xiaomi-direct-card/protected_direct_card.py"
     capture = source / PKG / "ObservationCaptureEvidence.java"
     fixture = source / "tests/native-xiaomi-search-input/real-censuses.json"
     need(meta(capture)["sha256"] == CURRENT_SHA, "exact reviewed current capture source")
@@ -78,6 +79,9 @@ def main():
     need(meta(fixture)["sha256"] == FIXTURE_SHA, "exact existing non-private recorded fixture")
     predecessor = runpy.run_path(str(helper))["without_canonical"]
     current = capture.read_bytes()
+    direct_predecessor = runpy.run_path(str(direct_helper))["capture_predecessor"](current)
+    need(sha(direct_predecessor) == "9a1677456b4f1435416649fe01d2d4690af9ffe072946f8688a54bce81fc8d86",
+         "read-only getter inverse reproduces the complete preceding capture source")
     baseline = predecessor(current)
     need(sha(baseline) == BASE_SHA and predecessor(baseline) == baseline, "complete baseline inverse")
     try:
@@ -94,7 +98,7 @@ def main():
                source / "tests/native-ctrip-form-observation/FormPairHostTest.java",
                source / "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
                source / TEST / "AxCanonicalReuseHost.java"]
-    paths = [capture, helper, fixture, source / TEST / "run_host.py", *shared]
+    paths = [capture, helper, direct_helper, fixture, source / TEST / "run_host.py", *shared]
     tools = [jdk / "bin/java", jdk / "bin/javac", jdk / "lib/modules", jdk / "lib/ct.sym", jar]
     before, tool_before = [meta(p) for p in paths], [meta(p) for p in tools]
     out.mkdir(mode=0o700)

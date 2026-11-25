@@ -115,6 +115,24 @@ POSTCAPTURE_CASE_NAMES = ['post_capture_settle_no_new_read_at_11277', 'post_capt
 LEGACY_EVENT_CASE_NAMES_SHA256 = '92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5'
 
 def reverse_postcapture_event_helper(raw):
+    actual_current_sha256 = sha(raw)
+    # Current compilation uses the real form-summary dependency closure.
+    # Reverse only its exact declaration in the historical proof copy.
+    prior_declaration = b"      'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java']\n"
+    current_declaration = b"      'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java',\n      'NativeCtripFormObservation.java','NativeActionSnapshotCheck.java','ObservationCaptureEvidence.java',\n      'NativeXiaomiSearchInputObservation.java','ObservedChildText.java','ObservedTargetLabels.java','ObservedImeEnter.java']\n"
+    need(len(raw) == 19974 and actual_current_sha256 ==
+         'd21f56ea528f1165fdeff87ecfef732cfd803d8cbb8e8154034f0c9eca8ededd',
+         'exact current form-summary compile-dependency bytes required')
+    need(raw.count(current_declaration) == 1,
+         'unique complete form-summary dependency declaration required')
+    raw = raw.replace(current_declaration, prior_declaration, 1)
+    need(len(raw) == 19740 and sha(raw) ==
+         'ae53f1a9506ba7ff1c04d03a46f45edc64a59813a1647af93c79e1fbbdf24c83',
+         'complete prior event runner must be restored before postcapture proof')
+    dependency_inverse = {'current_sha256': actual_current_sha256,
+                          'prior_sha256': sha(raw), 'operations': 1,
+                          'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+                          'compilation_uses_actual_current_source': True}
     spec = POSTCAPTURE_EVENT_INVERSE
     need(sha(raw) == spec['current_sha256'], 'exact current postcapture event runner required')
     restored = raw
@@ -123,7 +141,8 @@ def reverse_postcapture_event_helper(raw):
         need(restored.count(current) == 1, 'unique exact postcapture test addition required')
         restored = restored.replace(current, prior, 1)
     need(sha(restored) == spec['prior_sha256'], 'complete pre-postcapture event runner must be restored')
-    return restored, {'actual_current_sha256': sha(raw), 'whole_prior_sha256': sha(restored),
+    return restored, {'actual_current_sha256': actual_current_sha256, 'whole_prior_sha256': sha(restored),
+                      'form_summary_compile_dependency_inverse': dependency_inverse,
                       'inverse_operation_count': len(spec['operations']), 'proof_copy_only': True,
                       'actual_compilation_uses_unmodified_current_helper': True}
 

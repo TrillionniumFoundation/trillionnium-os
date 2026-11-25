@@ -61,6 +61,9 @@ SHARED.update({
   "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java":"400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593",
   "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java":"ff884b8cafe28330262e8ff27423eaf34553faed3556984a3d188876ccef02ad"
 })
+# Keep the complete preceding closure. The getter is removed only for proof copies.
+PRE_DIRECT_CARD_SHARED=dict(SHARED)
+SHARED[CAPTURE_REUSE_PATH]="e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f466947935f4c"
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -88,11 +91,16 @@ def main():
     publication_inverse=a.source/"tests/native-ax-observation/protected_publication.py"
     read(publication_inverse)
     publication_predecessor=runpy.run_path(str(publication_inverse))["predecessor"]
+    direct_inverse=a.source/"tests/native-xiaomi-direct-card/protected_direct_card.py"
+    read(direct_inverse)
+    direct_capture_predecessor=runpy.run_path(str(direct_inverse))["capture_predecessor"]
     for rel in PATHS:
         raw=read(a.source/rel)
         if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
         if rel==CAPTURE_REUSE_PATH:
-            prior=publication_predecessor(raw)
+            before_getter=direct_capture_predecessor(raw)
+            need(sha(before_getter)==PRE_DIRECT_CARD_SHARED[rel],"getter proof copy must reproduce complete preceding capture source")
+            prior=publication_predecessor(before_getter)
             need(sha(prior)==PRE_AX_PUBLICATION_SHARED[rel],"AX publication proof copy must reproduce complete e30 capture source")
             need(sha(capture_predecessor(prior))==PRE_CANONICAL_REUSE_SHARED[rel],
                  "canonical reuse proof copy must reproduce the complete preceding capture source")
@@ -123,7 +131,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"pre_direct_card_shared_source_pins":PRE_DIRECT_CARD_SHARED,"direct_card_getter_inverse_verified":True,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

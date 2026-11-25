@@ -315,7 +315,11 @@ final class NativeXiaomiProductPage {
     private static Page results(NativeAppGoal goal,NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> models){
         if(models.size()!=1)return page(frame,"search_results_unverified","unique_visible_exact_product_card_required",null,null);
         NativeAppEvidence.Node model=models.get(0),card=clickAncestor(frame,model);
-        if(card==null||!VIEW.equals(card.className)||distance(model.path,card.path)!=2)
+        Map<String,Object> directMembership=null;
+        if(card!=null&&VIEW.equals(card.className)&&distance(model.path,card.path)==1){
+            directMembership=sealedDirectCardMembership(frame,model,card);
+            if(directMembership==null)return page(frame,"search_results_unverified","sealed_direct_product_card_required",null,null);
+        }else if(card==null||!VIEW.equals(card.className)||distance(model.path,card.path)!=2)
             return page(frame,"search_results_unverified","actual_clickable_product_card_required",null,null);
         String group=parent(model.path);
         List<NativeAppEvidence.Node> amounts=new ArrayList<NativeAppEvidence.Node>(),symbols=new ArrayList<NativeAppEvidence.Node>(),secondary=new ArrayList<NativeAppEvidence.Node>();
@@ -347,6 +351,7 @@ final class NativeXiaomiProductPage {
         membership.put("native_same_parent_path",group);membership.put("all_price_nodes_within_card",true);
         membership.put("price_source","same_card_adjacent_currency_and_amount");
         membership.put("comparison_strikethrough_semantics_observed",false);
+        if(directMembership!=null)membership.put("sealed_direct_child_membership",directMembership);
         try{
             Quote quote=new Quote(frame,"search_card",model,amount.text,comparison,
                     compared==null?null:"secondary_display_amount",Collections.<Map<String,Object>>emptyList(),sources,membership);
@@ -355,6 +360,166 @@ final class NativeXiaomiProductPage {
             return page(frame,"search_results_unverified","invalid_observed_amount",card,null);
         }
     }
+
+    /** One observed direct-child results template. The complete sealed ordinary
+     * AX census closes the child set; retained rows alone cannot prove it.
+     * This reads original facts only. Clicks still use the same Frame NodeRef
+     * and all existing Session/fresh-action checks. */
+    private static Map<String,Object> sealedDirectCardMembership(NativeAppEvidence.Frame frame,
+            NativeAppEvidence.Node model,NativeAppEvidence.Node card){
+        if(frame.capture==null||!ObservationCaptureEvidence.NATIVE_AX.equals(frame.captureKind)
+                ||!ObservationCaptureEvidence.NATIVE_AX.equals(frame.capture.kind)
+                ||!"0/1".equals(parent(card.path))||!model.path.equals(card.path+"/0"))return null;
+        Map<String,Object> census=frame.capture.sealedNativeAxCensus();
+        if(!"hidden".equals(census.get("ime_visibility")))return null;
+        Object rowsValue=census.get("nodes");if(!(rowsValue instanceof List))return null;
+        Map<String,Map<?,?>> raw=new LinkedHashMap<String,Map<?,?>>();
+        for(Object value:(List<?>)rowsValue){
+            if(!(value instanceof Map))return null;Map<?,?> row=(Map<?,?>)value;
+            if(!(row.get("path") instanceof String))return null;String path=(String)row.get("path");
+            if(raw.put(path,row)!=null||!frame.packageName.equals(row.get("package"))
+                    ||!sealedInteger(row,"window_id",frame.windowId)||!(row.get("visible") instanceof Boolean))return null;
+        }
+        // Validate every reported child slot, including hidden/unretained rows.
+        for(Map.Entry<String,Map<?,?>> entry:raw.entrySet()){
+            String path=entry.getKey();Object countValue=entry.getValue().get("children");
+            if(!(countValue instanceof Integer||countValue instanceof Long))return null;
+            long count=((Number)countValue).longValue();if(count<0||count>ObservationCaptureEvidence.MAX_NODES)return null;
+            for(int i=0;i<count;i++)if(!raw.containsKey(path+"/"+i))return null;
+            if(!"0".equals(path)){
+                Map<?,?> parentRow=raw.get(parent(path));int index=childIndex(path);
+                if(parentRow==null||index<0||!sealedIntegerAtLeast(parentRow,"children",index+1)
+                        ||!(parentRow.get("class") instanceof String)||!parentRow.get("class").equals(entry.getValue().get("parent_class")))return null;
+            }
+        }
+        Map<String,NativeAppEvidence.Node> retained=new LinkedHashMap<String,NativeAppEvidence.Node>();
+        for(NativeAppEvidence.Node node:frame.nodes){
+            if(!sealedProjectionMatches(frame,node,raw.get(node.path))||retained.put(node.path,node)!=null)return null;
+        }
+        int sourceRetained=0,titles=0,queries=0;
+        for(Map.Entry<String,Map<?,?>> entry:raw.entrySet()){
+            Map<?,?> row=entry.getValue();
+            if(row.get("ref_signature_sha256")!=null){
+                if(!retained.containsKey(entry.getKey()))return null;sourceRetained++;
+            }
+            if(TITLE.equals(row.get("text")))titles++;
+            if(Boolean.TRUE.equals(row.get("visible"))&&TEXT.equals(row.get("class"))
+                    &&NativeAppGoal.PRODUCT_MODEL.equals(row.get("text")))queries++;
+        }
+        if(sourceRetained!=frame.nodes.size()||!sealedInteger(census,"retained",sourceRetained)||titles!=1||queries!=1)return null;
+        Map<?,?> root=raw.get("0"),scroll=raw.get("0/1"),cardRow=raw.get(card.path);
+        if(!sealedBox(root,frame.left,frame.top,frame.right,frame.bottom)
+                ||!sealedPassive(root,"android.widget.FrameLayout",false,false)
+                ||!sealedPassive(scroll,"android.widget.ScrollView",false,true)
+                ||!sealedInteger(root,"children",3)||!sealedInside(scroll,root)
+                ||!sealedPassive(cardRow,VIEW,true,false)||!sealedInteger(cardRow,"children",12)
+                ||!sealedInside(cardRow,scroll)||!usable(frame,card)||!card.text.isEmpty()
+                ||!card.description.isEmpty()||!card.viewId.isEmpty())return null;
+        String[] headerPaths={"0/0","0/0/0","0/0/0/0","0/0/0/0/0","0/0/0/0/0/0"};
+        String[] headerTypes={VIEW,VIEW,"android.widget.HorizontalScrollView",VIEW,TEXT};
+        Map<?,?> previous=root;
+        for(int i=0;i<headerPaths.length;i++){
+            Map<?,?> row=raw.get(headerPaths[i]);boolean query=i==headerPaths.length-1;
+            if(!sealedPassive(row,headerTypes[i],i==1||i==3,false)
+                    ||!sealedInteger(row,"children",query?0:1)||!sealedInside(row,previous)
+                    ||!(query?NativeAppGoal.PRODUCT_MODEL:"").equals(row.get("text"))
+                    ||!"".equals(row.get("description"))||!"".equals(row.get("view_id")))return null;
+            previous=row;
+        }
+        NativeAppEvidence.Node query=retained.get(headerPaths[headerPaths.length-1]);
+        if(!usable(frame,query)||query.bottom>=card.top)return null;
+        String[] literal={TITLE,"满血WiFi6，3000兆级无线速率","适用面积","≤120㎡",
+                "无线速率","3000M级","整机接口","WAN/LAN*4（自适应）"};
+        List<String> childPaths=new ArrayList<String>();NativeAppEvidence.Node[] children=new NativeAppEvidence.Node[12];
+        for(int i=0;i<children.length;i++){
+            String path=card.path+"/"+i;Map<?,?> row=raw.get(path);NativeAppEvidence.Node child=retained.get(path);
+            if(!sealedPassive(row,TEXT,false,false)||!sealedInteger(row,"children",0)
+                    ||!usable(frame,child)||!child.within(card)||!VIEW.equals(child.parentClass)
+                    ||!child.description.isEmpty()||!child.viewId.isEmpty()
+                    ||!child.label.equals(ObservedTargetLabels.project(child.text)))return null;
+            if(i<literal.length&&!literal[i].equals(child.text))return null;
+            if(i==8&&!("￥".equals(child.text)||"¥".equals(child.text)))return null;
+            if(i==9&&!NUMBER.matcher(child.text).matches())return null;
+            if(i==10&&!SECONDARY.matcher(child.text).matches())return null;
+            if(i==11&&!child.text.matches("[0-9]{1,8}(?:\\.[0-9]{1,2})?万?\\+?条评价 {1,8}(?:100|[1-9]?[0-9])%满意"))return null;
+            children[i]=child;childPaths.add(path);
+        }
+        if(children[0]!=model)return null;
+        for(int i=1;i<8;i++)if(children[i].top<model.bottom||children[i].bottom>children[9].top)return null;
+        if(children[11].top<=Math.max(children[9].bottom,children[10].bottom))return null;
+        int descendants=0;
+        for(String path:raw.keySet())if(under(path,card.path))descendants++;
+        if(descendants!=12)return null;
+        Map<String,Object> proof=map();proof.put("shape","sealed_native_ax_direct_text_card_v1");
+        proof.put("sealed_receipt_sha256",frame.capture.receiptSha256);
+        proof.put("original_capture_elapsed_ms",frame.capturedElapsedMs);
+        proof.put("complete_raw_nodes",raw.size());proof.put("retained_nodes",frame.nodes.size());
+        proof.put("card_path",card.path);proof.put("complete_direct_child_paths",childPaths);
+        proof.put("exact_query_header",query.fact("text"));
+        proof.put("creates_node_reference",false);proof.put("grants_action_authority",false);
+        return Collections.unmodifiableMap(proof);
+    }
+    private static boolean sealedProjectionMatches(NativeAppEvidence.Frame frame,NativeAppEvidence.Node n,Map<?,?> row){
+        if(row==null||!Boolean.TRUE.equals(row.get("visible"))||!(row.get("label") instanceof String))return false;
+        return n.path.equals(row.get("path"))&&n.packageName.equals(row.get("package"))
+                &&n.className.equals(row.get("class"))&&n.viewId.equals(row.get("view_id"))
+                &&n.text.equals(row.get("text"))&&n.description.equals(row.get("description"))
+                &&n.parentClass.equals(row.get("parent_class"))&&sealedFullReferenceMatches(n,row)
+                &&n.label.equals(ObservedTargetLabels.project((String)row.get("label")))
+                &&sealedBox(row,n.left,n.top,n.right,n.bottom)&&sealedInteger(row,"window_id",frame.windowId)
+                &&Boolean.valueOf(n.enabled).equals(row.get("enabled"))&&Boolean.valueOf(n.password).equals(row.get("password"))
+                &&Boolean.valueOf(n.clickable).equals(row.get("clickable"))&&Boolean.valueOf(n.editable).equals(row.get("editable"))
+                &&Boolean.valueOf(n.scrollable).equals(row.get("scrollable"))&&n.selected!=null&&n.checkable!=null&&n.checked!=null
+                &&n.selected.equals(row.get("selected"))&&n.checkable.equals(row.get("checkable"))&&n.checked.equals(row.get("checked"))
+                &&ObservedScrollActions.observed(n.scrollDirections).fingerprintInput().equals(row.get("scroll_actions"));
+    }
+    /** Frame carries the original appTreeSignature. The raw census carries
+     * SHA256(NodeRef.signature), after the existing scroll and IME bindings.
+     * Reuse those exact bindings once; never hash the appTreeSignature again,
+     * reconstruct a NodeRef, or infer missing input/focus metadata. */
+    private static boolean sealedFullReferenceMatches(NativeAppEvidence.Node n,Map<?,?> row){
+        return n.signature!=null&&!n.editable&&!n.password&&Boolean.FALSE.equals(row.get("focused"))
+                &&row.containsKey("input_sha256")&&row.get("input_sha256")==null
+                &&ObservedImeEnter.ABSENT.fingerprintInput().equals(row.get("ime_enter"))
+                &&NativeAppEvidence.hash(ObservedImeEnter.ABSENT.bindFreshness(
+                        ObservedScrollActions.observed(n.scrollDirections).bindFreshness(n.signature),false,null))
+                        .equals(row.get("ref_signature_sha256"));
+    }
+    private static boolean sealedPassive(Map<?,?> row,String type,boolean clickable,boolean scrollable){
+        return row!=null&&type.equals(row.get("class"))&&Boolean.TRUE.equals(row.get("visible"))
+                &&Boolean.TRUE.equals(row.get("enabled"))&&Boolean.FALSE.equals(row.get("password"))
+                &&Boolean.FALSE.equals(row.get("editable"))&&Boolean.FALSE.equals(row.get("focused"))
+                &&Boolean.FALSE.equals(row.get("selected"))&&Boolean.FALSE.equals(row.get("checkable"))
+                &&Boolean.FALSE.equals(row.get("checked"))&&Boolean.valueOf(clickable).equals(row.get("clickable"))
+                &&Boolean.valueOf(clickable).equals(row.get("action_click"))&&Boolean.valueOf(scrollable).equals(row.get("scrollable"))
+                &&(scrollable||ObservedScrollActions.observed(Collections.<String>emptySet()).fingerprintInput().equals(row.get("scroll_actions")));
+    }
+    private static boolean sealedInteger(Map<?,?> row,String key,long value){
+        if(row==null)return false;Object actual=row.get(key);
+        return (actual instanceof Integer||actual instanceof Long)&&((Number)actual).longValue()==value;
+    }
+    private static boolean sealedIntegerAtLeast(Map<?,?> row,String key,long value){
+        Object actual=row.get(key);return (actual instanceof Integer||actual instanceof Long)&&((Number)actual).longValue()>=value;
+    }
+    private static List<?> sealedBounds(Map<?,?> row){
+        if(row==null||!(row.get("bounds") instanceof List))return null;List<?> b=(List<?>)row.get("bounds");
+        if(b.size()!=4)return null;
+        for(Object value:b)if(!(value instanceof Integer||value instanceof Long)
+                ||((Number)value).longValue()<Integer.MIN_VALUE||((Number)value).longValue()>Integer.MAX_VALUE)return null;
+        return b;
+    }
+    private static int sealedCoordinate(List<?> b,int i){return ((Number)b.get(i)).intValue();}
+    private static boolean sealedBox(Map<?,?> row,int l,int t,int r,int b){
+        List<?> actual=sealedBounds(row);return actual!=null&&sealedCoordinate(actual,0)==l&&sealedCoordinate(actual,1)==t
+                &&sealedCoordinate(actual,2)==r&&sealedCoordinate(actual,3)==b;
+    }
+    private static boolean sealedInside(Map<?,?> row,Map<?,?> parent){
+        List<?> a=sealedBounds(row),b=sealedBounds(parent);
+        return a!=null&&b!=null&&sealedCoordinate(a,2)>sealedCoordinate(a,0)&&sealedCoordinate(a,3)>sealedCoordinate(a,1)
+                &&sealedCoordinate(a,0)>=sealedCoordinate(b,0)&&sealedCoordinate(a,1)>=sealedCoordinate(b,1)
+                &&sealedCoordinate(a,2)<=sealedCoordinate(b,2)&&sealedCoordinate(a,3)<=sealedCoordinate(b,3);
+    }
+
 
     /** The archived ordinary App toolbar uses a FrameLayout root and direct
      * sibling slots. Its two real TextView labels distinguish normal search

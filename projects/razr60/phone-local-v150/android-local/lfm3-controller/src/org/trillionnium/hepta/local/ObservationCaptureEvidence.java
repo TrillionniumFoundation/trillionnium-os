@@ -205,6 +205,14 @@ final class ObservationCaptureEvidence {
         return other!=null&&kind.equals(other.kind)&&receiptSha256.equals(other.receiptSha256)
                 &&Arrays.equals(raw,other.raw);
     }
+    /** Original immutable ordinary AX census. Publication recheck proves equal
+     * A/B/C content only; it never changes the capture clock or supplies fresh
+     * dispatch/currentness authority. Historical planning kinds are excluded. */
+    Map<String,Object> sealedNativeAxCensus(){
+        need(NATIVE_AX.equals(kind),"ordinary sealed native AX census required");
+        return map(receipt,"second");
+    }
+
     Map<String,Object> evidence(){
         Map<String,Object> e=new TreeMap<String,Object>();
         e.put("kind",kind);e.put("receipt_schema",inputHistory()?INPUT_SCHEMA:formHistory()?FORM_SCHEMA:SCHEMA);
