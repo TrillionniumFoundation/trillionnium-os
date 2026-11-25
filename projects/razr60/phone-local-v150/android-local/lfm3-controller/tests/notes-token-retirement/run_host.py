@@ -41,7 +41,7 @@ public class IDisplayManager {public static int[] currentIds=new int[]{0,1};publ
     stubs=ports.prepare(out/'android-io-ports')
     bg=s/'src/org/trillionnium/hepta/background';own=s/'tests/notes-token-retirement'
     production=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupTaskFence','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody','BackgroundTaskOrganizer','PublicPersonalNotesReader','PublicPersonalNotesRetirement','PublicPersonalNotesRetirementAdapter']
-    files=[bg/(name+'.java') for name in production]+[own/'NotesTaskInfoSemanticsHostTest.java',own/'NotesTokenRetirementHostTest.java',own/'NotesPendingRetirementReadHostTest.java',s/'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',s/'tests/public-own-group-policy/PersonalNotesCustodyHostTest.java']+stubs
+    files=[bg/(name+'.java') for name in production]+[own/'NotesTaskInfoSemanticsHostTest.java',own/'NotesTokenRetirementHostTest.java',own/'NotesPendingRetirementReadHostTest.java',own/'NotesPhysicalCoexistenceHostTest.java',s/'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',s/'tests/public-own-group-policy/PersonalNotesCustodyHostTest.java']+stubs
     tracked=list(dict.fromkeys(files+[own/'actual-c672-taskinfo-fields.json',shared,Path(__file__).resolve(),jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
     if a.actual_detached_recents:tracked.append(a.actual_detached_recents.resolve(strict=True))
     before=[ref(path) for path in tracked];classes=out/'classes';classes.mkdir()
@@ -52,12 +52,13 @@ public class IDisplayManager {public static int[] currentIds=new int[]{0,1};publ
     commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-proc:none','-cp',jar,'-d',classes,*files]),
         ('token-cases',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.NotesTokenRetirementHostTest',*([a.actual_detached_recents] if a.actual_detached_recents else [])]),
         ('pending-read-cases',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.NotesPendingRetirementReadHostTest']),
+        ('physical-coexistence',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.NotesPhysicalCoexistenceHostTest']),
         ('taskinfo-semantics',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.NotesTaskInfoSemanticsHostTest',own/'actual-c672-taskinfo-fields.json']),
         ('original-custody',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.PersonalNotesCustodyHostTest']),
         ('original-physical-parser',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.PublicPhysicalAuditHostTest'])]
     report={'schema':'hepta.notes-token-retirement-host-gate.v1','all_pass':False,'phone_operations':0,'android_runtime':False,
         'actual_production_inputs':[ref(bg/(name+'.java')) for name in production],'physical_dump_io_and_display_handle_ports_synthetic':True,
-        'old_cases_or_expectations_changed':False,'inputs_before':before,'stages':[]}
+        'old_cases_or_expectations_changed':True,'changed_expectation_reason':'unrelated physical activity no longer freezes runtime; protected nonphysical and identity refusals retained','inputs_before':before,'stages':[]}
     try:
         for name,argv in commands:
             argv=list(map(str,argv));start=time.monotonic()

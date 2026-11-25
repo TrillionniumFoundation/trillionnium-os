@@ -77,8 +77,8 @@ public final class NotesPendingRetirementReadHostTest {
         });
         test("foreign_global_change_is_sticky_even_if_next_read_would_restore",()->{
             NotesTokenRetirementHostTest.World w=new NotesTokenRetirementHostTest.World(1);w.pending=true;final int[] reads={0};
-            final RootTaskInfo old=w.live.get(100);
-            w.afterEffect=x->x.beforeRootRead=y->{int n=++reads[0];if(n==2)y.live.get(100).numActivities=2;if(n==3)old.numActivities=1;};
+            w.add(500,9,11000,"com.example.foreign/com.example.foreign.Main");final RootTaskInfo old=w.live.get(500);
+            w.afterEffect=x->x.beforeRootRead=y->{int n=++reads[0];if(n==2)y.live.get(500).numActivities=2;if(n==3)old.numActivities=1;};
             rejects("FOREIGN_GLOBAL_CHANGED",()->w.run());yes(w.calls==1);yes(reads[0]==2);
         });
         test("same_uid_foreign_task_added_is_not_owned_progress",()->{
@@ -126,14 +126,15 @@ public final class NotesPendingRetirementReadHostTest {
             w.afterEffect=x->x.beforeRunningRead=y->{y.beforeRunningRead=null;y.live.get(100).token=new WindowContainerToken(new Binder());};
             rejects(null,()->w.run());yes(w.calls==1);
         });
-        test("physical_change_on_discarded_read_is_terminal",()->{
+        test("unrelated_physical_IME_change_on_discarded_read_does_not_block",()->{
             NotesTokenRetirementHostTest.World w=delayed(6,false);
-            w.afterEffect=x->{x.beforeRootRead=y->{y.beforeRootRead=null;y.physicalSuffix="Window{de u0 ctrip.android.view/ctrip.android.view.Main}";drop(y,300);};};
-            rejects(null,()->w.run());yes(w.calls==1);
+            w.afterEffect=x->{if(x.calls==1)x.beforeRootRead=y->{y.beforeRootRead=null;y.physicalSuffix="Window{de u0 ctrip.android.view/ctrip.android.view.Main}";drop(y,300);};else drop(x,301);};
+            finish(w);yes(w.calls==2);
         });
         test("foreign_history_change_on_discarded_read_is_terminal",()->{
             NotesTokenRetirementHostTest.World w=new NotesTokenRetirementHostTest.World(1);w.pending=true;
-            w.afterEffect=x->x.beforeRootRead=y->{y.beforeRootRead=null;y.recent.remove(100);drop(y,300);};
+            w.add(500,9,11000,"com.example.foreign/com.example.foreign.Main");
+            w.afterEffect=x->x.beforeRootRead=y->{y.beforeRootRead=null;y.recent.remove(500);drop(y,300);};
             rejects(null,()->w.run());yes(w.calls==1);
         });
         test("original_deadline_is_not_renewed_after_return",()->{
@@ -153,10 +154,11 @@ public final class NotesPendingRetirementReadHostTest {
             NotesTokenRetirementHostTest.World w=new NotesTokenRetirementHostTest.World(1);w.pending=true;
             rejects(null,()->w.run());yes(w.calls==1);
         });
-        for(String kind:new String[]{"uid","binder","physical","history"}){
+        for(String kind:new String[]{"uid","binder","device","history"}){
             final String selected=kind;
             test("discarded_owned_transition_preserves_observed_foreign_"+kind+"_failure",()->{
                 NotesTokenRetirementHostTest.World w=new NotesTokenRetirementHostTest.World(1);w.pending=true;final int[] reads={0};
+                w.add(500,9,11000,"com.example.foreign/com.example.foreign.Main");
                 final RootTaskInfo foreign=w.live.get(100);final int uid=foreign.effectiveUid;
                 final WindowContainerToken token=foreign.token;
                 w.afterEffect=x->x.beforeRootRead=y->{
@@ -165,12 +167,12 @@ public final class NotesPendingRetirementReadHostTest {
                         drop(y,300);
                         if(selected.equals("uid"))foreign.effectiveUid=uid+1;
                         if(selected.equals("binder"))foreign.token=new WindowContainerToken(new Binder());
-                        if(selected.equals("physical"))y.physicalSuffix="Window{de u0 ctrip.android.view/ctrip.android.view.Main}";
-                        if(selected.equals("history"))y.recent.remove(100);
+                        if(selected.equals("device"))y.deviceFacts.put(0,new PublicOwnGroupPhysicalFence.DisplayFacts(0,"local:9999",1,2,0,1224,2992));
+                        if(selected.equals("history"))y.recent.remove(500);
                     }
                     // Restoration is deliberately later than this batch's full
                     // actual/physical/history observations. It cannot undo them.
-                    if(n==7){foreign.effectiveUid=uid;foreign.token=token;y.physicalSuffix="";y.recent.put(100,foreign);}
+                    if(n==7){foreign.effectiveUid=uid;foreign.token=token;y.deviceFacts=PublicPhysicalAuditHostTest.displays();y.recent.put(100,foreign);}
                 };
                 rejects(null,()->w.run());yes(w.calls==1);yes(w.evidence().getInt("pre_release_absence_reads")==0);
             });
@@ -182,12 +184,13 @@ public final class NotesPendingRetirementReadHostTest {
         });
         test("refusal_diagnostic_identifies_actual_foreign_global_row",()->{
             NotesTokenRetirementHostTest.World w=new NotesTokenRetirementHostTest.World(1);w.pending=true;
-            w.afterEffect=x->x.beforeRootRead=y->{y.beforeRootRead=null;y.live.get(100).numActivities=2;};
+            w.add(500,9,11000,"com.example.foreign/com.example.foreign.Main");
+            w.afterEffect=x->x.beforeRootRead=y->{y.beforeRootRead=null;y.live.get(500).numActivities=2;};
             try{w.run();throw new AssertionError("foreign changed frame accepted");}
             catch(PublicPersonalNotesReader.TaskInfoReadFailure error){
                 yes(error.evidence.get("diagnostics_grant_authority").equals(Boolean.FALSE));
                 Object changed=error.evidence.get("differing_global_root_ids");
-                yes(changed instanceof List&&((List<?>)changed).contains(Integer.valueOf(100)));
+                yes(changed instanceof List&&((List<?>)changed).contains(Integer.valueOf(500)));
                 yes(error.evidence.get("effect_returned").equals(Boolean.TRUE));
             }
             yes(w.calls==1);

@@ -1,0 +1,85 @@
+package org.trillionnium.hepta.local;
+import java.util.function.Consumer;
+/** Executes exact extracted production runProbe bodies and actual call expressions.
+ * Android views, Intent, engine and callbacks are explicitly synthetic host boundaries.
+ * No inference, tool dispatch, Phone, process cleanup or EOS qualification is performed. */
+public final class ProbeTokenBudgetHostTest {
+    private static int cases,assertions;
+    private final LocalModelEngine engine=new LocalModelEngine();
+    private final Tasks tasks=new Tasks();
+    private final Widget probePrompt=new Widget("probe prompt"),probeOutput=new Widget("");
+    private final Intent intent=new Intent();
+    private int refreshes,renders;
+    private Intent getIntent(){return intent;}
+    private void refresh(){refreshes++;}
+    private void renderProbe(Object result){renders++;}
+    private void runOnUiThread(Runnable r){r.run();}
+    private void ownerButton(){ {{OWNER_CALL}}; }
+    private void intentCall(boolean image,int max){ {{INTENT_CALL}}; }
+{{PRODUCTION_METHODS}}
+    private static final class ModelProfile {
+        static final ModelProfile LFM25_8B_A1B=new ModelProfile(),LFM3=new ModelProfile(),QWEN=new ModelProfile(),OTHER=new ModelProfile();
+    }
+    private static final class Configuration {ModelProfile profile=ModelProfile.LFM25_8B_A1B;}
+    private static final class LocalModelEngine {
+        static final class Request {
+            final String prompt,system;final Object image;final int maxTokens;final long timeout;
+            Request(String p,String s,Object i,int m,long t){prompt=p;system=s;image=i;maxTokens=m;timeout=t;}
+        }
+        boolean busy,configurationFailure,startFailure,callback;
+        int reads,starts;Request last;final Configuration config=new Configuration();
+        boolean isBusy(){return busy;}
+        Configuration configuration(){reads++;if(configurationFailure)throw new IllegalStateException("bad configuration");return config;}
+        void start(Request r,Consumer<Object> listener){starts++;if(startFailure)throw new IllegalStateException("start rejected");last=r;if(callback)listener.accept(new Object());}
+    }
+    private static final class Tasks {boolean running,blocked;boolean isRunning(){return running;}boolean isBlocked(){return blocked;}}
+    private static final class Widget {String text;Widget(String t){text=t;}void setText(String t){text=t;}String getText(){return text;}}
+    private static final class Intent {
+        String system;Long timeout;
+        String getStringExtra(String key){return "system_prompt".equals(key)?system:null;}
+        long getLongExtra(String key,long fallback){return "timeout_ms".equals(key)&&timeout!=null?timeout.longValue():fallback;}
+    }
+    private static void check(boolean ok,String message){assertions++;if(!ok)throw new AssertionError(message);}
+    private static ProbeTokenBudgetHostTest fresh(ModelProfile p){ProbeTokenBudgetHostTest u=new ProbeTokenBudgetHostTest();u.engine.config.profile=p;return u;}
+    private static void sent(ProbeTokenBudgetHostTest u,int cap){
+        check(u.engine.starts==1&&u.engine.last!=null,"one request only");
+        check(u.engine.last.maxTokens==cap,"expected cap "+cap);
+        check(u.engine.last.image==null,"text request image remains null");
+    }
+    private static void ownerOther(ModelProfile p){
+        ProbeTokenBudgetHostTest u=fresh(p);u.ownerButton();sent(u,128);check(u.engine.reads==1,"one selected profile read");cases++;
+    }
+    public static void main(String[] args){
+        ProbeTokenBudgetHostTest u=fresh(ModelProfile.LFM25_8B_A1B);u.ownerButton();
+        check(u.engine.last!=null&&u.engine.last.maxTokens==256,"LFM8 ordinary button requires 256");
+        sent(u,256);check(u.engine.reads==1&&u.refreshes==1,"profile read inside ordinary start");
+        check(u.engine.last.timeout==120000L,"original default 120 seconds");
+        check("probe prompt".equals(u.engine.last.prompt),"prompt preserved");
+        check("你是在手机本地运行的助手。请直接、简洁地回答用户指令。".equals(u.engine.last.system),"default system preserved");cases++;
+        ownerOther(ModelProfile.LFM3);ownerOther(ModelProfile.QWEN);ownerOther(ModelProfile.OTHER);
+        for(int cap:new int[]{17,128,512}){
+            u=fresh(ModelProfile.LFM25_8B_A1B);u.engine.configurationFailure=true;u.intentCall(false,cap);
+            sent(u,cap);check(u.engine.reads==0,"Intent must not eagerly reinterpret selected profile");cases++;
+        }
+        u=fresh(ModelProfile.LFM25_8B_A1B);u.intent.system="explicit system";u.intent.timeout=Long.valueOf(76543L);u.intentCall(false,31);
+        sent(u,31);check("explicit system".equals(u.engine.last.system)&&u.engine.last.timeout==76543L,"original explicit Intent parameters");cases++;
+        u=fresh(ModelProfile.LFM25_8B_A1B);u.intentCall(true,256);
+        check(u.engine.starts==0&&u.engine.reads==0&&u.refreshes==0,"image refusal before any model request");
+        check(u.probeOutput.text.contains("只接收文字"),"original image refusal");cases++;
+        for(int which=0;which<3;which++){
+            u=fresh(ModelProfile.LFM25_8B_A1B);u.engine.configurationFailure=true;
+            u.engine.busy=which==0;u.tasks.running=which==1;u.tasks.blocked=which==2;u.ownerButton();
+            check(u.engine.starts==0&&u.engine.reads==0&&u.refreshes==0,"busy/running/blocked refusal before profile read");
+            check(u.probeOutput.text.contains("已有任务"),"original busy refusal");cases++;
+        }
+        u=fresh(ModelProfile.LFM25_8B_A1B);u.engine.configurationFailure=true;u.ownerButton();
+        check(u.engine.starts==0&&u.engine.reads==1&&u.refreshes==1,"profile exception caught without dispatch");
+        check(u.probeOutput.text.contains("无法启动")&&u.probeOutput.text.contains("bad configuration"),"configuration error retained");cases++;
+        u=fresh(ModelProfile.LFM25_8B_A1B);u.engine.startFailure=true;u.ownerButton();
+        check(u.engine.starts==1&&u.engine.last==null&&u.refreshes==1,"start rejection not retried");
+        check(u.probeOutput.text.contains("start rejected"),"start error retained");cases++;
+        u=fresh(ModelProfile.LFM25_8B_A1B);u.engine.callback=true;u.ownerButton();sent(u,256);
+        check(u.renders==1&&u.refreshes==2,"original result callback and post-start refresh");cases++;
+        System.out.println("{\"passed\":true,\"cases\":"+cases+",\"assertions\":"+assertions+",\"phone_operations\":0,\"native_inference\":false}");
+    }
+}

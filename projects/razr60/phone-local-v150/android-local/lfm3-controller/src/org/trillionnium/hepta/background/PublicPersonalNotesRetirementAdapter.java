@@ -99,10 +99,12 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
             PublicPersonalNotesCustody.Frame ending=after.last();
             guard(false);long end=now();
             List<PublicPersonalNotesCustody.Frame> frames=new ArrayList<PublicPersonalNotesCustody.Frame>(before.frames);frames.addAll(after.frames);
-            boolean settle=pending.facts(frames,physical.recents,physical.hashes,begin,end);
+            boolean settle=pending.facts(frames,physical.recents,physical.state,begin,end);
             String mismatch=actual.changed?"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED":null;
+            if(!PublicPersonalNotesRetirement.samePhysicalMembership(actual.global,ending.global))
+                mismatch="NOTES_RETIREMENT_PHYSICAL_CENSUS_SETTLING";
             if(!before.stable||!after.stable)mismatch="NOTES_RETIREMENT_FRAME_CHANGED_DURING_READ";
-            if(!first.global.excludingRoot(-1).equals(ending.global.excludingRoot(-1)))mismatch="NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ";
+            if(!PublicPersonalNotesRetirement.sameReadGlobal(first.global,ending.global))mismatch="NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ";
             else if(first.roots.size()!=ending.roots.size())mismatch="NOTES_RETIREMENT_ROOTS_CHANGED_DURING_READ";
             else for(int i=0;i<ending.roots.size();i++){
                 PublicPersonalNotesCustody.Node root=ending.roots.get(i),old=first.roots.get(i);
@@ -111,7 +113,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                     mismatch="NOTES_RETIREMENT_FINAL_TASKINFO_CHANGED";
             }
             if(settle&&mismatch==null)mismatch="NOTES_RETIREMENT_PENDING_DETACHED_RECENT";
-            if(mismatch==null)return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual.tasks,physical.hashes,begin,end,display,uid);
+            if(mismatch==null)return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual.tasks,physical.state,begin,end,display,uid);
             if(attempt==3)throw pending.refusal(mismatch,"complete_post_returned_read_bound",first.global,ending.global,actual.tasks);
             awaitRead();
         }
@@ -126,7 +128,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         Map<Integer,BackgroundOwnedSingleTask.Task> actual=actualTasks(first.global);
         Physical physical=physical();
         PublicPersonalNotesCustody.Frame ending=after?reader.frameAfterRelease(authority):reader.frame();
-        need(first.global.excludingRoot(-1).equals(ending.global.excludingRoot(-1)),"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
+        need(PublicPersonalNotesRetirement.sameReadGlobal(first.global,ending.global),"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
         need(first.roots.size()==ending.roots.size(),"NOTES_RETIREMENT_ROOTS_CHANGED_DURING_READ");
         for(int i=0;i<ending.roots.size();i++){
             PublicPersonalNotesCustody.Node root=ending.roots.get(i),old=first.roots.get(i);
@@ -134,11 +136,13 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                     &&PublicPersonalNotesRetirement.sameTask(root.task,actual.get(root.task.id)),"NOTES_RETIREMENT_FINAL_TASKINFO_CHANGED");
         }
         guard(after);long end=now();need(end-begin<=1500,"NOTES_RETIREMENT_SAMPLE_AGE");
-        return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual,physical.hashes,begin,end,display,uid);
+        return new PublicPersonalNotesRetirement.Sample(ending,physical.recents,actual,physical.state,begin,end,display,uid);
     }
     private static final class ActualRead{
-        final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;final boolean changed;
-        ActualRead(Map<Integer,BackgroundOwnedSingleTask.Task> tasks,boolean changed){this.tasks=tasks;this.changed=changed;}
+        final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;final boolean changed;final ProfileTaskPolicy.Snapshot global;
+        ActualRead(Map<Integer,BackgroundOwnedSingleTask.Task> tasks,boolean changed,ProfileTaskPolicy.Snapshot global){
+            this.tasks=tasks;this.changed=changed;this.global=global;
+        }
     }
     private Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks(ProfileTaskPolicy.Snapshot expected)throws Exception{
         return actualTasks(expected,null).tasks;
@@ -146,7 +150,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
     private ActualRead actualTasks(ProfileTaskPolicy.Snapshot expected,PublicPersonalNotesRetirement.PendingRead pending)throws Exception{
         time();Object raw=allRoots.invoke(activities);time();
         ProfileTaskPolicy.Snapshot global=(ProfileTaskPolicy.Snapshot)rootProjection.invoke(null,raw);
-        boolean changed=!global.excludingRoot(-1).equals(expected.excludingRoot(-1));
+        boolean changed=!PublicPersonalNotesRetirement.sameReadGlobal(expected,global);
         if(pending==null)need(!changed,"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED");
         need(raw instanceof List&&((List<?>)raw).size()<=ProfileTaskPolicy.MAX_ROOTS,"NOTES_RETIREMENT_ROOT_QUERY");
         Map<Integer,BackgroundOwnedSingleTask.Task> out=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
@@ -176,7 +180,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
             }
         }
         need(out.keySet().containsAll(global.allIds),"NOTES_RETIREMENT_ACTUAL_UID_CENSUS_INCOMPLETE");
-        if(pending!=null)pending.actual(global,out);return new ActualRead(out,changed);
+        if(pending!=null)pending.actual(global,out);return new ActualRead(out,changed,global);
     }
     private void readChildren(BackgroundOwnedSingleTask.Task parent,Map<Integer,BackgroundOwnedSingleTask.Task> out,
             Set<Integer> expectedLeaves,Set<Integer> found,Set<Integer> visited,int depth)throws Exception{
@@ -224,7 +228,10 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                 component(field(row,"origActivity")),bool(row,"isRunning"),bool(row,"isVisible"));
         BackgroundOwnedSingleTask.Task old=out.put(task.id,task);
         boolean changed=old!=null&&!PublicPersonalNotesRetirement.sameTask(old,task);
-        if(changed&&duplicateRootAllowed&&pending!=null)pending.pair(old,task);
+        if(changed&&duplicateRootAllowed&&PublicPersonalNotesRetirement.unrelatedPhysical(old,uid)
+                &&PublicPersonalNotesRetirement.unrelatedPhysical(task,uid)){
+            PublicPersonalNotesRetirement.requireSamePhysicalTask(old,task,uid);changed=false;
+        }else if(changed&&duplicateRootAllowed&&pending!=null)pending.pair(old,task);
         else need(old==null||(duplicateRootAllowed&&!changed),"NOTES_RETIREMENT_DUPLICATE_TASKINFO_CHANGED");
         Object prior=wrappers.put(binder,wrapper);need(prior==null||binder.equals(tokenBinder.invoke(prior)),"NOTES_RETIREMENT_WRAPPER_CHANGED");
         return changed;
@@ -243,8 +250,10 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         apply.invoke(windowOrganizer,transaction);effect.returned();time();
     }
     private static final class Physical {
-        final String recents;final Map<Integer,String> hashes;
-        Physical(String recents,Map<Integer,String> hashes){this.recents=recents;this.hashes=hashes;}
+        final String recents;final PublicPersonalNotesRetirement.Physical state;
+        Physical(String recents,Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> devices,Map<Integer,String> hashes){
+            this.recents=recents;state=new PublicPersonalNotesRetirement.Physical(devices,hashes);
+        }
     }
     @SuppressWarnings("unchecked")
     private Physical physical()throws Exception{
@@ -257,7 +266,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         String window=(String)dump.invoke(null,windows,new String[]{"-a","displays"},limit);
         String recents=(String)dump.invoke(null,am,new String[]{"-a","recents"},limit);
         Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after=(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>)factsMethod.invoke(null,displays);
-        for(int id:new int[]{0,1})need(before.get(id).data().equals(after.get(id).data()),"NOTES_RETIREMENT_PHYSICAL_CHANGED_DURING_READ");
+        PublicPersonalNotesRetirement.Physical.requireSameDevices(before,after);
         // The complete original parser validates every section first. Reuse its
         // exact hierarchy/focus/IME projection separately from all recents;
         // the coordinator preserves full nonowned history bodies and order.
@@ -275,7 +284,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
             append(value,after.get(id).data());append(value,rows.get(id).toString());append(value,focused.get(id));
             result.put(id,ProfileIdentity.sha(value.toString().getBytes(StandardCharsets.UTF_8)));
         }
-        time();return new Physical(recents,Collections.unmodifiableMap(result));
+        time();return new Physical(recents,after,Collections.unmodifiableMap(result));
     }
     static boolean displayAbsent(int display,String name)throws Exception{
         need(display>1&&name!=null,"NOTES_RETIREMENT_DISPLAY_BINDING");

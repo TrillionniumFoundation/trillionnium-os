@@ -128,6 +128,7 @@ public final class NotesTaskInfoSemanticsHostTest {
             int index=0;for(RootTaskInfo row:running){
                 String pkg=row.baseIntent.getComponent().getPackageName();
                 out.append(PublicPhysicalAuditHostTest.row(index++,row.taskId,row.userId,row.effectiveUid,row.displayId,Integer.toHexString(row.taskId),pkg)
+                        .replace("rootTaskId="+row.taskId,"rootTaskId="+expected.leaves.get(row.taskId).parent)
                         .replace("    lastDisplayId=","    lastActiveTime=2000 (inactive for 0s)\n    lastDisplayId="));
             }
             out.append("  Visible recent tasks (most recent first):\n");index=0;
@@ -139,7 +140,7 @@ public final class NotesTaskInfoSemanticsHostTest {
             PublicPersonalNotesCustody.Frame frame=new PublicPersonalNotesCustody.Frame(expected,
                     Collections.singletonList(new PublicPersonalNotesCustody.Node(own,Collections.emptyList())),begin+1,begin+2);
             Map<Integer,String> physical=new LinkedHashMap<Integer,String>();physical.put(0,NotesTokenRetirementHostTest.SHA);physical.put(1,NotesTokenRetirementHostTest.SHA);
-            return new PublicPersonalNotesRetirement.Sample(frame,recents(),actual,physical,begin,begin+3,574,NotesTokenRetirementHostTest.UID);
+            return new PublicPersonalNotesRetirement.Sample(frame,recents(),actual,new PublicPersonalNotesRetirement.Physical(PublicPhysicalAuditHostTest.displays(),physical),begin,begin+3,574,NotesTokenRetirementHostTest.UID);
         }
     }
     private static void rejected(Port port,String code)throws Exception{refuses(code,port::census);check(port.effects==0);}

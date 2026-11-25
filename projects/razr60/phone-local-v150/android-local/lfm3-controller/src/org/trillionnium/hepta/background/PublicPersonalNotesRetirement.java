@@ -21,20 +21,46 @@ final class PublicPersonalNotesRetirement {
         long now();
         void awaitRead() throws Exception;
     }
+    /** Complete physical observation with a separate immutable device identity.
+     * Focus, IME, power, rotation and unrelated activities are observations only. */
+    static final class Physical {
+        final Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> devices;
+        final Map<Integer,String> observed;
+        Physical(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> devices,Map<Integer,String> observed){
+            need(devices!=null&&devices.size()==2&&observed!=null&&observed.size()==2,
+                    "NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
+            for(int id:new int[]{0,1})need(devices.get(id)!=null&&devices.get(id).id==id
+                    &&ProfileIdentity.hash(observed.get(id)),"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
+            need(!devices.get(0).uniqueId.equals(devices.get(1).uniqueId),"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
+            this.devices=Collections.unmodifiableMap(new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>(devices));
+            this.observed=Collections.unmodifiableMap(new LinkedHashMap<Integer,String>(observed));
+        }
+        void requireSameDevices(Physical after){
+            need(after!=null,"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
+            requireSameDevices(devices,after.devices);
+        }
+        static void requireSameDevices(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before,
+                Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after){
+            need(before!=null&&after!=null&&before.size()==2&&after.size()==2,"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
+            for(int id:new int[]{0,1}){
+                PublicOwnGroupPhysicalFence.DisplayFacts a=before.get(id),b=after.get(id);
+                need(a!=null&&b!=null&&a.id==id&&b.id==id&&a.type==b.type&&a.uniqueId.equals(b.uniqueId),
+                        "NOTES_RETIREMENT_PHYSICAL_DEVICE_CHANGED");
+            }
+        }
+    }
     static final class Sample {
         final PublicPersonalNotesCustody.Frame frame;
         final PublicOwnGroupPhysicalFence.RecentCensus recents;
         final History history;
         final Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks;
-        final Map<Integer,String> physical;
+        final Physical physical;
         final long begin,end;
         Sample(PublicPersonalNotesCustody.Frame frame,String rawRecents,
-                Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks,Map<Integer,String> physical,long begin,long end,
+                Map<Integer,BackgroundOwnedSingleTask.Task> actualTasks,Physical physical,long begin,long end,
                 int ownedDisplay,int ownedUid){
-            need(ownedDisplay>1&&ownedUid>=10000&&frame!=null&&actualTasks!=null&&physical!=null&&physical.size()==2
-                    &&physical.containsKey(0)&&physical.containsKey(1)&&begin>=0&&end>=begin&&end-begin<=1500
+            need(ownedDisplay>1&&ownedUid>=10000&&frame!=null&&actualTasks!=null&&physical!=null&&begin>=0&&end>=begin&&end-begin<=1500
                     &&frame.begin>=begin&&frame.end<=end,"NOTES_RETIREMENT_SAMPLE_INCOMPLETE");
-            for(String hash:physical.values())need(ProfileIdentity.hash(hash),"NOTES_RETIREMENT_PHYSICAL_INCOMPLETE");
             need(actualTasks.size()<=ProfileTaskPolicy.MAX_LEAVES+ProfileTaskPolicy.MAX_ROOTS
                     &&actualTasks.keySet().containsAll(frame.global.allIds),"NOTES_RETIREMENT_ACTUAL_UID_CENSUS_INCOMPLETE");
             Set<Object> tokens=new LinkedHashSet<Object>();
@@ -64,9 +90,10 @@ final class PublicPersonalNotesRetirement {
                 traversed.add(node.id);
             }
             need(traversed.equals(actualTasks.keySet()),"NOTES_RETIREMENT_UNCLASSIFIED_ACTUAL_TASK");
-            this.frame=frame;history=new History(rawRecents);recents=history.census;
+            this.frame=frame;history=new History(rawRecents,begin,end);recents=history.census;
             this.actualTasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(actualTasks));
-            this.physical=Collections.unmodifiableMap(new LinkedHashMap<Integer,String>(physical));this.begin=begin;this.end=end;
+            this.physical=physical;this.begin=begin;this.end=end;
+            requireRecentLiveIdentities(recents,frame.global,actualTasks,ownedUid);
         }
         boolean contains(int id){return frame.global.allIds.contains(id)||recents.allIds.contains(id);}
     }
@@ -133,8 +160,7 @@ final class PublicPersonalNotesRetirement {
             return out;
         }
         private void globalFacts(ProfileTaskPolicy.Snapshot global){
-            need(global!=null&&owner.foreignGlobal(owner.baseline.frame.global).equals(owner.foreignGlobal(global)),
-                    "NOTES_RETIREMENT_FOREIGN_GLOBAL_CHANGED");
+            owner.requireForeignGlobal(global);
             for(ProfileTaskPolicy.Root root:global.roots)if(owner.plan.ids.contains(root.id))
                 need(root.display==owner.plan.display&&root.user==0,"NOTES_RETIREMENT_PENDING_TASK_MIGRATED");
             for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(owner.plan.ids.contains(leaf.id)||owner.plan.ids.contains(leaf.parent))
@@ -188,25 +214,20 @@ final class PublicPersonalNotesRetirement {
             }catch(RuntimeException error){throw refusal(error.getMessage(),stage,priorGlobal,global,rows);}
         }
         void actual(ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> rows)throws Exception{
-            active();Map<Integer,List<?>> foreign=new LinkedHashMap<Integer,List<?>>();
-            for(BackgroundOwnedSingleTask.Task task:rows.values())if(!owner.plan.ids.contains(task.id)){
-                foreign.put(task.id,taskFields(task));
-                need(task.uid!=owner.plan.uid&&task.topUid!=owner.plan.uid&&!notes(task.intentComponent)&&!notes(task.base)
-                        &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
-            }
-            if(!owner.foreignActual(owner.baseline).equals(foreign))
-                throw refusal("NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED","actual_uid_and_binder",priorGlobal,global,owned(rows));
+            active();
+            try{owner.requireForeignActual(rows);}
+            catch(RuntimeException error){throw refusal(error.getMessage(),"actual_uid_and_binder",priorGlobal,global,owned(rows));}
             observeCensus(global,owned(rows),"actual_global_and_uid");
         }
         boolean facts(List<PublicPersonalNotesCustody.Frame> frames,String rawRecents,
-                Map<Integer,String> physical,long begin,long end)throws Exception{
+                Physical physical,long begin,long end)throws Exception{
             active();long now=owner.port.now();
             need(begin>=owner.last.end&&end>=begin&&now>=end&&now-begin<=1500&&now<owner.deadline,
                     "NOTES_RETIREMENT_DEADLINE_OR_STALE");
-            need(owner.baseline.physical.equals(physical),"NOTES_RETIREMENT_PHYSICAL_CHANGED");
+            owner.baseline.physical.requireSameDevices(physical);
             need(frames!=null&&frames.size()==6,"NOTES_RETIREMENT_COMPLETE_BATCH_REQUIRED");
-            History history=new History(rawRecents);
-            owner.baseline.history.requireSame(history,owner.plan.ids,Math.max(1,(end-owner.baseline.begin+999)/1000+1));
+            History history=new History(rawRecents,begin,end);
+            owner.requireHistory(history,begin,end);
             boolean pending=false;
             for(PublicPersonalNotesCustody.Frame frame:frames){
                 need(frame.begin>=begin&&frame.end<=end,"NOTES_RETIREMENT_FRAME_OUTSIDE_BATCH");globalFacts(frame.global);
@@ -251,6 +272,13 @@ final class PublicPersonalNotesRetirement {
     private Sample baseline,last;
     private boolean started,ready;
     private Effect lastReturnedEffect;
+    // Keep identities observed even in discarded read batches. A later restore
+    // cannot erase a UID/Binder/location substitution seen by a complete read.
+    private final Map<Integer,List<?>> physicalActualIdentities=new LinkedHashMap<Integer,List<?>>();
+    private final Map<Object,Integer> physicalBinderOwners=new LinkedHashMap<Object,Integer>();
+    private final Map<String,List<?>> physicalGlobalLocations=new LinkedHashMap<String,List<?>>();
+    private final Map<Integer,PublicOwnGroupPhysicalFence.RecentRecord> physicalRecentIdentities=
+            new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.RecentRecord>();
     PublicPersonalNotesRetirement(PublicPersonalNotesCustody custody,Port port,long deadline){
         need(custody!=null&&port!=null&&deadline>0,"NOTES_RETIREMENT_BINDING");this.custody=custody;this.port=port;this.deadline=deadline;
     }
@@ -294,25 +322,138 @@ final class PublicPersonalNotesRetirement {
     private void verify(Sample sample,long now,boolean advance){
         fresh(sample,now);need(plan!=null&&baseline!=null,"NOTES_RETIREMENT_PLAN_UNAVAILABLE");
         if(advance)need(last!=null&&sample!=last&&sample.begin>=last.end&&sample.end>last.end,"NOTES_RETIREMENT_SAMPLE_REPLAYED");
-        need(baseline.physical.equals(sample.physical),"NOTES_RETIREMENT_PHYSICAL_CHANGED");
-        need(foreignGlobal(baseline).equals(foreignGlobal(sample)),"NOTES_RETIREMENT_FOREIGN_GLOBAL_CHANGED");
-        need(foreignActual(baseline).equals(foreignActual(sample)),"NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED");
-        baseline.history.requireSame(sample.history,plan.ids,Math.max(1,(sample.end-baseline.begin+999)/1000+1));
-        for(BackgroundOwnedSingleTask.Task task:sample.actualTasks.values())if(!plan.ids.contains(task.id))
-            need(task.uid!=plan.uid&&task.topUid!=plan.uid&&!notes(task.intentComponent)&&!notes(task.base)
-                    &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
+        baseline.physical.requireSameDevices(sample.physical);
+        requireForeignGlobal(sample.frame.global);
+        requireForeignActual(sample.actualTasks);
+        requireHistory(sample.history,sample.begin,sample.end);
         if(!ready)plan.verify(sample.frame,sample.recents,now);
         last=sample;
     }
-    private List<List<?>> foreignGlobal(Sample sample){return foreignGlobal(sample.frame.global);}
-    private List<List<?>> foreignGlobal(ProfileTaskPolicy.Snapshot global){
-        List<ProfileTaskPolicy.Root> roots=new ArrayList<ProfileTaskPolicy.Root>();
-        for(ProfileTaskPolicy.Root root:global.roots)if(!plan.ids.contains(root.id))roots.add(root);
-        try{return new ProfileTaskPolicy.Snapshot(roots).excludingRoot(-1);}
-        catch(ProfileTaskPolicy.Refusal refusal){throw new IllegalStateException("NOTES_RETIREMENT_FOREIGN_GLOBAL_INCOMPLETE",refusal);}
+    private void requireForeignGlobal(ProfileTaskPolicy.Snapshot global){
+        need(global!=null&&globalRows(baseline.frame.global,plan.ids).equals(globalRows(global,plan.ids)),
+                "NOTES_RETIREMENT_FOREIGN_GLOBAL_CHANGED");
+        Map<String,List<?>> current=physicalLocations(global,plan.ids);
+        for(Map.Entry<String,List<?>> e:current.entrySet()){
+            List<?> old=physicalGlobalLocations.get(e.getKey());
+            need(old==null||old.equals(e.getValue()),"NOTES_RETIREMENT_PHYSICAL_TASK_LOCATION_CHANGED");
+            physicalGlobalLocations.put(e.getKey(),e.getValue());
+            need(physicalGlobalLocations.size()<=2*(ProfileTaskPolicy.MAX_LEAVES+ProfileTaskPolicy.MAX_ROOTS),
+                    "NOTES_RETIREMENT_PHYSICAL_IDENTITY_BOUND");
+        }
     }
-    private Map<Integer,List<?>> foreignActual(Sample sample){Map<Integer,List<?>> values=new LinkedHashMap<Integer,List<?>>();
-        for(BackgroundOwnedSingleTask.Task task:sample.actualTasks.values())if(!plan.ids.contains(task.id))values.put(task.id,taskFields(task));return values;
+    private void requireForeignActual(Map<Integer,BackgroundOwnedSingleTask.Task> rows){
+        need(foreignActual(baseline.actualTasks).equals(foreignActual(rows)),"NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED");
+        for(BackgroundOwnedSingleTask.Task task:rows.values())if(!plan.ids.contains(task.id)){
+            requireUnrelated(task,plan.uid);
+            if(unrelatedPhysical(task,plan.uid)){
+                List<?> identity=physicalIdentity(task),old=physicalActualIdentities.get(task.id);
+                need(old==null||old.equals(identity),"NOTES_RETIREMENT_PHYSICAL_TASK_IDENTITY_CHANGED");
+                Integer tokenOwner=physicalBinderOwners.get(task.token);
+                need(tokenOwner==null||tokenOwner.intValue()==task.id,"NOTES_RETIREMENT_PHYSICAL_BINDER_REUSED");
+                physicalActualIdentities.put(task.id,identity);physicalBinderOwners.put(task.token,task.id);
+                need(physicalActualIdentities.size()<=ProfileTaskPolicy.MAX_LEAVES+ProfileTaskPolicy.MAX_ROOTS
+                        &&physicalBinderOwners.size()<=ProfileTaskPolicy.MAX_LEAVES+ProfileTaskPolicy.MAX_ROOTS,
+                        "NOTES_RETIREMENT_PHYSICAL_IDENTITY_BOUND");
+            }else need(!physicalActualIdentities.containsKey(task.id),"NOTES_RETIREMENT_PHYSICAL_TASK_MIGRATED");
+        }
+    }
+    private Map<Integer,List<?>> foreignActual(Map<Integer,BackgroundOwnedSingleTask.Task> rows){
+        Map<Integer,List<?>> values=new LinkedHashMap<Integer,List<?>>();
+        for(BackgroundOwnedSingleTask.Task task:rows.values())if(!plan.ids.contains(task.id)){
+            requireUnrelated(task,plan.uid);
+            if(!unrelatedPhysical(task,plan.uid))values.put(task.id,taskFields(task));
+        }
+        return values;
+    }
+    private void requireHistory(History history,long begin,long end){
+        baseline.history.requireSame(history,plan.ids,plan.uid,Math.max(1,(end-baseline.begin+999)/1000+1));
+        if(last!=null)last.history.requireSame(history,plan.ids,plan.uid,Math.max(1,(end-last.begin+999)/1000+1));
+        Set<Integer> current=history.census.unrelatedPhysicalIds(plan.ids,plan.uid);
+        for(PublicOwnGroupPhysicalFence.RecentRecord row:history.census.records.values()){
+            PublicOwnGroupPhysicalFence.RecentRecord old=physicalRecentIdentities.get(row.task);
+            if(old!=null)need(current.contains(row.task)&&old.token.equals(row.token)&&old.user==row.user
+                    &&old.uid==row.uid&&old.root==row.root&&old.display==row.display,
+                    "NOTES_RETIREMENT_PHYSICAL_RECENT_IDENTITY_CHANGED");
+            if(current.contains(row.task))physicalRecentIdentities.put(row.task,row);
+            need(physicalRecentIdentities.size()<=ProfileTaskPolicy.MAX_LEAVES,"NOTES_RETIREMENT_PHYSICAL_IDENTITY_BOUND");
+        }
+    }
+    private static boolean physicalDisplay(int display){return display==0||display==1;}
+    private static void requireUnrelated(BackgroundOwnedSingleTask.Task task,int uid){
+        need(task!=null&&task.uid!=uid&&task.topUid!=uid&&!notes(task.intentComponent)&&!notes(task.base)
+                &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
+    }
+    static boolean unrelatedPhysical(BackgroundOwnedSingleTask.Task task,int uid){
+        return task!=null&&physicalDisplay(task.display)&&task.user==0&&task.uid>=0&&task.uid<100000
+                &&(task.topUid==-1||task.topUid>=0&&task.topUid<100000)&&task.uid!=uid&&task.topUid!=uid
+                &&!notes(task.intentComponent)&&!notes(task.base)&&!notes(task.top)&&!notes(task.real)&&!notes(task.orig);
+    }
+    private static List<?> physicalIdentity(BackgroundOwnedSingleTask.Task task){
+        return java.util.Arrays.asList(task.id,task.display,task.user,task.parent,task.uid,task.token,task.cookies,
+                task.intentComponent,task.real,task.orig);
+    }
+    static void requireSamePhysicalTask(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b,int uid){
+        need(unrelatedPhysical(a,uid)&&unrelatedPhysical(b,uid)&&physicalIdentity(a).equals(physicalIdentity(b)),
+                "NOTES_RETIREMENT_PHYSICAL_TASK_IDENTITY_CHANGED");
+    }
+    private static Set<Integer> physicalRoots(ProfileTaskPolicy.Snapshot global,Set<Integer> owned){
+        need(global!=null&&owned!=null,"NOTES_RETIREMENT_GLOBAL_INCOMPLETE");
+        Set<Integer> ids=new LinkedHashSet<Integer>();
+        for(ProfileTaskPolicy.Root root:global.roots)if(physicalDisplay(root.display)&&root.user==0){
+            need(!owned.contains(root.id)&&!notes(root.base)&&!notes(root.top),"NOTES_RETIREMENT_PHYSICAL_TARGET_PRESENT");
+            boolean personal=true;
+            for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(leaf.parent==root.id){
+                need(!owned.contains(leaf.id)&&!notes(leaf.name),"NOTES_RETIREMENT_PHYSICAL_TARGET_PRESENT");
+                personal&=leaf.user==0&&leaf.display==root.display;
+            }
+            if(personal)ids.add(root.id);
+        }
+        return ids;
+    }
+    private static List<List<?>> globalRows(ProfileTaskPolicy.Snapshot global,Set<Integer> owned){
+        Set<Integer> excluded=new LinkedHashSet<Integer>(owned);excluded.addAll(physicalRoots(global,owned));
+        List<List<?>> rows=new ArrayList<List<?>>();
+        for(List<?> row:global.excludingRoot(-1))if(!excluded.contains((Integer)row.get(0)))rows.add(row);
+        return rows;
+    }
+    private static Map<String,List<?>> physicalLocations(ProfileTaskPolicy.Snapshot global,Set<Integer> owned){
+        Set<Integer> physical=physicalRoots(global,owned);Map<String,List<?>> out=new LinkedHashMap<String,List<?>>();
+        Map<Integer,ProfileTaskPolicy.Root> roots=new LinkedHashMap<Integer,ProfileTaskPolicy.Root>();
+        Set<Integer> ids=new LinkedHashSet<Integer>(physical);
+        for(ProfileTaskPolicy.Root root:global.roots)if(physical.contains(root.id))roots.put(root.id,root);
+        for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(physical.contains(leaf.parent))ids.add(leaf.id);
+        for(int id:ids){
+            ProfileTaskPolicy.Root root=roots.get(id);ProfileTaskPolicy.Leaf leaf=global.leaves.get(id);
+            // One identity per numeric ID includes BOTH framework roles. An
+            // ordinary leaf's TaskInfo parent=-1 cannot hide root membership.
+            out.put("task:"+id,java.util.Arrays.asList(id,root!=null,root==null?-1:root.display,root==null?-1:root.user,
+                    leaf==null?-1:leaf.parent,leaf==null?-1:leaf.display,leaf==null?-1:leaf.user));
+        }
+        return out;
+    }
+    /** Per-read comparison retains every nonphysical root/child field and checks
+     * physical root membership. Actual UID/Binder rows are checked separately
+     * before this batch can become a Sample or enter an original token effect. */
+    static boolean sameReadGlobal(ProfileTaskPolicy.Snapshot before,ProfileTaskPolicy.Snapshot after){
+        Set<Integer> none=Collections.emptySet();
+        Map<String,List<?>> a=physicalLocations(before,none),b=physicalLocations(after,none);
+        for(Map.Entry<String,List<?>> e:a.entrySet())if(b.containsKey(e.getKey()))
+            need(e.getValue().equals(b.get(e.getKey())),"NOTES_RETIREMENT_PHYSICAL_TASK_LOCATION_CHANGED");
+        return globalRows(before,none).equals(globalRows(after,none));
+    }
+    static boolean samePhysicalMembership(ProfileTaskPolicy.Snapshot before,ProfileTaskPolicy.Snapshot after){
+        Set<Integer> none=Collections.emptySet();return physicalLocations(before,none).equals(physicalLocations(after,none));
+    }
+    private static void requireRecentLiveIdentities(PublicOwnGroupPhysicalFence.RecentCensus recents,
+            ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> actual,int uid){
+        for(int id:recents.unrelatedPhysicalIds(Collections.<Integer>emptySet(),uid)){
+            BackgroundOwnedSingleTask.Task task=actual.get(id);if(task==null)continue;
+            PublicOwnGroupPhysicalFence.RecentRecord row=recents.records.get(id);
+            ProfileTaskPolicy.Leaf leaf=global.leaves.get(id);
+            int root=leaf==null?id:leaf.parent;
+            need(unrelatedPhysical(task,uid)&&task.uid==row.uid&&task.user==row.user&&task.display==row.display
+                    &&root==row.root,"NOTES_RETIREMENT_PHYSICAL_RECENT_LIVE_DISAGREES");
+        }
     }
     /** TaskInfo exposes parentTaskId only for organizer-created parents. For a
      * foreign running leaf, the complete RootTaskInfo child arrays still give a
@@ -353,6 +494,12 @@ final class PublicPersonalNotesRetirement {
             ||value.startsWith(PublicPersonalNotesCustody.PACKAGE+"/"));}
     private static void need(boolean ok,String code){if(!ok)throw new IllegalStateException(code);}
 
+    static Map<String,Object> historyDiagnostic(Throwable error){
+        return error!=null&&error.getClass()==IllegalStateException.class
+                &&"NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED".equals(error.getMessage())
+                &&error.getCause() instanceof History.Refusal?((History.Refusal)error.getCause()).evidence():null;
+    }
+
     /** Preserve every nonowned internal/visible/hidden body and its ordering.
      * Only the displayed relative inactivity age may advance naturally. */
     private static final class History {
@@ -360,10 +507,13 @@ final class PublicPersonalNotesRetirement {
         private static final Pattern HEAD=Pattern.compile("(?m)^  \\* Recent #([0-9]+): (Task\\{[0-9a-f]+ #([0-9]+) [^{}\\r\\n]+\\})$");
         private static final Pattern AGE=Pattern.compile("(?m)^    lastActiveTime=(0|[1-9][0-9]*) \\(inactive for (0|[1-9][0-9]*)s\\)$");
         final PublicOwnGroupPhysicalFence.RecentCensus census;
-        private final String preamble;
+        private final String preamble,raw;
+        private final long sampleBegin,sampleEnd;
         private final Map<Integer,String> internal=new LinkedHashMap<Integer,String>(),visible=new LinkedHashMap<Integer,String>();
         private final Map<Integer,Long> ages=new LinkedHashMap<Integer,Long>();
-        History(String raw){
+        History(String raw){this(raw,-1,-1);}
+        History(String raw,long sampleBegin,long sampleEnd){
+            this.raw=raw;this.sampleBegin=sampleBegin;this.sampleEnd=sampleEnd;
             census=PublicOwnGroupPhysicalFence.inspectRecents(raw);
             int start=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);boolean omitted=end<0;
             need(start>=0&&start==raw.lastIndexOf(INTERNAL)&&(omitted||(end>start&&end==raw.lastIndexOf(VISIBLE))),"NOTES_RETIREMENT_HISTORY_SECTIONS");
@@ -394,11 +544,151 @@ final class PublicPersonalNotesRetirement {
             for(Map.Entry<Integer,String> row:visible.entrySet())if(!own.contains(row.getKey()))append(value,"visible|"+row.getValue());
             for(Map.Entry<Integer,String> row:census.hiddenLabels.entrySet())if(!own.contains(row.getKey()))append(value,"hidden|"+row.getValue());return value.toString();
         }
-        void requireSame(History after,Set<Integer> own,long ageBudget){
-            need(after!=null&&foreign(own).equals(after.foreign(own)),"NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
-            for(Map.Entry<Integer,Long> row:ages.entrySet())if(!own.contains(row.getKey())){
+        private String runtimePreamble(){
+            return preamble.replaceAll("(?m)^(mFreezeTaskListReordering(?:PendingTimeout)?)=(?:true|false)$","$1=false")
+                    .replaceAll("(?m)^hidden_field=(?:true|false)$","hidden_field=complete_observation");
+        }
+        private Set<Integer> runtimeExcluded(Set<Integer> own,int uid){
+            Set<Integer> excluded=new LinkedHashSet<Integer>(own);
+            for(int id:census.unrelatedPhysicalIds(own,uid)){
+                String body=internal.get(id);
+                need(body!=null,"NOTES_RETIREMENT_HISTORY_IDENTITY");
+                Pattern target=Pattern.compile("(?<![A-Za-z0-9_.])"+Pattern.quote(PublicPersonalNotesCustody.PACKAGE)
+                        +"(?=$|[^A-Za-z0-9_.])");
+                for(String part:java.util.Arrays.asList(body,visible.get(id),census.hiddenLabels.get(id)))
+                    need(part==null||!target.matcher(part).find(),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
+                excluded.add(id);
+            }
+            return excluded;
+        }
+        private String protectedHistory(Set<Integer> own,int uid){
+            Set<Integer> excluded=runtimeExcluded(own,uid);StringBuilder value=new StringBuilder();append(value,runtimePreamble());
+            for(Map.Entry<Integer,String> row:internal.entrySet())if(!excluded.contains(row.getKey()))append(value,"internal|"+row.getValue());
+            for(Map.Entry<Integer,String> row:visible.entrySet())if(!excluded.contains(row.getKey()))append(value,"visible|"+row.getValue());
+            for(Map.Entry<Integer,String> row:census.hiddenLabels.entrySet())if(!excluded.contains(row.getKey()))append(value,"hidden|"+row.getValue());
+            return value.toString();
+        }
+        void requireSame(History after,Set<Integer> own,int uid,long ageBudget){
+            need(ageBudget>=0,"NOTES_RETIREMENT_HISTORY_SCOPE");
+            if(after==null)throw new IllegalStateException("NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED",
+                    new Refusal(this,null,own,uid,ageBudget));
+            census.requirePhysicalIdentities(after.census,own,uid);
+            if(!protectedHistory(own,uid).equals(after.protectedHistory(own,uid)))throw new IllegalStateException(
+                    "NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED",new Refusal(this,after,own,uid,ageBudget));
+            Set<Integer> excluded=runtimeExcluded(own,uid);
+            for(Map.Entry<Integer,Long> row:ages.entrySet())if(!excluded.contains(row.getKey())){
                 Long next=after.ages.get(row.getKey());need(next!=null&&next>=row.getValue()&&next-row.getValue()<=ageBudget,
                         "NOTES_RETIREMENT_HISTORY_AGE_CHANGED");}
+        }
+
+        /** Original rejected strings only. These records are diagnostics, never
+         * replayable history, task authority, or cleanup evidence. */
+        private static final class Refusal extends IllegalStateException {
+            private static final long serialVersionUID=1L;
+            private static final int MAX_PAIR_BYTES=32768;
+            private final History before,after;
+            private final Set<Integer> own;
+            private final long ageBudget;
+            private final int uid;
+            Refusal(History before,History after,Set<Integer> own,int uid,long ageBudget){
+                super("NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
+                this.before=before;this.after=after;
+                this.own=Collections.unmodifiableSet(new LinkedHashSet<Integer>(own));this.uid=uid;this.ageBudget=ageBudget;
+            }
+            Map<String,Object> evidence(){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("schema","hepta.notes-retirement-history-diagnostic.v1");
+                out.put("reason",getMessage());out.put("diagnostics_grant_authority",false);
+                out.put("release_evidence",false);out.put("model_input",false);
+                out.put("owned_task_ids_excluded",new ArrayList<Integer>(own));
+                out.put("history_preservation_scope","nonphysical_and_unresolved_recents");out.put("physical_history_frozen",false);
+                out.put("baseline_resolved_physical_ids",new ArrayList<Integer>(before.census.unrelatedPhysicalIds(own,uid)));
+                out.put("current_resolved_physical_ids",after==null?null:new ArrayList<Integer>(after.census.unrelatedPhysicalIds(own,uid)));
+                out.put("relative_age_budget_seconds",ageBudget);
+                byte[] left=bytes(before.raw),right=after==null?null:bytes(after.raw);
+                out.put("baseline",rawRef(before,left));out.put("current",after==null?null:rawRef(after,right));
+                out.put("baseline_foreign_sha256",sha(before.protectedHistory(own,uid)));
+                out.put("current_foreign_sha256",after==null?null:sha(after.protectedHistory(own,uid)));
+                out.put("first_difference",difference(before,after,own,uid));
+                out.put("all_differences_enumerated",false);
+                boolean complete=right!=null&&left.length<=MAX_PAIR_BYTES
+                        &&right.length<=MAX_PAIR_BYTES-left.length;
+                out.put("raw_pair_limit_bytes",MAX_PAIR_BYTES);out.put("raw_pair_complete",complete);
+                out.put("raw_pair_omission_reason",complete?null:after==null?"current_history_unavailable":"raw_pair_byte_bound");
+                if(complete)try{out.put("raw_pair",packed(left,right));}
+                catch(java.io.IOException unavailable){
+                    out.put("raw_pair_complete",false);out.put("raw_pair_omission_reason","diagnostic_encoding_unavailable");
+                }
+                return out;
+            }
+            private static Map<String,Object> packed(byte[] left,byte[] right)throws java.io.IOException{
+                byte[] raw=new byte[left.length+right.length];
+                System.arraycopy(left,0,raw,0,left.length);System.arraycopy(right,0,raw,left.length,right.length);
+                java.io.ByteArrayOutputStream sink=new java.io.ByteArrayOutputStream();
+                try(java.util.zip.GZIPOutputStream gzip=new java.util.zip.GZIPOutputStream(sink)){gzip.write(raw);}
+                byte[] zipped=sink.toByteArray();Map<String,Object> pair=new LinkedHashMap<String,Object>();
+                pair.put("encoding","gzip-base64-concatenated-original-utf8");
+                pair.put("decoded_bytes",raw.length);pair.put("decoded_sha256",ProfileIdentity.sha(raw));
+                pair.put("compressed_bytes",zipped.length);pair.put("compressed_sha256",ProfileIdentity.sha(zipped));
+                pair.put("data",java.util.Base64.getEncoder().encodeToString(zipped));return pair;
+            }
+            private static Map<String,Object> rawRef(History value,byte[] raw){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("bytes",raw.length);out.put("sha256",value.census.rawSha256);
+                out.put("sample_begin_elapsed_ms",value.sampleBegin);out.put("sample_end_elapsed_ms",value.sampleEnd);
+                out.put("source","original_complete_retirement_recents_read");return out;
+            }
+            private static Map<String,Object> difference(History a,History b,Set<Integer> own,int uid){
+                if(b==null)return detail("history",null,"current_unavailable",null,null);
+                if(!a.runtimePreamble().equals(b.runtimePreamble()))return detail("preamble",null,"body_changed",a.runtimePreamble(),b.runtimePreamble());
+                Set<Integer> ax=a.runtimeExcluded(own,uid),bx=b.runtimeExcluded(own,uid);
+                Map<String,Object> found=section("internal",a.internal,b.internal,ax,bx);
+                if(found==null)found=section("visible",a.visible,b.visible,ax,bx);
+                if(found==null)found=section("hidden",a.census.hiddenLabels,b.census.hiddenLabels,ax,bx);
+                return found==null?detail("foreign_projection",null,"not_localized",a.protectedHistory(own,uid),b.protectedHistory(own,uid)):found;
+            }
+            private static Map<String,Object> section(String name,Map<Integer,String> a,Map<Integer,String> b,Set<Integer> ax,Set<Integer> bx){
+                List<Integer> left=new ArrayList<Integer>(),right=new ArrayList<Integer>();
+                for(int id:a.keySet())if(!ax.contains(id))left.add(id);
+                for(int id:b.keySet())if(!bx.contains(id))right.add(id);
+                if(!left.equals(right)){
+                    Map<String,Object> out=detail(name,null,"membership_or_order_changed",left.toString(),right.toString());
+                    out.put("baseline_task_ids",new ArrayList<Integer>(left.subList(0,Math.min(32,left.size()))));
+                    out.put("current_task_ids",new ArrayList<Integer>(right.subList(0,Math.min(32,right.size()))));
+                    out.put("task_id_lists_complete",left.size()<=32&&right.size()<=32);
+                    out.put("baseline_task_count",left.size());out.put("current_task_count",right.size());return out;
+                }
+                for(int id:left)if(!Objects.equals(a.get(id),b.get(id)))
+                    return detail(name,id,"body_changed",a.get(id),b.get(id));
+                return null;
+            }
+            private static Map<String,Object> detail(String section,Integer id,String kind,String a,String b){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("section",section);out.put("task_id",id);out.put("kind",kind);
+                out.put("baseline_normalized_part_sha256",a==null?null:sha(a));
+                out.put("current_normalized_part_sha256",b==null?null:sha(b));
+                out.put("baseline_part_bytes",a==null?null:bytes(a).length);
+                out.put("current_part_bytes",b==null?null:bytes(b).length);
+                if(a!=null&&b!=null){
+                    String[] left=a.split("\\n",-1),right=b.split("\\n",-1);int line=0;
+                    while(line<left.length&&line<right.length&&left[line].equals(right[line]))line++;
+                    out.put("first_differing_line_zero_based",line);
+                    out.put("baseline_field_key",line<left.length?field(left[line]):"line_absent");
+                    out.put("current_field_key",line<right.length?field(right[line]):"line_absent");
+                    out.put("raw_values_in_summary",false);
+                }
+                return out;
+            }
+            private static String field(String line){
+                String value=line.trim();int equals=value.indexOf('=');
+                if(equals>0&&equals<=64){
+                    String key=value.substring(0,equals);
+                    if(key.matches("[A-Za-z][A-Za-z0-9_.]{0,63}"))return key;
+                }
+                return "unlabelled";
+            }
+            private static byte[] bytes(String value){return value.getBytes(java.nio.charset.StandardCharsets.UTF_8);}
+            private static String sha(String value){return ProfileIdentity.sha(bytes(value));}
         }
         private static Matcher one(Pattern pattern,String text){Matcher first=pattern.matcher(text),other=pattern.matcher(text);
             need(first.find()&&other.find()&&!other.find(),"NOTES_RETIREMENT_HISTORY_FIELD");return first;}

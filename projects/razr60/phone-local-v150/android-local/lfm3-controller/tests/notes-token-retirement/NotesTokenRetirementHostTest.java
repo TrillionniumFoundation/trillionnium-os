@@ -57,7 +57,11 @@ public final class NotesTokenRetirementHostTest {
         PublicPersonalNotesRetirement retirement;
         int calls,handleChecks,forbidden,actualReads,deadlineAdvance,childQueries;
         boolean throwBefore,throwAfter,pending,originalHandle=true,missingRunningLeaf,skipRoot;
-        String physicalSuffix="",historySuffix="";
+        String physicalSuffix="",historySuffix="",hiddenPrefix="";
+        int focusedTask=100,physicalEpoch=2000;
+        java.util.function.UnaryOperator<String> recentTransform;
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> deviceFacts=PublicPhysicalAuditHostTest.displays();
+        final java.util.Set<Integer> ordinaryNestedLeaves=new java.util.LinkedHashSet<Integer>();
         Consumer<World> beforeEffect,beforeRootRead,beforeRunningRead,afterEffect;
         PublicPersonalNotesRetirement.Effect observedEffect;
         boolean nullChildren;
@@ -88,10 +92,12 @@ public final class NotesTokenRetirementHostTest {
                 if(throwAfter)throw new IllegalStateException("fixture Binder after-effect ambiguity");
             }
         };
-        World(int count)throws Exception{
+        World(int count)throws Exception{this(count,null);}
+        World(int count,Consumer<World> initial)throws Exception{
             current=this;SystemClock.now=10000;SystemClock.step=1;
             ApplicationInfo app=new ApplicationInfo();app.uid=UID;app.enabled=true;app.packageName=PKG;app.sourceDir="/fixture/notes.apk";context.pm.installed=app;
             add(100,0,10367,"ctrip.android.view/ctrip.android.view.Main");add(101,1,10368,"com.example.cover/com.example.cover.Main");
+            if(initial!=null)initial.accept(this);
             custody=new PublicPersonalNotesCustody(GEN,SHA,UID,BackgroundTaskOrganizer.profileSnapshot(this),PublicOwnGroupPhysicalFence.inspectRecents(recents()));
             custody.beforeCreate();custody.bindDisplay(7);custody.markLaunch();
             for(int i=0;i<count;i++)add(300+i,7,UID,COMP);
@@ -110,7 +116,7 @@ public final class NotesTokenRetirementHostTest {
             ApplicationInfo app=new ApplicationInfo();app.packageName=info.packageName;app.uid=uid;app.sourceDir="/fixture/app.apk";app.enabled=true;info.applicationInfo=app;row.topActivityInfo=info;
             row.childTaskIds=new int[]{id};row.childTaskUserIds=new int[]{0};row.childTaskNames=new String[]{comp};row.childTaskBounds=new android.graphics.Rect[]{new android.graphics.Rect(0,0,100,100)};return row;
         }
-        @Override public Object getAllRootTaskInfos(){actualReads++;if(beforeRootRead!=null)beforeRootRead.accept(this);List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();for(RootTaskInfo row:live.values())if(row.parentTaskId<0)rows.add(row);if(skipRoot&&!rows.isEmpty())rows.remove(rows.size()-1);return rows;}
+        @Override public Object getAllRootTaskInfos(){actualReads++;if(beforeRootRead!=null)beforeRootRead.accept(this);List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();for(RootTaskInfo row:live.values())if(row.parentTaskId<0&&!ordinaryNestedLeaves.contains(row.taskId))rows.add(row);if(skipRoot&&!rows.isEmpty())rows.remove(rows.size()-1);return rows;}
         @Override public Object getTasks(int max,boolean visible,boolean extras,int display){
             if(beforeRunningRead!=null)beforeRunningRead.accept(this);
             yes(max==2049&&!visible&&extras&&display==-1);List<RootTaskInfo> rows=new ArrayList<RootTaskInfo>();
@@ -118,28 +124,36 @@ public final class NotesTokenRetirementHostTest {
         }
         @Override public IWindowOrganizerController getWindowOrganizerController(){return controller;}
         String recents(){
-            StringBuilder out=new StringBuilder("ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)\nmRecentsUid=1000\nmRecentsComponent=ComponentInfo{com.example.recents/.Main}\nmFreezeTaskListReordering=false\nmFreezeTaskListReorderingPendingTimeout=false\n  Recent tasks:\n");int index=0;
+            StringBuilder out=new StringBuilder("ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)\nmRecentsUid=1000\nmRecentsComponent=ComponentInfo{com.example.recents/.Main}\nmFreezeTaskListReordering=false\nmFreezeTaskListReorderingPendingTimeout=false\n"+hiddenPrefix+"  Recent tasks:\n");int index=0;
             for(RootTaskInfo row:recent.values()){
                 String pkg=row.baseIntent.getComponent().getPackageName();String raw=PublicPhysicalAuditHostTest.row(index++,row.taskId,0,row.effectiveUid,row.displayId,Integer.toHexString(row.taskId),pkg);
-                raw=raw.replace("    lastDisplayId=","    lastActiveTime=2000 (inactive for 0s)\n    lastDisplayId=");out.append(raw);
+                int epoch=row.displayId==0||row.displayId==1?physicalEpoch:2000;
+                raw=raw.replace("    lastDisplayId=","    lastActiveTime="+epoch+" (inactive for 0s)\n    lastDisplayId=");out.append(raw);
             }
             out.append("  Visible recent tasks (most recent first):\n");index=0;
-            for(RootTaskInfo row:recent.values())out.append(PublicPhysicalAuditHostTest.visible(index++,row.taskId,0,row.displayId,row.baseIntent.getComponent().getPackageName()));
-            return out.toString()+historySuffix;
+            for(RootTaskInfo row:recent.values())out.append(PublicPhysicalAuditHostTest.visible(index++,row.taskId,0,row.displayId,row.baseIntent.getComponent().getPackageName())
+                    .replace("lastActiveTime=2000","lastActiveTime="+(row.displayId==0||row.displayId==1?physicalEpoch:2000)));
+            String raw=out.toString()+historySuffix;return recentTransform==null?raw:recentTransform.apply(raw);
         }
         String activities(){StringBuilder text=new StringBuilder("ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)\n");
             for(int display:new int[]{0,1,7}){text.append("Display #").append(display).append(" (activities from top to bottom):\n");
-                for(RootTaskInfo row:live.values())if(row.displayId==display&&row.parentTaskId<0)appendTask(text,row,1);}
+                for(RootTaskInfo row:live.values())if(row.displayId==display&&row.parentTaskId<0&&!ordinaryNestedLeaves.contains(row.taskId))appendTask(text,row,1);}
             text.append("\nActivityTaskSupervisor state:\n  SleepTokens=[]\n");return text.toString();}
         void appendTask(StringBuilder text,RootTaskInfo row,int depth){String token=Integer.toHexString(row.taskId),indent=String.join("",Collections.nCopies(depth*2," "));
             text.append(indent).append("* Task{").append(token).append(" #").append(row.taskId).append(" type=standard U=0 visible=true sz=1}\n");
             if(row.numActivities>0&&row.childTaskIds.length==1&&row.childTaskIds[0]==row.taskId)text.append(indent).append("  * Hist #0: ActivityRecord{").append(token).append("a u0 ")
                     .append(row.baseIntent.getComponent().getPackageName()).append('/').append(row.baseIntent.getComponent().getClassName()).append(" t").append(row.taskId).append("}\n");
-            for(RootTaskInfo child:live.values())if(child.parentTaskId==row.taskId)appendTask(text,child,depth+1);
+            for(RootTaskInfo child:live.values())if(child.parentTaskId==row.taskId
+                    ||child.taskId!=row.taskId&&ordinaryNestedLeaves.contains(child.taskId)&&java.util.Arrays.stream(row.childTaskIds).anyMatch(id->id==child.taskId))
+                appendTask(text,child,depth+1);
         }
-        String windows(){return "WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)\n  Display: mDisplayId=0 (ownFocus=false)\n"
-                +"  mCurrentFocus=Window{ad u0 ctrip.android.view/ctrip.android.view.Main}\n  mFocusedApp=ActivityRecord{64a u0 ctrip.android.view/ctrip.android.view.Main t100}\n"
-                +"  mImeInputTarget="+(physicalSuffix.isEmpty()?"null":physicalSuffix)+"\n  Display: mDisplayId=1 (ownFocus=false)\n  mCurrentFocus=null\n  mFocusedApp=null\n";}
+        String windows(){
+            RootTaskInfo row=live.get(focusedTask);if(row==null)throw new AssertionError("synthetic focused task missing");
+            String component=row.baseIntent.getComponent().getPackageName()+"/"+row.baseIntent.getComponent().getClassName();
+            return "WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)\n  Display: mDisplayId=0 (ownFocus=false)\n"
+                +"  mCurrentFocus=Window{ad u0 "+component+"}\n  mFocusedApp=ActivityRecord{"+Integer.toHexString(row.taskId)+"a u0 "+component+" t"+row.taskId+"}\n"
+                +"  mImeInputTarget="+(physicalSuffix.isEmpty()?"null":physicalSuffix)+"\n  Display: mDisplayId=1 (ownFocus=false)\n  mCurrentFocus=null\n  mFocusedApp=null\n";
+        }
         void run()throws Exception{
             PublicPersonalNotesRetirement.Port port=new PublicPersonalNotesRetirement.Port(){
                 public PublicPersonalNotesRetirement.Sample read()throws Exception{return adapter.read();}
@@ -173,7 +187,7 @@ public final class NotesTokenRetirementHostTest {
             }
         }
     }
-    public static Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> facts(){return PublicPhysicalAuditHostTest.displays();}
+    public static Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> facts(){return current.deviceFacts;}
     public static String dump(String[] args){if(args.length!=2||!"-a".equals(args[0]))throw new AssertionError("fixed dump args");
         if("activities".equals(args[1]))return current.activities();if("displays".equals(args[1]))return current.windows();
         if("recents".equals(args[1]))return current.recents();throw new AssertionError("unknown dump");}
@@ -216,7 +230,7 @@ public final class NotesTokenRetirementHostTest {
         test("changed original cookies are rejected before WCT",()->{World w=new World(1);w.beforeEffect=x->x.live.get(300).launchCookies.add(new Binder());refuses(null,w::run);yes(w.calls==0);});
         test("non-leaf root with a child never reaches broad REMOVE_TASK",()->{World w=new World(1);w.live.get(300).childTaskIds=new int[]{302};refuses(null,w::run);yes(w.calls==0&&w.forbidden==0);});
         test("owned root moved onto main refuses",()->{World w=new World(1);w.beforeEffect=x->x.live.get(300).displayId=0;refuses(null,w::run);yes(w.calls==0);});
-        test("foreign physical focus IME change blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.physicalSuffix="Window{ae u0 input}";refuses(null,w::run);yes(w.calls==0);});
+        test("unrelated physical IME change permits original token dispatch",()->{World w=new World(1);w.beforeEffect=x->x.physicalSuffix="Window{ae u0 input}";w.run();w.released();yes(w.calls==1&&w.custody.known());});
         test("foreign complete recent body change blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.historySuffix="foreign tail changed\n";refuses(null,w::run);yes(w.calls==0);});
         test("owned handle replacement blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.originalHandle=false;refuses(null,w::run);yes(w.calls==0);});
         test("late final sample consumes no new effect",()->{World w=new World(1);w.beforeEffect=x->SystemClock.now=x.deadline;refuses(null,w::run);yes(w.calls==0);});
@@ -235,7 +249,7 @@ public final class NotesTokenRetirementHostTest {
         test("ready plan cannot release after original cleanup deadline",()->{World w=new World(1);w.run();SystemClock.now=w.deadline;
             refuses(null,()->w.retirement.beforeRelease(w.adapter.now()));refuses(null,()->w.custody.enterRelease(w.adapter.now()));
             refuses(null,w.custody::enterRelease);yes(!w.custody.known()&&!new JSONObject(w.custody.evidence()).getBoolean("release_api_entered"));});
-        test("post-release physical change is not known cleanup",()->{World w=new World(1);w.run();w.physicalSuffix="Window{ae u0 input}";refuses(null,w::released);yes(!w.custody.known());});
+        test("post-release unrelated physical IME change preserves cleanup",()->{World w=new World(1);w.run();w.physicalSuffix="Window{ae u0 input}";w.released();yes(w.custody.known());});
         test("display absence includes disabled logical displays",()->{
             android.hardware.display.IDisplayManager.currentIds=new int[]{0,1,7};yes(!PublicPersonalNotesRetirementAdapter.displayAbsent(7,"fixture-owned"));
             android.hardware.display.IDisplayManager.currentIds=new int[]{0,1};yes(PublicPersonalNotesRetirementAdapter.displayAbsent(7,"fixture-owned"));});
