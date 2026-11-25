@@ -260,11 +260,74 @@ public final class QualificationScopeHostTest {
             check(refused&&Files.isSymbolicLink(leaf)&&Arrays.equals(content,Files.readAllBytes(target)),"rejected child symlink and target bytes remain unchanged");
         }});
     }
+    private static void concurrentHostFileDescriptorCase()throws Exception{
+        test("host_fd_registry_keeps_parallel_atomic_write_and_read_identity",()->{
+            final int workers=8,rounds=64;
+            final Path dir=Files.createTempDirectory(output,"fd-registry-");
+            final CyclicBarrier registered=new CyclicBarrier(workers),closed=new CyclicBarrier(workers);
+            ExecutorService pool=Executors.newFixedThreadPool(workers);
+            List<Future<Integer>> futures=new ArrayList<Future<Integer>>();
+            try{
+                for(int worker=0;worker<workers;worker++){
+                    final int id=worker;
+                    futures.add(pool.submit(()->{
+                        int completed=0;
+                        for(int round=0;round<rounds;round++){
+                            Path path=dir.resolve("writer-"+id+".json");
+                            byte[] expected=bytes("private-journal-"+id+"-"+round);
+                            android.util.AtomicFile file=new android.util.AtomicFile(path.toFile());
+                            FileOutputStream out=file.startWrite();
+                            FileDescriptor outputFd=out.getFD();
+                            FileDescriptor inputFd=null;
+                            boolean committed=false;
+                            try{
+                                registered.await(10,TimeUnit.SECONDS);
+                                // Each worker keeps its own registered descriptor while other
+                                // workers register, look up and retire distinct descriptors.
+                                int mode=(id%2==0)?0600:0640;
+                                android.system.Os.fchmod(outputFd,mode);
+                                out.write(expected);out.flush();
+                                check((android.system.Os.fstat(outputFd).st_mode&0777)==mode,"chmod must apply to this registered output");
+                                Thread.yield();
+                                inputFd=android.system.Os.open(path.toString(),android.system.OsConstants.O_RDONLY,0);
+                                check(android.system.Os.fstat(inputFd).st_ino==android.system.Os.lstat(path.toString()).st_ino,"read descriptor must retain its file identity");
+                                byte[] actual=new byte[expected.length+1];
+                                int count=android.system.Os.read(inputFd,actual,0,actual.length);
+                                check(count==expected.length&&Arrays.equals(expected,Arrays.copyOf(actual,count)),"parallel read must use the matching output bytes");
+                                android.system.Os.close(inputFd);inputFd=null;
+                                file.finishWrite(out);committed=true;
+                                boolean forgotten=false;
+                                try{android.system.Os.fchmod(outputFd,0600);}
+                                catch(IOException expectedRefusal){forgotten="untracked fixture output".equals(expectedRefusal.getMessage());}
+                                check(forgotten,"retired descriptor must remain refused");
+                                completed++;
+                            }finally{
+                                if(inputFd!=null)android.system.Os.close(inputFd);
+                                if(!committed)file.failWrite(out);
+                            }
+                            closed.await(10,TimeUnit.SECONDS);
+                        }
+                        return completed;
+                    }));
+                }
+                int completed=0;
+                for(Future<Integer> future:futures)completed+=future.get(30,TimeUnit.SECONDS);
+                check(completed==workers*rounds,"all concurrent file lifecycles must finish");
+                boolean unknown=false;
+                try{android.system.Os.fchmod(new FileDescriptor(),0600);}
+                catch(IOException expectedRefusal){unknown="untracked fixture output".equals(expectedRefusal.getMessage());}
+                check(unknown,"unknown descriptor must remain refused");
+            }finally{
+                pool.shutdownNow();
+                check(pool.awaitTermination(10,TimeUnit.SECONDS),"host file workers must be joined");
+            }
+        });
+    }
     public static void main(String[] args)throws Exception{
         check(args.length==1||(args.length==2&&"--apk-splits-only".equals(args[1])),"unexpected host test mode");
         output=Paths.get(args[0]);Files.createDirectories(output);apkSplitCases();
         if(args.length==2){writeResult();return;}
-        privatePathCases();
+        privatePathCases();concurrentHostFileDescriptorCase();
         test("closed_config_exact_roles_and_proof_identity",()->{try(Env e=new Env(true)){QualificationScope.Config c=QualificationScope.Config.parse(e.config);check(c.allows(SETTINGS)&&c.allows(SEARCH)&&c.allows(CALC)&&c.allows(HOME),"all roles");for(String p:FOREIGN)check(!c.allows(p),"foreign excluded");}});
         test("closed_config_missing_unknown_duplicate_and_type_rejected",()->{try(Env e=new Env(true)){
             final Map<String,Object> missing=new LinkedHashMap<String,Object>(e.fields);missing.remove("search_observation_sha256");rejects(()->QualificationScope.Config.parse(bytes(new JSONObject(missing).toString())));

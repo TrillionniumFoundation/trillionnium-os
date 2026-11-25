@@ -4,7 +4,7 @@ import java.io.*;import java.nio.file.*;import java.util.*;
 public final class Os {
  public static String failFsyncPath;
  public static final java.util.List<String> syncLog=new java.util.ArrayList<String>();
- private static final Map<FileDescriptor,Open> OPEN=new IdentityHashMap<FileDescriptor,Open>();
+ private static final Map<FileDescriptor,Open> OPEN=Collections.synchronizedMap(new IdentityHashMap<FileDescriptor,Open>());
  private static final class Open {final Path path;final RandomAccessFile file;Open(Path p,RandomAccessFile f){path=p;file=f;}}
  public static StructStat lstat(String s)throws Exception{Path p=Paths.get(s);if(!Files.exists(p,LinkOption.NOFOLLOW_LINKS))throw new ErrnoException("lstat",2);Map<String,Object> a=Files.readAttributes(p,"unix:*",LinkOption.NOFOLLOW_LINKS);StructStat r=new StructStat();r.st_dev=((Number)a.get("dev")).longValue();r.st_ino=((Number)a.get("ino")).longValue();r.st_size=((Number)a.get("size")).longValue();r.st_nlink=((Number)a.get("nlink")).longValue();r.st_uid=((Number)a.get("uid")).intValue();r.st_mode=((Number)a.get("mode")).intValue();r.st_mtime=((java.nio.file.attribute.FileTime)a.get("lastModifiedTime")).toMillis()/1000;r.st_ctime=((java.nio.file.attribute.FileTime)a.get("ctime")).toMillis()/1000;return r;}
  public static StructStat fstat(FileDescriptor fd)throws Exception{return lstat(OPEN.get(fd).path.toString());}
