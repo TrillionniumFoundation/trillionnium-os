@@ -93,13 +93,19 @@
      * No old phone failure is assigned a watermark that its original receipt lacks. */
     static void armTargetRefreshEvent(HeptaAccessibilityService service,Fixture fixture,int kind,Runnable duringRefresh){
         NodeData root=fixture.nodes.get("0");check(root!=null,"actual full synthetic census contains root");
-        root.beforeRefresh=()->{
+        // These existing successor tests require a terminal early-fence failure.
+        // Re-emit content in the one replacement round; new one-event recovery
+        // is covered separately by RefreshCensusCases.fragment.
+        final Runnable[] event={null};
+        event[0]=()->{
             check(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","refreshNativeSearchTargetChain"),"event arrives during the actual target/ancestor refresh method");
             SearchActionWork work=service.activeSearchAction;
             check(work!=null&&work.firstFinalEventsElapsed>=0&&!work.firstPostDEventRejected,"first actual D event fence already passed");
             if(duringRefresh!=null)duringRefresh.run();
             successorEvent(service,kind);
+            if(kind==3&&work.finalCensusResamples==0)root.beforeRefresh=event[0];
         };
+        root.beforeRefresh=event[0];
     }
     static NoEffectRun submitCapturedSearch(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Attempt attempt){
         NoEffectRun value=new NoEffectRun(service,f,attempt);

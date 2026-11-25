@@ -36,7 +36,7 @@ public final class ObserverIntegrationHostTest {
             require(Boolean.FALSE.equals(evidence.get("same_instant_pixels_and_ax_claimed")),scenario+": no simultaneity");
             require(Boolean.TRUE.equals(evidence.get("fresh_action_validation_required")),scenario+": final action validation");
             require(Boolean.FALSE.equals(evidence.get("post_encoding_whole_graph_rechecked")),scenario+": no whole graph claim");
-            boolean late=scenario.startsWith("post_late")||scenario.equals("post_region_content");
+            boolean late=scenario.startsWith("post_late")||scenario.equals("post_region_content")||scenario.equals("ordinary_late_change");
             require((late?"post_encoding_form_pair_history":form?"pre_encoding_form_pair_history":"pre_encoding_paired_history").equals(evidence.get("mode")),scenario+": correct mode");
             require(number(result,"new_window_checks")== (late?0:1),scenario+": expected full graph or window publication check");
             if(form){
@@ -87,7 +87,8 @@ public final class ObserverIntegrationHostTest {
         run("post_early_classified",true,true);
         run("post_late_classified",true,true);
         for(String fault:Arrays.asList("post_late_retired","post_late_after_completion","post_late_protected","post_late_foreign",
-                "post_late_untyped","post_late_other_window","post_late_omitted","post_early_event_after_pair","ordinary_late_change"))run(fault,false,false);
+                "post_late_untyped","post_late_other_window","post_late_omitted","post_early_event_after_pair"))run(fault,false,false);
+        run("ordinary_late_change",true,true);
         run("classified_complete_pair",true,true);
         run("known_target_event_during_census",true,true);
         run("unrelated_display_event",true,true);

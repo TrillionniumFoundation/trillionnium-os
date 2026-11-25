@@ -466,10 +466,76 @@
                 f.action(attempt);check(f.outcome.accepted&&f.effects==1,"content interval proved by current actual pair");
             }
         });
+        one("single_window_content_after_original_D_requires_complete_replacement_before_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt attempt=f.intent();String run=attempt.modelRunId;long deadline=attempt.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed;
+                final Map<String,NodeData> oldNodes=new LinkedHashMap<String,NodeData>(f.nodes);
+                final SearchActionWork[] originalWork={null};final int[] injected={0};final boolean[] replacement={false};
+                final Map<String,Object> trace=new LinkedHashMap<String,Object>();trace.put("case","single_window_content_after_original_D");
+                f.windowHook=()->{SearchActionWork work=s.activeSearchAction;
+                    if(work!=null&&work.pairCompleted!=null){
+                        f.windowHook=null;originalWork[0]=work;injected[0]++;
+                        check(work.finalCensusResamples==0&&work.firstFinalEventsElapsed>=work.latestSnapshotCompletedElapsed
+                                &&!work.firstPostDEventRejected&&!work.ancestorChainChecked,"event follows original D/first fence but precedes complete target-chain return");
+                        trace.put("injected_elapsed_ms",SystemClock.now);trace.put("D_completed_watermark",work.pairCompleted.evidence());
+                        s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                        trace.put("after_event_watermark",work.events.mark().evidence());
+                    }
+                };
+                f.graphHook=()->{if(f.graphReads==5){
+                    SearchActionWork work=s.activeSearchAction;
+                    check(work==originalWork[0]&&actionSlot.pending()&&!work.state.effectEntered(),"same Attempt worker/slot retained before fresh C");
+                    check(!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled"))
+                            &&attempt.evidence().get("revalidation")==null,"old pure proof discarded, no claim or effect");
+                    for(NodeData node:oldNodes.values())check(node.obtained==node.recycled,"old C/D and temporary Android references physically closed");
+                    replacement[0]=true;f.nodes.clear();
+                }};
+                f.action(attempt);
+                trace.put("injections",injected[0]);trace.put("complete_graph_reads",f.graphReads);trace.put("platform_calls",f.effects);
+                trace.put("accepted",f.outcome!=null&&f.outcome.accepted);trace.put("dispatched",f.outcome!=null&&f.outcome.dispatched);
+                trace.put("detail",f.outcome==null?"missing":f.outcome.detail);finalCensusEndpointEvidence.add(trace);
+                check(injected[0]==1&&replacement[0]&&f.graphReads==6,"one original window event requires fresh full C/D, not just a new watermark");
+                check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1,"one effect only after replacement qualification");
+                JSONObject e=finalCensusEvidence(f),old=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                trace.put("native_search_execution",NativeSearchPlanning.map(e));
+                check(e.getInt("complete_census_resamples")==1&&e.getJSONArray("discarded_final_censuses").length()==1
+                        &&"content_event_after_target_refresh".equals(old.getString("reason")),"actual early refusal preserved in one ledger");
+                check(old.getBoolean("old_C_graph_closed")&&old.getBoolean("old_D_graph_closed")&&old.getBoolean("old_revalidation_discarded"),"both graphs and proof retired before replacement");
+                check(e.getJSONObject("current_C").getJSONObject("envelope").getLong("captured_elapsed_ms")>
+                        old.getJSONObject("latest_D").getJSONObject("envelope").getLong("captured_elapsed_ms"),"new complete capture clock rather than old age rewriting");
+                check(e.getBoolean("same_C_D_android_node")&&e.getBoolean("original_C_node_and_actual_ancestor_chain")
+                        &&e.getBoolean("reported_windows_before_after_equal")&&!e.isNull("live_profile_before_effect"),"replacement re-enters actual node/window/profile checks");
+                check(e.getJSONObject("D_completed_watermark").toString().equals(e.getJSONObject("before_effect_watermark").toString()),"no unaccounted event after the final replacement D");
+                check(attempt.modelRunId.equals(run)&&attempt.deadlineElapsed==deadline&&f.base.search.chainDeadlineElapsed==chain
+                        &&f.outcome.actionExecution.getLong("queued_elapsed_ms")==attempt.startedElapsed,"original model/Attempt/reservation/deadlines unchanged");
+                for(NodeData node:oldNodes.values())check(node.effects==0,"no discarded original node receives input");
+                for(NodeData node:f.nodes.values())check(node.obtained==node.recycled,"replacement refs physically drained");
+                f.base.search.acceptOutcome(attempt,f.outcome,successorReceipt(f.outcome),SystemClock.now);
+                rejected(()->attempt.claim(SystemClock.now));check(f.effects==1&&!actionSlot.pending(),"no second effect or retained action slot");
+            }
+        });
         one("any_event_after_complete_D_prevents_effect",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                NativeSearchSession.Attempt attempt=f.intent();f.windowHook=()->{if(s.activeSearchAction!=null&&s.activeSearchAction.pairCompleted!=null){f.windowHook=null;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}};
+                NativeSearchSession.Attempt attempt=f.intent();final int[] injected={0};
+                // Keep the original zero-effect contract for the final D: one
+                // content event after each of the two allowed complete rounds.
+                f.windowHook=()->{SearchActionWork work=s.activeSearchAction;
+                    if(work!=null&&work.pairCompleted!=null&&injected[0]==work.finalCensusResamples){
+                        check(injected[0]<2&&!work.state.effectEntered()&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"one event per complete unclaimed round");
+                        injected[0]++;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    }
+                };
                 f.action(attempt);noEffect(f,"no late content bypass after D");
+                JSONObject e=finalCensusEvidence(f);JSONArray discarded=e.getJSONArray("discarded_final_censuses");
+                check(injected[0]==2&&f.graphReads==6&&e.getInt("complete_census_resamples")==1&&discarded.length()==1,"one replacement only, never a third complete pair");
+                check("content_event_after_target_refresh".equals(discarded.getJSONObject(0).getString("reason"))
+                        &&e.getBoolean("typed_post_D_after_target_refresh_fence_rejected")
+                        &&e.getJSONObject("after_target_refresh_event_rejection_watermark").getLong("content")>e.getJSONObject("D_completed_watermark").getLong("content"),"second actual D event is the terminal refusal");
+                check(f.outcome.stale&&!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&!f.outcome.actionExecution.getBoolean("effect_entered")
+                        &&!e.getBoolean("platform_call_invoked"),"zero claim/effect/platform call after exhausted allowance");
+                Map<String,Object> trace=new LinkedHashMap<String,Object>();trace.put("case","content_after_both_complete_D_rounds");
+                trace.put("injections",injected[0]);trace.put("complete_graph_reads",f.graphReads);trace.put("platform_calls",f.effects);
+                trace.put("native_search_execution",NativeSearchPlanning.map(e));finalCensusEndpointEvidence.add(trace);
             }
         });
         one("same_values_new_C_D_Android_node_identity_is_refused",()->{

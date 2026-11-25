@@ -92,7 +92,28 @@ def calendar_observer_legacy_parts(service, parts):
     compiled["observation"] = parts["observation"].replace(actual, port, 1)
     if compiled["observation"].replace(port, actual, 1) != parts["observation"]:
         raise RuntimeError("Original production observation section must remain reversible")
-    return compiled, {
+    # Legacy scheduling carriers omit the form provider type. Expand only this
+    # reviewed compile-time String constant; the complete form carrier supplies
+    # supported_goal and compiles the original method without any substitution.
+    diagnostic_constant = None
+    diagnostic_anchor = '    private static void recordNativeFormPublicationDecision('
+    if 'supported_goal' not in parts and diagnostic_anchor in service:
+        diagnostic = body(service, diagnostic_anchor)
+        if sha(diagnostic.encode()) != '5b2d9a8c13ebb0e7e7aed30a5586dfd179e47420d74cb66797e67190e72c9dd8':
+            raise RuntimeError('Exact reviewed form diagnostic method required')
+        token, literal = 'NativeCtripFlightPage.PACKAGE', '"ctrip.android.view"'
+        if diagnostic.count(token) != 1 or compiled['observation'].count(diagnostic) != 1:
+            raise RuntimeError('Unique diagnostic package constant boundary required')
+        expanded = diagnostic.replace(token, literal, 1)
+        compiled['observation'] = compiled['observation'].replace(diagnostic, expanded, 1)
+        restored = compiled['observation'].replace(expanded, diagnostic, 1).replace(port, actual, 1)
+        if restored != parts['observation']:
+            raise RuntimeError('Complete observation must reverse after constant expansion')
+        diagnostic_constant = {'schema': 'hepta.observer-diagnostic-constant-port.v1',
+            'value': 'ctrip.android.view', 'actual_method_sha256': sha(diagnostic.encode()),
+            'compiled_method_sha256': sha(expanded.encode()), 'reversible': True,
+            'compile_time_string_constant_only': True, 'grants_authority': False}
+    boundary = {
         "schema": "hepta.observer-calendar-legacy-type-boundary.v1",
         "calendar_producer_excluded": True,
         "full_production_observation_sha256": sha(parts["observation"].encode()),
@@ -103,6 +124,9 @@ def calendar_observer_legacy_parts(service, parts):
         "private_constructor_and_lifecycle_methods_throw": True,
         "calendar_callback_created": False, "calendar_producer_executed": False,
         "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
+    if diagnostic_constant is not None:
+        boundary["diagnostic_package_constant_port"] = diagnostic_constant
+    return compiled, boundary
 
 
 def calendar_controller_legacy_template(template):

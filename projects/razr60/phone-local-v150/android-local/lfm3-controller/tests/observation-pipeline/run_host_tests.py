@@ -55,6 +55,33 @@ calendar_boundary = {
     "private_constructor_and_lifecycle_methods_throw": True,
     "calendar_callback_created": False, "calendar_producer_executed": False,
     "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
+
+# This independent canonical carrier has no form-provider type. Expand the
+# actual compile-time String constant only inside the exact diagnostic method.
+diagnostic_start = '    private static void recordNativeFormPublicationDecision('
+if diagnostic_start in text:
+    diagnostic_actual = section(diagnostic_start, '    private void nativeSeedDecision(')
+    if hashlib.sha256(diagnostic_actual.encode()).hexdigest() != '65c3cc20d61d3420baee14b5027da304f80b687716830ad6c9c19e8df5842e93':
+        raise RuntimeError('Exact reviewed form diagnostic method boundary required')
+    package_source = root/'src/org/trillionnium/hepta/local/NativeCtripFlightPage.java'
+    goal_source = root/'src/org/trillionnium/hepta/local/NativeAppGoal.java'
+    if package_source.read_text().count('    static final String PACKAGE=NativeAppGoal.CTRIP_PACKAGE;') != 1 or goal_source.read_text().count('    public static final String CTRIP_PACKAGE = "ctrip.android.view";') != 1:
+        raise RuntimeError('Actual compile-time package constant chain differs')
+    token, literal = 'NativeCtripFlightPage.PACKAGE', '"ctrip.android.view"'
+    if diagnostic_actual.count(token) != 1 or compiled_parts['observation'].count(diagnostic_actual) != 1:
+        raise RuntimeError('Unique diagnostic package constant required')
+    expanded = diagnostic_actual.replace(token, literal, 1)
+    compiled_parts['observation'] = compiled_parts['observation'].replace(diagnostic_actual, expanded, 1)
+    restored = compiled_parts['observation'].replace(expanded, diagnostic_actual, 1).replace(calendar_port, calendar_actual, 1)
+    if restored != parts['observation']:
+        raise RuntimeError('Entire original observation must reverse after package expansion')
+    calendar_boundary['compiled_observation_sha256'] = hashlib.sha256(compiled_parts['observation'].encode()).hexdigest()
+    calendar_boundary['diagnostic_package_constant_port'] = {
+        'value': 'ctrip.android.view', 'actual_method_sha256': hashlib.sha256(diagnostic_actual.encode()).hexdigest(),
+        'compiled_method_sha256': hashlib.sha256(expanded.encode()).hexdigest(), 'reversible': True,
+        'constant_sources': {str(q.relative_to(root)): hashlib.sha256(q.read_bytes()).hexdigest() for q in (package_source, goal_source)},
+        'compile_time_string_constant_only': True, 'grants_authority': False}
+
 template_path=Path(__file__).with_name('ObserverPipelineHost.template')
 template=template_path.read_text()
 for key,value in compiled_parts.items():template=template.replace('{{'+key+'}}',value)

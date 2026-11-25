@@ -14,6 +14,7 @@ def main():
  ap=argparse.ArgumentParser()
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
  ap.add_argument('--loading-original',type=Path)
+ ap.add_argument('--refresh-only',action='store_true')
  args=ap.parse_args();source=args.source.resolve();out=args.output.resolve();jdk=args.java_home.resolve();jar=args.json_jar.resolve()
  if out.exists() or source in out.parents:raise RuntimeError('fresh outside-source output required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
@@ -74,6 +75,14 @@ def main():
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
  parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()
+ refresh_fragment=(test/'RefreshCensusCases.fragment').read_text()
+ parts['cases']+='\n'+refresh_fragment
+ original_main='        NativeProfileIdentityHostTest.workspace=Paths.get(args[1]);Files.createDirectories(NativeProfileIdentityHostTest.workspace);'
+ if parts['cases'].count(original_main)!=1:raise RuntimeError('one actual producer main setup')
+ parts['cases']=parts['cases'].replace(original_main,original_main+'\n        if(Boolean.getBoolean("hepta.test.refreshOnly")){refreshCensusRecoveryCases();finalCensusRecoveryCases();successorCases(args);refreshOnlyReport(args[0]);return;}',1)
+ original_cases='        finalCensusRecoveryCases();'
+ if parts['cases'].count(original_cases)!=1:raise RuntimeError('one default final census case registration')
+ parts['cases']=parts['cases'].replace(original_cases,original_cases+'\n        refreshCensusRecoveryCases();',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -197,7 +206,7 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.refreshOnly='+str(args.refresh_only).lower(),'-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json'),'-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]

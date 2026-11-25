@@ -73,7 +73,7 @@ def reverse_input_history_helper(path, raw):
 # Exact PNG type/compile closure inverse; historical proof only, never the compiled source.
 PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.template': {'current_sha256': '7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f', 'prior_sha256': '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2', 'operations': [['        int getWidth(){return 1080;}int getHeight(){return 2400;}\n', '        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n        int getWidth(){return 1080;}int getHeight(){return 2400;}\n']]}, 'tests/observation-diagnostics/run_host.py': {'current_sha256': '0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f', 'prior_sha256': 'd70aee4bdb21724d9a0c88bca02b5653bd60b02cfe9931be964b085f44bb3d0c', 'operations': [['def sha(raw):', "def png_sources(source):\n    # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.\n    return [source/PKG/'ObservationPngEncoder.java',\n            source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',\n            source/'tests/observation-png/stubs/android/os/Build.java']\n\ndef sha(raw):"], ['    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n', '    paths += png_sources(source)\n    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n'], ["        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += png_sources(source)\n        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}, 'tests/native-observation-events/run_host.py': {'current_sha256': 'd47a7dc865b678a5cd5c4d49c45635886ae0e49da0b90749bc6e7401d9536a27', 'prior_sha256': '70b3abf2899f84f59ae09b2324c7b3581551c426005ecb6d629a859659984dc2', 'operations': [['    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n', '    inputs += h.png_sources(source)\n    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n'], ["        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += h.png_sources(source)\n        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}}
 
-def reverse_png_closure(path, raw):
+def reverse_png_closure_before_diagnostic_constant(path, raw):
     actual_current_sha256 = sha(raw)
     dependency_inverse = None
     if path == 'tests/observation-diagnostics/run_host.py':
@@ -107,6 +107,33 @@ def reverse_png_closure(path, raw):
                      'operations':len(spec['operations']),'proof_copy_only':True,
                      'compile_dependency_inverse':dependency_inverse,
                      'compilation_uses_actual_current_source':True}
+
+
+# This exact test-port change is reversed only for the old fixture proof.
+# events.generate continues to load and compile the actual current helper.
+DIAGNOSTIC_PACKAGE_PORT_INVERSE = {'current_bytes': 32562, 'current_sha256': '54f48567a8819557a9e69e95b0cf1acb52ac3813f97e2ab45071313eb0e5fc48', 'prior_bytes': 30763, 'prior_sha256': '1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07', 'operations': [('    return compiled, {\n', '    # Legacy scheduling carriers omit the form provider type. Expand only this\n    # reviewed compile-time String constant; the complete form carrier supplies\n    # supported_goal and compiles the original method without any substitution.\n    diagnostic_constant = None\n    diagnostic_anchor = \'    private static void recordNativeFormPublicationDecision(\'\n    if \'supported_goal\' not in parts and diagnostic_anchor in service:\n        diagnostic = body(service, diagnostic_anchor)\n        if sha(diagnostic.encode()) != \'5b2d9a8c13ebb0e7e7aed30a5586dfd179e47420d74cb66797e67190e72c9dd8\':\n            raise RuntimeError(\'Exact reviewed form diagnostic method required\')\n        token, literal = \'NativeCtripFlightPage.PACKAGE\', \'"ctrip.android.view"\'\n        if diagnostic.count(token) != 1 or compiled[\'observation\'].count(diagnostic) != 1:\n            raise RuntimeError(\'Unique diagnostic package constant boundary required\')\n        expanded = diagnostic.replace(token, literal, 1)\n        compiled[\'observation\'] = compiled[\'observation\'].replace(diagnostic, expanded, 1)\n        restored = compiled[\'observation\'].replace(expanded, diagnostic, 1).replace(port, actual, 1)\n        if restored != parts[\'observation\']:\n            raise RuntimeError(\'Complete observation must reverse after constant expansion\')\n        diagnostic_constant = {\'schema\': \'hepta.observer-diagnostic-constant-port.v1\',\n            \'value\': \'ctrip.android.view\', \'actual_method_sha256\': sha(diagnostic.encode()),\n            \'compiled_method_sha256\': sha(expanded.encode()), \'reversible\': True,\n            \'compile_time_string_constant_only\': True, \'grants_authority\': False}\n    boundary = {\n'), ('        "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}\n', '        "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}\n    if diagnostic_constant is not None:\n        boundary["diagnostic_package_constant_port"] = diagnostic_constant\n    return compiled, boundary\n')]}
+
+def reverse_png_closure(path, raw):
+    actual_sha = sha(raw)
+    constant_inverse = None
+    if path == 'tests/observation-diagnostics/run_host.py':
+        spec = DIAGNOSTIC_PACKAGE_PORT_INVERSE
+        need(len(raw) == spec['current_bytes'] and sha(raw) == spec['current_sha256'],
+             'exact current diagnostic constant port required')
+        for prior, current in reversed(spec['operations']):
+            prior, current = prior.encode(), current.encode()
+            need(raw.count(current) == 1, 'unique exact diagnostic port inverse required')
+            raw = raw.replace(current, prior, 1)
+        need(len(raw) == spec['prior_bytes'] and sha(raw) == spec['prior_sha256'],
+             'complete prior diagnostic helper required before existing inverse chain')
+        constant_inverse = {'actual_current_sha256': actual_sha, 'prior_sha256': sha(raw),
+            'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+            'compilation_uses_actual_current_source': True}
+    restored, proof = reverse_png_closure_before_diagnostic_constant(path, raw)
+    proof['current_sha256'] = actual_sha
+    if constant_inverse is not None:
+        proof['diagnostic_package_constant_inverse'] = constant_inverse
+    return restored, proof
 
 # These exact additions are reversed only in the historical proof copy.
 # Compilation and execution keep the current runner and all ten additional cases.

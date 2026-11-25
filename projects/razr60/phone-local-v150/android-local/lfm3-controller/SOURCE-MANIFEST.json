@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "93ddcd8d6728cf78ec73eddde30bf37537959487",
-  "base_manifest_sha256": "eb57c8102ee601224b47071b010a715ec5a281e1887148d68d62ce7557ef0361",
+  "base_head": "fd0e8e4bc032e7a856f134af766955c025a4b58f",
+  "base_manifest_sha256": "a87981a5f0d640330eabe8aefe3851b2d3d4248bac932a361b512600166269c5",
   "candidate_exact_git_head": null,
-  "candidate_status": "accepted_xiaomi_filled_detail_profile_recents_reuse_gemma_menu_pending_final_host_publication_and_phone",
-  "complete_source_files": 2659,
+  "candidate_status": "accepted_search_refresh_and_current_form_publication_pending_final_host_publication_and_phone",
+  "complete_source_files": 2663,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
     "early_sampling_draft_excluded": true,
@@ -59,6 +59,18 @@
     },
     "read_only_original_sealed_census": true,
     "strict_inverse_cases": 14
+  },
+  "current_form_read_publication": {
+    "action_authority_granted": false,
+    "device_success_claimed": false,
+    "diagnostic_caps_unchanged": true,
+    "events_covered_required": true,
+    "frozen_input_sha256": "007752751a7e45861d7042531875fd7992f24d627a232c9cdaa76027b53be30a",
+    "full_census_comparator_required": true,
+    "latest_diagnostic_only": true,
+    "old_watermarks_reconstructed": false,
+    "published_tree_pixels_and_captured_time_original": true,
+    "same_current_form_or_entered_open_required": true
   },
   "current_gemma_ordinary_menu": {
     "actual_model_and_business_pass_claimed": false,
@@ -256,6 +268,14 @@
       "duplicate_full_prefix"
     ],
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
+  },
+  "current_search_target_refresh_replacement": {
+    "device_success_claimed": false,
+    "frozen_input_sha256": "0d0ee2ffe069cf54dfe06f29f1b6593e06cb8b159046f9445ef30b221728db3a",
+    "new_model_or_input_retry": false,
+    "one_pre_effect_complete_replacement": true,
+    "same_attempt_deadline": true,
+    "same_final_fences": true
   },
   "current_successor_delta": {
     "baseline": "8d23b7584512fcf282096ece046eb041c01cf711",
@@ -8178,10 +8198,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 668568,
+      "bytes": 672256,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "dd6dd99063e7294b6b6bdf030973a2fc27ee3403f5644c9caba43160e7760b53"
+      "sha256": "d7d759bc7ec3d8cddb7277c3f798dd0e220213fac2761c41785414d4eafe51db"
     },
     {
       "bytes": 711,
@@ -8460,10 +8480,10 @@
       "sha256": "e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f466947935f4c"
     },
     {
-      "bytes": 56088,
+      "bytes": 58108,
       "mode": "100644",
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "208b1a7d008beb093d30dad04c4c5c4db2f860142ac26136c04891e80dbe3a9b"
+      "sha256": "a34a059b24ea64647eefbcbd3e784835ca3567980a8abd44b96c50b55425621e"
     },
     {
       "bytes": 5285,
@@ -11220,10 +11240,10 @@
       "sha256": "9874629b7c95bdbeef2942712aab6974b8cb366e32690d149624d85d0cb7e757"
     },
     {
-      "bytes": 11065,
+      "bytes": 11130,
       "mode": "100644",
       "path": "tests/native-ctrip-form-observation/ObserverIntegrationHostTest.java",
-      "sha256": "693949c908afa5242f9dd043c662ae052f2343a55c4277f09ba3b014f595d27a"
+      "sha256": "7907376cc705c5b5922f7631bd5386f8d37c91f7cdd696c2cf8ed9fa051ca7a2"
     },
     {
       "bytes": 3397,
@@ -11266,6 +11286,24 @@
       "mode": "100644",
       "path": "tests/native-ctrip-form-observation/scope_predecessor.py",
       "sha256": "ec5d74d0c7514e43316e0f2433ad034d4f9d12fb1bcc4c3f0d645fde79244744"
+    },
+    {
+      "bytes": 12512,
+      "mode": "100644",
+      "path": "tests/native-ctrip-form-read-publication/FormReadPublicationHostTest.java",
+      "sha256": "fcbc01e75deffd4ca3b048b1886472592b818249792fcc9d61e228490f78d44f"
+    },
+    {
+      "bytes": 1948,
+      "mode": "100644",
+      "path": "tests/native-ctrip-form-read-publication/README.md",
+      "sha256": "1c4c48d93950b0873e19c69eadb0fb2f6c04437dff8180e7ee6ca65192545ba1"
+    },
+    {
+      "bytes": 15483,
+      "mode": "100644",
+      "path": "tests/native-ctrip-form-read-publication/run_host.py",
+      "sha256": "a9e5a1d354ba78332e56e19d90afc56caae4d20937e1fc73dcfd8c355ee1184d"
     },
     {
       "bytes": 25791,
@@ -11484,10 +11522,10 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 64469,
+      "bytes": 68311,
       "mode": "100644",
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "039ba07db49c9ac31f8451c54793974455190a93fae9e261af2a947a765f3ddb"
+      "sha256": "52dfde749ed45498a1e6c61249d496ec27baadc628cc6730ee885bf86aec774c"
     },
     {
       "bytes": 7722,
@@ -11766,16 +11804,16 @@
       "sha256": "5fdb5f01b514ad03cb9cd9ace1978ea52769c702d2a2e6f20e5def44c81311b4"
     },
     {
-      "bytes": 58973,
+      "bytes": 59348,
       "mode": "100644",
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "b4060cec52e2dc76cbbe3e1f42dd7b24986da8d2d6fffb7d73e22ded96c249dc"
+      "sha256": "da4ddad1bb193150ad052fa2091214f3c7c984fbfd125fab7d748d9855f7b3f7"
     },
     {
-      "bytes": 75116,
+      "bytes": 82387,
       "mode": "100644",
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "2623a91137cb9510a9d1a9c908e018518e422efb59cf6f40b577143fab730570"
+      "sha256": "5a0eab59c0abba4e78895570fb97477db63b922c86de85178cf6866aea2671bb"
     },
     {
       "bytes": 13317,
@@ -11788,6 +11826,12 @@
       "mode": "100644",
       "path": "tests/native-search-producer/PublicationReplacementCases.fragment",
       "sha256": "e38be46092b5d0c6388f45f0ad78c366f57575c49e473f5365dc27827267baa1"
+    },
+    {
+      "bytes": 18738,
+      "mode": "100644",
+      "path": "tests/native-search-producer/RefreshCensusCases.fragment",
+      "sha256": "72f5e5281723fafd3e200660291639da3773cbde7dd4e94afde0c370dcfb6a88"
     },
     {
       "bytes": 31369,
@@ -11832,10 +11876,10 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 20316,
+      "bytes": 21303,
       "mode": "100644",
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "58c153f50d902ca8c781b3781240bc557752f13f03dbb7c807170e2ff0b0b721"
+      "sha256": "922a0d474e250cbf6989bdfe0311ee0ae28e979cd3664253e91676b5c2cd7293"
     },
     {
       "bytes": 14431,
@@ -12972,10 +13016,10 @@
       "sha256": "743e0b8ab9eb900f1349b9b883b5083e45f0d97374242bae2ee196b0d86bfc52"
     },
     {
-      "bytes": 30763,
+      "bytes": 32562,
       "mode": "100644",
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07"
+      "sha256": "54f48567a8819557a9e69e95b0cf1acb52ac3813f97e2ab45071313eb0e5fc48"
     },
     {
       "bytes": 13092,
@@ -13014,10 +13058,10 @@
       "sha256": "7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f"
     },
     {
-      "bytes": 9529,
+      "bytes": 11880,
       "mode": "100644",
       "path": "tests/observation-pipeline/run_host_tests.py",
-      "sha256": "3366405a85e3d26e1dd016274357319d54f36a1409428430e162841fe4c1d280"
+      "sha256": "55d7b0190566e4d469be252879ae12ce0f50c5accf6b7f83ed04ab9831df3b8f"
     },
     {
       "bytes": 685,
@@ -16519,13 +16563,22 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "93b8bfc1e6f5e8711fe19afe7a8fa4cee6408a5048cae8c607b3fde16611d411",
+  "production_input_map_sha256": "77ff24560666f6543cbb6ba8981ff15c63a0ce5669c1593dfba74afeca78f400",
   "schema": "hepta.local-source.v3",
-  "scope": "Preserve the complete 93dd Notes physical coexistence, v11 recovery, LFM8 ordinary text256, native AX, and Ctrip current-profile guards. Add strict Xiaomi filled-history and current detail amount semantics, bounded profile retirement diagnostics, synchronous same-raw membership parse reuse, and ordinary hand-selected Gemma4 E2B/E4B entries. No device success claimed.",
+  "scope": "Preserve complete fd0 typed Notes coexistence/recovery, all ordinary text model entries, local model configuration, scoped native query/detail/form identities and 18 native libraries. Add one pre-effect same-attempt complete search census replacement after typed target refresh, and event-covered ordinary current-form post-encoding complete comparison with bounded latest diagnostics. No historical task or current device result reclassified.",
   "source_head": null,
   "source_parent_head": "8d23b7584512fcf282096ece046eb041c01cf711",
   "source_parent_manifest_sha256": "2b7bc7e2a027b8439c8b74d779dc09ed3740f4cbe1e78c2883d9c7c67e07d03f",
   "source_snapshot_predecessor_manifest_sha256": "2b7bc7e2a027b8439c8b74d779dc09ed3740f4cbe1e78c2883d9c7c67e07d03f",
+  "test_fixture_compatibility": {
+    "complete_form_carrier_unmodified": true,
+    "exact_historical_screenshot_helper_inverse": true,
+    "first_full_run_failure_preserved": true,
+    "independent_canonical_diagnostic_constant_only": true,
+    "legacy_diagnostic_constant_only": true,
+    "producer_original_and_replacement_D_event_cases": true,
+    "production_changed_by_fixture_delta": false
+  },
   "test_only_revision": {
     "accepted_settings_delta": {
       "bytes": 1438,

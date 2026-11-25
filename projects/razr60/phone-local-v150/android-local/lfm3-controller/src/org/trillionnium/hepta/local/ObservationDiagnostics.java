@@ -46,7 +46,7 @@ final class ObservationDiagnostics {
     private String previousSampleKey,publishedObservationId,terminal;
     private Map<String,Object> lastSavedGraphChange,lastSeedDecision,lastSampleGraphChange;private long seedAdmissions;
     private GraphStamp previousSampleStamp;
-    private Map<String,Object> lastFullGraphChange;private long fullGraphChanges;
+    private Map<String,Object> lastFullGraphChange,lastFormPublicationDecision;private long fullGraphChanges;
     // At most one pair of already completed immutable values; no Android objects.
     private CensusStamp privateBefore,privateAfter;
     private Map<String,Object> privateBeforeSummary,privateAfterSummary;
@@ -118,6 +118,29 @@ final class ObservationDiagnostics {
         Map<String,Object> row=map();row.put("decision",decision);row.put("elapsed_ms",clock(now)-started);
         row.put("grants_action_authority",false);lastSeedDecision=Collections.unmodifiableMap(row);
         if("admitted".equals(decision))seedAdmissions=plus(seedAdmissions,1);
+    }
+    /** One fixed-size decision summary. Raw graph data and original budgets are unchanged. */
+    synchronized void formPublicationDecision(long captured,long paired,long completed,long[] capture,long[] pair,
+            long[] start,long[] end,boolean equal,boolean eventsCovered,boolean attempted,boolean classified){
+        if(ended)return;
+        require(captured>=started&&paired>=captured&&(completed==-1||completed>=paired));
+        Map<String,Object> row=map();row.put("schema","hepta.native-form-publication-decision.v1");
+        row.put("captured_elapsed_ms",captured);row.put("pair_completed_elapsed_ms",paired);
+        row.put("census_completed_elapsed_ms",completed);
+        row.put("watermark_order",Collections.unmodifiableList(Arrays.asList("events","unknown","content","boundary")));
+        row.put("capture_watermark",formWatermark(capture));row.put("pair_completed_watermark",formWatermark(pair));
+        row.put("post_encoding_start_watermark",formWatermark(start));row.put("post_encoding_complete_watermark",formWatermark(end));
+        row.put("whole_graph_equal",equal);row.put("events_covered",eventsCovered);
+        row.put("form_comparison_attempted",attempted);row.put("form_comparison_proved",classified);
+        row.put("grants_action_authority",false);row.put("grants_publication",false);
+        row.put("business_verified",false);row.put("changes_deadline",false);
+        lastFormPublicationDecision=Collections.unmodifiableMap(row);
+    }
+    private static List<Long> formWatermark(long[] value){
+        if(value==null)return null;
+        require(value.length==4&&value[0]>=0&&value[1]>=0&&value[2]>=0&&value[3]>=0
+                &&value[1]<=value[0]&&value[2]<=value[0]&&value[3]<=value[0]&&value[2]<=value[0]-value[3]);
+        return Collections.unmodifiableList(Arrays.asList(value[0],value[1],value[2],value[3]));
     }
     /** Existing immutable census values only. This never admits an observation or action. */
     synchronized void fullGraphChange(String stage,CensusStamp before,CensusStamp after,long now){
@@ -376,6 +399,7 @@ final class ObservationDiagnostics {
             value.put("native_full_graph_change_count",fullGraphChanges);}
         if(lastAxPublicationRejection!=null){value.put("last_ax_publication_rejection",lastAxPublicationRejection);
             value.put("ax_publication_rejection_count",axPublicationRejections);}
+        if(lastFormPublicationDecision!=null)value.put("last_form_publication_decision",lastFormPublicationDecision);
         if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
             value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;

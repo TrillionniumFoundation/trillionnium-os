@@ -1944,6 +1944,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{request.trace.fullGraphChange(stage,nativeDiagnosticCensus(before),nativeDiagnosticCensus(after),SystemClock.elapsedRealtime());}
         catch(RuntimeException unavailable){/* Optional value diagnostics cannot replace the original refusal. */}
     }
+    /** Fixed copied counters only; no new read, clock, traversal, or authority. */
+    private static long[] formDiagnosticWatermark(ObservationEventWatermark value){
+        return value==null?null:new long[]{value.events,value.unknownEvents,value.contentEvents,value.boundaryEvents};
+    }
+    private static void recordNativeFormPublicationDecision(ObservationRequest request,ObservationProduct product,
+            Graph after,boolean equal,boolean eventsCovered,boolean attempted){
+        if(request.trace==null||request.background==null
+                ||!NativeCtripFlightPage.PACKAGE.equals(request.background.selection.initialPackage))return;
+        try{request.trace.formPublicationDecision(product.capturedAt,product.pairCompletedAt,
+                after==null?-1:after.readCompletedElapsedMs,
+                formDiagnosticWatermark(product.identity.eventWatermark),
+                formDiagnosticWatermark(product.pairCompletedWatermark),
+                formDiagnosticWatermark(product.postEncodingStartWatermark),
+                formDiagnosticWatermark(product.postEncodingCompletedWatermark),
+                equal,eventsCovered,attempted,product.postEncodingFormPair!=null);}
+        catch(RuntimeException unavailable){/* Diagnostics never substitute for the original decision. */}
+    }
     private void nativeSeedDecision(ObservationRequest request,String decision){
         if(request.trace!=null)try{request.trace.seedDecision(decision,SystemClock.elapsedRealtime());}
         catch(RuntimeException unavailable){/* A diagnostic cannot grant or retire evidence. */}
@@ -2266,11 +2283,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 &&identity.frozenWindow.matches(frozenObservationWindow(after));
                         boolean eventsCovered=!retry&&complete.onlyContentSince(persistedEvents)
                                 &&complete.onlyContentSince(identity.eventWatermark)&&complete.events==request.events;
-                        // Pixels already match A and B. A later, complete C may establish a
-                        // historical first form only for the already-entered OPEN's read permit.
-                        if(!equal&&eventsCovered&&(request.postEffectController!=null||scopedContentCheck))
+                        // Classify the already-read complete C only under the original event fence.
+                        // The helper retains entered-OPEN or same-current-form ownership and full-census checks.
+                        if(!equal&&eventsCovered)
                             product.postEncodingFormPair=nativeCtripFormPair(request,identity,after);
                         boolean formCovered=product.postEncodingFormPair!=null&&complete.events==request.events;
+                        recordNativeFormPublicationDecision(request,product,after,equal,eventsCovered,!equal&&eventsCovered);
                         boolean covered=equal&&eventsCovered;
                         if(!retry&&!equal&&!formCovered){
                             request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;
@@ -4940,18 +4958,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private volatile SearchActionWork activeSearchAction;
     private static final int NATIVE_SEARCH_CURRENT_C_READ_LIMIT=8;
-    /** A memory-only capability from the last unclaimed census fence. It
+    /** A memory-only capability from an exact unclaimed census fence. It
      * never creates another model intent, Attempt, action slot or deadline. */
     static final class NativeSearchFinalCensusResampleProof {
         private final HeptaAccessibilityService issuer;private final SearchActionWork work;
         private final NativeSearchRole role;private final Graph oldC,oldD;
         private final NativeActionSnapshotCheck.Snapshot current,latest;
         private final NativeSearchPlanning.EventMark rejected;private final long issuedElapsed;
+        private final boolean afterTargetRefresh;
         private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
         private NativeSearchFinalCensusResampleProof(HeptaAccessibilityService issuer,SearchActionWork work,
-                NativeSearchRole role,Graph latestGraph,NativeSearchPlanning.EventMark rejected,long now){
+                NativeSearchRole role,Graph latestGraph,NativeSearchPlanning.EventMark rejected,long now,boolean afterTargetRefresh){
             this.issuer=issuer;this.work=work;this.role=role;oldC=work.currentGraph;oldD=latestGraph;
             current=work.currentSnapshot;latest=work.latestSnapshot;this.rejected=rejected;issuedElapsed=now;
+            this.afterTargetRefresh=afterTargetRefresh;
         }
         void consume(NativeSearchSession.Attempt actual,NativeSearchRole actualRole,long now){
             if(actual!=work.attempt||actualRole!=role||now<issuedElapsed||now>=actual.deadlineElapsed)
@@ -4963,9 +4983,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         ||issuer.activeSearchAction!=work||issuer.nativeSearchTrackedAction!=work||issuer.lastActionExecution!=work.state
                         ||work.currentGraph!=null||oldC==null||oldD==null||!oldC.refs.isEmpty()||!oldD.refs.isEmpty()
                         ||work.currentSnapshot!=current||work.latestSnapshot!=latest
-                        ||work.finalPreclaimRejectedWatermark!=rejected||!work.typedFinalPreclaimContentRejected
-                        ||work.firstPostDEventRejected||work.typedAfterTargetRefreshPostDEventRejected
-                        ||!work.currentNodeIdentityChecked||!work.ancestorChainChecked||!work.windowsChecked||work.profileBeforeEffect==null
+                        ||work.firstPostDEventRejected||!work.currentNodeIdentityChecked
+                        ||(afterTargetRefresh
+                            ?work.afterTargetRefreshRejectedWatermark!=rejected||!work.typedAfterTargetRefreshPostDEventRejected
+                                ||!work.targetChainMatchesD||work.ancestorChainChecked||work.windowsChecked||work.profileBeforeEffect!=null
+                                ||work.finalPreclaimEventsElapsed>=0||work.finalPreclaimRejectedWatermark!=null||work.typedFinalPreclaimContentRejected
+                            :work.finalPreclaimRejectedWatermark!=rejected||!work.typedFinalPreclaimContentRejected
+                                ||work.typedAfterTargetRefreshPostDEventRejected
+                                ||!work.ancestorChainChecked||!work.windowsChecked||work.profileBeforeEffect==null)
                         ||work.platformCallInvoked||work.state.effectEntered()||work.state.retired()||work.state.isDrained()
                         ||work.cancel.isCancelled()||observedNow<issuedElapsed||observedNow>=work.state.deadlineElapsed
                         ||observedNow>=work.session.chainDeadlineElapsed)
@@ -5027,7 +5052,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final List<Map<String,Object>> currentReadAttempts=new ArrayList<Map<String,Object>>();
         final List<Map<String,Object>> incompleteLatestReads=new ArrayList<Map<String,Object>>();
         NativeSearchPlanning.EventMark pairStart,pairCompleted,effectWatermark;
-        WindowOwnership profileBeforeEffect;boolean currentNodeIdentityChecked,ancestorChainChecked,windowsChecked;
+        WindowOwnership profileBeforeEffect;boolean currentNodeIdentityChecked,targetChainMatchesD,ancestorChainChecked,windowsChecked;
         SearchActionWork(NativeSearchSession.Attempt attempt,QualificationScopeConfig.Bound scope,Cancellation cancel){
             this.attempt=attempt;session=attempt.session;this.scope=scope;this.cancel=cancel;
             planningDirectory=nativeSearchPlanningDirectory;planningReadOrdinal=taskObservationAdmissions;
@@ -5064,7 +5089,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         /** Called only after C's full actual target/ancestor chain and root metadata
          * match D, before this helper returns and before any attempt/effect claim. */
-        void requireAfterTargetRefreshEvents(){
+        void requireAfterTargetRefreshEvents(NativeSearchRole role,Graph latestGraph){
             check();
             // Session locking remains outside the event-routing lock.
             attempt.requireUnclaimedRevalidated(SystemClock.elapsedRealtime());
@@ -5077,14 +5102,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             ||afterTargetRefreshEventsElapsed<firstFinalEventsElapsed
                             ||afterTargetRefreshEventsElapsed>=state.deadlineElapsed
                             ||afterTargetRefreshEventsElapsed>=session.chainDeadlineElapsed
-                            ||cancel.isCancelled()||currentGraph==null||currentSnapshot==null||latestSnapshot==null||roleProof==null
-                            ||!currentNodeIdentityChecked||ancestorChainChecked||windowsChecked
+                            ||cancel.isCancelled()||currentGraph==null||latestGraph==null||currentSnapshot==null||latestSnapshot==null||role==null||roleProof==null
+                            ||!currentNodeIdentityChecked||!targetChainMatchesD||ancestorChainChecked||windowsChecked||profileBeforeEffect!=null
+                            ||finalPreclaimEventsElapsed>=0||finalPreclaimRejectedWatermark!=null||typedFinalPreclaimContentRejected
                             ||platformCallInvoked||state.effectEntered()||state.retired()||state.isDrained()
-                            ||activeSearchAction!=this||nativeSearchTrackedAction!=this)
+                            ||activeSearchAction!=this||nativeSearchTrackedAction!=this||lastActionExecution!=state)
                         throw new StaleObservation("new search root-refresh event is outside the live unclaimed pre-effect boundary");
                     // Unknown, window/boundary and untyped events never set this typed cause.
                     requireNativeSearchPairEvents(pairCompleted,observed);
                     typedAfterTargetRefreshPostDEventRejected=true;
+                    if(finalCensusResamples==0&&pendingFinalCensusResample==null&&currentReadAttempts.size()<NATIVE_SEARCH_CURRENT_C_READ_LIMIT){
+                        // A typed event only discards this read proof. A fresh complete
+                        // C/D pair must pass every original identity/input fence again.
+                        requireNativeSearchPairEvents(pairStart,observed);
+                        pendingFinalCensusResample=new NativeSearchFinalCensusResampleProof(HeptaAccessibilityService.this,this,role,latestGraph,observed,afterTargetRefreshEventsElapsed,true);
+                        throw new NativeSearchFinalCensusChanged(pendingFinalCensusResample);
+                    }
                     throw new StaleObservation("new search intent received an event after its complete current D census");
                 }
             }
@@ -5103,8 +5136,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(bannerRefusal!=null)return "overlapping_blank_home_banner_before_claim";
             return firstPostDEventRejected?"post_D_event_before_target_refresh":"post_D_event_after_target_refresh_before_claim";
         }
-        /** The only recovery boundary is after the complete window/profile/policy
-         * checks and before attempt_journal/claim. Later fences cannot issue it. */
+        /** The original late recovery boundary follows the complete window/profile/policy
+         * checks and precedes attempt_journal/claim. Later fences cannot issue it. */
         void requireFinalPreclaimEvents(NativeSearchRole role,Graph latestGraph){
             check();attempt.requireUnclaimedRevalidated(SystemClock.elapsedRealtime());requireFinalProfileClock();
             synchronized(nativeSearchEventLock){
@@ -5128,7 +5161,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 typedFinalPreclaimContentRejected=true;
                 if(finalCensusResamples!=0||pendingFinalCensusResample!=null||currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT)
                     throw new StaleObservation("new search final census cannot replace its spent resample/read budget");
-                pendingFinalCensusResample=new NativeSearchFinalCensusResampleProof(HeptaAccessibilityService.this,this,role,latestGraph,observed,finalPreclaimEventsElapsed);
+                pendingFinalCensusResample=new NativeSearchFinalCensusResampleProof(HeptaAccessibilityService.this,this,role,latestGraph,observed,finalPreclaimEventsElapsed,false);
                 throw new NativeSearchFinalCensusChanged(pendingFinalCensusResample);
             }
         }
@@ -5137,11 +5170,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(proof==null||proof!=pendingFinalCensusResample)
                 throw new IllegalStateException("actual final-census failure capability required");
             Map<String,Object> old=new LinkedHashMap<String,Object>();
-            old.put("ordinal",finalCensusResamples+1);old.put("reason","content_event_at_last_preclaim_fence");
+            old.put("ordinal",finalCensusResamples+1);old.put("reason",proof.afterTargetRefresh?"content_event_after_target_refresh":"content_event_at_last_preclaim_fence");
             old.put("current_C",NativeSearchPlanning.snapshot(currentSnapshot));old.put("latest_D",NativeSearchPlanning.snapshot(latestSnapshot));
             old.put("role_comparison",roleProof);old.put("pair_start_watermark",pairStart.evidence());
-            old.put("D_completed_watermark",pairCompleted.evidence());old.put("rejection_watermark",finalPreclaimRejectedWatermark.evidence());
-            old.put("checked_elapsed_ms",finalPreclaimEventsElapsed);old.put("original_attempt_deadline_elapsed_ms",attempt.deadlineElapsed);
+            old.put("D_completed_watermark",pairCompleted.evidence());old.put("rejection_watermark",proof.rejected.evidence());
+            old.put("checked_elapsed_ms",proof.issuedElapsed);old.put("original_attempt_deadline_elapsed_ms",attempt.deadlineElapsed);
+            old.put("first_final_event_check_elapsed_ms",firstFinalEventsElapsed);
+            old.put("after_target_refresh_event_check_elapsed_ms",afterTargetRefreshEventsElapsed);
+            old.put("target_chain_matches_D",targetChainMatchesD);old.put("final_switcher_hint",finalSwitcherHint);
             old.put("same_attempt",true);old.put("model_reissued",false);old.put("effect_entered",state.effectEntered());old.put("platform_call_invoked",platformCallInvoked);
             // D and all temporary nodes have already closed in the round's finally.
             Graph previous=currentGraph;currentGraph=null;if(previous!=null)previous.close();
@@ -5150,9 +5186,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             discardedFinalCensuses.add(old);
             attempt.discardRevalidationForFinalCensus(proof,SystemClock.elapsedRealtime());
             finalCensusResamples++;old.put("old_revalidation_discarded",true);pendingFinalCensusResample=null;
-            // First/second rejection latches were false; never clear a rejected cause.
+            // The consumed private proof and ledger retain the rejected round.
+            // No rejected round can authorize the replacement pair or its effect.
             currentSnapshot=null;latestSnapshot=null;roleProof=null;finalSwitcherHint=null;pairCompleted=null;effectWatermark=null;
-            profileBeforeEffect=null;currentNodeIdentityChecked=false;ancestorChainChecked=false;windowsChecked=false;
+            profileBeforeEffect=null;currentNodeIdentityChecked=false;targetChainMatchesD=false;ancestorChainChecked=false;windowsChecked=false;
+            typedAfterTargetRefreshPostDEventRejected=false;afterTargetRefreshRejectedWatermark=null;
             latestReadReturnedElapsed=-1;latestSnapshotCompletedElapsed=-1;roleComparedElapsed=-1;firstFinalEventsElapsed=-1;
             afterTargetRefreshEventsElapsed=-1;finalPreclaimEventsElapsed=-1;finalPreclaimRejectedWatermark=null;typedFinalPreclaimContentRejected=false;
             // pairStart and the same live SearchEvents tracker deliberately survive.
@@ -5503,7 +5541,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             work.currentNodeIdentityChecked=true;work.requireFirstFinalEvents();
             Map<String,Object> before=readNativeActionWindows(fresh,work.budget());
             if(!fresh.nativeActionWindows.equals(before))throw new StaleObservation("new search complete D window set changed");
-            refreshNativeSearchTargetChain(work,original,revalidated.actionPath,latest,fresh);
+            refreshNativeSearchTargetChain(work,original,revalidated.actionPath,latest,fresh,revalidated);
             work.ancestorChainChecked=true;work.requireFinalEvents();
             Map<String,Object> after=readNativeActionWindows(fresh,work.budget());
             if(!before.equals(after))throw new StaleObservation("new search final reported windows changed");
@@ -5575,7 +5613,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
 
     /** Refreshes C's exact reference and actual parent/child identities against complete D. */
     private void refreshNativeSearchTargetChain(SearchActionWork work,NodeRef original,String targetPath,
-            NativeActionSnapshotCheck.Snapshot snapshot,Graph latest)throws Exception{
+            NativeActionSnapshotCheck.Snapshot snapshot,Graph latest,NativeSearchRole role)throws Exception{
         if(original==null)throw new StaleObservation("new search current C reference missing");
         List<AccessibilityNodeInfo> temporary=new ArrayList<AccessibilityNodeInfo>();
         AccessibilityNodeInfo cursor=original.node;String path=targetPath;Rect targetBounds=new Rect();cursor.getBoundsInScreen(targetBounds);
@@ -5623,7 +5661,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if("0".equals(path)){
                     if(parent!=null||!latest.windowMetadata.bindFreshness("").equals(readWindowMetadata(cursor,bounds,latest.windowId,latest.displayId).bindFreshness("")))
                         throw new StaleObservation("new search current root/window metadata changed");
-                    work.requireAfterTargetRefreshEvents();return;
+                    work.targetChainMatchesD=true;work.requireAfterTargetRefreshEvents(role,latest);return;
                 }
                 int slash=path.lastIndexOf('/'),index=Integer.parseInt(path.substring(slash+1));
                 if(parent==null||!refreshNativeSearchNode(work,parent)||index>=parent.getChildCount()||!expected.parent.equals(string(parent.getClassName())))
