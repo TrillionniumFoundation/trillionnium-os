@@ -20,7 +20,7 @@ PKG = Path('src/org/trillionnium/hepta/local')
 TEST = Path('tests/observation-diagnostics')
 JAVA = ['ObservationCaptureEvidence.java', 'HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
         'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java',
-        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java']
+        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java','ObservedImeEnter.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
        'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java','PrivateCensusDiagnosticsHostTest.java','PrivateCensusFileHost.template','AxPublicationDiagnosticsHostTest.java']
 

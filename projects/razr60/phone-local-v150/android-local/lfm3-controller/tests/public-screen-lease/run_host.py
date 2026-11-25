@@ -21,7 +21,14 @@ def main():
         'initial_wait_uses_frozen_deadline':'        },initializationDeadline,Thread::sleep);',
         'cleanup_latch':'        closing.set(true);\n        retirePublicScreenLease();\n        retireBootRead();',
         'notes_quarantine':'    private void quarantinePublicNotes(String reason){\n        retirePublicScreenLease();',
-        'profile_quarantine':'    private void quarantineProfile(String reason){\n        retirePublicScreenLease();',
+        # First-refusal diagnostics are fail-safe and precede the unchanged lease retirement.
+        'profile_quarantine':(
+            '    private void quarantineProfile(String reason){\n'
+            '        // Keep the first cleanup refusal separate from the original close/Stop reason.\n'
+            '        // Diagnostics never change custody, deadlines, or the cleanup outcome.\n'
+            '        try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}\n'
+            '        catch(Throwable unavailable){/* Original quarantine remains authoritative. */}\n'
+            '        retirePublicScreenLease();'),
         'absolute_watchdog':'if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);',
         'private_mode_unchanged':'        if(config.publicOwnGroupScope==null)return;',
         'scoped_flags':'if(flags!=0x0000000a||selected!=displayId||selected<=1||remaining<=0||remaining>BrokerProtocol.MAX_TTL_MS',

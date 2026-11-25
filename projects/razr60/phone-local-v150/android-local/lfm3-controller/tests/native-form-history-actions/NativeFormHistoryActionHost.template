@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Control-flow bridge for two verbatim HeptaAccessibilityService methods.
+ * Control-flow bridge for verbatim HeptaAccessibilityService methods and helpers.
  * The full Phone/Session/Guard/comparator contract has its own actual-class gate.
  * All Android IO, captures, graph facts, comparison, claim and effects here are
  * explicit instrumented ports. This gate proves those ports are called in the
@@ -37,10 +37,11 @@ final class NativeFormHistoryActionHost {
     interface Cancellation {boolean isCancelled();}
     static final class BackgroundSession {}
     static final class NativeActionSnapshotCheck {
-        static final String YEAR="inspect_departure_year",QUERY="query_observed_form";
+        {{purpose_constants}}
     }
     final class Guard {
-        final String purpose;boolean claimed;int requireClaimedCalls;boolean goal=true;
+        final String purpose;boolean claimed;int requireClaimedCalls;
+        NativeAppGoal goal=flightGoal(NativeAppGoal.CTRIP_PACKAGE);
         void verifyInstalled(){if(!installed)throw new StaleObservation("installation changed");}
 
         Guard(String value){purpose=value;}
@@ -52,7 +53,14 @@ final class NativeFormHistoryActionHost {
         void close(){if(closed)throw new AssertionError("double close");closed=true;closedReads++;}
     }
     interface GraphBudget {void check();}
-    static final class NativeCtripFlightPage {static boolean supported(boolean accepted){return accepted;}}
+    // Explicit route-acceptance port; the goal itself is the actual immutable production type.
+    static NativeAppGoal flightGoal(String selectedPackage){
+        NativeAppGoal goal=NativeAppGoal.parse("查询2026年11月24日北京到上海单程机票，1名成人",selectedPackage);
+        if(goal==null)throw new AssertionError("literal host flight goal required");return goal;
+    }
+    static final class NativeCtripFlightPage {
+        static boolean supported(NativeAppGoal goal){return NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName);}
+    }
     static final class State {
         long deadlineElapsed=9000;boolean entered;boolean effectEntered(){return entered;}
     }
@@ -162,6 +170,7 @@ final class NativeFormHistoryActionHost {
     void actionEffectReturned(ActionWork work,Boolean accepted){returned++;events.add("returned");}
     void finishAfter(long delay,boolean accepted,String text,ActionCallback callback,ActionWork work){callback.onResult(new ActionOutcome(accepted,accepted,false,text));}
 
+    {{product_query_guard}}
     {{query_budget}}
     {{query_read}}
     {{validate}}
@@ -212,7 +221,7 @@ final class NativeFormHistoryActionHost {
                 if("already_entered".equals(fault))w.state.entered=true;
                 if("protected_change".equals(fault)||"new_date".equals(fault))h.compareReject=true;
                 if("ordinary_pixels".equals(fault))h.current.capture=new Capture(false);
-                if("wrong_route".equals(fault))w.nativeGuard.goal=false;
+                if("wrong_route".equals(fault))w.nativeGuard.goal=flightGoal(NativeAppGoal.CSAIR_PACKAGE);
                 if("repeated_in_final".equals(fault)){
                     yes(h.validate("task",h.current,action,null,()->false,w)==null,"one allowed complete reread consumed before final check");
                     h.injectedFailures=1;h.firstFailureOrdinal=h.reads+1;
@@ -265,7 +274,7 @@ final class NativeFormHistoryActionHost {
                 if("retired".equals(fault))h.retired=true;
                 if("already_entered".equals(fault))w.state.entered=true;
                 if("changed_form".equals(fault))h.compareReject=true;
-                if("wrong_route".equals(fault))w.nativeGuard.goal=false;
+                if("wrong_route".equals(fault))w.nativeGuard.goal=flightGoal(NativeAppGoal.CSAIR_PACKAGE);
                 if("ordinary_pixels".equals(fault))h.current.capture=new Capture(false);
                 ActionDecision action=new ActionDecision("click");action.nodeId="n33";
                 String refusal=h.validate("task",h.current,action,null,()->false,w);

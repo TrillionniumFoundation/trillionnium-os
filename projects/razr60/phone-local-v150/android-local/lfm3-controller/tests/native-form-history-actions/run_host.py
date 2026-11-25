@@ -26,31 +26,41 @@ def main():
     extractor=source/'tests/observation-diagnostics/run_host.py'
     template=own/'NativeFormHistoryActionHost.template'
     year_fixture=own/'86b343-departure-year-refusals.json'
-    inputs=[service,extractor,Path(__file__).resolve(),template,year_fixture]
+    goal=source/'src/org/trillionnium/hepta/local/NativeAppGoal.java'
+    snapshot=source/'src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java'
+    inputs=[service,extractor,Path(__file__).resolve(),template,year_fixture,goal,snapshot]
     tools=[jdk/'bin/javac',jdk/'bin/java',jdk/'lib/modules',jdk/'lib/ct.sym']
     before=[meta(p) for p in inputs];tool_before=[meta(p) for p in tools]
     out.mkdir(parents=True,mode=0o700)
     report={'schema':'hepta.native-form-history-actions-host.v1','all_pass':False,'stages':[],
       'inputs_before':before,'tools_before':tool_before,'android_execution':False,'phone_operations':0,
       'business_completion_verified':False,'real_comparator_executed':False,'real_guard_executed':False,
-      'scope':'Two exact HA method bodies; all Android IO, captures, graph facts, comparison, claim and effects are explicit instrumented ports.'}
+      'scope':'Verbatim HA validate/click and query helpers with actual NativeAppGoal and purpose constants; Android IO, captures, graph facts, comparison, claim and effects remain explicit instrumented ports.'}
     env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1';sys.dont_write_bytecode=True
     for key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH'):env.pop(key,None)
     try:
         spec=importlib.util.spec_from_file_location('history_actual_extractor',extractor);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         raw=service.read_text(encoding='utf-8')
-        methods={'query_budget':module.body(raw,'    private final class QueryGraphBudget implements GraphBudget {'),
+        methods={'product_query_guard':module.body(raw,'    private static boolean nativeProductQueryGuard(ActionWork work){'),
+                 'query_budget':module.body(raw,'    private final class QueryGraphBudget implements GraphBudget {'),
                  'query_read':module.body(raw,'    private Graph readNativeActionGraph('),
                  'validate':module.body(raw,'    private String validate('),
                  'click_branch':module.body(raw,'            if("click".equals(action.action)){')}
+        constants=[line for line in snapshot.read_text(encoding='utf-8').splitlines() if line.startswith('    static final String OPEN=')]
+        need(len(constants)==1 and 'SUBMIT_QUERY="submit_product_query"' in constants[0],'one actual purpose declaration required')
         text=template.read_text(encoding='utf-8')
+        need(text.count('{{purpose_constants}}')==1,'one actual purpose declaration marker')
+        text=text.replace('{{purpose_constants}}',constants[0],1)
         for key,value in methods.items():
             marker='{{'+key+'}}';need(text.count(marker)==1,'one method marker');text=text.replace(marker,value,1)
         need('{{' not in text,'no unresolved method markers')
         generated=out/'generated/org/trillionnium/hepta/local/NativeFormHistoryActionHost.java'
         write(generated,text)
         report['extraction']={'source':meta(service),'methods':{k:{'bytes':len(v.encode('utf-8')),'sha256':sha(v.encode('utf-8'))} for k,v in methods.items()},
-          'bodies_verbatim':True,'generated':meta(generated),'production_methods_rewritten':False}
+          'bodies_verbatim':True,'generated':meta(generated),'production_methods_rewritten':False,
+          'actual_goal_class':meta(goal),'purpose_constants_source':meta(snapshot),
+          'purpose_constants':{'bytes':len(constants[0].encode('utf-8')),'sha256':sha(constants[0].encode('utf-8'))},
+          'query_helper_stubbed':False,'new_query_authority_qualified':False}
         tool_port=out/'generated/org/trillionnium/hepta/background/FixedIntentTools.java'
         write(tool_port,'package org.trillionnium.hepta.background; public final class FixedIntentTools { private FixedIntentTools(){} public static boolean isTool(String action){ if("click".equals(action)||"back".equals(action)||"wait".equals(action)||"done".equals(action))return false; throw new AssertionError("FixedIntentTools protocol outside this control-flow gate"); } }\n')
         report['instrumented_tool_classifier_port']={'source':meta(tool_port),'boundary':'Only four tested non-tool action labels return false; every other action throws. No FixedIntentTools route is qualified.'}
@@ -81,7 +91,7 @@ def main():
         report['recorded_year_refusals']=meta(year_fixture)
         report['year_scenario_offsets']=year_args
         classes=out/'classes';classes.mkdir()
-        commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all','-Werror','-d',classes,generated,tool_port]),
+        commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all','-Werror','-d',classes,goal,generated,tool_port]),
           ('cases',[jdk/'bin/java','-cp',classes,'org.trillionnium.hepta.local.NativeFormHistoryActionHost',out/'CASES.json',','.join(str(n) for n in counts),','.join('/'.join(map(str,row)) for row in year_args)])]
         for name,argv in commands:
             start=time.monotonic_ns()

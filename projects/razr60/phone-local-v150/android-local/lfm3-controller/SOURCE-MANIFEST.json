@@ -3,7 +3,7 @@
   "base_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
   "base_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_search_and_profile_cleanup_successor",
+  "candidate_status": "reviewed_search_and_profile_cleanup_host_harness_successor",
   "complete_source_files": 2595,
   "current_native_xiaomi_modal_handoff_order": {
     "actual_old_failure_preserved": true,
@@ -163,7 +163,10 @@
       "src/org/trillionnium/hepta/local/NativeAppSession.java",
       "src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java",
       "tests/native-action-integration/run_host.py",
+      "tests/native-ax-consumers/run_host.py",
       "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
+      "tests/native-form-history-actions/run_host.py",
       "tests/native-stale-recovery/run_budget.py",
       "tests/native-xiaomi-product/run_host.py",
       "tests/native-xiaomi-query-stability/NativeXiaomiQueryStabilityHostTest.java",
@@ -174,10 +177,12 @@
       "tests/native-xiaomi-query-stability/real-censuses.json",
       "tests/native-xiaomi-query-stability/run_host.py",
       "tests/native-xiaomi-query-stability/run_integration_host.py",
+      "tests/observation-diagnostics/run_host.py",
       "tests/profile-cleanup-sampling/ProfileCleanupDiagnosticsHostTest.java",
       "tests/profile-cleanup-sampling/ProfileCleanupSamplingHostTest.java",
       "tests/profile-cleanup-sampling/README.md",
-      "tests/profile-cleanup-sampling/run_host.py"
+      "tests/profile-cleanup-sampling/run_host.py",
+      "tests/public-screen-lease/run_host.py"
     ],
     "model_weights_changed": false,
     "native_runtime_changed": false,
@@ -8958,8 +8963,8 @@
     },
     {
       "path": "tests/native-ax-consumers/run_host.py",
-      "bytes": 4848,
-      "sha256": "a0e7109ffa441696436c00aad737fa9c040090a2e23c525e508bc1f058a34c92"
+      "bytes": 4867,
+      "sha256": "436c282e57c009551f9e7023bd1a0a062e1e7fa2c5b18692c6abfde0fe4a5196"
     },
     {
       "path": "tests/native-ax-observation/ActualAxPhoneChecks.java",
@@ -9248,8 +9253,8 @@
     },
     {
       "path": "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
-      "bytes": 27913,
-      "sha256": "3f14fe114045d27549efe533e8002412d87985c615d668a8b1dbe2efb2a6dff3"
+      "bytes": 28461,
+      "sha256": "ff56de97a1127ca8bc8abd5e16685346b04a0ca7af303803e77d745285c2444f"
     },
     {
       "path": "tests/native-form-history-actions/d1e685-query-refusals.json",
@@ -9258,8 +9263,8 @@
     },
     {
       "path": "tests/native-form-history-actions/run_host.py",
-      "bytes": 9154,
-      "sha256": "587356387112ba3f1aecdcf80e1c0e10ae70578c5d8d9492c77fc9eb4118d18f"
+      "bytes": 10232,
+      "sha256": "c907b0f4e4a4622a46760b21aa786e640a86d04f6d9435f61a7053dcdb107eb8"
     },
     {
       "path": "tests/native-form-history-consumers/NativeFormHistoryConsumersHostTest.java",
@@ -10478,8 +10483,8 @@
     },
     {
       "path": "tests/observation-diagnostics/run_host.py",
-      "bytes": 30739,
-      "sha256": "0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f"
+      "bytes": 30763,
+      "sha256": "1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07"
     },
     {
       "path": "tests/observation-display-scope/ObservationDisplayScopeHostTest.java",
@@ -11393,8 +11398,8 @@
     },
     {
       "path": "tests/public-screen-lease/run_host.py",
-      "bytes": 10720,
-      "sha256": "e6f98157f37e190c215d3f168ccc91db51333f866ab2efa46a507cf84b057add"
+      "bytes": 11280,
+      "sha256": "162f5c2263cf6cd4f8cf8eee5fe985deef4d99423f6c9a69fda298da0899cf38"
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
@@ -13167,9 +13172,9 @@
   },
   "host_validation_at_preparation": {
     "targeted_review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10724,
-      "sha256": "efee1b67c8d109aa129dd6a417fb9938359b0af5fa1b3f2c87e345a2938c6f26"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r2/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 10489,
+      "sha256": "d5c2a7d984ef98c14c116615d0bcb124e5dc7b595a92a197beac90e22bbcef0d"
     },
     "full_current_host_suite_completed_at_preparation": false,
     "android_build_completed_at_preparation": false,
@@ -13183,8 +13188,8 @@
   "production_input_map_sha256": "034c16fccb1066eff256cce37248a53d300be0d1d073e6a4b4d1daaea0e16691",
   "schema": "hepta.local-source.v3",
   "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions.",
-  "source_parent_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
-  "source_parent_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+  "source_parent_head": "a252f1164117f158e84b63dc39f5eba431972b08",
+  "source_parent_manifest_sha256": "51f4f9e242e7049a401a9c9687775c3364c9a79d0e569d52da3a624fa4201597",
   "source_snapshot_predecessor_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -13251,9 +13256,9 @@
   },
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10724,
-      "sha256": "efee1b67c8d109aa129dd6a417fb9938359b0af5fa1b3f2c87e345a2938c6f26"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r2/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 10489,
+      "sha256": "d5c2a7d984ef98c14c116615d0bcb124e5dc7b595a92a197beac90e22bbcef0d"
     },
     "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions."
   }
