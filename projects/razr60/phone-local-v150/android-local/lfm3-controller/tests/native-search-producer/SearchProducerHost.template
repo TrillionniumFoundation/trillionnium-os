@@ -44,6 +44,9 @@ public final class HeptaAccessibilityService {
     PhoneObservation current;Graph currentGraph;Bitmap currentBitmap;
     static final class Bitmap {void recycle(){}}
     Fixture fixture;
+    /** Explicit Android public client-cache API endpoint; never a provider or input call. */
+    boolean clearCache(){fixture.cacheCalls++;if(fixture.cacheHook!=null)fixture.cacheHook.run();
+        if(fixture.cacheThrows)throw new IllegalStateException("synthetic Android client cache failure");return fixture.cacheResult;}
     static final class ProfilePermissionUiSession {static boolean pending;static boolean workPending(){return pending;}void retire(String task,String reason){/* unrelated permission IO stays pending until its own owner drains */}}
     final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession();
     private static final class ActionWork {final ActionExecutionState state;private ActionWork(ActionExecutionState state){this.state=state;}}
@@ -188,11 +191,13 @@ public final class HeptaAccessibilityService {
         int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
         String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
         Runnable graphHook,windowHook,effectHook,afterEffectRecycleHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
+        int cacheCalls,syntheticBackEffects;boolean cacheResult=true,cacheThrows,incompleteGraph;Runnable cacheHook;
         Fixture()throws Exception{this(new Object());}
         Fixture(Object controller)throws Exception{
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("previous physical capacity leaked");
             actionIo=new FakeExecutor();observationIo=new FakeExecutor();ProfilePermissionUiSession.pending=false;
             Looper.main=true;SystemClock.now=NativeSearchSessionHostTest.START;LocalSocket.reset();
+            android.os.Build.VERSION.SDK_INT=33;
             fixture=this;live=HeptaAccessibilityService.this;ownedController=controller;
             String owner=NativeProfileIdentityHostTest.OWNER;
             String selectionSha=NativeAppObservation.selectionSha(NativeProfileIdentityHostTest.selection(owner,NativeProfileIdentityHostTest.xiaomi()));
@@ -263,7 +268,7 @@ public final class HeptaAccessibilityService {
                     collectNativeActionNode(g,node,entry.getKey(),(String)entry.getValue().v.get("parent_class"),retained,ref);
                 }finally{node.recycle();}
             }
-            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=true;
+            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=!incompleteGraph;if(incompleteGraph)g.collectionStats.pending=1;
             SystemClock.now+=graphDuration/3;g.nativeActionCapturedAt=SystemClock.now;g.nativeActionNodes=g.nativeActionBuilding;g.nativeActionBuilding=null;
             SystemClock.now+=graphDuration/3;g.readCompletedElapsedMs=SystemClock.now;checkReadBudget(budget);return g;
             }{{read_graph_failure_cleanup}}
@@ -302,7 +307,7 @@ public final class HeptaAccessibilityService {
             if(!observationIo.jobs.isEmpty())observationIo.one();
             if(!actionIo.jobs.isEmpty())actionIo.one();
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("owned work has not drained");
-            base.close();live=null;
+            android.os.Build.VERSION.SDK_INT=33;base.close();live=null;
         }
     }
     static final List<Map<String,Object>> cases=new ArrayList<Map<String,Object>>();static int assertions;

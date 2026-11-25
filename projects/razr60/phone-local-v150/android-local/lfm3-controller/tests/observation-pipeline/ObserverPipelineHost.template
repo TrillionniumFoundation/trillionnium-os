@@ -229,6 +229,9 @@ public final class ObserverPipelineHost {
         Graph graph=new Graph(n,background==null?0:background.displayId());graph.readStartedElapsedMs=SystemClock.now;graphs.add(graph);
         try{if(readHook!=null)readHook.read(graph,n);budget.check();graph.readCompletedElapsedMs=SystemClock.now;return graph;}catch(RuntimeException error){graph.close();throw error;}
     }
+    /** Fail-only legacy boundary. The dedicated Ctrip bridge compiles the actual helper. */
+    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,
+            ObservationEventWatermark pairStart,StaleObservation failure){return null;}
     /** Explicit fail-only port: legacy scheduling fixtures cannot admit scoped form pairs.
      * The dedicated form-observation gate substitutes both actual production helpers. */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}

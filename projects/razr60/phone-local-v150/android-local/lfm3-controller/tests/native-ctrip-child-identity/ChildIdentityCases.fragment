@@ -1,0 +1,252 @@
+
+    static NativeActionSnapshotCheckHostTest.Fixture childArchive(boolean after)throws Exception{
+        String path=System.getProperty("hepta.ctrip.child.actual");
+        org.json.JSONObject input=new org.json.JSONObject(new String(Files.readAllBytes(Paths.get(path)),StandardCharsets.UTF_8));
+        expect(input.getBoolean("complete_pair_recorded")&&!input.getBoolean("raw_pair_omitted_for_budget")
+                &&input.getInt("raw_pair_count")==1&&"saved_graph".equals(input.getString("selected_pair_stage")),"complete actual pair");
+        org.json.JSONObject side=input.getJSONObject(after?"after":"before"),read=side.getJSONObject("read");
+        expect(side.getBoolean("native_nodes_complete")&&read.getBoolean("native_observation_complete")
+                &&read.getBoolean("reported_windows_complete")&&!read.getBoolean("truncated"),"complete original census");
+        org.json.JSONArray rows=side.getJSONArray("native_nodes");
+        expect(rows.length()==278&&side.getInt("raw_node_count")==278,"all actual 278 nodes");
+        NativeActionSnapshotCheckHostTest.Fixture out=FormPairHostTest.managedForm();out.nodes.clear();
+        for(int i=0;i<rows.length();i++){
+            Map<String,Object> row=rows.getJSONObject(i).toMap();String key=(String)row.get("path");
+            expect(NativeAppGoal.CTRIP_PACKAGE.equals(row.get("package"))&&out.nodes.put(key,row)==null,"unique original node");
+        }return out;
+    }
+    @SuppressWarnings("unchecked")
+    static void childPopulate(ObserverPipelineHost f,Graph g,NativeActionSnapshotCheckHostTest.Fixture rows,int ordinal,boolean changed){
+        populate(f,g,rows,"post_fixture",ordinal);
+        g.windowId=((Number)rows.nodes.get("0").get("window_id")).intValue();
+        g.profileWindow=owned(f.taskBackground.profile,g.windowId,TEST_TOKEN);
+        Map<String,Object> ws=new LinkedHashMap<String,Object>(windows());
+        Map<String,Object> row=new LinkedHashMap<String,Object>((Map<String,Object>)((List<?>)ws.get("windows")).get(0));
+        row.put("window_id",g.windowId);ws.put("target_window_id",g.windowId);ws.put("windows",Collections.singletonList(row));
+        g.nativeActionWindows=NativeAppEvidence.immutableMap(ws);g.nativeObservationComplete=completeNativeObservationGraph(g);
+        g.digest=changed?"actual-278-after":"actual-278-before";
+        f.windowValue=frozenObservationWindow(g); // Same complete fixture graph supplies the explicit current-window IO port.
+        expect(g.nativeActionNodes.size()==278,"full original nodes kept");
+        for(NativeActionSnapshotCheck.Node n:g.nativeActionNodes)expect(n.v.equals(rows.nodes.get(n.path)),"node values exactly original");
+    }
+    static void childEvent(ObserverPipelineHost f,ObservationRequest r,String kind){
+        if("unknown".equals(kind))f.noteObservationEvent(-1);
+        else if("boundary".equals(kind))f.noteObservationEvent(15,r.captured.windowId,NativeAppGoal.CTRIP_PACKAGE,false);
+        else if("untyped".equals(kind))r.events++;
+        else f.noteObservationEvent(15,r.captured.windowId,NativeAppGoal.CTRIP_PACKAGE,true);
+    }
+    static Object childInvoke(ObserverPipelineHost f,ObservationRequest r,ObservationProduct product,ObservationEventWatermark start,StaleObservation failure)throws Exception{
+        java.lang.reflect.Method m=ObserverPipelineHost.class.getDeclaredMethod("recheckPostEffectChildWindow",
+                ObservationRequest.class,ObservationProduct.class,ObservationEventWatermark.class,StaleObservation.class);
+        m.setAccessible(true);
+        try{return m.invoke(f,r,product,start,failure);}
+        catch(java.lang.reflect.InvocationTargetException error){throw new AssertionError("actual helper escaped",error.getCause());}
+    }
+    static void childNote(ObservationRequest r,StaleObservation failure,Object check)throws Exception{
+        Class<?> proof=null;for(Class<?> c:ObserverPipelineHost.class.getDeclaredClasses())
+            if("PostEffectChildWindowCheck".equals(c.getSimpleName()))proof=c;
+        expect(proof!=null,"actual ephemeral check class");
+        java.lang.reflect.Method note=ObservationRequest.class.getDeclaredMethod("note",ObservationDiagnostics.Event.class,boolean.class,proof);
+        note.setAccessible(true);note.invoke(r,ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE,failure.backgroundChildUnavailable,check);
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> childDiagnostic(ObservationRequest r)throws Exception{
+        java.lang.reflect.Field field=ObservationRequest.class.getDeclaredField("postEffectChildDiagnostic");field.setAccessible(true);
+        Object carrier=field.get(r);java.lang.reflect.Method method=carrier.getClass().getDeclaredMethod("snapshot");method.setAccessible(true);
+        return (Map<String,Object>)method.invoke(carrier);
+    }
+    static void childReset(){
+        mainThread=Thread.currentThread();expect(!observationIoBusy.get()&&observationIo.active.get()==0,"previous IO drained");
+        SystemClock.now=1000;SystemClock.nextElapsedHook=null;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;Bitmap.streamHook=null;
+        observationIo.reject=false;WebFlightSession.unreleased=false;
+    }
+    static Map<String,Object> exerciseOriginalChildNote(String scenario)throws Exception{
+        childReset();ObserverPipelineHost f=formFixture("post_late_classified");
+        try{
+            ObservationRequest r=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+                public void onObservation(PhoneObservation value){throw new AssertionError("no publication");}
+                public void onError(String error){throw new AssertionError("no callback");}},()->false,13000,f.taskBackground);
+            r.postEffectController=new Object();r.postEffectIdentityRejected="already_sticky".equals(scenario);
+            r.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE,true);
+            Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("scenario",scenario);
+            out.put("sticky",r.postEffectIdentityRejected);out.put("typed_failures",r.postEffectSamplingTypedChildFailures);
+            out.put("capture_failures",r.readCaptureFailures);out.put("no_reads",f.reads.get()==0&&f.windowChecks.get()==0);
+            return out;
+        }finally{f.dispose();}
+    }
+    static FrozenObservationWindow childChangedWindow(FrozenObservationWindow w,String kind,BackgroundSession bg){
+        Map<String,Object> windows=w.windows;WindowOwnership profile=w.profileWindow;
+        if("window_census_mismatch".equals(kind)){Map<String,Object> copy=new LinkedHashMap<String,Object>(windows);copy.put("target_layer",3);windows=copy;}
+        if("profile_token_mismatch".equals(kind))profile=owned(bg.profile,w.windowId,"44444444-5555-6666-7777-888888888888");
+        return new FrozenObservationWindow(w.packageName,"window_id_mismatch".equals(kind)?w.windowId+1:w.windowId,
+                w.displayId,w.rotation,w.left,w.top,w.right,w.bottom,w.width,w.height,
+                "window_metadata_mismatch".equals(kind)?w.metadata+"changed":w.metadata,windows,profile);
+    }
+    static Map<String,Object> exerciseChildIdentity(final String scenario)throws Exception{
+        childReset();final ObserverPipelineHost f=formFixture("post_late_classified");
+        final Map<String,Object> out=new LinkedHashMap<String,Object>();
+        final NativeActionSnapshotCheckHostTest.Fixture rows=childArchive(false);
+        final ObservationRequest r=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+            public void onObservation(PhoneObservation value){throw new AssertionError("identity read cannot publish");}
+            public void onError(String error){f.errors.add(error);}},()->f.cancelled.get(),13000,f.taskBackground);
+        f.activeObservation=r;r.trace=f.observationDiagnostic(r);r.readAuthorization=f.taskAuthorization;
+        f.ownedController=new LocalTaskController();NativeAppSession task=new NativeAppSession();
+        NativeAppSession.PostEffectReadPermit permit=new NativeAppSession.PostEffectReadPermit(task,f.taskAuthorization,f.lease,
+                f.taskBackground.selection,f.taskBackground.generation,15,16000);permit.admit(false);
+        r.postEffectController=f.ownedController;r.postEffectNativeTask=task;r.postEffectPermit=permit;
+        r.postEffectTaskDeadline=21000;r.postEffectTransitionDeadline=16000;r.taskReadOrdinal=++f.taskObservationAdmissions;
+        Graph g=new Graph(1,15);f.graphs.add(g);g.readStartedElapsedMs=1000;
+        childPopulate(f,g,rows,1,false);g.readCompletedElapsedMs=1010;r.captured=g;r.nativeSample=true;r.graph("sample_graph",g);
+        SystemClock.now=1020;CaptureIdentity identity=new CaptureIdentity(g,1020,r.eventWatermark(),true);
+        final ObservationProduct product=new ObservationProduct(identity,1021);product.pairStartedAt=1022;product.bitmap=new Bitmap(false);
+        final ObservationEventWatermark start=r.eventWatermark();r.phase("screenshot_graph");SystemClock.now=1030;
+        f.windowValue=frozenObservationWindow(g);long originalDeadline=r.deadline,transition=r.postEffectTransitionDeadline,taskDeadline=r.postEffectTaskDeadline;
+        StaleObservation failed=new StaleObservation("synthetic child unavailable",!"untyped_failure".equals(scenario),
+                "noncanonical_path".equals(scenario)?"0/01":"root_path".equals(scenario)?"0":"0/0/9/2");
+        if("incomplete_capture".equals(scenario))g.nativeObservationComplete=false;
+        if("missing_native_census".equals(scenario))g.nativeActionNodes=null;
+        if("capture_replaced".equals(scenario))g.digest="replaced";
+        if("generation_replaced".equals(scenario))g.backgroundGeneration="55555555-6666-7777-8888-999999999999";
+        if("existing_sticky".equals(scenario))r.postEffectIdentityRejected=true;
+        if("initial_scope".equals(scenario))r.initialController=new Object();
+        if("native_ax_scope".equals(scenario))r.nativeAxMode=new Object();
+        if("mixed_ordinary_identity".equals(scenario))r.readIdentity=new NativeReadIdentity(g);
+        if("unsupported_target".equals(scenario))f.taskBackground.profile=target(NativeAppGoal.CTRIP_PACKAGE,1780,NativeCtripFlightPage.BASE_APK_SHA256);
+        if("unknown_before_read".equals(scenario))childEvent(f,r,"unknown");
+        if("boundary_before_read".equals(scenario))childEvent(f,r,"boundary");
+        if("untyped_before_read".equals(scenario))childEvent(f,r,"untyped");
+        if("known_content_before_read".equals(scenario))childEvent(f,r,"content");
+        f.windowHook=()->{
+            SystemClock.now+=7; // Explicit host IO cost, charged to the original request clock.
+            if(scenario.startsWith("window_")||scenario.equals("profile_token_mismatch"))f.windowValue=childChangedWindow(f.windowValue,scenario,f.taskBackground);
+            if("unknown_during_read".equals(scenario))childEvent(f,r,"unknown");
+            if("boundary_during_read".equals(scenario))childEvent(f,r,"boundary");
+            if("untyped_during_read".equals(scenario))childEvent(f,r,"untyped");
+            if("known_content_during_read".equals(scenario))childEvent(f,r,"content");
+            if("deadline_during_read".equals(scenario))SystemClock.now=r.deadline;
+            if("cancel_during_read".equals(scenario))f.cancelled.set(true);
+            if("owner_retired_during_read".equals(scenario))permit.valid=false;
+            if("authorization_replaced_during_read".equals(scenario))f.taskAuthorization=new AuthorizationGate();
+            if("task_lease_retired_during_read".equals(scenario))f.lease="retired-task-lease";
+            if("identity_reader_throws".equals(scenario))throw new NoActiveWindow();
+        };
+        observationIoBusy.set(true);r.worker(true);
+        try{
+            final StaleObservation actualFailure=failed;
+            Object checked=observationIo.executor.submit(()->childInvoke(f,r,product,start,actualFailure)).get(5,TimeUnit.SECONDS);
+            if("content_before_note".equals(scenario))childEvent(f,r,"content");
+            if("unknown_before_note".equals(scenario))childEvent(f,r,"unknown");
+            if("token_before_note".equals(scenario))r.token++;
+            if("cancel_before_note".equals(scenario))f.cancelled.set(true);
+            if("deadline_before_note".equals(scenario))SystemClock.now=r.deadline;
+            if("task_deadline_before_note".equals(scenario))SystemClock.now=r.postEffectTaskDeadline;
+            if("transition_deadline_before_note".equals(scenario))SystemClock.now=r.postEffectTransitionDeadline;
+            childNote(r,failed,checked);
+            Map<String,Object> first=childDiagnostic(r);
+            out.put("proof_returned",checked!=null);out.put("sticky_after_first",r.postEffectIdentityRejected);
+            if("second_stale_is_not_reopened".equals(scenario)){
+                Object second=observationIo.executor.submit(()->childInvoke(f,r,product,start,actualFailure)).get(5,TimeUnit.SECONDS);
+                childNote(r,failed,second);out.put("second_proof_absent",second==null);
+                Map<String,Object> last=childDiagnostic(r);
+                out.put("first_read_and_note_preserved",first!=null&&last!=null
+                        &&Objects.equals(first.get("read_started_elapsed_ms"),last.get("read_started_elapsed_ms"))
+                        &&Objects.equals(first.get("read_completed_elapsed_ms"),last.get("read_completed_elapsed_ms"))
+                        &&Objects.equals(first.get("same_identity_at_note"),last.get("same_identity_at_note"))
+                        &&Integer.valueOf(1).equals(last.get("later_stale_rejections")));
+            }
+            out.put("scenario",scenario);out.put("sticky",r.postEffectIdentityRejected);
+            out.put("identity_reads",f.windowChecks.get());out.put("body_reads",f.reads.get());
+            out.put("typed_failures",r.postEffectSamplingTypedChildFailures);out.put("capture_failures",r.readCaptureFailures);
+            out.put("diagnostic",childDiagnostic(r));out.put("events",r.events);out.put("unknown_events",r.unknownEvents);
+            out.put("deadline_unchanged",r.deadline==originalDeadline&&r.postEffectTransitionDeadline==transition&&r.postEffectTaskDeadline==taskDeadline);
+            out.put("no_publication_or_effect",f.delivered.isEmpty()&&f.errors.isEmpty()&&f.directory.list().length==0&&!f.actionWorkPending()&&!f.nativeCancellationWorkPending());
+            out.put("native_278_kept",g.nativeActionNodes==null||g.nativeActionNodes.size()==278);
+            java.lang.reflect.Field carrierField=ObservationRequest.class.getDeclaredField("postEffectChildDiagnostic");carrierField.setAccessible(true);
+            Object carrier=carrierField.get(r);java.lang.reflect.Method finish=carrier.getClass().getDeclaredMethod("finish");finish.setAccessible(true);finish.invoke(carrier);
+            Map<String,Object> beforeFrozen=childDiagnostic(r);
+            childNote(r,failed,checked);
+            out.put("diagnostic_frozen",Objects.equals(beforeFrozen,childDiagnostic(r)));
+        }finally{
+            r.worker(false);observationIoBusy.set(false);product.close();f.windowHook=null;f.dispose();SystemClock.nextElapsedHook=null;
+        }
+        boolean closed=true;for(Graph graph:f.graphs)closed&=graph.closed;
+        out.put("all_graphs_closed",closed);out.put("all_bitmaps_recycled",Bitmap.made.stream().allMatch(b->b.recycled));
+        out.put("workers_drained",!observationIoBusy.get()&&observationIo.active.get()==0);
+        return out;
+    }
+
+    static Map<String,Object> exerciseChildPipeline(final String scenario)throws Exception{
+        childReset();final ObserverPipelineHost f=formFixture("post_late_classified");
+        final NativeActionSnapshotCheckHostTest.Fixture beforeNodes=childArchive(false),afterNodes=childArchive(true);
+        final Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("scenario",scenario);
+        f.readHook=(graph,n)->{
+            if(n==6)throw new StaleObservation("synthetic typed child unavailable",true,"0/0/9/2");
+            boolean changed=n>=10;
+            childPopulate(f,graph,changed?afterNodes:beforeNodes,n,changed);
+        };
+        try{
+            f.captureFormRead();f.finish();expect(f.delivered.size()==1,"original complete frame before effect: "+f.errors);
+            PhoneObservation before=f.current;int pngBefore=f.directory.list((p,n)->n.endsWith(".png")).length;
+            f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;SystemClock.now+=400;
+            f.ownedController=new LocalTaskController();
+            f.submitted=new NativeAppSession.PostEffectReadPermit(new NativeAppSession(),f.taskAuthorization,f.lease,
+                    f.taskBackground.selection,f.taskBackground.generation,15,SystemClock.now+15000);
+            f.submitted.fixtureOrigin=before.id;
+            Bitmap.encodeHook=()->{
+                if(f.reads.get()>=9)f.noteObservationEvent(15,((Number)beforeNodes.nodes.get("0").get("window_id")).intValue(),
+                        NativeAppGoal.CTRIP_PACKAGE,true);
+            };
+            f.windowHook=()->{
+                SystemClock.now+=7;
+                if("pipeline_unknown_identity_read".equals(scenario)&&f.reads.get()==6)f.noteObservationEvent(-1);
+            };
+            int bitmapStart=Bitmap.made.size();ObservationRequest r=f.captureFormRead();
+            long originalDeadline=r.deadline,originalStarted=r.started;
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"first failed screenshot fully drained");
+            List<Bitmap> failedCopies=new ArrayList<Bitmap>(Bitmap.made.subList(bitmapStart,Bitmap.made.size()));
+            // The worker transfers ownership to the original main-thread acceptScreenshot.
+            // Check the same failed objects after that callback has rejected and closed them.
+            f.main.drain();
+            boolean failedPixelsClosed=!failedCopies.isEmpty();
+            for(Bitmap failedCopy:failedCopies)failedPixelsClosed&=failedCopy.recycled;
+            out.put("failed_pixels_discarded",failedPixelsClosed);
+            out.put("first_attempt_published_nothing",f.delivered.isEmpty()
+                    &&f.directory.list((p,n)->n.endsWith(".png")).length==pngBefore&&f.current==before);
+            out.put("first_sticky",r.postEffectIdentityRejected);
+            out.put("first_diagnostic",childDiagnostic(r));
+            out.put("first_full_reads",f.reads.get());
+            if("pipeline_complete_resample".equals(scenario)){
+                for(int i=0;i<60&&f.delivered.isEmpty()&&f.errors.isEmpty();i++){
+                    f.main.drain();SystemClock.now+=200;f.main.drain();
+                    await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"resample worker drain");
+                    f.main.drain();
+                }
+                out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
+                out.put("full_reads",f.reads.get());out.put("new_png_files",f.directory.list((p,n)->n.endsWith(".png")).length-pngBefore);
+                if(!f.delivered.isEmpty()){
+                    PhoneObservation published=f.delivered.get(0);Map<String,Object> evidence=published.captureEvidence;
+                    out.put("capture_evidence",evidence);out.put("capture_time_preserved",published.capturedElapsedMillis==f.lastScreenshotAt);
+                    out.put("new_frame",published!=before&&f.current==published);
+                    File[] history=f.directory.listFiles((p,n)->n.endsWith("-form-history.json"));
+                    out.put("history_artifacts",history.length);
+                    if(history.length==1){
+                        byte[] raw=Files.readAllBytes(history[0].toPath());
+                        out.put("history",new org.json.JSONObject(new String(raw,StandardCharsets.UTF_8)).toMap());
+                        out.put("history_sha256",sha(raw));out.put("history_bytes",raw.length);
+                    }
+                }
+            }else{
+                out.put("publications",f.delivered.size());out.put("full_reads",f.reads.get());
+                out.put("new_png_files",f.directory.list((p,n)->n.endsWith(".png")).length-pngBefore);
+            }
+            out.put("deadline_unchanged",r.deadline==originalDeadline&&r.started==originalStarted&&r.deadline==r.started+12000);
+            out.put("no_action_or_business_completion",!f.actionWorkPending()&&!f.nativeCancellationWorkPending());
+            out.put("identity_reads_total",f.windowChecks.get());out.put("typed_failures",r.postEffectSamplingTypedChildFailures);
+            out.put("diagnostic",childDiagnostic(r));
+        }finally{f.windowHook=null;Bitmap.encodeHook=null;f.dispose();SystemClock.nextElapsedHook=null;}
+        boolean graphs=true;for(Graph graph:f.graphs)graphs&=graph.closed;
+        out.put("all_graphs_closed",graphs);out.put("all_bitmaps_recycled",Bitmap.made.stream().allMatch(b->b.recycled));
+        out.put("all_buffers_closed",f.shots.stream().allMatch(s->s.buffer.closes==1));
+        out.put("workers_drained",!observationIoBusy.get()&&observationIo.active.get()==0&&observationIo.uncaught.get()==0);
+        return out;
+    }

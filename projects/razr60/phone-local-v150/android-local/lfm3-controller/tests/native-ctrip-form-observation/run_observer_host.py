@@ -99,11 +99,14 @@ def generate(source,output,h):
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    if h.sha(template.encode())!='7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f':
+    child_fixture=source/'tests/native-ctrip-child-identity/protected_fixture.py'
+    child_proof=runpy.run_path(str(child_fixture)) if child_fixture.is_file() else None
+    proof_template=child_proof['template_predecessor'](template.encode()).decode() if child_proof else template
+    if h.sha(proof_template.encode())!='7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f':
         raise RuntimeError('reviewed current observer fixture changed')
     # Proof copy only: compile the current metadata ports with all original scheduling cases.
     png_metadata='        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n'
-    pre_png_template=once(template,png_metadata,'')
+    pre_png_template=once(proof_template,png_metadata,'')
     if h.sha(pre_png_template.encode())!='1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2':
         raise RuntimeError('PNG metadata ports must reverse to the complete prior observer fixture')
     # Restore only the exact failure-type proof copy; template stays current for compilation.
@@ -151,6 +154,10 @@ def generate(source,output,h):
       'profile_owner':h.body(service,'    private static void requireSameProfileOwner('),
       'collection_stats':h.body(phone,'    public static final class CollectionStats {'),
       'supported_goal':h.body(page,'    static boolean supported(NativeAppGoal goal){')}
+    if child_proof is not None:
+        parts['child_identity_recheck']=h.body(service,'    private PostEffectChildWindowCheck recheckPostEffectChildWindow(')
+        parts['child_window_fingerprint']=h.body(service,'    private static String postEffectChildWindowFingerprint(')
+        parts['actual_stale_type']=h.body(service,'    private static final class StaleObservation extends IllegalStateException {')
     evidence_anchors=[
       '    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){',
       '    static void requireProfileTarget(ProfileTarget expected,WindowOwnership actual){',
@@ -167,6 +174,8 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        if child_proof is not None and anchor=='    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){':
+            proof=child_proof['accept_predecessor'](proof.encode()).decode()
         # Reverse only the reviewed Xiaomi original-literal type guard for the
         # historical body proof. Actual production extraction stays current.
         if anchor=='    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{' and actual=='0fbffdc34dc59df1828d928c70c7514d9732d8cb6afedaf2f2c308918a321d01':
@@ -344,6 +353,9 @@ def generate(source,output,h):
     }''')
     template=once(template,'        expect(owns(task)&&authorization!=null&&authorization==taskAuthorization,"retired fixture authorization");',
                   '        if(!owns(task)||!authorizationReady||authorization==null||authorization!=taskAuthorization)throw new IllegalStateException("retired fixture authorization");')
+    if child_proof is not None:
+        template=once(template,child_proof['PORT'],parts['child_identity_recheck']+'\n'+parts['child_window_fingerprint']+'\n')
+        template=once(template,typed_child_port,parts['actual_stale_type']+'\n')
     if '{{' in template:raise RuntimeError('unfilled host fixture')
     for name,raw in parts.items():
         if name=='provider_constants':continue
@@ -358,6 +370,7 @@ def generate(source,output,h):
             'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
             'parts':{name:{'bytes':len(raw.encode()),'sha256':h.sha(raw.encode())} for name,raw in parts.items()},
             'protected_production_bodies':protected,'protected_files':protected_files,
+            'child_identity_fixture_proof':h.meta(child_fixture) if child_proof is not None else None,
             'readonly_owner_inverse':readonly_owner_inverse,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
             'legacy_fixture_only_fail_closed_port':True,'initial_current_frame_created_by_actual_observer':True,

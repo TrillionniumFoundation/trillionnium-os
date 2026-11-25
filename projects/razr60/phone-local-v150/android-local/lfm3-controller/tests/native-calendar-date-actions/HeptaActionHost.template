@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import org.json.JSONObject;
 import org.trillionnium.hepta.background.WindowOwnership;
+import org.trillionnium.hepta.background.ProfileTarget;
 
 /** Host Android/read/scheduling ports only. Marked blocks are exact production.
  * Private proof/receipt constructors and their admission logic are never replaced. */
@@ -200,7 +201,7 @@ final class HeptaAccessibilityService {
     static FrozenObservationWindow frozenObservationWindow(Graph g){throw new AssertionError("native sealed/window-only path unavailable");}
     FrozenObservationWindow readFrozenObservationWindow(ObservationRequest r,CaptureIdentity i){throw new AssertionError("window-only read unavailable");}
     ObservationDiagnostics observationDiagnostic(ObservationRequest r){return null;}
-    static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String>{DiagnosticSnapshot(ObservationDiagnostics d){throw new AssertionError("diagnostic callback disabled");}public String call(){throw new AssertionError("disabled");}}
+    // Exact production DiagnosticSnapshot and child diagnostic values are inserted by the runner.
     static final class PrivateCensusSnapshot implements java.util.concurrent.Callable<String>{PrivateCensusSnapshot(ObservationDiagnostics d){throw new AssertionError("private census callback disabled");}public String call(){throw new AssertionError("disabled");}}
     static final class NativeReadIdentity {NativeReadIdentity(Graph g){throw new AssertionError("native retry identity unavailable");}boolean matches(Graph g){return false;}}
     static final class NativeResampleSeed {}

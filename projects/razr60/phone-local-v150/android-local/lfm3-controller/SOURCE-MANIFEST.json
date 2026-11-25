@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
-  "base_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
+  "base_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
+  "base_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2660,
+  "complete_source_files": 2666,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
     "early_sampling_draft_excluded": true,
@@ -146,6 +146,17 @@
     "partial_effect_shape_closed": true,
     "separate_ack_required": true
   },
+  "current_observation_child_read_recovery": {
+    "actual_ctrip_historical_branch_proven": false,
+    "cache_cause_proven": false,
+    "ctrip_source_sha256": "7e2550c886ad8fccf46c01a3dcd71660d0d7ebb6ecd2a7e35d77eb7192450ea7",
+    "event_history_preserved": true,
+    "merged_source_sha256": "ee7e01744e78caf05effd1eaba9cfd9d10331aa0230568190f89cc85dd2c2131",
+    "original_deadlines_preserved": true,
+    "private_phone_fixtures_in_source": false,
+    "whole_source_union_exact": true,
+    "xiaomi_source_sha256": "da95f4ff37def93fc6277e299331dc194261088e31956a654f829fb463ab99ce"
+  },
   "current_observation_closure": {
     "historical_image_not_new_action_authority": true,
     "new_form_submit_ceiling_removed": true,
@@ -190,7 +201,7 @@
     "phone_latency_improvement_measured": false
   },
   "current_published_parent_heads": [
-    "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528"
+    "e4c20b7d775feea780d37c06710dd1ffeff42001"
   ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
@@ -241,13 +252,30 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
+    "baseline": "e4c20b7d775feea780d37c06710dd1ffeff42001",
     "model_weights_unchanged": true,
     "native_unchanged": true,
     "phone_success_claimed": false,
-    "production_changes": [],
+    "production_changes": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+    ],
     "test_changes": [
-      "tests/native-profile-live-identity/run_host.py"
+      "tests/native-calendar-date-actions/HeptaActionHost.template",
+      "tests/native-calendar-date-actions/run_host.py",
+      "tests/native-calendar-date-fresh/HeptaFreshHost.template",
+      "tests/native-calendar-date-fresh/run_host.py",
+      "tests/native-ctrip-child-identity/ChildIdentityCases.fragment",
+      "tests/native-ctrip-child-identity/ChildIdentityHostTest.java",
+      "tests/native-ctrip-child-identity/protected_fixture.py",
+      "tests/native-ctrip-child-identity/run_host.py",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-observation-screenshot-seed/run_host.py",
+      "tests/native-search-producer/PostBackClientCacheCases.fragment",
+      "tests/native-search-producer/PostBackClientCacheExpectedCases.json",
+      "tests/native-search-producer/SearchProducerHost.template",
+      "tests/native-search-producer/run_producer.py",
+      "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
+      "tests/observation-pipeline/ObserverPipelineHost.template"
     ]
   },
   "current_xiaomi_protected_history_prefix": {
@@ -6824,9 +6852,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 674820,
+      "bytes": 698595,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "38c2dac4c0223d2435799ffa5af833c458196d12fc5dbc659d537dea3dca10c0"
+      "sha256": "ee7e01744e78caf05effd1eaba9cfd9d10331aa0230568190f89cc85dd2c2131"
     },
     {
       "bytes": 711,
@@ -9159,9 +9187,9 @@
       "sha256": "eef7494cb0713fbf767b60fe476904df403043482fd19e972372d8966de0e5b7"
     },
     {
-      "bytes": 17378,
+      "bytes": 17278,
       "path": "tests/native-calendar-date-actions/HeptaActionHost.template",
-      "sha256": "e30582f678144ba98acc2c8233a494677d6de5e96ca0ac0219259d7f6095619b"
+      "sha256": "3b71145335cfc8ea825f8d775d99d010a6b5996d2957bd04de68ffeae7591b81"
     },
     {
       "bytes": 54627,
@@ -9169,9 +9197,9 @@
       "sha256": "b31fc44038c3248992852dcff27be984eb95fa7d6deae951046c5b3d7f9ef5e2"
     },
     {
-      "bytes": 23059,
+      "bytes": 24982,
       "path": "tests/native-calendar-date-actions/run_host.py",
-      "sha256": "0b2614c747208b8bbb43cd08967b6bca0ac555b941a133a60d82ca9b8c43f3a5"
+      "sha256": "27989ee2d9b8e30ca02190e9766ff95451078aca7dd58885bab0c666860670a0"
     },
     {
       "bytes": 3371,
@@ -9179,9 +9207,9 @@
       "sha256": "f6fc14748e359113fc53f9fcf18c9df0728e9c156d8bf5d2043739fad0efeb14"
     },
     {
-      "bytes": 12566,
+      "bytes": 12466,
       "path": "tests/native-calendar-date-fresh/HeptaFreshHost.template",
-      "sha256": "50293ac9df34430379c5e35380981dbb874d683afbe1558b4e6f12f44588f285"
+      "sha256": "e5a2db349bb077d92b1a20bd47fb021c4ec45e346892f431147168d0c22445ec"
     },
     {
       "bytes": 31688,
@@ -9189,9 +9217,9 @@
       "sha256": "f6ab1b948cfd654f6902eed978b0acba1232187b3efe8ccaa7a31f7470254937"
     },
     {
-      "bytes": 19204,
+      "bytes": 21127,
       "path": "tests/native-calendar-date-fresh/run_host.py",
-      "sha256": "eb7433621e080765ffe7d328b129dce5ae552779105e2bfd212f0b39571c372d"
+      "sha256": "8079784105b66cc940551a56f6f5bfe5a0caa1da0bcbeedb8c81587be8deb6ea"
     },
     {
       "bytes": 27848,
@@ -9339,6 +9367,26 @@
       "sha256": "bd703e93f159a32eb7c26c9501881dcf7982c6ec13fab37f98548f43239b588c"
     },
     {
+      "bytes": 21297,
+      "path": "tests/native-ctrip-child-identity/ChildIdentityCases.fragment",
+      "sha256": "ee07391204bf113aebcbee2007893a7ea05e80cbb7389945148fc20e79c1f740"
+    },
+    {
+      "bytes": 6910,
+      "path": "tests/native-ctrip-child-identity/ChildIdentityHostTest.java",
+      "sha256": "060f4123380bfba36fb4a312f1fea9903e2ba7050f7e8abd972a2d916584612e"
+    },
+    {
+      "bytes": 1542,
+      "path": "tests/native-ctrip-child-identity/protected_fixture.py",
+      "sha256": "2f9461ebe2cef9f7a6641e40e359d6512de7330b8263a6220b0592bc67b4395b"
+    },
+    {
+      "bytes": 15216,
+      "path": "tests/native-ctrip-child-identity/run_host.py",
+      "sha256": "43b0685f9fd4a4cae6106d07c4f0575130f3cc4a8b4d2ce48f5414a0e1fa5625"
+    },
+    {
       "bytes": 10293,
       "path": "tests/native-ctrip-form-observation/ActualCtripRegionHostTest.java",
       "sha256": "034959af349a16d91eae54a98d7ba320a19efbcfeb442da3d08d57df93122ec6"
@@ -9374,9 +9422,9 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 77938,
+      "bytes": 79232,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "9820f096f03fb5b4ba5e0c034400d9a903d4fd9082980794ed4fef41d5997339"
+      "sha256": "37342b935b131a72d6ec40739c9b237bbdd54f690074706c4dcd20ebd43e381b"
     },
     {
       "bytes": 3535,
@@ -9604,9 +9652,9 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 64469,
+      "bytes": 66069,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "039ba07db49c9ac31f8451c54793974455190a93fae9e261af2a947a765f3ddb"
+      "sha256": "7bfb158dde046a95c6f7df00c3c0fcf1326f8332ca6b864ccd8a9e492005d32d"
     },
     {
       "bytes": 7722,
@@ -9849,6 +9897,16 @@
       "sha256": "383e1663ebb75d87e7624b3dc5a40bf6e89e31e6916444ec8199fff5f25f946c"
     },
     {
+      "bytes": 29426,
+      "path": "tests/native-search-producer/PostBackClientCacheCases.fragment",
+      "sha256": "e0773dda7375e5dc3ce507907df217da47f4f39b602169ee88eb4edfbadfc75b"
+    },
+    {
+      "bytes": 2204,
+      "path": "tests/native-search-producer/PostBackClientCacheExpectedCases.json",
+      "sha256": "fc3137ab98b7e69dfd7c52b6f29cf8c6f38e5fe8966b9518d9fcf5f4a7bcc374"
+    },
+    {
       "bytes": 76659,
       "path": "tests/native-search-producer/ProducerCases.fragment",
       "sha256": "e931368d7eb554db36860a13e9e2b3d2d000eb254c0b9812be2e4c6350422b01"
@@ -9874,9 +9932,9 @@
       "sha256": "fde299b1a2859ae11453b5f1d6b5456550f4b58c59374416cf5afd35d471ebdd"
     },
     {
-      "bytes": 29280,
+      "bytes": 29867,
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "sha256": "f0feb6049485c3c63d99998ed742172ce803f80a7d2b64a5d56179450552ac1f"
+      "sha256": "2634a5c370195dbab579b9fdd1a1fc9c78dfa16eb4667b0a7ca9437a62112091"
     },
     {
       "bytes": 112963,
@@ -9899,9 +9957,9 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 22180,
+      "bytes": 23265,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "ee70cc54274454c25b8b090250fb655d0a3ff75c0ac777678e749fa11f094501"
+      "sha256": "e3524cd8142fa24ed31249939ab85d5e0952254e295001db86b46a58b8642cc3"
     },
     {
       "bytes": 14431,
@@ -10829,9 +10887,9 @@
       "sha256": "d8bc2463ca2113e73f1e80300e6cfceafda932efaa1b53785b11670c793bc669"
     },
     {
-      "bytes": 13729,
+      "bytes": 14632,
       "path": "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
-      "sha256": "62bf21dfc763c56b097c4edf62d7f552b916b51c4c174f67980febd94cf150be"
+      "sha256": "0ab8a5abe42a423a76a2c2a224d439f7e16630de98aa21a1463bb673de0c7215"
     },
     {
       "bytes": 9348,
@@ -10879,9 +10937,9 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 37419,
+      "bytes": 37723,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f"
+      "sha256": "fb3fb74feb4e7e67a16953ae80b00a51bdd34a31b0fb799dabc274d8368300ba"
     },
     {
       "bytes": 9529,
@@ -13570,64 +13628,70 @@
     }
   ],
   "historical_provenance": {
-    "b1dd_and_63c75_prequalification_sources_preserved": true,
     "historical_failed_tasks_preserved": true,
-    "immediate_parent_component_tree": "a3a22a33aa68f902a31931c85dbd71fce3895b29",
-    "immediate_parent_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
-    "immediate_parent_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
+    "immediate_parent_component_tree": "8ead98300a3b89fb1c58613655693d9cc773307d",
+    "immediate_parent_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
+    "immediate_parent_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
     "prior_provenance": {
-      "b1dd_prequalification_source_preserved": true,
+      "b1dd_and_63c75_prequalification_sources_preserved": true,
       "historical_failed_tasks_preserved": true,
-      "immediate_parent_component_tree": "048919c5776b9edb3051e085a914eb4f4940c65c",
-      "immediate_parent_head": "b1dd8cb96366d06f739996509db2e28434188020",
-      "immediate_parent_manifest_sha256": "4dcc3e7817478cf629dccf6525635c48add5db88ec55bf067f3c2d75600f8f28",
+      "immediate_parent_component_tree": "a3a22a33aa68f902a31931c85dbd71fce3895b29",
+      "immediate_parent_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
+      "immediate_parent_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
       "prior_provenance": {
+        "b1dd_prequalification_source_preserved": true,
         "historical_failed_tasks_preserved": true,
-        "immediate_parent_component_tree": "67408ec1f6d1ba4e7d8cd3957b39a619d12fdfa9",
-        "immediate_parent_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
-        "immediate_parent_manifest_sha256": "efa76674ac0aa37c060b3ca340de58521cf95aafd08c5cfa473b3c80df7d3c7f",
+        "immediate_parent_component_tree": "048919c5776b9edb3051e085a914eb4f4940c65c",
+        "immediate_parent_head": "b1dd8cb96366d06f739996509db2e28434188020",
+        "immediate_parent_manifest_sha256": "4dcc3e7817478cf629dccf6525635c48add5db88ec55bf067f3c2d75600f8f28",
         "prior_provenance": {
           "historical_failed_tasks_preserved": true,
-          "immediate_parent_component_tree": "10e46279dcbf90dbb7e3c21813d64b21870095e2",
-          "immediate_parent_head": "cc22f6be1f1393cd181b578b33dbe38c045e4d03",
-          "immediate_parent_manifest_sha256": "a711dc83d51016aa12f5f56d324a02d27dbf6f71c09a858e3f8cd3e57aa2aef7",
+          "immediate_parent_component_tree": "67408ec1f6d1ba4e7d8cd3957b39a619d12fdfa9",
+          "immediate_parent_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
+          "immediate_parent_manifest_sha256": "efa76674ac0aa37c060b3ca340de58521cf95aafd08c5cfa473b3c80df7d3c7f",
           "prior_provenance": {
-            "current_phone_task_still_requires_recovery": true,
-            "historical_failed_task_preserved": true,
-            "immediate_parent_component_tree": "813aeb9a70437cab31645971202fd3e8c7d45660",
-            "immediate_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
-            "immediate_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
+            "historical_failed_tasks_preserved": true,
+            "immediate_parent_component_tree": "10e46279dcbf90dbb7e3c21813d64b21870095e2",
+            "immediate_parent_head": "cc22f6be1f1393cd181b578b33dbe38c045e4d03",
+            "immediate_parent_manifest_sha256": "a711dc83d51016aa12f5f56d324a02d27dbf6f71c09a858e3f8cd3e57aa2aef7",
             "prior_provenance": {
-              "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
-              "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
-              "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
-              "old_failed_phone_and_host_records_preserved": true,
-              "original_parent_full_host_is_not_qualified": true,
-              "original_parent_full_host_stages_passed": 48,
-              "original_parent_full_host_stages_total": 50,
+              "current_phone_task_still_requires_recovery": true,
+              "historical_failed_task_preserved": true,
+              "immediate_parent_component_tree": "813aeb9a70437cab31645971202fd3e8c7d45660",
+              "immediate_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
+              "immediate_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
               "prior_provenance": {
-                "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
-                "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-                "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+                "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
+                "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
+                "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
                 "old_failed_phone_and_host_records_preserved": true,
+                "original_parent_full_host_is_not_qualified": true,
+                "original_parent_full_host_stages_passed": 48,
+                "original_parent_full_host_stages_total": 50,
                 "prior_provenance": {
-                  "exact_cleanup_started_time_unavailable": true,
-                  "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
-                  "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
-                  "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
-                  "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
-                  "immediate_parent_qualification_failed": true,
-                  "immediate_parent_qualifications_are_historical": true,
-                  "original_e7ef24_business_status": "blocked",
-                  "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-                  "original_notes_cleanup": "CLEANUP_UNKNOWN",
-                  "original_notes_task_status": "blocked",
-                  "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
-                  "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
-                  "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
-                  "previous_full_host_passed": false,
-                  "previous_host_and_phone_results_are_not_current_qualification": true,
-                  "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+                  "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
+                  "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
+                  "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+                  "old_failed_phone_and_host_records_preserved": true,
+                  "prior_provenance": {
+                    "exact_cleanup_started_time_unavailable": true,
+                    "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
+                    "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
+                    "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
+                    "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
+                    "immediate_parent_qualification_failed": true,
+                    "immediate_parent_qualifications_are_historical": true,
+                    "original_e7ef24_business_status": "blocked",
+                    "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+                    "original_notes_cleanup": "CLEANUP_UNKNOWN",
+                    "original_notes_task_status": "blocked",
+                    "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+                    "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+                    "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+                    "previous_full_host_passed": false,
+                    "previous_host_and_phone_results_are_not_current_qualification": true,
+                    "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+                  }
                 }
               }
             }
@@ -13861,7 +13925,7 @@
     "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
     "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336"
   },
-  "mac_cached_source_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
+  "mac_cached_source_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
   "main_java_sources": 220,
   "merged_published_heads": [
     "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
@@ -13869,13 +13933,13 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "9ad060404c58774109a4b9ff054326509df43470534361a7b242180f6d16c955",
-  "production_qualification_base_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
+  "production_input_map_sha256": "6bdb04749712a377b748c28925538d21d4ba70d65e3f3941bf04132bdfe5ca48",
+  "production_qualification_base_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
   "schema": "hepta.local-source.v3",
-  "scope": "Recognize one protected AX3000T history prefix and verify live profile installations through the same existing background session. Preserve all action freshness, authority, cleanup and physical-screen guards.",
-  "source_parent_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
-  "source_parent_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
-  "source_snapshot_predecessor_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
+  "scope": "Preserve the original observation deadlines while recovering once from a typed post-Back child-cache failure and distinguishing a strictly reverified Ctrip child read failure from changed window identity. All complete graph, event, authority and publication checks remain required.",
+  "source_parent_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
+  "source_parent_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
+  "source_snapshot_predecessor_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

@@ -75,6 +75,23 @@ PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.templat
 
 def reverse_png_closure(path, raw):
     actual_current_sha256 = sha(raw)
+    child_identity_template_inverse = None
+    if path == 'tests/observation-pipeline/ObserverPipelineHost.template':
+        # Reverse only the exact fail-only host port in a historical proof copy.
+        # events.generate still compiles the actual current template and Service.
+        child_identity_port = b'    /** Fail-only legacy boundary. The dedicated Ctrip bridge compiles the actual helper. */\n    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,\n            ObservationEventWatermark pairStart,StaleObservation failure){return null;}\n'
+        if actual_current_sha256 == 'fb3fb74feb4e7e67a16953ae80b00a51bdd34a31b0fb799dabc274d8368300ba':
+            need(len(raw) == 37723 and raw.count(child_identity_port) == 1,
+                 'exact one child-identity fail-only template port required')
+            raw = raw.replace(child_identity_port, b'', 1)
+            need(len(raw) == 37419 and sha(raw) ==
+                 '7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f',
+                 'whole pre-child-identity template bytes must be restored')
+            child_identity_template_inverse = {
+                'actual_current_sha256': actual_current_sha256,
+                'whole_prior_sha256': sha(raw), 'removed_bytes': len(child_identity_port),
+                'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+                'actual_compilation_uses_unmodified_current_template': True}
     dependency_inverse = None
     if path == 'tests/observation-diagnostics/run_host.py':
         # This exact host-only addition supplies the real ObservedImeEnter type.
@@ -106,6 +123,7 @@ def reverse_png_closure(path, raw):
     return restored,{'current_sha256':actual_current_sha256,'prior_sha256':sha(restored),
                      'operations':len(spec['operations']),'proof_copy_only':True,
                      'compile_dependency_inverse':dependency_inverse,
+                     'child_identity_template_inverse':child_identity_template_inverse,
                      'compilation_uses_actual_current_source':True}
 
 # These exact additions are reversed only in the historical proof copy.

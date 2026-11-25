@@ -67,6 +67,7 @@ def main():
  '    private static boolean completeNativeObservationGraph(', '    private static void requireSameProfileOwner(',
  '    private static void requireSameProfileWindow(', '    private WindowOwnership readProfileWindow(',
  '    private ImeVisibility readImeVisibility(', '    private ObservedWindowMetadata readWindowMetadata(',
+ '    static String limited(',
  '    private static String nodeSignature(', '    private static String baseNodeSignature(', '    private static String inputTextHash(',
  '    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root,final boolean refreshChildren,final GraphBudget budget){',
  ]
@@ -77,7 +78,10 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
- parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()
+ cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
+ if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -119,7 +123,7 @@ def main():
  if s.count(chmod_start)!=1:raise RuntimeError('one actual host chmod endpoint required')
  s=s.replace('public final class Os {','public final class Os {\n public static volatile java.util.function.Consumer<String> beforeChmod;')
  s=s.replace(chmod_start,chmod_start+'if(beforeChmod!=null)beforeChmod.accept(s);');osp.write_text(s)
- additional=[]
+ additional=[source/'tests/qualification-scope/fixtures/android/os/Build.java']
  for path,text in {
   'android/util/DisplayMetrics.java':'package android.util;public final class DisplayMetrics{public int widthPixels,heightPixels;}\n',
   'android/util/Log.java':'package android.util;public final class Log{public static int i(String tag,String text){return 0;}}\n',
@@ -212,6 +216,12 @@ def main():
     report['after_target_expected_cases']=required;report['after_target_observed_cases']=observed
     report['after_target_exact_cases']=len(names)==len(set(names)) and len(observed)==len(required) and set(observed)==set(required)
     report['all_pass']=report['all_pass'] and report['after_target_exact_cases']
+    cache_expected=json.loads((test/'PostBackClientCacheExpectedCases.json').read_text())
+    cache_observed=[n for n in names if n.startswith('post_back_cache_')]
+    report['post_back_cache_expected_cases']=cache_expected
+    report['post_back_cache_observed_cases']=cache_observed
+    report['post_back_cache_exact_cases']=len(names)==len(set(names)) and len(cache_observed)==len(cache_expected) and set(cache_observed)==set(cache_expected)
+    report['all_pass']=report['all_pass'] and report['post_back_cache_exact_cases']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']

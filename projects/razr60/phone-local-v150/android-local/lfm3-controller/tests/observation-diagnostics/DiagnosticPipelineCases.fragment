@@ -59,7 +59,16 @@
             DiagnosticChecks.check(j.getJSONObject("events").getInt("SAMPLE_START")==2&&j.getJSONObject("events").getInt("CAPTURE_START")==1,"actual counts");
             DiagnosticChecks.check(j.getJSONArray("last_graphs").length()==4,"actual frame hashes");
             int reads=f.reads.get();new DiagnosticSnapshot(r.trace).call();DiagnosticChecks.check(f.reads.get()==reads,"snapshot performs no read");
-            java.lang.reflect.Field[] fields=DiagnosticSnapshot.class.getDeclaredFields();DiagnosticChecks.check(fields.length==1&&fields[0].getType()==ObservationDiagnostics.class,"no captured Service/request/graph");f.dispose();
+            java.util.Map<String,Class<?>> fields=new java.util.LinkedHashMap<String,Class<?>>();
+            for(java.lang.reflect.Field field:DiagnosticSnapshot.class.getDeclaredFields())fields.put(field.getName(),field.getType());
+            DiagnosticChecks.check(fields.size()==2&&fields.get("values")==ObservationDiagnostics.class
+                    &&fields.get("childIdentity")==PostEffectChildDiagnostic.class,"only actual diagnostics and bounded copied child values; no captured Service/request/graph");
+            java.util.Map<String,Class<?>> childFields=new java.util.LinkedHashMap<String,Class<?>>();
+            for(java.lang.reflect.Field field:PostEffectChildDiagnostic.class.getDeclaredFields())childFields.put(field.getName(),field.getType());
+            DiagnosticChecks.check(childFields.size()==3&&childFields.get("value")==java.util.Map.class
+                    &&childFields.get("finished")==Boolean.TYPE&&childFields.get("laterStaleRejections")==Integer.TYPE,
+                    "child diagnostic stores only copied values and primitive state; no Service/request/graph/node");
+            f.dispose();
         });
         diag("actual_target_unknown_event_counts_preserve_old_reset_rule",()->{
             ObserverPipelineHost f=nativeFixture();Block b=new Block();f.readHook=(g,n)->{boundGraph(g);b.run();};f.begin();ObservationRequest r=f.activeObservation;b.entered();

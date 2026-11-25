@@ -59,6 +59,27 @@ def main():
   def block(owner,t,a,b):
    v=section(t,a,b);extracted.append({'source':str(S/PKG/owner),'start':a,'end':b,'bytes':len(v.encode()),'sha256':sha(v.encode()),'verbatim':True});return v
   ha=[]
+  # Compile the actual bounded diagnostic carrier and the exact post-effect
+  # child-window helper. This calendar fixture still has no post-effect owner;
+  # its pre-existing window IO port refuses, so no new success port is added.
+  for anchor in [
+   '    private static final class PostEffectChildDiagnostic {',
+   '    private static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String> {',
+   '    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,',
+   '    private static String postEffectChildWindowFingerprint(FrozenObservationWindow value){',
+   '    private void persistCtripFormHistory(ObservationRequest request,ObservationProduct product)throws Exception{']:
+   ha.append(member('HeptaAccessibilityService.java',H,anchor))
+  # Preserve the exact already-selected generic-session Service refusal ports
+  # when this calendar fixture replaces that enclosing host class.
+  inherited_service=selected['org.trillionnium.hepta.local.HeptaAccessibilityService']
+  inherited_service_text=inherited_service.read_text()
+  for port_anchor,port_sha in [('    static HeptaAccessibilityService connected(){return null;}', '7ca03759928d0462e80ec1387a3b959de2e0df88310a179c0303dca5c4489b32'), ('    BackgroundSession retiredBusinessBackgroundForCleanup(String task,String generation,String owner)throws java.io.IOException{', '3a6fa117ebd990a2364b26d1b84b18db67fc10f3fc416c20699fde4bf48e912a')]:
+   port=body(inherited_service_text,port_anchor)
+   if sha(port.encode())!=port_sha:raise RuntimeError('exact inherited cleanup refusal type port required')
+   ha.append(port);originals.append(inherited_service)
+   extracted.append({'source':str(inherited_service),'anchor':port_anchor,'bytes':len(port.encode()),
+    'sha256':port_sha,'verbatim':True,'inherited_generic_session_port':True,
+    'cleanup_authority_available':False})
   # The actual null-submission path is shared by the calendar read admission.
   # Keep its cleanup/activation methods verbatim; this fixture cannot mint a
   # post-effect retry proof or a NativeReadIdentity.

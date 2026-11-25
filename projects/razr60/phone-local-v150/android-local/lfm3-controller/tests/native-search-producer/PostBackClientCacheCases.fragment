@@ -1,0 +1,335 @@
+
+    /** Same actual modal/Back/session/producer transitions, with explicit host
+     * Android Frame/action/API IO. No phone cache cause or recovery is claimed. */
+    static final List<Map<String,Object>> postBackCacheEventEvidence=new ArrayList<Map<String,Object>>();
+    static void cacheEvent(HeptaAccessibilityService s,String kind){
+        if("unknown".equals(kind))s.noteNativeSearchEvent(-1,-1,null,false,false);
+        else if("boundary".equals(kind))s.noteNativeSearchEvent(7,97,NativeAppGoal.XIAOMI_PACKAGE,false,true);
+        else s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,false);
+    }
+    static final class CacheHomeFixture {
+        final NativeSearchRequest modalRequest;final ActionExecutionState back;
+        final long finished,transitionDeadline,chainDeadline,taskDeadline;
+        CacheHomeFixture(NativeSearchRequest modalRequest,ActionExecutionState back,long finished,long transitionDeadline,long chainDeadline,long taskDeadline){
+            this.modalRequest=modalRequest;this.back=back;this.finished=finished;this.transitionDeadline=transitionDeadline;this.chainDeadline=chainDeadline;this.taskDeadline=taskDeadline;
+        }
+    }
+    static NativeAppEvidence.Frame cacheModalFrame(Fixture f,long at){
+        JSONArray rows=modalRecordedCensuses.getJSONObject("second").getJSONArray("nodes");
+        List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();
+        for(int i=1;i<rows.length();i++){
+            JSONObject n=rows.getJSONObject(i);JSONArray b=n.getJSONArray("bounds");
+            nodes.add(new NativeAppEvidence.Node("n"+(i-1),n.getString("package"),n.getString("class"),n.getString("view_id"),
+                    n.getString("text"),n.getString("description"),n.getString("path"),n.getString("parent_class"),n.getString("ref_signature_sha256"),
+                    n.getString("label"),b.getInt(0),b.getInt(1),b.getInt(2),b.getInt(3),true,false,true,false,false,
+                    Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,Collections.<String>emptySet()));
+        }
+        String h=NativeSearchSessionHostTest.H;
+        return new NativeAppEvidence.Frame(f.base.search.taskId,f.base.nativeTask.goal.ownerSha256,f.base.nativeTask.target.targetSha256,
+                f.base.authority.sha256,f.base.nativeTask.selectionSha,NativeSearchSessionHostTest.id(),NativeAppGoal.XIAOMI_PACKAGE,
+                f.base.env.session.generation,h,h,h,h,h,f.base.env.session.displayId(),96,0,1224,2992,186,694,1038,2298,
+                at,false,true,nodes,1,true,f.base.window(at));
+    }
+    static CacheHomeFixture cachePrepareHome(HeptaAccessibilityService s,Fixture f)throws Exception{
+        ModalRead modal=new ModalRead(f);NativeSearchRequest old=modalReady(s,f,modal);
+        s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed);
+        SystemClock.now+=20;
+        NativeAppEvidence.Frame frame=cacheModalFrame(f,SystemClock.now);f.base.nativeTask.observed(frame);
+        check(f.base.nativeTask.domain().backAllowed&&f.base.nativeTask.domain().clickIds.isEmpty(),"actual fresh modal provider allows only original Back");
+        // Explicit ordinary-AX publication endpoint. No Session or proof field is fabricated.
+        s.taskObservationAdmissions++;s.current=new PhoneObservation();s.current.id=frame.observationId;
+        String run=NativeSearchSessionHostTest.id();SystemClock.now+=20;
+        ActionDecision action=ActionDecision.parse(new JSONObject().put("action","back").put("package",frame.packageName)
+                .put("observation_id",frame.observationId).toString(),ActionDecision.IME_ACTION_SCHEMA);
+        f.base.gate.check(action,run);f.base.nativeTask.beforeModelAction(1,action,run,SystemClock.now);
+        ActionExecutionState back=new ActionExecutionState(NativeSearchSessionHostTest.id(),f.base.search.taskId,run,frame.observationId,
+                f.base.authority.sha256,96,7,f.base.env.session.generation,SystemClock.now,SystemClock.now+8000,()->SystemClock.now);
+        check(actionSlot.acquire(back),"one real original action slot");
+        back.enterEffect(false,true);f.syntheticBackEffects++;SystemClock.now+=20;back.effectReturned(Boolean.TRUE);
+        back.drained();actionSlot.release(back);check(back.publish(false,true),"real drained Back callback accepts original owner");
+        s.lastActionExecution=back;long finished=SystemClock.now;
+        f.base.nativeTask.modelActionOutcome(action,run,true,true,false,NativeSearchSessionHostTest.H,finished);
+        SystemClock.now+=10;s.prepareNativeSearchAfterImageModal(s.ownedController,f.base.search,action,run);
+        check(f.base.search.imageModalHomePlanning()&&f.base.search.initialPlanningDeadline()==finished+15000
+                &&s.current==null&&s.currentGraph==null,"actual handoff keeps exact 15s and disposes spent modal observation");
+        for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all original modal node handles already released");
+        f.values=f.base.census(SystemClock.now);f.nodes.clear();f.syncNodes();f.recordedPlanningNodes=false;f.observableLoadingProjection=false;
+        f.refreshGraphChildren=true;f.callbackCount=0;f.error=null;f.planning=null;
+        return new CacheHomeFixture(old,back,finished,f.base.search.initialPlanningDeadline(),f.base.search.chainDeadlineElapsed,f.base.search.taskDeadlineElapsed);
+    }
+    static NativeSearchRequest cacheStartHome(HeptaAccessibilityService s,Fixture f,CacheHomeFixture home){
+        NativeSearchRequest r=f.startPlanning(null,home.transitionDeadline-SystemClock.now);
+        check(r!=null&&r.deadline==home.transitionDeadline&&r.samplingDeadline==home.transitionDeadline-2000
+                &&r.session==f.base.search&&r.admissionOrdinal==s.nativeSearchInitialAdmissionBase+1,"one actual post-Back read admission with original sampling reserve");
+        return r;
+    }
+    static void cachePump(HeptaAccessibilityService s){
+        int count=0;
+        while(observationIo.hasJobs()||s.main.hasJobs()){
+            if(++count>12)throw new AssertionError("unexpected producer work resubmission");
+            if(observationIo.hasJobs())observationIo.one();
+            while(s.main.hasJobs())s.main.one();
+        }
+        check(!observationIoBusy.get(),"actual serial workers physically drained");
+    }
+    static JSONObject cacheDiagnostics(HeptaAccessibilityService s,NativeSearchRequest r){
+        return new JSONObject(HeptaAccessibilityService.nativeSearchGraphReadDiagnostics(r));
+    }
+    static JSONObject cacheFailedFile(Fixture f,NativeSearchRequest r)throws Exception{
+        File p=new File(f.directory,r.id+"-failed-native-search-planning.json");
+        check(p.isFile()&&(android.system.Os.lstat(p.getPath()).st_mode&0777)==0600,"this request owns its private failure bytes");
+        return new JSONObject(new String(Files.readAllBytes(p.toPath()),StandardCharsets.UTF_8));
+    }
+    static void cacheOriginalClocks(Fixture f,CacheHomeFixture home,NativeSearchRequest r){
+        check(r.deadline==home.transitionDeadline&&r.samplingDeadline==home.transitionDeadline-2000
+                &&f.base.search.chainDeadlineElapsed==home.chainDeadline&&f.base.search.taskDeadlineElapsed==home.taskDeadline,
+                "no request, transition, sampling, chain or task deadline was extended");
+        check(f.syntheticBackEffects==1&&f.effects==0&&!f.base.search.navigationEffectRecorded()
+                &&actionIo.submissions==0,"same one explicit host Back, no repeated Back, search action or model request");
+        check(Boolean.TRUE.equals(home.back.evidence().get("callback_authority_current")),"historical Back remains its original accepted callback");
+    }
+    static void cachePartialFailure(Fixture f){f.nodes.get("0/0/0").refresh=false;}
+    static void cacheRestoreNodes(Fixture f){for(NodeData n:f.nodes.values())n.refresh=true;}
+    static void postBackClientCacheCases()throws Exception{
+        one("post_back_cache_typed_first_graph_disposes_partial_then_publishes_new_full_pair",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);
+                List<NodeData> original=new ArrayList<NodeData>(f.nodes.values());
+                f.cacheHook=()->{
+                    for(NodeData n:original)check(n.obtained==n.recycled,"all partial root/retained/child references recycled before API");
+                    check(s.activeNativeSearchObservation.lastCompletePair==null&&s.activeNativeSearchObservation.graphReturns==0,
+                            "API is entered without a surviving graph or complete pair");
+                    s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    cacheRestoreNodes(f);
+                };
+                NativeSearchRequest r=cacheStartHome(s,f,home);
+                s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                cachePump(s);
+                check(f.planning!=null&&f.error==null&&r.published&&f.callbackCount==1,"only newly complete sealed A/B planning publishes: "+f.error);
+                check(f.cacheCalls==1&&r.graphReadAttempts==3&&r.graphReturns==2&&f.graphReads==5,"one failed first graph plus exactly two new full root reads");
+                JSONObject d=cacheDiagnostics(s,r),c=d.getJSONObject("client_cache_reset");
+                check(c.getInt("trigger_read_ordinal")==1&&"0/0/0".equals(c.getString("trigger_child_path")),"fixed actual trigger identity");
+                check(c.getBoolean("attempt_claimed")&&c.getBoolean("clear_cache_returned")&&!c.getBoolean("observation_or_transition_verified"),
+                        "cache API result itself grants no transition proof");
+                check(c.getJSONObject("before").getLong("events")==1&&c.getJSONObject("after").getLong("events")==2
+                        &&r.events.mark().events==2&&!d.getBoolean("event_counters_reset"),"all pre-read and cache-time event counters retained");
+                check(d.getJSONArray("reads").getJSONObject(0).getBoolean("typed_child_unavailable")
+                        &&!d.getJSONArray("reads").getJSONObject(0).getBoolean("graph_returned"),"actual typed failed read records no complete graph");
+                JSONObject published=new JSONObject(f.planning.publication).getJSONObject("producer_diagnostics").getJSONObject("graph_read_diagnostics");
+                check(published.getJSONObject("client_cache_reset").getInt("trigger_read_ordinal")==1,"successful publication preserves bounded reset diagnostics");
+                cacheOriginalClocks(f,home,r);
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all subsequent full graphs released before publication");
+                NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);
+                check(offer!=null&&f.base.journalNames.contains("native-search-image-modal-home.json"),"unchanged Session accepts only new complete home proof");
+                check(f.effects==0&&f.syntheticBackEffects==1,"offering complete planning dispatches nothing");
+            }
+        });
+        for(String result:Arrays.asList("true","false","throw","unsupported")){
+            one("post_back_cache_"+result+"_persistent_child_failure_consumes_once_and_keeps_failure",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);
+                    f.cacheResult=!"false".equals(result);f.cacheThrows="throw".equals(result);
+                    if("unsupported".equals(result))android.os.Build.VERSION.SDK_INT=32;
+                    NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                    check(f.planning==null&&f.error!=null&&r.graphReturns==0&&r.lastCompletePair==null&&r.path==null,"API outcome never promotes a residual or absent graph");
+                    check(r.clientCacheResetClaimed&&f.cacheCalls==("unsupported".equals(result)?0:1),"single claim survives every outcome and repeated typed failures");
+                    JSONObject raw=cacheFailedFile(f,r),d=raw.getJSONObject("graph_read_diagnostics"),c=d.getJSONObject("client_cache_reset");
+                    check(d.getJSONArray("reads").length()==8&&d.getInt("omitted_read_count")>0&&d.getInt("read_attempts")>8,
+                            "only last eight read records retained with honest total/omission");
+                    check(c.getInt("trigger_read_ordinal")==1&&"0/0/0".equals(c.getString("trigger_child_path"))
+                            &&d.getJSONArray("reads").getJSONObject(0).getInt("ordinal")>1,"trigger remains identifiable after retained ring eviction");
+                    check(d.toString().getBytes(StandardCharsets.UTF_8).length<=12288,"finite read/path/counter diagnostic stays bounded");
+                    check(!raw.getBoolean("complete_pair_available")&&!raw.getBoolean("planning_published"),"failure artifact never claims full pair or success");
+                    if("throw".equals(result))check("IllegalStateException".equals(c.getString("failure_class"))&&c.isNull("clear_cache_returned"),"API throw recorded separately");
+                    else if("unsupported".equals(result))check(!c.getBoolean("api33_supported")&&c.isNull("clear_cache_returned"),"unsupported API neither called nor returned");
+                    else check(c.getBoolean("clear_cache_returned")=="true".equals(result),"exact API boolean retained");
+                    cacheOriginalClocks(f,home,r);
+                    for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"every failed partial read physically released");
+                }
+            });
+        }
+        one("post_back_cache_false_can_only_continue_via_independently_valid_new_pair",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);f.cacheResult=false;f.cacheHook=()->cacheRestoreNodes(f);
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(f.cacheCalls==1&&f.planning!=null&&r.graphReturns==2&&!r.clientCacheResetReturned.booleanValue(),"false API is neither authority nor a replacement for new full proof");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        for(String kind:Arrays.asList("untyped_same_message","root_path","noncanonical_path","oversized_path")){
+            one("post_back_cache_"+kind+"_does_not_invoke_or_claim_cache",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);
+                    String path="root_path".equals(kind)?"0":"noncanonical_path".equals(kind)?"0/01":"0/"+String.join("",Collections.nCopies(250,"1"));
+                    f.graphHook=()->{
+                        if("untyped_same_message".equals(kind))throw new StaleObservation("后台子节点已不可用，需重新观察");
+                        throw new StaleObservation("explicit malformed host typed path",true,path);
+                    };
+                    NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                    check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&f.planning==null&&f.error!=null,"exact typed nonroot bounded path required");
+                    JSONObject d=cacheDiagnostics(s,r);
+                    if("oversized_path".equals(kind))check(d.getJSONArray("reads").getJSONObject(0).getString("child_path").length()<=241
+                            &&d.getJSONArray("reads").getJSONObject(0).getBoolean("child_path_omitted"),"oversized failed-path diagnostic explicitly truncated");
+                    cacheOriginalClocks(f,home,r);
+                }
+            });
+        }
+        one("post_back_cache_ordinary_initial_read_never_uses_modal_reset",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.refreshGraphChildren=true;cachePartialFailure(f);NativeSearchRequest r=f.startPlanning();cachePump(s);
+                check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&!f.base.search.imageModalHomePlanning()
+                        &&f.planning==null&&f.effects==0&&f.syntheticBackEffects==0,"no post-Back route and no effect invented");
+            }
+        });
+        one("post_back_cache_second_graph_failure_cannot_reset_after_any_complete_graph",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);f.graphHook=()->{if(f.graphReads>=4)cachePartialFailure(f);};
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(r.graphReturns==1&&f.cacheCalls==0&&!r.clientCacheResetClaimed&&f.planning==null,"failed B and later A cannot erase an already returned graph");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        one("post_back_cache_incomplete_returned_graph_never_grants_reset_or_planning",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);f.graphHook=()->{
+                    f.incompleteGraph=f.graphReads==3;if(f.graphReads>3)cachePartialFailure(f);
+                };
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(r.graphReturns>=1&&f.planning==null&&f.cacheCalls==0&&!r.clientCacheResetClaimed,"even an incomplete returned graph excludes this narrower first-failure branch");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        for(String limit:Arrays.asList("sampling","request")){
+            one("post_back_cache_"+limit+"_deadline_before_catch_has_no_cache_call",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);NativeSearchRequest r=cacheStartHome(s,f,home);
+                    f.nodes.get("0/0/0").beforeRefresh=()->{SystemClock.now="sampling".equals(limit)?r.samplingDeadline:r.deadline;};
+                    cachePump(s);check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&r.graphReturns==0&&f.planning==null,"original deadline wins before API admission");
+                    cacheOriginalClocks(f,home,r);
+                }
+            });
+            one("post_back_cache_api_crosses_"+limit+"_deadline_never_gets_new_budget",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);NativeSearchRequest r=cacheStartHome(s,f,home);
+                    f.cacheHook=()->{cacheRestoreNodes(f);SystemClock.now="sampling".equals(limit)?r.samplingDeadline:r.deadline;};
+                    cachePump(s);check(f.cacheCalls==1&&r.graphReturns==0&&f.planning==null,"API elapsed time consumes original residual budget");
+                    cacheOriginalClocks(f,home,r);
+                }
+            });
+        }
+        for(String guard:Arrays.asList("cancel","owner","sampling")){
+            one("post_back_cache_"+guard+"_after_claim_before_api_propagates_policy_failure",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);NativeSearchRequest r=cacheStartHome(s,f,home);
+                    final boolean[] fired={false};
+                    SystemClock.beforeRead=()->{if(r.clientCacheResetClaimed&&!r.clientCacheResetInvoked){
+                        SystemClock.beforeRead=null;fired[0]=true;
+                        if("cancel".equals(guard))f.cancelled=true;
+                        else if("owner".equals(guard))s.ownedController=new Object();
+                        else SystemClock.now=r.samplingDeadline;
+                    }};
+                    cachePump(s);check(fired[0]&&r.clientCacheResetClaimed&&f.cacheCalls==0&&r.clientCacheResetFailure==null&&f.planning==null,
+                            "policy exception outside Android API catch cannot be mislabeled or refunded");
+                    cacheOriginalClocks(f,home,r);
+                }
+            });
+        }
+        for(String guard:Arrays.asList("cancel","owner","scope")){
+            one("post_back_cache_"+guard+"_during_api_cannot_publish_or_read_next_root",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);NativeSearchRequest r=cacheStartHome(s,f,home);
+                    f.cacheHook=()->{cacheRestoreNodes(f);if("cancel".equals(guard))f.cancelled=true;
+                        else if("owner".equals(guard))s.ownedController=new Object();else s.taskScope=null;};
+                    cachePump(s);check(f.cacheCalls==1&&r.graphReturns==0&&f.planning==null&&f.error!=null,"same task/scope/owner required after API");
+                    cacheOriginalClocks(f,home,r);
+                }
+            });
+        }
+        one("post_back_cache_different_exception_instance_cannot_consume_actual_read",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);NativeSearchRequest r=cacheStartHome(s,f,home);
+                final boolean[] checked={false};
+                SystemClock.beforeRead=()->{NativeSearchGraphReadTrace last=r.lastGraphRead;
+                    if(last!=null&&last.failure!=null&&last.completed>=last.started&&!r.clientCacheResetClaimed){
+                        SystemClock.beforeRead=null;checked[0]=true;
+                        s.resetNativeSearchClientCacheAfterChildFailure(r,new StaleObservation("后台子节点已不可用，需重新观察",true,"0/0/0"));
+                        check(f.cacheCalls==0&&!r.clientCacheResetClaimed,"identical string/path with different exception identity grants nothing");
+                    }};
+                f.cacheHook=()->cacheRestoreNodes(f);cachePump(s);
+                check(checked[0]&&f.cacheCalls==1&&f.planning!=null,"only original thrown object subsequently uses one reset");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        for(String kind:Arrays.asList("unknown","boundary","untyped")){
+            one("post_back_cache_historical_"+kind+"_retained_and_current_C_D_rejects_new_event",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);f.cacheHook=()->cacheRestoreNodes(f);
+                    f.graphHook=()->{if(f.cacheCalls>0&&f.graphReads>=5)cacheEvent(s,kind);};
+                    NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                    Map<String,Object> observed=new LinkedHashMap<String,Object>();postBackCacheEventEvidence.add(observed);
+                    observed.put("kind",kind);observed.put("cache_calls_after_planning",f.cacheCalls);
+                    observed.put("planning_available",f.planning!=null);observed.put("planning_error",f.error);
+                    observed.put("graph_reads_after_planning",f.graphReads);observed.put("historical_watermark",r.events.mark().evidence());
+                    check(f.cacheCalls==1&&f.planning!=null&&f.error==null&&r.graphReturns==2&&r.events.mark().events>0,
+                            "original planning is complete historical A/B, not present input authority");
+                    Map<String,Object> publication=f.planning.publication;
+                    check(Boolean.TRUE.equals(publication.get("planning_as_of_B"))
+                            &&Boolean.TRUE.equals(publication.get("no_event_neutrality_claim"))
+                            &&Boolean.TRUE.equals(publication.get("fresh_effect_census_required")),
+                            "unchanged original publication explicitly retains history and still requires new current C/D");
+                    check(f.planning.context.bAfter.events==r.events.mark().events
+                            &&f.planning.context.sealed.events==r.events.mark().events,"historical event is preserved in sealed complete pair");
+                    observed.put("historical_capture_context",f.planning.context.evidence());
+                    observed.put("original_publication_flags",Arrays.asList(publication.get("planning_as_of_B"),
+                            publication.get("no_event_neutrality_claim"),publication.get("fresh_effect_census_required")));
+                    cacheOriginalClocks(f,home,r);
+                    f.graphHook=null;
+                    NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);
+                    NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,
+                            SystemClock.now,SystemClock.now+8000);
+                    final boolean[] injected={false};
+                    f.graphHook=()->{SearchActionWork work=s.activeSearchAction;
+                        if(work!=null&&work.currentSnapshot!=null&&!injected[0]){injected[0]=true;cacheEvent(s,kind);}
+                    };
+                    f.action(attempt);
+                    observed.put("new_event_in_original_current_C_D",injected[0]);observed.put("cache_calls_after_action",f.cacheCalls);
+                    observed.put("graph_reads_after_action",f.graphReads);observed.put("accepted",f.outcome!=null&&f.outcome.accepted);
+                    observed.put("dispatched",f.outcome!=null&&f.outcome.dispatched);observed.put("effects",f.effects);
+                    observed.put("action_detail",f.outcome==null?null:f.outcome.detail);observed.put("attempt_claimed",attempt.evidence().get("claimed"));
+                    observed.put("original_historical_watermark_after_action",r.events.mark().evidence());
+                    if(f.outcome!=null&&f.outcome.actionExecution!=null){
+                        observed.put("effect_entered",f.outcome.actionExecution.get("effect_entered"));
+                        JSONObject current=f.outcome.actionExecution.getJSONObject("native_search_execution");
+                        observed.put("platform_call_invoked",current.get("platform_call_invoked"));
+                        observed.put("current_C_D_start_watermark",current.opt("pair_start_watermark"));
+                        observed.put("current_C_D_completed_watermark",current.opt("D_completed_watermark"));
+                    }
+                    check(injected[0]&&f.outcome!=null&&!f.outcome.accepted&&!f.outcome.dispatched&&f.effects==0
+                            &&f.cacheCalls==1&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),
+                            "separate fresh current C/D with a new unqualified event cannot reach claim or platform input");
+                    check(f.outcome.detail.contains("unknown, boundary or untyped event")
+                            &&!f.outcome.actionExecution.getBoolean("effect_entered"),
+                            "unchanged actual requireNativeSearchPairEvents is the refusing authority consumer");
+                    check(f.syntheticBackEffects==1&&r.events.mark().events==f.planning.context.sealed.events,
+                            "historical event remains recorded, with no repeated Back or reset of the original tracker");
+                }
+            });
+        }
+        one("post_back_cache_new_profile_read_failure_stays_failure",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);
+                f.cacheHook=()->{cacheRestoreNodes(f);f.profileLifetime=0;};
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(f.cacheCalls==1&&f.planning==null&&f.error!=null,"new full traversal still consumes original profile identity/expiry checks");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        one("post_back_cache_untyped_stale_then_full_pair_uses_original_retry_without_cache",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);f.graphHook=()->{f.graphHook=null;throw new StaleObservation("后台子节点已不可用，需重新观察");};
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(f.planning!=null&&f.cacheCalls==0&&!r.clientCacheResetClaimed&&r.graphReturns==2,"original generic retry remains independent of typed cache option");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+    }
