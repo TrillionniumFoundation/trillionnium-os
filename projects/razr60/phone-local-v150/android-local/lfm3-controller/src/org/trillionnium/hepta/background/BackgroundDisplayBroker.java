@@ -2008,6 +2008,8 @@ public final class BackgroundDisplayBroker {
                             &&config.profileTarget.same(actual.target))
                     .put("profile_cleanup",new JSONObject(cleanup))
                     .put("profile_cleanup_diagnostics",new JSONObject(profileCleanupFailures.evidence()))
+                    .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:
+                            new JSONObject(profileOwnedTask.retirementDiagnostics()))
                     .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                             new JSONObject(profileOwnedTask.lastLeafValidation()))
                     .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
@@ -2045,6 +2047,8 @@ public final class BackgroundDisplayBroker {
             .put("profile_cleanup",config.profileTarget==null?JSONObject.NULL:new JSONObject(
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
             .put("profile_cleanup_diagnostics",new JSONObject(profileCleanupFailures.evidence()))
+            .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:
+                    new JSONObject(profileOwnedTask.retirementDiagnostics()))
             .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                     new JSONObject(profileOwnedTask.lastLeafValidation()))
             .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:

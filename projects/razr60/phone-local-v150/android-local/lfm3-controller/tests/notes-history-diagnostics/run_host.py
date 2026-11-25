@@ -58,7 +58,17 @@ def extract_broker(source,out):
     first,last=text.index(begin),text.index(end)
     helper=text[first:last]
     methods=helper[helper.index("    static void appendNotesHistoryDiagnostic("):]
-    restored=unique(text,helper,"")
+    # The accepted profile diagnostic fields are unrelated to this Notes formatter.
+    # Only the exact reviewed full source can take this proof-only inverse.
+    restored=text
+    profile_diagnostic_parent=None
+    if hashlib.sha256(text.encode()).hexdigest()=="f05219808faa900e139f096fd7f4ba2c65190de697a44f71a632a7dc11875b22":
+        restored=unique(restored,'                    .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:\n                            new JSONObject(profileOwnedTask.retirementDiagnostics()))\n',"")
+        restored=unique(restored,'            .put("profile_retirement_diagnostics",profileOwnedTask==null?JSONObject.NULL:\n                    new JSONObject(profileOwnedTask.retirementDiagnostics()))\n',"")
+        profile_diagnostic_parent="a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44"
+        need(hashlib.sha256(restored.encode()).hexdigest()==profile_diagnostic_parent,
+             "exact accepted profile diagnostic inverse required")
+    restored=unique(restored,helper,"")
     call='            if(config.publicOwnGroupScope!=null)appendNotesHistoryDiagnostic(terminal,publicNotesCleanupFailure,\n                    config.publicOwnGroupScope.taskId,config.generation,config.publicOwnGroupScope.sha256,displayId);\n'
     restored=unique(restored,call,"")
     restored=unique(restored,"    private volatile Throwable publicNotesCleanupFailure;\n","")
@@ -76,7 +86,8 @@ final class NotesHistoryBrokerOutputHost {
 """+methods+"}\n"
     target=out/"NotesHistoryBrokerOutputHost.java";target.write_text(body)
     return target,dict(source=ref(path),methods_sha256=hashlib.sha256(methods.encode()).hexdigest(),
-                       actual_methods_byte_exact=True,original_broker_whole_sha256=BROKER_PARENT,
+                       actual_methods_byte_exact=True,profile_diagnostic_proof_parent=profile_diagnostic_parent,
+                       original_broker_whole_sha256=BROKER_PARENT,
                        original_broker_restored=True,full_android_broker_compiled=False,generated=ref(target))
 def decode_pair(value):
     import base64,zlib

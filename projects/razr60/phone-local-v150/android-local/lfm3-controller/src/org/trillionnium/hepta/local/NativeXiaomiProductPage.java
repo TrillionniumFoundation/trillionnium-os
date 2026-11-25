@@ -31,6 +31,10 @@ final class NativeXiaomiProductPage {
     private static final Pattern SECONDARY=Pattern.compile("[¥￥]("+MONEY+")");
     private static final Pattern DETAIL=Pattern.compile("("+MONEY+")元划线价("+MONEY+")元");
     private static final Pattern PROMOTION=Pattern.compile("(?:分期最高减"+MONEY+"元|分期立减|预计得[0-9]{1,8}米金)");
+    private static final Pattern DETAIL_MONEY=Pattern.compile(MONEY+"元");
+    private static final Pattern DETAIL_PRICE_ROLE=Pattern.compile(
+            "(?:券后|补贴后|到手|实付|优惠|活动|会员|分期|单|销售|零售|售)价|价格|月供|首付|每期|分期金额|现价|原价|划线价|参考价|总价|应付|实付");
+    private static final Pattern DETAIL_NATIVE_PATH=Pattern.compile("0(?:/(?:0|[1-9][0-9]{0,5})){0,127}");
     private NativeXiaomiProductPage(){}
 
     static final class Page {
@@ -270,6 +274,8 @@ final class NativeXiaomiProductPage {
     private static Page detail(NativeAppGoal goal,NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> models){
         if(models.size()!=1)return page(frame,"product_detail_unverified","unique_visible_exact_product_title_required",null,null);
         NativeAppEvidence.Node model=models.get(0),price=null;Matcher priceMatch=null;
+        if("0/0/6".equals(model.path)&&"android.widget.ScrollView".equals(model.parentClass))
+            return sealedMirroredDetail(frame,model);
         for(NativeAppEvidence.Node node:frame.nodes){
             Matcher found=DETAIL.matcher(node.description);
             if(usable(frame,node)&&VIEW.equals(node.className)&&!node.clickable&&found.matches()){
@@ -310,6 +316,178 @@ final class NativeXiaomiProductPage {
         }catch(IllegalArgumentException invalidAmount){
             return page(frame,"product_detail_unverified","invalid_observed_amount",null,null);
         }
+    }
+
+
+    /** One closed detail layout observed in the pinned native App: the price
+     * wrapper and its only price child mirror one complete description. This
+     * is structural membership, never label/string deduplication. The ordinary
+     * AX receipt already seals both complete censuses; no age is refreshed. */
+    private static Page sealedMirroredDetail(NativeAppEvidence.Frame frame,NativeAppEvidence.Node model){
+        Map<String,Map<?,?>> raw=sealedDetailCensus(frame);
+        if(raw==null)return page(frame,"product_detail_unverified","sealed_complete_detail_census_required",null,null);
+        Map<String,NativeAppEvidence.Node> retained=new LinkedHashMap<String,NativeAppEvidence.Node>();
+        for(NativeAppEvidence.Node node:frame.nodes)retained.put(node.path,node);
+        String block="0/0",pricePath=block+"/2",mirrorPath=pricePath+"/0",richPath=mirrorPath+"/0";
+        NativeAppEvidence.Node scroll=retained.get(block),price=retained.get(pricePath),mirror=retained.get(mirrorPath);
+        NativeAppEvidence.Node rich=retained.get(richPath),subsidy=retained.get(pricePath+"/1"),subsidyText=retained.get(pricePath+"/1/0");
+        Map<?,?> root=raw.get("0");
+        if(!sealedBox(root,frame.left,frame.top,frame.right,frame.bottom)
+                ||!sealedPassive(root,"android.widget.FrameLayout",false,false)||!sealedInteger(root,"children",12)
+                ||!detailRole(frame,raw,scroll,"android.widget.ScrollView",22,false,true)
+                ||!sealedInside(raw.get(block),root)||!detailEmpty(scroll)
+                ||!detailRole(frame,raw,price,VIEW,2,false,false)||!price.within(scroll)||!price.text.isEmpty()||!price.viewId.isEmpty()
+                ||!detailRole(frame,raw,mirror,VIEW,1,false,false)||!mirror.within(price)||!mirror.text.isEmpty()||!mirror.viewId.isEmpty()
+                ||!detailRole(frame,raw,rich,TEXT,0,false,false)||!rich.within(mirror)||rich.text.isEmpty()
+                ||!rich.description.isEmpty()||!rich.viewId.isEmpty()
+                ||!detailRole(frame,raw,subsidy,VIEW,1,true,false)||!subsidy.within(price)||!detailEmpty(subsidy)
+                ||!detailRole(frame,raw,subsidyText,TEXT,0,false,false)||!subsidyText.within(subsidy)
+                ||!"实名后可享补贴".equals(subsidyText.text)||!subsidyText.description.isEmpty()||!subsidyText.viewId.isEmpty()
+                ||!subsidyText.text.equals(subsidy.label)||rich.right>subsidy.left
+                ||!detailRole(frame,raw,model,TEXT,0,false,false)||!model.within(scroll)
+                ||!TITLE.equals(model.text)||!model.description.isEmpty()||!model.viewId.isEmpty()
+                ||!block.equals(parent(price.path))||!block.equals(parent(model.path))
+                ||price.bottom>=model.top||!price.description.equals(mirror.description)
+                ||!price.label.equals(price.description)||!mirror.label.equals(mirror.description))
+            return page(frame,"product_detail_unverified","mirrored_price_and_direct_title_membership_required",null,null);
+        Matcher amount=DETAIL.matcher(price.description);
+        if(!amount.matches())return page(frame,"product_detail_unverified","complete_mirrored_price_description_required",null,null);
+        if(!("￥"+amount.group(1)+"0￥"+amount.group(2)).equals(rich.text))
+            return page(frame,"product_detail_unverified","known_mirrored_rich_renderer_required",null,null);
+        // The intervening rows belong to this one price/title group. Neither a
+        // second product/card nor a different price can be hidden in the gap.
+        NativeAppEvidence.Node government=retained.get(block+"/3"),benefits=retained.get(block+"/4");
+        NativeAppEvidence.Node reward=retained.get(block+"/4/0"),more=retained.get(block+"/4/1"),gap=retained.get(block+"/5");
+        if(!detailRole(frame,raw,government,TEXT,0,false,false)||!government.within(scroll)
+                ||!"政府补贴至高减10%".equals(government.text)||!government.description.isEmpty()||!government.viewId.isEmpty()
+                ||!detailRole(frame,raw,benefits,VIEW,2,true,false)||!benefits.within(scroll)||!detailEmpty(benefits)
+                ||!detailRole(frame,raw,reward,TEXT,0,false,false)||!reward.within(benefits)
+                ||!reward.text.matches("预计得[0-9]{1,8}米金")||!reward.description.isEmpty()||!reward.viewId.isEmpty()
+                ||!detailRole(frame,raw,more,TEXT,0,false,false)||!more.within(benefits)
+                ||!"更多优惠".equals(more.text)||!more.description.isEmpty()||!more.viewId.isEmpty()
+                ||!detailRole(frame,raw,gap,VIEW,0,true,false)||!gap.within(scroll)||!detailEmpty(gap)||!gap.label.isEmpty()
+                ||price.bottom>government.top||government.bottom>benefits.top||benefits.bottom>gap.top||gap.bottom>model.top)
+            return page(frame,"product_detail_unverified","single_detail_price_title_group_required",null,null);
+        String[] features={"① 满血WiFi6，3000兆级无线速率","② 小米自研Mesh技术，全屋毫秒级，无缝漫游","③ 多设备畅玩不抢网"};
+        int previousBottom=model.bottom;
+        for(int i=0;i<features.length;i++){
+            NativeAppEvidence.Node feature=retained.get(block+"/"+(7+i));
+            if(!detailRole(frame,raw,feature,TEXT,0,false,false)||!feature.within(scroll)
+                    ||!features[i].equals(feature.text)||!feature.description.isEmpty()||!feature.viewId.isEmpty()
+                    ||feature.top<previousBottom)return page(frame,"product_detail_unverified","same_detail_product_features_required",null,null);
+            previousBottom=feature.bottom;
+        }
+        NativeAppEvidence.Node condition=retained.get("0/5");
+        if(!detailRole(frame,raw,condition,TEXT,0,false,false)||!condition.description.isEmpty()||!condition.viewId.isEmpty()
+                ||!"实名后可立享补贴，至高可减10%".equals(condition.text)||condition.top<scroll.bottom)
+            return page(frame,"product_detail_unverified","observed_detail_condition_required",null,null);
+        String[] footer={"加入购物车","立即购买"};
+        for(int i=0;i<footer.length;i++){
+            String path="0/"+(10+i);NativeAppEvidence.Node button=retained.get(path),label=retained.get(path+"/0");
+            if(!detailRole(frame,raw,button,VIEW,1,true,false)||!detailEmpty(button)
+                    ||!detailRole(frame,raw,label,TEXT,0,false,false)||!label.within(button)
+                    ||!footer[i].equals(label.text)||!label.description.isEmpty()||!label.viewId.isEmpty()
+                    ||!footer[i].equals(button.label)||button.top<condition.bottom)
+                return page(frame,"product_detail_unverified","single_detail_footer_required",null,null);
+        }
+        int descriptions=0;
+        for(Map.Entry<String,Map<?,?>> entry:raw.entrySet()){
+            String path=entry.getKey();Map<?,?> row=entry.getValue();
+            Object t=row.get("text"),d=row.get("description"),l=row.get("label");
+            if(!(t instanceof String)||!(d instanceof String)||(l!=null&&!(l instanceof String)))return page(frame,"product_detail_unverified","complete_detail_literal_fields_required",null,null);
+            // Unretained complete-census rows have no projected label; their text/description are still checked.
+            String text=(String)t,description=(String)d,label=l==null?"":(String)l;
+            if(text.startsWith("Xiaomi路由器")||description.startsWith("Xiaomi路由器")){
+                boolean originalTitle=model.path.equals(path)&&TITLE.equals(text)&&description.isEmpty();
+                // Offscreen selected-SKU text is a separate observed role. It
+                // never supplies a title, SKU, stock or address assertion.
+                boolean hiddenSelected="0/0/16/0".equals(path)&&("已选").equals(raw.get("0/0/15").get("text"))
+                        &&(TITLE+" ").equals(text)&&description.isEmpty()&&TEXT.equals(row.get("class"))
+                        &&VIEW.equals(row.get("parent_class"))&&sealedInteger(row,"children",0)
+                        &&Boolean.FALSE.equals(row.get("visible"))&&row.get("ref_signature_sha256")==null;
+                if(!originalTitle&&!hiddenSelected)return page(frame,"product_detail_unverified","competing_detail_product_required_absent",null,null);
+            }
+            if(DETAIL.matcher(description).matches()){
+                if(!(pricePath.equals(path)||mirrorPath.equals(path))||!price.description.equals(description))
+                    return page(frame,"product_detail_unverified","competing_detail_price_required_absent",null,null);
+                descriptions++;
+            }else if(detailMoney(description))return page(frame,"product_detail_unverified","competing_detail_description_required_absent",null,null);
+            if(detailMoney(text)&&!richPath.equals(path)&&!PROMOTION.matcher(text).matches())
+                return page(frame,"product_detail_unverified","competing_detail_text_price_required_absent",null,null);
+            // Only the already validated mirrored price/rich roles may expose price labels.
+            if(detailMoney(label)&&!pricePath.equals(path)&&!mirrorPath.equals(path)&&!richPath.equals(path)
+                    &&!PROMOTION.matcher(label).matches())
+                return page(frame,"product_detail_unverified","competing_detail_label_price_required_absent",null,null);
+        }
+        if(descriptions!=2)return page(frame,"product_detail_unverified","exact_parent_child_price_pair_required",null,null);
+        List<Map<String,Object>> sources=new ArrayList<Map<String,Object>>();
+        sources.add(model.fact("text"));sources.add(price.fact("description"));sources.add(mirror.fact("description"));
+        List<Map<String,Object>> conditions=new ArrayList<Map<String,Object>>(promotions(frame));
+        conditions.add(subsidyText.fact("text"));conditions.add(government.fact("text"));conditions.add(condition.fact("text"));
+        Map<String,Object> membership=map();
+        membership.put("shape","sealed_native_ax_scroll_detail_mirrored_price_v1");
+        membership.put("sealed_receipt_sha256",frame.capture.receiptSha256);
+        membership.put("original_capture_elapsed_ms",frame.capturedElapsedMs);
+        membership.put("complete_raw_nodes",raw.size());membership.put("retained_nodes",frame.nodes.size());
+        membership.put("native_common_product_block_path",block);membership.put("model_fact",model.fact("text"));
+        membership.put("price_fact",price.fact("description"));membership.put("mirror_price_fact",mirror.fact("description"));
+        membership.put("complete_price_subtree_paths",java.util.Arrays.asList(pricePath,mirrorPath,richPath,pricePath+"/1",pricePath+"/1/0"));
+        membership.put("price_source","complete_equal_parent_child_accessibility_descriptions");
+        membership.put("merged_child_text_used_as_amount",false);membership.put("ignored_merged_child_text",Collections.singletonList(rich.fact("text")));
+        membership.put("offscreen_sku_or_address_used",false);membership.put("creates_node_reference",false);membership.put("grants_action_authority",false);
+        try{
+            return page(frame,"product_detail_quote",null,null,new Quote(frame,"detail_display",model,amount.group(1),amount.group(2),
+                    "explicit_strikethrough_label",conditions,sources,membership));
+        }catch(IllegalArgumentException invalidAmount){
+            return page(frame,"product_detail_unverified","invalid_observed_amount",null,null);
+        }
+    }
+    private static boolean detailEmpty(NativeAppEvidence.Node n){
+        return n!=null&&n.text.isEmpty()&&n.description.isEmpty()&&n.viewId.isEmpty();
+    }
+    private static boolean detailRole(NativeAppEvidence.Frame frame,Map<String,Map<?,?>> raw,NativeAppEvidence.Node n,
+            String type,int children,boolean clickable,boolean scrollable){
+        return usable(frame,n)&&sealedPassive(raw.get(n.path),type,clickable,scrollable)
+                &&sealedInteger(raw.get(n.path),"children",children);
+    }
+    private static boolean detailMoney(String value){
+        // Explicit price/payment roles also apply when currency and amount occupy different nodes.
+        // Bare numbers (for example the sales-rank 1), 评价 and 性价比 are not monetary roles.
+        return value.indexOf('¥')>=0||value.indexOf('￥')>=0||DETAIL_MONEY.matcher(value).find()
+                ||DETAIL_PRICE_ROLE.matcher(value).find();
+    }
+    private static Map<String,Map<?,?>> sealedDetailCensus(NativeAppEvidence.Frame frame){
+        if(frame.capture==null||!ObservationCaptureEvidence.NATIVE_AX.equals(frame.captureKind)
+                ||!ObservationCaptureEvidence.NATIVE_AX.equals(frame.capture.kind))return null;
+        Map<String,Object> census=frame.capture.sealedNativeAxCensus();
+        if(!"hidden".equals(census.get("ime_visibility"))||!(census.get("nodes") instanceof List))return null;
+        Map<String,Map<?,?>> raw=new LinkedHashMap<String,Map<?,?>>();
+        for(Object value:(List<?>)census.get("nodes")){
+            if(!(value instanceof Map))return null;Map<?,?> row=(Map<?,?>)value;
+            if(!(row.get("path") instanceof String))return null;String path=(String)row.get("path");
+            if(!DETAIL_NATIVE_PATH.matcher(path).matches()||raw.put(path,row)!=null
+                    ||!frame.packageName.equals(row.get("package"))||!sealedInteger(row,"window_id",frame.windowId)
+                    ||!(row.get("visible") instanceof Boolean))return null;
+        }
+        for(Map.Entry<String,Map<?,?>> entry:raw.entrySet()){
+            String path=entry.getKey();Object countValue=entry.getValue().get("children");
+            if(!(countValue instanceof Integer||countValue instanceof Long))return null;
+            long count=((Number)countValue).longValue();if(count<0||count>ObservationCaptureEvidence.MAX_NODES)return null;
+            for(int i=0;i<count;i++)if(!raw.containsKey(path+"/"+i))return null;
+            if(!"0".equals(path)){
+                Map<?,?> parentRow=raw.get(parent(path));int index=childIndex(path);
+                if(parentRow==null||index<0||!sealedIntegerAtLeast(parentRow,"children",index+1)
+                        ||!(parentRow.get("class") instanceof String)||!parentRow.get("class").equals(entry.getValue().get("parent_class")))return null;
+            }
+        }
+        Set<String> projected=new LinkedHashSet<String>();
+        for(NativeAppEvidence.Node node:frame.nodes)
+            if(!sealedProjectionMatches(frame,node,raw.get(node.path))||!projected.add(node.path))return null;
+        int count=0;
+        for(Map.Entry<String,Map<?,?>> entry:raw.entrySet())if(entry.getValue().get("ref_signature_sha256")!=null){
+            if(!projected.contains(entry.getKey()))return null;count++;
+        }
+        return count==frame.nodes.size()&&sealedInteger(census,"retained",count)?raw:null;
     }
 
     private static Page results(NativeAppGoal goal,NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> models){

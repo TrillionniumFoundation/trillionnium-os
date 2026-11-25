@@ -428,10 +428,15 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             "GUI-Owl 4B · 语言 NPU + 图像 GPU（实验）\nQ4_0 + F16 视觉投影 · 可用内存门槛 6 GiB",
             "LFM3-VL 2B · 语言 NPU + 图像 GPU（仅观察）\nQAD Q4_0 + F16 视觉投影 · 可用内存门槛 4 GiB",
             "Qwen3.5 4B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 5 GiB",
-            "Qwen3.5 4B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 5 GiB"};
+            "Qwen3.5 4B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 5 GiB",
+            "Gemma 4 E2B · Hexagon NPU（实验）\nQAT Q4_0 · 可用内存门槛 5 GiB",
+            "Gemma 4 E2B · Adreno GPU（实验）\nQAT Q4_0 · 可用内存门槛 5 GiB",
+            "Gemma 4 E4B · Hexagon NPU（实验）\nQAT Q4_0 · 可用内存门槛 7 GiB",
+            "Gemma 4 E4B · Adreno GPU（实验）\nQAT Q4_0 · 可用内存门槛 7 GiB"};
         final ModelProfile[] profiles={ModelProfile.LFM3,ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.LFM25_8B_A1B,
-                ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.QWEN35_4B};
-        final String[] computes={"npu","gpu","npu","gpu","npu","npu","npu","gpu"};
+                ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.QWEN35_4B,
+                ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E4B,ModelProfile.GEMMA4_E4B};
+        final String[] computes={"npu","gpu","npu","gpu","npu","npu","npu","gpu","npu","gpu","npu","gpu"};
         int current=0;
         try{LocalRuntimeConfig config=engine.configuration();
             for(int i=0;i<profiles.length;i++)if(config.profile==profiles[i]&&config.compute.equals(computes[i])){current=i;break;}}

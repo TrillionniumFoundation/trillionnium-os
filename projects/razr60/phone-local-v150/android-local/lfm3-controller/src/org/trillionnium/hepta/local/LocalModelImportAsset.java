@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** The same five profiles exposed by ordinary local-model settings; no caller-supplied path or pin. */
+/** The same pinned profiles exposed by ordinary local-model settings; no caller-supplied path or pin. */
 final class LocalModelImportAsset {
     final String label;
     final LocalModelImportFile.Pin pin;
@@ -27,7 +27,9 @@ final class LocalModelImportAsset {
             new LocalModelImportAsset(ModelProfile.GUI_OWL_4B,true),
             new LocalModelImportAsset(ModelProfile.LFM3_VL_2B,false),
             new LocalModelImportAsset(ModelProfile.LFM3_VL_2B,true),
-            new LocalModelImportAsset(ModelProfile.QWEN35_4B,false)));
+            new LocalModelImportAsset(ModelProfile.QWEN35_4B,false),
+            new LocalModelImportAsset(ModelProfile.GEMMA4_E2B,false),
+            new LocalModelImportAsset(ModelProfile.GEMMA4_E4B,false)));
     static List<LocalModelImportAsset> all(){return ALL;}
     static LocalModelImportAsset named(String id){
         for(LocalModelImportAsset value:ALL)if(value.pin.id.equals(id))return value;

@@ -40,6 +40,11 @@ public final class ProfileOwnedTask {
     interface PublicRecentHistory {
         void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception;
+        default void observeParsed(String raw,ProfileTaskPolicy.Recents.Observation parsed,ProfileTarget target,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            need(parsed!=null,"PROFILE_RECENT_OBSERVATION_MISSING");parsed.claim(raw);
+            observe(raw,target,root,leaf,display,elapsed);
+        }
         Set<Integer> observedIds();
         Map<String,Object> evidence();
         default RetainedRecentHistory beginRetainedCleanup(String raw,ProfileTarget target,
@@ -71,6 +76,7 @@ public final class ProfileOwnedTask {
     private boolean identityUnknown,foreignTasks,cleanupKnown,liveAbsent,recentsAbsent;
     private boolean retainedReleaseChecked,rootDeleteAttempted,leafRemoveAttempted,retainedCleanupClaimed;
     private String recentsBeforeSha,recentsAfterSha;
+    private volatile RetirementAudit retirementAudit;
     public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display)throws Exception{
         this(platform,target,generation,requestId,display,null);
     }
@@ -262,71 +268,74 @@ public final class ProfileOwnedTask {
     }
     public synchronized void retire(long deadline)throws Exception{
         need(!retiring,"PROFILE_RETIRE_ALREADY_ATTEMPTED");retiring=true;
+        RetirementAudit audit=new RetirementAudit(deadline);retirementAudit=audit;
+        boolean returnedNormally=false;
         try{
-            actual(false);
+            retireCall(RetirementPhase.INITIAL_IDENTITY,()->actual(false));
             if(!rootAttempted){
-                platform.snapshot().requireDedicatedEmpty(target);requireRecentEmpty(readRecents());
-                need(checked(platform.roots()).isEmpty(),"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
-                liveAbsent=true;recentsAbsent=true;cleanupKnown=true;return;
+                retireCall(RetirementPhase.EMPTY_GLOBAL,()->platform.snapshot()).requireDedicatedEmpty(target);
+                requireRecentEmpty(retireCall(RetirementPhase.EMPTY_HISTORY,()->readRecents()));
+                need(checked(retireCall(RetirementPhase.EMPTY_ROOTS,()->platform.roots())).isEmpty(),"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
+                liveAbsent=true;recentsAbsent=true;cleanupKnown=true;returnedNormally=true;return;
             }
             need(root!=null,"PROFILE_ROOT_CREATE_UNRESOLVED");
-            ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
-            List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
+            ProfileTaskPolicy.Snapshot global=retireCall(RetirementPhase.INITIAL_GLOBAL,()->platform.snapshot());personalAudit=global.personalAudit(target,personal);
+            List<BackgroundOwnedSingleTask.Task> roots=checked(retireCall(RetirementPhase.INITIAL_ROOTS,()->platform.roots()));
             if(!roots.isEmpty()){
                 need(roots.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
                 BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);
                 if(ProfilePermissionTransient.COMPONENT.equals(currentRoot.top))requireRootIdentity(currentRoot);
                 else requireRoot(currentRoot,true);
-                List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
+                List<BackgroundOwnedSingleTask.Task> children=checked(retireCall(RetirementPhase.INITIAL_CHILDREN,()->platform.children(root.token)));
                 need(children.size()<=1,"PROFILE_FOREIGN_CHILD_TASK");
                 if(!children.isEmpty()){
                     BackgroundOwnedSingleTask.Task candidate=children.get(0);
-                    ProfilePermissionTransient.Proof permission=permissionForOwnedPair(currentRoot,candidate,global);
+                    ProfilePermissionTransient.Proof permission=retireCall(RetirementPhase.INITIAL_PERMISSION,()->permissionForOwnedPair(currentRoot,candidate,global));
                     if(permission==null){requireRoot(currentRoot,true);requireLeaf(candidate,global);}
                     if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
                     else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
                     global.requireOnlyOwned(target,display,root.id,leaf.id);
-                    requireRecentOnlyOwned(readRecents(),leaf.id);
+                    requireRecentOnlyOwned(retireCall(RetirementPhase.PRE_LEAF_HISTORY,()->readRecents()),leaf.id);
                     if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
-                    leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;
+                    leafRemoveAttempted=true;retireCall(RetirementPhase.REMOVE_LEAF,()->{platform.removeLeaf(leaf.token);return null;});leafRemoved=true;
                 }else{
                     requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
-                    if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!recentIds(readRecents()).contains(leaf.id),
+                    if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!recentIds(retireCall(RetirementPhase.DETACHED_HISTORY,()->readRecents())).contains(leaf.id),
                             "PROFILE_DETACHED_RECENT_LEAF_UNRESOLVED");
                 }
                 while(platform.now()<deadline){
-                    actual(false);
-                    ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
+                    retireCall(RetirementPhase.LOOP_IDENTITY,()->actual(false));
+                    ProfileTaskPolicy.Snapshot current=retireCall(RetirementPhase.LOOP_GLOBAL,()->platform.snapshot());personalAudit=current.personalAudit(target,personal);
                     boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
                     List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;
                     if(publicHistory!=null&&liveLeafGone){
                         // Read the retained root/children before the final complete public-history
                         // sample. There is no mutation in this interval: one fresh raw dump then
                         // proves both owned recents absence and preserved unrelated history.
-                        sampledRoots=checked(platform.roots());
+                        sampledRoots=checked(retireCall(RetirementPhase.LOOP_ROOTS,()->platform.roots()));
                         if(sampledRoots.size()==1){
                             requireRootIdentity(sampledRoots.get(0));
-                            sampledChildren=checked(platform.children(root.token));
+                            sampledChildren=checked(retireCall(RetirementPhase.LOOP_CHILDREN,()->platform.children(root.token)));
                         }
                     }
-                    ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
+                    ProfileTaskPolicy.Recents recent=retireCall(RetirementPhase.LOOP_HISTORY,()->readRecents());recentsAfterSha=recent.sha256;
                     requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);
                     boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
                     if(noLeaf){
                         current.requireDedicatedEmpty(target);requireRecentEmpty(recent);
-                        List<BackgroundOwnedSingleTask.Task> currentRoots=sampledRoots==null?checked(platform.roots()):sampledRoots;
+                        List<BackgroundOwnedSingleTask.Task> currentRoots=sampledRoots==null?checked(retireCall(RetirementPhase.LOOP_ROOTS,()->platform.roots())):sampledRoots;
                         need(currentRoots.size()==1,"PROFILE_ROOT_CHANGED_DURING_RETIRE");requireRoot(currentRoots.get(0),false);
                         List<BackgroundOwnedSingleTask.Task> currentChildren=sampledChildren==null
-                                ?checked(platform.children(root.token)):sampledChildren;
+                                ?checked(retireCall(RetirementPhase.LOOP_CHILDREN,()->platform.children(root.token))):sampledChildren;
                         need(currentChildren.isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
                         rootDeleteAttempted=true;
-                        need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
+                        need(retireCall(RetirementPhase.DELETE_ROOT,()->platform.deleteRoot(root.token)),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
                     current.requireOnlyOwned(target,display,root.id,liveLeafGone?-1:leaf.id);
-                    platform.pause();
+                    retireCall(RetirementPhase.LOOP_PAUSE,()->{platform.pause();return null;});
                 }
                 need(rootRemoved,"PROFILE_LEAF_RETIRE_NOT_CONFIRMED");
             }else{
@@ -334,25 +343,27 @@ public final class ProfileOwnedTask {
                 if(leaf!=null)need(!global.allIds.contains(leaf.id),"PROFILE_LEAF_MOVED_OUTSIDE_DISPLAY");
             }
             while(platform.now()<deadline){
-                if(absent())return;platform.pause();
+                if(absent()){returnedNormally=true;return;}
+                retireCall(RetirementPhase.ABSENCE_PAUSE,()->{platform.pause();return null;});
             }
             need(false,"PROFILE_RETIRE_ABSENCE_UNCONFIRMED");
         }catch(Exception error){
             identityUnknown=true;
             if(error.getMessage()!=null&&error.getMessage().contains("FOREIGN"))foreignTasks=true;
             throw error;
-        }
+        }finally{audit.finish(returnedNormally,root==null?null:root.id,leaf==null?null:leaf.id);}
     }
     public synchronized boolean absent()throws Exception{
         if(identityUnknown||!retiring)return false;
-        actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
-        ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
+        retireCall(RetirementPhase.ABSENCE_IDENTITY,()->actual(false));
+        ProfileTaskPolicy.Snapshot global=retireCall(RetirementPhase.ABSENCE_GLOBAL,()->platform.snapshot());personalAudit=global.personalAudit(target,personal);
+        ProfileTaskPolicy.Recents recent=retireCall(RetirementPhase.ABSENCE_HISTORY,()->readRecents());recentsAfterSha=recent.sha256;
         global.requireDedicatedEmpty(target);requireRecentEmpty(recent);
-        List<BackgroundOwnedSingleTask.Task> remaining=checked(platform.roots());
+        List<BackgroundOwnedSingleTask.Task> remaining=checked(retireCall(RetirementPhase.ABSENCE_ROOTS,()->platform.roots()));
         if(!remaining.isEmpty()){
             need(rootRemoved&&remaining.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
             requireRoot(remaining.get(0),false);
-            need(checked(platform.children(root.token)).isEmpty(),"PROFILE_FOREIGN_CHILD_TASK");
+            need(checked(retireCall(RetirementPhase.ABSENCE_CHILDREN,()->platform.children(root.token))).isEmpty(),"PROFILE_FOREIGN_CHILD_TASK");
             return false;
         }
         liveAbsent=(root==null||!global.allIds.contains(root.id))&&(leaf==null||!global.allIds.contains(leaf.id));
@@ -589,6 +600,96 @@ public final class ProfileOwnedTask {
         if(publicHistory!=null)out.put("public_foreign_recent_history",publicHistory.evidence());
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
+
+    /** Read-only trace of the one original retire invocation. Never acquire the
+     * task monitor here: the broker watchdog may need diagnostics during an IPC. */
+    public Map<String,Object> retirementDiagnostics(){
+        RetirementAudit audit=retirementAudit;
+        return audit==null?Collections.emptyMap():audit.evidence();
+    }
+    private enum RetirementPhase {
+        INITIAL_IDENTITY,EMPTY_GLOBAL,EMPTY_HISTORY,EMPTY_ROOTS,INITIAL_GLOBAL,
+        INITIAL_ROOTS,INITIAL_CHILDREN,INITIAL_PERMISSION,PRE_LEAF_HISTORY,
+        REMOVE_LEAF,DETACHED_HISTORY,LOOP_IDENTITY,LOOP_GLOBAL,LOOP_ROOTS,
+        LOOP_CHILDREN,LOOP_HISTORY,DELETE_ROOT,LOOP_PAUSE,ABSENCE_IDENTITY,
+        ABSENCE_GLOBAL,ABSENCE_HISTORY,ABSENCE_ROOTS,ABSENCE_CHILDREN,ABSENCE_PAUSE
+    }
+    private interface RetirementCall<T>{T run()throws Exception;}
+    private <T>T retireCall(RetirementPhase phase,RetirementCall<T> call)throws Exception{
+        RetirementAudit audit=retirementAudit;
+        RetirementAudit.Call sample=audit==null?null:audit.begin(phase);
+        if(sample==null)return call.run();
+        T value=null;boolean returned=false;
+        try{value=call.run();returned=true;return value;}
+        finally{audit.end(sample,returned,phase==RetirementPhase.DELETE_ROOT&&returned?(Boolean)value:null);}
+    }
+    /** Fixed-size memory only. The monotonic duration clock never reads
+     * Platform.now(), supplies an elapsed-realtime timestamp or extends a deadline.
+     * No monitor is held while the platform call executes. */
+    private final class RetirementAudit {
+        private static final int LIMIT=24;
+        private final long started=System.nanoTime(),deadline;
+        private final Call[] calls=new Call[LIMIT];
+        private int retained;
+        private long count;
+        private boolean finished,returned;
+        private long duration;
+        private Integer rootId,leafId;
+        private Call last,removeLeaf,deleteRoot,slowestCompleted;
+        private final class Call {
+            final RetirementPhase phase;final long ordinal,start;
+            boolean finished,returned;long end;Boolean accepted;
+            Call(RetirementPhase phase,long ordinal){this.phase=phase;this.ordinal=ordinal;start=System.nanoTime();}
+            Map<String,Object> evidence(){
+                Map<String,Object> out=new LinkedHashMap<String,Object>();
+                out.put("ordinal",ordinal);out.put("phase",phase.name());out.put("entered",true);
+                out.put("start_offset_us",Math.max(0,start-started)/1000);
+                out.put("finished",finished);out.put("returned",returned);out.put("api_accepted",accepted);
+                out.put("duration_us",finished?Math.max(0,end-start)/1000:null);
+                return Collections.unmodifiableMap(out);
+            }
+        }
+        RetirementAudit(long deadline){this.deadline=deadline;}
+        synchronized Call begin(RetirementPhase phase){
+            if(finished)return null;
+            if(count<Long.MAX_VALUE)count++;
+            Call item=new Call(phase,count);last=item;
+            if(retained<LIMIT)calls[retained++]=item;
+            if(phase==RetirementPhase.REMOVE_LEAF)removeLeaf=item;
+            if(phase==RetirementPhase.DELETE_ROOT)deleteRoot=item;
+            return item;
+        }
+        synchronized void end(Call item,boolean returned,Boolean accepted){
+            item.end=System.nanoTime();item.returned=returned;item.accepted=accepted;item.finished=true;
+            if(slowestCompleted==null||item.end-item.start>slowestCompleted.end-slowestCompleted.start)slowestCompleted=item;
+        }
+        synchronized void finish(boolean returned,Integer rootId,Integer leafId){
+            duration=Math.max(0,System.nanoTime()-started)/1000;this.returned=returned;
+            this.rootId=rootId;this.leafId=leafId;finished=true;
+        }
+        synchronized Map<String,Object> evidence(){
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("schema","hepta.profile-retirement-diagnostics.v1");
+            out.put("generation",generation);out.put("request_id",requestId);out.put("display_id",display);
+            out.put("root_task_id",rootId);out.put("leaf_task_id",leafId);
+            out.put("task_reads_deadline_elapsed_ms",deadline);
+            out.put("duration_clock","java.lang.System.nanoTime");
+            out.put("finished",finished);out.put("returned",returned);
+            out.put("duration_us",finished?duration:null);out.put("record_limit",LIMIT);
+            out.put("calls_started",count);out.put("calls_dropped",Math.max(0,count-retained));
+            List<Map<String,Object>> entries=new ArrayList<Map<String,Object>>();
+            for(int i=0;i<retained;i++)entries.add(calls[i].evidence());
+            out.put("calls",Collections.unmodifiableList(entries));
+            out.put("last_call",last==null?null:last.evidence());
+            out.put("slowest_completed_call",slowestCompleted==null?null:slowestCompleted.evidence());
+            out.put("remove_leaf",removeLeaf==null?null:removeLeaf.evidence());
+            out.put("delete_root",deleteRoot==null?null:deleteRoot.evidence());
+            out.put("diagnostics_grant_authority",false);out.put("provides_cleanup_proof",false);
+            out.put("allows_input_or_model_resumption",false);
+            return Collections.unmodifiableMap(out);
+        }
+    }
+
     private ProfileTarget actual(boolean ready)throws Exception{
         ProfileTarget actual=platform.recheck(ready);
         need(target.same(actual),"PROFILE_INSTALLATION_IDENTITY_CHANGED");return actual;
@@ -679,8 +780,10 @@ public final class ProfileOwnedTask {
     }
     private ProfileTaskPolicy.Recents readRecents()throws Exception{
         if(publicHistory==null)return platform.recents();
-        String raw=platform.publicRecentsDump();ProfileTaskPolicy.Recents recent=ProfileTaskPolicy.Recents.parse(raw);
-        publicHistory.observe(raw,target,root,leaf,display,platform.now());return recent;
+        String raw=platform.publicRecentsDump();
+        try(ProfileTaskPolicy.Recents.Observation parsed=ProfileTaskPolicy.Recents.parseObservation(raw)){
+            publicHistory.observeParsed(raw,parsed,target,root,leaf,display,platform.now());return parsed.result();
+        }
     }
     public synchronized void verifyPublicRecentHistory()throws Exception{if(publicHistory!=null)readRecents();}
     private Set<Integer> recentIds(ProfileTaskPolicy.Recents recent){return publicHistory==null?recent.ids:publicHistory.observedIds();}

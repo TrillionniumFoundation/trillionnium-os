@@ -12,6 +12,9 @@ PIN_DATA={'src/org/trillionnium/hepta/local/NativeAppGoal.java': {'bytes': 21582
 # Keep the complete old pins and prove the accepted history delta on copies; javac below still receives current production.
 PRE_HISTORY_PREFIX_PIN_DATA=dict(PIN_DATA)
 PIN_DATA.update({'src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java': {'bytes': 87484, 'sha256': '45190840abf4c78413153d3a156a2bcaa075e9e13dc2a0c3b5fd0eb717ddf558'}, 'src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java': {'bytes': 27679, 'sha256': '97676dccad63116b9e82c1236247f33909ca8cfcba429dd9f7cd5c2b7410cf67'}, 'tests/native-xiaomi-query-stability/protected_filled_query.py': {'bytes': 40795, 'sha256': '72b2980a3a7d59223e3a709b188aa3488228e5d4c66b9392dfad890c818ed074'}})
+# Preserve the signed93 pins; compile actual current production after exact proofs.
+PRE_FILLED_HISTORY_PIN_DATA=dict(PIN_DATA)
+PIN_DATA.update({'src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java': {'bytes': 27684, 'sha256': '86815c2110f012ce06bde4457695769ae7cb8852c0f8ec1b4a07034c767e5fbb'}, 'tests/native-xiaomi-query-stability/protected_filled_query.py': {'bytes': 42690, 'sha256': 'a00e84ff808db50b3d761582270522ca0eb3132ca725bf74e8de21209f12d687'}})
 ACTUAL_PINS={'owner.json': {'bytes': 10542, 'sha256': '7a2465d488e45e4ba6851c93bb35e9868d2f1eee9be1e84bc7f06e2e7616c1b3'}, 'native-app-page-0003.json': {'bytes': 337097, 'sha256': '4af2580bc868472215dd74124d36bf25100d5682f0f61f5ce482a02600a272c4'}, 'step-03-after.json': {'bytes': 85469, 'sha256': '95a276dd5dd01df6016da8e6f24c7281784b668fe27b8fd4e0ee2944f27383c5'}, '572304edf78a4ba89228579022176658-native-ax.json': {'bytes': 100102, 'sha256': '3307b70efd29c46762c3f5e3cb7be9e973f105d54e3d754f55821bbd3412f525'}}
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def need(ok,why):
@@ -34,8 +37,28 @@ def main():
     history_pin=PIN_DATA["tests/native-xiaomi-query-stability/protected_filled_query.py"]
     need(history_meta["bytes"]==history_pin["bytes"] and history_meta["sha256"]==history_pin["sha256"],"reviewed history inverse helper")
     history_predecessor=runpy.run_path(str(history_helper))["history_prefix_predecessor"]
+    # Qualification copies only: current semantic -> mirror -> exact signed93.
+    detail_helper=a.source/"tests/native-xiaomi-detail-mirror/protected_detail_mirror.py"
+    detail_meta=info(detail_helper)
+    need(detail_meta["bytes"]==15409 and detail_meta["sha256"]=="f1bf83564946293cc0074b64dfe5b5ae858d3115d3299005ea9296548dae143a","exact reviewed detail inverse helper")
+    originals[str(detail_helper)]=detail_meta
+    mirror_predecessor=runpy.run_path(str(detail_helper))["predecessor"]
+    semantic_helper=a.source/"tests/native-xiaomi-detail-semantics/protected_price_semantics.py"
+    semantic_meta=info(semantic_helper)
+    need(semantic_meta["bytes"]==2877 and semantic_meta["sha256"]=="5df861db66705332faf555b5a2418a4dec5136b8ed224133f662045c89fd2a22","exact reviewed price semantics inverse helper")
+    originals[str(semantic_helper)]=semantic_meta
+    semantic=runpy.run_path(str(semantic_helper))
+    def detail_predecessor(raw):
+        if isinstance(raw,bytes) and sha(raw)==semantic["CURRENT_SHA"]:
+            raw=semantic["predecessor"](raw)
+        return mirror_predecessor(raw)
     for rel,pin in PIN_DATA.items():
-        meta=info(a.source/rel);need(meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"],"exact source/fixture pin: "+rel)
+        meta=info(a.source/rel)
+        if rel==PKG+"NativeXiaomiProductPage.java":
+            proof_raw=detail_predecessor((a.source/rel).read_bytes())
+            need(len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"],"exact complete detail predecessor pin: "+rel)
+        else:
+            need(meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"],"exact source/fixture pin: "+rel)
         if rel in ("src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java","src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java"):
             prior=history_predecessor(Path(rel).name,(a.source/rel).read_bytes())
             old_pin=PRE_HISTORY_PREFIX_PIN_DATA[rel]
@@ -68,7 +91,12 @@ def main():
             need(r.returncode==0,"actual host command failed: "+name)
     try:
         helper=runpy.run_path(str(a.source/TEST/"protected_direct_card.py"))
-        inverse=helper["predecessor"];cases=[]
+        base_inverse=helper["predecessor"]
+        def inverse(name,raw):
+            if name=="NativeXiaomiProductPage.java" and sha(raw)!=helper["PINS"][name]["before_sha256"]:
+                raw=detail_predecessor(raw)
+            return base_inverse(name,raw)
+        cases=[]
         for name in ("ObservationCaptureEvidence.java","NativeXiaomiProductPage.java"):
             raw=(a.source/PKG/name).read_bytes();prior=inverse(name,raw)
             need(inverse(name,prior)==prior,"exact prior identity path")

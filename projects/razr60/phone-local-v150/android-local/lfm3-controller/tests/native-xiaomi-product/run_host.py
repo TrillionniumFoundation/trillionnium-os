@@ -67,6 +67,9 @@ SHARED[CAPTURE_REUSE_PATH]="e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f
 # Preserve the complete 8d closure; the filled-query helper first reverses only the exact reviewed history prefix.
 PRE_HISTORY_PREFIX_SHARED=dict(SHARED)
 SHARED.update({'src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java': '45190840abf4c78413153d3a156a2bcaa075e9e13dc2a0c3b5fd0eb717ddf558', 'src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java': '97676dccad63116b9e82c1236247f33909ca8cfcba429dd9f7cd5c2b7410cf67'})
+# Prove the exact filled-history delta before using the original source chain.
+PRE_FILLED_HISTORY_SHARED=dict(SHARED)
+SHARED["src/org/trillionnium/hepta/local/NativeXiaomiSearchInputObservation.java"]='86815c2110f012ce06bde4457695769ae7cb8852c0f8ec1b4a07034c767e5fbb'
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -97,8 +100,20 @@ def main():
     direct_inverse=a.source/"tests/native-xiaomi-direct-card/protected_direct_card.py"
     read(direct_inverse)
     direct_capture_predecessor=runpy.run_path(str(direct_inverse))["capture_predecessor"]
+    detail_path=a.source/"tests/native-xiaomi-detail-mirror/protected_detail_mirror.py"
+    semantic_path=a.source/"tests/native-xiaomi-detail-semantics/protected_price_semantics.py"
+    need(sha(read(detail_path))=="f1bf83564946293cc0074b64dfe5b5ae858d3115d3299005ea9296548dae143a","exact reviewed detail inverse helper")
+    need(sha(read(semantic_path))=="5df861db66705332faf555b5a2418a4dec5136b8ed224133f662045c89fd2a22","exact reviewed price semantics inverse helper")
+    mirror_predecessor=runpy.run_path(str(detail_path))["predecessor"]
+    semantic=runpy.run_path(str(semantic_path))
+    def detail_predecessor(raw):
+        if isinstance(raw,bytes) and sha(raw)==semantic["CURRENT_SHA"]:
+            raw=semantic["predecessor"](raw)
+        return mirror_predecessor(raw)
     for rel in PATHS:
         raw=read(a.source/rel)
+        if rel=="src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java":
+            need(sha(detail_predecessor(raw))=="91fed98eafe2f3cbcc090d9a3f85085fa1feb0f3ba002d7b9a78c71b13569bf0","complete signed93 detail predecessor")
         if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
         if rel==CAPTURE_REUSE_PATH:
             before_getter=direct_capture_predecessor(raw)

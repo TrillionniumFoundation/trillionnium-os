@@ -145,6 +145,33 @@ public final class ProfileTaskPolicy {
         private Recents(Map<Integer,Recent> rows,BackgroundOwnedSingleTask.RecentTasks validated){
             this.rows=Collections.unmodifiableMap(rows);ids=validated.ids;sha256=validated.sha256;bytes=validated.bytes;
         }
+        /** One synchronous observation only. The opaque proof carries the exact
+         * immutable String parsed here; it is neither serialized nor cached. */
+        static final class Observation implements AutoCloseable {
+            private final String raw;
+            private final Recents value;
+            private final Thread owner;
+            private boolean active=true,claimed;
+            private Observation(String raw,Recents value){
+                this.raw=raw;this.value=value;owner=Thread.currentThread();
+            }
+            private void requireActive()throws Refusal{
+                need(Thread.currentThread()==owner&&active,"PROFILE_RECENT_OBSERVATION_INACTIVE");
+            }
+            Recents result()throws Refusal{requireActive();return value;}
+            void claim(String current)throws Refusal{
+                requireActive();need(!claimed,"PROFILE_RECENT_OBSERVATION_REUSED");claimed=true;
+                // Reference identity also refuses another read of equal bytes.
+                need(current==raw,"PROFILE_RECENT_OBSERVATION_RAW_MISMATCH");
+            }
+            @Override public void close(){
+                if(Thread.currentThread()!=owner)throw new IllegalStateException("PROFILE_RECENT_OBSERVATION_THREAD");
+                active=false;
+            }
+        }
+        static Observation parseObservation(String raw)throws Exception{
+            return new Observation(raw,parse(raw));
+        }
         public static Recents parse(String text)throws Exception{
             BackgroundOwnedSingleTask.RecentTasks checked=BackgroundOwnedSingleTask.RecentTasks.parse(text);
             Map<Integer,Recent> rows=new LinkedHashMap<Integer,Recent>();int current=-1;boolean raw=false;

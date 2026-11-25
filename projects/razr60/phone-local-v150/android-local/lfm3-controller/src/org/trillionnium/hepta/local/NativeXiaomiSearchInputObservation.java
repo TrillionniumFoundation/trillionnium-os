@@ -114,7 +114,7 @@ final class NativeXiaomiSearchInputObservation {
      * publication or relaxes the existing empty-editor observation predicate. */
     static Map<String,Object> compareFilledQuery(Snapshot before,Snapshot after,String literal){
         need("AX3000T".equalsIgnoreCase(literal),"supported immutable product literal required");
-        return compare(before,after,literal);
+        return compare(before,after,literal,true);
     }
     private static Map<String,Object> compare(Snapshot before,Snapshot after,String literal){
         return compare(before,after,literal,false);

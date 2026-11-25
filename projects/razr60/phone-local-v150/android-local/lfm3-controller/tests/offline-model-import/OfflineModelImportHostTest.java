@@ -182,13 +182,16 @@ public final class OfflineModelImportHostTest {
             reject(()->LocalModelImportFile.ready(f.toFile(),pin(),LIVE));reject(()->LocalModelImportFile.begin(f.toFile(),pin()));unchangedOld(f);
         });
         run("fixed-registry-matches-real-model-and-projector-pins",()->{
-            check(LocalModelImportAsset.all().size()==7,"five models plus two projectors only");
-            for(ModelProfile model:new ModelProfile[]{ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B}){
+            check(LocalModelImportAsset.all().size()==9,"seven pinned models plus two existing projectors only");
+            for(ModelProfile model:new ModelProfile[]{ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E4B}){
                 LocalModelImportFile.Pin modelPin=LocalModelImportAsset.named(model.id+"/model").pin;
                 check(modelPin.filename.equals(model.fileName)&&modelPin.bytes==model.bytes&&modelPin.sha256.equals(model.sha256),"model pin from existing allowlist");
                 if(model.visual()){VlmResultContract.Profile visual=VlmResultContract.named(model.id);LocalModelImportFile.Pin projector=LocalModelImportAsset.named(model.id+"/projector").pin;
                     check(projector.filename.equals(visual.projectorFilename)&&projector.bytes==visual.projectorBytes&&projector.sha256.equals(visual.projectorSha256),"projector from existing exact profile");}
             }
+            reject(()->LocalModelImportAsset.named(ModelProfile.GEMMA4_E2B.id+"/projector"));
+            reject(()->LocalModelImportAsset.named(ModelProfile.GEMMA4_E4B.id+"/projector"));
+            reject(()->LocalModelImportAsset.named("gemma4-e2b-qat-q4_1/model"));
             reject(()->LocalModelImportAsset.named("external/model"));reject(()->new LocalModelImportFile.Pin("escape","../","bad.gguf",1,sha(OLD)));
         });
     }

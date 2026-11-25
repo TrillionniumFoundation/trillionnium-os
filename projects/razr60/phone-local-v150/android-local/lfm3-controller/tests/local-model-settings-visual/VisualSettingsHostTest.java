@@ -71,7 +71,9 @@ public final class VisualSettingsHostTest {
         }
         byte[] config()throws Exception{return Files.readAllBytes(files.resolve("model/runtime-config.json"));}
         void awaitSettings()throws Exception{
-            long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);
+            awaitSettings(System.nanoTime()+TimeUnit.SECONDS.toNanos(10));
+        }
+        void awaitSettings(long deadline)throws Exception{
             while(app.modelSettings.isBusy()){
                 Handler.drain();
                 if(System.nanoTime()>deadline)throw new AssertionError("actual settings callback deadline");
@@ -79,14 +81,29 @@ public final class VisualSettingsHostTest {
             }
             Handler.drain();
         }
+        // A completed finisher Future can precede the executor worker becoming idle.
+        // Positive cases wait for the real ordinary admission; refusal cases call ui directly.
+        void awaitSettingsAdmission(boolean restore,long deadline)throws Exception{
+            for(;;){
+                Handler.drain();
+                boolean ready=app.canChangeLocalModelSettings(restore);
+                if(System.nanoTime()>deadline)throw new AssertionError("actual ordinary settings admission deadline");
+                if(ready)return;
+                Thread.sleep(1);
+            }
+        }
         void choose(int choice)throws Exception{
+            long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);
+            awaitSettingsAdmission(false,deadline);
             AlertDialog.last=null;ui.choose();check(AlertDialog.last!=null,"actual ordinary selection button opened");
-            check(AlertDialog.last.labels.length==8,"six text choices and two existing restricted visual choices");
-            AlertDialog.last.choose(choice);AlertDialog.last.confirm();awaitSettings();
+            check(AlertDialog.last.labels.length==12,"ten pinned text choices and two existing restricted visual choices");
+            AlertDialog.last.choose(choice);AlertDialog.last.confirm();awaitSettings(deadline);
         }
         void restored()throws Exception{
+            long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);
+            awaitSettingsAdmission(true,deadline);
             AlertDialog.last=null;ui.restore();check(AlertDialog.last!=null,"actual ordinary restore button opened");
-            AlertDialog.last.confirm();awaitSettings();
+            AlertDialog.last.confirm();awaitSettings(deadline);
         }
         void close()throws Exception{
             app.modelSettings.close();engine.close();
@@ -526,24 +543,101 @@ public final class VisualSettingsHostTest {
         });
     }
 
+
+    /** Ordinary Gemma entry only; positive weights and Android UI remain declared host boundaries. */
+    private static void gemmaTextSettings()throws Exception{
+        for(int choice:new int[]{8,9,10,11}){
+            final int selected=choice;
+            final ModelProfile model=choice<10?ModelProfile.GEMMA4_E2B:ModelProfile.GEMMA4_E4B;
+            final String compute=choice%2==0?"npu":"gpu";
+            run("ordinary-gemma-"+(choice<10?"e2b":"e4b")+"-text-choice-"+compute,()->{
+                Env e=new Env("gemma-"+selected);byte[] original=e.config();e.choose(selected);
+                LocalRuntimeConfig config=e.engine.configuration();
+                check(config.profile==model&&config.compute.equals(compute),"ordinary button selects exact Gemma model and explicit device");
+                check(config.contextTokens==8192&&config.threads==4&&!config.visualObservationOnly,"fixed text-only runtime");
+                check(config.profile.minimumAvailableBytes==((model==ModelProfile.GEMMA4_E2B?5L:7L)<<30),"unchanged engineering memory gate");
+                JSONObject raw=new JSONObject(new String(e.config(),StandardCharsets.UTF_8));
+                check(raw.length()==5&&"hepta.local-runtime.v2".equals(raw.getString("schema"))&&!raw.has("visual_mode"),"no visual, external or arbitrary path fields");
+                check(e.app.modelSettings.state().contains("本次没有运行推理"),"selection never claims model qualification");
+                AlertDialog.last=null;e.ui.choose();
+                check(AlertDialog.last.checked==selected&&AlertDialog.last.labels[selected].contains("实验"),"actual menu retains explicit experimental selection");
+                String task=id();e.controller.begin(task);
+                check(delegate(e.controller.inference) instanceof EngineInferenceAdapter,"next manual task routes through the existing text adapter");
+                check(e.controller.inference.configuration().profile==model&&!e.controller.inference.acceptsObservedImage(),"task retains selected text model");
+                check(field(field(e.controller.inference,"binding"),"runtime")==e.engine.runtimeGeneration(),"task captures the actual published runtime generation");
+                check(task.equals(field(field(e.controller.inference,"binding"),"taskId")),"text task reservation remains owner-bound");
+                check(e.controller.finish().cleanupKnown&&!e.engine.isBusy(),"unstarted text reservation drains without spawning model");
+                e.restored();check(Arrays.equals(original,e.config()),"ordinary Restore preserves exact prior configuration bytes");
+                check(e.engine.configuration().profile==ModelProfile.LFM3,"explicit restoration returns baseline");
+            });
+        }
+        run("gemma-exact-pins-and-configuration-only-receipts",()->{
+            check(ModelProfile.GEMMA4_E2B.id.equals("gemma4-e2b-qat-q4_0")
+                    &&ModelProfile.GEMMA4_E2B.fileName.equals("gemma-4-E2B_q4_0-it.gguf")
+                    &&ModelProfile.GEMMA4_E2B.bytes==3349516256L
+                    &&ModelProfile.GEMMA4_E2B.sha256.equals("fa401b55b07ee70a54c6dae3903c783a6e65064312529ea57175cb5f8dec6634"),"exact official E2B artifact unchanged");
+            check(ModelProfile.GEMMA4_E4B.id.equals("gemma4-e4b-qat-q4_0")
+                    &&ModelProfile.GEMMA4_E4B.fileName.equals("gemma-4-E4B_q4_0-it.gguf")
+                    &&ModelProfile.GEMMA4_E4B.bytes==5154941280L
+                    &&ModelProfile.GEMMA4_E4B.sha256.equals("676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee"),"exact official E4B artifact unchanged");
+            for(ModelProfile model:new ModelProfile[]{ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E4B}){
+                Path files=fresh("gemma-transaction-"+model.id);
+                RuntimeConfigTransaction tx=RuntimeConfigTransaction.prepare(files.toFile(),RuntimeConfigTransaction.selected(model.id,"npu"),true);
+                tx.apply();tx.commit();
+                JSONObject receipt=new JSONObject(new String(Files.readAllBytes(tx.directory.toPath().resolve("committed.json")),StandardCharsets.UTF_8));
+                check(!receipt.getBoolean("inference_executed")&&!receipt.getBoolean("backend_qualified"),"saved Gemma configuration is not inference evidence");
+                check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3&&"npu".equals(LocalRuntimeConfig.defaults().compute),"factory default remains LFM3 NPU");
+            }
+        });
+        run("gemma-entry-retains-closed-text-allowlist",()->{
+            for(ModelProfile model:new ModelProfile[]{ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E4B}){
+                for(String device:new String[]{"cpu","auto","NPU","","https://external"})reject(()->RuntimeConfigTransaction.selected(model.id,device));
+                Path files=fresh("gemma-fields-"+model.id);
+                JSONObject raw=new JSONObject(new String(RuntimeConfigTransaction.selected(model.id,"npu"),StandardCharsets.UTF_8));
+                raw.put("model_sha256","0000000000000000000000000000000000000000000000000000000000000000");
+                reject(()->RuntimeConfigTransaction.prepare(files.toFile(),raw.toString().getBytes(StandardCharsets.UTF_8),true));
+                check(Arrays.equals(ORIGINAL,Files.readAllBytes(files.resolve("model/runtime-config.json")))&&!RuntimeConfigTransaction.pending(files.toFile()),"caller-supplied replacement pin rejected without changing configuration");
+            }
+            for(String model:new String[]{"unknown","gemma4-e2b-qat-q4_1","../escape",ModelProfile.QWEN35_9B.id,ModelProfile.MINICPM5.id,ModelProfile.GUI_OWL_4B.id,ModelProfile.LFM3_VL_2B.id})
+                reject(()->RuntimeConfigTransaction.selected(model,"npu"));
+        });
+        for(ModelProfile model:new ModelProfile[]{ModelProfile.GEMMA4_E2B,ModelProfile.GEMMA4_E4B}){
+            run("gemma-"+(model==ModelProfile.GEMMA4_E2B?"e2b":"e4b")+"-real-engine-memory-and-size-refusals",()->{
+                Path files=fresh("gemma-memory-"+model.id);LocalModelEngine engine=new LocalModelEngine(new LocalProbeApplication(files.toFile()));
+                realEngines.add(engine);LocalModelEngine.SettingsReservation lease=engine.reserveSettings(false);
+                LocalRuntimeConfig config=new LocalRuntimeConfig(model,"npu",8192,4);long kilobytes=model.minimumAvailableBytes/1024L;
+                MemoryAvailability below=MemoryAvailability.fromText(0,12L<<30,false,"MemTotal: 12582912 kB\nMemAvailable: "+(kilobytes-1)+" kB\n");
+                MemoryAvailability exact=MemoryAvailability.fromText(0,12L<<30,false,"MemTotal: 12582912 kB\nMemAvailable: "+kilobytes+" kB\n");
+                check(!below.admits(model.minimumAvailableBytes)&&exact.admits(model.minimumAvailableBytes),"exact model-specific kernel memory threshold retained");
+                ActivityManager.available=12L<<30;ActivityManager.low=true;
+                check(failure(()->engine.verifySettingsModel(lease,config)).contains("available memory"),"real Engine refuses system low-memory admission");
+                ActivityManager.low=false;write(files.resolve("model").resolve(model.fileName),new byte[]{1,2,3});
+                check(failure(()->engine.verifySettingsModel(lease,config)).contains("size differs"),"real Engine rejects wrong pinned weight bytes before publication");
+                check(!RuntimeConfigTransaction.pending(files.toFile()),"rejected model does not create settings transaction");
+                lease.requireOwned();engine.finishSettings(lease,true);check(!engine.isBusy(),"owned settings reservation drained");
+            });
+        }
+    }
+
     public static void main(String[] args)throws Exception{
         final boolean qwen=args.length==2&&"--qwen-text".equals(args[1]);
-        if(args.length!=1&&!qwen)throw new IllegalArgumentException("output plus optional --qwen-text required");
+        final boolean gemma=args.length==2&&"--gemma-text".equals(args[1]);
+        if(args.length!=1&&!qwen&&!gemma)throw new IllegalArgumentException("output plus optional --qwen-text/--gemma-text required");
         output=Paths.get(args[0]);Files.createDirectory(output);boolean passed=false;Throwable error=null;
-        try{if(qwen)qwenTextSettings();else{settings();routing();assets();lfmObserveSettings();}passed=true;}
+        try{if(gemma)gemmaTextSettings();else if(qwen)qwenTextSettings();else{settings();routing();assets();lfmObserveSettings();}passed=true;}
         catch(Throwable failure){error=failure;failure.printStackTrace();}
         finally{
             for(Env e:environments)try{e.close();}catch(Exception failure){passed=false;if(error==null)error=failure;failure.printStackTrace();}
             for(LocalModelEngine engine:realEngines)try{engine.close();if(!executor(engine).awaitTermination(3,TimeUnit.SECONDS))throw new IllegalStateException("real engine did not exit");}
                 catch(Exception failure){passed=false;if(error==null)error=failure;failure.printStackTrace();}
         }
-        JSONObject report=new JSONObject().put("schema",qwen?"hepta.local-model-settings-qwen-cases.v1":"hepta.local-model-settings-visual-cases.v1").put("passed",passed)
+        JSONObject report=new JSONObject().put("schema",gemma?"hepta.local-model-settings-gemma-cases.v1":qwen?"hepta.local-model-settings-qwen-cases.v1":"hepta.local-model-settings-visual-cases.v1").put("passed",passed)
                 .put("cases",cases).put("assertions",assertions).put("case_results",rows)
                 .put("actual_owner_button_methods",true).put("actual_application_idle_methods",true)
                 .put("actual_service_controller_factory",true).put("actual_settings_transaction_and_engine",true)
                 .put("actual_runtime_generation_binding",true).put("same_service_and_controller_roundtrip",true)
                 .put("positive_weight_verification_is_host_boundary",true).put("vlm_model_loading_is_host_boundary",true)
-                .put("actual_negative_asset_and_hash_checks",!qwen).put("actual_negative_qwen_memory_and_size_checks",qwen).put("android_view_and_inventory_are_host_boundaries",true)
+                .put("actual_negative_asset_and_hash_checks",!qwen&&!gemma).put("actual_negative_gemma_memory_size_and_pin_fields",gemma).put("actual_negative_qwen_memory_and_size_checks",qwen).put("android_view_and_inventory_are_host_boundaries",true)
                 .put("phone_operations",0).put("native_model_executed",false).put("positive_backend_qualified",false)
                 .put("error",error==null?JSONObject.NULL:error.toString());
         Files.write(output.resolve("RESULT.json"),(report.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
