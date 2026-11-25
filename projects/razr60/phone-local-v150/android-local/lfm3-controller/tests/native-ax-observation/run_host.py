@@ -57,10 +57,11 @@ def generate(source,out,h,snap):
     }
     private boolean ownsAuthorization(String task,Object auth){return owns(task)&&auth!=null&&auth==taskAuthorization;}
     static final class MobiMindPrivateFiles {
-        static Runnable writeHook;static java.util.function.Consumer<byte[]> readHook;static int writes,reads;
+        static Runnable writeHook,unchangedHook;static java.util.function.Consumer<byte[]> readHook;static int writes,reads;
         static final class Read {final File path;final byte[] bytes;
             Read(File p,byte[] b){path=p;bytes=b;}void unchangedPath()throws IOException{
                 if(!Arrays.equals(bytes,Files.readAllBytes(path.toPath())))throw new IOException("host file changed");
+                if(unchangedHook!=null)unchangedHook.run();
             }}
         static void writeNew(File path,byte[] bytes)throws IOException{
             expect(!isMain(),"private write on main");writes++;

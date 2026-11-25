@@ -1,21 +1,25 @@
 {
   "android_qualified": false,
-  "base_head": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
-  "base_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
+  "base_head": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
+  "base_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_profile_cleanup_diagnostic_screen_gate_closure",
+  "candidate_status": "reviewed_native_ax_post_persistence_complete_recheck",
   "complete_source_files": 2598,
   "current_successor_delta": {
-    "baseline": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
-    "production_changed": false,
+    "baseline": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
+    "production_changed": true,
     "reviewed_paths": [
-      "tests/public-screen-lease/run_host.py"
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
+      "tests/native-ax-observation/ActualAxPhoneChecks.java",
+      "tests/native-ax-observation/AxPipelineCases.fragment",
+      "tests/native-ax-observation/run_host.py"
     ],
     "model_weights_changed": false,
     "native_runtime_changed": false,
     "geniex_sdk_unchanged": "0.10",
     "automatic_default_model_unchanged": true,
-    "scope": "Close the screen-lease static integration gate over the complete bounded profile cleanup diagnostic prefix followed by the unchanged screen retirement. Production bytes match 454dd39."
+    "scope": "One original receipt file; complete post-persistence C witness, no second receipt rewrite."
   },
   "files": [
     {
@@ -6570,8 +6574,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 658881,
-      "sha256": "73bfce8e353c2d6d1d8669a64dd1bebd8844fbba9418268eca90d8eb1ac73855"
+      "bytes": 660600,
+      "sha256": "6135277124e98181b15b9c1176d42f11b48f5a3a1ac564591de72a1ac2c17dac"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -6800,8 +6804,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java",
-      "bytes": 26842,
-      "sha256": "e7f5ba2bf975f5a39ab47909176912ec1e825c32fb51ac778ee6a76e4abcf39d"
+      "bytes": 32021,
+      "sha256": "96a0099759222c59b78950230eae842ebd274e42035746ece4b9e0cf50e94a19"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
@@ -8840,18 +8844,18 @@
     },
     {
       "path": "tests/native-ax-observation/ActualAxPhoneChecks.java",
-      "bytes": 5522,
-      "sha256": "cf8fc147c54233840ff9bdc1fcb392b99df59c74c9bd348051b9602f9b8ff121"
+      "bytes": 9890,
+      "sha256": "2d6f71ebd6b93bbc348ef18c0b9fb7c78e40c659540de25319d555ca6cfe59fe"
     },
     {
       "path": "tests/native-ax-observation/AxPipelineCases.fragment",
-      "bytes": 29904,
-      "sha256": "810df108d4fb4635cbc86c3423165b88c2dede00c6e41a66ecc3fa50ef48e523"
+      "bytes": 38278,
+      "sha256": "ea45ff43e8430f1ce07ef57c1819ee2feb0a0eccca6a04336f6c483af4d3c1d5"
     },
     {
       "path": "tests/native-ax-observation/run_host.py",
-      "bytes": 13053,
-      "sha256": "558e16840ca3afd0956e27cec8df53ce2f613f0d80d4e74fd769de0008c0a346"
+      "bytes": 13127,
+      "sha256": "1a54f0330259780bd27dfd8c17d17cd78a700de3ff3c3b75dfd374f8f1abb1c8"
     },
     {
       "path": "tests/native-calendar-date-actions/CalendarDateReplyHost.java",
@@ -13005,15 +13009,25 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
-    "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
+    "previous_component_git_tree_sha1": "d979ac56d7acfbb4b150eb2b42f6c7b179c55a68",
+    "previous_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_full_host_passed": false,
-    "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
-    "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
-    "original_e7ef24_business_status": "blocked",
-    "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-    "exact_cleanup_started_time_unavailable": true
+    "previous_full_host_passed": true,
+    "previous_full_host_report_sha256": "04f6dbcea9812de711b8cbb05465e6f8425746df18f5bab822176db1c4542278",
+    "original_f349d_business_status": "failed",
+    "original_f349d_goal_verified": false,
+    "original_f349d_cleanup_known": true,
+    "earlier_manifest_history": {
+      "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+      "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
+      "previous_host_and_phone_results_are_not_current_qualification": true,
+      "previous_full_host_passed": false,
+      "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+      "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+      "original_e7ef24_business_status": "blocked",
+      "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+      "exact_cleanup_started_time_unavailable": true
+    }
   },
   "host_validation_at_preparation": {
     "current_targeted_host_execution": true,
@@ -13022,26 +13036,23 @@
     "expected_canonical_checks": 133,
     "extra_recorded_cleanup_gate_required": true,
     "extra_png_gate_required": true,
-    "current_xiaomi_cases": 31,
-    "current_xiaomi_assertions": 415,
-    "current_cleanup_synthetic_cases": 9,
-    "current_cleanup_sampling_assertions": 55,
-    "current_cleanup_diagnostic_assertions": 14,
+    "current_ax_cases": 95,
+    "current_ax_assertions": 385,
+    "baseline_compiled_and_expected_red": true,
+    "independent_review_sha256": "84fbb28755fb8c810bc2d6e5ac14f9b2035e9db1515ceb357554fb3d5d37d6f8",
     "hardware_operations": 0,
     "phone_qualified": false,
-    "retained_host_checks_and_provenance_are_historical": true,
-    "targeted_screen_lease_passed": true,
-    "original_full_host_failure_preserved": true
+    "retained_host_checks_and_provenance_are_historical": true
   },
   "main_java_sources": 220,
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "e3fbd64de3b12bfbcf81e9ecab6530ace8150a737e1bab59a9b06c267c131c65",
+  "production_input_map_sha256": "31d1c818a4c44d4ccea7926883d3c42a641c01f5908e91c382dfe1622a49b045",
   "schema": "hepta.local-source.v3",
-  "scope": "Close the screen-lease static integration gate over the complete bounded profile cleanup diagnostic prefix followed by the unchanged screen retirement. Production bytes match 454dd39.",
-  "source_parent_head": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
-  "source_parent_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
-  "source_snapshot_predecessor_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
+  "scope": "Retain immutable persisted A/B receipt and original capture identity while one newly acquired complete C census proves ordinary AX publication currentness. Preserve original deadlines, all post-C fences and fresh action validation.",
+  "source_parent_head": "e86ebcf19b460dac5d85a9c9039a5b1df8bb26e4",
+  "source_parent_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
+  "source_snapshot_predecessor_manifest_sha256": "ba38594edb3020da98041e78b6abe5d7e3233452af899c3ea8e5ecddb3426edb",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "inherited_source_behavior_metadata": {
@@ -13309,5 +13320,23 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451",
     "complete_prefix_sha256": "4f1905735c2994948f164d33cd2fe75299b6b7bc610e7f2337670bd75c8f04e0",
     "projection_compiled": false
+  },
+  "current_native_ax_post_persistence": {
+    "production_patch_sha256": "fa15ceeaca8ce5013205414add33c2af40e32fbc21eef62fab3b8f14eba76f99",
+    "targeted_review_sha256": "f3bf09f75875645cc1d21be6d6858bb3c523fe007ba7290b489b5efad6c633ab",
+    "independent_review_sha256": "84fbb28755fb8c810bc2d6e5ac14f9b2035e9db1515ceb357554fb3d5d37d6f8",
+    "new_phone_or_business_success_claimed": false,
+    "original_capture_id_clock_and_bytes_preserved": true,
+    "complete_current_census_required": true,
+    "typed_witness_consumed_by_actual_PhoneObservation": true,
+    "original_deadline_and_action_validation_unchanged": true,
+    "only_one_complete_publication_recheck": true,
+    "second_receipt_write_removed": true,
+    "full_C_comparison_and_serialization_still_performed": true,
+    "original_file_before_C_bytes_and_hash_rechecked": true,
+    "after_C_unchanged_path_metadata_checked": true,
+    "device_speedup_verified": false,
+    "actual_failure_preserved": true,
+    "private_phone_originals_not_published": true
   }
 }

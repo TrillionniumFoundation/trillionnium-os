@@ -45,7 +45,8 @@
             g.digest=sha(key.getBytes(StandardCharsets.UTF_8));g.nativeObservationComplete=completeNativeObservationGraph(g);
             if(n==2)f.windowValue=frozenObservationWindow(g);
         };
-        MobiMindPrivateFiles.writeHook=null;MobiMindPrivateFiles.readHook=null;MobiMindPrivateFiles.writes=0;MobiMindPrivateFiles.reads=0;return f;
+        MobiMindPrivateFiles.writeHook=null;MobiMindPrivateFiles.readHook=null;MobiMindPrivateFiles.unchangedHook=null;
+        MobiMindPrivateFiles.writes=0;MobiMindPrivateFiles.reads=0;return f;
     }
     void axBegin(){
         observe(lease,directory,()->cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,SystemClock.now+100000),new ObservationCallback(){
@@ -103,24 +104,71 @@
     static void assertOneRecheckPublication(ObserverPipelineHost f,ObservationRequest r)throws Exception{
         drainAx(f);check(f.delivered.size()==1&&f.errors.isEmpty(),"one complete recheck did not publish: "+f.errors);
         check(r.nativeAxPublicationRecheckAttempted,"successful recheck did not consume the one-use mark");
-        check(f.reads.get()==4&&MobiMindPrivateFiles.writes==2&&MobiMindPrivateFiles.reads==2,"recheck must read complete C and persist/readback a new receipt");
+        check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1&&MobiMindPrivateFiles.reads==2,
+                "recheck must verify original bytes and read complete C without rewriting A/B");
         check(((Number)f.current.captureEvidence.get("publication_full_graph_recheck_count")).intValue()==1,"recheck count missing");
-        check("final_published_complete_census".equals(f.current.captureEvidence.get("events_after_complete_census_admitted_endpoint")),"final endpoint is ambiguous");
+        check("post_persistence_complete_census".equals(f.current.captureEvidence.get("events_after_complete_census_admitted_endpoint")),"final endpoint is ambiguous");
+        Map<?,?> proof=(Map<?,?>)f.current.captureEvidence.get("publication_recheck");
+        check(proof!=null&&f.current.capture.receiptSha256.equals(proof.get("original_receipt_sha256")),"C lost original persisted bytes");
+        check(Boolean.TRUE.equals(proof.get("full_identity_nodes_windows_profile_owner_equal"))
+                &&Boolean.FALSE.equals(proof.get("receipt_rewritten")),"C must compare actual complete values without rewriting");
+        f.current.capture.requireHistoricalPublication(f.current.captureEvidence);
         check(Boolean.FALSE.equals(f.current.captureEvidence.get("events_after_complete_census_admitted")),"late event admitted after final C");
         check(f.current.captureEvidence.get("publication_original_pair") instanceof Map,"actual original B provenance missing");
         noPixels(f);
     }
     static void publicationRecheckCases()throws Exception{
-        axCase("late_content_at_main_requires_real_new_complete_receipt",()->{
+        axCase("actual_f349d_repeated_persistence_window_is_not_reentered",()->{
+            // Original trace: A captured3034; B complete3714; first persistence ends5970;
+            // first window ends6177; complete C6730; old second persistence ends10016;
+            // second window ends10230. Explicit synthetic IO/census uses these relative
+            // clocks and content deltas. It does not recreate Android graph/event timing.
+            ObserverPipelineHost f=axFixture((x,g,n)->{
+                if(n==2)SystemClock.now=x.activeObservation.started+3034;
+                if(n==3)SystemClock.now=x.activeObservation.started+3714;
+                if(n==4)SystemClock.now=x.activeObservation.started+6730;
+            },false,false);
+            MobiMindPrivateFiles.writeHook=()->{
+                ObservationRequest q=f.activeObservation;
+                if(MobiMindPrivateFiles.writes==1){
+                    SystemClock.now=q.started+5970;for(int i=0;i<8;i++)q.recordEvent(false,1);
+                }else{
+                    SystemClock.now=q.started+10016;for(int i=0;i<7;i++)q.recordEvent(false,1);
+                }
+            };
+            AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{
+                if(windows.incrementAndGet()==1)SystemClock.now=f.activeObservation.started+6177;
+                else SystemClock.now+=214;
+            };
+            ObservationRequest r=axPair(f);org.json.JSONObject original=onlyAxReceipt(f);
+            assertOneRecheckPublication(f,r);
+            check(onlyAxReceipt(f).toString().equals(original.toString()),"original A/B receipt changed");
+            check(f.current.capturedElapsedMillis==r.started+3034,"actual capture clock was refreshed");
+            check(SystemClock.now==r.started+6944&&r.deadline==r.started+12000,
+                    "no-write C must publish inside the original budget; synthetic clock differs");
+            Map<?,?> proof=(Map<?,?>)f.current.captureEvidence.get("publication_recheck");
+            check(((Number)proof.get("graph_completed_elapsed_ms")).longValue()==r.started+6730,
+                    "C endpoint not actually read");
+            check(((Number)((Map<?,?>)proof.get("completed_watermark")).get("content")).intValue()==8,
+                    "complete C did not cover only its actual observed content events");
+            check(windows.get()==2,"actual second fresh window check skipped");f.dispose();
+        });
+        axCase("late_content_at_main_retains_original_receipt_and_complete_C_witness",()->{
             ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
             org.json.JSONObject old=onlyAxReceipt(f);String oldId=old.getJSONObject("binding").getString("observation_id");
             long capture=old.getJSONObject("binding").getLong("captured_elapsed_ms");
             r.recordEvent(false,1);assertOneRecheckPublication(f,r);
             org.json.JSONObject next=onlyAxReceipt(f);
-            check(!oldId.equals(next.getJSONObject("binding").getString("observation_id")),"old receipt was relabelled");
+            check(oldId.equals(next.getJSONObject("binding").getString("observation_id"))
+                    &&old.toString().equals(next.toString()),"original receipt ID or bytes were relabelled");
             check(next.getJSONObject("binding").getLong("captured_elapsed_ms")==capture&&f.current.capturedElapsedMillis==capture,"A capture age refreshed");
             check(old.getJSONObject("first").toString().equals(next.getJSONObject("first").toString()),"original A changed");
-            check(next.getJSONObject("second_completed_watermark").getLong("content")==1,"C endpoint did not cover actual content event");
+            check(((Number)((Map<?,?>)((Map<?,?>)f.current.captureEvidence.get("publication_recheck"))
+                    .get("completed_watermark")).get("content")).intValue()==1,"C endpoint did not cover actual content event");
+            byte[] bytes=Files.readAllBytes(f.directory.listFiles()[0].toPath());
+            ObservationCaptureEvidence original=ObservationCaptureEvidence.fromSealedNativeAx(old.toMap(),bytes,ObservationCaptureEvidence.hash(bytes));
+            ActualAxPhoneChecks.runRecheck(original,f.current.capture,old.getJSONObject("binding"),f.current.captureEvidence);
             check(r.deadline==r.started+12000,"original total budget changed");f.dispose();
         });
         axCase("late_content_during_first_persist_has_one_full_recheck",()->{
@@ -151,7 +199,9 @@
             org.json.JSONObject finalReceipt=onlyAxReceipt(f);
             check(SystemClock.now-r.started>10000&&SystemClock.now<r.deadline,"capture margin case did not cross old settle limit");
             check(f.current.capturedElapsedMillis==r.started+8772,"capture clock replaced by recheck clock");
-            check(finalReceipt.getJSONObject("second").getLong("read_completed_elapsed_ms")==r.started+10600,"C clock not actual");
+            check(finalReceipt.getJSONObject("second").getLong("read_completed_elapsed_ms")==r.started+9381,"original B clock was overwritten");
+            check(((Number)((Map<?,?>)f.current.captureEvidence.get("publication_recheck")).get("graph_completed_elapsed_ms")).longValue()
+                    ==r.started+10600,"C clock not actual");
             Map<?,?> previous=(Map<?,?>)f.current.captureEvidence.get("publication_original_pair");
             check(((Number)previous.get("pair_graph_completed_elapsed_ms")).longValue()==r.started+9381,"old B clock lost");
             check(((Number)previous.get("recheck_admitted_elapsed_ms")).longValue()==r.started+9941,"admission clock fabricated");
@@ -160,7 +210,8 @@
         axCase("typed_content_during_C_read_requires_complete_equal_C",()->{
             ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)x.activeObservation.recordEvent(false,1);},false,false);
             ObservationRequest r=axPair(f);r.recordEvent(false,1);assertOneRecheckPublication(f,r);
-            check(onlyAxReceipt(f).getJSONObject("second_completed_watermark").getLong("content")==2,"actual C read content not sealed");f.dispose();
+            check(((Number)((Map<?,?>)((Map<?,?>)f.current.captureEvidence.get("publication_recheck")).get("completed_watermark"))
+                    .get("content")).intValue()==2,"actual C read content not witnessed");f.dispose();
         });
         for(final int kind:new int[]{0,2,3})axCase("late_noncontent_kind_"+kind+"_never_enters_recheck",()->{
             ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
@@ -208,13 +259,13 @@
             check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"C boundary got a replacement receipt");
             axRejectedFinally(f,r);
         });
-        for(final String point:new String[]{"persist","window","dto"})axCase("second_late_content_at_"+point+"_cannot_recheck_again",()->{
+        for(final String point:new String[]{"receipt_check","window","dto"})axCase("second_late_content_at_"+point+"_cannot_recheck_again",()->{
             ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger dtos=new AtomicInteger(),windows=new AtomicInteger();
-            if("persist".equals(point))MobiMindPrivateFiles.writeHook=()->{if(MobiMindPrivateFiles.writes==2)f.activeObservation.recordEvent(false,1);};
+            if("receipt_check".equals(point))MobiMindPrivateFiles.unchangedHook=()->{if(f.reads.get()==4)f.activeObservation.recordEvent(false,1);};
             if("window".equals(point))f.windowHook=()->{if(windows.incrementAndGet()==2)f.activeObservation.recordEvent(false,1);};
             if("dto".equals(point))f.phoneConstructHook=()->{dtos.incrementAndGet();f.activeObservation.recordEvent(false,1);};
             ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
-            check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4&&MobiMindPrivateFiles.writes==2,"second recheck or missing full C");
+            check(r.nativeAxPublicationRecheckAttempted&&f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"second recheck or missing full C");
             axRejectedFinally(f,r);
         });
         axCase("second_late_content_at_main_cannot_recheck_again",()->{
@@ -222,7 +273,59 @@
             r.recordEvent(false,1);f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);
             await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"C queued callback");
             r.recordEvent(false,1);drainAx(f);
-            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==2,"late main event got third census");axRejectedFinally(f,r);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"late main event got third census");axRejectedFinally(f,r);
+        });
+        axCase("changed_original_receipt_before_C_is_rejected_without_a_new_census",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
+            File path=f.directory.listFiles()[0];byte[] bytes=Files.readAllBytes(path.toPath());bytes[0]='!';
+            Files.write(path.toPath(),bytes,StandardOpenOption.TRUNCATE_EXISTING);
+            r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==3&&MobiMindPrivateFiles.writes==1,"changed A/B admitted C or a new write");axRejectedFinally(f,r);
+        });
+        axCase("corrupt_original_receipt_readback_before_C_is_rejected",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);ObservationRequest r=axPair(f);
+            MobiMindPrivateFiles.readHook=bytes->{if(MobiMindPrivateFiles.reads==2)bytes[0]='!';};
+            r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==3&&MobiMindPrivateFiles.writes==1,"unverified A/B admitted C");axRejectedFinally(f,r);
+        });
+        axCase("original_receipt_changed_during_C_is_rejected",()->{
+            ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4){
+                try{File path=x.directory.listFiles()[0];byte[] bytes=Files.readAllBytes(path.toPath());bytes[0]='!';
+                    Files.write(path.toPath(),bytes,StandardOpenOption.TRUNCATE_EXISTING);}
+                catch(IOException error){throw new AssertionError(error);}
+            }},false,false);
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"C did not retain the original file");axRejectedFinally(f,r);
+        });
+        for(final int kind:new int[]{0,2,3})axCase("new_noncontent_after_C_"+kind+"_refused",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{if(windows.incrementAndGet()==2)f.activeObservation.recordEvent(kind==3,kind==3?1:kind);};
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"post C boundary triggered another census");axRejectedFinally(f,r);
+        });
+        for(final String owner:new String[]{"controller","authorization","background"})axCase("new_"+owner+"_after_C_refused",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{if(windows.incrementAndGet()!=2)return;
+                if("controller".equals(owner))f.ownedController=new LocalTaskController();
+                if("authorization".equals(owner))f.taskAuthorization=new TaskAuthorization.Gate();
+                if("background".equals(owner))f.taskBackground=new BackgroundSession(9);
+            };
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"post C ownership changed read/write count");axRejectedFinally(f,r);
+        });
+        axCase("fresh_window_mismatch_after_C_is_rejected",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{if(windows.incrementAndGet()==2){FrozenObservationWindow w=f.windowValue;
+                f.windowValue=new FrozenObservationWindow(w.packageName,w.windowId+1,w.displayId,w.rotation,w.left,w.top,w.right,w.bottom,
+                        w.width,w.height,w.metadata,w.windows,w.profileWindow);}};
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(f.reads.get()==4&&MobiMindPrivateFiles.writes==1,"fresh window mismatch retried C");axRejectedFinally(f,r);
+        });
+        axCase("deadline_after_C_before_publication_is_rejected",()->{
+            ObserverPipelineHost f=axFixture(null,false,false);AtomicInteger windows=new AtomicInteger();
+            f.windowHook=()->{if(windows.incrementAndGet()==2)SystemClock.now=f.activeObservation.deadline;};
+            ObservationRequest r=axPair(f);r.recordEvent(false,1);drainAx(f);
+            check(r.finished&&!f.errors.isEmpty(),"post C original deadline ignored");axRejectedFinally(f,r);
         });
         axCase("C_finishing_at_original_deadline_is_rejected",()->{
             ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)SystemClock.now=x.activeObservation.deadline;},false,false);
@@ -302,16 +405,18 @@
                 ObservationRequest r=axPair(f);reject(f,r);
             });
             axCase("any_content_after_complete_endpoint_rejects",()->{
-                // The original A/B must be discarded. Hold the newly allowed C read
-                // to observe that boundary, then cancel it rather than racing its callback.
+                // A/B cannot publish until fresh C qualifies; retain the original file.
+                // Hold C to observe that boundary, then cancel rather than race its callback.
                 Block b=new Block();ObserverPipelineHost f=axFixture((x,g,n)->{if(n==4)b.run();},false,false);
                 ObservationRequest r=axPair(f);r.recordEvent(false,1);
                 f.main.drainUntil(()->r.nativeAxPublicationRecheckAttempted);b.entered();
                 check(f.delivered.isEmpty(),"original stale A/B was published");
                 f.cancelled.set(true);b.open();reject(f,r);
             });
-            axCase("event_during_receipt_write_rejects",()->{
+            axCase("events_during_receipt_write_and_after_C_reject",()->{
                 ObserverPipelineHost f=axFixture(null,false,false);MobiMindPrivateFiles.writeHook=()->f.activeObservation.recordEvent(false,1);
+                AtomicInteger windows=new AtomicInteger();
+                f.windowHook=()->{if(windows.incrementAndGet()==2)f.activeObservation.recordEvent(false,1);};
                 ObservationRequest r=axPair(f);reject(f,r);
             });
             axCase("persisted_receipt_corruption_rejected",()->{
