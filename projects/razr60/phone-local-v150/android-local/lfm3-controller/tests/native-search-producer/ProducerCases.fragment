@@ -235,7 +235,18 @@
         one("absence_of_private_final_census_capability_cannot_clear_current_attempt",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();rejected(()->attempt.discardRevalidationForFinalCensus(null,SystemClock.now));
-                int declared=0;for(java.lang.reflect.Constructor<?> c:NativeSearchFinalCensusResampleProof.class.getDeclaredConstructors())if(!c.isSynthetic()){declared++;check(java.lang.reflect.Modifier.isPrivate(c.getModifiers()),"declared producer constructor is private; Java 8 access bridge is synthetic");}check(declared==1,"one declared private producer constructor");
+                int declared=0;boolean original=false,phased=false;
+                Class<?>[] originalTypes={HeptaAccessibilityService.class,SearchActionWork.class,NativeSearchRole.class,Graph.class,NativeSearchPlanning.EventMark.class,long.class};
+                Class<?>[] phasedTypes={HeptaAccessibilityService.class,SearchActionWork.class,NativeSearchRole.class,Graph.class,NativeSearchPlanning.EventMark.class,long.class,NativeSearchFinalCensusResampleProof.Boundary.class};
+                for(java.lang.reflect.Constructor<?> c:NativeSearchFinalCensusResampleProof.class.getDeclaredConstructors())if(!c.isSynthetic()){
+                    declared++;check(java.lang.reflect.Modifier.isPrivate(c.getModifiers()),"both declared producer constructors remain private; Java 8 access bridges are synthetic");
+                    boolean old=Arrays.equals(c.getParameterTypes(),originalTypes),stage=Arrays.equals(c.getParameterTypes(),phasedTypes);
+                    check(old||stage,"only the exact original or private stage constructor exists");original|=old;phased|=stage;
+                }
+                check(declared==2&&original&&phased,"exact original final constructor plus private stage constructor");
+                check(java.lang.reflect.Modifier.isPrivate(NativeSearchFinalCensusResampleProof.Boundary.class.getModifiers())
+                        &&Arrays.equals(NativeSearchFinalCensusResampleProof.Boundary.values(),new NativeSearchFinalCensusResampleProof.Boundary[]{
+                            NativeSearchFinalCensusResampleProof.Boundary.FINAL_PRECLAIM,NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET}),"closed private stage enum cannot be supplied through a Session API");
                 f.action(attempt);check(f.outcome.accepted&&f.effects==1&&f.graphReads==4,"denied capability attempt does not manufacture or consume revalidation");
             }
         });
@@ -466,10 +477,10 @@
                 f.action(attempt);check(f.outcome.accepted&&f.effects==1,"content interval proved by current actual pair");
             }
         });
-        one("any_event_after_complete_D_prevents_effect",()->{
+        one("content_after_complete_D_before_target_refresh_reacquires_full_pair",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.windowHook=()->{if(s.activeSearchAction!=null&&s.activeSearchAction.pairCompleted!=null){f.windowHook=null;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}};
-                f.action(attempt);noEffect(f,"no late content bypass after D");
+                f.action(attempt);check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"late content requires a complete new C/D before the one original effect");
             }
         });
         one("same_values_new_C_D_Android_node_identity_is_refused",()->{
@@ -729,6 +740,7 @@
         Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("schema","hepta.native-search-actual-producer-cases.v1");
         report.put("cases",cases.size());report.put("assertions",assertions);report.put("all_pass",all);report.put("results",cases);
         report.put("final_census_endpoint_evidence",finalCensusEndpointEvidence);
+        report.put("after_target_census_evidence",afterTargetEvidence);
         report.put("android_execution",false);report.put("phone_operations",0);report.put("business_verified",false);
         Files.write(Paths.get(args[0]),NativeSearchPlanning.json(report).toString(2).getBytes(StandardCharsets.UTF_8));
         System.out.println("actual HA producer cases="+cases.size()+" assertions="+assertions+" all_pass="+all);

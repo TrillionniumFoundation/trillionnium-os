@@ -1,0 +1,43 @@
+{
+  "archived_pair_optional_external": [
+    "after_target_recorded_c78b_step_1_full_pair_and_original_rejection",
+    "after_target_recorded_c78b_step_1_nodes_in_actual_service_host_replacement",
+    "after_target_recorded_c78b_step_2_full_pair_and_original_rejection",
+    "after_target_recorded_c78b_step_2_nodes_in_actual_service_host_replacement"
+  ],
+  "external_data_in_git": false,
+  "schema": "hepta.native-search-after-target-exact-cases.v1",
+  "synthetic_actual_call_path": [
+    "after_target_complete_replacement_same_24s_attempt_and_old_nodes_closed",
+    "after_target_known_other_display_event_retains_original_filter",
+    "after_target_original_deadline_expires_during_new_C",
+    "after_target_replacement_D_eight_second_age_still_refuses",
+    "after_target_old_final_preclaim_budget_cannot_be_reused",
+    "after_target_replacement_final_preclaim_event_cannot_resample_again",
+    "after_target_replacement_incomplete_D_cannot_resample_again",
+    "after_target_replacement_first_D_fence_refusal_has_no_new_model",
+    "after_target_replacement_second_target_refresh_event_is_terminal",
+    "after_target_replacement_target_semantics_refused",
+    "after_target_replacement_root_metadata_refused",
+    "after_target_replacement_android_node_identity_refused",
+    "after_target_replacement_installed_identity_refused",
+    "after_target_before_consume_unknown_refused",
+    "after_target_before_consume_boundary_refused",
+    "after_target_before_consume_untyped_refused",
+    "after_target_private_boundary_rejects_ancestor_flag",
+    "after_target_private_boundary_rejects_windows_flag",
+    "after_target_private_boundary_rejects_profile_flag",
+    "after_target_private_boundary_rejects_first_fence_flag",
+    "after_target_private_boundary_rejects_final_stage_flag",
+    "after_target_private_boundary_rejects_current_role",
+    "after_target_private_boundary_rejects_latest_graph",
+    "after_target_private_boundary_rejects_pending_capability",
+    "after_target_private_boundary_rejects_shared_budget",
+    "after_target_private_boundary_rejects_cancelled",
+    "after_target_private_boundary_rejects_retired",
+    "after_target_private_boundary_rejects_claimed",
+    "after_target_private_boundary_rejects_deadline",
+    "after_target_capability_wrong_attempt_and_reuse_are_rejected",
+    "after_target_complete_replacement_does_not_reset_eight_C_read_cap"
+  ]
+}

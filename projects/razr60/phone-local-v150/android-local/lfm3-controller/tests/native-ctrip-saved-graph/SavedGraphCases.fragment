@@ -1,0 +1,156 @@
+
+    /** Complete archived nodes plus explicitly synthetic host IO/clock/lease/event endpoints.
+     * No historical event watermark, capture clock or live permission is reconstructed. */
+    static NativeActionSnapshotCheckHostTest.Fixture savedArchiveFixture(boolean after)throws Exception{
+        String path=System.getProperty("hepta.ctrip.saved.pair");
+        if(path==null)throw new AssertionError("explicit private pair path required");
+        org.json.JSONObject input=new org.json.JSONObject(new String(Files.readAllBytes(Paths.get(path)),StandardCharsets.UTF_8));
+        expect(input.getBoolean("complete_pair_recorded")&&!input.getBoolean("raw_pair_omitted_for_budget")
+                &&input.getInt("raw_pair_count")==1&&"saved_graph".equals(input.getString("selected_pair_stage")),"complete archived saved pair");
+        org.json.JSONObject side=input.getJSONObject(after?"after":"before"),read=side.getJSONObject("read");
+        expect(side.getBoolean("native_nodes_complete")&&read.getBoolean("native_observation_complete")
+                &&read.getBoolean("reported_windows_complete")&&!read.getBoolean("truncated"),"complete original archived rows");
+        org.json.JSONArray rows=side.getJSONArray("native_nodes");
+        expect(rows.length()==280&&rows.length()==side.getInt("raw_node_count"),"all 280 archived rows");
+        NativeActionSnapshotCheckHostTest.Fixture value=FormPairHostTest.managedForm();value.nodes.clear();
+        for(int i=0;i<rows.length();i++){
+            Map<String,Object> row=rows.getJSONObject(i).toMap();
+            expect(NativeAppGoal.CTRIP_PACKAGE.equals(row.get("package")),"archived Ctrip node");
+            String key=(String)row.get("path");
+            expect(value.nodes.put(key,row)==null,"unique archived path");
+        }
+        return value;
+    }
+    private int savedFixtureWindow;
+    static void savedEvent(ObserverPipelineHost f,boolean content){
+        f.noteObservationEvent(15,f.savedFixtureWindow,NativeAppGoal.CTRIP_PACKAGE,content);
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> exerciseSavedGraphScenario(final String scenario)throws Exception{
+        mainThread=Thread.currentThread();expect(!observationIoBusy.get()&&observationIo.active.get()==0,"prior worker drain");
+        SystemClock.now=1000;SystemClock.nextElapsedHook=null;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;Bitmap.streamHook=null;
+        observationIo.reject=false;WebFlightSession.unreleased=false;
+        final ObserverPipelineHost f=formFixture("ordinary_late_change");
+        final NativeActionSnapshotCheckHostTest.Fixture beforeRows=savedArchiveFixture(false),afterRows=savedArchiveFixture(true);
+        f.savedFixtureWindow=((Number)beforeRows.nodes.get("0").get("window_id")).intValue();
+        expect(f.savedFixtureWindow==((Number)afterRows.nodes.get("0").get("window_id")).intValue(),"same archived window");
+        final Graph[] originalA=new Graph[1],actualC=new Graph[1];
+        final AtomicInteger comparedSnapshots=new AtomicInteger(),hashCallbacks=new AtomicInteger();
+        f.readHook=(g,n)->{
+            boolean changed=n>=7;
+            populate(f,g,changed?afterRows:beforeRows,"post_fixture",n);
+            // Preserve every original node field. The synthetic IO envelope must name
+            // that same archived window; it never substitutes the legacy fixture's id.
+            g.windowId=f.savedFixtureWindow;
+            g.profileWindow=owned(f.taskBackground.profile,g.windowId,TEST_TOKEN);
+            Map<String,Object> fixtureWindows=new LinkedHashMap<String,Object>(windows());
+            Map<String,Object> fixtureWindow=new LinkedHashMap<String,Object>((Map<String,Object>)((List<?>)fixtureWindows.get("windows")).get(0));
+            fixtureWindow.put("window_id",Integer.valueOf(g.windowId));
+            fixtureWindows.put("target_window_id",Integer.valueOf(g.windowId));
+            fixtureWindows.put("windows",Collections.singletonList(fixtureWindow));
+            g.nativeActionWindows=NativeAppEvidence.immutableMap(fixtureWindows);
+            g.nativeObservationComplete=completeNativeObservationGraph(g);
+            if(n==2||n==5)f.windowValue=frozenObservationWindow(g);
+            g.digest=changed?"complete-archived-after":"complete-archived-before";
+            if(n==5)originalA[0]=g;
+            if(n==6&&"unsealed_boundary_pair".equals(scenario))savedEvent(f,false);
+            if(n==7){
+                actualC[0]=g;
+                if("content_during_census".equals(scenario))savedEvent(f,true);
+                if("unrelated_display_during_census".equals(scenario))f.noteObservationEvent(0);
+                if("unknown_during_census".equals(scenario))f.noteObservationEvent(-1);
+                if("boundary_during_census".equals(scenario))savedEvent(f,false);
+                if("content_after_census_endpoint".equals(scenario))f.afterReadHook=()->savedEvent(f,true);
+                if("protected_date_changed".equals(scenario))replaceNode(g,"0/0/2/5","text","11月27日后天");
+                if("protected_ancestor_changed".equals(scenario))replaceNode(g,"0/0","description","different parent");
+                if("window_changed".equals(scenario))g.windowId=f.savedFixtureWindow+1;
+                if("owner_changed".equals(scenario))g.backgroundOwnerSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+                if("generation_changed".equals(scenario))g.backgroundGeneration="55555555-6666-7777-8888-999999999999";
+                if("profile_token_changed".equals(scenario))g.profileWindow=owned(f.taskBackground.profile,f.savedFixtureWindow,"44444444-5555-6666-7777-888888888888");
+                if("profile_missing".equals(scenario))g.profileWindow=null;
+                if("omitted_census".equals(scenario))g.collectionStats=counters(g,g.nativeActionNodes.size(),0,1,0);
+                if("missing_node".equals(scenario)){
+                    for(int i=0;i<g.nativeActionNodes.size();i++)if("0/0/9/3/3".equals(g.nativeActionNodes.get(i).path)){g.nativeActionNodes.remove(i);break;}
+                    g.collectionStats=counters(g,g.nativeActionNodes.size(),0,0,0);
+                }
+                if("target_changed".equals(scenario))g.nativeActionTargetSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+                if("goal_changed".equals(scenario))g.nativeActionGoalSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+                if("ime_visible".equals(scenario))g.state=new ObservationState(TEST_SHA,ImeVisibility.VISIBLE);
+                if("capture_clock_before_request".equals(scenario))g.nativeActionCapturedAt=f.activeObservation.started-1;
+                if("wrong_current".equals(scenario))f.current=null;
+                if("missing_read_identity".equals(scenario))f.activeObservation.readIdentity=null;
+                if("rejected_read_identity".equals(scenario))f.activeObservation.readRecoveryRejected=true;
+                if("initial_mode".equals(scenario))f.activeObservation.initialController=new Object();
+                if("lease_closed".equals(scenario))f.taskBackground.closed=true;
+                if("authorization_replaced".equals(scenario))f.taskAuthorization=new AuthorizationGate();
+                if("cancelled".equals(scenario))f.cancelled.set(true);
+                if("deadline_reached".equals(scenario))SystemClock.now=f.activeObservation.deadline;
+                if("content_during_comparison".equals(scenario))f.selectionHook=()->{comparedSnapshots.incrementAndGet();savedEvent(f,true);};
+                if("unknown_during_comparison".equals(scenario))f.selectionHook=()->{comparedSnapshots.incrementAndGet();f.noteObservationEvent(-1);};
+            }
+        };
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        try{
+            f.captureFormRead();f.finish();expect(f.delivered.size()==1,"initial original observer must publish: "+f.errors);
+            PhoneObservation before=f.current;
+            int filesBefore=f.directory.list((parent,name)->name.endsWith(".png")).length,readsBefore=f.reads.get();
+            f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;SystemClock.now+=400;
+            Bitmap.encodeHook=()->{
+                savedEvent(f,true);
+                if("unknown_during_encode".equals(scenario))f.noteObservationEvent(-1);
+                if("boundary_during_encode".equals(scenario))savedEvent(f,false);
+                if("untyped_counter_increment".equals(scenario))f.activeObservation.events++;
+                if("no_read_before".equals(scenario))f.activeObservation.readBefore=null;
+            };
+            if("content_during_history_persist".equals(scenario))f.formHistoryHashHook=()->{hashCallbacks.incrementAndGet();savedEvent(f,true);};
+            if("unknown_during_history_persist".equals(scenario))f.formHistoryHashHook=()->{hashCallbacks.incrementAndGet();f.noteObservationEvent(-1);};
+            ObservationRequest request=f.captureFormRead();long captureAt=f.lastScreenshotAt;
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"after-capture worker drain");
+            if("content_before_publication".equals(scenario))savedEvent(f,true);
+            if("unknown_before_publication".equals(scenario))f.noteObservationEvent(-1);
+            if("boundary_before_publication".equals(scenario))savedEvent(f,false);
+            f.main.drain();
+            out.put("scenario",scenario);out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
+            out.put("original_deadline_preserved",request.deadline==request.started+12000);
+            out.put("new_full_reads",f.reads.get()-readsBefore);
+            out.put("new_png_files",f.directory.list((parent,name)->name.endsWith(".png")).length-filesBefore);
+            out.put("original_observation_retained",f.current==before||"wrong_current".equals(scenario)&&f.current==null);
+            out.put("original_capture_requested_at",captureAt);
+            out.put("captured_at",f.delivered.isEmpty()?-1L:f.delivered.get(0).capturedElapsedMillis);
+            out.put("published_graph_is_original_a",!f.delivered.isEmpty()&&f.currentGraph==originalA[0]);
+            out.put("saved_c_is_not_published",f.delivered.isEmpty()||f.currentGraph!=actualC[0]);
+            out.put("complete_original_pair_nodes",beforeRows.nodes.size()==280&&afterRows.nodes.size()==280);
+            out.put("actual_nodes_equal_to_archive_before",nodeValuesEqual(originalA[0],beforeRows));
+            out.put("actual_nodes_equal_to_archive_after",nodeValuesEqual(actualC[0],afterRows));
+            out.put("comparison_endpoint_hooks",comparedSnapshots.get());out.put("persist_endpoint_hooks",hashCallbacks.get());
+            out.put("read_capture_failures",request.readCaptureFailures);
+            out.put("diagnostic",request.trace==null?null:request.trace.snapshot(SystemClock.now));
+            File[] histories=f.directory.listFiles((parent,name)->name.endsWith("-form-history.json"));
+            out.put("form_history_files",histories.length);
+            if(!f.delivered.isEmpty()){
+                Map<String,Object> capture=f.delivered.get(0).captureEvidence;
+                out.put("capture_evidence",capture);
+                out.put("capture_evidence_bytes",new org.json.JSONObject(capture).toString().getBytes(StandardCharsets.UTF_8).length);
+                if(histories.length==1){
+                    byte[] raw=Files.readAllBytes(histories[0].toPath());
+                    out.put("form_history_sha256",sha(raw));out.put("form_history_bytes",raw.length);
+                    out.put("form_history",new org.json.JSONObject(new String(raw,StandardCharsets.UTF_8)).toMap());
+                }
+            }
+            out.put("no_action_work",!f.actionWorkPending()&&!f.nativeCancellationWorkPending());
+        }finally{
+            SystemClock.nextElapsedHook=null;f.selectionHook=null;f.afterReadHook=null;f.windowHook=null;
+            f.dispose();
+        }
+        boolean graphs=true;for(Graph graph:f.graphs)graphs&=graph.closed;
+        boolean bitmaps=true;for(Bitmap bitmap:Bitmap.made)bitmaps&=bitmap.recycled;
+        boolean buffers=true;for(ScreenshotResult shot:f.shots)buffers&=shot.buffer.closes==1;
+        out.put("all_graphs_closed",graphs);out.put("all_bitmaps_recycled",bitmaps);out.put("all_buffers_closed",buffers);
+        out.put("workers_drained",!observationIoBusy.get()&&observationIo.active.get()==0&&observationIo.uncaught.get()==0);
+        return out;
+    }
+    static boolean nodeValuesEqual(Graph graph,NativeActionSnapshotCheckHostTest.Fixture rows){
+        if(graph==null||graph.nativeActionNodes==null||graph.nativeActionNodes.size()!=rows.nodes.size())return false;
+        for(NativeActionSnapshotCheck.Node node:graph.nativeActionNodes)if(!node.v.equals(rows.nodes.get(node.path)))return false;
+        return true;
+    }
