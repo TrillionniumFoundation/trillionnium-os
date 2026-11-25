@@ -40,6 +40,11 @@ public final class ProfileOwnedTask {
     interface PublicRecentHistory {
         void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception;
+        default void observeParsed(String raw,ProfileTaskPolicy.Recents.Observation parsed,ProfileTarget target,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            need(parsed!=null,"PROFILE_RECENT_OBSERVATION_MISSING");parsed.claim(raw);
+            observe(raw,target,root,leaf,display,elapsed);
+        }
         Set<Integer> observedIds();
         Map<String,Object> evidence();
         default RetainedRecentHistory beginRetainedCleanup(String raw,ProfileTarget target,
@@ -679,8 +684,10 @@ public final class ProfileOwnedTask {
     }
     private ProfileTaskPolicy.Recents readRecents()throws Exception{
         if(publicHistory==null)return platform.recents();
-        String raw=platform.publicRecentsDump();ProfileTaskPolicy.Recents recent=ProfileTaskPolicy.Recents.parse(raw);
-        publicHistory.observe(raw,target,root,leaf,display,platform.now());return recent;
+        String raw=platform.publicRecentsDump();
+        try(ProfileTaskPolicy.Recents.Observation parsed=ProfileTaskPolicy.Recents.parseObservation(raw)){
+            publicHistory.observeParsed(raw,parsed,target,root,leaf,display,platform.now());return parsed.result();
+        }
     }
     public synchronized void verifyPublicRecentHistory()throws Exception{if(publicHistory!=null)readRecents();}
     private Set<Integer> recentIds(ProfileTaskPolicy.Recents recent){return publicHistory==null?recent.ids:publicHistory.observedIds();}

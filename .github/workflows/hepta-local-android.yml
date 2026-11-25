@@ -512,6 +512,26 @@ jobs:
             --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
             > "$hepta_native_out/native-observation-snapshot.runner.stdout" \
             2> "$hepta_native_out/native-observation-snapshot.runner.stderr"
+      - name: Run required same-read profile recents proof reuse gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/profile-recents-parse-reuse/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/profile-recents-parse-reuse" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/profile-recents-parse-reuse.runner.stdout" \
+            2> "$hepta_native_out/profile-recents-parse-reuse.runner.stderr"
+      - name: Run required synthetic Xiaomi detail mirror gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-xiaomi-detail-mirror/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-xiaomi-detail-mirror" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-xiaomi-detail-mirror.runner.stdout" \
+            2> "$hepta_native_out/native-xiaomi-detail-mirror.runner.stderr"
       - name: Preserve all original native App gate results and streams
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

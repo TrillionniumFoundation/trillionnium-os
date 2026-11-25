@@ -213,6 +213,9 @@ public final class PublicOwnGroupPhysicalFence {
         }
     }
     public static RecentCensus inspectRecents(String raw){return recents(raw,0);}
+    static RecentCensus inspectRecents(String raw,ProfileTaskPolicy.Recents.Observation parsed){
+        need(parsed!=null,"PHYSICAL_RECENTS_OBSERVATION_MISSING");return recents(raw,0,parsed);
+    }
     /** Motorola's final lastDisplayId is printed without a newline; the next
      * RecentTaskInfo header may immediately follow it. Recognize only that
      * complete field boundary. Preserve the original body bytes and raw hash;
@@ -269,11 +272,13 @@ public final class PublicOwnGroupPhysicalFence {
                 "PHYSICAL_OMITTED_VISIBLE_CONTROLLER_ACTIVITY");
         return true;
     }
-    private static RecentCensus recents(String raw,int targetUser){
+    private static RecentCensus recents(String raw,int targetUser){return recents(raw,targetUser,null);}
+    private static RecentCensus recents(String raw,int targetUser,ProfileTaskPolicy.Recents.Observation parsed){
         String text=checked(raw,"ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)");
-        // Reuse the existing complete recent-task membership parser as an
-        // independent fence before the richer stable-identity projection.
-        try{ProfileTaskPolicy.Recents.parse(text);}catch(Exception e){throw new IllegalArgumentException("PHYSICAL_RECENTS_MEMBERSHIP_INVALID",e);}
+        // The same complete membership proof remains mandatory. Only the exact
+        // current synchronous read can carry it into the richer projection.
+        try{if(parsed==null)ProfileTaskPolicy.Recents.parse(text);else parsed.claim(text);}
+        catch(Exception e){throw new IllegalArgumentException("PHYSICAL_RECENTS_MEMBERSHIP_INVALID",e);}
         String a="  Recent tasks:\n",b="  Visible recent tasks (most recent first):\n";
         int begin=text.indexOf(a),end=text.indexOf(b);boolean omitted=end<0;
         need(begin>=0&&begin==text.lastIndexOf(a)&&(omitted||end>begin&&end==text.lastIndexOf(b)),"PHYSICAL_RECENTS_SECTIONS_INCOMPLETE");

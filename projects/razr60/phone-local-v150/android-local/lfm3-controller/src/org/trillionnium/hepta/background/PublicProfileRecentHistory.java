@@ -78,11 +78,13 @@ public final class PublicProfileRecentHistory {
         private final Map<Integer,Row> rows;
         private final List<VisibleRow> visible;
         private final Map<Integer,String> tokens;
-        private Snapshot(String raw,ProfileTarget target)throws Exception{
+        private Snapshot(String raw,ProfileTarget target)throws Exception{this(raw,target,null);}
+        private Snapshot(String raw,ProfileTarget target,ProfileTaskPolicy.Recents.Observation proof)throws Exception{
             need(target!=null&&target.profile.userId==10&&target.profile.parentUserId==0&&ProfileTarget.supportsPackage(target.packageName),"PUBLIC_HISTORY_TARGET");
             byte[] bytes=raw==null?null:raw.getBytes(StandardCharsets.UTF_8);
             need(bytes!=null&&bytes.length>0&&bytes.length<=BackgroundOwnedSingleTask.MAX_DUMP_BYTES,"PUBLIC_HISTORY_RAW_BOUND");
-            this.raw=raw;this.target=target;census=PublicOwnGroupPhysicalFence.inspectRecents(raw);
+            this.raw=raw;this.target=target;census=proof==null?PublicOwnGroupPhysicalFence.inspectRecents(raw)
+                    :PublicOwnGroupPhysicalFence.inspectRecents(raw,proof);
             int begin=raw.indexOf(INTERNAL),end=raw.indexOf(VISIBLE);boolean omitted=end<0;
             // The full census above has already validated the narrow omitted-Visible shape.
             need(begin>=0&&begin==raw.lastIndexOf(INTERNAL)&&(omitted||end>begin&&end==raw.lastIndexOf(VISIBLE)),"PUBLIC_HISTORY_SECTIONS");
@@ -234,8 +236,16 @@ public final class PublicProfileRecentHistory {
             catch(Exception error){failed=true;failure=error.getMessage();throw error;}
         }
         public synchronized void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            observe(raw,target,root,leaf,display,elapsed,null);
+        }
+        @Override public synchronized void observeParsed(String raw,ProfileTaskPolicy.Recents.Observation parsed,
+                ProfileTarget target,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
+            need(parsed!=null,"PUBLIC_HISTORY_OBSERVATION_MISSING");observe(raw,target,root,leaf,display,elapsed,parsed);
+        }
+        private void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+                int display,long elapsed,ProfileTaskPolicy.Recents.Observation parsed)throws Exception{
             try{
-            requireCurrent(elapsed);need(first.target.same(target)&&display>1,"PUBLIC_HISTORY_CUSTODY_SCOPE");Snapshot next=new Snapshot(raw,target);Set<Integer> own=new LinkedHashSet<Integer>();
+            requireCurrent(elapsed);need(first.target.same(target)&&display>1,"PUBLIC_HISTORY_CUSTODY_SCOPE");Snapshot next=new Snapshot(raw,target,parsed);Set<Integer> own=new LinkedHashSet<Integer>();
             if(root!=null){claim(root,target,false,display);own.add(root.id);}
             if(leaf!=null){need(root!=null&&leaf.parent==root.id,"PUBLIC_HISTORY_OWNED_PARENT");claim(leaf,target,true,display);own.add(leaf.id);}
             for(int id:own){BackgroundOwnedSingleTask.Task task=retained.get(id);PublicOwnGroupPhysicalFence.RecentRecord row=next.census.records.get(id);

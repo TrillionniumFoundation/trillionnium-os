@@ -31,9 +31,15 @@ def main():
     need(history_meta["sha256"]=="90c3fbb3550ee110dd9f939aecf65ebad210694fa128e9371f7076c6d2ad08d5","exact reviewed history inverse helper")
     originals[str(history_helper)]=history_meta
     history_predecessor=runpy.run_path(str(history_helper))["predecessor"]
+    detail_helper=a.source/"tests/native-xiaomi-detail-mirror/protected_detail_mirror.py"
+    detail_meta=info(detail_helper)
+    need(detail_meta["sha256"]=="f1bf83564946293cc0074b64dfe5b5ae858d3115d3299005ea9296548dae143a","exact reviewed detail inverse helper")
+    originals[str(detail_helper)]=detail_meta
+    detail_predecessor=runpy.run_path(str(detail_helper))["predecessor"]
     for rel,pin in PIN_DATA.items():
         meta=info(a.source/rel)
         proof_raw=history_predecessor((a.source/rel).read_bytes()) if rel==PKG+"NativeXiaomiSearchInputObservation.java" else None
+        if rel==PKG+"NativeXiaomiProductPage.java":proof_raw=detail_predecessor((a.source/rel).read_bytes())
         need((len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"]) if proof_raw is not None
              else (meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"]),"exact source/fixture predecessor pin: "+rel)
         originals[str(a.source/rel)]=meta
@@ -64,7 +70,12 @@ def main():
             need(r.returncode==0,"actual host command failed: "+name)
     try:
         helper=runpy.run_path(str(a.source/TEST/"protected_direct_card.py"))
-        inverse=helper["predecessor"];cases=[]
+        base_inverse=helper["predecessor"]
+        def inverse(name,raw):
+            if name=="NativeXiaomiProductPage.java" and sha(raw)!=helper["PINS"][name]["before_sha256"]:
+                raw=detail_predecessor(raw)
+            return base_inverse(name,raw)
+        cases=[]
         for name in ("ObservationCaptureEvidence.java","NativeXiaomiProductPage.java"):
             raw=(a.source/PKG/name).read_bytes();prior=inverse(name,raw)
             need(inverse(name,prior)==prior,"exact prior identity path")

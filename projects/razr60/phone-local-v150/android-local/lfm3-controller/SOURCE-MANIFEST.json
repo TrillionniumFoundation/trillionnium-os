@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "be441602eb84a689082917b03d85c06963252cc5",
-  "base_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
+  "base_head": "112ea31283804d1c238cb7533e90fca378f68513",
+  "base_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2642,
+  "complete_source_files": 2649,
   "current_ctrip_form_scope": {
     "PhoneObservation_capture_limit": 8192,
     "early_sampling_draft_excluded": true,
@@ -32,6 +32,14 @@
       "path": "/home/alex/hepta-razr-ctrip-form-scene-draft-20261125-runtime-r1/test-e30-compat-r1/FREEZE.json",
       "sha256": "450ba735e38c5504455d60942522c266435e076d13bbafb7fb43140f86372e23"
     }
+  },
+  "current_detail_parse_closure": {
+    "closed_complete_detail_shape": true,
+    "fresh_read_cadence_unchanged": true,
+    "original_cleanup_budget_ms": 1400,
+    "original_price_identity_guards_retained": true,
+    "phone_timing_claimed": false,
+    "same_raw_opaque_membership_proof": true
   },
   "current_direct_card_scope": {
     "actual_replay_is_host_only": true,
@@ -169,7 +177,7 @@
     "phone_latency_improvement_measured": false
   },
   "current_published_parent_heads": [
-    "be441602eb84a689082917b03d85c06963252cc5"
+    "112ea31283804d1c238cb7533e90fca378f68513"
   ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
@@ -212,13 +220,26 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "be441602eb84a689082917b03d85c06963252cc5",
+    "baseline": "112ea31283804d1c238cb7533e90fca378f68513",
     "model_weights_unchanged": true,
     "native_unchanged": true,
     "phone_success_claimed": false,
-    "production_changes": [],
+    "production_changes": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+      "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
+      "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
+      "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    ],
     "test_changes": [
-      "tests/qualification-scope/BackgroundFreshnessHostTest.java"
+      "tests/native-xiaomi-detail-mirror/DetailMirrorHostTest.java",
+      "tests/native-xiaomi-detail-mirror/README.md",
+      "tests/native-xiaomi-detail-mirror/detail-shape.json",
+      "tests/native-xiaomi-detail-mirror/protected_detail_mirror.py",
+      "tests/native-xiaomi-detail-mirror/run_host.py",
+      "tests/native-xiaomi-direct-card/run_host.py",
+      "tests/profile-recents-parse-reuse/ProfileRecentsParseReuseHostTest.java",
+      "tests/profile-recents-parse-reuse/run_host.py"
     ]
   },
   "current_xiaomi_protected_history_prefix": {
@@ -6485,9 +6506,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 63866,
+      "bytes": 64339,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9"
+      "sha256": "c1c7cc2b3d8a3d43ec9b2ce8ddb6f23ceab7697ab4eafcf6e948f6630bbaef08"
     },
     {
       "bytes": 21140,
@@ -6545,9 +6566,9 @@
       "sha256": "ecdd2e0ee3153456042bc8c76dda9d122d8617ee432aaf551e1b0cdfb9f4ac84"
     },
     {
-      "bytes": 15390,
+      "bytes": 16852,
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
-      "sha256": "97bf188bfc08591a33a06a89393a1b1445b11efcaa44ba31ef40e94657484eb6"
+      "sha256": "7dc2f1fd533715c486f430c05bd2c681ff851090d522f6136b7df8e714fdb117"
     },
     {
       "bytes": 1107,
@@ -6560,9 +6581,9 @@
       "sha256": "cc2d60d1e61e33e504a7cf09694ad53caceaf27c3f1b6889ae2b955e5c54a70a"
     },
     {
-      "bytes": 30509,
+      "bytes": 30914,
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
-      "sha256": "4ce0d59042a16518b0db153b1998aa60cfb96471dec6f5b6dcf7eed7d76ef1eb"
+      "sha256": "b6f7c22818c2ced9b3e73c699c89ef246b0d21a2e253e9a3b73a2ab1006e5a8b"
     },
     {
       "bytes": 12193,
@@ -6645,9 +6666,9 @@
       "sha256": "7ae40d3cfa113958674b25b491a219e3c5bdd01993cc7e4ad999b848b7daf674"
     },
     {
-      "bytes": 31924,
+      "bytes": 32870,
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
-      "sha256": "0c61c30aca5b0fc403043db4844ca16d79f7e607a5121eaea8ca7621f7f74c04"
+      "sha256": "4e07a5630cb2fdf69bb82d82430e0b2e84d8c773327c1417b22779dbba15aac5"
     },
     {
       "bytes": 15557,
@@ -6995,9 +7016,9 @@
       "sha256": "a947fde81c983b10f3dcbddba90193c50e169baeefa137f1b7f968dc2eaaa307"
     },
     {
-      "bytes": 71093,
+      "bytes": 85512,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "91fed98eafe2f3cbcc090d9a3f85085fa1feb0f3ba002d7b9a78c71b13569bf0"
+      "sha256": "fea7aa9179e1ec55a75ae869e594d6fe35d5a3b3faf0d3c4727e1e04da0ab829"
     },
     {
       "bytes": 26082,
@@ -9900,6 +9921,31 @@
       "sha256": "4a0340408e1cb7e8e80ed80329f6ea8b10a11c6b58744ad4608bc4c9c1e15309"
     },
     {
+      "bytes": 33499,
+      "path": "tests/native-xiaomi-detail-mirror/DetailMirrorHostTest.java",
+      "sha256": "533fe24c9c74cb07e7fbc9fef900f035ae106e1a4e910fc89b3b30e8d31b4755"
+    },
+    {
+      "bytes": 2639,
+      "path": "tests/native-xiaomi-detail-mirror/README.md",
+      "sha256": "49a97019af814b8a63c56c0a8f7b509a8e0ee80a0a29c5941ae459c2ea20a246"
+    },
+    {
+      "bytes": 103794,
+      "path": "tests/native-xiaomi-detail-mirror/detail-shape.json",
+      "sha256": "7a367c32c5781269598704d80c697db87f507a4305dd18e3d13f0c0c9c75bad4"
+    },
+    {
+      "bytes": 15409,
+      "path": "tests/native-xiaomi-detail-mirror/protected_detail_mirror.py",
+      "sha256": "f1bf83564946293cc0074b64dfe5b5ae858d3115d3299005ea9296548dae143a"
+    },
+    {
+      "bytes": 13430,
+      "path": "tests/native-xiaomi-detail-mirror/run_host.py",
+      "sha256": "ce15a107e124a755f88deabecb7e445a5a6c4da85cf088cc43bcb390902b57d5"
+    },
+    {
       "bytes": 28817,
       "path": "tests/native-xiaomi-direct-card/DirectCardHostTest.java",
       "sha256": "5d4fec0b295abe8a948f2c5ddc9fc9e09a5b24de5cb4b37eedc947fc74fcf8a5"
@@ -9920,9 +9966,9 @@
       "sha256": "13715c8b38ab6abf5ed2a913b9869370e5690e15eaf21360b8400e52af3ce65a"
     },
     {
-      "bytes": 16046,
+      "bytes": 16774,
       "path": "tests/native-xiaomi-direct-card/run_host.py",
-      "sha256": "25ccea4203c40a2f4598ad02c1156f24ee3ad4d61119f7cd2045f1bc87b66dc5"
+      "sha256": "8bc790afbbfec00df6c3eb485cd08d218484712d073770e3dad4a37207be29d9"
     },
     {
       "bytes": 17559,
@@ -11313,6 +11359,16 @@
       "bytes": 7471,
       "path": "tests/profile-postlaunch-recovery/run_session_host.py",
       "sha256": "b070b2c5a8766436bd216208021998935ca2b8e2fe4b916d6a614e43627c068b"
+    },
+    {
+      "bytes": 21974,
+      "path": "tests/profile-recents-parse-reuse/ProfileRecentsParseReuseHostTest.java",
+      "sha256": "cd26b317c627c8e68800d71d3a6f39b26e5acecf863cd9c77e917e681d857939"
+    },
+    {
+      "bytes": 12787,
+      "path": "tests/profile-recents-parse-reuse/run_host.py",
+      "sha256": "16c8da47cfb65f95648dc199cebca87cb368265617a9e91262919de791570e69"
     },
     {
       "bytes": 7882,
@@ -13451,36 +13507,43 @@
     }
   ],
   "historical_provenance": {
-    "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
-    "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
-    "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
-    "old_failed_phone_and_host_records_preserved": true,
-    "original_parent_full_host_is_not_qualified": true,
-    "original_parent_full_host_stages_passed": 48,
-    "original_parent_full_host_stages_total": 50,
+    "current_phone_task_still_requires_recovery": true,
+    "historical_failed_task_preserved": true,
+    "immediate_parent_component_tree": "813aeb9a70437cab31645971202fd3e8c7d45660",
+    "immediate_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
+    "immediate_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
     "prior_provenance": {
-      "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
-      "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-      "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+      "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
+      "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
+      "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
       "old_failed_phone_and_host_records_preserved": true,
+      "original_parent_full_host_is_not_qualified": true,
+      "original_parent_full_host_stages_passed": 48,
+      "original_parent_full_host_stages_total": 50,
       "prior_provenance": {
-        "exact_cleanup_started_time_unavailable": true,
-        "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
-        "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
-        "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
-        "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
-        "immediate_parent_qualification_failed": true,
-        "immediate_parent_qualifications_are_historical": true,
-        "original_e7ef24_business_status": "blocked",
-        "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-        "original_notes_cleanup": "CLEANUP_UNKNOWN",
-        "original_notes_task_status": "blocked",
-        "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
-        "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
-        "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
-        "previous_full_host_passed": false,
-        "previous_host_and_phone_results_are_not_current_qualification": true,
-        "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+        "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
+        "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
+        "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+        "old_failed_phone_and_host_records_preserved": true,
+        "prior_provenance": {
+          "exact_cleanup_started_time_unavailable": true,
+          "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
+          "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
+          "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
+          "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
+          "immediate_parent_qualification_failed": true,
+          "immediate_parent_qualifications_are_historical": true,
+          "original_e7ef24_business_status": "blocked",
+          "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+          "original_notes_cleanup": "CLEANUP_UNKNOWN",
+          "original_notes_task_status": "blocked",
+          "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+          "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+          "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+          "previous_full_host_passed": false,
+          "previous_host_and_phone_results_are_not_current_qualification": true,
+          "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+        }
       }
     }
   },
@@ -13716,12 +13779,12 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "3a97d5a10c4579115fad469aa71a622539a89c591b95137d20f458a370d796e0",
+  "production_input_map_sha256": "d43a3aaf65fd8d28450784697e30bd03f1b9376334550fcc61880bbbf55b5831",
   "schema": "hepta.local-source.v3",
   "scope": "Recognize one protected AX3000T history prefix and verify live profile installations through the same existing background session. Preserve all action freshness, authority, cleanup and physical-screen guards.",
-  "source_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
-  "source_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
-  "source_snapshot_predecessor_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
+  "source_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
+  "source_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
+  "source_snapshot_predecessor_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
