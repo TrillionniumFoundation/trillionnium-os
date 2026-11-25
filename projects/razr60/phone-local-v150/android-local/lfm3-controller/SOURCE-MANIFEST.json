@@ -167,6 +167,7 @@
       "tests/native-ctrip-form-observation/run_observer_host.py",
       "tests/native-form-history-actions/NativeFormHistoryActionHost.template",
       "tests/native-form-history-actions/run_host.py",
+      "tests/native-observation-screenshot-seed/run_host.py",
       "tests/native-stale-recovery/run_budget.py",
       "tests/native-xiaomi-product/run_host.py",
       "tests/native-xiaomi-query-stability/NativeXiaomiQueryStabilityHostTest.java",
@@ -9383,8 +9384,8 @@
     },
     {
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "bytes": 61014,
-      "sha256": "90509aeed77e3f9c87c3f3ae6fb7b5165c94a372b792a6bbe78e0c96421f2968"
+      "bytes": 62838,
+      "sha256": "ecd708aeb054a61111231314e206371c50399d06791b3de14c425ec660e2f481"
     },
     {
       "path": "tests/native-observation-snapshot/ObservationEvidenceHost.java",
@@ -13172,9 +13173,9 @@
   },
   "host_validation_at_preparation": {
     "targeted_review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r2/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10489,
-      "sha256": "d5c2a7d984ef98c14c116615d0bcb124e5dc7b595a92a197beac90e22bbcef0d"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r3/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 10680,
+      "sha256": "82bfdff7ef9b85abb10e2cbbe57ddd0af043efba60f39290ae768c6e450e23de"
     },
     "full_current_host_suite_completed_at_preparation": false,
     "android_build_completed_at_preparation": false,
@@ -13188,8 +13189,8 @@
   "production_input_map_sha256": "034c16fccb1066eff256cce37248a53d300be0d1d073e6a4b4d1daaea0e16691",
   "schema": "hepta.local-source.v3",
   "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions.",
-  "source_parent_head": "a252f1164117f158e84b63dc39f5eba431972b08",
-  "source_parent_manifest_sha256": "51f4f9e242e7049a401a9c9687775c3364c9a79d0e569d52da3a624fa4201597",
+  "source_parent_head": "264dd9cecd69d23d2d8bd62c9d3877ac9d666f1f",
+  "source_parent_manifest_sha256": "7b2fdbad3631a9ecc6c9561b736efbfa8b869a98c41f7513441201c3020cd6ab",
   "source_snapshot_predecessor_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -13256,9 +13257,9 @@
   },
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
-      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r2/INTEGRATION-REVIEWED-INPUTS.json",
-      "bytes": 10489,
-      "sha256": "d5c2a7d984ef98c14c116615d0bcb124e5dc7b595a92a197beac90e22bbcef0d"
+      "path": "/home/alex/hepta-razr-local-closure-20261125-56dad1-root-r3/INTEGRATION-REVIEWED-INPUTS.json",
+      "bytes": 10680,
+      "sha256": "82bfdff7ef9b85abb10e2cbbe57ddd0af043efba60f39290ae768c6e450e23de"
     },
     "scope": "Preserve filled Xiaomi search targets across unrelated hotword churn and retire owned profile resources within existing deadlines; add source-bound regressions."
   }

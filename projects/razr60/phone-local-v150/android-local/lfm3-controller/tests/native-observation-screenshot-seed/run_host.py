@@ -74,6 +74,27 @@ def reverse_input_history_helper(path, raw):
 PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.template': {'current_sha256': '7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f', 'prior_sha256': '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2', 'operations': [['        int getWidth(){return 1080;}int getHeight(){return 2400;}\n', '        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n        int getWidth(){return 1080;}int getHeight(){return 2400;}\n']]}, 'tests/observation-diagnostics/run_host.py': {'current_sha256': '0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f', 'prior_sha256': 'd70aee4bdb21724d9a0c88bca02b5653bd60b02cfe9931be964b085f44bb3d0c', 'operations': [['def sha(raw):', "def png_sources(source):\n    # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.\n    return [source/PKG/'ObservationPngEncoder.java',\n            source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',\n            source/'tests/observation-png/stubs/android/os/Build.java']\n\ndef sha(raw):"], ['    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n', '    paths += png_sources(source)\n    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n'], ["        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += png_sources(source)\n        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}, 'tests/native-observation-events/run_host.py': {'current_sha256': 'd47a7dc865b678a5cd5c4d49c45635886ae0e49da0b90749bc6e7401d9536a27', 'prior_sha256': '70b3abf2899f84f59ae09b2324c7b3581551c426005ecb6d629a859659984dc2', 'operations': [['    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n', '    inputs += h.png_sources(source)\n    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n'], ["        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += h.png_sources(source)\n        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}}
 
 def reverse_png_closure(path, raw):
+    actual_current_sha256 = sha(raw)
+    dependency_inverse = None
+    if path == 'tests/observation-diagnostics/run_host.py':
+        # This exact host-only addition supplies the real ObservedImeEnter type.
+        # Reverse a proof copy; events.generate still imports the current runner.
+        prior_declaration = b"        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java']\n"
+        current_declaration = b"        'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java','ObservedImeEnter.java']\n"
+        need(len(raw) == 30763 and actual_current_sha256 ==
+             '1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07',
+             'exact current diagnostic compile-dependency bytes required')
+        need(raw.count(current_declaration) == 1,
+             'unique exact ObservedImeEnter compile-dependency declaration required')
+        raw = raw.replace(current_declaration, prior_declaration, 1)
+        need(len(raw) == 30739 and sha(raw) ==
+             '0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f',
+             'complete prior diagnostic runner must be restored before PNG proof')
+        dependency_inverse = {'current_sha256': actual_current_sha256,
+                              'prior_sha256': sha(raw), 'operations': 1,
+                              'dependency': 'ObservedImeEnter.java',
+                              'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+                              'compilation_uses_actual_current_source': True}
     spec=PNG_CLOSURE_INVERSES[path]
     need(sha(raw)==spec['current_sha256'],'exact current PNG closure source required: '+path)
     restored=raw
@@ -82,8 +103,9 @@ def reverse_png_closure(path, raw):
         need(restored.count(current)==1,'unique exact PNG closure inverse required: '+path)
         restored=restored.replace(current,prior,1)
     need(sha(restored)==spec['prior_sha256'],'complete pre-PNG closure bytes must be restored: '+path)
-    return restored,{'current_sha256':sha(raw),'prior_sha256':sha(restored),
+    return restored,{'current_sha256':actual_current_sha256,'prior_sha256':sha(restored),
                      'operations':len(spec['operations']),'proof_copy_only':True,
+                     'compile_dependency_inverse':dependency_inverse,
                      'compilation_uses_actual_current_source':True}
 
 # These exact additions are reversed only in the historical proof copy.
