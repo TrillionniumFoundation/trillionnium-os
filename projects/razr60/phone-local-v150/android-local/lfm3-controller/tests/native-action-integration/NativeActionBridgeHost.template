@@ -89,6 +89,8 @@ final class NativeActionBridgeHost {
     static final class PhoneObservation {
         String id,packageName,treeSha256,screenshotSha256,backgroundBootstrapPackage;
         ObservationCaptureEvidence capture;
+        private String captureEvidenceRaw;
+        JSONObject captureMetadata()throws org.json.JSONException{return captureEvidenceRaw==null?null:new JSONObject(captureEvidenceRaw);}
         WindowOwnership profileWindow;
         int windowId,rotation,width,height;long capturedElapsedMillis;
         ObservationState state;ObservedWindowMetadata windowMetadata;List<String> backgroundAllowedPackages;

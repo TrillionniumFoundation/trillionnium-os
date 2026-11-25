@@ -75,14 +75,19 @@ def main():
     capture_inverse=a.source/"tests/native-ax-canonical-reuse/protected_canonical_reuse.py"
     read(capture_inverse)
     capture_predecessor=runpy.run_path(str(capture_inverse))["predecessor"]
+    purpose_inverse=a.source/"tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py"
+    need(sha(read(purpose_inverse))=="5316f04448deb3523076e4c0ccc7ac7dd1cc929f1ff7593034738ddb66a446fe","exact Ctrip purpose proof inverse required")
+    purpose_predecessor=runpy.run_path(str(purpose_inverse))["restore_w5_form_purpose"]
     for rel in PATHS:
         raw=read(a.source/rel)
-        if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
+        # Only proof bytes traverse the exact W5 inverse; javac below keeps actual source paths.
+        proof_raw=purpose_predecessor(rel,raw) if rel in ('src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java', 'src/org/trillionnium/hepta/local/NativeAppEvidence.java', 'src/org/trillionnium/hepta/local/NativeCtripFormObservation.java', 'src/org/trillionnium/hepta/local/ObservationCaptureEvidence.java') else raw
+        if rel in SHARED:need(sha(proof_raw)==SHARED[rel],"reviewed complete pre-purpose shared DTO/goal pin")
         if rel==CAPTURE_REUSE_PATH:
-            need(sha(capture_predecessor(raw))==PRE_CANONICAL_REUSE_SHARED[rel],
+            need(sha(capture_predecessor(proof_raw))==PRE_CANONICAL_REUSE_SHARED[rel],
                  "canonical reuse proof copy must reproduce the complete preceding capture source")
         if rel in FILLED_QUERY_SHARED:
-            need(sha(filled_predecessor(Path(rel).name,raw))==PRE_FILLED_QUERY_SHARED[rel],
+            need(sha(filled_predecessor(Path(rel).name,proof_raw))==PRE_FILLED_QUERY_SHARED[rel],
                  "filled-query proof copy must reproduce the complete prior shared source")
     provenance_path=a.source/"tests/native-xiaomi-product/fixtures/PROVENANCE.json"
     provenance=json.loads(read(provenance_path))
@@ -108,7 +113,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_form_purpose_shared_source_pins":SHARED,"form_purpose_inverse_verified":True,"current_shared_source_pins":{rel:sha(originals[a.source/rel][0]) for rel in SHARED},"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

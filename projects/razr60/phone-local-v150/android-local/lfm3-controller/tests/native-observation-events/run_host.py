@@ -99,12 +99,22 @@ def generate(source,out,h):
             or actual_branch.replace(history_condition,form_condition,1)!=form_branch
             or form_branch.replace(form_condition,legacy_condition,1)!=branch):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
+    # New purpose geometry remains a separately qualified native guard even
+    # when the whole-tree digest matches. Reverse only this exact predicate
+    # in the proof copy; the complete production observer below is unchanged.
+    planning_branch=actual_branch
+    purpose_condition='}else if(expected.capture!=null&&expected.capture.planningHistory()||formPurposeGeometry!=null||!graph.digest.equals(now.digest)){'
+    actual_branch=planning_branch.replace(history_condition,purpose_condition,1)
+    if (actual_branch.count(purpose_condition)!=1
+            or actual_branch.replace(purpose_condition,history_condition,1)!=planning_branch):
+        raise RuntimeError('purpose call-site inverse must preserve the complete planning-history guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     h.write(out/'ObserverPipelineHost.java',template)
     return {'schema':'hepta.native-observation-events-extraction.v1',
         'bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
         'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
         'methods':{n:{'bytes':len(s.encode()),'sha256':h.sha(s.encode())} for n,s in parts.items()},
+        'stale_refusal_purpose_geometry_inverse':{'actual_bytes':len(actual_branch.encode()),'actual_sha256':h.sha(actual_branch.encode()),'prior_bytes':len(planning_branch.encode()),'prior_sha256':h.sha(planning_branch.encode()),'exact_inverse':True,'proof_copy_only':True,'native_action_guard_qualification_claimed':False},
         'original_pipeline_main_unchanged_in_source':True,'action_copies_do_not_carry_native_observation_completeness':True,
         'default_whole_graph_action_refusal_retained':True,'production_collector_hook':call,
         'boundary':'Actual observer/CollectionStats/metadata/state/gate code; synthetic collected Graph/NodeRef and Selection carriers, clock, callback, Android screenshot IO. No Android/currentness, pixels or action qualification.',

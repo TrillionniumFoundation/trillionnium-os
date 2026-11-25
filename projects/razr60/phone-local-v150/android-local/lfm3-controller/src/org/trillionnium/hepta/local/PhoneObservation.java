@@ -432,6 +432,10 @@ public final class PhoneObservation {
         while(keys.hasNext())actual.add(keys.next());require(actual.equals(expected),"exact Selection projection fields required");
     }
     private static void require(boolean value,String reason){if(!value)throw new IllegalArgumentException(reason);}
+    /** A fresh copy of the bounded original capture metadata; no node traversal. */
+    JSONObject captureMetadata() throws JSONException {
+        return captureEvidenceRaw==null?null:new JSONObject(captureEvidenceRaw);
+    }
     /** Existing frame semantics used by page comparisons; node content remains untrusted. */
     public JSONObject toJson() throws JSONException {
         return json(false);

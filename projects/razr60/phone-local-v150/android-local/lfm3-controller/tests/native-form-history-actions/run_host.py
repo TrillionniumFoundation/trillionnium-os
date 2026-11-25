@@ -41,7 +41,8 @@ def main():
     try:
         spec=importlib.util.spec_from_file_location('history_actual_extractor',extractor);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         raw=service.read_text(encoding='utf-8')
-        methods={'product_query_guard':module.body(raw,'    private static boolean nativeProductQueryGuard(ActionWork work){'),
+        methods={'form_purpose_guard':module.body(raw,'    private static boolean nativeFormPurposeGuard(ActionWork work){'),
+                 'product_query_guard':module.body(raw,'    private static boolean nativeProductQueryGuard(ActionWork work){'),
                  'query_budget':module.body(raw,'    private final class QueryGraphBudget implements GraphBudget {'),
                  'query_read':module.body(raw,'    private Graph readNativeActionGraph('),
                  'validate':module.body(raw,'    private String validate('),
@@ -60,7 +61,8 @@ def main():
           'bodies_verbatim':True,'generated':meta(generated),'production_methods_rewritten':False,
           'actual_goal_class':meta(goal),'purpose_constants_source':meta(snapshot),
           'purpose_constants':{'bytes':len(constants[0].encode('utf-8')),'sha256':sha(constants[0].encode('utf-8'))},
-          'query_helper_stubbed':False,'new_query_authority_qualified':False}
+          'query_helper_stubbed':False,'new_query_authority_qualified':False,
+          'form_purpose_helper_stubbed':False,'new_form_purpose_qualification_executed':False}
         tool_port=out/'generated/org/trillionnium/hepta/background/FixedIntentTools.java'
         write(tool_port,'package org.trillionnium.hepta.background; public final class FixedIntentTools { private FixedIntentTools(){} public static boolean isTool(String action){ if("click".equals(action)||"back".equals(action)||"wait".equals(action)||"done".equals(action))return false; throw new AssertionError("FixedIntentTools protocol outside this control-flow gate"); } }\n')
         report['instrumented_tool_classifier_port']={'source':meta(tool_port),'boundary':'Only four tested non-tool action labels return false; every other action throws. No FixedIntentTools route is qualified.'}

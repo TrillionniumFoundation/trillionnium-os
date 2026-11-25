@@ -37,13 +37,17 @@ final class NativeAppDomain {
         for(String id:clickIds)requireNode(id,true,false);
         for(Map.Entry<String,String> e:editValues.entrySet()){requireNode(e.getKey(),false,true);NativeAppEvidence.need(e.getValue()!=null,"native literal edit value");}
         for(String id:this.purposes.keySet())NativeAppEvidence.need("back".equals(id)||clickIds.contains(id)||editValues.containsKey(id),"purpose without granted target");
-        if(frame.capture!=null&&frame.capture.formHistory()){
+        if(frame.capture!=null&&frame.capture.formHistory()||frame.formPurposeGeometry!=null){
             NativeAppEvidence.need(NativeCtripFlightPage.FORM.equals(phase)&&NativeCtripFlightPage.PACKAGE.equals(frame.packageName)
                     &&result==null&&!back&&editValues.isEmpty()&&resourceIds.isEmpty(),
                     "historical form is planning-only and cannot supply another phase, edit, Back or result");
             for(String purpose:this.purposes.values())NativeAppEvidence.need(NativeActionSnapshotCheck.YEAR.equals(purpose)
                     ||NativeActionSnapshotCheck.QUERY.equals(purpose),"historical form can propose only inspected date/query purposes");
-            for(String id:clickIds)frame.capture.requireFormHistoryTarget(frame.byId.get(id).path);
+            for(String id:clickIds){
+                String purpose=this.purposes.get(id);NativeAppEvidence.Node node=frame.byId.get(id);
+                if(frame.capture!=null)frame.capture.requireFormHistoryTarget(node.path,purpose);
+                frame.requireFormPurposeTarget(purpose,node);
+            }
         }
         if(frame.capture!=null&&frame.capture.inputHistory()){
             NativeAppEvidence.need("search_input".equals(phase)&&NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)
@@ -170,6 +174,10 @@ final class NativeAppDomain {
         if(frame.capture!=null&&frame.capture.formHistory()){
             out.put("historical_form_planning_only",true);out.put("published_pair_is_current_tree_claimed",false);
             out.put("form_history",frame.capture.formHistoryEvidence());out.put("fresh_complete_census_and_native_guard_required",true);
+        }
+        if(frame.formPurposeGeometry!=null){
+            out.put("purpose_limited_form_planning",true);out.put("trip_tab_actions_available",false);
+            out.put("header_actions_available",false);out.put("fresh_complete_census_and_native_guard_required",true);
         }
         if(frame.capture!=null&&frame.capture.inputHistory()){
             out.put("historical_empty_input_planning_only",true);out.put("published_pair_is_current_tree_claimed",false);

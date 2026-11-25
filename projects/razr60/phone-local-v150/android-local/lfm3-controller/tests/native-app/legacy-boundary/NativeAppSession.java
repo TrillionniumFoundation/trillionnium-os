@@ -26,6 +26,8 @@ final class NativeAppSession {
     /** Type-only new API; these legacy cases cannot create or claim a native Attempt. */
     static final class ActionGuard {
         final String purpose=null;final NativeAppGoal goal=null;final NativeAppEvidence.Node targetNode=null;
+        // Type-only final-use projection; this guard still cannot be constructed.
+        final NativeAppEvidence.Frame frame=null;
         NativeActionSnapshotCheck.Intent intent(String ref){throw unavailable();}
         private ActionGuard(){throw unavailable();}
         void requireClaimed(){throw unavailable();}

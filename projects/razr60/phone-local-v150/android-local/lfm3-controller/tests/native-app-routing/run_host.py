@@ -10,6 +10,22 @@ EXPECTED_ENTRY=["actual_ui_to_session_preserves_native_target_and_original_owner
 PRESERVED_OWNER_PARSE_SHA256="56fc6f5e4e252a4876301571a3e19ec13edad3c279c129c54b703add5c17370c"
 JSON_SHA256="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
 
+def legacy_session_parent_proof(raw):
+    """Proof copy only; actual compilation retains the current refusing type port."""
+    parent_sha="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    current_sha="8ee6f4d05dc3f71ed646215947e10c9d34b12b4354ed6920ca49b06112dd5203"
+    digest=hashlib.sha256(raw).hexdigest()
+    if digest==parent_sha:return raw
+    if digest!=current_sha:raise RuntimeError("unknown legacy Session type-port source")
+    added=(b"        // Type-only final-use projection; this guard still cannot be constructed.\n"
+           b"        final NativeAppEvidence.Frame frame=null;\n")
+    if raw.count(added)!=1:raise RuntimeError("unique exact Frame type-port addition required")
+    proof=raw.replace(added,b"",1)
+    if hashlib.sha256(proof).hexdigest()!=parent_sha:
+        raise RuntimeError("complete original refusing Session proof differs")
+    return proof
+
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def require(ok,message):
     if not ok:raise RuntimeError(message)
@@ -66,7 +82,7 @@ def main():
         # New calendar signatures are local compiler shapes, never capabilities.
         legacy_session=source/"tests/native-app/legacy-boundary/NativeAppSession.java"
         legacy_raw=legacy_session.read_bytes()
-        require(legacy_session in pure and sha(legacy_raw)=="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+        require(legacy_session in pure and sha(legacy_session_parent_proof(legacy_raw))=="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
                 and b"class CalendarOffer" not in legacy_raw,"exact original legacy Session boundary required")
         calendar_shape=b"""
     static final class CalendarOffer {

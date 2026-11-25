@@ -9,6 +9,22 @@ import hashlib
 from pathlib import Path
 
 
+def legacy_session_parent_proof(raw):
+    """Proof copy only; actual compilation retains the current refusing type port."""
+    parent_sha="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    current_sha="8ee6f4d05dc3f71ed646215947e10c9d34b12b4354ed6920ca49b06112dd5203"
+    digest=hashlib.sha256(raw).hexdigest()
+    if digest==parent_sha:return raw
+    if digest!=current_sha:raise RuntimeError("unknown legacy Session type-port source")
+    added=(b"        // Type-only final-use projection; this guard still cannot be constructed.\n"
+           b"        final NativeAppEvidence.Frame frame=null;\n")
+    if raw.count(added)!=1:raise RuntimeError("unique exact Frame type-port addition required")
+    proof=raw.replace(added,b"",1)
+    if hashlib.sha256(proof).hexdigest()!=parent_sha:
+        raise RuntimeError("complete original refusing Session proof differs")
+    return proof
+
+
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
@@ -167,7 +183,7 @@ def prepare(source, output, entries):
         addition = part(local,
                 "    /** Calendar ABI only. Constructors and every authority endpoint always refuse. */",
                 "    private static UnsupportedOperationException unavailable(){")
-        require(sha(raw_legacy) == "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+        require(sha(legacy_session_parent_proof(raw_legacy)) == "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
                 and sha(addition.encode()) == "6143b28d3086ca7a1250a44e05a0b320dbf709eabc8d542ebf1fd47c0c4e2a1c"
                 and local.replace(addition, "", 1).encode() == raw_legacy,
                 "exact local calendar extension of original legacy Session required")

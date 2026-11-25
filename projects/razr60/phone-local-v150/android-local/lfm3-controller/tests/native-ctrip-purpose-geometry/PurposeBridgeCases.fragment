@@ -1,0 +1,289 @@
+
+    // Purpose cases retain the actual methods generated above. Android window,
+    // NodeRef transport, profile RPC and event clocks are explicit host ports.
+    static JSONObject productRecorded;
+    static final List<Map<String,Object>> productServiceCases=new ArrayList<Map<String,Object>>();
+    static final List<Map<String,Object>> productSessionCases=new ArrayList<Map<String,Object>>();
+    static int productAssertions;
+    boolean stripFormPurpose;
+    interface ProductTest {void run()throws Exception;}
+    static void productCheck(boolean value,String why){productAssertions++;if(!value)throw new AssertionError(why);}
+    static void productDenied(ProductTest test)throws Exception{
+        boolean refused=false;try{test.run();}catch(IllegalArgumentException|IllegalStateException|ActionDecision.InvalidActionException expected){refused=true;}
+        productCheck(refused,"actual Service branch must refuse");
+    }
+    static void productOne(List<Map<String,Object>> rows,String name,ProductTest test){
+        Map<String,Object> row=new TreeMap<String,Object>();row.put("name",name);
+        try{test.run();row.put("passed",true);}catch(Throwable failure){row.put("passed",false);row.put("failure",failure.toString());
+            java.io.StringWriter sw=new java.io.StringWriter();failure.printStackTrace(new java.io.PrintWriter(sw));row.put("stack",sw.toString());}
+        rows.add(row);
+    }
+    static Object productValue(Object value)throws Exception{
+        if(value==null||value==JSONObject.NULL)return null;
+        if(value instanceof JSONObject){Map<String,Object> out=new TreeMap<String,Object>();JSONObject o=(JSONObject)value;
+            for(Iterator<String> k=o.keys();k.hasNext();){String key=k.next();out.put(key,productValue(o.get(key)));}return out;}
+        if(value instanceof JSONArray){List<Object> out=new ArrayList<Object>();JSONArray a=(JSONArray)value;
+            for(int i=0;i<a.length();i++)out.add(productValue(a.get(i)));return out;}return value;
+    }
+    static ProfileTarget productProfile(){
+        return new ProfileTarget(new org.trillionnium.hepta.background.ProfileIdentity(10,10,0,org.trillionnium.hepta.background.ProfileIdentity.MANAGED),
+                1010367,NativeAppGoal.CTRIP_PACKAGE,"ctrip.android.view/ctrip.business.main.view.CTHomeActivity",1779L,
+                Collections.singletonMap("base",NativeCtripFlightPage.BASE_APK_SHA256),
+                Collections.singleton("c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"));
+    }
+    static NativeActionSnapshotCheckHostTest.Fixture productRaw(String side,String purpose)throws Exception{
+        NativeActionSnapshotCheckHostTest.Fixture f=NativeActionSnapshotCheckHostTest.form(purpose);
+        f.nodes.clear();JSONArray rows=productRecorded.getJSONObject("pairs").getJSONObject(side).getJSONArray("nodes");
+        for(int i=0;i<rows.length();i++){
+            Object value=productValue(rows.getJSONObject(i));if(!(value instanceof Map))throw new AssertionError("recorded row");
+            Map<String,Object> row=new TreeMap<String,Object>();for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet())row.put((String)e.getKey(),e.getValue());
+            row.put("window_id",96);f.nodes.put((String)row.get("path"),row);
+        }
+        f.env.put("visited",f.nodes.size());f.env.put("window_id",96);
+        f.target=NativeActionSnapshotCheck.QUERY.equals(purpose)?"0/0/2/13":"0/0/2/5";f.label=(String)f.nodes.get(f.target).get("label");
+        return f;
+    }
+    static NativeActionSnapshotCheck.Snapshot productSnapshot(Fixture f,Graph g,String obs){
+        Map<String,Object> e=new TreeMap<String,Object>();
+        e.put("task_id",f.task);e.put("owner_sha256",f.selection.taskTarget.ownerSha256);
+        e.put("target_sha256",f.selection.taskTarget.targetSha256);e.put("authorization_sha256",f.authorization.sha256);
+        try{e.put("selection_sha256",NativeAppObservation.selectionSha(f.selection));}catch(Exception fail){throw new IllegalArgumentException(fail);}
+        e.put("goal_sha256",f.selection.taskTarget.nativeGoal.contractSha256);
+        e.put("installed_set_sha256",new NativeAppEvidence.Installed(f.productProfile).apkSetSha256);
+        e.put("background_generation",f.service.background.generation);e.put("origin_observation_id",obs);
+        e.putAll(NativeAppEvidence.profileActionIdentity(g.profileWindow));
+        e.put("package",g.packageName);e.put("display_id",g.displayId);e.put("window_id",g.windowId);e.put("rotation",g.rotation);
+        e.put("width",g.nativeActionWidth);e.put("height",g.nativeActionHeight);
+        e.put("root_bounds",Arrays.asList(g.bounds.left,g.bounds.top,g.bounds.right,g.bounds.bottom));
+        e.put("window_metadata_sha256",sha(g.windowMetadata.bindFreshness("").getBytes(StandardCharsets.UTF_8)));
+        e.put("reported_windows_sha256",NativeAppEvidence.fingerprint(g.nativeActionWindows));e.put("reported_windows_complete",true);
+        e.put("ime_visibility","hidden");e.put("captured_elapsed_ms",g.nativeActionCapturedAt);e.put("full_native_complete",true);
+        e.put("visited",g.collectionStats.visited);e.put("pending",g.collectionStats.pending);
+        e.put("node_omissions",g.collectionStats.nodeBudgetOmissions);e.put("text_omissions",g.collectionStats.textBudgetOmissions);
+        e.put("child_omissions",(int)g.collectionStats.childSlotsOmitted);
+        return new NativeActionSnapshotCheck.Snapshot(e,g.nativeActionNodes);
+    }
+    static NativeAppEvidence.Frame productFrame(Fixture f,List<NativeAppEvidence.Node> nodes,String tree,String obs)throws Exception{
+        Map<String,Object> qualification=null;f.productCaptureMetadata=null;
+        boolean isForm=false;for(NativeAppEvidence.Node node:nodes)if((NativeAppGoal.CTRIP_PACKAGE+":id/bt_submit_inquire").equals(node.viewId))isForm=true;
+        if(isForm){
+            Graph original=f.productCapturedGraph,second=null,restore=null;
+            try{
+                NativeActionSnapshotCheck.Snapshot first=productSnapshot(f,original,obs);
+                second=f.graph(productRaw("after",f.purpose),null);
+                Map<String,Object> proof=NativeCtripFormObservation.compareForTargetPlanning(first,productSnapshot(f,second,obs));
+                Object raw=proof.get("form_purpose_geometry");
+                if(!(raw instanceof Map))throw new AssertionError("recorded moving header must require its distinct purpose qualification");
+                qualification=new TreeMap<String,Object>();for(Map.Entry<?,?> e:((Map<?,?>)raw).entrySet())qualification.put((String)e.getKey(),e.getValue());
+                qualification.put("planning_observation_id",obs);
+                Map<String,Object> metadata=new TreeMap<String,Object>();
+                metadata.put("schema","hepta.observation-capture.v1");metadata.put("mode","pre_encoding_form_pair_history");
+                metadata.put("capture_requested_elapsed_ms",SystemClock.now);
+                metadata.put("form_pair_comparison",org.trillionnium.hepta.local.NativeAppObservation.pixelFormPair(proof));
+                metadata.put("publication_refreshes_capture_age",false);metadata.put("grants_action_authority",false);
+                metadata.put("business_completion_verified",false);f.productCaptureMetadata=metadata;
+            }finally{
+                if(second!=null)second.close();
+                restore=f.graph(f.raw,null);restore.close();
+            }
+        }
+        return new NativeAppEvidence.Frame(f.task,f.selection.taskTarget.ownerSha256,f.selection.taskTarget.targetSha256,f.authorization.sha256,
+                NativeAppObservation.selectionSha(f.selection),obs,f.raw.pkg,f.service.background.generation,tree,hash("host-state:"+tree),
+                hash("host-screen:"+obs),hash("explicit-host-record:"+obs),hash("explicit-host-completion:"+obs),
+                7,96,0,1224,2992,0,0,1224,2992,SystemClock.now,false,true,nodes,1,true,f.productWindow,null,
+                f.service.stripFormPurpose?null:qualification);
+    }
+    static NativeProductQueryBridgeHost productHost(){
+        NativeProductQueryBridgeHost h=new NativeProductQueryBridgeHost();
+        h.productOwner="在携程查询2026年11月26日北京到上海单程机票，1名成人";return h;
+    }
+    static Fixture purposeFixture(NativeProductQueryBridgeHost h,String purpose,String label)throws Exception{
+        return h.new Fixture(purpose,label,productRaw("before",purpose));
+    }
+    static void deniedDispatch(Fixture f)throws Exception{
+        boolean refused=false;try{refused=!f.dispatch();}catch(IllegalArgumentException|IllegalStateException|ActionDecision.InvalidActionException expected){refused=true;}
+        productCheck(refused&&f.effects()==0&&!f.work.state.effectEntered(),"no effect on refused actual Service path");
+    }
+
+    /** Exact production captureEvidence method below; these carrier fields are
+     * explicit host timing/bitmap ports, never a phone observation controller. */
+    static final class EnvelopeWatermark {long events=42,contentEvents=12,boundaryEvents=3;}
+    static final class EnvelopeIdentity {long graphStartedAt,graphCompletedAt;EnvelopeWatermark eventWatermark=new EnvelopeWatermark();}
+    static final class EnvelopeSeal {long sealedAt,events=42;}
+    static final class CaptureEnvelope {
+        final EnvelopeIdentity identity=new EnvelopeIdentity();EnvelopeSeal seal=new EnvelopeSeal();
+        long capturedAt,callbackAt,pairStartedAt,pairCompletedAt,pairEvents=42,encodeStartedAt,encodeCompletedAt,persistedAt;
+        long publicationCheckStartedAt,publicationCheckCompletedAt,firstPublicationCheckStartedAt,firstPublicationCheckCompletedAt,firstPublicationCheckEvents=42;
+        long formPairCompletedEvents=42,unknownEvents=0,checkedEvents=42;
+        int postEffectPublicationRechecks=1;boolean contentPairSealed,postEncodingCompleteNativeRechecked,wholeGraphRechecked;
+        EnvelopeWatermark postEncodingStartWatermark,postEncodingCompletedWatermark;
+        Map<String,Object> formPair,postEncodingFormPair;
+        CaptureEnvelope(long at,Map<String,Object> proof,boolean late){
+            capturedAt=at;identity.graphStartedAt=at-20;identity.graphCompletedAt=at-5;callbackAt=at+10;
+            pairStartedAt=at+20;pairCompletedAt=at+50;seal.sealedAt=at+60;encodeStartedAt=at+70;encodeCompletedAt=at+100;
+            persistedAt=at+105;publicationCheckStartedAt=at+110;publicationCheckCompletedAt=at+120;
+            firstPublicationCheckStartedAt=at+106;firstPublicationCheckCompletedAt=at+109;
+            if(late){postEncodingFormPair=proof;postEncodingStartWatermark=new EnvelopeWatermark();postEncodingCompletedWatermark=new EnvelopeWatermark();}
+            else formPair=proof;
+        }
+        {{actual_capture_evidence}}
+    }
+    static final List<Map<String,Object>> transportMeasurements=new ArrayList<Map<String,Object>>();
+    static void fullCaptureTransport(boolean purpose,boolean late)throws Exception{
+        java.nio.file.Path directory=serviceOutput.getParent().resolve("transport-"+(purpose?"purpose":"strict")+"-"+(late?"post":"pre"));
+        java.nio.file.Files.createDirectory(directory);
+        NativeProductQueryBridgeHost h=productHost();
+        Fixture f=h.new Fixture(NativeActionSnapshotCheck.OPEN,"transport-open:"+directory.getFileName(),null,true,directory.toFile());
+        h.exerciseBackgroundPrecheck=true;OpenController c=new OpenController(f,directory.toFile());
+        c.invoke();c.commit();NativeAppSession.PostEffectReadPermit permit=c.permit();
+        productCheck(permit!=null&&c.outcome.accepted&&c.outcome.dispatched&&f.effects()==1,"actual durable private OPEN permit");
+        Map<String,Object> actualPermit=permit.evidence();
+        productCheck(Boolean.TRUE.equals(actualPermit.get("worker_drained"))&&actualPermit.containsKey("profile_target"),
+                "complete actual managed-profile permit evidence");
+        f.raw=productRaw("before",NativeActionSnapshotCheck.YEAR);
+        Graph original=f.graph(f.raw,null),second=null;
+        try{
+            f.productCapturedGraph=original;NativeAppEvidence.Frame frame=f.frame(f.retained(original),original.digest);
+            NativeActionSnapshotCheckHostTest.Fixture after=productRaw("after",NativeActionSnapshotCheck.YEAR);
+            if(!purpose)for(String path:f.raw.nodes.keySet())if(path.equals("0/0/0")||path.startsWith("0/0/0/"))
+                after.nodes.put(path,new TreeMap<String,Object>(f.raw.nodes.get(path)));
+            second=f.graph(after,null);
+            Map<String,Object> proof=new TreeMap<String,Object>(purpose
+                ?NativeCtripFormObservation.compareForTargetPlanning(productSnapshot(f,original,frame.observationId),productSnapshot(f,second,frame.observationId))
+                :NativeCtripFormObservation.compare(productSnapshot(f,original,frame.observationId),productSnapshot(f,second,frame.observationId)));
+            productCheck(purpose?proof.containsKey("form_purpose_geometry"):proof.containsKey("literal_form_facts"),"distinct strict/new qualification retained");
+            proof.put("entered_open_read_permit",actualPermit);
+            byte[] raw=new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8);
+            Map<String,Object> packed=org.trillionnium.hepta.local.NativeAppObservation.pixelFormPair(proof);
+            byte[] restored=org.trillionnium.hepta.local.NativeAppObservation.pixelFormPairBytes(new JSONObject(packed));
+            productCheck(Arrays.equals(raw,restored),"entire comparison including actual permit restored byte for byte");
+            Map<String,Object> metadata=new CaptureEnvelope(frame.capturedElapsedMs,packed,late).captureEvidence(frame.capturedElapsedMs+125);
+            int bytes=new JSONObject(metadata).toString().getBytes(StandardCharsets.UTF_8).length;
+            Map<String,Object> uncompressed=new CaptureEnvelope(frame.capturedElapsedMs,proof,late).captureEvidence(frame.capturedElapsedMs+125);
+            int originalBytes=new JSONObject(uncompressed).toString().getBytes(StandardCharsets.UTF_8).length;
+            productCheck(bytes<=8192,"entire actual standard capture envelope fits unchanged 8192-byte cap");
+            if(!purpose)productCheck(originalBytes>8192,"strict replay reproduces original inline byte overflow");
+            java.io.File pixel=directory.resolve("explicit-host-pixel-port.bin").toFile();
+            byte[] pixelBytes="host pixel file only; not a PNG or vision qualification".getBytes(StandardCharsets.UTF_8);
+            java.nio.file.Files.write(pixel.toPath(),pixelBytes,java.nio.file.StandardOpenOption.CREATE_NEW);
+            org.trillionnium.hepta.local.PhoneObservation phone=new org.trillionnium.hepta.local.PhoneObservation(
+                frame.observationId,frame.packageName,frame.capturedElapsedMs,frame.width,frame.height,frame.rotation,frame.windowId,
+                new android.graphics.Rect(frame.left,frame.top,frame.right,frame.bottom),pixel,sha(pixelBytes),frame.stateSha,
+                new ObservationState(frame.treeSha,ImeVisibility.HIDDEN),f.metadata(),false,
+                Collections.<org.trillionnium.hepta.local.PhoneObservation.Node>emptyList(),frame.generation,frame.packageName,
+                Collections.singletonList(frame.packageName),
+                new org.trillionnium.hepta.local.PhoneObservation.CollectionStats(1536,512,6144,0,0,0,0,0,0,0L,0L),
+                f.selection.json(),frame.ownerSha,metadata,f.productWindow);
+            productCheck(phone.captureMetadata().toString().getBytes(StandardCharsets.UTF_8).length==bytes,
+                    "actual PhoneObservation constructor/accessor accepts exact complete packed metadata");
+            productDenied(()->new org.trillionnium.hepta.local.PhoneObservation(
+                frame.observationId,frame.packageName,frame.capturedElapsedMs,frame.width,frame.height,frame.rotation,frame.windowId,
+                new android.graphics.Rect(frame.left,frame.top,frame.right,frame.bottom),pixel,sha(pixelBytes),frame.stateSha,
+                new ObservationState(frame.treeSha,ImeVisibility.HIDDEN),f.metadata(),false,
+                Collections.<org.trillionnium.hepta.local.PhoneObservation.Node>emptyList(),frame.generation,frame.packageName,
+                Collections.singletonList(frame.packageName),
+                new org.trillionnium.hepta.local.PhoneObservation.CollectionStats(1536,512,6144,0,0,0,0,0,0,0L,0L),
+                f.selection.json(),frame.ownerSha,oversizeCapture(metadata),f.productWindow));
+            java.nio.file.Files.write(directory.resolve("ORIGINAL-COMPARISON.json"),raw,java.nio.file.StandardOpenOption.CREATE_NEW);
+            java.nio.file.Files.write(directory.resolve("RESTORED-COMPARISON.json"),restored,java.nio.file.StandardOpenOption.CREATE_NEW);
+            java.nio.file.Files.write(directory.resolve("FULL-PACKED-CAPTURE.json"),new JSONObject(metadata).toString().getBytes(StandardCharsets.UTF_8),java.nio.file.StandardOpenOption.CREATE_NEW);
+            java.nio.file.Files.write(directory.resolve("ACTUAL-OPEN-PERMIT.json"),new JSONObject(actualPermit).toString().getBytes(StandardCharsets.UTF_8),java.nio.file.StandardOpenOption.CREATE_NEW);
+            Map<String,Object> row=new TreeMap<String,Object>();row.put("qualification",purpose?"purpose":"strict");row.put("phase",late?"post":"pre");
+            row.put("original_comparison_bytes",raw.length);row.put("original_comparison_sha256",sha(raw));row.put("restored_same_bytes",Arrays.equals(raw,restored));
+            row.put("uncompressed_complete_capture_bytes",originalBytes);row.put("packed_complete_capture_bytes",bytes);
+            row.put("actual_private_permit_fields",actualPermit.size());row.put("actual_phone_constructor_executed",true);
+            row.put("host_timing_and_pixel_ports",true);row.put("original_1c43_metadata_replayed",false);transportMeasurements.add(row);
+        }finally{if(second!=null)second.close();original.close();}
+    }
+    static Map<String,Object> oversizeCapture(Map<String,Object> original){
+        Map<String,Object> bad=new TreeMap<String,Object>(original);char[] fill=new char[8193];Arrays.fill(fill,'x');bad.put("explicit_oversize_negative",new String(fill));return bad;
+    }
+    static java.nio.file.Path serviceOutput;
+
+    static void productServiceTests(){
+        productOne(productServiceCases,"equal_tree_YEAR_runs_actual_final_census_claim_and_effect",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-equal-year");
+            productCheck(f.dispatch(),"actual dispatch");
+            productCheck(f.effects()==1&&f.work.state.effectEntered(),"one explicit host effect");
+            productCheck(Collections.frequency(h.events,"full_census")==2,"equal tree still complete validation and final reads");
+            productCheck(f.work.nativeActionProof!=null&&new JSONObject(f.work.nativeActionProof).getBoolean("original_node_ref_and_actual_ancestor_chain"),"actual final proof");
+        });
+        productOne(productServiceCases,"equal_tree_QUERY_uses_actual_calendar_roundtrip_and_final_claim",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.QUERY,"ctrip-equal-query");
+            productCheck(f.dispatch()&&f.effects()==1,"actual query effect after genuine Session year/back fixture chain");
+            productCheck(Collections.frequency(h.events,"full_census")==2,"query equal tree final census");
+        });
+        productOne(productServiceCases,"recorded_header_motion_is_rechecked_at_actual_final_use",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-moving-year");
+            f.fresh=productRaw("after",NativeActionSnapshotCheck.YEAR);
+            productCheck(f.dispatch()&&f.effects()==1,"actual complete second motion");
+        });
+        productOne(productServiceCases,"qualified_expected_without_private_guard_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-no-guard");
+            f.work=h.new ActionWork(f.task,h.current,f.run,h.scope,f.gate,h.background,()->false,h.currentGraph.copyForAction(f.action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,null);
+            deniedDispatch(f);
+        });
+        productOne(productServiceCases,"unqualified_guard_cannot_borrow_qualified_pixel_metadata",()->{
+            NativeProductQueryBridgeHost h=productHost();h.stripFormPurpose=true;Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-plain-guard");
+            productCheck(f.work.nativeGuard.frame.formPurposeGeometry==null,"explicit mismatched guard fixture");deniedDispatch(f);
+        });
+        productOne(productServiceCases,"pixel_metadata_original_census_substitution_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-replaced-origin");
+            Map<String,Object> q=new TreeMap<String,Object>(f.frame.formPurposeGeometry);q.put("first_nodes_sha256",hash("foreign original nodes"));
+            JSONObject metadata=h.current.captureMetadata(),decoded=org.trillionnium.hepta.local.NativeAppObservation.decodePixelFormPair(metadata.getJSONObject("form_pair_comparison"));
+            q.remove("planning_observation_id");decoded.put("form_purpose_geometry",new JSONObject(q));
+            Object raw=productValue(decoded);Map<String,Object> proof=new TreeMap<String,Object>();for(Map.Entry<?,?> e:((Map<?,?>)raw).entrySet())proof.put((String)e.getKey(),e.getValue());
+            metadata.put("form_pair_comparison",new JSONObject(org.trillionnium.hepta.local.NativeAppObservation.pixelFormPair(proof)));h.current.captureEvidenceRaw=metadata.toString();
+            deniedDispatch(f);
+        });
+        productOne(productServiceCases,"same_value_replacement_NodeRef_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-ref-replaced");
+            f.data.put(f.raw.target,new NodeData(f.raw.nodes.get(f.raw.target)));deniedDispatch(f);
+        });
+        productOne(productServiceCases,"final_query_date_semantics_change_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-final-date");
+            h.scopeMutation=()->{f.fresh.nodes.get("0/0/2/5").put("text","11月27日周五");f.fresh.nodes.get("0/0/2/5").put("label","11月27日周五");};
+            deniedDispatch(f);
+        });
+        productOne(productServiceCases,"final_selected_trip_change_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-trip-change");
+            f.fresh.nodes.get("0/0/2/0/0").put("selected",false);deniedDispatch(f);
+        });
+        productOne(productServiceCases,"final_header_descendant_target_overlap_is_refused",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-header-overflow");
+            f.fresh.nodes.get("0/0/0/0/0").put("bounds",Arrays.asList(0,0,1224,1000));deniedDispatch(f);
+        });
+        productOne(productServiceCases,"equal_tree_preclaimed_guard_cannot_repeat_effect",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-preclaimed");
+            f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);deniedDispatch(f);
+        });
+        productOne(productServiceCases,"equal_tree_expired_original_deadline_refuses",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-expired");
+            SystemClock.now=f.work.state.deadlineElapsed;deniedDispatch(f);
+        });
+        productOne(productServiceCases,"final_reported_window_change_refuses_before_claim",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-window");
+            h.windowMutation=()->{h.windowRows.get(0).layer=5;};deniedDispatch(f);
+        });
+        productOne(productServiceCases,"installed_identity_change_refuses_before_final_effect",()->{
+            NativeProductQueryBridgeHost h=productHost();Fixture f=purposeFixture(h,NativeActionSnapshotCheck.YEAR,"ctrip-installed");
+            f.installedCurrent=false;deniedDispatch(f);
+        });
+        productOne(productServiceCases,"full_strict_pre_capture_lossless_actual_phone_and_permit",()->fullCaptureTransport(false,false));
+        productOne(productServiceCases,"full_strict_post_capture_lossless_actual_phone_and_permit",()->fullCaptureTransport(false,true));
+        productOne(productServiceCases,"full_purpose_pre_capture_lossless_actual_phone_and_permit",()->fullCaptureTransport(true,false));
+        productOne(productServiceCases,"full_purpose_post_capture_lossless_actual_phone_and_permit",()->fullCaptureTransport(true,true));
+    }
+    static boolean productWrite(java.nio.file.Path path,List<Map<String,Object>> rows,String kind)throws Exception{
+        boolean pass=true;List<String> names=new ArrayList<String>();for(Map<String,Object> row:rows){names.add((String)row.get("name"));pass&=Boolean.TRUE.equals(row.get("passed"));}
+        Map<String,Object> out=new TreeMap<String,Object>();out.put("schema","hepta.ctrip-purpose-actual-"+kind+".v1");out.put("all_pass",pass);
+        out.put("cases",rows.size());out.put("case_names",names);out.put("results",rows);out.put("assertions_total",productAssertions);
+        out.put("phone_operations",0);out.put("android_runtime",false);out.put("platform_effect",false);out.put("business_verified",false);
+        java.nio.file.Files.write(path,(new JSONObject(out).toString(2)+"\n").getBytes(StandardCharsets.UTF_8),java.nio.file.StandardOpenOption.CREATE_NEW);return pass;
+    }
+    public static void main(String[] args)throws Exception{
+        sourceRoot=java.nio.file.Paths.get(args[0]);productRecorded=new JSONObject(new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(args[1])),StandardCharsets.UTF_8));
+        serviceOutput=java.nio.file.Paths.get(args[2]);productServiceTests();
+        java.nio.file.Files.write(serviceOutput.getParent().resolve("TRANSPORT-MEASUREMENTS.json"),new org.json.JSONArray(transportMeasurements).toString(2).getBytes(StandardCharsets.UTF_8),java.nio.file.StandardOpenOption.CREATE_NEW);
+        if(!productWrite(java.nio.file.Paths.get(args[2]),productServiceCases,"service"))throw new AssertionError("actual Ctrip Service case failed");
+    }

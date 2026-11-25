@@ -315,7 +315,8 @@ final class NativeXiaomiProductPage {
     private static Page results(NativeAppGoal goal,NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> models){
         if(models.size()!=1)return page(frame,"search_results_unverified","unique_visible_exact_product_card_required",null,null);
         NativeAppEvidence.Node model=models.get(0),card=clickAncestor(frame,model);
-        if(card==null||!VIEW.equals(card.className)||distance(model.path,card.path)!=2)
+        boolean directCard=card!=null&&observedDirectChildCard(frame,card,model);
+        if(card==null||!VIEW.equals(card.className)||(distance(model.path,card.path)!=2&&!directCard))
             return page(frame,"search_results_unverified","actual_clickable_product_card_required",null,null);
         String group=parent(model.path);
         List<NativeAppEvidence.Node> amounts=new ArrayList<NativeAppEvidence.Node>(),symbols=new ArrayList<NativeAppEvidence.Node>(),secondary=new ArrayList<NativeAppEvidence.Node>();
@@ -331,6 +332,9 @@ final class NativeXiaomiProductPage {
         if(amounts.size()!=1||symbols.size()!=1||secondary.size()>1)
             return page(frame,"search_results_unverified","unambiguous_same_card_price_nodes_required",card,null);
         NativeAppEvidence.Node amount=amounts.get(0),symbol=symbols.get(0);
+        if(directCard&&(!symbol.path.equals(card.path+"/8")||!amount.path.equals(card.path+"/9")
+                ||secondary.size()!=1||!secondary.get(0).path.equals(card.path+"/10")))
+            return page(frame,"search_results_unverified","observed_direct_card_price_slots_required",null,null);
         if(!adjacent(symbol,amount)||amount.top<=model.bottom)
             return page(frame,"search_results_unverified","same_row_adjacent_currency_and_amount_required",card,null);
         String comparison=null;NativeAppEvidence.Node compared=secondary.isEmpty()?null:secondary.get(0);
@@ -354,6 +358,41 @@ final class NativeXiaomiProductPage {
         }catch(IllegalArgumentException invalidAmount){
             return page(frame,"search_results_unverified","invalid_observed_amount",card,null);
         }
+    }
+
+    /** One additional layout from all three complete native AX result captures
+     * of the same pinned Xiaomi installation. It is not a generic depth range:
+     * the original two-level card remains unchanged; this variant is exactly
+     * ScrollView 0/1 -> clickable card 0/1/8 -> twelve direct TextView slots.
+     * Slot 0 is the exact model and slots 8/9/10 remain separate displayed price
+     * sources. The caller still verifies installed identity and fresh action
+     * ownership; this parser grants neither dispatch nor detail-price proof. */
+    private static boolean observedDirectChildCard(NativeAppEvidence.Frame frame,
+            NativeAppEvidence.Node card,NativeAppEvidence.Node model){
+        if(!"0/1/8".equals(card.path)||!VIEW.equals(card.className)
+                ||!"android.widget.ScrollView".equals(card.parentClass)||!usable(frame,card)
+                ||!card.clickable||card.editable||card.scrollable||!card.scrollDirections.isEmpty()
+                ||!card.viewId.isEmpty()||!card.text.isEmpty()||!card.description.isEmpty()||!unselected(card)
+                ||!model.path.equals(card.path+"/0"))return false;
+        NativeAppEvidence.Node scroll=null;
+        for(NativeAppEvidence.Node node:frame.nodes)if("0/1".equals(node.path))scroll=node;
+        if(scroll==null||!usable(frame,scroll)||!"android.widget.ScrollView".equals(scroll.className)
+                ||!"android.widget.FrameLayout".equals(scroll.parentClass)||scroll.clickable||scroll.editable
+                ||!scroll.scrollable||scroll.scrollDirections.size()!=2
+                ||!scroll.scrollDirections.contains("forward")||!scroll.scrollDirections.contains("down")
+                ||!scroll.viewId.isEmpty()||!scroll.text.isEmpty()||!scroll.description.isEmpty()
+                ||!unselected(scroll)||!card.within(scroll))return false;
+        int slots=0;
+        for(NativeAppEvidence.Node node:frame.nodes){
+            if(!under(node.path,card.path))continue;
+            int index=childIndex(node.path);
+            if(distance(node.path,card.path)!=1||index<0||index>=12||!usable(frame,node)
+                    ||!TEXT.equals(node.className)||!VIEW.equals(node.parentClass)||!node.within(card)
+                    ||node.clickable||node.editable||node.scrollable||!node.scrollDirections.isEmpty()
+                    ||!node.viewId.isEmpty()||!node.description.isEmpty()||!unselected(node))return false;
+            slots|=1<<index;
+        }
+        return slots==(1<<12)-1;
     }
 
     /** The archived ordinary App toolbar uses a FrameLayout root and direct

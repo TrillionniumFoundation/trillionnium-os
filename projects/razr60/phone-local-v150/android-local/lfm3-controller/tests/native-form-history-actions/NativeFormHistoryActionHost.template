@@ -28,12 +28,24 @@ final class NativeFormHistoryActionHost {
         final String id="observed",packageName="ctrip.android.view";
         final long capturedElapsedMillis=900;
         Capture capture=new Capture(true);
+        final boolean purposeMetadataPresent=false; // This old port has no new certificate source.
     }
     static final class ActionDecision {
         String action,observationId="observed",packageName="ctrip.android.view",nodeId="date";
         ActionDecision(String value){action=value;}
     }
     static final class ObservedTargetLabels {}
+    static final class LegacyFrame {final Map<String,Object> formPurposeGeometry=null;}
+    static final class NativeAppObservation {
+        static Map<String,Object> formPurposeGeometry(PhoneObservation p){
+            if(p.purposeMetadataPresent)throw new AssertionError("new purpose capture cannot be supplied by the legacy port");
+            return null;
+        }
+    }
+    static final class NativeAppEvidence {
+        static String fingerprint(Object unused){throw new AssertionError("purpose qualification belongs to actual-class companion gates");}
+    }
+
     interface Cancellation {boolean isCancelled();}
     static final class BackgroundSession {}
     static final class NativeActionSnapshotCheck {
@@ -41,6 +53,7 @@ final class NativeFormHistoryActionHost {
     }
     final class Guard {
         final String purpose;boolean claimed;int requireClaimedCalls;
+        final LegacyFrame frame=new LegacyFrame();
         NativeAppGoal goal=flightGoal(NativeAppGoal.CTRIP_PACKAGE);
         void verifyInstalled(){if(!installed)throw new StaleObservation("installation changed");}
 
@@ -170,6 +183,7 @@ final class NativeFormHistoryActionHost {
     void actionEffectReturned(ActionWork work,Boolean accepted){returned++;events.add("returned");}
     void finishAfter(long delay,boolean accepted,String text,ActionCallback callback,ActionWork work){callback.onResult(new ActionOutcome(accepted,accepted,false,text));}
 
+    {{form_purpose_guard}}
     {{product_query_guard}}
     {{query_budget}}
     {{query_read}}

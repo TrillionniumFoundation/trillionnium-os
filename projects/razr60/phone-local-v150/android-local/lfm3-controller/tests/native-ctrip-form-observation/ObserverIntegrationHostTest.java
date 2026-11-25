@@ -38,8 +38,10 @@ public final class ObserverIntegrationHostTest {
             require((late?"post_encoding_form_pair_history":form?"pre_encoding_form_pair_history":"pre_encoding_paired_history").equals(evidence.get("mode")),scenario+": correct mode");
             require(number(result,"new_window_checks")== (late?0:1),scenario+": expected full graph or window publication check");
             if(form){
-                Map<String,Object> comparison=(Map<String,Object>)evidence.get(late?"post_encoding_form_pair_comparison":"form_pair_comparison");
-                require(comparison!=null,scenario+": full comparison recorded");
+                Map<String,Object> transport=(Map<String,Object>)evidence.get(late?"post_encoding_form_pair_comparison":"form_pair_comparison");
+                require(transport!=null,scenario+": full lossless comparison recorded");
+                Map<String,Object> comparison=NativeFormPairCodecHost.decodedEvidence(transport);
+                require(new org.json.JSONObject(evidence).toString().getBytes(StandardCharsets.UTF_8).length<=8192,scenario+": complete capture metadata byte bound");
                 if(scenario.startsWith("post_")){
                     Map<String,Object> permit=(Map<String,Object>)comparison.get("entered_open_read_permit");
                     require(permit!=null&&result.get("original_frame_id").equals(permit.get("original_observation_id")),scenario+": private entered original frame");

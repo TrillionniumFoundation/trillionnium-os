@@ -113,15 +113,24 @@ public final class NativeFormHistoryConsumersHostTest {
     static final class Pack {
         final Fixture owner;final long start,captured;final String observation=id(),tree,state;
         final NativeActionSnapshotCheckHostTest.Fixture original,second;
+        final boolean recordedPurposeFixture;
         final WindowOwnership firstWindow,secondWindow;
         final Map<String,Object> binding,first,after,receipt,metadata;
         final ObservationCaptureEvidence capture;
         final List<PhoneObservation.Node> nodes;
         final PhoneObservation observed;final NotesCompletionEvidence.Frame completion;final NativeAppEvidence.Frame frame;
         Pack(Fixture owner,long start,boolean history,boolean change)throws Exception{
+            this(owner,start,history,change,null,null);
+        }
+        /** Explicit host-only complete-census injection for the purpose-geometry gate.
+         * The original constructor and all existing fixture behavior are unchanged. */
+        Pack(Fixture owner,long start,boolean history,boolean change,
+                NativeActionSnapshotCheckHostTest.Fixture recordedFirst,NativeActionSnapshotCheckHostTest.Fixture recordedSecond)throws Exception{
             this.owner=owner;this.start=start;captured=start+100;
-            original=form();second=original.copy();
-            if(change)NativeActionSnapshotCheckHostTest.changedText(second,"0/0/7/0","22w人围观");
+            recordedPurposeFixture=recordedFirst!=null;
+            if((recordedFirst==null)!=(recordedSecond==null))throw new IllegalArgumentException("both recorded host censuses required");
+            original=recordedFirst==null?form():recordedFirst.copy();second=recordedSecond==null?original.copy():recordedSecond.copy();
+            if(change&&recordedSecond==null)NativeActionSnapshotCheckHostTest.changedText(second,"0/0/7/0","22w人围观");
             firstWindow=owner.window(start+60);secondWindow=owner.window(start+160);
             tree=NativeAppEvidence.fingerprint(original.nodes);state=hash(tree+"|synthetic hidden IME");
             binding=map();binding.put("task_id",owner.task.taskId);binding.put("owner_sha256",owner.task.goal.ownerSha256);
@@ -184,6 +193,10 @@ public final class NativeFormHistoryConsumersHostTest {
         List<PhoneObservation.Node> phoneNodes(NativeActionSnapshotCheckHostTest.Fixture f){
             List<PhoneObservation.Node> result=new ArrayList<PhoneObservation.Node>();int index=0;
             for(Map<String,Object> row:f.nodes.values()){
+                if(recordedPurposeFixture&&(!Boolean.TRUE.equals(row.get("visible"))
+                        ||!(Boolean.TRUE.equals(row.get("clickable"))||Boolean.TRUE.equals(row.get("editable"))
+                        ||Boolean.TRUE.equals(row.get("scrollable"))||!((String)row.get("text")).isEmpty()
+                        ||!((String)row.get("description")).isEmpty())))continue;
                 List<?> b=(List<?>)row.get("bounds");
                 result.add(new PhoneObservation.Node("n"+index++,(String)row.get("package"),(String)row.get("class"),(String)row.get("view_id"),
                         (String)row.get("text"),(String)row.get("description"),new Rect((Integer)b.get(0),(Integer)b.get(1),(Integer)b.get(2),(Integer)b.get(3)),

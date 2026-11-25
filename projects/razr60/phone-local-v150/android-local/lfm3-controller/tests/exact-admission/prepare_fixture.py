@@ -7,6 +7,22 @@ from pathlib import Path
 import re
 
 
+def legacy_session_parent_proof(raw):
+    """Proof copy only; actual compilation retains the current refusing type port."""
+    parent_sha="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    current_sha="8ee6f4d05dc3f71ed646215947e10c9d34b12b4354ed6920ca49b06112dd5203"
+    digest=hashlib.sha256(raw).hexdigest()
+    if digest==parent_sha:return raw
+    if digest!=current_sha:raise RuntimeError("unknown legacy Session type-port source")
+    added=(b"        // Type-only final-use projection; this guard still cannot be constructed.\n"
+           b"        final NativeAppEvidence.Frame frame=null;\n")
+    if raw.count(added)!=1:raise RuntimeError("unique exact Frame type-port addition required")
+    proof=raw.replace(added,b"",1)
+    if hashlib.sha256(proof).hexdigest()!=parent_sha:
+        raise RuntimeError("complete original refusing Session proof differs")
+    return proof
+
+
 def section(text, start, end):
     if text.count(start) != 1 or text.count(end) != 1:
         raise RuntimeError("production admission anchors are not unique")
@@ -19,7 +35,7 @@ def calendar_legacy_types(source, output, files):
     """Private, rejecting compiler shapes for this original non-calendar gate."""
     old=source/"tests/native-app/legacy-boundary/NativeAppSession.java"
     raw=old.read_bytes()
-    if files.count(old)!=1 or hashlib.sha256(raw).hexdigest()!="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd":
+    if files.count(old)!=1 or hashlib.sha256(legacy_session_parent_proof(raw)).hexdigest()!="3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd":
         raise RuntimeError("Exact original refusing Session compiler input required")
     inserted=b"""
     static final class CalendarOffer {

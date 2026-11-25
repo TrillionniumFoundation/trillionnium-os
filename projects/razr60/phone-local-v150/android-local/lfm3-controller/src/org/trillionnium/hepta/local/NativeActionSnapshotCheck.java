@@ -149,6 +149,21 @@ final class NativeActionSnapshotCheck {
         }
         Set<String> anchors=anchors(in,old,fresh,before);List<String> changed=new ArrayList<String>();
         Set<String> classified=union(anchors,homeVariations.keySet());
+        Map<String,Object> formPurposeGeometry=null;
+        boolean strictClassified=true;
+        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
+            Node x=old.nodes.get(p),y=fresh.nodes.get(p);
+            if(x!=null&&y!=null&&x.v.equals(y.v))continue;
+            if(!protectedPath(p,classified))strictClassified=false;
+        }
+        if(!strictClassified&&CTRIP.equals(in.pkg)&&(YEAR.equals(in.purpose)||QUERY.equals(in.purpose))){
+            try{
+                need(before.roots.size()==1,"one complete purpose form root");
+                formPurposeGeometry=ctripFormPurposeGeometry(old,fresh,before.roots.iterator().next());
+                requireCtripPurposeSource(formPurposeGeometry,in.purpose,in.path,old);
+                classified.add((String)formPurposeGeometry.get("header_path"));
+            }catch(IllegalArgumentException purposeRefusal){formPurposeGeometry=null;}
+        }
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
             Node x=old.nodes.get(p),y=fresh.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
             String found=null;for(String root:classified)if(p.equals(root)||under(p,root)){need(found==null,"overlapping variable anchors");found=root;}
@@ -162,6 +177,7 @@ final class NativeActionSnapshotCheck {
         out.put("protected_subtrees",new ArrayList<String>(before.roots));out.put("checked_ancestors",new ArrayList<String>(before.ancestors));
         out.put("variable_branch_anchors",new ArrayList<String>(anchors));out.put("changed_paths",changed);out.put("changed_paths_truncated",false);
         out.put("xiaomi_search_home_variations",homeVariations);out.put("fully_unoccluded_claimed",false);
+        if(formPurposeGeometry!=null)out.put("form_purpose_geometry",formPurposeGeometry);
         if(searchIconTarget(in,old)||searchEntryTarget(in,old))out.put("navigation_semantics_device_verified",false);
         if(searchEntryTarget(in,old))out.put("search_entry_original_reference_retained_fresh_signature_required",true);
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
@@ -273,6 +289,162 @@ final class NativeActionSnapshotCheck {
         out.put("envelope",snapshot.env);List<Map<String,Object>> nodes=new ArrayList<Map<String,Object>>();
         for(Node n:snapshot.nodes.values())nodes.add(n.v);out.put("nodes",nodes);return out;
     }
+    /** A separate, purpose-limited geometry proof. It never proves a header is
+     * passive or below the form. Both entire censuses and every form/ancestor
+     * value remain mandatory at the callers. Only two direct native targets are
+     * named; no header, trip tab, coordinate or scroll capability is created. */
+    static Map<String,Object> ctripFormPurposeGeometry(Snapshot old,Snapshot fresh,String formPath){
+        need(old!=null&&fresh!=null&&old.env.keySet().equals(PROFILE_ENVELOPE)
+                &&fresh.env.keySet().equals(PROFILE_ENVELOPE)&&CTRIP.equals(s(old.env,"package"))
+                &&CTRIP.equals(s(fresh.env,"package")),"purpose geometry requires complete managed Ctrip censuses");
+        need(old.nodes.keySet().equals(fresh.nodes.keySet()),"purpose geometry retains the complete same topology");
+        for(String path:old.nodes.keySet()){
+            Node a=old.node(path),z=fresh.node(path);
+            need(a.children==z.children&&a.parent.equals(z.parent)&&a.cls.equals(z.cls)&&a.view.equals(z.view)
+                    &&a.pkg.equals(z.pkg)&&i(a.v,"window_id")==i(z.v,"window_id"),"purpose geometry node identity/topology changed");
+        }
+        Node form=old.node(formPath),otherForm=fresh.node(formPath);
+        need("android.widget.LinearLayout".equals(form.cls)&&("ctrip.android.view:id/view_flight_plant_home_tab").equals(form.view)
+                &&form.usable()&&form.v.equals(otherForm.v),"actual fixed native form container");
+        Node shared=old.node(parent(formPath));
+        need("android.widget.ScrollView".equals(shared.cls)&&("ctrip.android.view:id/plant_home_scroll_root").equals(shared.view)
+                &&shared.usable()&&shared.v.equals(fresh.node(shared.path).v),"same actual form scroll parent");
+        Node date=oneId(old,CP+"tv_depart_date"),query=oneId(old,CP+"bt_submit_inquire");
+        Node trip=oneDesc(old,"单程"),round=oneDesc(old,"往返"),multi=oneDesc(old,"多程"),economy=oneDesc(old,"经济舱");
+        Node tabs=old.node(parent(trip.path));
+        need("android.widget.HorizontalScrollView".equals(tabs.cls)&&("ctrip.android.view:id/tl_inquire_view").equals(tabs.view)
+                &&tabs.children==3&&tabs.within(form)&&tabs.v.equals(fresh.node(tabs.path).v)
+                &&parent(trip.path).equals(parent(round.path))&&parent(trip.path).equals(parent(multi.path))
+                &&b(trip.v,"selected")&&!b(round.v,"selected")&&!b(multi.v,"selected")&&b(economy.v,"selected"),
+                "same explicit single-trip and economy roles");
+        need("北京".equals(oneId(old,CP+"tv_depart_city").text)&&"上海".equals(oneId(old,CP+"tv_arrival_city").text)
+                &&"1成人".equals(oneId(old,CP+"tv_adult_count").text)&&"0儿童".equals(oneId(old,CP+"tv_child_count").text)
+                &&"0婴儿".equals(oneId(old,CP+"tv_baby_count").text),"supported actual form semantic inputs");
+        Matcher dateLiteral=DATE.matcher(date.text);
+        need(dateLiteral.matches()&&date.click()&&query.click()&&"查 询".equals(query.text)
+                &&date.children==0&&query.children==0&&date.within(form)&&query.within(form),"same actual leaf date/query targets");
+        LocalDate.of(2000,Integer.parseInt(dateLiteral.group(1)),Integer.parseInt(dateLiteral.group(2)));
+        List<Map<String,Object>> protectedValues=new ArrayList<Map<String,Object>>();
+        for(Node node:old.nodes.values())if(node.path.equals(formPath)||under(node.path,formPath)){
+            need(node.v.equals(fresh.node(node.path).v),"purpose geometry changed complete form node");
+            protectedValues.add(node.v);
+        }
+        String ancestor=formPath;
+        while(true){
+            need(old.node(ancestor).v.equals(fresh.node(ancestor).v),"purpose geometry changed actual ancestor");
+            if("0".equals(ancestor))break;ancestor=parent(ancestor);
+        }
+        Node header=null;
+        for(Node node:old.nodes.values())if(!"0".equals(node.path)&&parent(node.path).equals(parent(formPath))
+                &&"androidx.viewpager.widget.ViewPager".equals(node.cls)
+                &&node.bounds.get(1)<form.bounds.get(1)&&intersects(node.bounds,tabs.bounds)){
+            need(header==null,"ambiguous form header region");header=node;
+        }
+        need(header!=null&&header.usable()&&header.view.isEmpty()&&header.children==3
+                &&header.text.isEmpty()&&header.desc.isEmpty()&&header.v.equals(fresh.node(header.path).v)
+                &&header.bounds.get(3)<=tabs.bounds.get(3)&&contains(shared.bounds,header.bounds)
+                &&b(header.v,"scrollable")&&!b(header.v,"clickable")&&!b(header.v,"action_click")
+                &&neutralFlags(header)&&header.v.get("input_sha256")==null
+                &&"hepta.observed-ime-enter.v1|true|false|null".equals(s(header.v,"ime_enter"))
+                &&"hepta.observed-scroll-actions.v1|observed|forward|backward".equals(s(header.v,"scroll_actions")),
+                "fixed observed header geometry and metadata required");
+        boolean moved=false;
+        for(int slot=0;slot<header.children;slot++){
+            String childPath=header.path+"/"+slot;Node page=old.node(childPath);
+            need("android.widget.RelativeLayout".equals(page.cls)&&page.view.isEmpty()&&page.children==2
+                    &&page.text.isEmpty()&&page.desc.isEmpty(),"complete observed header page slots");
+            Node image=old.node(childPath+"/0"),label=old.node(childPath+"/1");
+            need("android.widget.ImageView".equals(image.cls)&&image.view.isEmpty()&&image.children==0
+                    &&image.text.isEmpty()&&"广告素材".equals(image.desc),"observed header image leaf");
+            need("android.widget.TextView".equals(label.cls)&&(CP+"label_text").equals(label.view)&&label.children==0
+                    &&"活动".equals(label.text)&&label.desc.isEmpty(),"observed header label leaf");
+            for(Node a:Arrays.asList(page,image,label)){
+                Node z=fresh.node(a.path);
+                need(sameExcept(a,z,"bounds","visible","label","ref_signature_sha256")
+                        &&a.bounds.get(1).equals(z.bounds.get(1))&&a.bounds.get(3).equals(z.bounds.get(3)),
+                        "only same-slot horizontal geometry and derived projections may vary");
+                for(Node n:Arrays.asList(a,z)){
+                    need(n.bounds.get(1)>=header.bounds.get(1)&&n.bounds.get(3)<=header.bounds.get(3)
+                            &&n.bounds.get(3)>n.bounds.get(1)&&b(n.v,"enabled")&&neutralFlags(n)
+                            &&!b(n.v,"scrollable")&&!b(n.v,"clickable")&&!b(n.v,"action_click")
+                            &&n.v.get("input_sha256")==null&&"hepta.observed-scroll-actions.v1|observed".equals(s(n.v,"scroll_actions"))
+                            &&"hepta.observed-ime-enter.v1|true|false|null".equals(s(n.v,"ime_enter")),
+                            "observed header facts or vertical extent changed");
+                    boolean positive=n.bounds.get(2)>n.bounds.get(0);
+                    need(!b(n.v,"visible")||positive,"visible header geometry is not positive");
+                    // A child may extend outside its immediate layout while still
+                    // wholly inside the fixed pager. No clipping assumption is made.
+                    need(!positive||contains(header.bounds,n.bounds),"header descendant escapes the fixed geometry");
+                    if("android.widget.RelativeLayout".equals(n.cls)){
+                        need(n.label==null&&n.v.get("ref_signature_sha256")==null,"unretained structural page cannot supply a reference");
+                    }else if(n.visible()){
+                        need(sha(nullable(n.v,"ref_signature_sha256"))
+                                &&(n.text.isEmpty()?n.desc:n.text).equals(n.label),"same visible header label projection");
+                    }else need(n.label==null&&n.v.get("ref_signature_sha256")==null,"hidden header cannot supply a retained label/reference");
+                }
+                moved|=!a.v.equals(z.v);
+            }
+        }
+        need(moved,"purpose geometry is not a generic substitute for the strict path");
+        List<String> separated=new ArrayList<String>();
+        for(Node node:old.nodes.values())if(under(node.path,formPath)
+                &&!node.path.equals(tabs.path)&&!under(node.path,tabs.path)){
+            Node z=fresh.node(node.path);
+            need(!intersects(header.bounds,node.bounds)&&!intersects(header.bounds,z.bounds),
+                    "header intersects a non-trip form field");
+            separated.add(node.path);
+        }
+        for(Snapshot snapshot:Arrays.asList(old,fresh))for(Node target:Arrays.asList(date,query))
+            for(Node node:snapshot.nodes.values()){
+                if(node.path.equals(target.path)||under(target.path,node.path))continue;
+                if(node.bounds.get(2)>node.bounds.get(0)&&node.bounds.get(3)>node.bounds.get(1))
+                    need(!intersects(node.bounds,target.bounds),"reported node geometry intersects the complete action target");
+            }
+        Map<String,Object> targets=new TreeMap<String,Object>();
+        targets.put(YEAR,ctripPurposeTarget(date));targets.put(QUERY,ctripPurposeTarget(query));
+        Map<String,Object> binding=new TreeMap<String,Object>(old.env);
+        for(String key:Arrays.asList("captured_elapsed_ms","visited","origin_observation_id"))binding.remove(key);
+        Map<String,Object> out=new TreeMap<String,Object>();
+        out.put("schema","hepta.ctrip-form-purpose-geometry.v1");out.put("envelope_binding",binding);
+        out.put("source_origin_observation_id",old.env.get("origin_observation_id"));
+        out.put("first_nodes_sha256",nodeValuesSha(old));out.put("second_nodes_sha256",nodeValuesSha(fresh));
+        out.put("form_path",formPath);out.put("trip_group_path",tabs.path);out.put("header_path",header.path);
+        out.put("header_bounds",header.bounds);out.put("separated_nontrip_paths",separated);out.put("targets",targets);
+        out.put("complete_form_nodes_sha256",hash(canonical(protectedValues)));out.put("complete_form_node_count",protectedValues.size());
+        out.put("direct_native_node_only",true);out.put("header_actions_authorized",false);out.put("trip_tab_actions_authorized",false);
+        out.put("header_action_set_proved",false);out.put("drawing_order_proved",false);
+        out.put("fully_unoccluded_pixels_claimed",false);out.put("grants_dispatch",false);return freeze(out);
+    }
+    private static Map<String,Object> ctripPurposeTarget(Node n){
+        need(n.click()&&sha(nullable(n.v,"ref_signature_sha256"))&&n.label!=null&&!n.label.isEmpty(),"actual original purpose target reference");
+        Map<String,Object> out=new TreeMap<String,Object>();
+        for(String key:Arrays.asList("path","parent_class","package","window_id","class","view_id","text","description","label","bounds","ref_signature_sha256"))
+            out.put(key,n.v.get(key));
+        return out;
+    }
+    private static String nodeValuesSha(Snapshot snapshot){
+        List<Map<String,Object>> rows=new ArrayList<Map<String,Object>>();
+        for(Node node:snapshot.nodes.values())rows.add(node.v);return hash(canonical(rows));
+    }
+    /** The capture constraint does not refresh a frame. It must bind the exact
+     * original complete node values and the same private action purpose/ref. */
+    static void requireCtripPurposeSource(Map<String,Object> proof,String purpose,String path,Snapshot original){
+        need(proof!=null&&"hepta.ctrip-form-purpose-geometry.v1".equals(proof.get("schema"))
+                &&Arrays.asList(YEAR,QUERY).contains(purpose)&&original!=null,"original purpose geometry constraint required");
+        Object observation=proof.containsKey("planning_observation_id")?proof.get("planning_observation_id"):proof.get("source_origin_observation_id");
+        need(original.env.get("origin_observation_id").equals(observation),"purpose constraint belongs to another observation");
+        Map<String,Object> binding=new TreeMap<String,Object>(original.env);
+        for(String key:Arrays.asList("captured_elapsed_ms","visited","origin_observation_id"))binding.remove(key);
+        need(canonical(binding).equals(canonical(copy(proof.get("envelope_binding"),0)))&&nodeValuesSha(original).equals(proof.get("first_nodes_sha256")),
+                "purpose constraint is not the original complete census");
+        Object value=proof.get("targets");need(value instanceof Map,"exact purpose targets required");
+        Object target=((Map<?,?>)value).get(purpose);
+        need(target instanceof Map&&path.equals(((Map<?,?>)target).get("path"))
+                &&ctripPurposeTarget(original.node(path)).equals(target),"original purpose/path/full reference differs");
+        need(Boolean.TRUE.equals(proof.get("direct_native_node_only"))&&Boolean.FALSE.equals(proof.get("grants_dispatch")),
+                "purpose constraint cannot grant direct dispatch");
+    }
+
     private static final class Scope {
         final Set<String> roots=new TreeSet<String>(),ancestors=new TreeSet<String>();final Map<String,Object> facts=new TreeMap<String,Object>();
         void protect(Snapshot s,String path){Node n=s.node(path);need(n.usable(),"visible actual semantic container");roots.add(path);String p=path;

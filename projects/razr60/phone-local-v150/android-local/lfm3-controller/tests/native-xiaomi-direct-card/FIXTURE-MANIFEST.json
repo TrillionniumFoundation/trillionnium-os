@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.xiaomi-direct-card-real-fixtures.v1",
+  "task_id": "259b87f726b340f79dfb7388e6c5a269",
+  "installed_head": "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
+  "installed_apk_sha256": "5fac5ebfe95e0206cbe8824c5fafd143f3cdd9c069f92737dcb69cc5767b3bcf",
+  "observations": [
+    "572304edf78a4ba89228579022176658",
+    "56f9d4f20b0044ac93059628dd9f3913",
+    "aeff5d24618b4a2f9ec9ff9ad3392e67"
+  ],
+  "files": [
+    {
+      "name": "56f9d4f20b0044ac93059628dd9f3913-native-ax.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/56f9d4f20b0044ac93059628dd9f3913-native-ax.json",
+        "bytes": 100096,
+        "sha256": "7702f976a6806dc574b4852362fe7ef20c68c6e10143c8fb1f82508b1bdd5477",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/56f9d4f20b0044ac93059628dd9f3913-native-ax.json",
+        "bytes": 100096,
+        "sha256": "7702f976a6806dc574b4852362fe7ef20c68c6e10143c8fb1f82508b1bdd5477",
+        "mode": 420
+      }
+    },
+    {
+      "name": "572304edf78a4ba89228579022176658-native-ax.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/572304edf78a4ba89228579022176658-native-ax.json",
+        "bytes": 100102,
+        "sha256": "3307b70efd29c46762c3f5e3cb7be9e973f105d54e3d754f55821bbd3412f525",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/572304edf78a4ba89228579022176658-native-ax.json",
+        "bytes": 100102,
+        "sha256": "3307b70efd29c46762c3f5e3cb7be9e973f105d54e3d754f55821bbd3412f525",
+        "mode": 420
+      }
+    },
+    {
+      "name": "aeff5d24618b4a2f9ec9ff9ad3392e67-native-ax.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/aeff5d24618b4a2f9ec9ff9ad3392e67-native-ax.json",
+        "bytes": 100096,
+        "sha256": "bfa1906d4b2badcbef1dcb393dc28312ca75bc699237487fa757b610f2f9053d",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/aeff5d24618b4a2f9ec9ff9ad3392e67-native-ax.json",
+        "bytes": 100096,
+        "sha256": "bfa1906d4b2badcbef1dcb393dc28312ca75bc699237487fa757b610f2f9053d",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-frame-56f9d4f20b0044ac93059628dd9f3913.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-frame-56f9d4f20b0044ac93059628dd9f3913.json",
+        "bytes": 85470,
+        "sha256": "6802c83207b53027d9ef746b6427a53353c8bbd98b38b06b95e67bc0243a71fe",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-frame-56f9d4f20b0044ac93059628dd9f3913.json",
+        "bytes": 85470,
+        "sha256": "6802c83207b53027d9ef746b6427a53353c8bbd98b38b06b95e67bc0243a71fe",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-frame-572304edf78a4ba89228579022176658.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-frame-572304edf78a4ba89228579022176658.json",
+        "bytes": 85469,
+        "sha256": "95a276dd5dd01df6016da8e6f24c7281784b668fe27b8fd4e0ee2944f27383c5",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-frame-572304edf78a4ba89228579022176658.json",
+        "bytes": 85469,
+        "sha256": "95a276dd5dd01df6016da8e6f24c7281784b668fe27b8fd4e0ee2944f27383c5",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-frame-aeff5d24618b4a2f9ec9ff9ad3392e67.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-frame-aeff5d24618b4a2f9ec9ff9ad3392e67.json",
+        "bytes": 85469,
+        "sha256": "1924ef0d02e02a8bf6f6e31daa64c066e770d432748f2ccbcd544106f88627ba",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-frame-aeff5d24618b4a2f9ec9ff9ad3392e67.json",
+        "bytes": 85469,
+        "sha256": "1924ef0d02e02a8bf6f6e31daa64c066e770d432748f2ccbcd544106f88627ba",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-page-0003.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-page-0003.json",
+        "bytes": 337097,
+        "sha256": "4af2580bc868472215dd74124d36bf25100d5682f0f61f5ce482a02600a272c4",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-page-0003.json",
+        "bytes": 337097,
+        "sha256": "4af2580bc868472215dd74124d36bf25100d5682f0f61f5ce482a02600a272c4",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-page-0004.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-page-0004.json",
+        "bytes": 337097,
+        "sha256": "a349c1e15ee3fc094779f443e5f8e876c9b1801cbbd6de743319a47304440e43",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-page-0004.json",
+        "bytes": 337097,
+        "sha256": "a349c1e15ee3fc094779f443e5f8e876c9b1801cbbd6de743319a47304440e43",
+        "mode": 420
+      }
+    },
+    {
+      "name": "native-app-page-0005.json",
+      "source": {
+        "path": "/home/alex/hepta-razr-resume-20261121-c98f4b30-r1/nov22-current-operator-retest/259b87f726b340f79dfb7388e6c5a269-raw/native-app-page-0005.json",
+        "bytes": 337097,
+        "sha256": "d70a1b983ad8674ebde0c0c84f5bb83a26a8072f2a4f5fc1126e264d0578b6ab",
+        "mode": 384
+      },
+      "fixture": {
+        "path": "/home/alex/hepta-razr-xiaomi-direct-card-20261125-56dad1-model/source/tests/native-xiaomi-direct-card/fixtures/native-app-page-0005.json",
+        "bytes": 337097,
+        "sha256": "d70a1b983ad8674ebde0c0c84f5bb83a26a8072f2a4f5fc1126e264d0578b6ab",
+        "mode": 420
+      }
+    }
+  ],
+  "fixtures_are_exact_archived_bytes": true,
+  "phone_operations": 0,
+  "task_business_success": false,
+  "purchase_or_detail_price_proved": false
+}

@@ -270,6 +270,15 @@ def generate(source,output):
             or actual_branch.replace(history_condition,form_condition,1)!=form_branch
             or form_branch.replace(form_condition,legacy_condition,1)!=branch):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
+    # New purpose geometry remains a separately qualified native guard even
+    # when the whole-tree digest matches. Reverse only this exact predicate
+    # in the proof copy; the complete production observer below is unchanged.
+    planning_branch=actual_branch
+    purpose_condition='}else if(expected.capture!=null&&expected.capture.planningHistory()||formPurposeGeometry!=null||!graph.digest.equals(now.digest)){'
+    actual_branch=planning_branch.replace(history_condition,purpose_condition,1)
+    if (actual_branch.count(purpose_condition)!=1
+            or actual_branch.replace(purpose_condition,history_condition,1)!=planning_branch):
+        raise RuntimeError('purpose call-site inverse must preserve the complete planning-history guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     callback='callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));'
     if service.count(callback)!=1:raise RuntimeError('actual action callback must consume diagnostic evidence')
@@ -286,6 +295,7 @@ def generate(source,output):
         'sources':{'service':meta(source/PKG/'HeptaAccessibilityService.java'),'controller':meta(source/PKG/'LocalTaskController.java')},
         'methods':{name:{'bytes':len(value.encode()),'sha256':sha(value.encode())} for name,value in {**parts,**methods}.items()},
         'stale_refusal_callsite':{'bytes':len(actual_branch.encode()),'sha256':sha(actual_branch.encode())},
+        'stale_refusal_purpose_geometry_inverse':{'bytes':len(planning_branch.encode()),'sha256':sha(planning_branch.encode()),'exact_inverse':True,'proof_copy_only':True,'native_action_guard_qualification_claimed':False},
         'stale_refusal_legacy_inverse':{'bytes':len(branch.encode()),'sha256':sha(branch.encode()),'exact_inverse':True},
         'stale_refusal_form_history_inverse':{'bytes':len(form_branch.encode()),'sha256':sha(form_branch.encode()),'exact_inverse':True},
         'planning_history_kind_predicates':{'bytes':len(history_predicates.encode()),'sha256':sha(history_predicates.encode()),'exact_form_or_input_only':True},

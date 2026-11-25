@@ -8,6 +8,8 @@ public final class JSONObject {
     public static final Object NULL=new Object();
     private final Map<String,Object> fields=new LinkedHashMap<String,Object>();
     public JSONObject(){}
+    /** Signature-only legacy port; pixel proof decoding must use actual org.json gates. */
+    public JSONObject(JSONTokener input)throws JSONException{throw new AssertionError("JSONTokener construction is outside legacy qualification fixtures");}
     public JSONObject(String raw)throws JSONException{Object value=FixtureJson.read(raw);if(!(value instanceof Map<?,?>))throw new JSONException("object required");for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet())fields.put((String)e.getKey(),e.getValue()==null?NULL:e.getValue());}
     public String getString(String key)throws JSONException{Object value=get(key);if(!(value instanceof String))throw new JSONException("string required");return (String)value;}
     public int getInt(String key)throws JSONException{return ((Number)get(key)).intValue();}public long getLong(String key)throws JSONException{return ((Number)get(key)).longValue();}
@@ -30,6 +32,7 @@ public final class JSONObject {
     }
     public int optInt(String key,int fallback){Object value=opt(key);return value instanceof Number?((Number)value).intValue():fallback;}
     public long optLong(String key,long fallback){Object value=opt(key);return value instanceof Number?((Number)value).longValue():fallback;}
+    public boolean optBoolean(String key){return optBoolean(key,false);}
     public boolean optBoolean(String key,boolean fallback){Object value=fields.get(key);return value instanceof Boolean?(Boolean)value:fallback;}
     public Object opt(String key){try{return get(key);}catch(JSONException missing){return null;}}
     public String optString(String key){return optString(key,"");}

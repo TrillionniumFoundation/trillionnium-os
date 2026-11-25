@@ -73,16 +73,20 @@ def main():
     helper = source / TEST / "protected_canonical_reuse.py"
     capture = source / PKG / "ObservationCaptureEvidence.java"
     fixture = source / "tests/native-xiaomi-search-input/real-censuses.json"
-    need(meta(capture)["sha256"] == CURRENT_SHA, "exact reviewed current capture source")
+    purpose_inverse = source / "tests/native-ctrip-purpose-geometry/protected_ctrip_form_purpose.py"
+    need(meta(purpose_inverse)["sha256"] == "5316f04448deb3523076e4c0ccc7ac7dd1cc929f1ff7593034738ddb66a446fe", "exact Ctrip purpose proof inverse required")
+    purpose_predecessor = runpy.run_path(str(purpose_inverse))["restore_w5_form_purpose"]
     need(meta(jar)["sha256"] == JSON_SHA and meta(jar)["bytes"] == 78332, "actual JSON dependency pin")
     need(meta(fixture)["sha256"] == FIXTURE_SHA, "exact existing non-private recorded fixture")
     predecessor = runpy.run_path(str(helper))["predecessor"]
     current = capture.read_bytes()
-    baseline = predecessor(current)
+    purpose_parent = purpose_predecessor(str(PKG / "ObservationCaptureEvidence.java"), current)
+    need(sha(purpose_parent) == CURRENT_SHA, "complete reviewed W5 capture predecessor")
+    baseline = predecessor(purpose_parent)
     need(sha(baseline) == BASE_SHA and predecessor(baseline) == baseline, "complete baseline inverse")
     try:
-        predecessor(b"?" + current[1:])
-    except RuntimeError:
+        predecessor(purpose_predecessor(str(PKG / "ObservationCaptureEvidence.java"), b"?" + current[1:]))
+    except (RuntimeError, ValueError):
         pass
     else:
         raise RuntimeError("unknown capture byte change was accepted")
@@ -94,7 +98,7 @@ def main():
                source / "tests/native-ctrip-form-observation/FormPairHostTest.java",
                source / "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
                source / TEST / "AxCanonicalReuseHost.java"]
-    paths = [capture, helper, fixture, source / TEST / "run_host.py", *shared]
+    paths = [capture, helper, purpose_inverse, fixture, source / TEST / "run_host.py", *shared]
     tools = [jdk / "bin/java", jdk / "bin/javac", jdk / "lib/modules", jdk / "lib/ct.sym", jar]
     before, tool_before = [meta(p) for p in paths], [meta(p) for p in tools]
     out.mkdir(mode=0o700)
@@ -103,6 +107,7 @@ def main():
         env.pop(key, None)
     result = dict(schema="hepta.ax-canonical-reuse-host-gate.v1", all_pass=False,
                   source=str(source), input_before=before, tools_before=tool_before, stages=[], variants={},
+                  actual_capture_sha256=sha(current), complete_w5_capture_proof_sha256=sha(purpose_parent),
                   phone_operations=0, android_execution=False, model_executed=False,
                   phone_latency_improvement_claimed=False, deadline_changed=False, durability_changed=False,
                   publication_fences_changed=False, full_census_checks_removed=False,
