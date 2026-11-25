@@ -1,0 +1,224 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/** Actual captured-label methods and NodeRef/PhoneObservation.Node, with explicit
+ * synthetic Android getter values. This does not run Android readGraph, create a
+ * current window proof, infer missing event metadata, or dispatch an action. */
+final class CapturedCtripLabelHost {
+    static final class HeptaAccessibilityService {
+        interface Cancellation { boolean isCancelled(); }
+    }
+    static final class Rect {
+        int left,top,right,bottom;
+        Rect(){}
+        Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}
+        Rect(Rect r){this(r.left,r.top,r.right,r.bottom);}
+        public String toString(){return "Rect("+left+", "+top+" - "+right+", "+bottom+")";}
+    }
+    static final class RawNode {
+        final Map<String,Object> values;
+        int obtained,recycled;
+        RawNode(Map<String,Object> v){values=Collections.unmodifiableMap(new TreeMap<String,Object>(v));}
+    }
+    static final class AccessibilityNodeInfo {
+        static final int ACTION_CLICK=16,ACTION_LONG_CLICK=32,ACTION_SET_TEXT=2097152,
+                ACTION_SCROLL_FORWARD=4096,ACTION_SCROLL_BACKWARD=8192;
+        static final class AccessibilityAction {
+            static final AccessibilityAction ACTION_SCROLL_UP=new AccessibilityAction(16908344),
+                    ACTION_SCROLL_DOWN=new AccessibilityAction(16908345),
+                    ACTION_SCROLL_LEFT=new AccessibilityAction(16908346),
+                    ACTION_SCROLL_RIGHT=new AccessibilityAction(16908347);
+            final int id;AccessibilityAction(int value){id=value;}int getId(){return id;}
+        }
+        final RawNode data;boolean released;
+        AccessibilityNodeInfo(RawNode value){data=value;data.obtained++;}
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo original){
+            original.requireLive();return new AccessibilityNodeInfo(original.data);
+        }
+        void requireLive(){if(released)throw new AssertionError("synthetic node already released");}
+        Object value(String key){requireLive();return data.values.get(key);}
+        String text(String key){return (String)value(key);}
+        boolean flag(String key){return Boolean.TRUE.equals(value(key));}
+        void recycle(){requireLive();released=true;data.recycled++;}
+        boolean refresh(){throw new AssertionError("captured label reduction must not refresh Android nodes");}
+        AccessibilityNodeInfo getChild(int index){throw new AssertionError("captured labels must use closed BFS facts, not child IO");}
+        boolean performAction(int action){throw new AssertionError("read-only captured-label fixture cannot dispatch");}
+        CharSequence getPackageName(){return text("package");}
+        CharSequence getClassName(){return text("class");}
+        String getViewIdResourceName(){return text("view_id");}
+        CharSequence getText(){return text("text");}
+        CharSequence getContentDescription(){return text("description");}
+        int getWindowId(){return ((Number)value("window_id")).intValue();}
+        int getChildCount(){return ((Number)value("children")).intValue();}
+        // These fields are absent from the private census; their values are
+        // explicitly synthetic fixture conditions, never reconstructed facts.
+        int getInputType(){return 0;}
+        boolean isLongClickable(){return false;}
+        boolean isPassword(){return flag("password");}
+        boolean isVisibleToUser(){return flag("visible");}
+        boolean isEnabled(){return flag("enabled");}
+        boolean isClickable(){return flag("clickable");}
+        boolean isEditable(){return flag("editable");}
+        boolean isScrollable(){return flag("scrollable");}
+        boolean isFocused(){return flag("focused");}
+        boolean isSelected(){return flag("selected");}
+        boolean isCheckable(){return flag("checkable");}
+        boolean isChecked(){return flag("checked");}
+        void getBoundsInScreen(Rect rect){
+            List<?> b=(List<?>)value("bounds");
+            rect.left=((Number)b.get(0)).intValue();rect.top=((Number)b.get(1)).intValue();
+            rect.right=((Number)b.get(2)).intValue();rect.bottom=((Number)b.get(3)).intValue();
+        }
+        List<AccessibilityAction> getActionList(){
+            List<AccessibilityAction> result=new ArrayList<AccessibilityAction>();
+            if(flag("action_click"))result.add(new AccessibilityAction(ACTION_CLICK));
+            ObservedScrollActions scroll=scroll(text("scroll_actions"));
+            for(String direction:scroll.directions){
+                int id="forward".equals(direction)?ACTION_SCROLL_FORWARD:"backward".equals(direction)?ACTION_SCROLL_BACKWARD:
+                        "up".equals(direction)?AccessibilityAction.ACTION_SCROLL_UP.getId():
+                        "down".equals(direction)?AccessibilityAction.ACTION_SCROLL_DOWN.getId():
+                        "left".equals(direction)?AccessibilityAction.ACTION_SCROLL_LEFT.getId():
+                        AccessibilityAction.ACTION_SCROLL_RIGHT.getId();
+                result.add(new AccessibilityAction(id));
+            }
+            return result;
+        }
+    }
+    static final class PhoneObservation {
+{{phone_node}}
+    }
+    static final class Graph {
+        final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
+        final Map<String,NodeRef> refs=new LinkedHashMap<String,NodeRef>();
+        List<NativeActionSnapshotCheck.Node> nativeActionBuilding=new ArrayList<NativeActionSnapshotCheck.Node>();
+        int nativeActionBytes;
+{{close_graph}}
+    }
+    static final class NativeAppEvidence {
+{{evidence_sha}}
+{{evidence_hash}}
+    }
+{{stale}}
+{{graph_budget}}
+{{label_fact}}
+{{captured_labels}}
+{{node_ref}}
+{{capture_fact}}
+{{apply_labels}}
+{{recycle_references}}
+{{base_signature}}
+{{has_action}}
+{{check_budget}}
+    static String string(CharSequence value){return value==null?"":value.toString();}
+    static String sha(byte[] bytes){
+        try{
+            MessageDigest md=MessageDigest.getInstance("SHA-256");
+            StringBuilder out=new StringBuilder();for(byte b:md.digest(bytes))out.append(String.format(Locale.ROOT,"%02x",b&255));
+            return out.toString();
+        }catch(java.security.NoSuchAlgorithmException impossible){throw new AssertionError(impossible);}
+    }
+    private static ObservedImeEnter readImeEnter(AccessibilityNodeInfo node){
+        throw new AssertionError("fixture must supply the complete archived IME value explicitly");
+    }
+    private static String inputTextHash(AccessibilityNodeInfo node){
+        throw new AssertionError("fixture must supply the archived input hash explicitly");
+    }
+    static ObservedScrollActions scroll(String fingerprint){
+        String prefix=ObservedScrollActions.SCHEMA+"|observed";
+        if((ObservedScrollActions.SCHEMA+"|unknown").equals(fingerprint))return ObservedScrollActions.UNKNOWN;
+        if(!fingerprint.startsWith(prefix))throw new AssertionError("unrecognised archived scroll value");
+        if(fingerprint.equals(prefix))return ObservedScrollActions.observed(Collections.<String>emptyList());
+        if(fingerprint.charAt(prefix.length())!='|')throw new AssertionError("unrecognised scroll separator");
+        return ObservedScrollActions.observed(Arrays.asList(fingerprint.substring(prefix.length()+1).split("\\|")));
+    }
+    static ObservedImeEnter ime(String fingerprint){
+        if(ObservedImeEnter.ABSENT.fingerprintInput().equals(fingerprint))return ObservedImeEnter.ABSENT;
+        if(ObservedImeEnter.UNKNOWN.fingerprintInput().equals(fingerprint))return ObservedImeEnter.UNKNOWN;
+        throw new AssertionError("unsupported archived IME fixture shape");
+    }
+    static void need(boolean value,String reason){if(!value)throw new AssertionError(reason);}
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> derive(List<Map<String,Object>> raw,String omitPath){
+        final Graph graph=new Graph();final List<RawNode> values=new ArrayList<RawNode>();
+        NativeSearchCapturedLabels facts=new NativeSearchCapturedLabels();
+        Map<String,Object> result=new LinkedHashMap<String,Object>();int characters=0;
+        try{
+            for(Map<String,Object> row:raw){
+                RawNode stored=new RawNode(row);values.add(stored);
+                AccessibilityNodeInfo node=new AccessibilityNodeInfo(stored);
+                try{
+                    String path=(String)row.get("path"),parent=(String)row.get("parent_class");
+                    if(!path.equals(omitPath))facts.add(captureNativeSearchLabelFact(node,path,parent));
+                    graph.nativeActionBuilding.add(new NativeActionSnapshotCheck.Node(row));
+                    // Original ref presence records retention. No new action target
+                    // or retention membership is inferred from label text.
+                    if(row.get("ref_signature_sha256")!=null){
+                        String id="n"+graph.rows.size();
+                        ObservedChildText.Result initial=ObservedChildText.notApplicable();
+                        ObservedScrollActions scroll=scroll((String)row.get("scroll_actions"));
+                        ObservedImeEnter ime=ime((String)row.get("ime_enter"));
+                        String input=(String)row.get("input_sha256");
+                        NodeRef reference=new NodeRef(node,initial,scroll,ime,input);
+                        graph.refs.put(id,reference);
+                        Rect bounds=new Rect();node.getBoundsInScreen(bounds);
+                        PhoneObservation.Node retained=new PhoneObservation.Node(id,(String)row.get("package"),
+                                (String)row.get("class"),(String)row.get("view_id"),(String)row.get("text"),
+                                (String)row.get("description"),bounds,(Boolean)row.get("clickable"),(Boolean)row.get("editable"),
+                                (Boolean)row.get("scrollable"),(Boolean)row.get("enabled"),(Boolean)row.get("focused"),
+                                (Boolean)row.get("password"),initial,scroll,ime,input,false,reference.appTreeSignature,
+                                path,parent,(Boolean)row.get("selected"),(Boolean)row.get("checkable"),(Boolean)row.get("checked"));
+                        graph.rows.add(retained);characters+=retained.text.length()+retained.description.length();
+                    }
+                }finally{node.recycle();}
+            }
+            facts.complete(raw.size(),0,false);
+            final int[] budgetChecks={0};GraphBudget budget=new GraphBudget(){public void check(){budgetChecks[0]++;}};
+            StringBuilder signatures=new StringBuilder("uncommitted");
+            int returned=new CapturedCtripLabelHost().applyNativeSearchCapturedLabels(graph,facts,budget,characters,32768,signatures);
+            Map<String,PhoneObservation.Node> rowsByPath=new LinkedHashMap<String,PhoneObservation.Node>();
+            for(PhoneObservation.Node row:graph.rows)rowsByPath.put(row.nativeTreePath,row);
+            List<Map<String,Object>> census=new ArrayList<Map<String,Object>>();
+            List<Map<String,Object>> labels=new ArrayList<Map<String,Object>>();
+            int changed=0;
+            for(int i=0;i<raw.size();i++){
+                Map<String,Object> original=raw.get(i),actual=graph.nativeActionBuilding.get(i).v;
+                Map<String,Object> originalFixed=new TreeMap<String,Object>(original),actualFixed=new TreeMap<String,Object>(actual);
+                for(String key:Arrays.asList("label","ref_signature_sha256")){originalFixed.remove(key);actualFixed.remove(key);}
+                need(originalFixed.equals(actualFixed),"all complete raw node facts outside label/ref must stay identical");
+                if(!original.equals(actual))changed++;
+                PhoneObservation.Node retained=rowsByPath.get(actual.get("path"));
+                if(retained!=null){
+                    NodeRef ref=graph.refs.get(retained.id);
+                    need(ref!=null&&retained.observedAppTreeSignature.equals(ref.appTreeSignature),"retained row and actual new NodeRef bind together");
+                    need(NativeAppEvidence.hash(ref.signature).equals(actual.get("ref_signature_sha256")),"native census must use the same actual copied NodeRef");
+                    if("derived".equals(retained.childText.status))
+                        need(ObservedTargetLabels.project(retained.label()).equals(actual.get("label")),"derived published label matches native census");
+                    Map<String,Object> label=new LinkedHashMap<String,Object>();label.put("path",retained.nativeTreePath);
+                    label.put("status",retained.childText.status);label.put("label",actual.get("label"));
+                    label.put("reference_sha256",actual.get("ref_signature_sha256"));labels.add(label);
+                }else need(original.equals(actual),"unretained raw rows remain byte-value equal");
+                census.add(actual);
+            }
+            result.put("nodes",census);result.put("retained_labels",labels);
+            result.put("complete_node_count",census.size());result.put("retained_count",graph.rows.size());
+            result.put("changed_label_reference_rows",changed);result.put("text_characters",returned);
+            result.put("native_bytes",graph.nativeActionBytes);result.put("budget_checks",budgetChecks[0]);
+            result.put("signatures_nonempty",signatures.length()>0);result.put("all_non_label_ref_facts_unchanged",true);
+            result.put("synthetic_missing_metadata",Arrays.asList("input_type=0","long_clickable=false","ACTION_LONG_CLICK/ACTION_SET_TEXT absent"));
+            result.put("original_raw_nodes_not_modified",true);result.put("android_bfs_execution_claimed",false);
+        }finally{
+            graph.close();int obtained=0,recycled=0;
+            for(RawNode node:values){need(node.obtained==node.recycled,"all synthetic Android references released");obtained+=node.obtained;recycled+=node.recycled;}
+            result.put("references_obtained",obtained);result.put("references_recycled",recycled);
+            result.put("all_references_closed",true);result.put("nested_refresh_or_child_io",0);result.put("effects",0);
+        }
+        return result;
+    }
+}

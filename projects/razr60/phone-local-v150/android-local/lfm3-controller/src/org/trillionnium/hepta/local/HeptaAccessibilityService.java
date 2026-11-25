@@ -251,7 +251,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean content=type==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
                 ||type==AccessibilityEvent.TYPE_VIEW_SCROLLED||type==AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED;
         noteObservationEvent(android.os.Build.VERSION.SDK_INT>=33?event.getDisplayId():-1,
-                event.getWindowId(),string(event.getPackageName()),content);
+                event.getWindowId(),string(event.getPackageName()),content,type);
     }
     @Override public void onInterrupt() {
         requestStop();
@@ -709,17 +709,133 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return value==null?null:new LinkedHashMap<String,Object>(value);
         }
     }
+    /** Copied bounded diagnostics only. No request, Graph, SDK event or node is retained. */
+    private static final class CtripReadDiagnostic {
+        private static final int FIRST_EVENTS=2,LAST_EVENTS=2,MAX_BYTES=4096;
+        private boolean finished;private long outerRecords,helperRecords,eventRecords,rejectedRecords;
+        private Map<String,Object> firstOuter,lastOuter,lastPrecheck,firstHelper,lastHelper,lastHelperProgress;
+        private final List<List<Long>> firstEvents=new ArrayList<List<Long>>();
+        private final List<List<Long>> lastEvents=new ArrayList<List<Long>>();
+        synchronized void finish(){finished=true;}
+        private static Map<String,Object> copy(Map<String,Object> source,int bytes){
+            if(source==null||source.size()>32)return null;
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            for(Map.Entry<String,Object> item:source.entrySet()){
+                String key=item.getKey();Object value=item.getValue();
+                if(key==null||key.length()>64)return null;
+                if(value instanceof List){
+                    List<?> values=(List<?>)value;if(values.size()>24)return null;
+                    List<Object> list=new ArrayList<Object>();
+                    for(Object v:values){if(!(v instanceof Number)&&!(v instanceof Boolean))return null;list.add(v);}
+                    value=java.util.Collections.unmodifiableList(list);
+                }else if(value!=null&&!(value instanceof Number)&&!(value instanceof Boolean)&&!(value instanceof String))return null;
+                if(value instanceof String&&("exception_message".equals(key)||"exception_class".equals(key))){
+                    String original=(String)value;String prefix=utf8Prefix(original,"exception_message".equals(key)?160:80);
+                    if(!prefix.equals(original))out.put(key+"_utf8_truncated",true);
+                    value=prefix;
+                }
+                if(value instanceof String&&((String)value).length()>240)return null;
+                out.put(key,value);
+            }
+            if(out.size()>32)return null;
+            try{
+                JSONObject json=new JSONObject(out);
+                if(json.toString().getBytes(StandardCharsets.UTF_8).length>bytes
+                        ||json.toString(2).getBytes(StandardCharsets.UTF_8).length>bytes)return null;
+            }catch(Exception unavailable){return null;}
+            return java.util.Collections.unmodifiableMap(out);
+        }
+        private static String utf8Prefix(String value,int maxBytes){
+            int end=0,bytes=0;
+            while(end<value.length()){
+                int code=value.codePointAt(end);
+                int count=code<=0x7f?1:code<=0x7ff?2:code<=0xffff?3:4;
+                if(bytes+count>maxBytes)break;
+                bytes+=count;end+=Character.charCount(code);
+            }
+            return value.substring(0,end);
+        }
+        private static Map<String,Object> first(Map<String,Object> value){
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("stage",value.get("stage"));out.put("at_ms",value.get("at_ms"));
+            if(value.containsKey("reason"))out.put("reason",value.get("reason"));
+            return java.util.Collections.unmodifiableMap(out);
+        }
+        synchronized void outer(Map<String,Object> source){
+            if(finished||source==null)return;
+            try{
+                Map<String,Object> value=copy(source,1536);
+                if(value==null){rejectedRecords++;return;}
+                if(firstOuter==null)firstOuter=first(value);
+                if("saved_complete".equals(value.get("stage")))lastOuter=value;
+                else{
+                    Map<String,Object> precheck=new LinkedHashMap<String,Object>();
+                    precheck.put("stage",value.get("stage"));precheck.put("at_ms",value.get("at_ms"));
+                    precheck.put("precheck",value.get("precheck"));precheck.put("persisted",value.get("persisted"));
+                    lastPrecheck=java.util.Collections.unmodifiableMap(precheck);
+                    if(lastOuter==null||!"saved_complete".equals(lastOuter.get("stage")))lastOuter=value;
+                }
+                outerRecords++;
+            }catch(RuntimeException unavailable){rejectedRecords++;}
+        }
+        synchronized void helper(Map<String,Object> source){
+            if(finished||source==null)return;
+            try{
+                Map<String,Object> value=copy(source,768);
+                if(value==null){rejectedRecords++;return;}
+                if(firstHelper==null)firstHelper=first(value);
+                if("HELPER_ENTERED".equals(value.get("reason"))||"CLOCK_CHECK".equals(value.get("reason"))){
+                    lastHelperProgress=first(value);
+                    if(lastHelper==null)lastHelper=value;
+                }else lastHelper=value;
+                helperRecords++;
+            }catch(RuntimeException unavailable){rejectedRecords++;}
+        }
+        synchronized void event(long at,int type,int display,int window,int capturedWindow,
+                boolean packageMatch,boolean contentType,int classification,boolean unknown,long requestEvents){
+            if(finished)return;
+            eventRecords++;
+            List<Long> row=java.util.Collections.unmodifiableList(java.util.Arrays.asList(
+                    eventRecords,at,(long)type,(long)display,(long)window,(long)capturedWindow,
+                    packageMatch?1L:0L,contentType?1L:0L,(long)classification,unknown?1L:0L,requestEvents));
+            if(firstEvents.size()<FIRST_EVENTS)firstEvents.add(row);
+            else{if(lastEvents.size()==LAST_EVENTS)lastEvents.remove(0);lastEvents.add(row);}
+        }
+        synchronized Map<String,Object> snapshot(){
+            if(outerRecords==0&&helperRecords==0&&eventRecords==0&&rejectedRecords==0)return null;
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("schema","hepta.ctrip-native-read-diagnostic.v1");out.put("frozen",finished);
+            out.put("outer_records",outerRecords);out.put("first_outer",firstOuter);out.put("last_outer",lastOuter);out.put("last_precheck",lastPrecheck);
+            out.put("helper_records",helperRecords);out.put("first_helper",firstHelper);out.put("last_helper",lastHelper);out.put("last_helper_progress",lastHelperProgress);
+            out.put("event_fields","ordinal,elapsed_ms,type,display,window,captured_window,package_match,content_type,classification,unknown,request_events");
+            out.put("event_classification","0=legacy_untyped,1=content,2=boundary; original classification unchanged");
+            out.put("first_events",new ArrayList<List<Long>>(firstEvents));out.put("last_events",new ArrayList<List<Long>>(lastEvents));
+            out.put("event_records",eventRecords);out.put("event_omitted",eventRecords-firstEvents.size()-lastEvents.size());
+            out.put("record_rejections",rejectedRecords);out.put("grants_action_authority",false);
+            try{
+                JSONObject json=new JSONObject(out);
+                if(json.toString().getBytes(StandardCharsets.UTF_8).length>MAX_BYTES
+                        ||json.toString(2).getBytes(StandardCharsets.UTF_8).length>MAX_BYTES)
+                    throw new IllegalStateException("bounded Ctrip read diagnostic exceeded");
+            }catch(org.json.JSONException unavailable){throw new IllegalStateException("Ctrip read diagnostic unavailable",unavailable);}
+            return out;
+        }
+    }
     /** Static: it cannot capture the Service, request, Graph, node or Bitmap. */
     private static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String> {
         private final ObservationDiagnostics values;private final PostEffectChildDiagnostic childIdentity;
+        private final CtripReadDiagnostic ctripRead;
         DiagnosticSnapshot(ObservationDiagnostics values){this(values,null);}
-        DiagnosticSnapshot(ObservationDiagnostics values,PostEffectChildDiagnostic childIdentity){
-            this.values=values;this.childIdentity=childIdentity;
+        DiagnosticSnapshot(ObservationDiagnostics values,PostEffectChildDiagnostic childIdentity){this(values,childIdentity,null);}
+        DiagnosticSnapshot(ObservationDiagnostics values,PostEffectChildDiagnostic childIdentity,CtripReadDiagnostic ctripRead){
+            this.values=values;this.childIdentity=childIdentity;this.ctripRead=ctripRead;
         }
         @SuppressWarnings("unchecked") @Override public String call(){
             Map<String,Object> snapshot=values.snapshot(SystemClock.elapsedRealtime());
             Map<String,Object> child=childIdentity==null?null:childIdentity.snapshot();
             if(child!=null)snapshot.put("post_effect_child_identity_recheck",child);
+            Map<String,Object> ctrip=ctripRead==null?null:ctripRead.snapshot();
+            if(ctrip!=null)snapshot.put("ctrip_native_read",ctrip);
             String raw=new JSONObject(snapshot).toString();
             if(!fits(snapshot)&&snapshot.containsKey("last_native_sample_graph_change")){
                 snapshot.remove("last_native_sample_graph_change");
@@ -1113,6 +1229,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         int readWorksStarted,readWorksFinished,readGraphChanges,readCaptureFailures,readSealedEventFailures;
         boolean postEffectPublicationRecheckAttempted,postEffectChildIdentityRecheckAttempted;
         final PostEffectChildDiagnostic postEffectChildDiagnostic=new PostEffectChildDiagnostic();
+        final CtripReadDiagnostic ctripReadDiagnostic=new CtripReadDiagnostic();
         boolean nativeAxPublicationRecheckAttempted;
         Graph captured;long token;int intervalRetries;boolean shotPending,nativeSample;
         ObservationDiagnostics trace;
@@ -1128,6 +1245,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(kind==1){contentEvents++;note(ObservationDiagnostics.Event.EVENT_TARGET_CONTENT);}
             else if(kind==2){boundaryEvents++;note(ObservationDiagnostics.Event.EVENT_TARGET_BOUNDARY);}
             note(unknown?ObservationDiagnostics.Event.EVENT_UNKNOWN:ObservationDiagnostics.Event.EVENT_TARGET);
+        }
+        synchronized void recordSdkEvent(boolean unknown,int kind,int type,int display,int window,
+                int capturedWindow,boolean packageMatch,boolean contentType){
+            if(finished)return;
+            recordEvent(unknown,kind);
+            if(background!=null&&NativeCtripFlightPage.PACKAGE.equals(background.selection.initialPackage))
+                ctripReadDiagnostic.event(SystemClock.elapsedRealtime(),type,display,window,capturedWindow,
+                        packageMatch,contentType,kind,unknown,events);
         }
         private String phase="queued";private long phaseAt;
         ObservationRequest(String taskId,File directory,ObservationCallback callback,Cancellation cancel,long deadline,BackgroundSession background){
@@ -1400,6 +1525,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
      * A content event must belong to the complete native graph currently owned by this capture.
      * Window/focus/unknown/foreign-owner events remain boundaries even when later values match. */
     private void noteObservationEvent(int displayId,int windowId,String packageName,boolean contentType){
+        noteObservationEvent(displayId,windowId,packageName,contentType,-1);
+    }
+    private void noteObservationEvent(int displayId,int windowId,String packageName,boolean contentType,int sdkEventType){
         notePostEffectSamplingEvent(displayId);
         noteNativeSearchEvent(displayId,windowId,packageName,contentType,true);
         ObservationRequest request=activeObservation;
@@ -1410,7 +1538,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     &&windowId==captured.windowId&&packageName!=null&&packageName.equals(captured.packageName)
                     &&nativeObservationRecheckAllowed(request,captured);
         }catch(RuntimeException unavailable){content=false;}
-        request.recordEvent(displayId<0,content?1:2);
+        request.recordSdkEvent(displayId<0,content?1:2,sdkEventType,displayId,windowId,
+                captured==null?-1:captured.windowId,captured!=null&&packageName!=null&&packageName.equals(captured.packageName),contentType);
     }
     /** One typed read, using the existing observation request/PNG publication.
      * This callback never grants input and never changes the native Session domain. */
@@ -1710,7 +1839,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         request.postEffectController=postController;request.postEffectNativeTask=postNativeTask;request.postEffectPermit=postPermit;
         request.postEffectTaskDeadline=postTaskDeadline;request.postEffectRetrySubmission=postProof;
         request.trace=observationDiagnostic(request);
-        if(request.trace!=null)try{callback.onDiagnostic(new DiagnosticSnapshot(request.trace,request.postEffectChildDiagnostic));}
+        if(request.trace!=null)try{callback.onDiagnostic(new DiagnosticSnapshot(request.trace,request.postEffectChildDiagnostic,request.ctripReadDiagnostic));}
         catch(RuntimeException unavailable){/* Optional diagnostics grant no authority and do not replace the observation. */}
         if(request.trace!=null)try{callback.onPrivateCensusDiagnostic(new PrivateCensusSnapshot(request.trace));}
         catch(RuntimeException unavailable){/* Pure optional evidence cannot replace the observation. */}
@@ -2071,7 +2200,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(request.finished)return null;
         String diagnostic=request.diagnostic(error);
         request.note(ObservationDiagnostics.Event.REQUEST_ERROR);if(request.trace!=null)request.trace.finish("failed",SystemClock.elapsedRealtime());
-        request.failedAt=SystemClock.elapsedRealtime();request.postEffectChildDiagnostic.finish();request.finished=true;request.resampleSeed=null;request.gate.retire();
+        request.failedAt=SystemClock.elapsedRealtime();request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.resampleSeed=null;request.gate.retire();
         if(request.shotPending&&captureSerial==request.token){capturePending=false;captureSerial++;}
         request.shotPending=false;
         if(request.captured!=null){request.captured.close();request.captured=null;}
@@ -2335,6 +2464,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             &&persistedEvents.events!=product.seal.events&&!scopedContentCheck)retry=true;
                     boolean completeContentCheck=product.seal!=null&&identity.nativeRecheck
                             &&(product.formPair==null?persistedEvents.contentEvents>identity.eventWatermark.contentEvents:scopedContentCheck);
+                    Map<String,Object> savedGate=ctripSavedGraphGate(request,identity,product,persistedEvents,
+                            scopedContentCheck,completeContentCheck,retry);
                     if(completeContentCheck){
                         // Typed content events never advance a window-only watermark. Encoding is
                         // already finished: reread the COMPLETE actual graph and window census.
@@ -2345,21 +2476,41 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final ObservationEventWatermark complete=request.eventWatermark();
                         product.postEncodingCompletedWatermark=complete;
                         request.graph("saved_graph",after);
-                        boolean equal=!retry&&after!=null&&identity.matches(after)
-                                &&nativeObservationRecheckAllowed(request,after)
-                                &&identity.frozenWindow.matches(frozenObservationWindow(after));
-                        boolean eventsCovered=!retry&&complete.onlyContentSince(persistedEvents)
-                                &&complete.onlyContentSince(identity.eventWatermark)&&complete.events==request.events;
+                        int equalIdentity=-1,equalNative=-1,equalWindow=-1;
+                        boolean equal=!retry&&after!=null&&(equalIdentity=identity.matches(after)?1:0)==1
+                                &&(equalNative=nativeObservationRecheckAllowed(request,after)?1:0)==1
+                                &&(equalWindow=identity.frozenWindow.matches(frozenObservationWindow(after))?1:0)==1;
+                        int eventsPersisted=-1,eventsCapture=-1;long eventsRead=-1,formEventsRead=-1;
+                        boolean eventsCovered=!retry&&(eventsPersisted=complete.onlyContentSince(persistedEvents)?1:0)==1
+                                &&(eventsCapture=complete.onlyContentSince(identity.eventWatermark)?1:0)==1
+                                &&complete.events==(eventsRead=request.events);
                         // Pixels already match A and B. A later, complete C may classify only
                         // historical form facts for this same managed read or entered OPEN permit.
                         // The original helper rechecks the full owner, target, census and form region.
-                        boolean managedFormRead=request.initialController==null&&request.postEffectController==null
-                                &&request.readBefore!=null&&request.readBefore==current
-                                &&request.readIdentity!=null&&!request.readRecoveryRejected;
-                        if(!equal&&eventsCovered&&(request.postEffectController!=null||scopedContentCheck||managedFormRead))
-                            product.postEncodingFormPair=nativeCtripFormPair(request,identity,after);
-                        boolean formCovered=product.postEncodingFormPair!=null&&complete.events==request.events;
+                        int managedInitial=-1,managedPost=-1,managedBefore=-1,managedCurrent=-1,managedIdentity=-1,managedAccepted=-1;
+                        boolean managedFormRead=(managedInitial=request.initialController==null?1:0)==1
+                                &&(managedPost=request.postEffectController==null?1:0)==1
+                                &&(managedBefore=request.readBefore!=null?1:0)==1
+                                &&(managedCurrent=request.readBefore==current?1:0)==1
+                                &&(managedIdentity=request.readIdentity!=null?1:0)==1
+                                &&(managedAccepted=!request.readRecoveryRejected?1:0)==1;
+                        boolean helperEntered=!equal&&eventsCovered&&(request.postEffectController!=null||scopedContentCheck||managedFormRead);
+                        if(helperEntered)product.postEncodingFormPair=nativeCtripFormPair(request,identity,after);
+                        boolean formCovered=product.postEncodingFormPair!=null&&complete.events==(formEventsRead=request.events);
                         boolean covered=equal&&eventsCovered;
+                        if(savedGate!=null){
+                            savedGate.put("stage","saved_complete");savedGate.put("at_ms",SystemClock.elapsedRealtime());
+                            savedGate.put("complete",ctripDiagnosticMark(complete));
+                            savedGate.put("equal_checks",java.util.Arrays.asList(!retry?1:0,retry?-1:after!=null?1:0,equalIdentity,equalNative,equalWindow));
+                            savedGate.put("event_checks",java.util.Arrays.asList(eventsPersisted,eventsCapture,
+                                    eventsRead<0?-1:complete.events==eventsRead?1:0));
+                            savedGate.put("managed_checks",java.util.Arrays.asList(managedInitial,managedPost,managedBefore,
+                                    managedCurrent,managedIdentity,managedAccepted));
+                            savedGate.put("helper",helperEntered?"HELPER_ENTERED":"SKIPPED_OUTER");
+                            savedGate.put("result",java.util.Arrays.asList(equal?1:0,eventsCovered?1:0,formCovered?1:0,covered?1:0));
+                            savedGate.put("event_reads",java.util.Arrays.asList(eventsRead,formEventsRead));
+                            request.ctripReadDiagnostic.outer(savedGate);
+                        }
                         if(!retry&&!equal&&!formCovered){
                             request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);
                             request.note(ObservationDiagnostics.Event.SAVED_GRAPH_SEALED_CONTENT_CHANGED);retry=true;
@@ -2634,7 +2785,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
-            request.postEffectChildDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;
+            request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;
             request.callback.onObservation(observation);
         }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}
         finally{if(!transferred)product.close();}
@@ -3209,6 +3360,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 persisted=-1,windowStarted=-1,windowCompleted=-1,workerDrained=-1,mainPosted=-1,mainStarted=-1,
                 captureExpiredAt=-1,previousWorkerReturned=-1;
         volatile int encodeAttempts;volatile boolean preserveExpiredPath;
+        volatile String lastEncodeFailureClass,lastEncodeFailure;volatile long lastEncodeFailureElapsed=-1;
         volatile NativeSearchPlanning.EventMark rejectedWatermark;
         NativeSearchPublicationTrace(int ordinal){this.ordinal=ordinal;}
         Map<String,Object> evidence(){
@@ -3223,7 +3375,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("window_started_elapsed_ms",windowStarted);e.put("window_completed_elapsed_ms",windowCompleted);
             e.put("worker_drained_elapsed_ms",workerDrained);e.put("main_posted_elapsed_ms",mainPosted);e.put("main_started_elapsed_ms",mainStarted);
             e.put("capture_expired_elapsed_ms",captureExpiredAt);e.put("previous_worker_returned_elapsed_ms",previousWorkerReturned);
-            e.put("rejected_watermark",rejectedWatermark==null?null:rejectedWatermark.evidence());return NativeAppEvidence.immutableMap(e);
+            e.put("rejected_watermark",rejectedWatermark==null?null:rejectedWatermark.evidence());
+            e.put("last_encode_failure_class",lastEncodeFailureClass);e.put("last_encode_failure",lastEncodeFailure);
+            e.put("last_encode_failure_elapsed_ms",lastEncodeFailureElapsed);return NativeAppEvidence.immutableMap(e);
         }
     }
     /** Diagnostic values only; never a census, event reset or retry capability. */
@@ -3231,7 +3385,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final int ordinal;final String phase;final long started;
         final NativeSearchPlanning.EventMark before;
         long completed=-1;boolean graphReturned,fullGraph;RuntimeException failure;
-        NativeSearchPlanning.EventMark after;
+        FrozenObservationWindow eventWindow;Map<String,Object> eventWindowFacts;
+        long eventWindowBound=-1;int previousEventWindow=-1;boolean completedWindowMatched;
+        NativeSearchPlanning.EventMark eventWindowMark,after;
         NativeSearchGraphReadTrace(int ordinal,String phase,long started,NativeSearchPlanning.EventMark before){
             this.ordinal=ordinal;this.phase=phase;this.started=started;this.before=before;
         }
@@ -3245,6 +3401,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("typed_child_unavailable",stale!=null&&stale.backgroundChildUnavailable);
             e.put("child_path",path==null?null:limited(path,240));e.put("child_path_omitted",path!=null&&path.length()>240);
             e.put("before",before.evidence());e.put("after",after==null?null:after.evidence());
+            if(eventWindowFacts!=null&&eventWindow!=null){
+                e.put("event_target_bound_elapsed_ms",eventWindowBound);e.put("previous_event_target_window",previousEventWindow);
+                e.put("event_target_window_facts_sha256",NativeAppEvidence.fingerprint(eventWindowFacts));
+                e.put("event_target_window_id",eventWindow.windowId);e.put("event_target_display_id",eventWindow.displayId);
+                e.put("event_target_binding_watermark",eventWindowMark==null?null:eventWindowMark.evidence());
+                e.put("completed_window_matches_bound_target",completedWindowMatched);
+                e.put("event_target_future_only",true);e.put("past_event_counts_rewritten",false);
+            }
             return NativeAppEvidence.immutableMap(e);
         }
     }
@@ -3423,8 +3587,50 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             requireNativeSearchPairEvents(new NativeSearchPlanning.EventMark(0,0,0,0),request.events.mark());
     }
     private GraphBudget nativeSearchReadBudget(final NativeSearchRequest request){
-        return new GraphBudget(){public void check(){requireNativeSearchRead(request);}
-            public Cancellation cancellation(){return request.cancel;}public long deadline(){return request.deadline;}};
+        return new NativeSearchGraphBudget(){public void check(){requireNativeSearchRead(request);}
+            public Cancellation cancellation(){return request.cancel;}public long deadline(){return request.deadline;}
+            public void beforeNodes(Graph graph){bindNativeSearchGraphWindow(request,graph);}};
+    }
+    /** The existing root/profile/all-window read has completed; this binds only future SDK event metadata. */
+    private void bindNativeSearchGraphWindow(NativeSearchRequest request,Graph graph){
+        requireNativeSearchRead(request);BackgroundSession background=request.session.background;
+        if(graph==null||graph.nativeActionBuilding==null||!graph.nativeActionBuilding.isEmpty()
+                ||graph.nativeActionWindows==null||graph.profileWindow==null||graph.windowMetadata==null
+                ||!"observed".equals(graph.windowMetadata.status)||graph.windowMetadata.type==null
+                ||graph.windowMetadata.type.intValue()!=1||graph.nativeActionWidth<=0||graph.nativeActionHeight<=0
+                ||!request.taskId.equals(graph.nativeActionTaskId)
+                ||!request.session.authorization.authorization.sha256.equals(graph.nativeActionAuthorizationSha)
+                ||!request.session.binding().get("selection_sha256").equals(graph.nativeActionSelectionSha)
+                ||!background.ownerSha256.equals(graph.backgroundOwnerSha)
+                ||!background.selection.taskTarget.targetSha256.equals(graph.nativeActionTargetSha)
+                ||!background.selection.taskTarget.nativeGoal.contractSha256.equals(graph.nativeActionGoalSha)
+                ||!background.generation.equals(graph.backgroundGeneration)||graph.displayId!=background.displayId()
+                ||request.events.display!=graph.displayId||!request.events.packageName.equals(graph.packageName)
+                ||!background.selection.initialPackage.equals(graph.packageName)
+                ||!background.selection.allowedPackages.equals(graph.backgroundAllowedPackages))
+            throw new StaleObservation("current native search window identity required before BFS event binding");
+        NativeAppEvidence.requireProfileTarget(background.profileTarget(),graph.profileWindow);
+        long checked=SystemClock.elapsedRealtime();
+        background.requireProfileWindow(graph.profileWindow,graph.windowId,graph.profileWindow.taskId,checked);
+        FrozenObservationWindow actual=new FrozenObservationWindow(graph.packageName,graph.windowId,graph.displayId,graph.rotation,
+                graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom,graph.nativeActionWidth,graph.nativeActionHeight,
+                graph.windowMetadata.bindFreshness(""),graph.nativeActionWindows,graph.profileWindow);
+        Map<String,Object> facts=nativeSearchWindowFacts(actual);requireNativeSearchRead(request);
+        NativeSearchGraphReadTrace read=request.lastGraphRead;
+        synchronized(nativeSearchEventLock){
+            long now=SystemClock.elapsedRealtime();
+            if(activeNativeSearchObservation!=request||request.finished||request.cancel.isCancelled()
+                    ||read==null||read!=request.lastGraphRead||read.graphReturned||read.failure!=null
+                    ||read.completed>=0||read.eventWindow!=null||now<read.started||now>=request.deadline
+                    ||now<checked||now>=graph.profileWindow.expiresElapsedMs)
+                throw new ObservationAbandoned();
+            // The old counters remain byte-for-byte historical facts. No past event is reclassified.
+            NativeSearchPlanning.EventMark before=request.events.mark();int previous=request.events.window;
+            request.events.window=graph.windowId;
+            read.eventWindow=actual;read.eventWindowFacts=facts;read.eventWindowBound=now;
+            read.previousEventWindow=previous;read.eventWindowMark=before;
+        }
+        requireNativeSearchRead(request);
     }
     private void watchNativeSearchObservation(final NativeSearchRequest request){
         if(request.finished)return;
@@ -3690,8 +3896,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(request.publicationOriginal!=null
                     &&!NativeSearchPlanning.equal(NativeSearchRole.stableEnvelope(request.publicationOriginal.second),NativeSearchRole.stableEnvelope(snapshot)))
                 throw new IllegalStateException("publication replacement changed the original complete window/owner identity");
-            request.events.window=graph.windowId;
-            return new NativeSearchSample(graph,snapshot,nativeSearchWindowFacts(frozenObservationWindow(graph)),before,request.events.mark());
+            FrozenObservationWindow completedWindow=frozenObservationWindow(graph);
+            if(trace.eventWindow==null||!trace.eventWindow.matches(completedWindow))
+                throw new StaleObservation("complete search graph differs from its actual pre-BFS event window");
+            trace.completedWindowMatched=true;
+            return new NativeSearchSample(graph,snapshot,nativeSearchWindowFacts(completedWindow),before,request.events.mark());
         }catch(RuntimeException failed){
             synchronized(request){trace.failure=failed;}throw failed;
         }finally{
@@ -3882,6 +4091,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     trace.encodeStarted=SystemClock.elapsedRealtime();trace.encodeAttempts++;
                     try{encoded=NativeSearchPlanning.encode(request.id,first.snapshot,second.snapshot,request.session.binding(),timing,context);}
                     catch(IllegalArgumentException unavailable){
+                        trace.lastEncodeFailureClass=limited(unavailable.getClass().getSimpleName(),96);
+                        trace.lastEncodeFailure=limited(message(unavailable),300);trace.lastEncodeFailureElapsed=SystemClock.elapsedRealtime();
                         if(completingInFlightPair)throwNativeSearchSamplingExhausted(request,"complete_pair");
                         last=message(unavailable);request.lastSampleRejection=last;
                         if(request.retrySubmission==null&&request.replanSubmission==null&&request.samplingSubmission==null
@@ -4550,7 +4761,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=null;
             request.captured=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
-            request.postEffectChildDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;request.callback.onObservation(observation);
+            request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;request.callback.onObservation(observation);
         }catch(Exception failure){
             product.reject("ax_main_handoff","ownership_or_deadline",request.eventWatermark(),SystemClock.elapsedRealtime());
             recordNativeAxPublicationRejection(request,product,"ax_main_handoff");
@@ -5284,7 +5495,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             try{attempt.requireLive(SystemClock.elapsedRealtime());return true;}catch(RuntimeException retired){return false;}
         }
         void check(){state.check(cancel.isCancelled(),currentLease());}
-        GraphBudget budget(){return new GraphBudget(){public void check(){SearchActionWork.this.check();}
+        GraphBudget budget(){return new NativeSearchGraphBudget(){public void check(){SearchActionWork.this.check();}
             public Cancellation cancellation(){return cancel;}public long deadline(){return state.deadlineElapsed;}};}
         Cancellation boundedCancellation(){return new Cancellation(){public boolean isCancelled(){
             try{check();return false;}catch(RuntimeException retired){return true;}
@@ -6151,47 +6362,99 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         facts.put("windows",value.windows);facts.put("profile",NativeAppEvidence.profileActionIdentity(value.profileWindow));
         return NativeAppEvidence.fingerprint(facts);
     }
+    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){
+        return mark==null?null:java.util.Arrays.asList(mark.events,mark.unknownEvents,mark.contentEvents,mark.boundaryEvents);
+    }
+    /** Values already read by the original outer gate; no guard is re-evaluated for diagnostics. */
+    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,
+            ObservationProduct product,ObservationEventWatermark persisted,boolean scoped,boolean complete,boolean retry){
+        if(request.background==null||!NativeCtripFlightPage.PACKAGE.equals(request.background.selection.initialPackage))return null;
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("stage","saved_precheck");out.put("at_ms",SystemClock.elapsedRealtime());out.put("deadline_ms",request.deadline);
+        out.put("precheck",java.util.Arrays.asList(retry?1:0,product.seal!=null?1:0,identity.nativeRecheck?1:0,scoped?1:0,complete?1:0));
+        out.put("capture",ctripDiagnosticMark(identity.eventWatermark));out.put("pair",ctripDiagnosticMark(product.pairCompletedWatermark));
+        out.put("persisted",ctripDiagnosticMark(persisted));out.put("helper",complete?"NOT_REACHED":"SKIPPED_COMPLETE_CONTENT_CHECK");
+        request.ctripReadDiagnostic.outer(out);return out;
+    }
+    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,
+            IllegalArgumentException failure){
+        if(request.background==null||!NativeCtripFlightPage.PACKAGE.equals(request.background.selection.initialPackage))return;
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("stage",stage);out.put("reason",reason);
+        out.put("at_ms",SystemClock.elapsedRealtime());out.put("deadline_ms",request.deadline);
+        out.put("events",ctripDiagnosticMark(request.eventWatermark()));
+        if(failure!=null){
+            out.put("exception_class",failure.getClass().getSimpleName());
+            out.put("exception_message",message(failure));
+        }
+        request.ctripReadDiagnostic.helper(out);
+    }
     /** Read-only fallback for one already-observed managed Ctrip form.
      * Complete raw censuses, never diagnostic summaries, supply both sides.
      * No ActionGuard/Intent, model action, query history or NodeRef is minted.
      */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){
         boolean postEffect=request.postEffectController!=null;
+        recordCtripFormGate(request,"HELPER_ENTERED","entry",null);
         if(request.initialController!=null||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
                 ||request.background==null||!identity.nativeRecheck||identity.frozenWindow==null
                 ||request.captured==null||after==null||identity.unknownEvents!=0||request.unknownEvents!=0
-                ||!nativeObservationRecheckAllowed(request,request.captured)||!nativeObservationRecheckAllowed(request,after)
-                ||!identity.frozenWindow.matches(frozenObservationWindow(after)))return null;
+                ||!nativeObservationRecheckAllowed(request,request.captured)||!nativeObservationRecheckAllowed(request,after)){
+            recordCtripFormGate(request,"READ_AUTH_OR_NATIVE","read_authority",null);return null;
+        }
+        if(!identity.frozenWindow.matches(frozenObservationWindow(after))){
+            recordCtripFormGate(request,"FROZEN_WINDOW","frozen_window",null);return null;
+        }
         if(postEffect){
             if(request.readBefore!=null||request.readIdentity!=null||request.retrySubmission!=null
                     ||request.postEffectIdentityRejected||!postEffectObservationOwner(request)
                     ||request.postEffectIdentity!=null&&(!request.postEffectIdentity.matches(request.captured)
-                    ||!request.postEffectIdentity.matches(after)))return null;
+                    ||!request.postEffectIdentity.matches(after))){
+                recordCtripFormGate(request,"POST_OWNER_OR_STICKY","post_effect_owner",null);return null;
+            }
         }else if(request.readBefore==null||request.readBefore!=current||request.readIdentity==null||request.readRecoveryRejected
-                ||!request.readIdentity.matches(request.captured)||!request.readIdentity.matches(after))return null;
+                ||!request.readIdentity.matches(request.captured)||!request.readIdentity.matches(after)){
+            recordCtripFormGate(request,"ORDINARY_BEFORE_OR_IDENTITY","ordinary_owner",null);return null;
+        }
         ProfileTarget target=request.background.profileTarget();
         BackgroundTaskTarget task=request.background.selection.taskTarget;
         if(target==null||!NativeCtripFlightPage.PACKAGE.equals(target.packageName)
                 ||target.versionCode!=NativeCtripFlightPage.VERSION_CODE
                 ||!NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
-                ||task==null||!NativeCtripFlightPage.supported(task.nativeGoal))return null;
+                ||task==null||!NativeCtripFlightPage.supported(task.nativeGoal)){
+            recordCtripFormGate(request,"INSTALLED_TARGET","installed_target",null);return null;
+        }
+        recordCtripFormGate(request,"CLOCK_CHECK","clock",null);
         requireObservationWork(request);
         long now=SystemClock.elapsedRealtime();
         if(identity.graphStartedAt<request.started||identity.graphCompletedAt<identity.graphStartedAt
                 ||identity.graphCompletedAt>identity.capturedAt||after.readStartedElapsedMs<identity.capturedAt
-                ||after.readCompletedElapsedMs<after.readStartedElapsedMs||after.readCompletedElapsedMs>now)return null;
+                ||after.readCompletedElapsedMs<after.readStartedElapsedMs||after.readCompletedElapsedMs>now){
+            recordCtripFormGate(request,"CLOCK","clock",null);return null;
+        }
+        String stage="snapshot_build";
         try{
-            Map<String,Object> proof=NativeCtripFormObservation.compare(
-                    nativeCtripFormSnapshot(request,request.captured,target),nativeCtripFormSnapshot(request,after,target));
+            NativeActionSnapshotCheck.Snapshot beforeSnapshot=nativeCtripFormSnapshot(request,request.captured,target);
+            NativeActionSnapshotCheck.Snapshot afterSnapshot=nativeCtripFormSnapshot(request,after,target);
+            stage="classifier";
+            Map<String,Object> proof=NativeCtripFormObservation.compare(beforeSnapshot,afterSnapshot);
             if(postEffect){
+                stage="post_effect_permit";
                 Map<String,Object> bound=new java.util.LinkedHashMap<String,Object>(proof);
                 bound.put("entered_open_read_permit",request.postEffectPermit.evidence());
                 proof=java.util.Collections.unmodifiableMap(bound);
             }
-            if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144)return null;
+            if(new JSONObject(proof).toString().getBytes(StandardCharsets.UTF_8).length>262144){
+                recordCtripFormGate(request,"PROOF_BYTES","proof_bytes",null);return null;
+            }
             requireObservationWork(request);
-            return postEffect&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)?null:proof;
-        }catch(IllegalArgumentException unclassified){return null;}
+            boolean refused=postEffect&&(!postEffectObservationOwner(request)||request.postEffectIdentityRejected);
+            recordCtripFormGate(request,refused?"FINAL_POST_OWNER":"CLASSIFIER_ACCEPTED","final",null);
+            return refused?null:proof;
+        }catch(IllegalArgumentException unclassified){
+            recordCtripFormGate(request,"snapshot_build".equals(stage)?"SNAPSHOT_BUILD":
+                    "classifier".equals(stage)?"CLASSIFIER_REJECTED":"POST_PERMIT_REJECTED",stage,unclassified);
+            return null;
+        }
     }
     /** Actual ownership and complete raw rows are copied; expected facts never
      * fill a missing census. The old observation id is lineage, not a new frame. */
@@ -6865,11 +7128,194 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if("right".equals(direction))return AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT.getId();
         throw new IllegalArgumentException("未知滚动方向");
     }
+    /** One immutable node record from the same actual BFS; no Android handle or live child query. */
+    private static final class NativeSearchLabelFact {
+        final String path,parentClass,packageName,className,text,description,viewId,baseSignature;
+        final int windowId,left,top,right,bottom,children;
+        final boolean visible,clickable,clickAction,inputLike,password,interactive;
+        NativeSearchLabelFact(String path,String parentClass,String packageName,String className,int windowId,
+                int left,int top,int right,int bottom,int children,boolean visible,boolean clickable,
+                boolean clickAction,boolean inputLike,boolean password,boolean interactive,
+                String text,String description,String viewId,String baseSignature){
+            if(path==null||path.length()>240||!path.matches("0(?:/(?:0|[1-9][0-9]*))*")
+                    ||parentClass==null||packageName==null||className==null||windowId<0||children<0
+                    ||text==null||description==null||viewId==null||!NativeAppEvidence.sha(baseSignature))
+                throw new StaleObservation("complete captured search label identity required");
+            this.path=path;this.parentClass=parentClass;this.packageName=packageName;this.className=className;
+            this.windowId=windowId;this.left=left;this.top=top;this.right=right;this.bottom=bottom;this.children=children;
+            this.visible=visible;this.clickable=clickable;this.clickAction=clickAction;this.inputLike=inputLike;
+            this.password=password;this.interactive=interactive;this.text=text;this.description=description;
+            this.viewId=viewId;this.baseSignature=baseSignature;
+        }
+        boolean positive(){return right>left&&bottom>top;}
+        boolean intersects(NativeSearchLabelFact other){
+            return left<other.right&&other.left<right&&top<other.bottom&&other.top<bottom;
+        }
+    }
+    /** Original label reducer over a closed complete traversal, never over separately refreshed descendants. */
+    private static final class NativeSearchCapturedLabels {
+        private final Map<String,NativeSearchLabelFact> nodes=new LinkedHashMap<String,NativeSearchLabelFact>();
+        private long characters;private boolean complete;
+        void add(NativeSearchLabelFact fact){
+            if(complete||fact==null||nodes.size()>=NativeActionSnapshotCheck.MAX_NODES||nodes.containsKey(fact.path))
+                throw new StaleObservation("duplicate or over-budget captured search label node");
+            characters+=(long)fact.text.length()+fact.description.length();
+            if(characters>NativeActionSnapshotCheck.MAX_TEXT)
+                throw new StaleObservation("captured search labels exceed the original native text bound");
+            nodes.put(fact.path,fact);
+        }
+        void complete(int visited,int pending,boolean truncated){
+            if(complete||truncated||pending!=0||visited!=nodes.size()||nodes.isEmpty()||!nodes.containsKey("0"))
+                throw new StaleObservation("complete actual BFS required before deriving search labels");
+            NativeSearchLabelFact root=nodes.get("0");
+            if(!root.parentClass.isEmpty())throw new StaleObservation("captured search root has a parent");
+            for(NativeSearchLabelFact fact:nodes.values()){
+                if(fact.windowId!=root.windowId||!fact.packageName.equals(root.packageName))
+                    throw new StaleObservation("captured search label owner/window changed");
+                if(!"0".equals(fact.path)){
+                    int slash=fact.path.lastIndexOf('/');NativeSearchLabelFact parent=nodes.get(fact.path.substring(0,slash));
+                    int index;try{index=Integer.parseInt(fact.path.substring(slash+1));}
+                    catch(NumberFormatException invalid){throw new StaleObservation("captured child index unavailable");}
+                    if(parent==null||index>=parent.children||!fact.parentClass.equals(parent.className))
+                        throw new StaleObservation("captured search parent relation changed");
+                }
+                for(int i=0;i<fact.children;i++)if(!nodes.containsKey(fact.path+"/"+i))
+                    throw new StaleObservation("captured search child slot is missing");
+            }
+            complete=true;
+        }
+        NativeSearchLabelFact fact(String path){
+            NativeSearchLabelFact value=nodes.get(path);
+            if(!complete||value==null)throw new StaleObservation("closed captured search node required");
+            return value;
+        }
+        ObservedChildText.Result label(String path){
+            final NativeSearchLabelFact root=fact(path);
+            return ObservedChildText.collect(root,new ObservedChildText.Reader<NativeSearchLabelFact>(){
+                public ObservedChildText.Metadata metadata(NativeSearchLabelFact node){
+                    if(node==null||nodes.get(node.path)!=node)throw new StaleObservation("captured label node is not in this BFS");
+                    return new ObservedChildText.Metadata(node.visible&&node.positive(),
+                            root.windowId==node.windowId&&root.packageName.equals(node.packageName)&&root.intersects(node),
+                            node.clickable,node.clickAction,node.inputLike,node.password,node.interactive);
+                }
+                public String text(NativeSearchLabelFact node){return node.text;}
+                public String description(NativeSearchLabelFact node){return node.description;}
+                public String identity(NativeSearchLabelFact node){return node.baseSignature;}
+                public String viewId(NativeSearchLabelFact node){return node.viewId;}
+                public int childCount(NativeSearchLabelFact node){return node.children;}
+                public NativeSearchLabelFact child(NativeSearchLabelFact node,int index){
+                    if(index<0||index>=node.children)throw new StaleObservation("captured label child index changed");
+                    return fact(node.path+"/"+index);
+                }
+                public void release(NativeSearchLabelFact node){/* Pure immutable values have no Android reference. */}
+            });
+        }
+    }
+    private static NativeSearchLabelFact captureNativeSearchLabelFact(AccessibilityNodeInfo node,String path,String parentClass){
+        Rect bounds=new Rect();node.getBoundsInScreen(bounds);
+        boolean inputLike=node.isEditable()||node.getInputType()!=0,clickAction=hasAction(node,AccessibilityNodeInfo.ACTION_CLICK);
+        boolean interactive=node.isClickable()||node.isLongClickable()||inputLike||node.isScrollable()||node.isCheckable()
+                ||clickAction||hasAction(node,AccessibilityNodeInfo.ACTION_LONG_CLICK)
+                ||hasAction(node,AccessibilityNodeInfo.ACTION_SET_TEXT)
+                ||hasAction(node,AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)||hasAction(node,AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+                ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP.getId())
+                ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN.getId())
+                ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT.getId())
+                ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT.getId());
+        boolean password=node.isPassword();
+        return new NativeSearchLabelFact(path,parentClass,string(node.getPackageName()),string(node.getClassName()),node.getWindowId(),
+                bounds.left,bounds.top,bounds.right,bounds.bottom,node.getChildCount(),node.isVisibleToUser(),node.isClickable(),
+                clickAction,inputLike,password,interactive,password?"":string(node.getText()),
+                password?"":string(node.getContentDescription()),string(node.getViewIdResourceName()),baseNodeSignature(node));
+    }
+    /** Rebind original retained node copies to labels reduced from this same closed BFS, without any live node operation. */
+    private int applyNativeSearchCapturedLabels(Graph graph,NativeSearchCapturedLabels labels,GraphBudget budget,
+            int characters,int textLimit,StringBuilder signatures){
+        if(graph.nativeActionBuilding==null||graph.nativeActionBuilding.size()==0)
+            throw new StaleObservation("complete native census missing for captured search labels");
+        final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
+        final Map<String,NodeRef> replacements=new HashMap<String,NodeRef>();
+        final Map<String,PhoneObservation.Node> byPath=new HashMap<String,PhoneObservation.Node>();
+        boolean transferred=false;
+        try{
+            for(PhoneObservation.Node row:graph.rows){
+                checkReadBudget(budget);NativeSearchLabelFact fact=labels.fact(row.nativeTreePath);NodeRef old=graph.refs.get(row.id);
+                if(old==null||!fact.baseSignature.equals(baseNodeSignature(old.node))
+                        ||!row.packageName.equals(fact.packageName)||!row.className.equals(fact.className)
+                        ||!row.nativeParentClass.equals(fact.parentClass))
+                    throw new StaleObservation("retained search node differs from its actual BFS value");
+                ObservedChildText.Result child=labels.label(row.nativeTreePath);
+                if("unavailable".equals(child.status))throw new StaleObservation("captured search label reduction unavailable");
+                if((long)characters+child.text.length()>=textLimit)
+                    throw new StaleObservation("captured search labels exceed the original retained text bound");
+                characters+=child.text.length();
+                NodeRef reference=new NodeRef(old,child,row.scrollActions);
+                replacements.put(row.id,reference);
+                PhoneObservation.Node next=new PhoneObservation.Node(row.id,row.packageName,row.className,row.viewId,
+                        row.text,row.description,row.bounds,row.clickable,row.editable,row.scrollable,row.enabled,row.focused,
+                        row.password,child,row.scrollActions,row.imeEnter,row.inputTextSha256,row.submitAvailable,
+                        reference.appTreeSignature,row.nativeTreePath,row.nativeParentClass,row.selected,row.checkable,row.checked);
+                rows.add(next);if(byPath.put(next.nativeTreePath,next)!=null)throw new StaleObservation("duplicate retained search path");
+            }
+            List<NativeActionSnapshotCheck.Node> census=new ArrayList<NativeActionSnapshotCheck.Node>();long bytes=0;
+            for(NativeActionSnapshotCheck.Node original:graph.nativeActionBuilding){
+                checkReadBudget(budget);NativeSearchLabelFact fact=labels.fact(original.path);
+                if(!original.text.equals(fact.text)||!original.desc.equals(fact.description)||!original.cls.equals(fact.className)
+                        ||!original.parent.equals(fact.parentClass)||original.children!=fact.children)
+                    throw new StaleObservation("native census differs from captured search label values");
+                Map<String,Object> value=new java.util.TreeMap<String,Object>(original.v);PhoneObservation.Node retained=byPath.get(original.path);
+                if(retained!=null){
+                    NodeRef reference=replacements.get(retained.id);String label=retained.label();
+                    if(retained.text.trim().isEmpty()&&retained.description.trim().isEmpty()&&!"derived".equals(retained.childText.status))label="";
+                    value.put("label",ObservedTargetLabels.project(label));
+                    value.put("ref_signature_sha256",NativeAppEvidence.hash(reference.signature));
+                }
+                NativeActionSnapshotCheck.Node actual=new NativeActionSnapshotCheck.Node(value);
+                bytes+=new JSONObject(actual.v).toString().getBytes(StandardCharsets.UTF_8).length;
+                if(bytes>NativeActionSnapshotCheck.MAX_BYTES)throw new StaleObservation("captured search census exceeds the original byte bound");
+                census.add(actual);
+            }
+            StringBuilder rebuiltSignatures=new StringBuilder();
+            for(PhoneObservation.Node row:rows){
+                NodeRef ref=replacements.get(row.id);rebuiltSignatures.append(ref.appTreeSignature).append('|')
+                        .append(row.nativeTreePath).append('|').append(row.nativeParentClass).append('\n');
+                if(row.selectionStateObserved)rebuiltSignatures.append("native_selection|").append(row.nativeTreePath).append('|')
+                        .append(row.selected).append('|').append(row.checkable).append('|').append(row.checked).append('\n');
+            }
+            checkReadBudget(budget);
+            List<NodeRef> previous=new ArrayList<NodeRef>(graph.refs.values());
+            graph.refs.clear();graph.refs.putAll(replacements);graph.rows.clear();graph.rows.addAll(rows);
+            graph.nativeActionBuilding=census;graph.nativeActionBytes=(int)bytes;transferred=true;
+            signatures.setLength(0);signatures.append(rebuiltSignatures);
+            recycleNativeSearchLabelReferences(previous);
+            return characters;
+        }finally{if(!transferred)recycleNativeSearchLabelReferences(replacements.values());}
+    }
+    private static void recycleNativeSearchLabelReferences(Iterable<NodeRef> references){
+        RuntimeException first=null;
+        for(NodeRef reference:references)try{reference.node.recycle();}
+        catch(RuntimeException failed){if(first==null)first=failed;else if(failed!=first)first.addSuppressed(failed);}
+        if(first!=null)throw first;
+    }
     private static final class NodeRef {
         final AccessibilityNodeInfo node;final String signature,appTreeSignature;
         final ObservedImeEnter imeEnter;final String inputTextSha256;
         private NodeRef(NodeRef original){
             node=AccessibilityNodeInfo.obtain(original.node);signature=original.signature;appTreeSignature=original.appTreeSignature;
+            imeEnter=original.imeEnter;inputTextSha256=original.inputTextSha256;
+        }
+        /** New owned local copy; the original captured node remains owned by its graph until commit. */
+        private NodeRef(NodeRef original,ObservedChildText.Result childText,ObservedScrollActions scrollActions){
+            AccessibilityNodeInfo retained=AccessibilityNodeInfo.obtain(original.node);
+            final String tree,bound;
+            try{
+                tree=childText.bind(baseNodeSignature(retained));
+                bound=original.imeEnter.bindFreshness(scrollActions.bindFreshness(tree),retained.isFocused(),original.inputTextSha256);
+            }catch(RuntimeException|Error failed){
+                try{retained.recycle();}catch(RuntimeException cleanup){if(cleanup!=failed)failed.addSuppressed(cleanup);}
+                throw failed;
+            }
+            node=retained;appTreeSignature=tree;signature=bound;
             imeEnter=original.imeEnter;inputTextSha256=original.inputTextSha256;
         }
         NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){
@@ -7110,6 +7556,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }finally{root.recycle();}
     }
     private interface GraphBudget { void check(); default HeptaAccessibilityService.Cancellation cancellation(){return null;} default long deadline(){return 0;} }
+    /** Only the actual search planning/effect workers opt in; other graph consumers retain their existing path. */
+    private interface NativeSearchGraphBudget extends GraphBudget { default void beforeNodes(Graph graph) {} }
     private static void checkReadBudget(GraphBudget budget){if(budget!=null)budget.check();}
     /** Inspect window metadata only. Never traverse an IME root or collect its text. */
     private ImeVisibility readImeVisibility(int targetWindowId,int targetDisplayId){
@@ -7326,6 +7774,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             checkReadBudget(budget);return NativeAppEvidence.immutableMap(result);
         }finally{for(AccessibilityWindowInfo window:windows)if(window!=null)window.recycle();}
     }
+    /** Opt in only the already supported current managed Ctrip native census.
+     * This changes label derivation, never ownership, traversal freshness or event authority. */
+    private boolean capturedCtripLabelsAllowed(Graph graph,BackgroundSession background,GraphBudget budget){
+        if(graph==null||background==null||budget==null||taskWeb!=null||background!=taskBackground
+                ||!ownsBackground(background.taskId,background)||taskAuthorization==null
+                ||!ownsAuthorization(background.taskId,taskAuthorization)
+                ||graph.displayId<=Display.DEFAULT_DISPLAY||graph.displayId!=background.displayId()
+                ||!NativeCtripFlightPage.PACKAGE.equals(graph.packageName))return false;
+        BackgroundTaskTarget task=background.selection.taskTarget;ProfileTarget target=background.profileTarget();
+        if(task==null||target==null||!task.explicitSelection||!BackgroundTaskTarget.NATIVE_APP.equals(task.route)
+                ||!NativeCtripFlightPage.supported(task.nativeGoal)
+                ||!NativeCtripFlightPage.PACKAGE.equals(target.packageName)
+                ||target.versionCode!=NativeCtripFlightPage.VERSION_CODE
+                ||!NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
+                ||!task.ownerSha256.equals(background.ownerSha256)||!task.nativeGoal.ownerSha256.equals(background.ownerSha256)
+                ||!task.packageName.equals(graph.packageName)||!background.selection.initialPackage.equals(graph.packageName)
+                ||!background.selection.allowedPackages.equals(java.util.Collections.singletonList(graph.packageName))
+                ||!background.generation.equals(graph.backgroundGeneration)||!background.ownerSha256.equals(graph.backgroundOwnerSha)
+                ||graph.nativeActionBuilding==null||!graph.nativeActionBuilding.isEmpty()||graph.nativeActionWindows==null
+                ||graph.nativeActionWidth<=0||graph.nativeActionHeight<=0||graph.profileWindow==null
+                ||!background.taskId.equals(graph.nativeActionTaskId)
+                ||!taskAuthorization.authorization.sha256.equals(graph.nativeActionAuthorizationSha)
+                ||!task.targetSha256.equals(graph.nativeActionTargetSha)
+                ||!task.nativeGoal.contractSha256.equals(graph.nativeActionGoalSha))return false;
+        NativeAppEvidence.requireProfileTarget(target,graph.profileWindow);checkReadBudget(budget);
+        return true;
+    }
     @SuppressWarnings("deprecation")
     private void beginNativeActionCensus(Graph graph,BackgroundSession background,GraphBudget budget){
         try{
@@ -7434,6 +7909,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(background!=null&&(graph.windowMetadata.displayId==null||graph.windowMetadata.displayId.intValue()!=graph.displayId
                 ||!background.allows(graph.packageName)))throw new IllegalStateException("后台观察窗口越界");
         if(nativeEvidence)beginNativeActionCensus(graph,background,budget);
+        NativeSearchCapturedLabels capturedLabels=null;
+        if(budget instanceof NativeSearchGraphBudget){
+            if(!nativeEvidence||background==null||background.profileTarget()==null||nativeGoal==null
+                    ||!nativeGoal.readsXiaomiProduct()||!NativeAppGoal.XIAOMI_PACKAGE.equals(graph.packageName)
+                    ||graph.nativeActionBuilding==null||graph.nativeActionWindows==null)
+                throw new StaleObservation("captured search labels require the original complete native search owner");
+            ((NativeSearchGraphBudget)budget).beforeNodes(graph);
+            capturedLabels=new NativeSearchCapturedLabels();
+        }else if(nativeEvidence&&capturedCtripLabelsAllowed(graph,background,budget)){
+            capturedLabels=new NativeSearchCapturedLabels();
+        }
         ArrayDeque<String> nativePaths=new ArrayDeque<String>(),nativeParents=new ArrayDeque<String>();
         nativePaths.add("0");nativeParents.add("");
         StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
@@ -7448,6 +7934,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(budget instanceof QueryGraphBudget)((QueryGraphBudget)budget).currentPath=nativePath;
                     if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察",true,nativePath);
                     checkReadBudget(budget);Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
+                    if(capturedLabels!=null)capturedLabels.add(captureNativeSearchLabelFact(node,nativePath,nativeParentClass));
                     // Preserve at most94 owner units plus the exact40-LF provider
                     // form for the already selected background Notes app. The
                     // global text budget, raw hash and completion rule stay unchanged.
@@ -7461,7 +7948,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     PhoneObservation.Node nativeRetained=null;NodeRef nativeReference=null;
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
-                        ObservedChildText.Result childText=graph.rows.size()<retainedLimit?observedChildText(node,background!=null,budget):ObservedChildText.notApplicable();
+                        ObservedChildText.Result childText=graph.rows.size()<retainedLimit&&capturedLabels==null
+                                ?observedChildText(node,background!=null,budget):ObservedChildText.notApplicable();
                         if(graph.rows.size()<retainedLimit&&characters+text.length()+description.length()+childText.text.length()<textLimit){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('|')
                                     .append(nativePath).append('|').append(nativeParentClass).append('\n');
@@ -7510,6 +7998,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }finally{node.recycle();}
             }
             checkReadBudget(budget);if(!queue.isEmpty())graph.truncated=true;
+            if(capturedLabels!=null){
+                capturedLabels.complete(visited,queue.size(),graph.truncated);
+                characters=applyNativeSearchCapturedLabels(graph,capturedLabels,budget,characters,textLimit,signatures);
+            }
             graph.collectionStats=new PhoneObservation.CollectionStats(MAX_VISITED,retainedLimit,textLimit,
                     visited,graph.rows.size(),characters,queue.size(),nodeBudgetOmissions,textBudgetOmissions,
                     childSlotsOmitted,SystemClock.elapsedRealtime()-started);

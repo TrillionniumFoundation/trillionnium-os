@@ -64,10 +64,14 @@ def main():
   # its pre-existing window IO port refuses, so no new success port is added.
   for anchor in [
    '    private static final class PostEffectChildDiagnostic {',
+   '    private static final class CtripReadDiagnostic {',
    '    private static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String> {',
    '    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,',
    '    private static String postEffectChildWindowFingerprint(FrozenObservationWindow value){',
-   '    private void persistCtripFormHistory(ObservationRequest request,ObservationProduct product)throws Exception{']:
+   '    private void persistCtripFormHistory(ObservationRequest request,ObservationProduct product)throws Exception{',
+   '    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){',
+   '    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,',
+   '    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,']:
    ha.append(member('HeptaAccessibilityService.java',H,anchor))
   # Preserve the exact already-selected generic-session Service refusal ports
   # when this calendar fixture replaces that enclosing host class.

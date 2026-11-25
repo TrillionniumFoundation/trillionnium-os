@@ -61,13 +61,24 @@
             int reads=f.reads.get();new DiagnosticSnapshot(r.trace).call();DiagnosticChecks.check(f.reads.get()==reads,"snapshot performs no read");
             java.util.Map<String,Class<?>> fields=new java.util.LinkedHashMap<String,Class<?>>();
             for(java.lang.reflect.Field field:DiagnosticSnapshot.class.getDeclaredFields())fields.put(field.getName(),field.getType());
-            DiagnosticChecks.check(fields.size()==2&&fields.get("values")==ObservationDiagnostics.class
-                    &&fields.get("childIdentity")==PostEffectChildDiagnostic.class,"only actual diagnostics and bounded copied child values; no captured Service/request/graph");
+            DiagnosticChecks.check(fields.size()==3&&fields.get("values")==ObservationDiagnostics.class
+                    &&fields.get("childIdentity")==PostEffectChildDiagnostic.class&&fields.get("ctripRead")==CtripReadDiagnostic.class,
+                    "only actual diagnostics and two exact copied-value carriers; no captured Service/request/graph");
             java.util.Map<String,Class<?>> childFields=new java.util.LinkedHashMap<String,Class<?>>();
             for(java.lang.reflect.Field field:PostEffectChildDiagnostic.class.getDeclaredFields())childFields.put(field.getName(),field.getType());
             DiagnosticChecks.check(childFields.size()==3&&childFields.get("value")==java.util.Map.class
                     &&childFields.get("finished")==Boolean.TYPE&&childFields.get("laterStaleRejections")==Integer.TYPE,
                     "child diagnostic stores only copied values and primitive state; no Service/request/graph/node");
+            java.util.Map<String,Class<?>> ctripFields=new java.util.LinkedHashMap<String,Class<?>>();
+            for(java.lang.reflect.Field field:CtripReadDiagnostic.class.getDeclaredFields())ctripFields.put(field.getName(),field.getType());
+            java.util.Map<String,Class<?>> expectedCtrip=new java.util.LinkedHashMap<String,Class<?>>();
+            for(String name:java.util.Arrays.asList("FIRST_EVENTS","LAST_EVENTS","MAX_BYTES"))expectedCtrip.put(name,Integer.TYPE);
+            expectedCtrip.put("finished",Boolean.TYPE);
+            for(String name:java.util.Arrays.asList("outerRecords","helperRecords","eventRecords","rejectedRecords"))expectedCtrip.put(name,Long.TYPE);
+            for(String name:java.util.Arrays.asList("firstOuter","lastOuter","lastPrecheck","firstHelper","lastHelper","lastHelperProgress"))
+                expectedCtrip.put(name,java.util.Map.class);
+            for(String name:java.util.Arrays.asList("firstEvents","lastEvents"))expectedCtrip.put(name,java.util.List.class);
+            DiagnosticChecks.check(ctripFields.equals(expectedCtrip),"exact Ctrip copied maps/lists and primitive state only; no Service/request/Graph/SDK event/node");
             f.dispose();
         });
         diag("actual_target_unknown_event_counts_preserve_old_reset_rule",()->{

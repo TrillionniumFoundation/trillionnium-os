@@ -14,12 +14,15 @@ def main():
  ap=argparse.ArgumentParser()
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
  ap.add_argument('--loading-original',type=Path)
+ ap.add_argument('--captured-label-original',type=Path)
  ap.add_argument('--after-target-original',type=Path,action='append',default=[])
  args=ap.parse_args();source=args.source.resolve();out=args.output.resolve();jdk=args.java_home.resolve();jar=args.json_jar.resolve()
  if out.exists() or source in out.parents:raise RuntimeError('fresh outside-source output required')
  if len(args.after_target_original) not in (0,2):raise RuntimeError('exactly two complete after-target action originals required')
  after_target_before=[meta(p) for p in args.after_target_original]
  if after_target_before and [(x['bytes'],x['sha256']) for x in after_target_before]!=[(271012,'9bd6ffbb6b0b154fc002ea189db778bf982b673bb3835dd8d2485a318eb416bc'),(271493,'6222aa65845d2040fbf51769f3e794c811544f846572f55d8e743f4a301dc603')]:raise RuntimeError('exact archived c78b whole action bytes required')
+ captured_original_before=meta(args.captured_label_original) if args.captured_label_original else None
+ if captured_original_before and (captured_original_before['bytes'],captured_original_before['sha256'])!=(121578,'77eee186865f051c625b39b9c28da421519c371ad95099f0387d3a673f310c7e'):raise RuntimeError('exact complete a774 original required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
  test=source/'tests/native-search-producer';pkg=source/'src/org/trillionnium/hepta/local'
  query=module(source/'tests/web-flight/run_query_host_tests.py','producer_query')
@@ -34,6 +37,10 @@ def main():
  parts={
  'outcome':body(raw,'    public static final class ActionOutcome {'),
  'graph_budget':body(raw,'    private interface GraphBudget {'),
+ 'native_search_graph_budget':body(raw,'    private interface NativeSearchGraphBudget extends GraphBudget {'),
+ 'captured_label_fact':body(raw,'    private static final class NativeSearchLabelFact {'),
+ 'captured_labels':body(raw,'    private static final class NativeSearchCapturedLabels {'),
+ 'phone_node':body((pkg/'PhoneObservation.java').read_text(),'    public static final class Node {'),
  'stale':body(raw,'    private static final class StaleObservation extends IllegalStateException {'),
  'abandoned':body(raw,'    private static final class ObservationAbandoned extends IllegalStateException {'),
  'no_root':body(raw,'    private static final class NoActiveWindow extends IllegalStateException {'),
@@ -52,6 +59,11 @@ def main():
  if read_graph.count(cleanup)!=1 or read_graph.count('finally{while(!queue.isEmpty())queue.removeFirst().recycle();}')!=1:
   raise RuntimeError('actual incomplete graph and queue cleanup must remain')
  parts['background_child_guard']=child_guard[0];parts['read_graph_failure_cleanup']=cleanup
+ constant=re.findall(r'^    private static final int MAX_NODES=.*?MAX_CHARACTERS=.*?;\s*$',raw,re.M)
+ if len(constant)!=1:raise RuntimeError('one exact retained text limit declaration')
+ parts['original_graph_limits']=constant[0].rstrip()
+ for anchor in ('((NativeSearchGraphBudget)budget).beforeNodes(graph);','capturedLabels.add(captureNativeSearchLabelFact(node,nativePath,nativeParentClass));','capturedLabels.complete(visited,queue.size(),graph.truncated);','characters=applyNativeSearchCapturedLabels(graph,capturedLabels,budget,characters,textLimit,signatures);'):
+  if read_graph.count(anchor)!=1:raise RuntimeError('one actual captured BFS call path: '+anchor)
  signatures=[
   '    private void clearSnapshot(', '    private synchronized BackgroundSession backgroundFor(', '    void verifyBackgroundRemote(',
   '    private synchronized boolean ownsBackground(', '    private synchronized boolean ownsAuthorization(',
@@ -59,7 +71,9 @@ def main():
  '    private synchronized boolean ownsScope(', '    private static JSONObject callbackScopeEvidence(',
  '    private JSONObject callbackAuthorizationEvidence(', '    boolean actionWorkPending(){', '    JSONObject actionExecutionEvidence(',
  '    boolean observationReadWorkPending(){', '    void retireActionWork(', '    private static void checkReadBudget(',
- '    private static boolean hasAction(', '    private Map<String,Object> readNativeActionWindows(',
+  '    private static NativeSearchLabelFact captureNativeSearchLabelFact(', '    private int applyNativeSearchCapturedLabels(',
+ '    private static void recycleNativeSearchLabelReferences(',
+  '    private static boolean hasAction(', '    private Map<String,Object> readNativeActionWindows(',
  '    private static void collectNativeActionNode(',
  '    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference){',
  '    private static NativeActionSnapshotCheck.Node snapshotNativeActionNode(AccessibilityNodeInfo node,String path,\n            String parentClass,PhoneObservation.Node retained,NodeRef reference,Graph rawOwner){',
@@ -78,10 +92,10 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
- parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()
  cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
  if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
- parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);',1)
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -195,6 +209,8 @@ def main():
  report['external_after_target_originals_before']=after_target_before
  report['external_after_target_replay_enabled']=bool(after_target_before)
  report['external_loading_original']=original_before
+ report['external_captured_label_original_before']=captured_original_before
+ report['captured_label_fixture_boundary']={'original_bytes_not_transformed':True,'exact_original_supplied':bool(captured_original_before),'full_bfs_android_io_is_synthetic':True,'missing_raw_metadata_is_explicit_host_fixture':['input_type','long_clickable','action_long_click','action_set_text','directional_action_membership'],'new_device_success_claimed':False}
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
  env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1'
  for key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH'):env.pop(key,None)
@@ -207,7 +223,7 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
     expected=json.loads((test/'AfterTargetExpectedCases.json').read_text())
     names=[r['name'] for r in report['case_result']['results']]
@@ -222,12 +238,21 @@ def main():
     report['post_back_cache_observed_cases']=cache_observed
     report['post_back_cache_exact_cases']=len(names)==len(set(names)) and len(cache_observed)==len(cache_expected) and set(cache_observed)==set(cache_expected)
     report['all_pass']=report['all_pass'] and report['post_back_cache_exact_cases']
+    captured_expected=json.loads((test/'CapturedLabelExpectedCases.json').read_text())
+    captured_required=captured_expected['synthetic_actual_methods']+(captured_expected['archived_original_and_derived_host'] if captured_original_before else [])
+    captured_observed=[n for n in names if n.startswith('captured_label_') or n.startswith('forward_window_')]
+    report['captured_label_expected_cases']=captured_required;report['captured_label_observed_cases']=captured_observed
+    report['captured_label_exact_cases']=len(names)==len(set(names)) and len(captured_observed)==len(captured_required) and set(captured_observed)==set(captured_required)
+    report['all_pass']=report['all_pass'] and report['captured_label_exact_cases']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']
   report['external_original_unchanged']=original_before is None or original_before==meta(args.loading_original)
   report['external_after_target_originals_after']=[meta(p) for p in args.after_target_original]
   report['external_after_target_originals_unchanged']=after_target_before==report['external_after_target_originals_after']
+  report['external_captured_label_original_after']=meta(args.captured_label_original) if args.captured_label_original else None
+  report['external_captured_label_original_unchanged']=captured_original_before==report['external_captured_label_original_after']
+  report['all_pass']=report['all_pass'] and report['external_captured_label_original_unchanged']
   report['modal_fixture_after']=meta(modal_fixture);report['modal_fixture_unchanged']=report['modal_fixture_before']==report['modal_fixture_after']
   report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged'] and report['external_original_unchanged'] and report['modal_fixture_unchanged'] and report['external_after_target_originals_unchanged']
   write(out/'RESULT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')

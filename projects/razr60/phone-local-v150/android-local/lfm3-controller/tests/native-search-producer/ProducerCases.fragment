@@ -364,11 +364,14 @@
         });
         one("missing_raw_sidecar_coverage_cannot_default_to_valid",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                NativeSearchRequest request=f.startPlanning();Looper.main=false;Graph graph=f.graph(s.nativeSearchReadBudget(request),f.base.env.session);
-                try{graph.nativeSearchRawVisibilityChecked=0;boolean refused=false;try{s.nativeSearchSnapshot(graph,f.base.search,request.id,request.started);}catch(StaleObservation error){refused=error.getMessage().startsWith("stale:raw_visibility_census_coverage:");}
-                    check(refused,"typed snapshot requires all actual checked rows");
-                }finally{graph.close();f.cancelled=true;Looper.main=true;}
-                observationIo.one();s.main.one();
+            NativeSearchRequest request=f.startPlanning();
+            f.afterCapturedApplyHook=graph->graph.nativeSearchRawVisibilityChecked=0;
+            boolean oldMain=Looper.main;Looper.main=false;
+            try{boolean refused=false;try{s.readNativeSearchSample(request);}
+                catch(StaleObservation error){refused=error.getMessage().startsWith("stale:raw_visibility_census_coverage:");}
+                check(refused,"typed snapshot requires all actual checked rows");
+                check(request.graphReturns==1&&!request.lastGraphRead.completedWindowMatched,"actual read owns its trace and rejects before full snapshot acceptance");}
+            finally{f.cancelled=true;Looper.main=oldMain;}observationIo.one();s.main.one();
             }
         });
         one("raw_invalid_current_C_refused_before_claim_or_effect",()->{

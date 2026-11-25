@@ -26,6 +26,8 @@ public final class HeptaAccessibilityService {
     interface ActionCallback {void onResult(ActionOutcome value);}
     {{outcome}}
     {{graph_budget}}
+    {{native_search_graph_budget}}
+    {{original_graph_limits}}
     {{stale}}
     {{abandoned}}
     {{no_root}}
@@ -88,40 +90,56 @@ public final class HeptaAccessibilityService {
     static final class NodeData {
         final HeptaAccessibilityService owner;
         Map<String,Object> v;NodeData parent;final List<NodeData> children=new ArrayList<NodeData>();
-        int obtained,recycled,effects,boundsReads,visibleReads;boolean refresh=true;Runnable beforeRefresh;
+        int obtained,recycled,effects,boundsReads,visibleReads,childReads,refreshCalls;boolean refresh=true;Runnable beforeRefresh;
         NodeData(HeptaAccessibilityService owner,Map<String,Object> v){this.owner=owner;this.v=new TreeMap<String,Object>(v);}
     }
     static final class AccessibilityNodeInfo {
         static final int ACTION_CLICK=16,ACTION_LONG_CLICK=32,ACTION_SET_TEXT=2097152,ACTION_SCROLL_FORWARD=4096,ACTION_SCROLL_BACKWARD=8192;
         static final class AccessibilityAction {static final AccessibilityAction ACTION_SCROLL_UP=new AccessibilityAction(101),ACTION_SCROLL_DOWN=new AccessibilityAction(102),ACTION_SCROLL_LEFT=new AccessibilityAction(103),ACTION_SCROLL_RIGHT=new AccessibilityAction(104);final int id;AccessibilityAction(int id){this.id=id;}int getId(){return id;}}
-        final NodeData data;boolean released;
+        final NodeData data;boolean released,failCopy,failCopySignature,failValue,failRecycle;
         AccessibilityNodeInfo(NodeData d){data=d;d.obtained++;}
-        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo original){return new AccessibilityNodeInfo(original.data);}
-        Object value(String k){if(released)throw new AssertionError("recycled node used");return data.v.get(k);}
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo original){
+            if(original.failCopy){original.failCopy=false;original.data.owner.fixture.cancelled=true;throw new IllegalStateException("synthetic local copy failure");}
+            AccessibilityNodeInfo result=new AccessibilityNodeInfo(original.data);
+            if(original.failCopySignature){original.failCopySignature=false;result.failValue=true;}
+            return result;
+        }
+        Object value(String k){if(released)throw new AssertionError("recycled node used");
+            if(failValue){failValue=false;data.owner.fixture.cancelled=true;throw new IllegalStateException("synthetic copied value failure");}
+            return data.v.get(k);
+        }
         String s(String k){return (String)value(k);}boolean b(String k){return ((Boolean)value(k)).booleanValue();}
         void recycle(){if(released)throw new AssertionError("node double recycle");released=true;data.recycled++;
             Fixture fixture=data.owner.fixture;
+            if(failRecycle){failRecycle=false;fixture.cancelled=true;throw new IllegalStateException("synthetic recycle failure after local release");}
             if(fixture.effects>0&&fixture.afterEffectRecycleHook!=null){Runnable hook=fixture.afterEffectRecycleHook;fixture.afterEffectRecycleHook=null;hook.run();}
         }
-        boolean refresh(){if(data.beforeRefresh!=null){Runnable hook=data.beforeRefresh;data.beforeRefresh=null;hook.run();}return !released&&data.refresh;}
+        boolean refresh(){data.refreshCalls++;if(data.beforeRefresh!=null){Runnable hook=data.beforeRefresh;data.beforeRefresh=null;hook.run();}return !released&&data.refresh;}
         CharSequence getPackageName(){return s("package");}int getWindowId(){return ((Number)value("window_id")).intValue();}
         CharSequence getClassName(){return s("class");}String getViewIdResourceName(){return s("view_id");}CharSequence getText(){return s("text");}CharSequence getContentDescription(){return s("description");}
         boolean isPassword(){return b("password");}boolean isVisibleToUser(){data.visibleReads++;return b("visible");}boolean isEnabled(){return b("enabled");}
         boolean isClickable(){return b("clickable");}boolean isEditable(){return b("editable");}boolean isScrollable(){return b("scrollable");}
         boolean isFocused(){return b("focused");}boolean isSelected(){return b("selected");}boolean isCheckable(){return b("checkable");}boolean isChecked(){return b("checked");}
-        int getChildCount(){return data.children.size();}int getInputType(){return 0;}boolean isLongClickable(){return false;}
-        AccessibilityNodeInfo getChild(int i){return i<0||i>=data.children.size()||data.children.get(i)==null?null:new AccessibilityNodeInfo(data.children.get(i));}
+        int getChildCount(){return data.children.size();}int getInputType(){Object v=value("input_type");return v==null?0:((Number)v).intValue();}boolean isLongClickable(){return Boolean.TRUE.equals(value("long_clickable"));}
+        AccessibilityNodeInfo getChild(int i){data.childReads++;return i<0||i>=data.children.size()||data.children.get(i)==null?null:new AccessibilityNodeInfo(data.children.get(i));}
         AccessibilityNodeInfo getParent(){return data.parent==null?null:new AccessibilityNodeInfo(data.parent);}
         void getBoundsInScreen(Rect b){data.boundsReads++;List<?> r=(List<?>)value("bounds");b.left=((Number)r.get(0)).intValue();b.top=((Number)r.get(1)).intValue();b.right=((Number)r.get(2)).intValue();b.bottom=((Number)r.get(3)).intValue();}
         AccessibilityWindowInfo getWindow(){AccessibilityWindowInfo w=new AccessibilityWindowInfo(data.owner);w.id=getWindowId();w.task=data.owner.fixture.actualTask;return w;}
-        List<AccessibilityAction> getActionList(){return b("action_click")?Collections.singletonList(new AccessibilityAction(ACTION_CLICK)):Collections.<AccessibilityAction>emptyList();}
+        List<AccessibilityAction> getActionList(){
+            List<AccessibilityAction> result=new ArrayList<AccessibilityAction>();
+            if(b("action_click"))result.add(new AccessibilityAction(ACTION_CLICK));
+            for(String key:Arrays.asList("action_long_click","action_set_text","action_scroll_forward","action_scroll_backward"))
+                if(Boolean.TRUE.equals(value(key)))result.add(new AccessibilityAction("action_long_click".equals(key)?ACTION_LONG_CLICK:
+                        "action_set_text".equals(key)?ACTION_SET_TEXT:"action_scroll_forward".equals(key)?ACTION_SCROLL_FORWARD:ACTION_SCROLL_BACKWARD));
+            return result;
+        }
         boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("non-click effect");data.effects++;Fixture fixture=data.owner.fixture;fixture.effects++;if(fixture.effectHook!=null)fixture.effectHook.run();return fixture.apiAccepts;}
         public boolean equals(Object v){return v instanceof HeptaAccessibilityService.AccessibilityNodeInfo&&((AccessibilityNodeInfo)v).data==data;}public int hashCode(){return System.identityHashCode(data);}
     }
     static final class PhoneObservation {
         String id;
         static final class CollectionStats {int visited,retained,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;boolean truncated(){return pending!=0||nodeBudgetOmissions!=0||textBudgetOmissions!=0||childSlotsOmitted!=0;}}
-        static final class Node {String id,packageName,nativeTreePath,nativeParentClass,observedAppTreeSignature,text,description;Boolean selected,checkable,checked;boolean selectionStateObserved;Rect bounds;ObservedChildText.Result childText;String label(){return ObservedChildText.displayLabel(text,description,childText);}}
+        {{phone_node}}
     }
     static final class StateCarrier {ImeVisibility imeVisibility=ImeVisibility.HIDDEN;}
     static final class Graph {
@@ -137,6 +155,8 @@ public final class HeptaAccessibilityService {
         {{close_graph}}
     }
     {{node_ref}}
+    {{captured_label_fact}}
+    {{captured_labels}}
     {{frozen_window}}
     {{methods}}
     {{observation}}
@@ -192,6 +212,10 @@ public final class HeptaAccessibilityService {
         String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
         Runnable graphHook,windowHook,effectHook,afterEffectRecycleHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
         int cacheCalls,syntheticBackEffects;boolean cacheResult=true,cacheThrows,incompleteGraph;Runnable cacheHook;
+        java.util.function.Consumer<Graph> beforeCapturedNodesHook,afterCapturedNodesHook,afterCapturedApplyHook;
+        java.util.function.Consumer<String> beforeCapturedNodeHook;
+        Runnable afterCapturedClosureHook;
+        NativeSearchCapturedLabels lastCapturedLabels;Graph lastCapturedGraph;int capturedApplyCalls;
         Fixture()throws Exception{this(new Object());}
         Fixture(Object controller)throws Exception{
             if(actionSlot.pending()||observationIoBusy.get())throw new AssertionError("previous physical capacity leaked");
@@ -253,23 +277,60 @@ public final class HeptaAccessibilityService {
             AccessibilityNodeInfo root=new AccessibilityNodeInfo(nodes.get("0"));
             try{g.windowMetadata=readWindowMetadata(root,g.bounds,g.windowId,g.displayId);g.profileWindow=readProfileWindow(root,background,budget);}finally{root.recycle();}
             g.nativeActionWindows=readNativeActionWindows(g,budget);g.nativeActionBuilding=new ArrayList<NativeActionSnapshotCheck.Node>();
-            for(Map.Entry<String,NodeData> entry:nodes.entrySet()){
+            NativeSearchCapturedLabels captured=null;int retainedCharacters=0;StringBuilder capturedSignatures=new StringBuilder();
+            if(budget instanceof NativeSearchGraphBudget){
+                if(beforeCapturedNodesHook!=null)beforeCapturedNodesHook.accept(g);
+                ((NativeSearchGraphBudget)budget).beforeNodes(g);
+                if(afterCapturedNodesHook!=null)afterCapturedNodesHook.accept(g);
+                captured=new NativeSearchCapturedLabels();lastCapturedLabels=captured;lastCapturedGraph=g;
+            }
+            // Explicit Android traversal port: new fact path visits each declared slot in BFS order.
+            // It does not call live getChild while reducing labels after the closure.
+            List<Map.Entry<String,NodeData>> traversal=new ArrayList<Map.Entry<String,NodeData>>();
+            if(captured!=null){
+                ArrayDeque<String> queue=new ArrayDeque<String>();queue.add("0");
+                while(!queue.isEmpty()){
+                    String path=queue.removeFirst();NodeData data=nodes.get(path);
+                    if(data==null)throw new StaleObservation("synthetic BFS child slot unavailable",true,path);
+                    traversal.add(new AbstractMap.SimpleImmutableEntry<String,NodeData>(path,data));
+                    if(traversal.size()>MAX_VISITED)throw new StaleObservation("synthetic BFS exceeds original traversal bound");
+                    for(int i=0;i<data.children.size();i++)queue.addLast(path+"/"+i);
+                }
+            }else traversal.addAll(nodes.entrySet());
+            int capturedVisited=0;
+            for(Map.Entry<String,NodeData> entry:traversal){
                 AccessibilityNodeInfo node=new AccessibilityNodeInfo(entry.getValue());
                 try{
+                    if(captured!=null&&beforeCapturedNodeHook!=null)beforeCapturedNodeHook.accept(entry.getKey());
                     if(refreshGraphChildren)actualBackgroundChildRefresh(node,"0".equals(entry.getKey())?node:null,background,entry.getKey());
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);PhoneObservation.Node retained=null;NodeRef ref=null;
+                    if(captured!=null){captured.add(captureNativeSearchLabelFact(node,entry.getKey(),(String)entry.getValue().v.get("parent_class")));capturedVisited++;}
                     if(node.isVisibleToUser()&&!bounds.isEmpty()&&(!observableLoadingProjection||node.isClickable()||node.isEditable()||node.isScrollable()||!string(node.getText()).isEmpty()||!string(node.getContentDescription()).isEmpty())){
-                        retained=new PhoneObservation.Node();retained.id="n"+g.rows.size();retained.packageName=string(node.getPackageName());retained.nativeTreePath=entry.getKey();
-                        retained.nativeParentClass=(String)entry.getValue().v.get("parent_class");retained.text=string(node.getText());retained.description=string(node.getContentDescription());
-                        retained.selected=node.isSelected();retained.checkable=node.isCheckable();retained.checked=node.isChecked();retained.selectionStateObserved=true;retained.bounds=bounds;
-                        retained.childText=observedChildText(node,false,budget);ref=new NodeRef(node,retained.childText,readScrollActions(node));retained.observedAppTreeSignature=ref.appTreeSignature;
+                        ObservedChildText.Result child=captured==null?observedChildText(node,false,budget):ObservedChildText.notApplicable();
+                        ObservedScrollActions scroll=readScrollActions(node);ObservedImeEnter ime=readImeEnter(node);String input=inputTextHash(node);
+                        ref=new NodeRef(node,child,scroll,ime,input);
+                        retained=new PhoneObservation.Node("n"+g.rows.size(),string(node.getPackageName()),string(node.getClassName()),
+                                string(node.getViewIdResourceName()),string(node.getText()),string(node.getContentDescription()),bounds,
+                                node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),node.isFocused(),node.isPassword(),
+                                child,scroll,ime,input,false,ref.appTreeSignature,entry.getKey(),(String)entry.getValue().v.get("parent_class"),
+                                node.isSelected(),node.isCheckable(),node.isChecked());
+                        retainedCharacters+=retained.text.length()+retained.description.length()+child.text.length();
                         g.rows.add(retained);g.refs.put(retained.id,ref);
                     }
                     collectNativeActionNode(g,node,entry.getKey(),(String)entry.getValue().v.get("parent_class"),retained,ref);
                 }finally{node.recycle();}
             }
-            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=!incompleteGraph;if(incompleteGraph)g.collectionStats.pending=1;
-            SystemClock.now+=graphDuration/3;g.nativeActionCapturedAt=SystemClock.now;g.nativeActionNodes=g.nativeActionBuilding;g.nativeActionBuilding=null;
+            if(captured!=null){
+                captured.complete(capturedVisited,incompleteGraph?1:0,false);
+                if(afterCapturedClosureHook!=null)afterCapturedClosureHook.run();
+                retainedCharacters=applyNativeSearchCapturedLabels(g,captured,budget,retainedCharacters,MAX_CHARACTERS,capturedSignatures);
+                capturedApplyCalls++;
+                if(afterCapturedApplyHook!=null)afterCapturedApplyHook.accept(g);
+            }
+            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=nodes.size();g.collectionStats.retained=g.rows.size();g.nativeObservationComplete=!incompleteGraph&&g.state.imeVisibility!=ImeVisibility.UNKNOWN;if(incompleteGraph)g.collectionStats.pending=1;
+            // Same final qualification as completeNativeObservationGraph/finishNativeActionCensus:
+            // a complete BFS can still return an unusable native graph when the final IME read is unknown.
+            SystemClock.now+=graphDuration/3;g.nativeActionCapturedAt=SystemClock.now;g.nativeActionNodes=g.state.imeVisibility==ImeVisibility.HIDDEN?g.nativeActionBuilding:null;g.nativeActionBuilding=null;
             SystemClock.now+=graphDuration/3;g.readCompletedElapsedMs=SystemClock.now;checkReadBudget(budget);return g;
             }{{read_graph_failure_cleanup}}
         }

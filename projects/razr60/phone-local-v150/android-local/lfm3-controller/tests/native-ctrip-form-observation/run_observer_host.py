@@ -149,6 +149,9 @@ def generate(source,output,h):
       'observation':h.section(service,'    /** Each observation owns','    synchronized void bindQualificationScope('),
       'form_pair':h.body(service,'    private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){'),
       'form_snapshot':h.body(service,'    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target){'),
+      'ctrip_diagnostic_mark':h.body(service,'    private static List<Long> ctripDiagnosticMark('),
+      'ctrip_saved_gate':h.body(service,'    private static Map<String,Object> ctripSavedGraphGate('),
+      'ctrip_form_gate':h.body(service,'    private static void recordCtripFormGate('),
       'frozen_factory':h.body(service,'    private static FrozenObservationWindow frozenObservationWindow(Graph graph){'),
       'complete_native':h.body(service,'    private static boolean completeNativeObservationGraph(Graph graph){'),
       'profile_owner':h.body(service,'    private static void requireSameProfileOwner('),
@@ -341,8 +344,10 @@ def generate(source,output,h):
                   '    Object taskScope,taskNotesPhase,taskCalculatorInput,taskSubmitAttempts,taskFixedIntentAttempts,appDiscovery;Runnable stopListener;\n    AuthorizationGate taskAuthorization;')
     template=once(template,'try{if(readHook!=null)readHook.read(graph,n);budget.check();graph.readCompletedElapsedMs=SystemClock.now;return graph;}',
                   'try{if(readHook!=null)readHook.read(graph,n);budget.check();graph.readCompletedElapsedMs=SystemClock.now;\n            Runnable after=afterReadHook;if(after!=null){afterReadHook=null;SystemClock.nextElapsedHook=after;}return graph;}')
+    if child_proof is None or 'DIAGNOSTIC_PORTS' not in child_proof:raise RuntimeError('exact coherent diagnostic template proof required')
+    template=once(template,child_proof['DIAGNOSTIC_PORTS'],'')
     template=once(template,'    private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}',
-                  parts['form_pair']+'\n'+parts['form_snapshot'])
+                  '\n'.join(parts[k] for k in ('form_pair','form_snapshot','ctrip_diagnostic_mark','ctrip_saved_gate','ctrip_form_gate')))
     template=once(template,'    private static FrozenObservationWindow frozenObservationWindow(Graph graph){return null;}',
                   parts['frozen_factory']+'\n'+parts['complete_native'])
     fake=h.body(template,'    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){')

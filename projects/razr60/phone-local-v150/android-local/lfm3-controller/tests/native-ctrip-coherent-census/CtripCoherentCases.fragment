@@ -1,0 +1,306 @@
+
+    // Host-only IO, owner and clock fixtures. Actual observer/helper bodies above
+    // remain verbatim; the original private pair is never edited in place.
+    static void coherentReset(){
+        mainThread=Thread.currentThread();expect(!observationIoBusy.get()&&observationIo.active.get()==0,"previous IO drained");
+        SystemClock.now=1000;SystemClock.nextElapsedHook=null;Bitmap.made.clear();
+        Bitmap.copyHook=null;Bitmap.encodeHook=null;Bitmap.streamHook=null;
+        observationIo.reject=false;WebFlightSession.unreleased=false;
+    }
+    @SuppressWarnings("unchecked")
+    static void coherentPopulate(ObserverPipelineHost f,Graph graph,boolean after,int ordinal){
+        try{
+        NativeActionSnapshotCheckHostTest.Fixture values=CtripCoherentHostTest.fixture(after,true);
+        populate(f,graph,values,"coherent_fixture",ordinal);
+        graph.windowId=((Number)values.nodes.get("0").get("window_id")).intValue();
+        graph.profileWindow=f.taskBackground.profile==null?null:owned(f.taskBackground.profile,graph.windowId,TEST_TOKEN);
+        Map<String,Object> reported=new LinkedHashMap<String,Object>(windows());
+        Map<String,Object> window=new LinkedHashMap<String,Object>((Map<String,Object>)((List<?>)reported.get("windows")).get(0));
+        window.put("window_id",graph.windowId);reported.put("target_window_id",graph.windowId);
+        reported.put("windows",Collections.singletonList(window));graph.nativeActionWindows=NativeAppEvidence.immutableMap(reported);
+        graph.nativeObservationComplete=completeNativeObservationGraph(graph);
+        graph.digest=after?"coherent-counterfactual-after":"coherent-counterfactual-before";
+        f.windowValue=frozenObservationWindow(graph);
+        CtripCoherentHostTest.require(graph.nativeActionNodes.size()==(after?281:283),"all actual archived node values retained");
+        for(NativeActionSnapshotCheck.Node row:graph.nativeActionNodes)
+            CtripCoherentHostTest.require(row.v.equals(values.nodes.get(row.path)),"actual derived complete node values are the pipeline input");
+        }catch(Exception failure){throw new AssertionError("complete immutable fixture unavailable",failure);}
+    }
+    static void coherentEvent(ObserverPipelineHost f,ObservationRequest request,String kind){
+        int window=request.captured==null?-1:request.captured.windowId;
+        if("unknown".equals(kind))f.noteObservationEvent(-1,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+        else if("boundary".equals(kind))f.noteObservationEvent(15,window,NativeAppGoal.CTRIP_PACKAGE,false,32);
+        else if("untyped".equals(kind))f.noteObservationEvent(15);
+        else if("untyped_with_content".equals(kind)){
+            // Enter the actual complete-content branch, then supply a real legacy
+            // event not covered by its typed-content watermark. Do not change
+            // the existing legacy window-only control below.
+            f.noteObservationEvent(15,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+            f.noteObservationEvent(15);
+        }
+        else f.noteObservationEvent(15,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+    }
+    static Map<String,Object> exerciseCoherentPipeline(final String scenario)throws Exception{
+        coherentReset();final ObserverPipelineHost f=formFixture("ordinary_late_change");
+        final Map<String,Object> out=new LinkedHashMap<String,Object>();ObservationRequest request=null;
+        f.readHook=(graph,n)->{
+            coherentPopulate(f,graph,n>=7,n);
+            if(n==7){
+                if("protected_form_change".equals(scenario))replaceNode(graph,"0/0/2/5","text","11月27日明天");
+                if("deadline_during_census".equals(scenario))SystemClock.now=f.activeObservation.deadline;
+                if("cancel_during_census".equals(scenario))f.cancelled.set(true);
+            }
+        };
+        try{
+            f.captureFormRead();f.finish();expect(f.delivered.size()==1,"initial actual observer publishes full unchanged pair: "+f.errors);
+            PhoneObservation before=f.current;int pngBefore=f.directory.list((p,n)->n.endsWith(".png")).length;
+            int readsBefore=f.reads.get();f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;SystemClock.now+=400;
+            Bitmap.encodeHook=()->coherentEvent(f,f.activeObservation,
+                    "unknown_during_encoding".equals(scenario)?"unknown":"boundary_during_encoding".equals(scenario)?"boundary":
+                    "untyped_during_encoding".equals(scenario)?"untyped":
+                    "untyped_with_content_during_encoding".equals(scenario)?"untyped_with_content":"content");
+            if("late_event_during_helper_snapshot".equals(scenario))
+                f.selectionHook=()->coherentEvent(f,f.activeObservation,"content");
+            if("late_event_after_persist".equals(scenario))
+                f.formHistoryHashHook=()->coherentEvent(f,f.activeObservation,"content");
+            request=f.captureFormRead();long originalDeadline=request.deadline,originalStarted=request.started;
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"completed screenshot IO");
+            if("late_event_before_publication".equals(scenario))coherentEvent(f,request,"content");
+            f.main.drain();
+            out.put("scenario",scenario);out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
+            out.put("new_png_files",f.directory.list((p,n)->n.endsWith(".png")).length-pngBefore);
+            out.put("full_reads",f.reads.get()-readsBefore);
+            out.put("original_current_retained",f.current==before);
+            out.put("deadline_unchanged",request.deadline==originalDeadline&&request.started==originalStarted&&request.deadline==request.started+12000);
+            out.put("no_action_or_business_completion",!f.actionWorkPending()&&!f.nativeCancellationWorkPending());
+            File[] histories=f.directory.listFiles((p,n)->n.endsWith("-form-history.json"));
+            out.put("history_artifacts",histories.length);
+            if(!f.delivered.isEmpty())out.put("capture_evidence",f.delivered.get(0).captureEvidence);
+            out.put("events",request.events);out.put("unknown_events",request.unknownEvents);
+            out.put("content_events",request.contentEvents);out.put("boundary_events",request.boundaryEvents);
+        }finally{
+            Bitmap.encodeHook=null;f.selectionHook=null;f.formHistoryHashHook=null;SystemClock.nextElapsedHook=null;
+            f.dispose();
+        }
+        if(request!=null)out.put("diagnostic",request.ctripReadDiagnostic.snapshot());
+        boolean closed=true;for(Graph graph:f.graphs)closed&=graph.closed;
+        out.put("all_graphs_closed",closed);out.put("all_bitmaps_recycled",Bitmap.made.stream().allMatch(b->b.recycled));
+        out.put("all_buffers_closed",f.shots.stream().allMatch(s->s.buffer.closes==1));
+        out.put("workers_drained",!observationIoBusy.get()&&observationIo.active.get()==0&&observationIo.uncaught.get()==0);
+        out.put("historical_watermarks_or_clocks_reconstructed",false);return out;
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> exerciseCtripHelper(String scenario)throws Exception{
+        coherentReset();ObserverPipelineHost f=formFixture("ordinary_late_change");
+        final Map<String,Object> out=new LinkedHashMap<String,Object>();Graph after=null;ObservationRequest request=null;
+        try{
+            f.readHook=(graph,n)->coherentPopulate(f,graph,false,n);
+            f.captureFormRead();f.finish();expect(f.delivered.size()==1,"a real original observer frame for read lineage");
+            f.delivered.clear();f.errors.clear();SystemClock.now+=400;
+            request=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+                public void onObservation(PhoneObservation value){throw new AssertionError("helper cannot publish");}
+                public void onError(String error){f.errors.add(error);}},()->f.cancelled.get(),SystemClock.now+12000,f.taskBackground);
+            f.activeObservation=request;request.trace=f.observationDiagnostic(request);
+            request.readAuthorization=f.taskAuthorization;request.readBefore=f.current;
+            if("installed_target".equals(scenario))f.taskBackground.profile=target(NativeAppGoal.CTRIP_PACKAGE,1780,NativeCtripFlightPage.BASE_APK_SHA256);
+            Graph before=new Graph(1,15);f.graphs.add(before);before.readStartedElapsedMs=SystemClock.now;
+            coherentPopulate(f,before,false,1);SystemClock.now+=5;before.readCompletedElapsedMs=SystemClock.now;
+            request.captured=before;request.nativeSample=true;request.readIdentity=new NativeReadIdentity(before);
+            CaptureIdentity identity=new CaptureIdentity(before,SystemClock.now,request.eventWatermark(),true);
+            SystemClock.now+=5;after=new Graph(1,15);f.graphs.add(after);after.readStartedElapsedMs=SystemClock.now;
+            coherentPopulate(f,after,true,2);SystemClock.now+=5;after.readCompletedElapsedMs=SystemClock.now;
+            String expected;
+            if("read_authority".equals(scenario)){request.readAuthorization=null;expected="READ_AUTH_OR_NATIVE";}
+            else if("frozen_window".equals(scenario)){
+                Map<String,Object> changed=new LinkedHashMap<String,Object>(after.nativeActionWindows);changed.put("target_layer",99);
+                after.nativeActionWindows=NativeAppEvidence.immutableMap(changed);expected="FROZEN_WINDOW";
+            }else if("ordinary_identity".equals(scenario)){request.readRecoveryRejected=true;expected="ORDINARY_BEFORE_OR_IDENTITY";}
+            else if("installed_target".equals(scenario))expected="INSTALLED_TARGET";
+            else if("clock".equals(scenario)){after.readStartedElapsedMs=identity.capturedAt-1;expected="CLOCK";}
+            else if("snapshot_build".equals(scenario)){after.collectionStats=counters(after,after.nativeActionNodes.size(),0,1,0);expected="SNAPSHOT_BUILD";}
+            else if("classifier_rejected".equals(scenario)){replaceNode(after,"0/0/2/5","text","11月27日明天");expected="CLASSIFIER_REJECTED";}
+            else if("accepted".equals(scenario))expected="CLASSIFIER_ACCEPTED";
+            else throw new AssertionError("unknown helper scenario");
+            Map<String,Object> proof=f.nativeCtripFormPair(request,identity,after);
+            CtripCoherentHostTest.require((proof!=null)=="accepted".equals(scenario),"actual helper return for "+scenario);
+            Map<String,Object> diagnostic=request.ctripReadDiagnostic.snapshot();
+            Map<String,Object> last=(Map<String,Object>)diagnostic.get("last_helper");
+            CtripCoherentHostTest.require(expected.equals(last.get("reason")),"actual early-return stage: "+diagnostic);
+            CtripCoherentHostTest.require(request.deadline==request.started+12000,"unchanged original request deadline");
+            CtripCoherentHostTest.require(f.delivered.isEmpty()&&!f.actionWorkPending(),"helper grants no publication or action");
+            if(proof!=null)CtripCoherentHostTest.no(proof,"grants_action_authority");
+            out.put("scenario",scenario);out.put("expected_reason",expected);out.put("proof_returned",proof!=null);
+            out.put("diagnostic",diagnostic);out.put("phone_operations",0);
+        }finally{
+            // This direct helper never transfers after to request/current.
+            // Release the caller-owned graph before the original leak scan;
+            // captured/current remain owned by original retire/clearSnapshot.
+            if(after!=null&&!after.closed)after.close();f.dispose();
+        }
+        return out;
+    }
+    // Same host ownership endpoint already used by the original observer fixture.
+    // It is not a production ownership proof; the complete opt-in method is real.
+    private synchronized boolean ownsAuthorization(String task,AuthorizationGate authorization){
+        return owns(task)&&authorization!=null&&authorization==taskAuthorization;
+    }
+    static Map<String,Object> exerciseCtripOptIn(String scenario)throws Exception{
+        coherentReset();ObserverPipelineHost f=formFixture("ordinary_late_change");Graph graph=null;
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        try{
+            if("personal".equals(scenario))f.taskBackground.profile=null;
+            if("wrong_version".equals(scenario))f.taskBackground.profile=target(NativeAppGoal.CTRIP_PACKAGE,1780,NativeCtripFlightPage.BASE_APK_SHA256);
+            if("wrong_apk".equals(scenario))f.taskBackground.profile=target(NativeAppGoal.CTRIP_PACKAGE,NativeCtripFlightPage.VERSION_CODE,NativeActionSnapshotCheckHostTest.repeat('c',64));
+            graph=new Graph(1,15);f.graphs.add(graph);graph.readStartedElapsedMs=SystemClock.now;
+            coherentPopulate(f,graph,false,1);graph.nativeActionBuilding=new ArrayList<NativeActionSnapshotCheck.Node>();
+            BackgroundSession background=f.taskBackground;
+            if("wrong_package".equals(scenario))graph.packageName=NativeAppGoal.XIAOMI_PACKAGE;
+            if("wrong_goal".equals(scenario))background.selection.taskTarget.nativeGoal=NativeAppGoal.parse("在小米商城查询小米路由器AX3000T的价格",NativeAppGoal.XIAOMI_PACKAGE);
+            if("owner_changed".equals(scenario))graph.backgroundOwnerSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+            if("unowned_background".equals(scenario))f.taskBackground=new BackgroundSession(15);
+            if("missing_census".equals(scenario))graph.nativeActionBuilding=null;
+            if("missing_windows".equals(scenario))graph.nativeActionWindows=null;
+            final boolean expire="budget_expired".equals(scenario);final int[] checks={0};
+            GraphBudget budget="missing_budget".equals(scenario)?null:new GraphBudget(){public void check(){checks[0]++;if(expire)throw new ObservationAbandoned();}};
+            boolean accepted=false,expired=false;
+            try{accepted=f.capturedCtripLabelsAllowed(graph,background,budget);}
+            catch(ObservationAbandoned expected){expired=true;}
+            CtripCoherentHostTest.require(accepted=="supported".equals(scenario),"strict original managed Ctrip opt-in: "+scenario);
+            CtripCoherentHostTest.require(expired==expire,"budget exceptions propagate without an old-graph fallback");
+            CtripCoherentHostTest.require(checks[0]==(("supported".equals(scenario)||expire)?1:0),"no extra budget call after earlier refusal");
+            out.put("scenario",scenario);out.put("accepted",accepted);out.put("budget_expired",expired);out.put("budget_checks",checks[0]);
+            out.put("no_action",!f.actionWorkPending());out.put("graph_endpoint_is_synthetic",true);
+        }finally{
+            // Opt-in only inspects the caller-owned graph; it never transfers it.
+            if(graph!=null&&!graph.closed)graph.close();f.dispose();
+        }
+        return out;
+    }
+
+    static Map<String,Object> coherentCompleteDiagnostic(long value){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("stage","saved_complete");out.put("at_ms",value);out.put("deadline_ms",Long.MAX_VALUE);
+        out.put("precheck",Arrays.asList(0,1,1,0,1));
+        List<Long> mark=Arrays.asList(value,0L,value,0L);
+        out.put("capture",mark);out.put("pair",mark);out.put("persisted",mark);out.put("complete",mark);
+        out.put("equal_checks",Arrays.asList(1,1,0,-1,-1));
+        out.put("event_checks",Arrays.asList(1,1,1));out.put("managed_checks",Arrays.asList(1,1,1,1,1,1));
+        out.put("helper","HELPER_ENTERED");out.put("result",Arrays.asList(0,1,0,0));
+        out.put("event_reads",Arrays.asList(value,value));return out;
+    }
+    static Map<String,Object> coherentPrecheckDiagnostic(long value){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("stage","saved_precheck");out.put("at_ms",value);out.put("deadline_ms",Long.MAX_VALUE);
+        out.put("precheck",Arrays.asList(0,1,1,0,1));
+        List<Long> mark=Arrays.asList(value,0L,value,0L);
+        out.put("capture",mark);out.put("pair",mark);out.put("persisted",mark);
+        out.put("helper","NOT_REACHED");return out;
+    }
+    static Map<String,Object> coherentHelperDiagnostic(long value,String message){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("stage","classifier");
+        out.put("reason","CLASSIFIER_REJECTED");out.put("at_ms",value);out.put("deadline_ms",Long.MAX_VALUE);
+        out.put("events",Arrays.asList(value,0L,value,0L));out.put("exception_class","Synthetic"+message);
+        out.put("exception_message",message);return out;
+    }
+    static Map<String,Object> coherentHelperProgress(long value){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("stage","clock");out.put("reason","CLOCK_CHECK");
+        out.put("at_ms",value);out.put("deadline_ms",Long.MAX_VALUE);out.put("events",Arrays.asList(value,0L,value,0L));return out;
+    }
+    static void coherentAssertFrozen(CtripReadDiagnostic diagnostic)throws Exception{
+        diagnostic.finish();String frozen=new org.json.JSONObject(diagnostic.snapshot()).toString(2);
+        diagnostic.outer(coherentCompleteDiagnostic(9));diagnostic.helper(coherentHelperDiagnostic(9,"late value"));
+        diagnostic.event(9,32,15,2815,2814,false,false,2,false,9);
+        CtripCoherentHostTest.require(frozen.equals(new org.json.JSONObject(diagnostic.snapshot()).toString(2)),"terminal diagnostic is immutable under late worker and SDK callbacks");
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> exerciseCtripDiagnostic(String scenario)throws Exception{
+        if("sdk_first_last_omitted_and_freeze".equals(scenario))return coherentSdkDiagnostic();
+        CtripReadDiagnostic diagnostic=new CtripReadDiagnostic();
+        Map<String,Object> evidence=new LinkedHashMap<String,Object>();evidence.put("scenario",scenario);
+        if("complete_refusal_survives_precheck_and_deadline".equals(scenario)){
+            Map<String,Object> refusal=coherentCompleteDiagnostic(1000);diagnostic.outer(refusal);
+            diagnostic.helper(coherentHelperDiagnostic(1001,"complete original classifier refused"));
+            diagnostic.outer(coherentPrecheckDiagnostic(12999));diagnostic.helper(coherentHelperProgress(12999));
+            Map<String,Object> beforeFinish=diagnostic.snapshot();
+            Map<String,Object> decision=(Map<String,Object>)beforeFinish.get("last_outer");
+            Map<String,Object> precheck=(Map<String,Object>)beforeFinish.get("last_precheck");
+            Map<String,Object> helper=(Map<String,Object>)beforeFinish.get("last_helper");
+            CtripCoherentHostTest.require(refusal.equals(decision),"later precheck cannot replace complete rejection facts");
+            CtripCoherentHostTest.require(((Number)precheck.get("at_ms")).longValue()==12999,"latest precheck remains visible separately");
+            CtripCoherentHostTest.require("CLASSIFIER_REJECTED".equals(helper.get("reason")),"helper progress cannot erase its prior decision");
+            coherentAssertFrozen(diagnostic);evidence.put("diagnostic",diagnostic.snapshot());evidence.put("deadline_extended",false);
+        }else if("max_valid_utf8_long_counters".equals(scenario)){
+            List<Map<String,Object>> variants=new ArrayList<Map<String,Object>>();
+            for(String seed:Arrays.asList("界","中\ud83d\ude42")){
+                diagnostic=new CtripReadDiagnostic();
+                StringBuilder text=new StringBuilder();for(int i=0;i<240;i++)text.append(seed);
+                String message=text.toString();long value=Long.MAX_VALUE-100;
+                // Diagnostic counts only: explicit synthetic extremal values,
+                // never a request's clock, lease, watermark or action authority.
+                for(String field:Arrays.asList("outerRecords","helperRecords","eventRecords")){
+                    java.lang.reflect.Field count=CtripReadDiagnostic.class.getDeclaredField(field);count.setAccessible(true);count.setLong(diagnostic,value);
+                }
+                diagnostic.outer(coherentCompleteDiagnostic(value));diagnostic.outer(coherentPrecheckDiagnostic(value+1));
+                diagnostic.helper(coherentHelperDiagnostic(value,message));diagnostic.helper(coherentHelperProgress(value+1));
+                for(int i=0;i<4;i++)diagnostic.event(value+i,Integer.MAX_VALUE,Integer.MAX_VALUE,Integer.MAX_VALUE,
+                        Integer.MAX_VALUE,true,true,1,false,value+i);
+                diagnostic.finish();Map<String,Object> snapshot=diagnostic.snapshot();
+                CtripCoherentHostTest.require(((Number)snapshot.get("record_rejections")).longValue()==0,"valid full diagnostic is not silently dropped");
+                Map<String,Object> helper=(Map<String,Object>)snapshot.get("last_helper");
+                CtripCoherentHostTest.require(helper!=null&&"CLASSIFIER_REJECTED".equals(helper.get("reason")),"full max helper decision preserved");
+                for(String key:Arrays.asList("exception_message","exception_class")){
+                    String valueText=(String)helper.get(key);int cap=key.equals("exception_message")?160:80;
+                    CtripCoherentHostTest.require(valueText.getBytes(StandardCharsets.UTF_8).length<=cap,"exact UTF8 diagnostic byte cap");
+                    CtripCoherentHostTest.require(valueText.equals(new String(valueText.getBytes(StandardCharsets.UTF_8),StandardCharsets.UTF_8)),"UTF8 prefix does not split surrogate pairs");
+                    CtripCoherentHostTest.require(Boolean.TRUE.equals(helper.get(key+"_utf8_truncated")),"real truncation explicitly reported");
+                }
+                int compact=new org.json.JSONObject(snapshot).toString().getBytes(StandardCharsets.UTF_8).length;
+                int pretty=new org.json.JSONObject(snapshot).toString(2).getBytes(StandardCharsets.UTF_8).length;
+                CtripCoherentHostTest.require(compact<=4096&&pretty<=4096,"all valid records/events fit original carrier ceiling");
+                coherentAssertFrozen(diagnostic);Map<String,Object> v=new LinkedHashMap<String,Object>();
+                v.put("seed",seed);v.put("compact_bytes",compact);v.put("pretty_bytes",pretty);
+                v.put("diagnostic",snapshot);variants.add(v);
+            }evidence.put("variants",variants);
+        }else if("invalid_reference_and_oversize_rejected".equals(scenario)){
+            Map<String,Object> invalid=new LinkedHashMap<String,Object>();invalid.put("stage","invalid");invalid.put("graph",new Object());
+            diagnostic.outer(invalid);
+            invalid=new LinkedHashMap<String,Object>();invalid.put("stage","invalid");invalid.put("text",NativeActionSnapshotCheckHostTest.repeat('x',241));
+            diagnostic.helper(invalid);
+            invalid=new LinkedHashMap<String,Object>();for(int i=0;i<33;i++)invalid.put("k"+i,i);
+            diagnostic.outer(invalid);Map<String,Object> snapshot=diagnostic.snapshot();
+            CtripCoherentHostTest.require(((Number)snapshot.get("record_rejections")).longValue()==3,"unsafe or oversized records rejected explicitly");
+            CtripCoherentHostTest.require(snapshot.get("last_outer")==null&&snapshot.get("last_helper")==null,"no arbitrary SDK/request reference retained");
+            coherentAssertFrozen(diagnostic);evidence.put("diagnostic",diagnostic.snapshot());
+        }else throw new AssertionError("unknown diagnostic scenario");
+        return evidence;
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> coherentSdkDiagnostic()throws Exception{
+        coherentReset();ObserverPipelineHost f=formFixture("ordinary_late_change");ObservationRequest request=null;
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("scenario","sdk_first_last_omitted_and_freeze");
+        try{
+            request=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+                public void onObservation(PhoneObservation value){throw new AssertionError("SDK diagnostic cannot publish");}
+                public void onError(String error){f.errors.add(error);}},()->false,13000,f.taskBackground);
+            f.activeObservation=request;request.trace=f.observationDiagnostic(request);request.readAuthorization=f.taskAuthorization;
+            Graph g=new Graph(1,15);f.graphs.add(g);g.readStartedElapsedMs=1000;coherentPopulate(f,g,false,1);g.readCompletedElapsedMs=1010;
+            request.captured=g;request.nativeSample=true;SystemClock.now=1020;
+            for(int i=0;i<8;i++){
+                boolean unknown=i==2,otherWindow=i==3,boundary=i==5;
+                f.noteObservationEvent(unknown?-1:15,otherWindow?g.windowId+1:g.windowId,NativeAppGoal.CTRIP_PACKAGE,!boundary,boundary?32:2048);
+            }
+            long before=request.events;
+            f.noteObservationEvent(0,g.windowId,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+            CtripCoherentHostTest.require(request.events==before&&before==8,"known other physical display remains excluded");
+            Map<String,Object> diagnostic=request.ctripReadDiagnostic.snapshot();
+            List<List<?>> first=(List<List<?>>)diagnostic.get("first_events"),last=(List<List<?>>)diagnostic.get("last_events");
+            CtripCoherentHostTest.require(first.size()==2&&last.size()==2&&((Number)diagnostic.get("event_omitted")).longValue()==4,"fixed first/last capacity and exact omissions");
+            CtripCoherentHostTest.require(((Number)first.get(0).get(0)).longValue()==1&&((Number)last.get(1).get(0)).longValue()==8,"original event order preserved");
+            CtripCoherentHostTest.require(request.unknownEvents==1&&request.boundaryEvents==3&&request.contentEvents==5,"original actual classification is not softened by metadata recording");
+            CtripCoherentHostTest.require(((Number)first.get(0).get(5)).intValue()==g.windowId,"actual captured window recorded");
+            coherentAssertFrozen(request.ctripReadDiagnostic);out.put("diagnostic",request.ctripReadDiagnostic.snapshot());
+            out.put("unknown",request.unknownEvents);out.put("boundary",request.boundaryEvents);out.put("content",request.contentEvents);
+        }finally{f.dispose();}
+        return out;
+    }
+

@@ -11,7 +11,7 @@
   "post_back_cache_oversized_path_does_not_invoke_or_claim_cache",
   "post_back_cache_ordinary_initial_read_never_uses_modal_reset",
   "post_back_cache_second_graph_failure_cannot_reset_after_any_complete_graph",
-  "post_back_cache_incomplete_returned_graph_never_grants_reset_or_planning",
+  "post_back_cache_pending_child_census_rejected_before_graph_return",
   "post_back_cache_sampling_deadline_before_catch_has_no_cache_call",
   "post_back_cache_api_crosses_sampling_deadline_never_gets_new_budget",
   "post_back_cache_request_deadline_before_catch_has_no_cache_call",
@@ -27,5 +27,6 @@
   "post_back_cache_historical_boundary_retained_and_current_C_D_rejects_new_event",
   "post_back_cache_historical_untyped_retained_and_current_C_D_rejects_new_event",
   "post_back_cache_new_profile_read_failure_stays_failure",
-  "post_back_cache_untyped_stale_then_full_pair_uses_original_retry_without_cache"
+  "post_back_cache_untyped_stale_then_full_pair_uses_original_retry_without_cache",
+  "post_back_cache_complete_bfs_unknown_ime_returned_graph_never_grants_reset_or_planning"
 ]

@@ -1,0 +1,351 @@
+
+    // All new Android clocks, node handles, absent metadata and side effects below are host fixtures.
+    // Actual a774 bytes are used unchanged only for the historical refusal. Derived facts never rewrite them.
+    static final List<Map<String,Object>> capturedLabelEvidence=new ArrayList<Map<String,Object>>();
+    static Map<String,Object> labelFactValues(NativeSearchLabelFact f){
+        Map<String,Object> v=new LinkedHashMap<String,Object>();
+        v.put("path",f.path);v.put("parent",f.parentClass);v.put("package",f.packageName);v.put("class",f.className);
+        v.put("window",f.windowId);v.put("left",f.left);v.put("top",f.top);v.put("right",f.right);v.put("bottom",f.bottom);
+        v.put("children",f.children);v.put("visible",f.visible);v.put("clickable",f.clickable);v.put("click_action",f.clickAction);
+        v.put("input_like",f.inputLike);v.put("password",f.password);v.put("interactive",f.interactive);
+        v.put("text",f.text);v.put("description",f.description);v.put("view",f.viewId);v.put("base",f.baseSignature);return v;
+    }
+    static NativeSearchLabelFact labelFactValues(Map<String,Object> v){
+        return new NativeSearchLabelFact((String)v.get("path"),(String)v.get("parent"),(String)v.get("package"),(String)v.get("class"),
+                ((Number)v.get("window")).intValue(),((Number)v.get("left")).intValue(),((Number)v.get("top")).intValue(),
+                ((Number)v.get("right")).intValue(),((Number)v.get("bottom")).intValue(),((Number)v.get("children")).intValue(),
+                (Boolean)v.get("visible"),(Boolean)v.get("clickable"),(Boolean)v.get("click_action"),(Boolean)v.get("input_like"),
+                (Boolean)v.get("password"),(Boolean)v.get("interactive"),(String)v.get("text"),(String)v.get("description"),
+                (String)v.get("view"),(String)v.get("base"));
+    }
+    static NativeSearchLabelFact changedLabelFact(NativeSearchLabelFact f,String key,Object value){
+        Map<String,Object> v=labelFactValues(f);v.put(key,value);return labelFactValues(v);
+    }
+    static List<NativeSearchLabelFact> coherentLabelFacts(){
+        List<NativeSearchLabelFact> facts=new ArrayList<NativeSearchLabelFact>();
+        facts.add(new NativeSearchLabelFact("0","",NativeAppGoal.XIAOMI_PACKAGE,"android.widget.FrameLayout",96,
+                0,0,1224,2992,1,true,false,false,false,false,false,"","","",NativeAppEvidence.hash("synthetic root")));
+        facts.add(new NativeSearchLabelFact("0/0","android.widget.FrameLayout",NativeAppGoal.XIAOMI_PACKAGE,"android.widget.ViewSwitcher",96,
+                156,287,1000,375,1,true,true,true,false,false,true,"","","",NativeAppEvidence.hash("synthetic switcher")));
+        facts.add(new NativeSearchLabelFact("0/0/0","android.widget.ViewSwitcher",NativeAppGoal.XIAOMI_PACKAGE,"android.widget.LinearLayout",96,
+                156,301,1000,360,1,true,false,false,false,false,false,"","搜索Xiaomi 18 正在火热预约中","",NativeAppEvidence.hash("synthetic hint")));
+        facts.add(new NativeSearchLabelFact("0/0/0/0","android.widget.LinearLayout",NativeAppGoal.XIAOMI_PACKAGE,"android.widget.TextView",96,
+                156,301,679,360,0,true,false,false,false,false,false,"Xiaomi 18 正在火热预约中","","",NativeAppEvidence.hash("synthetic term")));
+        return facts;
+    }
+    static NativeSearchCapturedLabels closedLabelFacts(List<NativeSearchLabelFact> facts){
+        NativeSearchCapturedLabels value=new NativeSearchCapturedLabels();for(NativeSearchLabelFact fact:facts)value.add(fact);
+        value.complete(facts.size(),0,false);return value;
+    }
+    static void noCapturedReferences(Fixture f){
+        for(NodeData node:f.nodes.values())check(node.obtained==node.recycled,"all explicit host node handles released: "+node.v.get("path")+" "+node.obtained+"/"+node.recycled);
+    }
+    static void capturedPlanningOnly(Fixture f){
+        check(f.effects==0&&!actionSlot.pending(),"label values and forward event identity never issue input");
+    }
+    static void completePlanningWorker(HeptaAccessibilityService s,Fixture f){
+        observationIo.one();s.main.one();capturedPlanningOnly(f);
+    }
+    static void capturedLabelCases()throws Exception{
+        one("captured_label_value_carriers_have_no_android_or_authority_references",()->{
+            for(java.lang.reflect.Field field:NativeSearchLabelFact.class.getDeclaredFields()){
+                check(java.lang.reflect.Modifier.isFinal(field.getModifiers()),"captured node values are immutable");
+                Class<?> type=field.getType();check(type==String.class||type==int.class||type==boolean.class,"no node/window/session/authority handle in fact");
+            }
+            NativeSearchCapturedLabels values=closedLabelFacts(coherentLabelFacts());
+            check(values.fact("0/0").path.equals("0/0"),"actual closed fact lookup");
+            rejected(()->values.add(coherentLabelFacts().get(0)));rejected(()->values.complete(4,0,false));
+            rejected(()->values.fact("0/9"));
+        });
+        one("captured_label_original_reducer_and_36_utf16_projection",()->{
+            List<NativeSearchLabelFact> facts=coherentLabelFacts();ObservedChildText.Result value=closedLabelFacts(facts).label("0/0");
+            check("derived".equals(value.status)&&value.sourcesComplete&&value.sources.size()==2,"original reducer retains two real descendant sources");
+            check("搜索Xiaomi 18 正在火热预约中 · Xiaomi 18 正在火热预约中".equals(value.text),"same closed BFS hint and term");
+            check("搜索Xiaomi 18 正在火热预约中 · Xiaomi 18 正在火热…".equals(ObservedTargetLabels.project(value.text)),"unchanged exact 36 UTF-16 projection");
+            check(value.rootSignature.equals(facts.get(1).baseSignature),"root signature belongs to the same captured fact");
+            check(value.sources.get(0).nodeSignature.equals(facts.get(2).baseSignature)
+                    &&value.sources.get(1).nodeSignature.equals(facts.get(3).baseSignature),"child source hashes come from these same values");
+            String edge=String.join("",Collections.nCopies(35,"A"))+"\uD83D\uDE00Z";
+            check(ObservedTargetLabels.project(edge).equals(String.join("",Collections.nCopies(35,"A"))+"…"),"original projector cannot split a surrogate pair");
+        });
+        one("captured_label_original_metadata_excludes_interactive_or_hidden_subtrees",()->{
+            for(String property:Arrays.asList("clickable","click_action","input_like","password","interactive","visible")){
+                List<NativeSearchLabelFact> facts=coherentLabelFacts();
+                facts.set(2,changedLabelFact(facts.get(2),property,!"visible".equals(property)));
+                ObservedChildText.Result value=closedLabelFacts(facts).label("0/0");
+                check(value.text.isEmpty(),"original reducer excludes the whole boundary subtree: "+property);
+            }
+            List<NativeSearchLabelFact> outside=coherentLabelFacts();outside.set(2,changedLabelFact(outside.get(2),"left",1100));
+            check(closedLabelFacts(outside).label("0/0").text.isEmpty(),"original geometric scope excludes nonintersecting descendants");
+            List<NativeSearchLabelFact> own=coherentLabelFacts();own.set(1,changedLabelFact(own.get(1),"text","own title"));
+            check("not_applicable".equals(closedLabelFacts(own).label("0/0").status),"own text retains original label priority");
+        });
+        one("captured_label_requires_complete_canonical_bfs_membership",()->{
+            for(String scenario:Arrays.asList("missing_root","missing_child","wrong_parent","extra_slot","wrong_visited","pending","truncated")){
+                List<NativeSearchLabelFact> facts=coherentLabelFacts();
+                if("missing_root".equals(scenario))facts.remove(0);
+                if("missing_child".equals(scenario))facts.remove(3);
+                if("wrong_parent".equals(scenario))facts.set(3,changedLabelFact(facts.get(3),"parent","android.widget.FrameLayout"));
+                if("extra_slot".equals(scenario))facts.set(1,changedLabelFact(facts.get(1),"children",2));
+                NativeSearchCapturedLabels value=new NativeSearchCapturedLabels();for(NativeSearchLabelFact fact:facts)value.add(fact);
+                rejected(()->value.label("0/0"));
+                rejected(()->value.complete(facts.size()+("wrong_visited".equals(scenario)?1:0),"pending".equals(scenario)?1:0,"truncated".equals(scenario)));
+            }
+            rejected(()->changedLabelFact(coherentLabelFacts().get(1),"path","0/00"));
+            rejected(()->changedLabelFact(coherentLabelFacts().get(1),"base","untrusted"));
+        });
+        one("captured_label_duplicate_owner_window_and_original_text_caps_reject",()->{
+            NativeSearchCapturedLabels duplicate=new NativeSearchCapturedLabels();NativeSearchLabelFact root=coherentLabelFacts().get(0);
+            duplicate.add(root);rejected(()->duplicate.add(root));
+            for(String key:Arrays.asList("window","package")){
+                List<NativeSearchLabelFact> facts=coherentLabelFacts();
+                facts.set(3,changedLabelFact(facts.get(3),key,"window".equals(key)?Integer.valueOf(97):"other.package"));
+                rejected(()->closedLabelFacts(facts));
+            }
+            NativeSearchCapturedLabels cap=new NativeSearchCapturedLabels();
+            NativeSearchLabelFact excess=changedLabelFact(root,"text",String.join("",Collections.nCopies(NativeActionSnapshotCheck.MAX_TEXT+1,"X")));
+            rejected(()->cap.add(excess));
+        });
+        one("captured_label_capture_preserves_full_raw_and_password_redaction",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NodeData data=f.nodes.get("0");String raw=String.join("",Collections.nCopies(1024,"X"));data.v.put("text",raw);data.v.put("description",raw);
+                AccessibilityNodeInfo node=new AccessibilityNodeInfo(data);try{
+                    NativeSearchLabelFact fact=captureNativeSearchLabelFact(node,"0","");
+                    NativeActionSnapshotCheck.Node census=snapshotNativeActionNode(node,"0","",null,null);
+                    check(fact.text.length()==1024&&fact.text.equals(census.text)&&fact.description.equals(census.desc),"original raw values are retained before prompt projection");
+                    data.v.put("password",true);
+                    NativeSearchLabelFact password=captureNativeSearchLabelFact(node,"0","");
+                    NativeActionSnapshotCheck.Node hidden=snapshotNativeActionNode(node,"0","",null,null);
+                    check(password.password&&password.text.isEmpty()&&password.description.isEmpty()
+                            &&hidden.text.isEmpty()&&hidden.desc.isEmpty(),"capture and original census both redact password raw values");
+                    data.v.put("password",false);data.v.put("input_type",1);
+                    check(captureNativeSearchLabelFact(node,"0","").inputLike,"actual capture reads the original inputType boundary");
+                    data.v.put("input_type",0);data.v.put("long_clickable",true);
+                    check(captureNativeSearchLabelFact(node,"0","").interactive,"actual capture reads the original long-click boundary");
+                    data.v.put("long_clickable",false);data.v.put("action_set_text",true);
+                    check(captureNativeSearchLabelFact(node,"0","").interactive,"actual capture reads the original set-text action boundary");
+                }finally{node.recycle();}
+                noCapturedReferences(f);
+            }
+        });
+        one("captured_label_actual_planning_rebuild_has_no_extra_live_child_queries",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.refreshGraphChildren=true;f.plan();
+                check(f.planning!=null&&f.capturedApplyCalls==2&&f.graphReads==2,"real producer encodes two separately closed synthetic BFS graphs: "+f.error);
+                for(NodeData n:f.nodes.values())check(n.childReads==0,"no early live recursive getChild in captured-label reducer");
+                check(f.planning.publication!=null,"original producer still has to seal and publish planning");
+                capturedPlanningOnly(f);noCapturedReferences(f);
+            }
+        });
+        one("captured_label_non_search_budget_retains_old_descendant_path",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();GraphBudget original=s.nativeSearchReadBudget(request);
+                GraphBudget ordinary=new GraphBudget(){
+                    public void check(){original.check();}
+                    public Cancellation cancellation(){return original.cancellation();}
+                    public long deadline(){return original.deadline();}
+                };
+                boolean oldMain=Looper.main;Looper.main=false;Graph graph=null;
+                try{graph=f.graph(ordinary,s.taskBackground);
+                    check(f.capturedApplyCalls==0&&f.lastCapturedLabels==null,"only the explicit search budget opts in");}
+                finally{if(graph!=null)graph.close();f.cancelled=true;Looper.main=oldMain;}
+                observationIo.one();s.main.one();capturedPlanningOnly(f);noCapturedReferences(f);
+            }
+        });
+        one("captured_label_changed_retained_base_refuses_and_closes_whole_graph",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.afterCapturedClosureHook=()->{NodeRef first=f.lastCapturedGraph.refs.values().iterator().next();first.node.data.v.put("enabled",!first.node.isEnabled());};
+                f.graphHook=()->{if(f.graphReads>1)f.cancelled=true;};
+                f.plan();check(f.planning==null&&f.capturedApplyCalls==0,"changed retained captured identity cannot be repaired from label values");
+                capturedPlanningOnly(f);noCapturedReferences(f);
+            }
+        });
+        one("captured_label_midapply_deadline_cannot_transfer_partial_references",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();final int[] checks={0};
+                f.afterCapturedClosureHook=()->SystemClock.beforeRead=()->{
+                    if(inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService","applyNativeSearchCapturedLabels")&&++checks[0]==2)
+                        SystemClock.now=request.deadline;
+                };
+                completePlanningWorker(s,f);
+                check(f.planning==null&&f.capturedApplyCalls==0&&checks[0]>=2,"original deadline is checked during actual reconstruction");
+                check(request.deadline==request.started+12000,"same request deadline remains unchanged");noCapturedReferences(f);
+            }
+        });
+        for(String scenario:Arrays.asList("copy","copy_signature","old_recycle")){
+            one("captured_label_"+scenario+"_failure_releases_all_owned_copies",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    f.afterCapturedClosureHook=()->{
+                        AccessibilityNodeInfo old=f.lastCapturedGraph.refs.values().iterator().next().node;
+                        if("copy".equals(scenario))old.failCopy=true;
+                        else if("copy_signature".equals(scenario))old.failCopySignature=true;
+                        else old.failRecycle=true;
+                    };
+                    f.plan();check(f.planning==null&&f.capturedApplyCalls==0,"actual reconstruction refuses injected local-copy failure");
+                    capturedPlanningOnly(f);noCapturedReferences(f);
+                }
+            });
+        }
+        one("captured_label_original_retained_text_bound_still_rejects",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();final int[] refusals={0};
+                f.afterCapturedApplyHook=graph->{
+                    boolean refused=false;
+                    try{s.applyNativeSearchCapturedLabels(graph,f.lastCapturedLabels,s.nativeSearchReadBudget(request),
+                            MAX_CHARACTERS,MAX_CHARACTERS,new StringBuilder());}
+                    catch(StaleObservation expected){refused="stale:captured search labels exceed the original retained text bound".equals(expected.getMessage());}
+                    check(refused,"actual reconstruction still rejects the original retained text bound in its bounded worker");
+                    refusals[0]++;
+                };
+                completePlanningWorker(s,f);check(refusals[0]==2&&f.planning!=null,"the rejected extra reduction cannot change either original complete graph");
+                capturedPlanningOnly(f);noCapturedReferences(f);
+            }
+        });
+        one("forward_window_bind_keeps_all_prior_boundary_counts",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                NativeSearchPlanning.EventMark prior=request.events.mark();check(prior.boundary==1&&prior.content==0&&request.events.window==-1,"event preceding identity read remains boundary");
+                final List<Map<String,Object>> rows=new ArrayList<Map<String,Object>>();
+                f.afterCapturedNodesHook=g->{
+                    NativeSearchGraphReadTrace trace=request.lastGraphRead;NativeSearchPlanning.EventMark bound=request.events.mark();
+                    check(trace.eventWindow!=null&&trace.eventWindowBound>=trace.started&&trace.eventWindowMark.evidence().equals(bound.evidence()),"actual identity closure binds before this graph's BFS");
+                    check(bound.boundary==prior.boundary&&bound.unknown==prior.unknown,"no past event rewritten at binding");
+                    s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    NativeSearchPlanning.EventMark after=request.events.mark();check(after.content==bound.content+1&&after.boundary==bound.boundary,"only future typed same-window event is content");
+                    Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("before",bound.evidence());row.put("after",after.evidence());rows.add(row);
+                };
+                completePlanningWorker(s,f);
+                check(f.planning!=null&&rows.size()==2&&request.events.mark().boundary==1,"full A/B and original publication still required");
+                Map<String,Object> evidence=new LinkedHashMap<String,Object>();evidence.put("kind","synthetic_actual_window_binding");
+                evidence.put("prior_boundary",prior.evidence());evidence.put("reads",rows);evidence.put("phone_operations",0);
+                evidence.put("original_request_deadline",request.deadline);capturedLabelEvidence.add(evidence);noCapturedReferences(f);
+            }
+        });
+        one("forward_window_known_unknown_and_untyped_events_keep_original_fence",()->{
+            for(int kind=0;kind<3;kind++){
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    final int which=kind;NativeSearchRequest request=f.startPlanning();final boolean[] checked={false};
+                    f.afterCapturedNodesHook=g->{
+                        if(checked[0])return;checked[0]=true;NativeSearchPlanning.EventMark before=request.events.mark();
+                        s.noteNativeSearchEvent(which==0?-1:7,which==1?97:96,which==0?null:NativeAppGoal.XIAOMI_PACKAGE,true,which!=2);
+                        NativeSearchPlanning.EventMark after=request.events.mark();
+                        boolean refused=false;try{requireNativeSearchPairEvents(before,after);}catch(IllegalStateException failure){refused=true;}
+                        check(refused&&!after.contentOnlySince(before),"actual unchanged fence refuses unknown/boundary/untyped event after identity binding");
+                        f.cancelled=true;
+                    };
+                    completePlanningWorker(s,f);check(checked[0]&&f.planning==null,"no value/authority is published from the contaminated interval");noCapturedReferences(f);
+                }
+            }
+        });
+        one("forward_window_fresh_profile_proofs_match_only_same_lifetime_identity",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                final List<FrozenObservationWindow> identities=new ArrayList<FrozenObservationWindow>();
+                f.afterCapturedNodesHook=g->identities.add(s.activeNativeSearchObservation.lastGraphRead.eventWindow);
+                f.plan();check(f.planning!=null&&identities.size()==2,"real producer completed two full graph reads");
+                check(identities.get(0).matches(identities.get(1)),"fresh proof nonce/time alone is not a window identity change");
+                check(!identities.get(0).profileWindow.proofId.equals(identities.get(1).profileWindow.proofId),"fixture performed distinct real profile reply validations");
+                noCapturedReferences(f);
+            }
+        });
+        one("forward_window_wrong_complete_identity_cannot_bind_future_events",()->{
+            for(String scenario:Arrays.asList("owner","generation","target","package","windows","profile_expired")){
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchRequest request=f.startPlanning();final NativeSearchGraphReadTrace[] first={null};
+                    f.beforeCapturedNodesHook=g->{
+                        if(first[0]!=null)return;first[0]=request.lastGraphRead;
+                        if("owner".equals(scenario))g.backgroundOwnerSha=NativeAppEvidence.hash("different owner");
+                        if("generation".equals(scenario))g.backgroundGeneration=UUID.randomUUID().toString();
+                        if("target".equals(scenario))g.nativeActionTargetSha=NativeAppEvidence.hash("different target");
+                        if("package".equals(scenario))g.packageName="another.package";
+                        if("windows".equals(scenario))g.nativeActionWindows=null;
+                        if("profile_expired".equals(scenario))SystemClock.now=g.profileWindow.expiresElapsedMs;
+                    };
+                    f.graphHook=()->{if(f.graphReads>1)f.cancelled=true;};
+                    completePlanningWorker(s,f);
+                    check(first[0]!=null&&first[0].eventWindow==null&&first[0].failure!=null&&f.planning==null,"original actual identity gate refused "+scenario);
+                    check(request.events.window==-1,"failed identity has no new event target");noCapturedReferences(f);
+                }
+            }
+        });
+        one("forward_window_binding_rechecks_original_deadline_and_cancel",()->{
+            for(boolean cancel:Arrays.asList(false,true)){
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchRequest request=f.startPlanning();final NativeSearchGraphReadTrace[] first={null};
+                    f.beforeCapturedNodesHook=g->{first[0]=request.lastGraphRead;if(cancel)f.cancelled=true;else SystemClock.now=request.deadline;};
+                    completePlanningWorker(s,f);
+                    check(first[0]!=null&&first[0].eventWindow==null&&f.planning==null&&request.events.window==-1,"late/cancelled original request cannot bind");
+                    noCapturedReferences(f);
+                }
+            }
+        });
+        one("forward_window_completed_census_must_match_its_bound_identity",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();final NativeSearchGraphReadTrace[] first={null};
+                f.afterCapturedApplyHook=g->{if(first[0]==null){first[0]=request.lastGraphRead;g.rotation=1;}};
+                f.graphHook=()->{if(f.graphReads>1)f.cancelled=true;};
+                completePlanningWorker(s,f);
+                check(first[0]!=null&&first[0].eventWindow!=null&&!first[0].completedWindowMatched&&first[0].failure!=null&&f.planning==null,"early identity never substitutes for the complete returned graph identity");
+                noCapturedReferences(f);
+            }
+        });
+        one("forward_window_failed_partial_graph_never_becomes_planning",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchRequest request=f.startPlanning();final NativeSearchGraphReadTrace[] first={null};
+                f.refreshGraphChildren=true;
+                f.afterCapturedNodesHook=g->{if(first[0]==null){first[0]=request.lastGraphRead;for(Map.Entry<String,NodeData> n:f.nodes.entrySet())
+                    if(!"0".equals(n.getKey())){n.getValue().refresh=false;break;}}};
+                f.graphHook=()->{if(f.graphReads>1)f.cancelled=true;};
+                completePlanningWorker(s,f);
+                check(first[0]!=null&&first[0].eventWindow!=null&&!first[0].graphReturned&&!first[0].fullGraph&&first[0].failure instanceof StaleObservation&&f.planning==null,"bound metadata cannot promote partial node traversal");
+                check(request.events.mark().boundary>=0&&f.effects==0,"no effect/trace reset");noCapturedReferences(f);
+            }
+        });
+        capturedLabelActualOriginalCases();
+    }
+    static void capturedLabelActualOriginalCases()throws Exception{
+        String path=System.getProperty("hepta.test.capturedLabelOriginal");if(path==null)return;
+        final byte[] original=Files.readAllBytes(Paths.get(path));
+        check(original.length==121578&&"77eee186865f051c625b39b9c28da421519c371ad95099f0387d3a673f310c7e".equals(sha(original)),"exact full a774 original");
+        final JSONObject saved=new JSONObject(new String(original,StandardCharsets.UTF_8)),pair=saved.getJSONObject("last_complete_pair");
+        one("captured_label_a774_unchanged_full_pair_preserves_original_role_refusal",()->{
+            NativeActionSnapshotCheck.Snapshot a=fullSwapSnapshot(pair.getJSONObject("first").getJSONObject("census"));
+            NativeActionSnapshotCheck.Snapshot b=fullSwapSnapshot(pair.getJSONObject("second").getJSONObject("census"));
+            check(a.nodes.size()==75&&b.nodes.size()==75,"both original complete censuses remain unchanged");
+            String reason=null;try{NativeSearchRole.compare(a,b);}catch(IllegalArgumentException refused){reason=refused.getMessage();}
+            check(reason!=null&&reason.contains("hint original projected label"),"original exact role gate refuses inconsistent first-graph parent label: "+reason);
+            JSONObject first=pair.getJSONObject("first");NativeSearchPlanning.EventMark start=NativeSearchPlanning.EventMark.read(first.getJSONObject("before_watermark").toMap());
+            NativeSearchPlanning.EventMark end=NativeSearchPlanning.EventMark.read(first.getJSONObject("after_watermark").toMap());
+            check(end.boundary-start.boundary==47&&!end.contentOnlySince(start),"the historical 47 boundary events are not retrospectively reclassified");
+            Map<String,Object> evidence=new LinkedHashMap<String,Object>();evidence.put("kind","unchanged_device_failure_censuses");
+            evidence.put("input_path",path);evidence.put("input_sha256",sha(original));evidence.put("original_role_refusal",reason);
+            evidence.put("first_before",start.evidence());evidence.put("first_after",end.evidence());
+            evidence.put("replayed_device_success",false);capturedLabelEvidence.add(evidence);
+        });
+        one("captured_label_a774_full_nodes_in_explicit_fresh_host_bfs",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                final List<Map<String,Object>> derived=new ArrayList<Map<String,Object>>();
+                f.graphHook=()->recordedHomeSample(f,pair.getJSONObject(f.graphReads==1?"first":"second").getJSONObject("census"));
+                f.refreshGraphChildren=true;
+                f.afterCapturedApplyHook=g->{
+                    check(g.nativeActionBuilding.size()==75&&f.lastCapturedLabels.fact("0/0/3")!=null,"every original node participates in the synthetic full BFS");
+                    for(PhoneObservation.Node row:g.rows){
+                        NodeRef ref=g.refs.get(row.id);NativeSearchLabelFact fact=f.lastCapturedLabels.fact(row.nativeTreePath);
+                        check(row.observedAppTreeSignature.equals(ref.appTreeSignature)&&fact.baseSignature.equals(baseNodeSignature(ref.node)),"new label and actual copied reference bind the same captured base");
+                    }
+                    NativeActionSnapshotCheck.Node target=null;for(NativeActionSnapshotCheck.Node node:g.nativeActionBuilding)if("0/0/3".equals(node.path))target=node;
+                    check(target!=null&&target.label.equals(ObservedTargetLabels.project(f.lastCapturedLabels.label("0/0/3").text)),"parent label comes solely from this complete BFS");
+                    Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("read",f.graphReads);row.put("nodes",g.nativeActionBuilding.size());
+                    row.put("target_label_sha256",NativeAppEvidence.hash(target.label));row.put("target_ref_sha256",target.v.get("ref_signature_sha256"));derived.add(row);
+                };
+                f.plan();check(f.planning!=null&&f.graphReads==2&&f.capturedApplyCalls==2,"complete fresh host facts pass the unchanged real Role and producer: "+f.error);
+                check("0/0/3".equals(f.planning.role.actionPath),"unchanged role identifies the same supported search control");
+                for(NodeData node:f.nodes.values())check(node.childReads==0,"no independent live descendant label reads");
+                Map<String,Object> evidence=new LinkedHashMap<String,Object>();evidence.put("kind","original_node_values_with_explicit_synthetic_android_owner_clock_metadata");
+                evidence.put("input_path",path);evidence.put("input_sha256",sha(original));evidence.put("derived",derived);
+                evidence.put("synthetic_missing_metadata",Arrays.asList("input_type=0","long_clickable=false","unrecorded action membership=false"));
+                evidence.put("historical_watermarks_not_reused_as_current",true);evidence.put("phone_operations",0);evidence.put("replayed_device_success",false);
+                capturedLabelEvidence.add(evidence);capturedPlanningOnly(f);noCapturedReferences(f);
+            }
+            check(Arrays.equals(original,Files.readAllBytes(Paths.get(path))),"private full raw original remains byte-identical");
+        });
+    }

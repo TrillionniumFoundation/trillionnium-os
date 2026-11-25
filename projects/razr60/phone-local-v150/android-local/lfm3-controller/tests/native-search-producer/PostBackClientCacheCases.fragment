@@ -189,13 +189,46 @@
                 cacheOriginalClocks(f,home,r);
             }
         });
-        one("post_back_cache_incomplete_returned_graph_never_grants_reset_or_planning",()->{
+        one("post_back_cache_pending_child_census_rejected_before_graph_return",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                CacheHomeFixture home=cachePrepareHome(s,f);f.graphHook=()->{
-                    f.incompleteGraph=f.graphReads==3;if(f.graphReads>3)cachePartialFailure(f);
+                CacheHomeFixture home=cachePrepareHome(s,f);final NativeSearchGraphReadTrace[] first={null};final boolean[] preTypedChecked={false};
+                f.graphHook=()->{
+                    f.incompleteGraph=f.graphReads==3;
+                    if(f.graphReads==4){
+                        check(f.cacheCalls==0&&!s.activeNativeSearchObservation.clientCacheResetClaimed,
+                                "the first non-typed closed-BFS rejection cannot authorize a cache reset");
+                        preTypedChecked[0]=true;
+                    }
+                    if(f.graphReads>3)cachePartialFailure(f);
                 };
+                f.afterCapturedNodesHook=graph->{if(f.graphReads==3)first[0]=s.activeNativeSearchObservation.lastGraphRead;};
+                NativeSearchRequest r=cacheStartHome(s,f,home);
+                s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                NativeSearchPlanning.EventMark prior=r.events.mark();cachePump(s);
+                check(preTypedChecked[0]&&first[0]!=null&&!first[0].graphReturned&&first[0].failure instanceof StaleObservation
+                        &&!((StaleObservation)first[0].failure).backgroundChildUnavailable
+                        &&"stale:complete actual BFS required before deriving search labels".equals(first[0].failure.getMessage()),
+                        "original pending-child fixture now fails closed BFS before a graph can return");
+                check(r.graphReturns==0&&f.planning==null&&!r.published&&r.path==null&&f.effects==0,
+                        "partial facts never become a graph, publication or input");
+                check(f.cacheCalls<=1&&prior.evidence().equals(r.events.mark().evidence()),
+                        "later typed failure may use only the original one reset without rewriting any event");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        one("post_back_cache_complete_bfs_unknown_ime_returned_graph_never_grants_reset_or_planning",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);final NativeSearchGraphReadTrace[] first={null};
+                f.graphHook=()->{if(f.graphReads>3)cachePartialFailure(f);};
+                f.afterCapturedNodesHook=graph->{if(f.graphReads==3)first[0]=s.activeNativeSearchObservation.lastGraphRead;};
+                f.afterCapturedApplyHook=graph->{if(f.graphReads==3)graph.state.imeVisibility=ImeVisibility.UNKNOWN;};
                 NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
-                check(r.graphReturns>=1&&f.planning==null&&f.cacheCalls==0&&!r.clientCacheResetClaimed,"even an incomplete returned graph excludes this narrower first-failure branch");
+                check(first[0]!=null&&first[0].graphReturned&&!first[0].fullGraph
+                        &&first[0].failure instanceof StaleObservation
+                        &&"stale:native planning/effect requires a complete actual current census".equals(first[0].failure.getMessage()),
+                        "actual readNativeSearchSample counts then rejects the final-IME incomplete graph");
+                check(r.graphReturns>=1&&f.planning==null&&f.cacheCalls==0&&!r.clientCacheResetClaimed,
+                        "even an incomplete returned graph excludes this narrower first-failure branch");
                 cacheOriginalClocks(f,home,r);
             }
         });

@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.captured-label-producer-expected.v1",
+  "synthetic_actual_methods": [
+    "captured_label_value_carriers_have_no_android_or_authority_references",
+    "captured_label_original_reducer_and_36_utf16_projection",
+    "captured_label_original_metadata_excludes_interactive_or_hidden_subtrees",
+    "captured_label_requires_complete_canonical_bfs_membership",
+    "captured_label_duplicate_owner_window_and_original_text_caps_reject",
+    "captured_label_capture_preserves_full_raw_and_password_redaction",
+    "captured_label_actual_planning_rebuild_has_no_extra_live_child_queries",
+    "captured_label_non_search_budget_retains_old_descendant_path",
+    "captured_label_changed_retained_base_refuses_and_closes_whole_graph",
+    "captured_label_midapply_deadline_cannot_transfer_partial_references",
+    "captured_label_original_retained_text_bound_still_rejects",
+    "forward_window_bind_keeps_all_prior_boundary_counts",
+    "forward_window_known_unknown_and_untyped_events_keep_original_fence",
+    "forward_window_fresh_profile_proofs_match_only_same_lifetime_identity",
+    "forward_window_wrong_complete_identity_cannot_bind_future_events",
+    "forward_window_binding_rechecks_original_deadline_and_cancel",
+    "forward_window_completed_census_must_match_its_bound_identity",
+    "forward_window_failed_partial_graph_never_becomes_planning",
+    "captured_label_copy_failure_releases_all_owned_copies",
+    "captured_label_copy_signature_failure_releases_all_owned_copies",
+    "captured_label_old_recycle_failure_releases_all_owned_copies"
+  ],
+  "archived_original_and_derived_host": [
+    "captured_label_a774_unchanged_full_pair_preserves_original_role_refusal",
+    "captured_label_a774_full_nodes_in_explicit_fresh_host_bfs"
+  ]
+}

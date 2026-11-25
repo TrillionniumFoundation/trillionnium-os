@@ -235,6 +235,14 @@ public final class ObserverPipelineHost {
     /** Explicit fail-only port: legacy scheduling fixtures cannot admit scoped form pairs.
      * The dedicated form-observation gate substitutes both actual production helpers. */
     private Map<String,Object> nativeCtripFormPair(ObservationRequest request,CaptureIdentity identity,Graph after){return null;}
+    /** Diagnostic-only legacy ports. They cannot classify a form, alter events,
+     * grant an input, or publish. The dedicated observer bridge replaces this
+     * complete block with the actual production helpers/provider constants. */
+    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}
+    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){return null;}
+    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,
+            ObservationProduct product,ObservationEventWatermark persisted,boolean scoped,boolean complete,boolean retry){return null;}
+    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,IllegalArgumentException failure){}
     // No native search Session is bound in these original observer fixtures.
     // Unexpected binding is refused; these ports cannot create planning or an Offer.
     private final Object nativeSearchSession=null,activeNativeSearchObservation=null;
