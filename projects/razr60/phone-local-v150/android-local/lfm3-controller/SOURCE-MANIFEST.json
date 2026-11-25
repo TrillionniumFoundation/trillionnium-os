@@ -1,45 +1,21 @@
 {
   "android_qualified": false,
-  "base_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
-  "base_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+  "base_head": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
+  "base_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
   "candidate_exact_git_head": null,
-  "candidate_status": "reviewed_xiaomi_query_reservation_and_profile_cleanup_successor",
+  "candidate_status": "reviewed_profile_cleanup_diagnostic_screen_gate_closure",
   "complete_source_files": 2598,
   "current_successor_delta": {
-    "baseline": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
-    "production_changed": true,
-    "reviewed_production_sha256": {
-      "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336",
-      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": "a4f8e3ea65e4ac70f0239b14426496af5fb80bb21ac6e793debf4062393dfc4a"
-    },
+    "baseline": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
+    "production_changed": false,
+    "reviewed_paths": [
+      "tests/public-screen-lease/run_host.py"
+    ],
     "model_weights_changed": false,
     "native_runtime_changed": false,
     "geniex_sdk_unchanged": "0.10",
     "automatic_default_model_unchanged": true,
-    "reviewed_paths": [
-      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "tests/native-app-provider/NativeXiaomiQueryReservationHostTest.java",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/92c4b25021fe4385b28eed28d9f583a2-native-ax.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/PROVENANCE.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/d32cf3d7573345f68183b18233b0c8ee-native-ax.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/native-app-binding.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/native-app-outcome-03.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-03-action-derived.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-03-before.json",
-      "tests/native-app-provider/fixtures/xiaomi-query-stale-e7ef24/step-04-before.json",
-      "tests/native-app-provider/run_host.py",
-      "tests/profile-cleanup-sampling/ProfileCleanupDiagnosticsHostTest.java",
-      "tests/profile-cleanup-sampling/ProfileCleanupSamplingHostTest.java",
-      "tests/profile-cleanup-sampling/README.md",
-      "tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt",
-      "tests/profile-cleanup-sampling/run_candidate.py",
-      "tests/profile-cleanup-sampling/run_host.py",
-      "tools/run_host_checks.py"
-    ],
-    "scope": "Release a Xiaomi search reservation only after durable proved-unentered stale refusal and fresh reobservation; align provider capabilities with the admitted domain. Combine duplicate nonmutating public-history reads within the original cleanup budget and preserve the first diagnostic failure separately. No model/native changes or phone success claim."
+    "scope": "Close the screen-lease static integration gate over the complete bounded profile cleanup diagnostic prefix followed by the unchanged screen retirement. Production bytes match 454dd39."
   },
   "files": [
     {
@@ -11264,8 +11240,8 @@
     },
     {
       "path": "tests/public-screen-lease/run_host.py",
-      "bytes": 10720,
-      "sha256": "e6f98157f37e190c215d3f168ccc91db51333f866ab2efa46a507cf84b057add"
+      "bytes": 11656,
+      "sha256": "de834160d5ba4d8216da2832d4b3a6b5e97272d15b8f1ead7217f58745a8b1f0"
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
@@ -13029,13 +13005,14 @@
     }
   ],
   "historical_provenance": {
-    "previous_component_git_tree_sha1": "2f94d778ca6747c0f3f8965896e83a4cb8d53d73",
-    "previous_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+    "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+    "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
     "previous_host_and_phone_results_are_not_current_qualification": true,
-    "previous_full_host_passed": true,
+    "previous_full_host_passed": false,
+    "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+    "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
     "original_e7ef24_business_status": "blocked",
     "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-    "observed_surface_retire_to_last_history_ms": 1395,
     "exact_cleanup_started_time_unavailable": true
   },
   "host_validation_at_preparation": {
@@ -13052,17 +13029,19 @@
     "current_cleanup_diagnostic_assertions": 14,
     "hardware_operations": 0,
     "phone_qualified": false,
-    "retained_host_checks_and_provenance_are_historical": true
+    "retained_host_checks_and_provenance_are_historical": true,
+    "targeted_screen_lease_passed": true,
+    "original_full_host_failure_preserved": true
   },
   "main_java_sources": 220,
   "phone_qualified": false,
   "production_build_inputs_count": 397,
   "production_input_map_sha256": "e3fbd64de3b12bfbcf81e9ecab6530ace8150a737e1bab59a9b06c267c131c65",
   "schema": "hepta.local-source.v3",
-  "scope": "Release a Xiaomi search reservation only after durable proved-unentered stale refusal and fresh reobservation; align provider capabilities with the admitted domain. Combine duplicate nonmutating public-history reads within the original cleanup budget and preserve the first diagnostic failure separately. No model/native changes or phone success claim.",
-  "source_parent_head": "86d73a3531c64846fa8e60bf9f3f6147ca0e988b",
-  "source_parent_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
-  "source_snapshot_predecessor_manifest_sha256": "1daee8c62c18678d1ff225b28cc82d0f8ddfed92d16b322887ce92525d7992ef",
+  "scope": "Close the screen-lease static integration gate over the complete bounded profile cleanup diagnostic prefix followed by the unchanged screen retirement. Production bytes match 454dd39.",
+  "source_parent_head": "454dd39bda0f4a82c7f9d0ff04b9f9454e752e9a",
+  "source_parent_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
+  "source_snapshot_predecessor_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "inherited_source_behavior_metadata": {
@@ -13307,5 +13286,28 @@
     "diagnostic_assertions": 14,
     "portable_fixture": "tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt",
     "actual_archive_host_validation_is_separate": true
+  },
+  "installed_86d_production_delta": {
+    "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336",
+    "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
+    "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": "a4f8e3ea65e4ac70f0239b14426496af5fb80bb21ac6e793debf4062393dfc4a"
+  },
+  "current_screen_lease_diagnostic_closure": {
+    "production_unchanged": true,
+    "complete_current_prefix_required": true,
+    "original_retirement_call_required": true,
+    "prefix_unique": true,
+    "old_failure_preserved": true,
+    "synthetic_negative_source_cases": [
+      "missing_diagnostic_record",
+      "missing_diagnostic_exception_isolation",
+      "missing_screen_retirement",
+      "early_return_skips_screen_retirement",
+      "screen_retirement_moved_before_diagnostic",
+      "duplicate_full_prefix"
+    ],
+    "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451",
+    "complete_prefix_sha256": "4f1905735c2994948f164d33cd2fe75299b6b7bc610e7f2337670bd75c8f04e0",
+    "projection_compiled": false
   }
 }

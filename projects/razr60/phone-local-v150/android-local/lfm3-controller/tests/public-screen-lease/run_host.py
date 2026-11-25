@@ -21,7 +21,14 @@ def main():
         'initial_wait_uses_frozen_deadline':'        },initializationDeadline,Thread::sleep);',
         'cleanup_latch':'        closing.set(true);\n        retirePublicScreenLease();\n        retireBootRead();',
         'notes_quarantine':'    private void quarantinePublicNotes(String reason){\n        retirePublicScreenLease();',
-        'profile_quarantine':'    private void quarantineProfile(String reason){\n        retirePublicScreenLease();',
+        'profile_quarantine':(
+            '    private void quarantineProfile(String reason){\n'
+            '        // Keep the first cleanup refusal separate from the original close/Stop reason.\n'
+            '        // Diagnostics never change custody, deadlines, or the cleanup outcome.\n'
+            '        try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}\n'
+            '        catch(Throwable unavailable){/* Original quarantine remains authoritative. */}\n'
+            '        retirePublicScreenLease();'
+        ),
         'absolute_watchdog':'if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);',
         'private_mode_unchanged':'        if(config.publicOwnGroupScope==null)return;',
         'scoped_flags':'if(flags!=0x0000000a||selected!=displayId||selected<=1||remaining<=0||remaining>BrokerProtocol.MAX_TTL_MS',
@@ -45,6 +52,8 @@ def main():
         actual=(framework if key=='physical_group_census' else
                 legacy_cleanup if key=='cleanup_latch' else broker)
         if value not in actual:raise RuntimeError('actual broker/framework power integration missing: '+key)
+        if key=='profile_quarantine' and actual.count(value)!=1:
+            raise RuntimeError('profile cleanup diagnostic and screen retirement prefix is not unique')
     if broker.count('token.acquire(remaining);')!=1 or broker.count('newDisplayWakeLock.invoke(')!=1:
         raise RuntimeError('screen lease must have one actual acquire site')
     deadline='final long displayInitializationDeadline=Math.min(Math.min(r.deadline,expires),SystemClock.elapsedRealtime()+5000);'
@@ -122,6 +131,8 @@ final class PublicScreenInitializationFixture {
         'release_requires_listener_drain':True,'projection_compiled':False,'calendar_runtime_executed':False,
         'actual_cleanup_hunk_sha256':hashlib.sha256(calendar_cleanup.encode()).hexdigest(),
         'actual_release_hunk_sha256':hashlib.sha256(calendar_release.encode()).hexdigest()}
+    report['profile_cleanup_diagnostic_source_contract']={'complete_prefix_sha256':hashlib.sha256(exact['profile_quarantine'].encode()).hexdigest(),
+        'original_screen_retire_after_bounded_diagnostic':True,'projection_compiled':False,'diagnostic_runtime_covered_by_separate_gate':True}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)
         stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');stdout.write_bytes(result.stdout);stderr.write_bytes(result.stderr)
