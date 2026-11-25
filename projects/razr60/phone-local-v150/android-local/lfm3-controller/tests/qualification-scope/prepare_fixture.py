@@ -312,6 +312,19 @@ final class VlmInferenceAdapter {
     if snapshot_parts['snapshot'].count(observer_only) != 1:
         raise RuntimeError('one observer-only helper block in collector fixture')
     snapshot_parts['snapshot'] = snapshot_parts['snapshot'].replace(observer_only, '', 1)
+    # This legacy fixture has no managed Ctrip task/authorization binding.
+    # Keep the complete production readGraph and its opt-in call unchanged.
+    # An unexpected native Ctrip call must fail, never synthesize owner authority.
+    captured_ctrip_labels = java_method(s,
+        '    private boolean capturedCtripLabelsAllowed(Graph graph,BackgroundSession background,GraphBudget budget){')
+    captured_ctrip_labels_port = (
+        '    private boolean capturedCtripLabelsAllowed(Graph graph,BackgroundSession background,GraphBudget budget){\n'
+        '        throw new AssertionError("no managed Ctrip census owner in legacy observation fixture");\n'
+        '    }\n')
+    if snapshot_parts['snapshot'].count(captured_ctrip_labels) != 1:
+        raise RuntimeError('one complete managed Ctrip opt-in member in legacy collector')
+    snapshot_parts['snapshot'] = snapshot_parts['snapshot'].replace(
+        captured_ctrip_labels, captured_ctrip_labels_port, 1)
     fixture = (Path(__file__).parent / 'BackgroundObservationFixture.template').read_text()
     for name, code in snapshot_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     if '{{' in fixture:raise RuntimeError('unfilled background snapshot fixture')
@@ -520,6 +533,14 @@ final class PublicProfileBusinessRecoveryClient {
             'actual_mode_admission_sha256':hashlib.sha256(ax_mode_binding.encode()).hexdigest(),
             'legacy_dispatch_methods_modified':False,
             'separate_ax_gate_execution_not_claimed_here':True},
+         'managed_ctrip_opt_in_legacy_boundary':{
+             'actual_member_bytes':len(captured_ctrip_labels.encode()),
+             'actual_member_sha256':hashlib.sha256(captured_ctrip_labels.encode()).hexdigest(),
+             'refusal_port_sha256':hashlib.sha256(captured_ctrip_labels_port.encode()).hexdigest(),
+             'actual_read_graph_body_unmodified':True,
+             'legacy_task_target_unbound':True,
+             'covered_by':'tests/native-ctrip-coherent-census/run_host.py',
+             'boundary':'Only this legacy generated class replaces the managed Ctrip opt-in with an explicit AssertionError; unexpected entry fails. No owner/lease/authorization is supplied.'},
         'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},
         'model_settings_helpers_excluded_from_legacy_fixture':{
             'covered_by':'tests/local-model-settings/run_host.py',

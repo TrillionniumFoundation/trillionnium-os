@@ -76,11 +76,27 @@ PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.templat
 def reverse_png_closure(path, raw):
     actual_current_sha256 = sha(raw)
     child_identity_template_inverse = None
+    diagnostic_template_inverse = None
     if path == 'tests/observation-pipeline/ObserverPipelineHost.template':
+        # Exact diagnostic-only ports are reversed solely in this proof copy.
+        # The actual new template remains the input to events.generate/compilation.
+        diagnostic_ports = b'    /** Diagnostic-only legacy ports. They cannot classify a form, alter events,\n     * grant an input, or publish. The dedicated observer bridge replaces this\n     * complete block with the actual production helpers/provider constants. */\n    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}\n    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){return null;}\n    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,\n            ObservationProduct product,ObservationEventWatermark persisted,boolean scoped,boolean complete,boolean retry){return null;}\n    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,IllegalArgumentException failure){}\n'
+        if actual_current_sha256 == 'fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e':
+            need(len(raw) == 38545 and raw.count(diagnostic_ports) == 1,
+                 'exact one diagnostic-only legacy port block required')
+            raw = raw.replace(diagnostic_ports, b'', 1)
+            need(len(raw) == 37723 and sha(raw) ==
+                 'fb3fb74feb4e7e67a16953ae80b00a51bdd34a31b0fb799dabc274d8368300ba',
+                 'whole pre-diagnostic template bytes must be restored')
+            diagnostic_template_inverse = {
+                'actual_current_sha256':actual_current_sha256,
+                'whole_prior_sha256':sha(raw),'removed_bytes':len(diagnostic_ports),
+                'complete_prior_bytes_restored':True,'proof_copy_only':True,
+                'actual_compilation_uses_unmodified_current_template':True}
         # Reverse only the exact fail-only host port in a historical proof copy.
         # events.generate still compiles the actual current template and Service.
         child_identity_port = b'    /** Fail-only legacy boundary. The dedicated Ctrip bridge compiles the actual helper. */\n    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,\n            ObservationEventWatermark pairStart,StaleObservation failure){return null;}\n'
-        if actual_current_sha256 == 'fb3fb74feb4e7e67a16953ae80b00a51bdd34a31b0fb799dabc274d8368300ba':
+        if sha(raw) == 'fb3fb74feb4e7e67a16953ae80b00a51bdd34a31b0fb799dabc274d8368300ba':
             need(len(raw) == 37723 and raw.count(child_identity_port) == 1,
                  'exact one child-identity fail-only template port required')
             raw = raw.replace(child_identity_port, b'', 1)
@@ -124,6 +140,7 @@ def reverse_png_closure(path, raw):
                      'operations':len(spec['operations']),'proof_copy_only':True,
                      'compile_dependency_inverse':dependency_inverse,
                      'child_identity_template_inverse':child_identity_template_inverse,
+                     'diagnostic_template_inverse':diagnostic_template_inverse,
                      'compilation_uses_actual_current_source':True}
 
 # These exact additions are reversed only in the historical proof copy.

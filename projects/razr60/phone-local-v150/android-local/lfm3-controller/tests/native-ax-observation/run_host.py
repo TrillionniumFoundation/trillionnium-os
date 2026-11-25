@@ -15,6 +15,11 @@ def generate(source,out,h,snap):
  base=out/'base';base.mkdir();meta=snap.generate(source,base,h)
  path=out/'ObserverPipelineHost.java';s=(base/'ObserverPipelineHost.java').read_text()
  service=(source/PKG/'HeptaAccessibilityService.java').read_text()
+ # The shared legacy template has a diagnostic-only PACKAGE type port.
+ # This dedicated AX bridge supplies the real provider constants/predicate below.
+ # Remove only that exact duplicate; keep the three fail-only diagnostic methods.
+ diagnostic_provider_port='    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}\n'
+ s=once(s,diagnostic_provider_port,'')
  block=h.section(service,'    /** Native text capture mode is bound once','    synchronized TaskAuthorization.Gate bindTaskAuthorization(')
  for prefix in ['    private void bindNativeAxObservationRequest(ObservationRequest request){','    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){','    private void captureNativeAxObservation(ObservationRequest request){']:
   s=once(s,h.body(s,prefix),'')
@@ -107,6 +112,8 @@ def generate(source,out,h,snap):
  return {'schema':'hepta.native-ax-extraction.v1','production_ax_methods_verbatim':True,
          'production_observer_original_methods_verbatim':True,'actual_helper_compiled':True,
          'ax_block_sha256':h.sha(block.encode()),'legacy_extraction':meta,
+         'diagnostic_provider_port_removed_sha256':h.sha(diagnostic_provider_port.encode()),
+         'actual_provider_value_members_unchanged':True,
          'boundary':'Actual mode binding, both complete-census serialization, worker, receipt canonical-byte/hash validation, endpoint gates and publisher. Android graph/window/model capability/file endpoints are explicit fakes; actual full PhoneObservation also compiled by unchanged snapshot source closure. No phone/SDK/model execution.'}
 def main():
  ap=argparse.ArgumentParser()
