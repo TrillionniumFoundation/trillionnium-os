@@ -105,6 +105,11 @@ final class NativeXiaomiSearchInputObservation {
     }
 
     static Map<String,Object> compare(Snapshot before,Snapshot after){return compare(before,after,null);}
+    /** Separate original SET_QUERY action proof. Historical search terms stay
+     * exact and provide neither a query value nor any click/result authority. */
+    static Map<String,Object> compareQueryTyping(Snapshot before,Snapshot after){
+        return compare(before,after,null,true);
+    }
     /** Separate filled-button action predicate; never admits historical input
      * publication or relaxes the existing empty-editor observation predicate. */
     static Map<String,Object> compareFilledQuery(Snapshot before,Snapshot after,String literal){
@@ -112,6 +117,9 @@ final class NativeXiaomiSearchInputObservation {
         return compare(before,after,literal);
     }
     private static Map<String,Object> compare(Snapshot before,Snapshot after,String literal){
+        return compare(before,after,literal,false);
+    }
+    private static Map<String,Object> compare(Snapshot before,Snapshot after,String literal,boolean historyPrefix){
         need(before!=null&&after!=null,"two complete actual input censuses");
         need(before.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE)
                 &&after.env.keySet().equals(NativeActionSnapshotCheck.PROFILE_ENVELOPE),"managed-profile input only");
@@ -122,8 +130,9 @@ final class NativeXiaomiSearchInputObservation {
         a.remove("captured_elapsed_ms");b.remove("captured_elapsed_ms");
         need(a.equals(b),"input window/display/IME/owner/installation/profile differs");
         need(before.nodes.keySet().equals(after.nodes.keySet()),"complete input node membership changed");
-        Template left=template(before,literal),right=template(after,literal);
-        need(left.chips.equals(right.chips)&&left.carousel.equals(right.carousel),"recommendation membership changed");
+        Template left=template(before,literal,historyPrefix),right=template(after,literal,historyPrefix);
+        need(left.chips.equals(right.chips)&&left.carousel.equals(right.carousel)
+                &&left.heading==right.heading,"recommendation membership changed");
         List<String> changed=new ArrayList<String>();
         for(String path:before.nodes.keySet()){
             Node x=before.node(path),y=after.node(path);if(x.v.equals(y.v))continue;
@@ -145,6 +154,12 @@ final class NativeXiaomiSearchInputObservation {
         out.put("checked_ancestors",Collections.singletonList("0"));
         out.put("variable_branch_anchors",Collections.singletonList("0/6"));out.put("variable_chip_paths",new ArrayList<String>(left.chips));
         out.put("variable_carousel_path",left.carousel);out.put("variable_carousel_fields",Arrays.asList("scroll_actions","ref_signature_sha256"));
+        if(left.heading>0){
+            out.put("recommendation_heading_path","0/6/"+left.heading);
+            out.put("recommendation_refresh_path","0/6/"+(left.heading+1));
+            out.put("fixed_history_prefix_children",left.heading);
+            out.put("history_terms_are_query_or_result_evidence",false);
+        }
         out.put("changed_paths",changed);out.put("changed_paths_truncated",false);out.put("full_census_compared",true);
         out.put("whole_graph_equal",changed.isEmpty());out.put("published_pair_is_current_tree_claimed",false);
         out.put("fixed_disjoint_enclosure",before.node("0/6").bounds);out.put("all_coordinates_checked_without_normalization",true);
@@ -153,10 +168,10 @@ final class NativeXiaomiSearchInputObservation {
         return ObservationCaptureEvidence.freezeMap(out);
     }
     private static final class Template {
-        final Set<String> chips;final String carousel;
-        Template(Set<String> chips,String carousel){this.chips=chips;this.carousel=carousel;}
+        final Set<String> chips;final String carousel;final int heading;
+        Template(Set<String> chips,String carousel,int heading){this.chips=chips;this.carousel=carousel;this.heading=heading;}
     }
-    private static Template template(Snapshot snapshot,String literal){
+    private static Template template(Snapshot snapshot,String literal,boolean historyPrefix){
         boolean filled=literal!=null;
         Node root=snapshot.node("0"),field=snapshot.node(QUERY_PATH),toggle=snapshot.node("0/0"),normal=snapshot.node(filled?"0/2":"0/4");
         need(FRAME.equals(root.cls)&&root.parent.isEmpty()&&root.usable()&&root.children==7
@@ -195,7 +210,8 @@ final class NativeXiaomiSearchInputObservation {
             if(!filled||i<4)bottom=Math.max(bottom,Math.max(n.bounds.get(1),n.bounds.get(3)));
         }
         need(enclosure.bounds.get(1)>=bottom&&coordinatesWithin(root,enclosure),"recommendations disjoint from entire query/action toolbar");
-        Node heading=snapshot.node("0/6/0"),refresh=snapshot.node("0/6/1");
+        int headingIndex=historyPrefix?historyRecommendationHeading(snapshot,enclosure):0;
+        Node heading=snapshot.node("0/6/"+headingIndex),refresh=snapshot.node("0/6/"+(headingIndex+1));
         need(TEXT.equals(heading.cls)&&"android.widget.ScrollView".equals(heading.parent)&&heading.children==0
                 &&heading.usable()&&"猜你想搜".equals(heading.text)&&!b(heading.v,"clickable")
                 &&!b(heading.v,"action_click")&&passiveMetadata(heading)&&coordinatesWithin(enclosure,heading),"actual recommendation section heading");
@@ -204,10 +220,10 @@ final class NativeXiaomiSearchInputObservation {
                 &&b(refresh.v,"clickable")&&b(refresh.v,"action_click")&&passiveMetadata(refresh)
                 &&coordinatesWithin(enclosure,refresh),"same observed recommendation refresh control");
         Set<String> chips=new TreeSet<String>();Node carousel=null;
-        for(int index=2;index<enclosure.children;index++){
+        for(int index=headingIndex+2;index<enclosure.children;index++){
             Node chip=snapshot.node("0/6/"+index);
             if(!VIEW.equals(chip.cls)||chip.children!=1){carousel=chip;break;}
-            need(index<34,"bounded complete recommendation chip run");
+            need(index<headingIndex+34,"bounded complete recommendation chip run");
             Node text=snapshot.node(chip.path+"/0");
             need("android.widget.ScrollView".equals(chip.parent)&&chip.view.isEmpty()&&chip.text.isEmpty()&&chip.desc.isEmpty()
                     &&b(chip.v,"clickable")&&b(chip.v,"action_click")&&b(chip.v,"enabled")&&passiveMetadata(chip)
@@ -229,7 +245,45 @@ final class NativeXiaomiSearchInputObservation {
                     .contains(s(carousel.v,"scroll_actions"))
                 &&coordinatesWithin(enclosure,carousel),"fixed passive horizontal carousel leaf and known boundary directions");
         NativeActionSnapshotCheck.requireSearchInputReference(snapshot,carousel);
-        return new Template(chips,carousel.path);
+        return new Template(chips,carousel.path,headingIndex);
+    }
+    /** Locate the one actual recommendation heading inside this complete fixed
+     * panel. Only the observed history-heading / history-chip prefix is accepted;
+     * it is excluded from every variable region and must compare byte-for-byte. */
+    private static int historyRecommendationHeading(Snapshot snapshot,Node enclosure){
+        int heading=-1;
+        for(int i=0;i<enclosure.children;i++){
+            Node n=snapshot.node(enclosure.path+"/"+i);
+            if(TEXT.equals(n.cls)&&"猜你想搜".equals(n.text)){
+                need(heading<0,"unique actual recommendation section heading");heading=i;
+            }
+        }
+        need(heading>=0,"actual recommendation section heading");
+        if(heading==0)return 0;
+        need(heading>=2&&heading<=33,"bounded complete search history prefix");
+        Node title=snapshot.node(enclosure.path+"/0"),recommendation=snapshot.node(enclosure.path+"/"+heading);
+        need(TEXT.equals(title.cls)&&"android.widget.ScrollView".equals(title.parent)&&title.children==0
+                &&title.usable()&&"搜索历史".equals(title.text)&&title.text.equals(title.label)
+                &&title.desc.isEmpty()&&title.view.isEmpty()&&!b(title.v,"clickable")&&!b(title.v,"action_click")
+                &&passiveMetadata(title)&&coordinatesWithin(enclosure,title),"actual fixed search history heading");
+        NativeActionSnapshotCheck.requireSearchInputReference(snapshot,title);
+        for(int i=1;i<heading;i++){
+            Node chip=snapshot.node(enclosure.path+"/"+i),term=snapshot.node(chip.path+"/0");
+            need(VIEW.equals(chip.cls)&&"android.widget.ScrollView".equals(chip.parent)&&chip.children==1
+                    &&chip.click()&&chip.view.isEmpty()&&chip.text.isEmpty()&&chip.desc.isEmpty()
+                    &&passiveMetadata(chip)&&TEXT.equals(term.cls)&&VIEW.equals(term.parent)&&term.children==0
+                    &&term.usable()&&term.view.isEmpty()&&term.desc.isEmpty()&&!term.text.trim().isEmpty()
+                    &&term.text.equals(term.label)&&term.text.equals(chip.label)
+                    &&!b(term.v,"clickable")&&!b(term.v,"action_click")&&passiveMetadata(term),
+                    "complete fixed history term and its real parent");
+            need(coordinatesWithin(enclosure,chip)&&coordinatesWithin(chip,term)
+                    &&chip.bounds.get(1)>=title.bounds.get(3)
+                    &&chip.bounds.get(3)<=recommendation.bounds.get(1),
+                    "history remains before recommendations inside the fixed panel");
+            NativeActionSnapshotCheck.requireSearchInputReference(snapshot,chip);
+            NativeActionSnapshotCheck.requireSearchInputReference(snapshot,term);
+        }
+        return heading;
     }
     private static void toolbarButton(Snapshot s,Node button){
         Node label=s.node(button.path+"/0");

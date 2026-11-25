@@ -178,7 +178,7 @@ final class NativeActionSnapshotCheck {
         Node target=old.node(in.path);
         need(NativeXiaomiSearchInputObservation.QUERY_PATH.equals(in.path)&&target.usable()&&b(target.v,"editable")
                 &&in.label.equals(target.label)&&in.refSha256.equals(target.v.get("ref_signature_sha256")),"original empty-query target/ref/label");
-        Map<String,Object> out=new TreeMap<String,Object>(NativeXiaomiSearchInputObservation.compare(old,fresh));
+        Map<String,Object> out=new TreeMap<String,Object>(NativeXiaomiSearchInputObservation.compareQueryTyping(old,fresh));
         out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");out.put("purpose",in.purpose);
         out.put("target_path",in.path);out.put("model_run_id",in.run);out.put("original_node_id",in.node);
         out.put("original_action_sha256",in.actionSha);out.put("original_observation_id",in.identity.get("origin_observation_id"));

@@ -11,6 +11,16 @@ def predecessor(raw):
     if not isinstance(raw,bytes):
         raise ValueError("Ctrip scope source bytes required")
     actual=hashlib.sha256(raw).hexdigest()
+    # Proof copy only: reverse the one accepted SET_QUERY call-site change.
+    if actual=="45190840abf4c78413153d3a156a2bcaa075e9e13dc2a0c3b5fd0eb717ddf558":
+        current=b"NativeXiaomiSearchInputObservation.compareQueryTyping(old,fresh)"
+        prior=b"NativeXiaomiSearchInputObservation.compare(old,fresh)"
+        if raw.count(current)!=1:
+            raise ValueError("unique reviewed SET_QUERY history call")
+        raw=raw.replace(current,prior,1)
+        actual=hashlib.sha256(raw).hexdigest()
+        if actual!=CURRENT_SHA256:
+            raise ValueError("history call inverse must reproduce complete 8d comparator")
     if actual==PREDECESSOR_SHA256:
         return raw
     if actual!=CURRENT_SHA256:

@@ -205,7 +205,7 @@ def generate(source,output,h):
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
-        if name=='NativeActionSnapshotCheck.java' and actual=='400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593':
+        if name=='NativeActionSnapshotCheck.java' and actual in ('400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593','45190840abf4c78413153d3a156a2bcaa075e9e13dc2a0c3b5fd0eb717ddf558'):
             prior=runpy.run_path(str(source/'tests/native-ctrip-form-observation/scope_predecessor.py'))['predecessor'](current)
             prior=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,prior)
             proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](prior)

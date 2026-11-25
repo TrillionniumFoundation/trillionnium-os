@@ -593,12 +593,22 @@ public final class LocalTaskController implements AutoCloseable {
                 completionInstalled=nativeInstalled;
                 record(evidence,"completion-installed-identity.json",new JSONObject(nativeInstalled.evidence()));
                 final File nativeEvidence=evidence;
+                final BackgroundSession nativeBackground=background;
+                final String nativeTaskId=taskId,nativeOwnerSha256=completion.nativeGoal().ownerSha256;
                 NativeAppSession nativeTask=new NativeAppSession(taskId,authorization,backgroundSelection,
                         nativeInstalled.profileTarget==null
                                 ?new NativeAppEvidence.Installed(nativeInstalled.packageName,nativeInstalled.uid,nativeInstalled.versionCode,nativeInstalled.apkHashes)
                                 :new NativeAppEvidence.Installed(nativeInstalled.profileTarget),
                         NativeAppObservation.selectionSha(backgroundSelection),background.generation,background.displayId(),
-                        new NativeAppSession.InstalledVerifier(){public void verify()throws Exception{nativeInstalled.verify(service);}},
+                        new NativeAppSession.InstalledVerifier(){public void verify()throws Exception{
+                            if(nativeInstalled.profileTarget==null){nativeInstalled.verify(service);return;}
+                            if(!nativeTaskId.equals(nativeBackground.taskId)||!nativeOwnerSha256.equals(nativeBackground.ownerSha256)
+                                    ||!nativeInstalled.profileTarget.same(nativeBackground.profileTarget()))
+                                throw new IllegalStateException("native installation verifier lost its bound background target");
+                            // The same live broker re-reads this selected installation and authenticates a new state response.
+                            // Keep the full catalogue for selection and the separate post-cleanup installation check.
+                            nativeBackground.verifyProfileInstallation();
+                        }},
                         new NativeAppSession.Journal(){public void write(String leaf,java.util.Map<String,Object> value)throws Exception{
                             record(nativeEvidence,leaf,new JSONObject(value));
                         }});
@@ -871,7 +881,16 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toEvidenceJson());
-                if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
+                if(completionInstalled!=null)try{
+                    if(completion.nativeGoal()==null)completionInstalled.verify(service);
+                    else{
+                        NativeAppSession currentNative=activeNativeTask;
+                        if(currentNative==null||!taskId.equals(currentNative.taskId)||currentNative.authorization!=authorization
+                                ||activeNativeBackground!=background)
+                            throw new IllegalStateException("native installation verifier is not owned by this task");
+                        currentNative.verifyInstalled();
+                    }
+                }catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
                 completion.action(steps,decisionRunId,action,outcome.accepted,outcome.dispatched,outcome.stale,
                         completionFrame(before),completionFrame(observation),completionFixed(outcome.fixedIntent));
                 LastModelDecisionProjection dispatchedDecision=LastModelDecisionProjection.fromOutcome(taskId,steps,decisionRunId,before.id,action,
