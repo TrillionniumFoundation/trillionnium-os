@@ -50,6 +50,19 @@ def unique(text,old,new):
     return text.replace(old,new)
 def put(path,value):
     with path.open("x",encoding="utf-8") as f:json.dump(value,f,ensure_ascii=False,indent=2);f.write("\n")
+def close_reply_proof_copy(text):
+    # Only this exact admitted-close source may be reversed for the historical proof.
+    # Extraction and compilation below continue to use the unmodified actual text.
+    if hashlib.sha256(text.encode()).hexdigest()=="abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c":
+        text=unique(text,
+            "    // Only an authenticated, already admitted profile or personal Notes close RPC owns this peer.\n",
+            "    // Only the authenticated, already admitted work-profile close RPC can own this peer.\n")
+        text=unique(text,
+            '                        if(config.publicOwnGroupScope!=null&&(config.profileTarget!=null||publicNotesCustody!=null)&&"close".equals(request.operation))\n',
+            '                        if(config.publicOwnGroupScope!=null&&config.profileTarget!=null&&"close".equals(request.operation))\n')
+        need(hashlib.sha256(text.encode()).hexdigest()=="a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44",
+             "exact authenticated Notes close inverse must restore the entire diagnostic broker")
+    return text
 def extract_broker(source,out):
     path=source/"src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java";text=path.read_text()
     begin="    /** Diagnostic-only augmentation of the original single terminal object.\n"
@@ -58,7 +71,7 @@ def extract_broker(source,out):
     first,last=text.index(begin),text.index(end)
     helper=text[first:last]
     methods=helper[helper.index("    static void appendNotesHistoryDiagnostic("):]
-    restored=unique(text,helper,"")
+    restored=unique(close_reply_proof_copy(text),helper,"")
     call='            if(config.publicOwnGroupScope!=null)appendNotesHistoryDiagnostic(terminal,publicNotesCleanupFailure,\n                    config.publicOwnGroupScope.taskId,config.generation,config.publicOwnGroupScope.sha256,displayId);\n'
     restored=unique(restored,call,"")
     restored=unique(restored,"    private volatile Throwable publicNotesCleanupFailure;\n","")
