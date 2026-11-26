@@ -12,9 +12,11 @@
     "Show actual automatic-model configuration failures and retain same-call memory admission facts without changing model admission thresholds",
     "Validate the original planning Offer before duplicate controller audit persistence while keeping core durable planning evidence and model-before-journal exclusion",
     "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority",
-    "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies"
+    "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies",
+    "Let one typed incomplete D read recovery precede one complete final census replacement in the same Xiaomi search Attempt; retain the original total eight C reads, absolute 24-second deadline, owner guards and one input",
+    "Require the Activity cached automatic-target snapshot to match persisted preferences before toggling automatic mode; reload and report stale changes without overwriting current target/model choices"
   ],
-  "complete_source_files": 2719,
+  "complete_source_files": 2718,
   "files": [
     {
       "bytes": 100,
@@ -6803,12 +6805,6 @@
       "sha256": "79ef76eb53f74fea68c3091803ca600338bb5edf44286230708aed47ed7bcd11"
     },
     {
-      "bytes": 4162,
-      "mode": 420,
-      "path": "provenance/mobimind-app-only-r1/SOURCE-MANIFEST.json",
-      "sha256": "4babf01d56f4310d784ac12ff5eb391ab454b5164da36be0ede9d62846924fd6"
-    },
-    {
       "bytes": 2097,
       "mode": 420,
       "path": "provenance/mobimind-app-only-r1/assets/official-gui-prompts.json",
@@ -6933,12 +6929,6 @@
       "mode": 420,
       "path": "provenance/mobimind-worker-r4/README.md",
       "sha256": "11c3ceab6a3aca3788b30c687d091a870f37765af2a2ef18817205fde76aa552"
-    },
-    {
-      "bytes": 4323,
-      "mode": 420,
-      "path": "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json",
-      "sha256": "b642269f327219c23d9fd778621921c85fd19cb8a35def970e5097ca88d2d8f5"
     },
     {
       "bytes": 7208,
@@ -7877,10 +7867,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 775813,
-      "mode": 384,
+      "bytes": 776227,
+      "mode": 420,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "06f45f8c93f9c671ed9a22226ff79193f1e64eec508ef31cd558d7f8045d677b"
+      "sha256": "02007a067ef9d638a9159d5e553a4f5c77e3291db39e693eff2708635952f2c0"
     },
     {
       "bytes": 711,
@@ -7944,7 +7934,7 @@
     },
     {
       "bytes": 301073,
-      "mode": 384,
+      "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
       "sha256": "770db69258244a7a15ec858b81861cf3895f50307e2aa5f212adadc8e027633d"
     },
@@ -7955,10 +7945,10 @@
       "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
     },
     {
-      "bytes": 105524,
+      "bytes": 105539,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "23ea28b07ed16f23d8b0e4fdf5641d15a4bc216c8db562b6b0f67602d105436d"
+      "sha256": "6e2c54a8bb9dc7b106db9565983785ccb390444cc2906fd95951869684d439ea"
     },
     {
       "bytes": 4417,
@@ -8160,7 +8150,7 @@
     },
     {
       "bytes": 66663,
-      "mode": 384,
+      "mode": 420,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
       "sha256": "9811f011c97748b760c95a99d8bc76750512d82d6c6a785fa0674bd875132cb3"
     },
@@ -10583,10 +10573,10 @@
       "sha256": "37c0e9b2c5eda2c8607a04ec990dd926909ed0b19d29c85ca901e59d716ad462"
     },
     {
-      "bytes": 51935,
+      "bytes": 58012,
       "mode": 420,
       "path": "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "sha256": "80ee40976d6c85edcd16d5807caf2b1acbbc4dcbd89706fc00d71e2ecdf84dd3"
+      "sha256": "08a9ed65894de83ae57a965e6c92a15d1b5da94600c3f84d429a5b89fc359068"
     },
     {
       "bytes": 788,
@@ -10932,7 +10922,7 @@
     },
     {
       "bytes": 5034,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/native-ctrip-child-identity/protected_fixture.py",
       "sha256": "eed7f5888899ee8b3b9540578ebab0e96b6700e758d3b6319e368c8aa913915d"
     },
@@ -11010,7 +11000,7 @@
     },
     {
       "bytes": 101021,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
       "sha256": "affe7913c99d3c4e1573d151138d949194d9127b1331a56cad9c6cf84792b6e8"
     },
@@ -11340,7 +11330,7 @@
     },
     {
       "bytes": 80997,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
       "sha256": "dddba1996df3c744b27fc24c9cdd2e4cc98236618991ebb8d3640869893fb6a3"
     },
@@ -11621,10 +11611,16 @@
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
     },
     {
-      "bytes": 18113,
+      "bytes": 18723,
       "mode": 420,
       "path": "tests/native-search-producer/IncompleteCensusCases.fragment",
-      "sha256": "e007ff4f1183b5b2bf7b9b3ec9f47cd0965aa11223c277ad312dc530d550c626"
+      "sha256": "1e0b700f39d8241002c5545e3a7bd7a50b93f121c50efd46037ba4b96a9ffe62"
+    },
+    {
+      "bytes": 22101,
+      "mode": 420,
+      "path": "tests/native-search-producer/IncompleteThenFinalCases.fragment",
+      "sha256": "9742cc8d956e165f2ab04b5f67fdfdf29df88e9a52d72c6c369ab0a6452f366a"
     },
     {
       "bytes": 27926,
@@ -11676,7 +11672,7 @@
     },
     {
       "bytes": 68029,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
       "sha256": "255922adaa582c5b51a384c297c555be5e1bd2a8554664a1b323674ea8f70a81"
     },
@@ -11693,10 +11689,10 @@
       "sha256": "1f7489a4f31e674ef73a9ee810cfcb60c5650ec413d3ef1679034fa8efd1606f"
     },
     {
-      "bytes": 76775,
+      "bytes": 76849,
       "mode": 420,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "f7e5ccd77cc0ccb2cb8ad05b6474c02c9f2790a6f30c42b678fd362a26c59a04"
+      "sha256": "33b646df0a5de595017d01cb6460694a31a43ff49029d098bbb39697b7802bfa"
     },
     {
       "bytes": 13317,
@@ -11753,10 +11749,10 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 27417,
+      "bytes": 28922,
       "mode": 420,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "ac16f550f40a7572302694b27ff93a764a8b5809b961346a2c738aa6af0ff717"
+      "sha256": "07f8b4167216a11abdd511a2e2610a094856374f7da4a7756449c48d978979dd"
     },
     {
       "bytes": 14431,
@@ -12954,7 +12950,7 @@
     },
     {
       "bytes": 22829,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/observation-diagnostics/PrivateCensusDiagnosticsHostTest.java",
       "sha256": "719a698f4106c0e3579555bdb533103473815c2ab762024767e1d706e38f1fd0"
     },
@@ -13002,7 +12998,7 @@
     },
     {
       "bytes": 38719,
-      "mode": 384,
+      "mode": 420,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
       "sha256": "ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6"
     },
@@ -16327,10 +16323,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "f1c957e240b091ab7d1213cac647afa8cc676ed868f86176dfbcd24d78bcfffc",
-  "predecessor_source_manifest_sha256": "f1c957e240b091ab7d1213cac647afa8cc676ed868f86176dfbcd24d78bcfffc",
+  "predecessor_manifest_sha256": "ef97da7a682be3a6bca1a580f93a70e39e765a173354d88fb91f53675468fa0d",
+  "predecessor_source_manifest_sha256": "ef97da7a682be3a6bca1a580f93a70e39e765a173354d88fb91f53675468fa0d",
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "83272653f52655ce13dc64291e8a665a7dfd9e801cdb5d361115ffe6046d13a7",
+  "production_input_map_sha256": "c67ce77ddd69a73090687978a04dba13b8b35b9238726de21cd4744930665d8d",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "688dbea61bf461271845be486fb73933b8165424"
+  "source_parent_head": "73db8c958e2a667f22c9d65071e4b8cd86bb885b"
 }

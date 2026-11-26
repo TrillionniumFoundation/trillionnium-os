@@ -845,9 +845,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             }
             try{
                 BackgroundAutoTargetPreferences.Snapshot base=automaticTargets==null?BackgroundAutoTargetPreferences.empty():automaticTargets;
+                BackgroundAutoTargetPreferences.requireSame(this,base);
                 BackgroundAutoTargetPreferences.Snapshot next=base.withAutomatic(automaticTargetMode.isChecked());
                 BackgroundAutoTargetPreferences.save(this,next);automaticTargets=next;automaticTargetsError=null;automaticInputChanged();
-            }catch(Exception error){automaticTargetMode.setChecked(automaticTargets==null||automaticTargets.automatic);automaticStartFeedback="自动选择未保存："+HeptaAccessibilityService.message(error);taskState.setText(automaticStartFeedback);}
+            }catch(Exception error){restoreAutomaticTargets();automaticStartFeedback="自动选择未保存："+HeptaAccessibilityService.message(error);taskState.setText(automaticStartFeedback);}
             refresh();
         });
         pickAutomaticTargets.setOnClickListener(view->chooseAutomaticTargets());

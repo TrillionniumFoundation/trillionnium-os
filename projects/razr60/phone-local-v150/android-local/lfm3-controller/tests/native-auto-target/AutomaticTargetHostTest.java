@@ -358,10 +358,87 @@ public final class AutomaticTargetHostTest {
         });
     }
 
+    private static void clickAutomaticToggle(Env e,boolean checked)throws Exception {
+        java.lang.reflect.Method install=MainActivity.class.getDeclaredMethod("installAutomaticTargetListeners");
+        install.setAccessible(true);install.invoke(e.ui);
+        e.ui.automaticTargetMode.setChecked(checked);
+        e.ui.automaticTargetMode.listener.accept(e.ui.automaticTargetMode);
+    }
+    private static void staleAutomaticToggleCases()throws Exception {
+        test("stale_activity_toggle_cannot_replace_new_gui_choice_in_either_direction",()->{
+            for(boolean enabled:Arrays.asList(false,true)){
+                try(Env e=new Env("stale-toggle-"+enabled,FLIGHT,false)){
+                    BackgroundAutoTargetPreferences.Snapshot old=new BackgroundAutoTargetPreferences.Snapshot(!enabled,
+                            Arrays.asList(e.notes,e.flight.withModel(ModelProfile.LFM3),e.product));
+                    BackgroundAutoTargetPreferences.save(e.app,old);e.ui.automaticTargets=old;
+                    e.ui.automaticTargetMode.setChecked(old.automatic);
+                    BackgroundAutoTargetPreferences.Snapshot fresh=new BackgroundAutoTargetPreferences.Snapshot(!enabled,
+                            Arrays.asList(e.notes.withModel(ModelProfile.QWEN35_4B),e.flight,e.product.withModel(ModelProfile.LFM25_8B_A1B)));
+                    BackgroundAutoTargetPreferences.save(e.app,fresh);
+                    android.content.SharedPreferences.Memory prefs=e.app.getSharedPreferences("background-auto-targets-v1",0);
+                    Map<String,?> exact=prefs.getAll();int commits=prefs.commits;
+                    e.ui.stopActivity();e.ui.resumeActivity();
+                    check(prefs.commits==commits&&prefs.getAll().equals(exact),"lifecycle does not save the old Activity table");
+                    clickAutomaticToggle(e,enabled);
+                    check(prefs.commits==commits&&prefs.getAll().equals(exact),"stale toggle cannot commit or replace any saved preference");
+                    check(e.ui.automaticTargets.sha256.equals(fresh.sha256)&&e.ui.automaticTargetMode.isChecked()==fresh.automatic,
+                            "rejected toggle reloads actual saved table and automatic state without writing");
+                    check(e.ui.automaticTargets.entry(e.flight.instanceKey).identitySha256.equals(e.flight.identitySha256),
+                            "fresh GUI4 Ctrip profile identity remains exact");
+                    check(e.ui.taskState.getText().contains("自动选择未保存")&&e.ui.taskState.getText().contains("偏好已变化"),
+                            "owner sees that this toggle was refused, not silently merged or applied");
+                    check(e.app.model.verificationCalls==0&&!e.app.modelSettings.isBusy(),"rejection cannot start model settings");
+                    e.noTask();
+                }
+            }
+        });
+        test("stale_automatic_bit_alone_is_not_accepted_as_current",()->{
+            try(Env e=new Env("stale-toggle-bit",FLIGHT,false)){
+                BackgroundAutoTargetPreferences.Snapshot fresh=e.ui.automaticTargets.withAutomatic(false);
+                BackgroundAutoTargetPreferences.save(e.app,fresh);
+                android.content.SharedPreferences.Memory prefs=e.app.getSharedPreferences("background-auto-targets-v1",0);
+                Map<String,?> exact=prefs.getAll();int commits=prefs.commits;
+                clickAutomaticToggle(e,false);
+                check(prefs.commits==commits&&prefs.getAll().equals(exact),"even coincidentally equal desired state cannot overwrite a stale table");
+                check(e.ui.automaticTargets.sha256.equals(fresh.sha256)&&!e.ui.automaticTargetMode.isChecked(),"fresh saved state is displayed");
+                e.noTask();
+            }
+        });
+        test("missing_activity_snapshot_cannot_erase_a_saved_model_table",()->{
+            try(Env e=new Env("stale-toggle-null",FLIGHT,false)){
+                BackgroundAutoTargetPreferences.Snapshot fresh=e.ui.automaticTargets;
+                android.content.SharedPreferences.Memory prefs=e.app.getSharedPreferences("background-auto-targets-v1",0);
+                Map<String,?> exact=prefs.getAll();int commits=prefs.commits;
+                e.ui.automaticTargets=null;clickAutomaticToggle(e,false);
+                check(prefs.commits==commits&&prefs.getAll().equals(exact),"missing local snapshot cannot save empty targets over a real table");
+                check(e.ui.automaticTargets.sha256.equals(fresh.sha256),"actual saved preferences can be reloaded after rejection");
+                e.noTask();
+            }
+        });
+        test("current_activity_toggle_preserves_every_model_and_scope",()->{
+            try(Env e=new Env("current-toggle-model-table",FLIGHT,false)){
+                BackgroundAutoTargetPreferences.Snapshot initial=e.ui.automaticTargets;
+                android.content.SharedPreferences.Memory prefs=e.app.getSharedPreferences("background-auto-targets-v1",0);
+                int commits=prefs.commits;
+                for(boolean enabled:Arrays.asList(false,true)){
+                    clickAutomaticToggle(e,enabled);
+                    BackgroundAutoTargetPreferences.Snapshot saved=BackgroundAutoTargetPreferences.load(e.app);
+                    check(saved.automatic==enabled&&prefs.commits==++commits,"fresh explicit toggle makes one exact commit");
+                    check(saved.sha256.equals(initial.withAutomatic(enabled).sha256),"only the explicit automatic boolean changed");
+                    for(BackgroundAutoTargetPreferences.Entry before:initial.targets){
+                        check(saved.entry(before.instanceKey).identitySha256.equals(before.identitySha256),"every installed scope and preferred model remains exact");
+                    }
+                }
+                check(e.app.model.verificationCalls==0&&!e.app.modelSettings.isBusy(),"preference toggle does not start model settings");
+                e.noTask();
+            }
+        });
+    }
+
     public static void main(String[] args)throws Exception {
         root=Paths.get(args[0]);Files.createDirectories(root);android.os.Looper.getMainLooper();
         ProfileTarget originalCatalogue=ProfileCatalogueClient.actual;
-        try{flightPreferenceCases(Paths.get(args[1]));textPreferenceCases();}
+        try{flightPreferenceCases(Paths.get(args[1]));textPreferenceCases();staleAutomaticToggleCases();}
         finally{ProfileCatalogueClient.actual=originalCatalogue;android.app.AlertDialog.shown=null;}
         test("saved_instance_list_roundtrip_digest_and_manual_preferences_untouched",()->{
             try(Env e=new Env("roundtrip",NOTE,false)){

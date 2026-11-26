@@ -5903,7 +5903,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         NativeSearchPlanning.EventMark afterTargetRefreshRejectedWatermark;
         long afterTargetRefreshEventsElapsed=-1;
         long finalPreclaimEventsElapsed=-1;NativeSearchPlanning.EventMark finalPreclaimRejectedWatermark;
-        boolean typedFinalPreclaimContentRejected;int finalCensusResamples;
+        boolean typedFinalPreclaimContentRejected;int finalCensusResamples,incompleteCensusResamples;
         NativeSearchFinalCensusResampleProof pendingFinalCensusResample;
         final List<Map<String,Object>> discardedFinalCensuses=new ArrayList<Map<String,Object>>();
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
@@ -6034,7 +6034,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(proof==null||proof!=pendingFinalCensusResample)
                 throw new IllegalStateException("actual final-census failure capability required");
             Map<String,Object> old=new LinkedHashMap<String,Object>();
-            old.put("ordinal",finalCensusResamples+1);
+            old.put("ordinal",discardedFinalCensuses.size()+1);
             old.put("reason",proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
                     ?"content_event_after_target_chain":"content_event_at_last_preclaim_fence");
             old.put("producer_boundary",proof.boundary.name());
@@ -6068,8 +6068,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             // pairStart and the same live SearchEvents tracker deliberately survive.
             check();
         }
-        /** One full replacement pair shares the existing final-census allowance.
-         * A failed descendant is never skipped or treated as the action target. */
+        /** A typed incomplete D may replace its incomplete pair once, before any complete
+         * final-census replacement. This does not spend that later allowance.
+         * Both counters retain the original C-read cap and absolute deadline;
+         * a failed descendant is never skipped or treated as the action target. */
         void discardIncompleteCensusForResample(NativeSearchIncompleteCensusChanged failed){
             check();long now=SystemClock.elapsedRealtime();attempt.requireUnvalidatedRead(now);
             if(failed==null||failed.work!=this||failed.oldC!=currentGraph||failed.oldSnapshot!=currentSnapshot)
@@ -6089,7 +6091,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         ||!failed.failure.backgroundChildPath.matches("0(?:/[0-9]+)*")
                         ||failed.readStartedElapsed<attempt.startedElapsed||failed.readEndedElapsed<failed.readStartedElapsed
                         ||observedNow<failed.readEndedElapsed||observedNow>=state.deadlineElapsed
-                        ||observedNow>=session.chainDeadlineElapsed||finalCensusResamples!=0||pendingFinalCensusResample!=null
+                        ||observedNow>=session.chainDeadlineElapsed||finalCensusResamples!=0||incompleteCensusResamples!=0||pendingFinalCensusResample!=null
                         ||currentReadAttempts.isEmpty()||currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT
                         ||currentGraph==null||currentSnapshot==null||currentGraph.refs.isEmpty()
                         ||latestSnapshot!=null||pairCompleted!=null||roleProof!=null||profileBeforeEffect!=null
@@ -6103,7 +6105,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 rejected.put("rejection_watermark",observed.evidence());
             }
             Map<String,Object> old=new LinkedHashMap<String,Object>();
-            old.put("ordinal",finalCensusResamples+1);old.put("reason","incomplete_D_descendant_before_revalidation");
+            old.put("ordinal",discardedFinalCensuses.size()+1);old.put("reason","incomplete_D_descendant_before_revalidation");
             old.put("current_C",NativeSearchPlanning.snapshot(currentSnapshot));old.put("latest_D",null);
             old.put("incomplete_D_read",rejected);old.put("pair_start_watermark",pairStart.evidence());
             old.put("same_attempt",true);old.put("model_reissued",false);old.put("effect_entered",false);old.put("platform_call_invoked",false);
@@ -6112,7 +6114,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(!previous.refs.isEmpty())throw new IllegalStateException("discarded current C graph retains Android references");
             old.put("old_C_graph_closed",true);old.put("partial_D_graph_and_queue_discarded",true);
             old.put("old_revalidation_discarded",false);old.put("original_attempt_still_unvalidated",true);
-            finalCensusResamples++;discardedFinalCensuses.add(old);rejected.put("replacement_pair_admitted",true);
+            incompleteCensusResamples++;discardedFinalCensuses.add(old);rejected.put("replacement_pair_admitted",true);
             currentSnapshot=null;latestGraph=null;revalidatedRole=null;
             // No tracker, old deadline, read ordinal, rejection latch or Attempt is renewed.
             check();attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
@@ -6285,6 +6287,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("latest_D",work.latestSnapshot==null?null:NativeAppEvidence.immutableMap(NativeSearchPlanning.snapshot(work.latestSnapshot)));
             proof.put("current_C_read_attempts",work.currentReadAttempts);proof.put("current_C_resample_limit",NATIVE_SEARCH_CURRENT_C_READ_LIMIT-1);
             proof.put("incomplete_D_census_reads",work.incompleteLatestReads);
+            proof.put("incomplete_D_census_resamples",work.incompleteCensusResamples);proof.put("incomplete_D_census_resample_limit",1);
             proof.put("original_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
             if(work.finalSwitcherHint!=null)proof.put("final_switcher_hint",work.finalSwitcherHint);
             if(work.targetSignatureRefusal!=null)proof.put("fresh_signature_refusal",work.targetSignatureRefusal);
@@ -6331,7 +6334,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(work.currentGraph!=null||work.currentSnapshot!=null||work.latestSnapshot!=null||work.platformCallInvoked)
                 throw new IllegalStateException("new search current C read cannot reuse a prior graph or effect");
             Map<String,Object> read=new LinkedHashMap<String,Object>();read.put("ordinal",ordinal);
-            read.put("complete_census_round",work.finalCensusResamples+1);
+            read.put("complete_census_round",work.finalCensusResamples+work.incompleteCensusResamples+1);
             read.put("started_elapsed_ms",SystemClock.elapsedRealtime());read.put("completed",false);
             read.put("fresh_complete_read_next",false);work.currentReadAttempts.add(read);
             try{

@@ -634,7 +634,7 @@
                 noEffect(f,"original D and bounded replacement C cannot establish a complete new pair");check(f.graphReads==11&&f.outcome.stale,"one failed D followed by only the remaining seven original C reads");
                 JSONObject proof=f.outcome.actionExecution.getJSONObject("native_search_execution");
                 check(proof.isNull("current_C")&&proof.isNull("latest_D")&&proof.getJSONArray("current_C_read_attempts").length()==8,"no partial replacement is promoted and the original C budget remains exhausted");
-                check(proof.getInt("complete_census_resamples")==1&&proof.getJSONArray("discarded_final_censuses").length()==1,"one shared complete-pair replacement was consumed");
+                check(proof.getInt("complete_census_resamples")==0&&proof.getInt("incomplete_D_census_resamples")==1&&proof.getJSONArray("discarded_final_censuses").length()==1,"one incomplete-D replacement was consumed; no complete final pair existed");
                 JSONObject discarded=proof.getJSONArray("discarded_final_censuses").getJSONObject(0);
                 check(discarded.getBoolean("old_C_graph_closed")&&discarded.isNull("latest_D"),"old complete C was disposed; original D was incomplete");
                 check(f.outcome.actionExecution.getLong("deadline_elapsed_ms")==attempt.deadlineElapsed&&!Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&attempt.evidence().get("revalidation")==null,"old deadline and unclaimed state remain; no incomplete proof grants input");
