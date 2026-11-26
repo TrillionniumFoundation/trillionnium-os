@@ -203,7 +203,9 @@ def generate(source,output,h):
     }
 '''
     compiled_typed_child_port = (child_proof['READ_DIAGNOSTIC_TYPED_STALE_PORT']
-            if child_proof is not None and h.sha(template.encode())==child_proof.get('READ_DIAGNOSTIC_TEMPLATE') else typed_child_port)
+            if child_proof is not None and h.sha(template.encode()) in (
+                child_proof.get('READ_DIAGNOSTIC_TEMPLATE'),
+                'a7ec7dcd36a7e15ab3f5a97606a1082b341cd94e6069ae047281da573e3291ab') else typed_child_port)
     prior_stale_port = '''    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
 '''
     prior_template_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
