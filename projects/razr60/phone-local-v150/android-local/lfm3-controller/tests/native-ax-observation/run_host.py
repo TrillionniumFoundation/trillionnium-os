@@ -109,6 +109,13 @@ def generate(source,out,h,snap):
  s=once(s,'FLIGHT_RESULTS="native_flight_results"','FLIGHT_RESULTS="'+goal_kind[0]+'"')
  s=once(s,'        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.',
      '        ProfileTarget observedProfileTarget;ProfileTarget profileTarget(){return observedProfileTarget;} // Explicit synthetic profile transport; no phone permission.')
+ s=once(s,'    static final class BackgroundSession {',
+ '''    static final class BackgroundSession {
+        // Fail-only legacy port; the empty-loading suite substitutes the actual
+        // same-object broker proof registry and production historical check.
+        void requireHistoricalProfileWindow(WindowOwnership proof,int windowId,int observedTaskId,long capturedAt){
+            throw new AssertionError("legacy AX fixture cannot grant profile loading retries");
+        }''')
  profile_adapter=h.body((source/PKG/'NativeAppEvidence.java').read_text(),'    static Map<String,Object> profileActionIdentity(WindowOwnership actual){')
  s=once(s,'import org.trillionnium.hepta.background.ProfileTarget;','import org.trillionnium.hepta.background.ProfileTarget;\nimport org.trillionnium.hepta.background.WindowOwnership;')
  s=once(s,h.body(s,'    static final class WindowOwnership {'),'')

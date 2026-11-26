@@ -1,0 +1,145 @@
+
+    static ProfileTarget emptyLoadingTarget(int user,int uid){
+        return new ProfileTarget(new org.trillionnium.hepta.background.ProfileIdentity(user,user,0,
+                org.trillionnium.hepta.background.ProfileIdentity.MANAGED),uid,SnapshotChecks.APP,
+                SnapshotChecks.APP+"/Main",20261010,Collections.singletonMap("base",SnapshotChecks.OWNER),
+                Collections.singleton(SnapshotChecks.OWNER));
+    }
+    static WindowOwnership emptyLoadingOwner(ProfileTarget target,int window,int task,int parent,String token,long at,long expiry){
+        return new WindowOwnership(target,SnapshotChecks.GENERATION,9,window,task,parent,token,
+                "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",target.profile.userId,target.profile.serial,target.fullUid,at,expiry);
+    }
+    static final String EMPTY_LOADING_TOKEN="dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+    static void emptyLoadingGraph(ObserverPipelineHost f,Graph g){
+        ProfileTarget target=f.taskBackground.observedProfileTarget;
+        g.profileWindow=emptyLoadingOwner(target,g.windowId,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+        f.taskBackground.profileProofs.put(g.profileWindow,Boolean.TRUE);
+        g.rows.clear();g.refs.clear();g.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,3,0,0,0,0,0,0,1);
+        g.nativeActionNodes=null;g.nativeObservationComplete=false;g.digest="owned-empty-loading";
+    }
+    static ObserverPipelineHost emptyLoadingFixture(final int emptyReads,final boolean boundaryFirst)throws Exception{
+        ObserverPipelineHost f=axFixture((x,g,n)->{
+            if(n<=emptyReads){
+                emptyLoadingGraph(x,g);
+                if(boundaryFirst&&n==1)x.activeObservation.recordEvent(false,2);
+            }else{
+                ProfileTarget t=x.taskBackground.observedProfileTarget;
+                g.profileWindow=emptyLoadingOwner(t,g.windowId,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                x.taskBackground.profileProofs.put(g.profileWindow,Boolean.TRUE);
+                x.windowValue=new FrozenObservationWindow(g.packageName,g.windowId,g.displayId,g.rotation,
+                        g.bounds.left,g.bounds.top,g.bounds.right,g.bounds.bottom,g.nativeActionWidth,g.nativeActionHeight,
+                        g.windowMetadata.bindFreshness(""),g.nativeActionWindows,g.profileWindow);
+            }
+        },false,false);
+        f.taskBackground.observedProfileTarget=emptyLoadingTarget(10,1010367);f.taskBackground.displayId=9;
+        Graph prior=new Graph(0,9);axGraph(prior);prior.windowId=6;
+        prior.profileWindow=emptyLoadingOwner(f.taskBackground.observedProfileTarget,6,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+        Map<String,Object> oldWindows=new LinkedHashMap<String,Object>(rawWindows());oldWindows.put("target_window_id",6);
+        Map<String,Object> oldWindow=new LinkedHashMap<String,Object>();
+        oldWindow.put("window_id",6);oldWindow.put("display_id",9);oldWindow.put("type",1);oldWindow.put("layer",2);
+        oldWindow.put("bounds",Arrays.asList(0,0,1080,2400));oldWindow.put("focused",true);oldWindow.put("active",true);
+        oldWindows.put("windows",Collections.singletonList(oldWindow));prior.nativeActionWindows=immutableMap(oldWindows);
+        List<NativeActionSnapshotCheck.Node> oldNodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(NativeActionSnapshotCheck.Node n:prior.nativeActionNodes){
+            Map<String,Object> value=new LinkedHashMap<String,Object>(n.v);value.put("window_id",6);oldNodes.add(new NativeActionSnapshotCheck.Node(value));
+        }
+        prior.nativeActionNodes=Collections.unmodifiableList(oldNodes);
+        f.taskBackground.profileProofs.put(prior.profileWindow,Boolean.TRUE);
+        prior.nativeObservationComplete=true;f.currentGraph=prior;f.graphs.add(prior);
+        return f;
+    }
+    static void driveEmptyLoading(ObserverPipelineHost f,int ticks)throws Exception{
+        for(int i=0;i<ticks&&f.errors.isEmpty()&&f.delivered.isEmpty();i++){
+            drainAx(f);if(f.errors.isEmpty()&&f.delivered.isEmpty())SystemClock.now+=200;
+        }
+        drainAx(f);
+    }
+    static ObservationRequest emptyLoadingBound(ObserverPipelineHost f)throws Exception{
+        ObservationRequest r=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){
+            public void onObservation(PhoneObservation o){f.delivered.add(o);}
+            public void onError(String e){f.errors.add(e);}
+        },()->f.cancelled.get(),SystemClock.now+12000,f.taskBackground);
+        r.readAuthorization=f.taskAuthorization;f.bindNativeAxObservationRequest(r);f.activeObservation=r;
+        Graph g=new Graph(1,9);axGraph(g);emptyLoadingGraph(f,g);
+        g.readStartedElapsedMs=SystemClock.now;g.readCompletedElapsedMs=SystemClock.now;
+        f.graphs.add(g);r.captured=g;return r;
+    }
+    static void emptyLoadingCases()throws Exception{
+        axCase("actual_044_stable_empty_detail_requires_a_new_complete_pair",()->{
+            // 044 had one target boundary, then three identical empty retained hashes.
+            // The current owned leaf/token survives window6 -> window7 navigation.
+            ObserverPipelineHost f=emptyLoadingFixture(3,true);f.axBegin();ObservationRequest r=f.activeObservation;
+            driveEmptyLoading(f,12);
+            check(f.errors.isEmpty()&&f.delivered.size()==1,"owned empty loading page ended task: "+f.errors);
+            check(f.reads.get()==6,"empty samples became authority or a fresh complete pair was skipped");
+            check(f.taskObservationAdmissions==1&&r.deadline==r.started+12000,"loading acquired a new request or budget");
+            check(f.currentGraph.windowId==7&&f.currentGraph.nativeObservationComplete&&!f.currentGraph.rows.isEmpty(),"empty graph published");
+            check(MobiMindPrivateFiles.writes==1&&f.directory.list().length==1,"empty loading wrote a receipt");
+            Map<?,?> events=(Map<?,?>)r.trace.snapshot(SystemClock.now).get("events");
+            check(((Number)events.get("CAPTURE_RETRY")).intValue()==1,"empty page did not retire its ready evidence once");
+            for(Graph g:f.graphs)check(g==f.currentGraph||g.closed,"discarded empty/sample/pair graph leaked");
+            check(!f.actionWorkPending(),"read-only loading wait entered an action");noPixels(f);f.dispose();
+        });
+        axCase("permanently_empty_detail_expires_in_original_settle_budget",()->{
+            ObserverPipelineHost f=emptyLoadingFixture(100,false);f.axBegin();ObservationRequest r=f.activeObservation;
+            driveEmptyLoading(f,3);check(f.errors.isEmpty()&&f.delivered.isEmpty(),"empty page failed before existing budget");
+            long deadline=r.deadline;SystemClock.now=r.started+ObservationStabilityGate.SETTLE_LIMIT_MS;drainAx(f);
+            check(r.finished&&!f.errors.isEmpty()&&f.delivered.isEmpty(),"permanently empty page did not expire");
+            check(r.deadline==deadline&&deadline==r.started+12000&&f.taskObservationAdmissions==1,"empty page renewed time/admission");
+            check(MobiMindPrivateFiles.writes==0&&f.directory.list().length==0,"empty page acquired a capture");
+            noPixels(f);f.dispose();
+        });
+        axCase("cancelled_empty_wait_does_not_read_or_dispatch_again",()->{
+            ObserverPipelineHost f=emptyLoadingFixture(100,false);f.axBegin();ObservationRequest r=f.activeObservation;
+            driveEmptyLoading(f,3);int reads=f.reads.get();f.cancelled.set(true);SystemClock.now+=200;drainAx(f);
+            check(r.finished&&f.delivered.isEmpty()&&!f.errors.isEmpty()&&f.reads.get()==reads,"cancelled wait made a new read");
+            check(MobiMindPrivateFiles.writes==0&&!f.actionWorkPending(),"cancelled wait issued an effect");noPixels(f);f.dispose();
+        });
+        for(final String kind:new String[]{"owner","authorization","controller","mode","generation","physical0","physical1",
+                "package","foreign_token","foreign_leaf","foreign_parent","foreign_uid","foreign_profile","unregistered_proof",
+                "profile_window","expired_proof","future_proof","read_before_request","future_read","unknown_event",
+                "ime_unknown","ime_visible","metadata_unknown","metadata_type","metadata_display","window_bounds",
+                "pending_nodes","zero_visited","truncated","nonempty_incomplete","native_window","native_task"})
+            axCase("empty_loading_"+kind+"_hard_refused_without_retry",()->{
+                ObserverPipelineHost f=emptyLoadingFixture(100,false);ObservationRequest r=emptyLoadingBound(f);Graph g=r.captured;
+                ProfileTarget target=f.taskBackground.observedProfileTarget;
+                if("owner".equals(kind))g.backgroundOwnerSha="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+                if("authorization".equals(kind))f.taskAuthorization=new TaskAuthorization.Gate();
+                if("controller".equals(kind))f.ownedController=new LocalTaskController();
+                if("mode".equals(kind))f.nativeAxMode=new NativeAxMode(f.ownedController,new Object(),f.taskAuthorization,f.taskBackground,f.lease);
+                if("generation".equals(kind))g.backgroundGeneration="99999999-9999-4999-8999-999999999999";
+                if("physical0".equals(kind))g.displayId=0;
+                if("physical1".equals(kind))g.displayId=1;
+                if("package".equals(kind))g.packageName="foreign.app";
+                if("foreign_token".equals(kind))g.profileWindow=emptyLoadingOwner(target,7,100,90,"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",SystemClock.now,SystemClock.now+2000);
+                if("foreign_leaf".equals(kind))g.profileWindow=emptyLoadingOwner(target,7,101,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                if("foreign_parent".equals(kind))g.profileWindow=emptyLoadingOwner(target,7,100,91,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                if("foreign_uid".equals(kind))g.profileWindow=emptyLoadingOwner(emptyLoadingTarget(10,1010368),7,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                if("foreign_profile".equals(kind))g.profileWindow=emptyLoadingOwner(emptyLoadingTarget(11,1110367),7,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                if("profile_window".equals(kind))g.profileWindow=emptyLoadingOwner(target,8,100,90,EMPTY_LOADING_TOKEN,SystemClock.now,SystemClock.now+2000);
+                if("expired_proof".equals(kind))g.profileWindow=emptyLoadingOwner(target,7,100,90,EMPTY_LOADING_TOKEN,SystemClock.now-2,SystemClock.now);
+                if("future_proof".equals(kind))g.profileWindow=emptyLoadingOwner(target,7,100,90,EMPTY_LOADING_TOKEN,SystemClock.now+1,SystemClock.now+2000);
+                f.taskBackground.profileProofs.put(g.profileWindow,Boolean.TRUE);
+                if("unregistered_proof".equals(kind))g.profileWindow=WindowOwnership.fromWire(g.profileWindow.wire(),target);
+                if("read_before_request".equals(kind))g.readStartedElapsedMs=r.started-1;
+                if("future_read".equals(kind))g.readCompletedElapsedMs=SystemClock.now+1;
+                if("unknown_event".equals(kind))r.recordEvent(true,1);
+                if("ime_unknown".equals(kind))g.state=new ObservationState(SnapshotChecks.OWNER,ImeVisibility.UNKNOWN);
+                if("ime_visible".equals(kind))g.state=new ObservationState(SnapshotChecks.OWNER,ImeVisibility.VISIBLE);
+                if("metadata_unknown".equals(kind))g.windowMetadata=ObservedWindowMetadata.unknown(new int[]{0,0,1080,2400},"android.widget.FrameLayout");
+                if("metadata_type".equals(kind))g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",2,9,new int[]{0,0,1080,2400},SnapshotChecks.APP);
+                if("metadata_display".equals(kind))g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,0,new int[]{0,0,1080,2400},SnapshotChecks.APP);
+                if("window_bounds".equals(kind))g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,9,new int[]{1,0,1080,2400},SnapshotChecks.APP);
+                if("pending_nodes".equals(kind))g.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,3,0,0,1,0,0,0,1);
+                if("zero_visited".equals(kind))g.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,0,0,0,0,0,0,0,1);
+                if("truncated".equals(kind))g.truncated=true;
+                if("nonempty_incomplete".equals(kind)){g.rows.add(new PhoneObservation.Node("n0",SnapshotChecks.APP,"0/0",SnapshotChecks.OWNER));g.refs.put("n0",new NodeRef(SnapshotChecks.OWNER));}
+                if("native_window".equals(kind)){Map<String,Object> w=new LinkedHashMap<String,Object>(g.nativeActionWindows);w.put("target_window_id",8);g.nativeActionWindows=immutableMap(w);}
+                if("native_task".equals(kind))g.nativeActionTaskId="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+                f.captureObservation(r);drainAx(f);
+                check(r.finished&&!f.errors.isEmpty()&&f.delivered.isEmpty(),"unsafe empty graph was not refused: "+kind);
+                check(f.reads.get()==0&&MobiMindPrivateFiles.writes==0&&g.closed,"bad empty graph scheduled a read or leaked");
+                check(r.deadline==r.started+12000&&!f.actionWorkPending(),"bad empty graph acquired time or an action");
+                noPixels(f);f.dispose();
+            });
+    }

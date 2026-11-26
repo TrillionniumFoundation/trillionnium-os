@@ -4874,10 +4874,64 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 product.completed!=null&&now!=null&&now.onlyContentSince(product.completed)
                 &&now.onlyContentSince(product.identity.eventWatermark);
     }
+    /** An owned empty loading window is missing content, never an AX capture.
+     * Keep the current request's clock and require a new complete sample pair. */
+    private synchronized boolean nativeAxEmptyLoadingCanWait(ObservationRequest request,Graph graph){
+        final long now=SystemClock.elapsedRealtime();final NativeAxMode mode=nativeAxMode;
+        final BackgroundSession background=request.background;
+        if(graph==null||graph!=request.captured||graph.nativeObservationComplete||request.nativeSample
+                ||mode==null||request.nativeAxMode!=mode||live!=this||ownedController!=mode.controller
+                ||!mode.taskId.equals(request.taskId)||mode.authorization!=request.readAuthorization
+                ||mode.authorization!=taskAuthorization||mode.background!=background||taskWeb!=null
+                ||request.finished||activeObservation!=request||request.cancel.isCancelled()||request.unknownEvents!=0
+                ||request.readRecoveryRejected||request.initialIdentityRejected||request.postEffectIdentityRejected
+                ||background==null||!ownsBackground(request.taskId,background)||!request.taskId.equals(background.taskId)
+                ||now<request.started||now>=request.deadline||graph.readStartedElapsedMs<request.started
+                ||graph.readCompletedElapsedMs<graph.readStartedElapsedMs||graph.readCompletedElapsedMs>now
+                ||request.displayId<=1||request.displayId!=background.displayId()||graph.displayId!=request.displayId
+                ||!background.generation.equals(graph.backgroundGeneration)
+                ||!background.ownerSha256.equals(graph.backgroundOwnerSha)||graph.backgroundSelectionRaw==null
+                ||currentGraph==null||currentGraph.profileWindow==null||graph.profileWindow==null)return false;
+        BackgroundTaskTarget target=background.selection.taskTarget;
+        if(target==null||target.nativeGoal==null||!target.explicitSelection||!BackgroundTaskTarget.NATIVE_APP.equals(target.route)
+                ||!background.ownerSha256.equals(target.ownerSha256)||!background.ownerSha256.equals(target.nativeGoal.ownerSha256)
+                ||!target.packageName.equals(target.nativeGoal.packageName)||!target.packageName.equals(background.selection.initialPackage)
+                ||!target.packageName.equals(graph.packageName)||!target.packageName.equals(graph.backgroundBootstrapPackage)
+                ||!background.selection.allowedPackages.equals(java.util.Collections.singletonList(target.packageName))
+                ||!background.selection.allowedPackages.equals(graph.backgroundAllowedPackages))return false;
+        PhoneObservation.CollectionStats stats=graph.collectionStats;ObservedWindowMetadata window=graph.windowMetadata;
+        if(graph.truncated||stats==null||stats.truncated()||stats.visited<1||stats.retained!=0
+                ||!graph.rows.isEmpty()||!graph.refs.isEmpty()||stats.pending!=0||stats.nodeBudgetOmissions!=0
+                ||stats.textBudgetOmissions!=0||stats.childSlotsOmitted!=0
+                ||graph.state==null||graph.state.imeVisibility!=ImeVisibility.HIDDEN
+                ||window==null||!"observed".equals(window.status)||window.type==null||window.type.intValue()!=1
+                ||window.displayId==null||window.displayId.intValue()!=graph.displayId
+                ||window.rootClassTruncated||window.titleTruncated||graph.bounds==null
+                ||graph.nativeActionWindows==null||graph.nativeActionWidth<=0||graph.nativeActionHeight<=0
+                ||!request.taskId.equals(graph.nativeActionTaskId)
+                ||!Integer.valueOf(graph.displayId).equals(graph.nativeActionWindows.get("display_id"))
+                ||!Integer.valueOf(graph.windowId).equals(graph.nativeActionWindows.get("target_window_id")))return false;
+        int[] root=window.rootBounds(),bounds=window.windowBounds();
+        if(root==null||bounds==null||root[0]!=graph.bounds.left||root[1]!=graph.bounds.top
+                ||root[2]!=graph.bounds.right||root[3]!=graph.bounds.bottom
+                ||bounds[0]>root[0]||bounds[1]>root[1]||bounds[2]<root[2]||bounds[3]<root[3])return false;
+        try{
+            // This is the exact broker-received proof object, not decoded receipt data.
+            background.requireHistoricalProfileWindow(graph.profileWindow,graph.windowId,graph.profileWindow.taskId,now);
+            // Navigation may replace the window, but never the owned leaf/token/UID.
+            requireSameProfileOwner(currentGraph.profileWindow,graph.profileWindow);
+            return true;
+        }catch(RuntimeException stale){return false;}
+    }
     private void captureNativeAxObservation(final ObservationRequest request){
         if(!observationActive(request))return;
-        if(!nativeTextObservationAllowed(request,request.captured)||!request.nativeSample)
-            {failObservation(request,"文本AX观察没有同次完整原生授权");return;}
+        if(!nativeTextObservationAllowed(request,request.captured)||!request.nativeSample){
+            if(nativeAxEmptyLoadingCanWait(request,request.captured)){
+                request.note(ObservationDiagnostics.Event.SAMPLE_MISSING);
+                retryObservation(request,ObservationStabilityGate.SAMPLE_GAP_MS);
+            }else failObservation(request,"文本AX观察没有同次完整原生授权");
+            return;
+        }
         if(!observationIoBusy.compareAndSet(false,true)){failObservation(request,"先前屏幕读取尚未退出");return;}
         final CaptureIdentity identity=new CaptureIdentity(request.captured,SystemClock.elapsedRealtime(),request.eventWatermark(),true);
         final NativeAxProduct product=new NativeAxProduct(identity,request.captured,request.nativeAxMode);

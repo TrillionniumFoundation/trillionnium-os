@@ -1,15 +1,16 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_FINAL_AFFECTED_GATES_AND_ANDROID_BUILD",
+  "candidate_status": "SOURCE_FROZEN_PENDING_FULL_CANONICAL_AND_ANDROID_BUILD",
   "changes": [
     "profile cleanup accepts separately validated normal cleanup diagnostics",
     "released close history binds original exit and fresh absence",
     "avoid duplicate unpublished Ctrip sample encoding and record currentness refusal",
     "Notes retirement permits unrelated personal foreground changes with owned task isolation preserved",
-    "business recovery compares typed physical display identity and protected recents while unrelated personal foreground remains usable"
+    "business recovery compares typed physical display identity and protected recents while unrelated personal foreground remains usable",
+    "Keep a proven same-owner empty native AX loading window sampling within its original request deadline; never publish empty content or replay the business action"
   ],
-  "complete_source_files": 2716,
+  "complete_source_files": 2718,
   "files": [
     {
       "bytes": 100,
@@ -7872,10 +7873,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 768703,
+      "bytes": 773597,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "fb2f223fa07e64f664de034dbc6d0b2f8f9f1c50fe9f587176923ba29bf6c30d"
+      "sha256": "04ce9008f9f269096164e9c39e19054125f50722f41f59db2d6be97ff491154a"
     },
     {
       "bytes": 711,
@@ -10656,16 +10657,28 @@
       "sha256": "ea45ff43e8430f1ce07ef57c1819ee2feb0a0eccca6a04336f6c483af4d3c1d5"
     },
     {
+      "bytes": 13624,
+      "mode": 420,
+      "path": "tests/native-ax-observation/EmptyLoadingCases.fragment",
+      "sha256": "73372d8a52b635ccd68a49aae8de71484f7c08c30ed979f09d7b3b6614ded033"
+    },
+    {
       "bytes": 18744,
       "mode": 420,
       "path": "tests/native-ax-observation/protected_publication.py",
       "sha256": "857385c38cc55ffbf923381130903fb323e21d3e3329282d2dc006c7f4b52f0e"
     },
     {
-      "bytes": 17445,
+      "bytes": 3799,
+      "mode": 420,
+      "path": "tests/native-ax-observation/run_empty_loading_host.py",
+      "sha256": "3458ae553d76518ebf0963e1d0a835d11a4c0b09a98a17fa78b1bc402410e017"
+    },
+    {
+      "bytes": 17933,
       "mode": 420,
       "path": "tests/native-ax-observation/run_host.py",
-      "sha256": "d70e504112e84dcd087f01785ac643e10b037f3bdff4ebf99a0b5ea1767a95aa"
+      "sha256": "146ef6f7096a3932005da5bc87e3ccdfb577b6654f1148b11b93c54d0059eeba"
     },
     {
       "bytes": 15114,
@@ -16304,10 +16317,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "4d70d514b0237ed2526b5ae59c77664bd796e2f4ed90239ac74372dae0d644aa",
-  "predecessor_source_manifest_sha256": "69469ac91ef536fda2a79ca6cdb6debbe76fac510c51e811ba3bcbf8b4425e23",
+  "predecessor_manifest_sha256": "6521473c3e5d9f32ad4d513e012c589966aaaf9690e4ed74e7d7630ffc80a2df",
+  "predecessor_source_manifest_sha256": "6521473c3e5d9f32ad4d513e012c589966aaaf9690e4ed74e7d7630ffc80a2df",
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "43708feb280df676c40475bf679e2c2745348567daa686732bd0d53101b86e1c",
+  "production_input_map_sha256": "04b79f56938c54a0776d6a1421542c0ced6bf5a2294a90ed5118117f011e1ba1",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "d4dafe285082e4fa340302e3733199da5e7d7f9e"
+  "source_parent_head": "79e91a89d41a40eebcb0026b85b00838f9f817a0"
 }
