@@ -1,0 +1,396 @@
+package org.trillionnium.hepta.local;
+
+import android.graphics.Rect;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.security.MessageDigest;
+import java.util.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import org.json.*;
+import org.trillionnium.hepta.background.ProfileIdentity;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
+
+/** Real producer members and full production DTO/proof on explicit host SDK,
+ * immutable owner values, elapsed clock, and ordinary file IO. No Android,
+ * phone, model inference, permission issuance, navigation or platform action. */
+public final class PixelCensusHostTest {
+    static final String TASK=repeat('a',32), ID=repeat('b',32), PKG="com.xiaomi.shop";
+    static final String OWNER=repeat('a',64), AUTH=repeat('b',64), TARGET=repeat('c',64), GOAL=repeat('d',64), SELECT=repeat('e',64);
+    static final String GEN="11111111-1111-1111-1111-111111111111";
+    static File root;
+    static long now;
+    static String repeat(char c,int n){char[] s=new char[n];Arrays.fill(s,c);return new String(s);}
+    static final class SystemClock {static long elapsedRealtime(){return now;}}
+    static final class Bitmap {void recycle(){}}
+    static final class ProfileOwnershipViolation extends IllegalStateException {
+        private static final long serialVersionUID=1L;ProfileOwnershipViolation(String s){super(s);}
+    }
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;StaleObservation(String s){super(s);}
+    }
+    static final class NativeResampleSeed {}
+    static final class Goal {String ownerSha256=OWNER,packageName=PKG,contractSha256=GOAL;}
+    static final class BackgroundTaskTarget {
+        static final String NATIVE_APP="native_app";String route=NATIVE_APP,ownerSha256=OWNER,packageName=PKG,targetSha256=TARGET;
+        boolean explicitSelection=true;Goal nativeGoal=new Goal();
+    }
+    static final class Selection {
+        final BackgroundTaskTarget taskTarget=new BackgroundTaskTarget();
+        String initialPackage=PKG;List<String> allowedPackages=Collections.singletonList(PKG);final String actualSha=SELECT;
+    }
+    static final class BackgroundSession {
+        final Selection selection=new Selection();
+        String taskId=TASK,generation=GEN,ownerSha256=OWNER;int display=7;ProfileTarget target;
+        ProfileTarget profileTarget(){return target;}int displayId(){return display;}
+    }
+    static final class Authorization {String sha256=AUTH;}
+    static final class TaskAuthorization {
+        static void require(boolean allowed,String reason){if(!allowed)throw new IllegalStateException(reason);}
+        static final class Gate {
+            String taskId=TASK;final Authorization authorization=new Authorization();boolean live=true;int readyCalls;
+            void ready(){readyCalls++;require(live,"synthetic original gate retired");}
+        }
+    }
+    /** Synthetic selection transport only; never an App Selection capability. */
+    static final class NativeAppObservation {static String selectionSha(Selection actual){return actual.actualSha;}}
+    static final class ObservationRequest {
+        Graph captured;BackgroundSession background;Object readAuthorization;
+        String taskId=TASK;int displayId=7;long started=1000,deadline=2000;File directory;boolean cancelled;
+    }
+    static final class Graph {
+        String packageName=PKG,backgroundGeneration=GEN,backgroundOwnerSha=OWNER,backgroundSelectionRaw="explicit-host-selection";
+        String backgroundBootstrapPackage=PKG;List<String> backgroundAllowedPackages=Collections.singletonList(PKG);
+        String nativeActionTaskId=TASK,nativeActionTargetSha=TARGET,nativeActionAuthorizationSha=AUTH,nativeActionSelectionSha=SELECT,nativeActionGoalSha=GOAL;
+        int windowId=13,displayId=7,rotation=0,nativeActionWidth=100,nativeActionHeight=200;
+        Rect bounds=new Rect(0,0,100,200);boolean nativeObservationComplete=true,truncated;
+        long readStartedElapsedMs=1020,readCompletedElapsedMs=1060,nativeActionCapturedAt=1050;
+        ObservationState state;String digest;ObservedWindowMetadata windowMetadata;
+        PhoneObservation.CollectionStats collectionStats;WindowOwnership profileWindow;ObservationDiagnostics.GraphStamp diagnosticStamp;
+        List<NativeActionSnapshotCheck.Node> nativeActionNodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        Map<String,Object> nativeActionWindows;
+        List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
+        int nativeSearchRawVisibilityChecked;boolean nativeSearchInvalidRawVisibility;
+        String nativeSearchFirstInvalidRawPath;List<Integer> nativeSearchFirstInvalidRawBounds;
+    }
+    Object taskWeb;BackgroundSession owned;TaskAuthorization.Gate taskAuthorization;
+    boolean owns(String task){return owned!=null&&TASK.equals(task)&&task.equals(owned.taskId);}
+    boolean ownsBackground(String task,BackgroundSession bg){return TASK.equals(task)&&owned==bg;}
+    void requireObservationWork(ObservationRequest r){
+        if(r.cancelled||!ownsBackground(r.taskId,r.background)||now<r.started||now>=r.deadline)
+            throw new IllegalStateException("host explicit original request/owner/cancel/deadline");
+    }
+    static final class MobiMindPrivateFiles {
+        static Runnable readHook;static int writes,reads;
+        static final class Read {
+            final Path path;final byte[] bytes;final Object fileKey;final long size;
+            Read(Path p,byte[] b)throws IOException {path=p;bytes=b;java.nio.file.attribute.BasicFileAttributes a=Files.readAttributes(p,java.nio.file.attribute.BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);fileKey=a.fileKey();size=a.size();}
+            void unchangedPath()throws IOException{
+                java.nio.file.attribute.BasicFileAttributes a=Files.readAttributes(path,java.nio.file.attribute.BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
+                if(!a.isRegularFile()||!Objects.equals(a.fileKey(),fileKey)||a.size()!=size||!Arrays.equals(bytes,Files.readAllBytes(path)))
+                    throw new IOException("changed host original receipt");
+            }
+        }
+        static void writeNew(File file,byte[] bytes)throws IOException {
+            writes++;Files.write(file.toPath(),bytes,StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
+        }
+        static Read read(File file,int max,boolean owned)throws IOException {
+            reads++;if(!owned||Files.isSymbolicLink(file.toPath()))throw new IOException("host owned regular input");
+            byte[] bytes=Files.readAllBytes(file.toPath());if(bytes.length>max)throw new IOException("host receipt bound");
+            Read r=new Read(file.toPath(),bytes);if(readHook!=null)readHook.run();return r;
+        }
+    }
+    /** Getter values only. Every object has explicit SDK identity; no input API. */
+    static final class AccessibilityNodeInfo {
+        static final int ACTION_CLICK=16;
+        static final class AccessibilityAction {
+            static final AccessibilityAction ACTION_SCROLL_FORWARD=new AccessibilityAction(4096),ACTION_SCROLL_BACKWARD=new AccessibilityAction(8192),
+                ACTION_SCROLL_UP=new AccessibilityAction(16908344),ACTION_SCROLL_DOWN=new AccessibilityAction(16908346),
+                ACTION_SCROLL_LEFT=new AccessibilityAction(16908345),ACTION_SCROLL_RIGHT=new AccessibilityAction(16908347),
+                ACTION_IME_ENTER=new AccessibilityAction(16908372);
+            final int id;AccessibilityAction(int n){id=n;}int getId(){return id;}CharSequence getLabel(){return null;}
+        }
+        final Object identity;String pkg=PKG,cls="android.widget.TextView",view="id",text="AX3000T",desc="159元";
+        Rect bounds=new Rect(2,2,98,70);int window=13,children;
+        boolean visible=true,enabled=true,click=true,editable,scrollable,focused,password,selected,checkable,checked;
+        AccessibilityNodeInfo(){identity=new Object();}
+        private AccessibilityNodeInfo(AccessibilityNodeInfo a){
+            identity=a.identity;pkg=a.pkg;cls=a.cls;view=a.view;text=a.text;desc=a.desc;bounds=new Rect(a.bounds);window=a.window;children=a.children;
+            visible=a.visible;enabled=a.enabled;click=a.click;editable=a.editable;scrollable=a.scrollable;focused=a.focused;password=a.password;
+            selected=a.selected;checkable=a.checkable;checked=a.checked;
+        }
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo a){return new AccessibilityNodeInfo(a);}
+        void recycle(){}void getBoundsInScreen(Rect out){out.left=bounds.left;out.top=bounds.top;out.right=bounds.right;out.bottom=bounds.bottom;}
+        CharSequence getPackageName(){return pkg;}CharSequence getClassName(){return cls;}String getViewIdResourceName(){return view;}
+        CharSequence getText(){return text;}CharSequence getContentDescription(){return desc;}int getWindowId(){return window;}int getChildCount(){return children;}
+        boolean isVisibleToUser(){return visible;}boolean isEnabled(){return enabled;}boolean isClickable(){return click;}boolean isEditable(){return editable;}
+        boolean isScrollable(){return scrollable;}boolean isFocused(){return focused;}boolean isPassword(){return password;}
+        boolean isSelected(){return selected;}boolean isCheckable(){return checkable;}boolean isChecked(){return checked;}
+        List<AccessibilityAction> getActionList(){return click?Collections.singletonList(new AccessibilityAction(ACTION_CLICK)):Collections.<AccessibilityAction>emptyList();}
+        @Override public boolean equals(Object o){return o instanceof AccessibilityNodeInfo&&((AccessibilityNodeInfo)o).identity==identity;}
+        @Override public int hashCode(){return System.identityHashCode(identity);}
+    }
+{{ACTUAL_MEMBERS}}
+    static final class Fixture {
+        final PixelCensusHostTest service=new PixelCensusHostTest();
+        final Graph graph=new Graph();final ObservationRequest request=new ObservationRequest();
+        final ObservationProduct product;final AccessibilityNodeInfo retained=new AccessibilityNodeInfo();
+        final ProfileTarget target;final JSONObject selection;
+        Fixture(String name)throws Exception {
+            now=1180;MobiMindPrivateFiles.readHook=null;MobiMindPrivateFiles.writes=0;MobiMindPrivateFiles.reads=0;
+            request.directory=new File(root,name);Files.createDirectory(request.directory.toPath());
+            ProfileIdentity profile=new ProfileIdentity(10,10L,0,ProfileIdentity.MANAGED);
+            target=new ProfileTarget(profile,1010485,PKG,PKG+"/com.xiaomi.shop.MainActivity",1L,
+                    Collections.singletonMap("base",repeat('1',64)),Collections.singleton(repeat('2',64)));
+            graph.profileWindow=new WindowOwnership(target,GEN,7,13,101,100,
+                    "22222222-2222-2222-2222-222222222222","33333333-3333-3333-3333-333333333333",10,10L,1010485,1000L,5000L);
+            graph.state=new ObservationState(repeat('3',64),ImeVisibility.HIDDEN);graph.digest=repeat('4',64);
+            graph.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,100,200},"android.widget.FrameLayout",1,7,new int[]{0,0,100,200},PKG);
+            graph.nativeActionWindows=new LinkedHashMap<String,Object>();graph.nativeActionWindows.put("display_id",7);graph.nativeActionWindows.put("target_window_id",13);
+            graph.nativeActionWindows.put("windows",Collections.singletonList(Collections.<String,Object>singletonMap("window_id",13)));
+            rebuildRows();
+            BackgroundSession bg=new BackgroundSession();bg.target=target;service.owned=bg;service.taskAuthorization=new TaskAuthorization.Gate();
+            request.background=bg;request.readAuthorization=service.taskAuthorization;request.captured=graph;
+            CaptureIdentity id=new CaptureIdentity(graph,1080L,new ObservationEventWatermark(0,0,0,0),service.nativeObservationRecheckAllowed(request,graph));
+            product=new ObservationProduct(id,1090L);product.pairStartedAt=1100;product.pairCompletedAt=1110;
+            product.seal=new ObservationPairSeal(id,request.readAuthorization,1100,1110,1120,0,0);
+            product.encodeStartedAt=1130;product.encodeCompletedAt=1140;product.persistedAt=1150;
+            product.publicationCheckStartedAt=1160;product.publicationCheckCompletedAt=1170;
+            product.id=ID;product.path=new File(request.directory,ID+".png");
+            BufferedImage image=new BufferedImage(100,200,BufferedImage.TYPE_INT_ARGB);image.setRGB(3,4,0xff00ff00);
+            if(!ImageIO.write(image,"png",product.path))throw new IOException("host PNG writer unavailable");
+            try(InputStream in=new FileInputStream(product.path)){product.pixelPng=PixelNativeCensusEvidence.readPng(in,100,200);}
+            product.digest=product.pixelPng.sha256;
+            selection=new JSONObject().put("mode","background").put("allowed_packages",new JSONArray(Collections.singletonList(PKG)))
+                .put("bootstrap_package",PKG).put("bootstrap_source","owner_selected_initial_app").put("bootstrap_model_issued",false)
+                .put("home_allowed",false).put("main_display_fallback",false).put("profile_target_wire",target.wire()).put("profile_target_sha256",target.sha256);
+        }
+        void rebuildRows(){
+            graph.rows.clear();graph.refs.clear();graph.nativeActionNodes.clear();
+            AccessibilityNodeInfo root=new AccessibilityNodeInfo();root.cls="android.widget.FrameLayout";root.children=2;root.click=false;
+            root.text="";root.desc="";root.view="";root.bounds=new Rect(0,0,100,200);
+            AccessibilityNodeInfo hidden=new AccessibilityNodeInfo();hidden.visible=false;hidden.click=false;hidden.text="complete unretained original";hidden.desc="";
+            ObservedChildText.Result child=ObservedChildText.notApplicable();ObservedScrollActions scroll=readScrollActions(retained);
+            ObservedImeEnter ime=readImeEnter(retained);String input=inputTextHash(retained);
+            NodeRef ref=new NodeRef(retained,child,scroll,ime,input);
+            PhoneObservation.Node n=new PhoneObservation.Node("n0",PKG,retained.cls,limited(retained.view,96),
+                    retained.password?"":limited(retained.text,96),retained.password?"":limited(retained.desc,96),retained.bounds,
+                    retained.click,retained.editable,retained.scrollable,retained.enabled,retained.focused,retained.password,child,scroll,ime,input,false,
+                    ref.appTreeSignature,"0/0",root.cls,Boolean.valueOf(retained.selected),Boolean.valueOf(retained.checkable),Boolean.valueOf(retained.checked));
+            graph.rows.add(n);graph.refs.put(n.id,ref);
+            graph.nativeActionNodes.add(snapshotNativeActionNode(root,"0","",null,null,graph));
+            graph.nativeActionNodes.add(snapshotNativeActionNode(retained,"0/0",root.cls,n,ref,graph));
+            graph.nativeActionNodes.add(snapshotNativeActionNode(hidden,"0/1",root.cls,null,null,graph));
+            graph.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,3,1,n.text.length()+n.description.length(),0,0,0,0,40);
+        }
+        void persist()throws Exception {service.persistPixelNativeCensus(request,product);}
+        PhoneObservation publish()throws Exception {return publish(product.pixelNativeCensus,product.captureEvidence(1200L),graph.rows,product.digest);}
+        PhoneObservation publish(PixelNativeCensusEvidence proof,Map<String,Object> clocks,List<PhoneObservation.Node> nodes,String png)throws Exception{
+            return new PhoneObservation(ID,PKG,1080L,100,200,graph.rotation,13,graph.bounds,product.path,png,graph.digest,
+                    graph.state,graph.windowMetadata,false,nodes,GEN,PKG,Collections.singletonList(PKG),
+                    graph.collectionStats,selection,OWNER,clocks,graph.profileWindow,null,proof);
+        }
+    }
+    interface Work {void run()throws Exception;}
+    static void rejects(Work work)throws Exception {
+        try{work.run();}catch(IllegalArgumentException|IllegalStateException|IOException expected){SnapshotChecks.check(true,"typed refusal");return;}
+        throw new AssertionError("expected actual refusal");
+    }
+    static void test(String name,Work work)throws Exception {SnapshotChecks.run(name,work::run);}
+    static Map<String,Object> mutable(Map<String,Object> v){return new TreeMap<String,Object>(v);}
+    @SuppressWarnings("unchecked") static Map<String,Object> obj(Map<String,Object> v,String key){return (Map<String,Object>)v.get(key);}
+    @SuppressWarnings("unchecked") static List<Map<String,Object>> rows(Map<String,Object> v){return (List<Map<String,Object>>)v.get("nodes");}
+    static Map<String,Object> clocks(Fixture f){
+        Map<String,Object> v=mutable(f.product.captureEvidence(1200));
+        v.keySet().retainAll(new HashSet<String>(Arrays.asList("sample_graph_started_elapsed_ms","sample_graph_completed_elapsed_ms","capture_requested_elapsed_ms",
+             "screenshot_callback_elapsed_ms","pair_graph_started_elapsed_ms","pair_graph_completed_elapsed_ms","pair_sealed_elapsed_ms",
+             "png_encode_started_elapsed_ms","png_encode_completed_elapsed_ms","png_persisted_and_hashed_elapsed_ms","publication_check_started_elapsed_ms","publication_check_completed_elapsed_ms")));
+        v.put("request_started_elapsed_ms",f.request.started);v.put("request_deadline_elapsed_ms",f.request.deadline);v.put("proof_copied_elapsed_ms",1180L);return v;
+    }
+    static PixelNativeCensusEvidence proof(Fixture f,Map<String,Object> census,Map<String,Object> time){
+        return PixelNativeCensusEvidence.fromCapturedGraph(census,ID,1080,f.target.apkSetSha256,f.product.pixelPng,time);
+    }
+    static void cases()throws Exception {
+        test("actual_GUI_native_recheck_serial_producer_persists_before_any_READY",()->{
+            Fixture f=new Fixture("positive");SnapshotChecks.check(f.service.nativeObservationRecheckAllowed(f.request,f.graph),"actual native scope predicate");
+            SnapshotChecks.check(f.product.identity.nativeRecheck&&f.service.pixelNativeCensusEligible(f.request,f.product),"actual native sample/capture admission");
+            f.persist();PhoneObservation o=f.publish();JSONObject j=o.toEvidenceJson();
+            SnapshotChecks.check(o.capture==null&&ObservationCaptureEvidence.PIXELS.equals(o.captureKind),"pixels remains pixels");
+            SnapshotChecks.check(o.screenshot.equals(f.product.path)&&o.screenshotSha256.equals(f.product.digest),"original PNG retained");
+            Map<String,Object> raw=f.product.pixelNativeCensus.completeReceipt();
+            Object windows=obj(raw,"census").get("reported_windows");
+            SnapshotChecks.check(PixelNativeCensusEvidence.fingerprint(windows).equals(NativeAppEvidence.fingerprint(windows)),"complete original canonical encoder semantics");
+            rejects(()->PixelNativeCensusEvidence.fingerprint(Double.valueOf(1.0)));rejects(()->NativeAppEvidence.fingerprint(Double.valueOf(1.0)));
+            Map<Object,Object> badKey=new HashMap<Object,Object>();badKey.put(Integer.valueOf(1),"x");
+            rejects(()->PixelNativeCensusEvidence.fingerprint(badKey));rejects(()->NativeAppEvidence.fingerprint(badKey));
+            SnapshotChecks.check(rows(obj(raw,"census")).size()==3&&o.nodes.size()==1,"three complete originals versus one retained row");
+            SnapshotChecks.check(j.getJSONObject("pixels_native_census").getInt("full_native_nodes")==3,"compact evidence binds full original");
+            SnapshotChecks.check(Arrays.equals(f.product.pixelNativeCensus.receiptBytes(),Files.readAllBytes(f.product.pixelNativeCensusPath.toPath())),"real original receipt");
+            SnapshotChecks.check(MobiMindPrivateFiles.writes==1&&MobiMindPrivateFiles.reads==1,"one write and complete readback");
+            SnapshotChecks.check(Boolean.FALSE.equals(raw.get("grants_action_authority"))&&Boolean.FALSE.equals(raw.get("business_completion_verified")),"no authority/completion");
+            SnapshotChecks.check(!o.toJson().has("pixels_native_census"),"model/page semantics unchanged");
+        });
+        test("actual_producer_long_text_view_and_description_use_original_retained_projection",()->{
+            Fixture f=new Fixture("long");f.retained.text=repeat('t',120);f.retained.desc=repeat('d',130);f.retained.view=repeat('v',120);f.rebuildRows();
+            f.persist();PhoneObservation o=f.publish();Map<String,Object> row=rows(obj(f.product.pixelNativeCensus.completeReceipt(),"census")).get(1);
+            SnapshotChecks.check(((String)row.get("text")).length()==120&&o.nodes.get(0).text.length()==97,"full and bounded originals distinct");
+            SnapshotChecks.check(o.nodes.get(0).viewId.endsWith("…"),"actual view projection preserved");
+        });
+        test("actual_producer_blank_clickable_node_preserves_empty_full_label",()->{
+            Fixture f=new Fixture("blank");f.retained.text="";f.retained.desc="";f.rebuildRows();f.persist();f.publish();
+            SnapshotChecks.check("".equals(rows(obj(f.product.pixelNativeCensus.completeReceipt(),"census")).get(1).get("label")),"exact original empty label rule");
+        });
+        test("actual_producer_real_selected_checked_values_preserved",()->{
+            Fixture f=new Fixture("selected");f.retained.selected=true;f.retained.checkable=true;f.retained.checked=true;f.rebuildRows();f.persist();f.publish();
+            SnapshotChecks.check(Boolean.TRUE.equals(rows(obj(f.product.pixelNativeCensus.completeReceipt(),"census")).get(1).get("checked")),"actual selected facts");
+        });
+        test("actual_same_graph_and_full_original_pixels_refuse_unpersisted_receipt",()->{
+            Fixture f=new Fixture("unpersisted");PixelNativeCensusEvidence p=proof(f,nativeAxCensus(f.graph),clocks(f));
+            rejects(()->f.publish(p,f.product.captureEvidence(1200),f.graph.rows,f.product.digest));
+            byte[] b=p.receiptBytes();b[b.length-1]^=1;rejects(()->p.withPersistedReceipt(b));
+        });
+        test("actual_producer_refuses_replaced_graph_at_file_readback",()->{
+            Fixture f=new Fixture("replace");MobiMindPrivateFiles.readHook=()->f.request.captured=new Graph();
+            try{rejects(f::persist);SnapshotChecks.check(f.product.pixelNativeCensus==null,"no published proof after replacement");}
+            finally{MobiMindPrivateFiles.readHook=null;f.product.close();}
+            Fixture gate=new Fixture("replaced-authorization");
+            MobiMindPrivateFiles.readHook=()->gate.service.taskAuthorization=new TaskAuthorization.Gate();
+            try{rejects(gate::persist);SnapshotChecks.check(gate.product.pixelNativeCensus==null,"original resolver rejects replaced gate");}
+            finally{MobiMindPrivateFiles.readHook=null;gate.product.close();}
+            Fixture retired=new Fixture("retired-authorization");
+            MobiMindPrivateFiles.readHook=()->retired.service.taskAuthorization.live=false;
+            try{rejects(retired::persist);SnapshotChecks.check(retired.service.taskAuthorization.readyCalls==2&&retired.product.pixelNativeCensus==null,"original resolver rechecks ready after original file readback");}
+            finally{MobiMindPrivateFiles.readHook=null;retired.product.close();}
+        });
+        test("actual_producer_refuses_cancel_at_file_readback",()->{
+            Fixture f=new Fixture("cancel");MobiMindPrivateFiles.readHook=()->f.request.cancelled=true;
+            try{rejects(f::persist);SnapshotChecks.check(f.product.pixelNativeCensus==null,"no published proof after cancel");}
+            finally{MobiMindPrivateFiles.readHook=null;f.product.close();}
+        });
+        test("actual_producer_refuses_original_deadline_at_readback",()->{
+            Fixture f=new Fixture("deadline");MobiMindPrivateFiles.readHook=()->now=f.request.deadline;
+            try{rejects(f::persist);}finally{MobiMindPrivateFiles.readHook=null;f.product.close();}
+        });
+        test("actual_producer_refuses_same_name_receipt_overwrite",()->{
+            Fixture f=new Fixture("existing");Files.write(new File(f.request.directory,ID+"-pixels-native-census.json").toPath(),new byte[]{1},StandardOpenOption.CREATE_NEW);
+            rejects(f::persist);SnapshotChecks.check(Files.readAllBytes(new File(f.request.directory,ID+"-pixels-native-census.json").toPath()).length==1,"old file untouched");
+        });
+        test("actual_eligibility_rejects_retired_lease_wrong_route_or_foreign_profile",()->{
+            Fixture f=new Fixture("lease");f.service.owned=null;SnapshotChecks.check(!f.service.pixelNativeCensusEligible(f.request,f.product),"retired actual lease");
+            f.service.owned=f.request.background;f.request.background.selection.taskTarget.route="other";SnapshotChecks.check(!f.service.pixelNativeCensusEligible(f.request,f.product),"wrong route");
+            f.request.background.selection.taskTarget.route=BackgroundTaskTarget.NATIVE_APP;f.request.background.target=null;rejects(()->f.service.pixelNativeCensusEligible(f.request,f.product));
+            Object[] unrecognized={null,new Object(),new TaskAuthorization.Gate()};
+            for(int i=0;i<unrecognized.length;i++){
+                Fixture no=new Fixture("unrecognized-authorization-"+i);Object value=unrecognized[i];
+                no.request.readAuthorization=value;
+                no.product.seal=new ObservationPairSeal(no.product.identity,value,1100,1110,1120,0,0);
+                no.persist();SnapshotChecks.check(no.product.pixelNativeCensus==null&&MobiMindPrivateFiles.writes==0,"unknown Object does not acquire original task authority");
+            }
+            Fixture retired=new Fixture("retired-before-copy");retired.service.taskAuthorization.live=false;rejects(retired::persist);
+            SnapshotChecks.check(MobiMindPrivateFiles.writes==0,"retired gate checked before private companion write");
+            Fixture wrongTask=new Fixture("wrong-gate-task");wrongTask.service.taskAuthorization.taskId=ID;rejects(wrongTask::persist);
+            SnapshotChecks.check(MobiMindPrivateFiles.writes==0,"original resolver binds current task");
+            Fixture wrongSha=new Fixture("wrong-auth-digest");wrongSha.graph.nativeActionAuthorizationSha=repeat('9',64);rejects(wrongSha::persist);
+            SnapshotChecks.check(MobiMindPrivateFiles.writes==0,"resolved authorization matches original graph census");
+        });
+        test("actual_eligibility_excludes_classified_form_history",()->{
+            Fixture f=new Fixture("form");f.product.formPair=new TreeMap<String,Object>();f.persist();
+            SnapshotChecks.check(f.product.pixelNativeCensus==null&&MobiMindPrivateFiles.writes==0,"scoped form is not whole graph");
+        });
+        test("actual_producer_refuses_retained_subset_as_complete",()->{
+            Fixture f=new Fixture("subset");f.graph.nativeActionNodes=Collections.singletonList(f.graph.nativeActionNodes.get(1));rejects(f::persist);
+        });
+        test("complete_snapshot_refuses_missing_child_with_adjusted_counts",()->{
+            Fixture f=new Fixture("missing-child");Map<String,Object> census=mutable(nativeAxCensus(f.graph));
+            census.put("nodes",new ArrayList<Map<String,Object>>(rows(census).subList(0,2)));census.put("visited",2);rejects(()->proof(f,census,clocks(f)));
+        });
+        test("complete_snapshot_refuses_orphan_and_wrong_parent_class",()->{
+            Fixture f=new Fixture("parent");Map<String,Object> census=mutable(nativeAxCensus(f.graph));List<Map<String,Object>> list=new ArrayList<Map<String,Object>>(rows(census));
+            Map<String,Object> row=mutable(list.get(1));row.put("parent_class","foreign");list.set(1,row);census.put("nodes",list);rejects(()->proof(f,census,clocks(f)));
+        });
+        test("complete_snapshot_refuses_any_omission_pending_or_unknown_IME",()->{
+            Fixture f=new Fixture("omission");for(String key:Arrays.asList("pending","child_slots_omitted","node_budget_omissions","text_budget_omissions")){
+                Map<String,Object> c=mutable(nativeAxCensus(f.graph));c.put(key,1);rejects(()->proof(f,c,clocks(f)));
+            }
+            Map<String,Object> c=mutable(nativeAxCensus(f.graph));c.put("ime_visibility","unknown");rejects(()->proof(f,c,clocks(f)));
+        });
+        test("complete_snapshot_retained_count_is_real_nonnull_reference_count",()->{
+            Fixture f=new Fixture("count");Map<String,Object> c=mutable(nativeAxCensus(f.graph));c.put("retained",2);rejects(()->proof(f,c,clocks(f)));
+        });
+        test("cross_frame_PNG_hash_not_relabelled_as_current",()->{
+            Fixture f=new Fixture("pngsplice");f.persist();rejects(()->f.publish(f.product.pixelNativeCensus,f.product.captureEvidence(1200),f.graph.rows,repeat('9',64)));
+        });
+        test("cross_frame_census_identity_not_relabelled_as_published",()->{
+            Fixture f=new Fixture("censussplice");Map<String,Object> c=mutable(nativeAxCensus(f.graph)),id=mutable(obj(c,"identity"));
+            id.put("app_tree_sha256",repeat('9',64));c.put("identity",id);PixelNativeCensusEvidence p=proof(f,c,clocks(f));p=p.withPersistedReceipt(p.receiptBytes());
+            final PixelNativeCensusEvidence wrong=p;rejects(()->f.publish(wrong,f.product.captureEvidence(1200),f.graph.rows,f.product.digest));
+        });
+        test("published_projection_refuses_parent_signature_and_selection_splice",()->{
+            Fixture f=new Fixture("rows");f.persist();PhoneObservation.Node n=f.graph.rows.get(0);
+            for(int mode=0;mode<3;mode++){
+                final PhoneObservation.Node wrong=new PhoneObservation.Node(n.id,n.packageName,n.className,n.viewId,n.text,n.description,n.bounds,n.clickable,n.editable,n.scrollable,n.enabled,n.focused,n.password,n.childText,n.scrollActions,n.imeEnter,n.inputTextSha256,n.submitAvailable,
+                    mode==1?repeat('9',64):n.observedAppTreeSignature,n.nativeTreePath,mode==0?"foreign":n.nativeParentClass,mode==2?Boolean.TRUE:n.selected,n.checkable,n.checked);
+                rejects(()->f.publish(f.product.pixelNativeCensus,f.product.captureEvidence(1200),Collections.singletonList(wrong),f.product.digest));
+            }
+        });
+        test("published_projection_refuses_text_view_or_label_splice",()->{
+            Fixture f=new Fixture("values");f.persist();PhoneObservation.Node n=f.graph.rows.get(0);
+            final PhoneObservation.Node wrong=new PhoneObservation.Node(n.id,n.packageName,n.className,n.viewId,"invented",n.description,n.bounds,n.clickable,n.editable,n.scrollable,n.enabled,n.focused,n.password,n.childText,n.scrollActions,n.imeEnter,n.inputTextSha256,n.submitAvailable,n.observedAppTreeSignature,n.nativeTreePath,n.nativeParentClass,n.selected,n.checkable,n.checked);
+            rejects(()->f.publish(f.product.pixelNativeCensus,f.product.captureEvidence(1200),Collections.singletonList(wrong),f.product.digest));
+        });
+        test("all_original_capture_clocks_and_original_deadline_are_bound",()->{
+            Fixture f=new Fixture("clocks");Map<String,Object> t=clocks(f);t.put("capture_requested_elapsed_ms",1081L);rejects(()->proof(f,nativeAxCensus(f.graph),t));
+            Map<String,Object> late=clocks(f);late.put("proof_copied_elapsed_ms",2000L);rejects(()->proof(f,nativeAxCensus(f.graph),late));
+            Map<String,Object> reversed=clocks(f);reversed.put("pair_graph_completed_elapsed_ms",1099L);rejects(()->proof(f,nativeAxCensus(f.graph),reversed));
+        });
+        test("publication_does_not_refresh_age_or_extend_original_deadline",()->{
+            Fixture f=new Fixture("published-clock");f.persist();Map<String,Object> m=mutable(f.product.captureEvidence(1200));m.put("capture_age_at_publication_ms",0L);
+            rejects(()->f.publish(f.product.pixelNativeCensus,m,f.graph.rows,f.product.digest));
+            Map<String,Object> late=mutable(f.product.captureEvidence(2000));rejects(()->f.publish(f.product.pixelNativeCensus,late,f.graph.rows,f.product.digest));
+        });
+        test("bounded_original_post_effect_window_recheck_preserves_history",()->{
+            Fixture f=new Fixture("recheck");f.persist();f.product.postEffectPublicationRechecks=1;f.product.firstPublicationCheckStartedAt=1160;f.product.firstPublicationCheckCompletedAt=1170;
+            f.product.publicationCheckStartedAt=1185;f.product.publicationCheckCompletedAt=1190;PhoneObservation o=f.publish();
+            SnapshotChecks.check(o.capturedElapsedMillis==1080&&o.screenshotSha256.equals(f.product.digest),"recheck does not refresh old capture");
+            f.product.firstPublicationCheckStartedAt=1161;rejects(f::publish);
+        });
+        test("PNG_full_read_requires_original_dimensions_signature_CRC_and_IEND",()->{
+            Fixture f=new Fixture("png");byte[] b=Files.readAllBytes(f.product.path.toPath());
+            rejects(()->PixelNativeCensusEvidence.readPng(new ByteArrayInputStream(b),101,200));
+            byte[] bad=b.clone();bad[29]^=1;rejects(()->PixelNativeCensusEvidence.readPng(new ByteArrayInputStream(bad),100,200));
+            byte[] truncated=Arrays.copyOf(b,b.length-1);rejects(()->PixelNativeCensusEvidence.readPng(new ByteArrayInputStream(truncated),100,200));
+            byte[] signature=b.clone();signature[0]=0;rejects(()->PixelNativeCensusEvidence.readPng(new ByteArrayInputStream(signature),100,200));
+        });
+        test("PNG_no_progress_and_excessive_original_bytes_refused",()->{
+            rejects(()->PixelNativeCensusEvidence.readPng(new InputStream(){public int read(){return 0;}public int read(byte[] b,int o,int l){return 0;}},100,200));
+            rejects(()->PixelNativeCensusEvidence.readPng(new InputStream(){int left=PixelNativeCensusEvidence.MAX_PNG_BYTES+1;public int read(){if(left--<=0)return -1;return 0;}
+                public int read(byte[] b,int o,int l){if(left<=0)return -1;int n=Math.min(left,l);Arrays.fill(b,o,o+n,(byte)0);left-=n;return n;}},100,200));
+        });
+        test("complete_original_receipt_and_projection_are_deep_immutable",()->{
+            Fixture f=new Fixture("immutable");f.persist();byte[] bytes=f.product.pixelNativeCensus.receiptBytes();bytes[0]^=1;
+            SnapshotChecks.check(!Arrays.equals(bytes,f.product.pixelNativeCensus.receiptBytes()),"caller cannot mutate raw receipt");
+            try{obj(f.product.pixelNativeCensus.completeReceipt(),"census").put("visited",1);throw new AssertionError("mutable census");}
+            catch(UnsupportedOperationException expected){SnapshotChecks.check(true,"immutable census");}
+        });
+        test("unpublished_owned_companion_is_cleaned_but_published_original_is_retained",()->{
+            Fixture f=new Fixture("cleanup");f.persist();File receipt=f.product.pixelNativeCensusPath;f.product.close();
+            SnapshotChecks.check(!receipt.exists(),"unpublished owned receipt removed");
+            Fixture keep=new Fixture("published");keep.persist();File original=keep.product.pixelNativeCensusPath;keep.product.published=true;keep.product.close();
+            SnapshotChecks.check(original.isFile(),"published original retained");
+        });
+    }
+    @SuppressWarnings("unchecked") static void originalPhoneCases()throws Exception{
+        java.lang.reflect.Method binding=NativeAxConsumersHostTest.class.getDeclaredMethod("binding",WindowOwnership.class);binding.setAccessible(true);
+        Map<String,Object> b=(Map<String,Object>)binding.invoke(null,new Object[]{null});
+        java.lang.reflect.Method captured=NativeAxConsumersHostTest.class.getDeclaredMethod("capture",Map.class);captured.setAccessible(true);
+        ObservationCaptureEvidence c=(ObservationCaptureEvidence)captured.invoke(null,b);
+        ActualAxPhoneChecks.run(c,new JSONObject(b));ObservationEvidenceHost.run();
+    }
+    public static void main(String[] args)throws Exception {
+        root=new File(args[1]);Files.createDirectories(root.toPath());
+        try{if("original".equals(args[0]))originalPhoneCases();else cases();}
+        finally{SnapshotChecks.finish(args[2]);}
+    }
+}

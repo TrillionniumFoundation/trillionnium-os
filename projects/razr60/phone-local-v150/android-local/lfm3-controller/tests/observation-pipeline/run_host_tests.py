@@ -78,7 +78,7 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
 record['calendar_legacy_boundary']=calendar_boundary
 record['ctrip_form_sampling_legacy_boundary']=sampling_boundary
 record['sampling_legacy_helper']={'path':str(sampling_helper_path),'bytes':sampling_helper_path.stat().st_size,'sha256':hashlib.sha256(sampling_helper_path.read_bytes()).hexdigest()}
-png_sources=[root/'src/org/trillionnium/hepta/local/ObservationPngEncoder.java',
+png_sources=[root/'src/org/trillionnium/hepta/local/ObservationPngEncoder.java',root/'src/org/trillionnium/hepta/local/PixelNativeCensusEvidence.java',
              root/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
              root/'tests/observation-png/stubs/android/os/Build.java']
 record['png_closure_sources']={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in png_sources}

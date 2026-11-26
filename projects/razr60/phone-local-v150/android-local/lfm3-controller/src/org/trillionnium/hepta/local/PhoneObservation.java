@@ -171,6 +171,7 @@ public final class PhoneObservation {
     public final String id, packageName, screenshotSha256, treeSha256;
     public final String captureKind;
     final ObservationCaptureEvidence capture;
+    final PixelNativeCensusEvidence pixelNativeCensus;
     public final long capturedElapsedMillis;
     private final String captureEvidenceRaw;
     public final int width, height, rotation, windowId;
@@ -240,6 +241,17 @@ public final class PhoneObservation {
                       String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
                       CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
                       java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow,ObservationCaptureEvidence capture) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,state,windowMetadata,
+                truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,collectionStats,
+                actualSelection,actualOwnerSha256,captureEvidence,actualProfileWindow,capture,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
+                      CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
+                      java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow,ObservationCaptureEvidence capture,
+                      PixelNativeCensusEvidence pixelNativeCensus) {
         this.capture=capture;captureKind=capture==null?ObservationCaptureEvidence.PIXELS:capture.kind;
         if(capture!=null){
             if(!capture.nativeText()||screenshot!=null||screenshotSha256!=null
@@ -307,7 +319,62 @@ public final class PhoneObservation {
         this.treeSha256=treeSha256;this.nodesTruncated=truncated;
         this.state=state;this.windowMetadata=windowMetadata;
         this.nodes=Collections.unmodifiableList(new ArrayList<Node>(nodes));
+        if(pixelNativeCensus!=null){
+            if(capture!=null||screenshot==null||screenshotSha256==null||actualSelection==null||actualOwnerSha256==null
+                    ||actualProfileWindow==null||state==null||state.imeVisibility!=ImeVisibility.HIDDEN
+                    ||windowMetadata==null||windowMetadata.displayId==null||truncated
+                    ||collectionStats==null||collectionStats.truncated())
+                throw new IllegalArgumentException("complete bound actual pixels required for native census companion");
+            java.util.Map<String,Object> bound=new java.util.LinkedHashMap<String,Object>();
+            bound.put("observation_id",id);bound.put("package",packageName);bound.put("owner_sha256",actualOwnerSha256);
+            bound.put("background_generation",backgroundGeneration);bound.put("app_tree_sha256",state.appTreeSha256);
+            bound.put("observation_state_sha256",treeSha256);bound.put("display_id",windowMetadata.displayId);
+            bound.put("window_id",windowId);bound.put("rotation",rotation);bound.put("width",width);bound.put("height",height);
+            bound.put("left",bounds.left);bound.put("top",bounds.top);bound.put("right",bounds.right);bound.put("bottom",bounds.bottom);
+            bound.put("captured_elapsed_ms",at);bound.put("profile_window",actualProfileWindow.evidence());bound.put("screen_sha256",screenshotSha256);
+            pixelNativeCensus.requirePublished(bound,captureEvidence,collectionStats.visited,collectionStats.retained);
+            requirePixelNativeProjection(pixelNativeCensus,nodes);
+        }
+        this.pixelNativeCensus=pixelNativeCensus;
     }
+    /** The compact published rows must be the same projection of the full original graph. */
+    private static void requirePixelNativeProjection(PixelNativeCensusEvidence proof,List<Node> nodes){
+        java.util.Map<?,?> census=(java.util.Map<?,?>)proof.completeReceipt().get("census");
+        java.util.Map<String,java.util.Map<?,?>> full=new java.util.HashMap<String,java.util.Map<?,?>>();
+        for(Object value:(java.util.List<?>)census.get("nodes")){
+            java.util.Map<?,?> row=(java.util.Map<?,?>)value;full.put((String)row.get("path"),row);
+        }
+        java.util.Set<String> paths=new java.util.HashSet<String>();
+        for(Node n:nodes){
+            java.util.Map<?,?> row=full.get(n.nativeTreePath);
+            require(row!=null&&paths.add(n.nativeTreePath)&&n.selectionStateObserved&&n.observedAppTreeSignature!=null,
+                    "actual retained path/reference missing from full pixel census");
+            // The real managed-profile producers support Xiaomi/Ctrip. Their retained
+            // text/description/view ID are the original 96-unit projection, while the
+            // complete census retains bounded original strings from the same getters.
+            String label=n.label();
+            if(n.text.trim().isEmpty()&&n.description.trim().isEmpty()&&!"derived".equals(n.childText.status))label="";
+            require(n.packageName.equals(row.get("package"))&&n.className.equals(row.get("class"))
+                    &&n.nativeParentClass.equals(row.get("parent_class"))
+                    &&n.viewId.equals(PixelNativeCensusEvidence.retainedValue((String)row.get("view_id"),96))
+                    &&n.text.equals(PixelNativeCensusEvidence.retainedValue((String)row.get("text"),96))
+                    &&n.description.equals(PixelNativeCensusEvidence.retainedValue((String)row.get("description"),96))
+                    &&ObservedTargetLabels.project(label).equals(row.get("label"))
+                    &&java.util.Arrays.asList(n.bounds.left,n.bounds.top,n.bounds.right,n.bounds.bottom).equals(row.get("bounds"))
+                    &&Boolean.TRUE.equals(row.get("visible"))&&Boolean.valueOf(n.enabled).equals(row.get("enabled"))
+                    &&Boolean.valueOf(n.clickable).equals(row.get("clickable"))&&Boolean.valueOf(n.editable).equals(row.get("editable"))
+                    &&Boolean.valueOf(n.scrollable).equals(row.get("scrollable"))&&Boolean.valueOf(n.focused).equals(row.get("focused"))
+                    &&Boolean.valueOf(n.password).equals(row.get("password"))&&n.selected.equals(row.get("selected"))
+                    &&n.checkable.equals(row.get("checkable"))&&n.checked.equals(row.get("checked"))
+                    &&n.scrollActions.fingerprintInput().equals(row.get("scroll_actions"))
+                    &&n.imeEnter.fingerprintInput().equals(row.get("ime_enter"))
+                    &&java.util.Objects.equals(n.inputTextSha256,row.get("input_sha256"))
+                    &&ObservationCaptureEvidence.hash((n.imeEnter.bindFreshness(n.scrollActions.bindFreshness(n.observedAppTreeSignature),
+                            n.focused,n.inputTextSha256)).getBytes(java.nio.charset.StandardCharsets.UTF_8)).equals(row.get("ref_signature_sha256")),
+                    "actual retained values differ from full original pixel census");
+        }
+    }
+
     /** Window title/class are untrusted metadata, not a classifier or a page title guarantee. */
     JSONObject windowJson() throws JSONException {
         ObservedWindowMetadata value=windowMetadata;
@@ -445,6 +512,7 @@ public final class PhoneObservation {
         if(includeCaptureEvidence){
             value.put("captured_elapsed_ms",capturedElapsedMillis);
             if(captureEvidenceRaw!=null)value.put("capture",new JSONObject(captureEvidenceRaw));
+            if(pixelNativeCensus!=null)value.put("pixels_native_census",new JSONObject(pixelNativeCensus.summary()));
         }
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
         value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256==null?JSONObject.NULL:screenshotSha256);

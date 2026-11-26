@@ -12,7 +12,7 @@ def main():
     a=ap.parse_args();s=a.source.resolve();out=a.output.absolute();out.mkdir(parents=True,exist_ok=False)
     h=load(s/"tests/observation-diagnostics/run_host.py","form_phone_helper")
     j=a.java_home.resolve();jar=a.json_jar.resolve()
-    names=["PhoneObservation","ObservationCaptureEvidence","ObservationState","ObservedWindowMetadata","ImeVisibility","ObservedChildText","ObservedTargetLabels","ObservedScrollActions","ObservedImeEnter","NativeActionSnapshotCheck","NativeCtripFormObservation","NativeXiaomiSearchInputObservation"]
+    names=["PhoneObservation",'PixelNativeCensusEvidence',"ObservationCaptureEvidence","ObservationState","ObservedWindowMetadata","ImeVisibility","ObservedChildText","ObservedTargetLabels","ObservedScrollActions","ObservedImeEnter","NativeActionSnapshotCheck","NativeCtripFormObservation","NativeXiaomiSearchInputObservation"]
     paths=[s/PKG/(n+".java") for n in names]
     paths += [s/"src/org/trillionnium/hepta/background"/(n+".java") for n in ("ProfileIdentity","ProfileTarget","WindowOwnership")]
     paths += [s/"tests/qualification-scope/fixtures/android/graphics/Rect.java",HERE/"FormCapturePhoneHostTest.java"]

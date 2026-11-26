@@ -10,7 +10,7 @@ from pathlib import Path
 PKG=Path('src/org/trillionnium/hepta/local')
 HERE=Path(__file__).resolve().parent
 BUNDLE=HERE.parents[1]
-JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','LocalTaskController.java',
+JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','PixelNativeCensusEvidence.java','LocalTaskController.java',
       'ObservationDiagnostics.java','ObservationStabilityGate.java','ActionExecutionState.java','ObservedChildText.java','ObservedScrollActions.java','ObservedImeEnter.java',
       'TaskCancellationQueue.java','ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java','NativeAppEvidence.java','ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java','NativeActionSnapshotCheck.java','ObservedTargetLabels.java']
 def load(path,name):

@@ -497,7 +497,7 @@ final class VlmInferenceAdapter {
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig','VlmPins','VlmResultContract',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
           'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',
-          'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation','VisualPromptProjection','MobiMindContract','MobiMindPins',
+          'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation','PixelNativeCensusEvidence','VisualPromptProjection','MobiMindContract','MobiMindPins',
           'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','SessionTerminalEvidence','ObservationDiagnostics','NativeActionSnapshotCheck']
     pure += ['NativeCalendarDateEnvelope','NativeCalendarDateIntent','NativeCalendarDateProtocol','UiVenusInputContract','UiVenusPins']
     # Compile the real new value/file classes and their strict production JSON reader.

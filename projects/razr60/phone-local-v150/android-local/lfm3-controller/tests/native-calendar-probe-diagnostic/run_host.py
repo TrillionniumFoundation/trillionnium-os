@@ -64,7 +64,7 @@ def prepare(source,fixture,here):
     files,base=module('probe_actual_background',source/'tests/background-session/prepare_fixture.py').prepare(source,fixture,include_terminal=False)
     # Use the real JSON library for diagnostic and private receipt serialization.
     files=[Path(x) for x in files if '/org/json/' not in str(x)]
-    actual_names=('PhoneObservation','ObservedChildText','ObservedWindowMetadata','ObservationState','ImeVisibility',
+    actual_names=('PhoneObservation','PixelNativeCensusEvidence','ObservedChildText','ObservedWindowMetadata','ObservationState','ImeVisibility',
                   'ObservationCaptureEvidence','NativeCtripFormObservation','NativeXiaomiSearchInputObservation', 'NativeActionSnapshotCheck','NativeAppEvidence')
     files += [pkg/(x+'.java') for x in actual_names]
     files=module('probe_legacy_unused_grammar',source/'tests/native-app/legacy-boundary/prepare_search_pure.py').add(source,files)

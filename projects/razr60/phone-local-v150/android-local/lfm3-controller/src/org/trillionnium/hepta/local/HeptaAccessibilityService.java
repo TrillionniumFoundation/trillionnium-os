@@ -1559,6 +1559,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         ObservationPairSeal seal;NativeResampleSeed seed;
         Map<String,Object> formPair,postEncodingFormPair; // Complete read-only comparisons; never whole-tree equality.
         File formHistoryPath;String formHistoryDigest;int formHistoryBytes;
+        PixelNativeCensusEvidence.Png pixelPng;PixelNativeCensusEvidence pixelNativeCensus;File pixelNativeCensusPath;
         long formPairCompletedEvents=-1; // Frozen immediately after the complete census, before comparison.
         boolean contentPairSealed,postEncodingCompleteNativeRechecked;
         ObservationEventWatermark pairCompletedWatermark,postEncodingStartWatermark,postEncodingCompletedWatermark;
@@ -1620,6 +1621,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             // Best effort removal of this request's unpublished evidence, not a claim of durable deletion.
             if(path!=null&&!published){path.delete();path=null;}
             if(formHistoryPath!=null&&!published){formHistoryPath.delete();formHistoryPath=null;}
+            if(pixelNativeCensusPath!=null&&!published){pixelNativeCensusPath.delete();pixelNativeCensusPath=null;}
         }
     }
     /** Legacy untyped events retain their original gates; they cannot enter new content coverage. */
@@ -2829,7 +2831,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     requireObservationWork(request);
                     path.setReadable(false,false);path.setReadable(true,true);path.setWritable(false,false);path.setWritable(true,true);
-                    request.phase("png_hash");product.digest=fileSha256(path);requireObservationWork(request);
+                    request.phase("png_hash");
+                    if(pixelNativeCensusEligible(request,product)){
+                        try(java.io.FileInputStream input=new java.io.FileInputStream(path)){
+                            product.pixelPng=PixelNativeCensusEvidence.readPng(input,product.bitmap.getWidth(),product.bitmap.getHeight());
+                        }
+                        product.digest=product.pixelPng.sha256;
+                    }else product.digest=fileSha256(path);
+                    requireObservationWork(request);
                     product.persistedAt=SystemClock.elapsedRealtime();
                     // Keep the existing diagnostic phase bucket; captureEvidence records
                     // whether this was a full graph or an identity-only publication check.
@@ -2935,7 +2944,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     product.publicationCheckCompletedAt=SystemClock.elapsedRealtime();
                 }
                 requireObservationWork(request);
-                if(!retry)persistCtripFormHistory(request,product);
+                if(!retry){persistCtripFormHistory(request,product);persistPixelNativeCensus(request,product);}
             }catch(Exception failure){error="观察失败："+message(failure);}
             finally{
                 if(!copyEntered)result.getHardwareBuffer().close();
@@ -2947,6 +2956,62 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }});}catch(RuntimeException unavailable){
             request.worker(false);observationIoBusy.set(false);result.getHardwareBuffer().close();failObservation(request,"屏幕观察队列不可用："+message(unavailable));
         }
+    }
+
+    /** Optional original-pixel companion for an actually complete managed native graph.
+     * Scoped form histories keep their own receipt; they never become an equal full graph. */
+    private boolean pixelNativeCensusEligible(ObservationRequest request,ObservationProduct product){
+        Graph graph=request==null?null:request.captured;
+        return graph!=null&&graph.profileWindow!=null&&request.background!=null&&request.readAuthorization!=null&&request.readAuthorization==taskAuthorization
+                &&product!=null&&product.identity.nativeRecheck&&product.seal!=null
+                &&product.seal.identity==product.identity&&product.seal.authorization==request.readAuthorization
+                &&product.formPair==null&&product.postEncodingFormPair==null&&product.identity.samplingFormProof==null
+                &&product.identity.matches(graph)&&nativeObservationRecheckAllowed(request,graph);
+    }
+    /** No READY or page parser is a prerequisite. The serial screenshot worker
+     * archives this graph even if later recognition or manual navigation refuses. */
+    private void persistPixelNativeCensus(ObservationRequest request,ObservationProduct product)throws Exception{
+        if(!pixelNativeCensusEligible(request,product))return;
+        requireObservationWork(request);Graph graph=request.captured;
+        TaskAuthorization.Gate authorization=authorizationFor(request.taskId);
+        requireTaskAuthorization(request.taskId,authorization);
+        if(product.pixelNativeCensus!=null||product.pixelNativeCensusPath!=null||product.pixelPng==null
+                ||product.id==null||product.path==null||!product.path.getName().equals(product.id+".png")
+                ||!product.pixelPng.sha256.equals(product.digest)||!completeNativeObservationGraph(graph))
+            throw new IllegalStateException("complete original pixel/census ownership required");
+        ProfileTarget target=request.background.profileTarget();
+        NativeAppEvidence.requireProfileTarget(target,graph.profileWindow);
+        String selection=NativeAppObservation.selectionSha(request.background.selection);
+        if(target==null||request.readAuthorization!=authorization||!request.taskId.equals(graph.nativeActionTaskId)
+                ||!authorization.authorization.sha256.equals(graph.nativeActionAuthorizationSha)
+                ||!selection.equals(graph.nativeActionSelectionSha)
+                ||!request.background.ownerSha256.equals(graph.backgroundOwnerSha)
+                ||!request.background.selection.taskTarget.targetSha256.equals(graph.nativeActionTargetSha)
+                ||!request.background.selection.taskTarget.nativeGoal.contractSha256.equals(graph.nativeActionGoalSha)
+                ||!request.background.generation.equals(graph.backgroundGeneration)
+                ||request.displayId!=graph.displayId)
+            throw new IllegalStateException("actual pixel/census task identity changed");
+        Map<String,Object> times=new java.util.LinkedHashMap<String,Object>();
+        times.put("request_started_elapsed_ms",request.started);times.put("request_deadline_elapsed_ms",request.deadline);
+        times.put("sample_graph_started_elapsed_ms",product.identity.graphStartedAt);
+        times.put("sample_graph_completed_elapsed_ms",product.identity.graphCompletedAt);
+        times.put("capture_requested_elapsed_ms",product.capturedAt);times.put("screenshot_callback_elapsed_ms",product.callbackAt);
+        times.put("pair_graph_started_elapsed_ms",product.pairStartedAt);times.put("pair_graph_completed_elapsed_ms",product.pairCompletedAt);
+        times.put("pair_sealed_elapsed_ms",product.seal.sealedAt);times.put("png_encode_started_elapsed_ms",product.encodeStartedAt);
+        times.put("png_encode_completed_elapsed_ms",product.encodeCompletedAt);times.put("png_persisted_and_hashed_elapsed_ms",product.persistedAt);
+        times.put("publication_check_started_elapsed_ms",product.publicationCheckStartedAt);
+        times.put("publication_check_completed_elapsed_ms",product.publicationCheckCompletedAt);
+        times.put("proof_copied_elapsed_ms",SystemClock.elapsedRealtime());
+        PixelNativeCensusEvidence value=PixelNativeCensusEvidence.fromCapturedGraph(nativeAxCensus(graph),
+                product.id,product.capturedAt,target.apkSetSha256,product.pixelPng,times);
+        File path=new File(request.directory,product.id+"-pixels-native-census.json");
+        MobiMindPrivateFiles.writeNew(path,value.receiptBytes());product.pixelNativeCensusPath=path;
+        MobiMindPrivateFiles.Read actual=MobiMindPrivateFiles.read(path,ObservationCaptureEvidence.MAX_RECEIPT_BYTES,true);
+        value=value.withPersistedReceipt(actual.bytes);actual.unchangedPath();requireObservationWork(request);
+        requireTaskAuthorization(request.taskId,authorization);
+        if(request.readAuthorization!=authorization||request.captured!=graph||!pixelNativeCensusEligible(request,product))
+            throw new IllegalStateException("pixel/census graph retired before publication");
+        product.pixelNativeCensus=value;
     }
 
     /** Preserve full readonly comparisons once; compact capture metadata never
@@ -3162,7 +3227,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             PhoneObservation observation=new PhoneObservation(product.id,graph.packageName,product.capturedAt,
                     product.bitmap.getWidth(),product.bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,product.path,product.digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages,graph.collectionStats,
                     graph.backgroundSelectionRaw==null?null:new JSONObject(graph.backgroundSelectionRaw),graph.backgroundOwnerSha,
-                    product.captureEvidence(SystemClock.elapsedRealtime()),graph.profileWindow);
+                    product.captureEvidence(SystemClock.elapsedRealtime()),graph.profileWindow,null,product.pixelNativeCensus);
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());

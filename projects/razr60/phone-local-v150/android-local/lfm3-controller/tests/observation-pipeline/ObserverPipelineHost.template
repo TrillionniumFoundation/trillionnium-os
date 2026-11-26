@@ -186,6 +186,12 @@ public final class ObserverPipelineHost {
             this.id=id;this.path=path;capturedElapsedMillis=captured;this.collectionStats=collectionStats;
             this.captureEvidence=captureEvidence;
         }
+            PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
+            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha,Map<String,Object> captureEvidence,WindowOwnership profile,
+            ObservationCaptureEvidence capture,PixelNativeCensusEvidence companion){
+            this(id,pkg,captured,width,height,rotation,window,bounds,path,hash,digest,state,metadata,truncated,rows,generation,initial,packages,collectionStats,selection,ownerSha,captureEvidence,profile);
+            if(capture!=null||companion!=null)throw new AssertionError("legacy observer cannot publish typed companion authority");
+        }
     }
     static final class JSONObject {
         private final org.json.JSONObject value;

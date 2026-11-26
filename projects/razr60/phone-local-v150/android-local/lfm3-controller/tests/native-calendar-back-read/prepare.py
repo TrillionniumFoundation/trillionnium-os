@@ -47,15 +47,10 @@ def extend_template(source,text,extractor,controller,out,common):
             'profile identity carrier only')
     proof_anchor=extractor.body((source/PKG/'HeptaAccessibilityService.java').read_text(),
         '    static final class PostEffectObservationRetryProof {')
-    port='''
-        /** Test-only opaque producer carrier. The real Service proof and Controller
-         * consumer execute here; actual AX worker/window/drain are a separate gate. */
-        private static final class PostEffectSamplingRetry {
-            final Map<String,Object> axReadIdentity;
-            PostEffectSamplingRetry(boolean typed){axReadIdentity=typed?Collections.<String,Object>singletonMap("synthetic_sdk_port",true):null;}
-        }
-'''
-    replace(proof_anchor,port+proof_anchor,'explicit synthetic producer type')
+    old_port='        private static final class PostEffectSamplingRetry {\n            final java.util.Map<String,Object> axReadIdentity=null;\n            private PostEffectSamplingRetry(){throw new AssertionError("no AX handoff authority in consumer IO port");}\n        }'
+    port='        private static final class PostEffectSamplingRetry {\n            final java.util.Map<String,Object> axReadIdentity;\n            private PostEffectSamplingRetry(){throw new AssertionError("no AX handoff authority in consumer IO port");}\n            PostEffectSamplingRetry(boolean typed){axReadIdentity=typed?Collections.<String,Object>singletonMap("synthetic_sdk_port",true):null;}\n        }'
+    need(text.count(proof_anchor)==1,'one complete actual post-effect proof remains unchanged')
+    replace(old_port,port,'single synthetic producer type with original no-arg refusal')
     helper=extractor.body(controller,'    private static java.util.Map<String,Object> nativeCalendarBackExecution(')
     projection=extractor.body(controller,'    private static java.util.Map<String,Object> nativeQueryExecution(')
     replace(projection,projection+'\n'+helper,'actual BACK callback projection')

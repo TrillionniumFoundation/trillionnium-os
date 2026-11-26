@@ -26,7 +26,7 @@ OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.jav
 
 def png_sources(source):
     # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.
-    return [source/PKG/'ObservationPngEncoder.java',
+    return [source/PKG/'ObservationPngEncoder.java',source/PKG/'PixelNativeCensusEvidence.java',
             source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
             source/'tests/observation-png/stubs/android/os/Build.java']
 
@@ -66,7 +66,40 @@ def body(raw,start):
             if depth==0:return raw[first:i+1]
         i+=1
     raise RuntimeError('unterminated body')
+def pixel_native_census_legacy_parts(service, parts):
+    """No optional companion authority in the old synthetic scheduling fixtures.
+    The separate pixels-native-census gate executes both complete actual members.
+    Every existing worker/callback/product body remains current.
+    """
+    expected = {'    private boolean pixelNativeCensusEligible(': {'sha256': '5fad1f6a50491278fa723c68e5432efe95ce9e449b84e4d4379975a2ab8230bf', 'bytes': 738, 'port': '    private boolean pixelNativeCensusEligible(ObservationRequest request,ObservationProduct product){\n        if(product!=null&&(product.pixelNativeCensus!=null||product.pixelNativeCensusPath!=null))\n            throw new AssertionError("legacy observer cannot hold a pixel/native census companion");\n        return false;\n    }'}, '    private void persistPixelNativeCensus(': {'sha256': '4b602fa9a53cb86b0103452c5b08e6ba3295428a478014cd6e78b0028bdbc9b4', 'bytes': 4006, 'port': '    private void persistPixelNativeCensus(ObservationRequest request,ObservationProduct product)throws Exception{\n        if(product==null||product.pixelPng!=null||product.pixelNativeCensus!=null||product.pixelNativeCensusPath!=null)\n            throw new AssertionError("legacy observer cannot manufacture a pixel/native census companion");\n    }'}}
+    compiled = dict(parts)
+    rows = []
+    for anchor, rule in expected.items():
+        member = body(service, anchor)
+        if len(member.encode()) != rule["bytes"] or sha(member.encode()) != rule["sha256"]:
+            raise RuntimeError("unknown optional pixel companion producer: " + anchor)
+        if compiled["observation"].count(member) != 1:
+            raise RuntimeError("complete optional companion member must occur once")
+        before = compiled["observation"]
+        compiled["observation"] = before.replace(member, rule["port"], 1)
+        if compiled["observation"].replace(rule["port"], member, 1) != before:
+            raise RuntimeError("only the complete optional companion producer may be excluded")
+        rows.append({"anchor": anchor, "bytes": rule["bytes"], "sha256": rule["sha256"],
+                     "explicit_no_companion_port_sha256": sha(rule["port"].encode())})
+    return compiled, {"schema": "hepta.pixel-census-legacy-type-boundary.v1",
+                      "excluded_complete_new_members": rows,
+                      "original_source_sha256": sha(parts["observation"].encode()),
+                      "compiled_source_sha256": sha(compiled["observation"].encode()),
+                      "pixel_census_producer_executed": False, "pixel_census_authority_available": False,
+                      "new_actual_producer_gate": "tests/pixels-native-census/run_host.py"}
+
 def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
+    parts, pixel_boundary = pixel_native_census_legacy_parts(service, parts)
+    compiled, boundary = _ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling)
+    boundary["pixel_native_census_boundary"] = pixel_boundary
+    return compiled, boundary
+
+def _ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
     """Exact type boundary only; qualified form tests must retain the real block."""
     start = "    private boolean ctripFormSamplingOwner(ObservationRequest request,long now){"
     end = "    private void sampleObservation(final ObservationRequest request){"
