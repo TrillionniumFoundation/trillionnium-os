@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
-  "base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "base_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+  "base_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+  "base_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
   "complete_source_files": 2678,
@@ -205,7 +205,7 @@
     "original_deadlines_preserved": true,
     "prior_merged_source_sha256": "3208f0203a56b446a4d5f54fd26896c6a8a423bc0742e7a42b52458e42a0070c",
     "private_phone_fixtures_in_source": false,
-    "test_only_successor_production_unchanged": false,
+    "test_only_successor_production_unchanged": true,
     "whole_source_union_exact": true,
     "xiaomi_source_sha256": "da95f4ff37def93fc6277e299331dc194261088e31956a654f829fb463ab99ce"
   },
@@ -253,7 +253,7 @@
     "phone_latency_improvement_measured": false
   },
   "current_published_parent_heads": [
-    "0a8ca847fd2d8d667a229e068c02f5d8044609fb"
+    "1cca2349eb0b1495e3ad3a0d38633964e5381f2b"
   ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
@@ -304,33 +304,45 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-    "model_weights_unchanged": true,
-    "native_unchanged": true,
-    "phone_success_claimed": false,
-    "production_changes": [
+    "baseline": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+    "inherited_production_changes_from_installed": [
       "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
       "src/org/trillionnium/hepta/local/ObservationStabilityGate.java"
     ],
+    "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+    "model_weights_unchanged": true,
+    "native_unchanged": true,
+    "phone_success_claimed": false,
+    "production_changes": [],
     "test_changes": [
-      "tests/native-calendar-date-actions/run_host.py",
-      "tests/native-calendar-date-fresh/run_host.py",
-      "tests/native-ctrip-coherent-census/run_host.py",
-      "tests/native-ctrip-form-observation/run_observer_host.py",
-      "tests/native-ctrip-form-sampling/CtripFormSamplingCases.fragment",
-      "tests/native-ctrip-form-sampling/CtripFormSamplingGateHostTest.java",
-      "tests/native-ctrip-form-sampling/CtripFormSamplingHostTest.java",
-      "tests/native-ctrip-form-sampling/run_host.py",
-      "tests/native-observation-screenshot-seed/run_host.py",
-      "tests/native-post-effect-sampling/run_host.py",
-      "tests/native-search-producer/InitialClientCacheCases.fragment",
-      "tests/native-search-producer/InitialClientCacheExpectedCases.json",
-      "tests/native-search-producer/PostBackClientCacheCases.fragment",
-      "tests/native-search-producer/PostBackClientCacheExpectedCases.json",
-      "tests/native-search-producer/run_producer.py",
-      "tests/observation-diagnostics/run_host.py",
-      "tests/observation-pipeline/run_host_tests.py"
+      "tests/local-model-settings-visual/README.md",
+      "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "tests/local-model-settings-visual/run_host.py",
+      "tests/native-ax-observation/run_host.py"
     ]
+  },
+  "current_test_fixture_compatibility": {
+    "actual_parser_admission_low_memory_engine_hash_expectations_unchanged": true,
+    "ax_only_two_snapshot_type_names_qualified": true,
+    "carrier_whole_member_inverse_required": true,
+    "failed_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+    "generated_memory_io_only": true,
+    "memory_whole_class_inverse_required": true,
+    "original_failed_full": {
+      "bytes": 112173,
+      "mode": 384,
+      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r2/validation-full-host-r1/HOST-VERIFIED.json",
+      "sha256": "caaac97d65c0f43bcd399130a5a030a65942b2a46856f6cd349b7e429c8e1ada"
+    },
+    "prepublication_original_suites": {
+      "bytes": 5295,
+      "mode": 384,
+      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+      "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+    },
+    "production_unchanged_from_git_parent": true,
+    "real_form_sampling_source_members_unchanged": true,
+    "synthetic_kernel_input_receipts_required": true
   },
   "current_xiaomi_protected_history_prefix": {
     "exact_single_AX3000T_prefix": true,
@@ -8566,9 +8578,9 @@
       "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
     },
     {
-      "bytes": 1927,
+      "bytes": 2707,
       "path": "tests/local-model-settings-visual/README.md",
-      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+      "sha256": "d46a416bb8cf3dc7ac6d64afd498d4f545e098ceb4831eee5e5176d08aad42e4"
     },
     {
       "bytes": 9165,
@@ -8576,14 +8588,14 @@
       "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
     },
     {
-      "bytes": 47387,
+      "bytes": 47533,
       "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "sha256": "e2b865d416be72e5afa489b35c80cd6aa540bfa1828ad0e61da1df2e19442b41"
+      "sha256": "34ba1d1f8dd67d79592e3dfd5bd0ca75873df52e0491d6d403182d86db4b5b3c"
     },
     {
-      "bytes": 15454,
+      "bytes": 20683,
       "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "71acaef1592ae7a06524652614bceac48657d5b11c24006e58e02c30f6a43fa3"
+      "sha256": "047bb48a57a5ac4968fd7dc292b28057686319a3ce8916e5cdcb4a6d9497159c"
     },
     {
       "bytes": 3621,
@@ -9226,9 +9238,9 @@
       "sha256": "857385c38cc55ffbf923381130903fb323e21d3e3329282d2dc006c7f4b52f0e"
     },
     {
-      "bytes": 13686,
+      "bytes": 15615,
       "path": "tests/native-ax-observation/run_host.py",
-      "sha256": "612f2cb7c231dd6a6db9f0138a621740b5f0575d9f7e3cc047fa48aa9bde149c"
+      "sha256": "51e4e95b14f475ad655471d92d569ba81b21b31fcadd3f2af5733224d1adf9a7"
     },
     {
       "bytes": 15114,
@@ -13742,99 +13754,108 @@
     }
   ],
   "historical_provenance": {
+    "failed_parent_full_preserved": true,
     "focused_failed_r1_r2_preserved": true,
     "historical_failed_tasks_preserved": true,
-    "immediate_parent_component_tree": "2384b99b0f3427372850e1c733eaad285d174a17",
-    "immediate_parent_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-    "immediate_parent_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+    "immediate_parent_component_tree": "e803d8b4da8560383706f6dc6b038f994f704ec8",
+    "immediate_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+    "immediate_parent_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
     "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
     "prior_provenance": {
-      "actual_parent_mac_build": {
-        "bytes": 1695,
-        "mode": 384,
-        "path": "/home/alex/hepta-razr-bb270-coherent-census-successor-20261125-56dad1-model-r1/MAC-BUILD-RESULT.json",
-        "sha256": "b46d4d9af4f6eca5b07dc65b8dc9ea412ed83f78900c6b25bad6d5f2ab771190"
-      },
-      "failed_parent_full_report": {
-        "bytes": 111738,
-        "mode": 384,
-        "path": "/home/alex/hepta-razr-bb270-coherent-census-successor-20261125-56dad1-model-r1/validation-full-host-r1/HOST-VERIFIED.json",
-        "sha256": "7cd8be9b7cf28bb5ab1150aaea78ab48afae9873320b81a6e27c0cc4649ec122"
-      },
+      "focused_failed_r1_r2_preserved": true,
       "historical_failed_tasks_preserved": true,
-      "immediate_parent_component_tree": "27a1d433610548924f337e7805d22fd7b0228820",
-      "immediate_parent_head": "9f452b7e667cb405860e3ac327b290a4c021a92e",
-      "immediate_parent_manifest_sha256": "bc209672ab5e3f209c0600e3da688fd47400907f74575009ec96122efc9e1a75",
-      "installed_previous_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
+      "immediate_parent_component_tree": "2384b99b0f3427372850e1c733eaad285d174a17",
+      "immediate_parent_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+      "immediate_parent_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+      "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
       "prior_provenance": {
+        "actual_parent_mac_build": {
+          "bytes": 1695,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-bb270-coherent-census-successor-20261125-56dad1-model-r1/MAC-BUILD-RESULT.json",
+          "sha256": "b46d4d9af4f6eca5b07dc65b8dc9ea412ed83f78900c6b25bad6d5f2ab771190"
+        },
+        "failed_parent_full_report": {
+          "bytes": 111738,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-bb270-coherent-census-successor-20261125-56dad1-model-r1/validation-full-host-r1/HOST-VERIFIED.json",
+          "sha256": "7cd8be9b7cf28bb5ab1150aaea78ab48afae9873320b81a6e27c0cc4649ec122"
+        },
         "historical_failed_tasks_preserved": true,
-        "immediate_parent_component_tree": "7b597896ba772fc2c06240e2ef29f7b5468fa6e3",
-        "immediate_parent_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
-        "immediate_parent_manifest_sha256": "14b995ebafec73726aa6f510790df508ac8634939a54cbb838e563cd02d997a3",
+        "immediate_parent_component_tree": "27a1d433610548924f337e7805d22fd7b0228820",
+        "immediate_parent_head": "9f452b7e667cb405860e3ac327b290a4c021a92e",
+        "immediate_parent_manifest_sha256": "bc209672ab5e3f209c0600e3da688fd47400907f74575009ec96122efc9e1a75",
+        "installed_previous_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
         "prior_provenance": {
           "historical_failed_tasks_preserved": true,
-          "immediate_parent_component_tree": "8ead98300a3b89fb1c58613655693d9cc773307d",
-          "immediate_parent_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
-          "immediate_parent_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
+          "immediate_parent_component_tree": "7b597896ba772fc2c06240e2ef29f7b5468fa6e3",
+          "immediate_parent_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
+          "immediate_parent_manifest_sha256": "14b995ebafec73726aa6f510790df508ac8634939a54cbb838e563cd02d997a3",
           "prior_provenance": {
-            "b1dd_and_63c75_prequalification_sources_preserved": true,
             "historical_failed_tasks_preserved": true,
-            "immediate_parent_component_tree": "a3a22a33aa68f902a31931c85dbd71fce3895b29",
-            "immediate_parent_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
-            "immediate_parent_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
+            "immediate_parent_component_tree": "8ead98300a3b89fb1c58613655693d9cc773307d",
+            "immediate_parent_head": "e4c20b7d775feea780d37c06710dd1ffeff42001",
+            "immediate_parent_manifest_sha256": "efe7613f071de9720b8600ba5c800a68c2add4ea61a57c59e2bf8d4078b51233",
             "prior_provenance": {
-              "b1dd_prequalification_source_preserved": true,
+              "b1dd_and_63c75_prequalification_sources_preserved": true,
               "historical_failed_tasks_preserved": true,
-              "immediate_parent_component_tree": "048919c5776b9edb3051e085a914eb4f4940c65c",
-              "immediate_parent_head": "b1dd8cb96366d06f739996509db2e28434188020",
-              "immediate_parent_manifest_sha256": "4dcc3e7817478cf629dccf6525635c48add5db88ec55bf067f3c2d75600f8f28",
+              "immediate_parent_component_tree": "a3a22a33aa68f902a31931c85dbd71fce3895b29",
+              "immediate_parent_head": "63c75ec959b43a3b15d63bf4967f0f5a1bfa0528",
+              "immediate_parent_manifest_sha256": "16447b40dfa42fe3ebdaf29d49a65bb8458e0bfb9433a64649c67edc40423d95",
               "prior_provenance": {
+                "b1dd_prequalification_source_preserved": true,
                 "historical_failed_tasks_preserved": true,
-                "immediate_parent_component_tree": "67408ec1f6d1ba4e7d8cd3957b39a619d12fdfa9",
-                "immediate_parent_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
-                "immediate_parent_manifest_sha256": "efa76674ac0aa37c060b3ca340de58521cf95aafd08c5cfa473b3c80df7d3c7f",
+                "immediate_parent_component_tree": "048919c5776b9edb3051e085a914eb4f4940c65c",
+                "immediate_parent_head": "b1dd8cb96366d06f739996509db2e28434188020",
+                "immediate_parent_manifest_sha256": "4dcc3e7817478cf629dccf6525635c48add5db88ec55bf067f3c2d75600f8f28",
                 "prior_provenance": {
                   "historical_failed_tasks_preserved": true,
-                  "immediate_parent_component_tree": "10e46279dcbf90dbb7e3c21813d64b21870095e2",
-                  "immediate_parent_head": "cc22f6be1f1393cd181b578b33dbe38c045e4d03",
-                  "immediate_parent_manifest_sha256": "a711dc83d51016aa12f5f56d324a02d27dbf6f71c09a858e3f8cd3e57aa2aef7",
+                  "immediate_parent_component_tree": "67408ec1f6d1ba4e7d8cd3957b39a619d12fdfa9",
+                  "immediate_parent_head": "7dc65e6b10d2a3bc268f22953e8fd6b1699bc88e",
+                  "immediate_parent_manifest_sha256": "efa76674ac0aa37c060b3ca340de58521cf95aafd08c5cfa473b3c80df7d3c7f",
                   "prior_provenance": {
-                    "current_phone_task_still_requires_recovery": true,
-                    "historical_failed_task_preserved": true,
-                    "immediate_parent_component_tree": "813aeb9a70437cab31645971202fd3e8c7d45660",
-                    "immediate_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
-                    "immediate_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
+                    "historical_failed_tasks_preserved": true,
+                    "immediate_parent_component_tree": "10e46279dcbf90dbb7e3c21813d64b21870095e2",
+                    "immediate_parent_head": "cc22f6be1f1393cd181b578b33dbe38c045e4d03",
+                    "immediate_parent_manifest_sha256": "a711dc83d51016aa12f5f56d324a02d27dbf6f71c09a858e3f8cd3e57aa2aef7",
                     "prior_provenance": {
-                      "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
-                      "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
-                      "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
-                      "old_failed_phone_and_host_records_preserved": true,
-                      "original_parent_full_host_is_not_qualified": true,
-                      "original_parent_full_host_stages_passed": 48,
-                      "original_parent_full_host_stages_total": 50,
+                      "current_phone_task_still_requires_recovery": true,
+                      "historical_failed_task_preserved": true,
+                      "immediate_parent_component_tree": "813aeb9a70437cab31645971202fd3e8c7d45660",
+                      "immediate_parent_head": "112ea31283804d1c238cb7533e90fca378f68513",
+                      "immediate_parent_manifest_sha256": "a37e3c8db5b23ee74b5e8a590762ea46f4acca79fd304f53bb5aef22d12a8e54",
                       "prior_provenance": {
-                        "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
-                        "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
-                        "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+                        "immediate_parent_component_tree": "21568391b28e14490355848088d82756425c168f",
+                        "immediate_parent_head": "be441602eb84a689082917b03d85c06963252cc5",
+                        "immediate_parent_manifest_sha256": "522acfc596cad8dbd912f885b94020069b0bd1900738625b0dbce5cbcef6bef6",
                         "old_failed_phone_and_host_records_preserved": true,
+                        "original_parent_full_host_is_not_qualified": true,
+                        "original_parent_full_host_stages_passed": 48,
+                        "original_parent_full_host_stages_total": 50,
                         "prior_provenance": {
-                          "exact_cleanup_started_time_unavailable": true,
-                          "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
-                          "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
-                          "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
-                          "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
-                          "immediate_parent_qualification_failed": true,
-                          "immediate_parent_qualifications_are_historical": true,
-                          "original_e7ef24_business_status": "blocked",
-                          "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
-                          "original_notes_cleanup": "CLEANUP_UNKNOWN",
-                          "original_notes_task_status": "blocked",
-                          "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
-                          "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
-                          "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
-                          "previous_full_host_passed": false,
-                          "previous_host_and_phone_results_are_not_current_qualification": true,
-                          "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+                          "immediate_parent_component_tree": "6643f75ae37edcf646fe720123ebde4015a649c0",
+                          "immediate_parent_head": "1fab845554139604f5d5fb4d603d0ea4d4f1f51d",
+                          "immediate_parent_manifest_sha256": "99f1faca9c23cb255553cd6a5fedd24105040f52964201fb3e6a1a0792ba4226",
+                          "old_failed_phone_and_host_records_preserved": true,
+                          "prior_provenance": {
+                            "exact_cleanup_started_time_unavailable": true,
+                            "immediate_parent_component_tree": "743021c4d841c0f07b5aa3d93503f972777ef5d2",
+                            "immediate_parent_failure": "Noncanonical serialization of the unchanged production input map was rejected by the original screenshot seed source gate.",
+                            "immediate_parent_head": "ab25ed1bd84cb05e6ba9258fa2f63b350c50a06f",
+                            "immediate_parent_manifest_sha256": "5ef2d99e296e0891a4d0ab96dbeebeff978362d9c1da5f38263ffc5f7ca72b9e",
+                            "immediate_parent_qualification_failed": true,
+                            "immediate_parent_qualifications_are_historical": true,
+                            "original_e7ef24_business_status": "blocked",
+                            "original_e7ef24_cleanup": "CLEANUP_UNKNOWN",
+                            "original_notes_cleanup": "CLEANUP_UNKNOWN",
+                            "original_notes_task_status": "blocked",
+                            "previous_component_git_tree_sha1": "2b1261d090f1e75e5f48582074812a9d693d32aa",
+                            "previous_failed_report_sha256": "1da68014c8b8557aa40e6a330a5117e30ab4f548da42828005f3a4ea4647f5eb",
+                            "previous_full_host_failure": "The screen-lease source contract required immediate retirement before the new diagnostic prefix; canonical inherited the same strict rejection.",
+                            "previous_full_host_passed": false,
+                            "previous_host_and_phone_results_are_not_current_qualification": true,
+                            "previous_manifest_sha256": "c2c4111ad783e88ec381ac19af9a533fcaa8f5e2c2915e110d41985c7abcf70e"
+                          }
                         }
                       }
                     }
@@ -13863,7 +13884,13 @@
     },
     "current_android_build_qualified": false,
     "current_full_host_suite_completed": false,
-    "phone_qualified": false
+    "phone_qualified": false,
+    "prepublication_original_failed_suites": {
+      "bytes": 5295,
+      "mode": 384,
+      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+      "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+    }
   },
   "inherited_source_behavior_metadata": {
     "0a8ca_coherent_census": {
@@ -13954,6 +13981,53 @@
         "tests/native-observation-screenshot-seed/run_host.py",
         "tests/qualification-scope/prepare_fixture.py"
       ]
+    },
+    "1cca_initial_and_form_sampling_delta": {
+      "baseline": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+      "model_weights_unchanged": true,
+      "native_unchanged": true,
+      "phone_success_claimed": false,
+      "production_changes": [
+        "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+        "src/org/trillionnium/hepta/local/ObservationStabilityGate.java"
+      ],
+      "test_changes": [
+        "tests/native-calendar-date-actions/run_host.py",
+        "tests/native-calendar-date-fresh/run_host.py",
+        "tests/native-ctrip-coherent-census/run_host.py",
+        "tests/native-ctrip-form-observation/run_observer_host.py",
+        "tests/native-ctrip-form-sampling/CtripFormSamplingCases.fragment",
+        "tests/native-ctrip-form-sampling/CtripFormSamplingGateHostTest.java",
+        "tests/native-ctrip-form-sampling/CtripFormSamplingHostTest.java",
+        "tests/native-ctrip-form-sampling/run_host.py",
+        "tests/native-observation-screenshot-seed/run_host.py",
+        "tests/native-post-effect-sampling/run_host.py",
+        "tests/native-search-producer/InitialClientCacheCases.fragment",
+        "tests/native-search-producer/InitialClientCacheExpectedCases.json",
+        "tests/native-search-producer/PostBackClientCacheCases.fragment",
+        "tests/native-search-producer/PostBackClientCacheExpectedCases.json",
+        "tests/native-search-producer/run_producer.py",
+        "tests/observation-diagnostics/run_host.py",
+        "tests/observation-pipeline/run_host_tests.py"
+      ]
+    },
+    "1cca_preparation_qualification": {
+      "author_cases_are_not_published_same_source_execution": true,
+      "author_ctrip_sampling_gate": {
+        "bytes": 56864,
+        "mode": 420,
+        "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+        "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+      },
+      "author_xiaomi_gate": {
+        "bytes": 2051788,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+        "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+      },
+      "current_android_build_qualified": false,
+      "current_full_host_suite_completed": false,
+      "phone_qualified": false
     },
     "9f452_source_delta": {
       "baseline": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
@@ -14230,7 +14304,7 @@
     "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336"
   },
   "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "mac_cached_source_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+  "mac_cached_source_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
   "main_java_sources": 220,
   "merged_published_heads": [
     "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
@@ -14241,10 +14315,10 @@
   "production_input_map_sha256": "c1acc976fc322b0a07b342e90e10c5284284ef214822eb237cff595ab72e0db2",
   "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "schema": "hepta.local-source.v3",
-  "scope": "Isolated successor of installed 0a8ca: a distinct single-attempt initial Xiaomi planning cache reset after an actual typed child refresh failure, and complete managed Ctrip form-pair sampling with real distinct frame keys. Original full-root reads, refresh, owner/profile/action guards, 30s planning, 10s settle and 12s request budgets remain. Phone efficacy is not yet qualified.",
-  "source_parent_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "source_parent_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
-  "source_snapshot_predecessor_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+  "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
+  "source_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+  "source_parent_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
+  "source_snapshot_predecessor_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

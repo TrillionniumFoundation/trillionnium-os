@@ -152,6 +152,31 @@ def main():
         result["engine_host_type_boundary"]={"only_class_final_removed":True,"all_fields_and_method_bodies_unchanged":True,
             "original_sha256":sha(engine_original),"fixture_sha256":sha(engine_host),
             "unmodified_final_engine_executed_in_original_gate":True}
+        # Only this visual/Qwen suite's generated copy replaces the kernel text IO endpoint.
+        # The actual parser, admission/lowMemory logic, Engine and hash expectations are retained.
+        memory_original=take(pkg/"MemoryAvailability.java")
+        need(len(memory_original)==4417 and sha(memory_original)=="bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003",
+             "exact original MemoryAvailability required for the explicit host IO boundary")
+        memory_endpoint_before="try(FileInputStream input=new FileInputStream(\"/proc/meminfo\");ByteArrayOutputStream out=new ByteArrayOutputStream()){".encode()
+        memory_endpoint_after="try(java.io.InputStream input=VisualSettingsMemoryInput.open(amAvailable,amTotal,low);ByteArrayOutputStream out=new ByteArrayOutputStream()){".encode()
+        need(memory_original.count(memory_endpoint_before)==1,"unique production kernel IO endpoint")
+        memory_host=memory_original.replace(memory_endpoint_before,memory_endpoint_after,1)
+        need(memory_host.count(memory_endpoint_after)==1
+             and memory_host.replace(memory_endpoint_after,memory_endpoint_before,1)==memory_original,
+             "generated memory class must reverse in full to unchanged production")
+        memory_fixture=out/"generated/org/trillionnium/hepta/local/MemoryAvailability.java"
+        memory_io_fixture=out/"generated/org/trillionnium/hepta/local/VisualSettingsMemoryInput.java"
+        memory_io_ports="package org.trillionnium.hepta.local;\n\n/** Explicit visual-settings kernel-text IO port; never reads the host /proc. */\nfinal class VisualSettingsMemoryInput {\n    private static final java.util.List<java.util.Map<String,Object>> reads=\n            new java.util.ArrayList<java.util.Map<String,Object>>();\n    private VisualSettingsMemoryInput(){}\n    static synchronized java.io.InputStream open(long available,long total,boolean low){\n        if(reads.size()>=256)throw new AssertionError(\"bounded visual-settings memory IO receipt\");\n        // A malformed synthetic AM tuple stays invalid; valid nonnegative bytes round DOWN to KiB.\n        // The unchanged production parser still rejects impossible totals or available > total.\n        String text=available<0||total<0||available>total\n                ?\"MemTotal: invalid kB\\nMemAvailable: invalid kB\\n\"\n                :\"MemTotal: \"+(total/1024L)+\" kB\\nMemAvailable: \"+(available/1024L)+\" kB\\n\";\n        java.util.Map<String,Object> row=new java.util.LinkedHashMap<String,Object>();\n        row.put(\"activity_manager_available\",available);row.put(\"activity_manager_total\",total);\n        row.put(\"low_memory\",low);row.put(\"meminfo_ascii\",text);\n        reads.add(java.util.Collections.unmodifiableMap(row));\n        return new java.io.ByteArrayInputStream(text.getBytes(java.nio.charset.StandardCharsets.US_ASCII));\n    }\n    static synchronized java.util.List<java.util.Map<String,Object>> evidence(){\n        return java.util.Collections.unmodifiableList(\n                new java.util.ArrayList<java.util.Map<String,Object>>(reads));\n    }\n}\n"
+        memory_fixture_ref=put(memory_fixture,memory_host)
+        memory_io_ref=put(memory_io_fixture,memory_io_ports.encode())
+        production=[path for path in production if path!=pkg/"MemoryAvailability.java"]+[memory_fixture,memory_io_fixture]
+        result["kernel_memory_io_boundary"]={"host_kernel_read":False,"synthetic_kernel_text":True,
+            "original_production_sha256":sha(memory_original),"generated_class":memory_fixture_ref,
+            "io_port":memory_io_ref,"whole_class_inverse_equal":True,"only_kernel_text_io_endpoint_replaced":True,
+            "parser_admits_low_memory_and_thresholds_unchanged":True,
+            "original_engine_and_asset_hash_expectations_unchanged":True,
+            "nonnegative_byte_values_round_down_to_kib":True,"invalid_synthetic_tuple_is_invalid_text":True,
+            "missing_io_fallback_not_claimed_by_this_port":True}
         tests=[test/"VisualSettingsHostTest.java"]
         for path in tests:take(path)
         search_helper=source/"tests/native-app/legacy-boundary/prepare_search_pure.py";take(search_helper)
@@ -172,6 +197,19 @@ def main():
         need(cases==json.loads(stdout),"case receipt equals actual process stdout")
         result["case_result"]={"path":str(out/"cases/RESULT.json"),"bytes":len(raw),"sha256":sha(raw)}
         result["cases"]=cases
+        memory_reads=cases.get("synthetic_kernel_memory_reads")
+        need(cases.get("kernel_memory_io_is_synthetic")is True and type(memory_reads)is list
+             and 0<len(memory_reads)<=256,"actual bounded synthetic kernel input receipt required")
+        for row in memory_reads:
+            need(set(row)=={"activity_manager_available","activity_manager_total","low_memory","meminfo_ascii"}
+                 and type(row["activity_manager_available"])is int and type(row["activity_manager_total"])is int
+                 and type(row["low_memory"])is bool and type(row["meminfo_ascii"])is str,"memory IO receipt fields")
+            available,total=row["activity_manager_available"],row["activity_manager_total"]
+            expected_text=("MemTotal: invalid kB\nMemAvailable: invalid kB\n"
+                if available<0 or total<0 or available>total else
+                "MemTotal: "+str(total//1024)+" kB\nMemAvailable: "+str(available//1024)+" kB\n")
+            need(row["meminfo_ascii"]==expected_text,"actual fixture kernel text follows declared floor/invalid mapping")
+        result["kernel_memory_io_boundary"]["actual_input_receipt"]=put(out/"KERNEL-MEMORY-INPUTS.json",enc(memory_reads))
         rows=cases.get("case_results")
         need(cases.get("schema")==contract["case_schema"] and cases.get("passed")is True
           and type(cases.get("cases"))is int and cases["cases"]==30

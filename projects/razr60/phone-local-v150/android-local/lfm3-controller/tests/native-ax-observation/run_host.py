@@ -20,6 +20,22 @@ def generate(source,out,h,snap):
  # Remove only that exact duplicate; keep the three fail-only diagnostic methods.
  diagnostic_provider_port='    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}\n'
  s=once(s,diagnostic_provider_port,'')
+ # This legacy AX bridge has a nested Node-only type port. Qualify only the new
+ # pure-value carrier's two Snapshot references to the already compiled top-level type.
+ # The dedicated real form/sampling bridge does not call this generator.
+ sampling_carrier=h.body(service,'    private static final class CtripFormSample {')
+ if len(sampling_carrier.encode())!=1571 or h.sha(sampling_carrier.encode())!='abd251e1d042c25f814088fd3b8af56e6bf4452700b5fae226890ae6d1172749':
+  raise RuntimeError('exact actual Ctrip sampling carrier before AX-only type qualification')
+ short_snapshot='NativeActionSnapshotCheck.Snapshot'
+ full_snapshot='org.trillionnium.hepta.local.NativeActionSnapshotCheck.Snapshot'
+ if sampling_carrier.count(short_snapshot)!=2:raise RuntimeError('exact two sampling Snapshot type references')
+ sampling_carrier_host=sampling_carrier.replace(short_snapshot,full_snapshot)
+ if (len(sampling_carrier_host.encode())!=1629
+     or h.sha(sampling_carrier_host.encode())!='5eced13663d08a02f108033e451834b1a2a1eaf156735a9b772e835b764c998c'
+     or sampling_carrier_host.count(full_snapshot)!=2
+     or sampling_carrier_host.replace(full_snapshot,short_snapshot)!=sampling_carrier):
+  raise RuntimeError('AX-only carrier must reverse in full to the actual source member')
+ s=once(s,sampling_carrier,sampling_carrier_host)
  block=h.section(service,'    /** Native text capture mode is bound once','    synchronized TaskAuthorization.Gate bindTaskAuthorization(')
  for prefix in ['    private void bindNativeAxObservationRequest(ObservationRequest request){','    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){','    private void captureNativeAxObservation(ObservationRequest request){']:
   s=once(s,h.body(s,prefix),'')
@@ -114,6 +130,12 @@ def generate(source,out,h,snap):
          'ax_block_sha256':h.sha(block.encode()),'legacy_extraction':meta,
          'diagnostic_provider_port_removed_sha256':h.sha(diagnostic_provider_port.encode()),
          'actual_provider_value_members_unchanged':True,
+         'sampling_carrier_type_qualification':{
+             'actual_member_bytes':len(sampling_carrier.encode()),'actual_member_sha256':h.sha(sampling_carrier.encode()),
+             'host_member_bytes':len(sampling_carrier_host.encode()),'host_member_sha256':h.sha(sampling_carrier_host.encode()),
+             'only_two_snapshot_type_names_qualified':True,'whole_member_inverse_equal':True,
+             'legacy_nested_node_port_unchanged':True,'real_form_bridge_uses_original_member':True,
+             'actual_top_level_snapshot_source':h.meta(source/PKG/'NativeActionSnapshotCheck.java')},
          'boundary':'Actual mode binding, both complete-census serialization, worker, receipt canonical-byte/hash validation, endpoint gates and publisher. Android graph/window/model capability/file endpoints are explicit fakes; actual full PhoneObservation also compiled by unchanged snapshot source closure. No phone/SDK/model execution.'}
 def main():
  ap=argparse.ArgumentParser()

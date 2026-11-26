@@ -461,7 +461,7 @@ public final class VisualSettingsHostTest {
             check(!below.admits(ModelProfile.LFM3_VL_2B.minimumAvailableBytes),"actual parser rejects below four GiB");
             MemoryAvailability exact=MemoryAvailability.fromText(0,12L<<30,false,"MemTotal: 12582912 kB\nMemAvailable: 4194304 kB\n");
             check(exact.admits(ModelProfile.LFM3_VL_2B.minimumAvailableBytes)&&!exact.admits(ModelProfile.GUI_OWL_4B.minimumAvailableBytes),
-                    "actual four GiB contract is separate from GUI six GiB; host /proc memory is not replaced");
+                    "actual four GiB contract is separate from GUI six GiB; generated kernel IO uses explicit fixture text");
             ActivityManager.available=12L<<30;ActivityManager.low=true;
             check(failure(()->engine.verifySettingsModel(lease,lfmObserve())).contains("available memory"),"lowMemory remains authoritative");
             check(!RuntimeConfigTransaction.pending(files.toFile()),"memory failure writes no config");
@@ -544,6 +544,7 @@ public final class VisualSettingsHostTest {
                 .put("actual_runtime_generation_binding",true).put("same_service_and_controller_roundtrip",true)
                 .put("positive_weight_verification_is_host_boundary",true).put("vlm_model_loading_is_host_boundary",true)
                 .put("actual_negative_asset_and_hash_checks",!qwen).put("actual_negative_qwen_memory_and_size_checks",qwen).put("android_view_and_inventory_are_host_boundaries",true)
+                .put("kernel_memory_io_is_synthetic",true).put("synthetic_kernel_memory_reads",VisualSettingsMemoryInput.evidence())
                 .put("phone_operations",0).put("native_model_executed",false).put("positive_backend_qualified",false)
                 .put("error",error==null?JSONObject.NULL:error.toString());
         Files.write(output.resolve("RESULT.json"),(report.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
