@@ -114,6 +114,61 @@ final class PublicPersonalNotesCustody {
         if(bootstrapReadUsed||!firstRootReadActive(task,actualDisplay,actualUid,now))return false;
         bootstrapReadUsed=true;return true;
     }
+    /** A read-only snapshot of this active custodian's already observed tasks.
+     * It cannot mint custody, authorize an effect, or retire any task/display.
+     * The old observed map remains intact when a runtime task disappears. */
+    static final class ActiveRead {
+        private final PublicPersonalNotesCustody owner;
+        private final int display,uid,launchCount;
+        private final long lastObservation;
+        private final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;
+        private ActiveRead(PublicPersonalNotesCustody owner){
+            this.owner=owner;display=owner.display;uid=owner.uid;launchCount=owner.launchCount;
+            lastObservation=owner.lastObservation;
+            tasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(owner.observed));
+        }
+        void requireScope(int actualDisplay,int actualUid){synchronized(owner){
+            need(owner.activeReadAvailable()&&actualDisplay==display&&actualUid==uid
+                    &&owner.display==display&&owner.uid==uid&&owner.launchCount==launchCount
+                    &&owner.lastObservation==lastObservation&&owner.observed.keySet().equals(tasks.keySet()),
+                    "NOTES_ACTIVE_READ_UNAVAILABLE");
+            // A same-millisecond observation can keep lastObservation unchanged.
+            // Bind the complete actual identity map as well as its timestamp.
+            for(Map.Entry<Integer,BackgroundOwnedSingleTask.Task> entry:tasks.entrySet())
+                need(sameTokenIdentity(entry.getValue(),owner.observed.get(entry.getKey())),
+                        "NOTES_ACTIVE_READ_UNAVAILABLE");
+        }}
+        BackgroundOwnedSingleTask.Task retained(int id){
+            requireScope(display,uid);BackgroundOwnedSingleTask.Task value=tasks.get(id);
+            need(value!=null,"NOTES_ACTIVE_READ_UNKNOWN_TASK");return value;
+        }
+        void requireGlobal(ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> rows){
+            requireScope(display,uid);need(global!=null&&rows!=null,"NOTES_ACTIVE_GLOBAL_CENSUS_UNAVAILABLE");
+            for(ProfileTaskPolicy.Root root:global.roots){
+                if(tasks.containsKey(root.id))
+                    need(root.display==display&&root.user==0&&rows.containsKey(root.id),
+                            "NOTES_ACTIVE_TASK_ESCAPED_OR_REMAINING");
+                if(root.display==display)need(rows.containsKey(root.id),"NOTES_ACTIVE_FOREIGN_ROOT");
+            }
+            for(ProfileTaskPolicy.Leaf leaf:global.leaves.values()){
+                // Check parent references too: an old task may not survive as a
+                // foreign/nested container after disappearing from the root set.
+                if(tasks.containsKey(leaf.id)||tasks.containsKey(leaf.parent))
+                    need(leaf.display==display&&leaf.user==0&&leaf.id==leaf.parent&&rows.containsKey(leaf.id),
+                            "NOTES_ACTIVE_TASK_ESCAPED_OR_NESTED");
+                if(leaf.display==display)
+                    need(leaf.id==leaf.parent&&rows.containsKey(leaf.id),"NOTES_ACTIVE_FOREIGN_CHILD");
+            }
+        }
+    }
+    private boolean activeReadAvailable(){
+        return attempted&&launched&&display>1&&!retiring&&!releasePrepared&&!releaseAttempted
+                &&!releaseReturned&&!unknown&&!known&&lastObservation>=0&&!observed.isEmpty();
+    }
+    synchronized ActiveRead activeRead(int actualDisplay,int actualUid){
+        return activeReadAvailable()&&actualDisplay==display&&actualUid==uid?new ActiveRead(this):null;
+    }
+
     synchronized void observe(Frame frame,long now){
         if(retiring)return; // A late monitor read cannot reopen or overwrite retirement.
         try{observeChecked(frame,now);}catch(RuntimeException error){unresolved(error.getMessage());throw error;}

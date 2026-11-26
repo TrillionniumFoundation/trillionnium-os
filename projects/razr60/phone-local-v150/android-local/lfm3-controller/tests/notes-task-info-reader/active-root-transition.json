@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.notes-active-census-recorded-topology.v1",
+  "source_broker_bytes": 5903,
+  "source_broker_sha256": "9a42f76cfd0249bf1cfcb587bcdff9b2c533c0877df1520127cb107b299712a3",
+  "terminal_state": "CLEANUP_UNKNOWN",
+  "terminal_reason": "PUBLIC_SCOPE_POLICY_UNAVAILABLE",
+  "runtime_phase": "runtime_policy_check",
+  "runtime_reason": "NOTES_ROOT_CENSUS_CHANGED",
+  "census_stage": "within_sample",
+  "sample_attempt": 1,
+  "before": [
+    "survivor",
+    "departing"
+  ],
+  "middle": [
+    "survivor",
+    "departing"
+  ],
+  "after": [
+    "survivor"
+  ],
+  "recorded_roots_same_user_uid_display": true,
+  "recorded_token_equality_per_id": true,
+  "recorded_launch_cookies_empty": true,
+  "cleanup_reason": "NOTES_RETIREMENT_FINAL_TASKINFO_CHANGED",
+  "release_api_entered": false,
+  "serialized_tokens_grant_authority": false,
+  "complete_taskinfo_rows_recorded": false,
+  "android_taskinfo_and_binder_replay": "synthetic values from existing full reflection fixture; real record supplies only normalized topology and equality",
+  "normalization": "actual surviving and departing IDs map to synthetic 1464/1465; actual display maps to fixture display 205"
+}

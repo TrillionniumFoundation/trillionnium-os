@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual private history admission and explicitly synthetic current-proof/consumer tests. No phone."""
-import argparse,hashlib,json,os,stat,subprocess,traceback
+import argparse,hashlib,json,os,stat,subprocess,traceback,types
 from pathlib import Path
 JSON_SHA="941cc2fe5b1e42c30ceeeb25578e589a137094d5eccf84d67196eca9c29e5cdb"
 MAIN="org.trillionnium.hepta.local.NotesWorkflowReleasedReplyLostHostTest"
@@ -34,10 +34,27 @@ def main():
     test=source/"tests/notes-workflow-released-reply-lost/NotesWorkflowReleasedReplyLostHostTest.java"
     oldtest=source/"tests/notes-workflow-foreign-history/NotesWorkflowForeignHistoryHostTest.java"
     sources=[ref(source/rel),ref(base/rel),ref(test),ref(oldtest)]
+    consumer_inverse_proofs=[]
     consumers=["PublicPersonalNotesRecoveryClient.java","BackgroundSession.java","MobiMindPrivateFiles.java","RecoveryJournalTransaction.java","RecoveryQuiescence.java","SessionRecovery.java","LocalTaskSession.java"]
     for name in consumers:
         r="src/org/trillionnium/hepta/local/"+name
-        need(raw(source/r)==raw(base/r),"unchanged consumer source required: "+r);sources.append(ref(source/r))
+        current,historical=raw(source/r),raw(base/r)
+        if name=="PublicPersonalNotesRecoveryClient.java" and current!=historical:
+            helper=source/"tests/notes-workflow-aborted-after-back/source_predecessor.py"
+            inverse=source/"tests/notes-workflow-aborted-after-back/source-inverse.json"
+            helper_ref=ref(helper);inverse_ref=ref(inverse);base_ref=ref(base/r)
+            need(helper_ref["sha256"]=="b6644c18529182e234957ba52572c035254a20785f8614be859b889bf137e936","reviewed v13 client predecessor helper changed")
+            helper_raw=raw(helper)
+            need(hashlib.sha256(helper_raw).hexdigest()==helper_ref["sha256"],"v13 predecessor helper changed before load")
+            predecessor=types.ModuleType("v13_client_source_predecessor");predecessor.__file__=str(helper)
+            exec(compile(helper_raw,str(helper),"exec"),predecessor.__dict__)
+            current=predecessor.client_predecessor(current,historical,raw(inverse))
+            sources.extend((helper_ref,inverse_ref,base_ref))
+            consumer_inverse_proofs.append(dict(source=ref(source/r),historical=base_ref,helper=helper_ref,inverse=inverse_ref,
+                full_inverse_byte_exact=True,proof_only=True,old_java_compiled_by_this_bridge=False,
+                candidate_client_compiled_here=False,candidate_client_origin="dependency_classes",
+                current_client_dependency_provenance_must_be_verified_by_producer=True))
+        need(current==historical,"unchanged consumer source required: "+r);sources.append(ref(source/r))
     for name in ("WorkerGenerationProof.java",):
         r="src/org/trillionnium/hepta/local/"+name
         need(raw(source/r)==raw(base/r),"unchanged generation source required");sources.append(ref(source/r))
@@ -48,7 +65,7 @@ def main():
     out.mkdir(mode=0o700,parents=True);env=dict(os.environ)
     for k in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(k,None)
     report=dict(schema="hepta.notes-workflow-released-reply-lost-runner.v1",all_pass=False,source_root=str(source),base_source_root=str(base),
-      sources=sources,private_input_map=ref(mapping),private_originals=before,legacy_input_map=ref(legacy),legacy_originals=old,
+      sources=sources,consumer_source_inverse_proofs=consumer_inverse_proofs,private_input_map=ref(mapping),private_originals=before,legacy_input_map=ref(legacy),legacy_originals=old,
       android_json_jar=ref(jar),java=ref(jdk/"bin/java"),javac=ref(jdk/"bin/javac"),
       dependency_classes=str(deps),dependency_class_refs=dep_refs,stages=[],phone_operations=0,current_absence_proven=False,
       app_recovery_completed=False,business_success_claimed=False)

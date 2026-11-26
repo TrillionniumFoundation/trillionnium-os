@@ -45,7 +45,7 @@ def main():
          and retained['actual_root_read_failure'] is None and retained['absence_reads']==2 and retained['cleanup_known'] is True
          and retained['later_owned_tasks']==[{'task_id':1825,'user_id':0,'display_id':502,'actual_effective_uid':10382,
              'parent_id':-1,'serialized_token_grants_authority':False}], 'historical sample is unclassified; later cleanup is a different read')
-    tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,failure_case,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
+    tracked=list(dict.fromkeys(files+private_files+[own/'active_census_history.py',own/'prepare_fixture.py',Path(__file__).resolve(),capture,failure_case,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
     if a.actual_failure_terminal is not None:
         terminal=a.actual_failure_terminal.resolve(strict=True)
         original=raw(terminal)
@@ -58,7 +58,11 @@ def main():
         tracked.append(terminal)
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f','approved reader differs')
+    history=own/'active_census_history.py'
+    need(pin(history)['sha256']=='c85c2125ac4d0a2c20ea5e78c4a04648618cf1e75816bd5b890ff692f0b63883','reviewed active-census inverse differs')
+    proof_spec=importlib.util.spec_from_file_location('notes_active_census_history',history);proof_module=importlib.util.module_from_spec(proof_spec);proof_spec.loader.exec_module(proof_module)
+    reader_proof=proof_module.reader_predecessor(raw(bg/'PublicPersonalNotesReader.java'))
+    need(hashlib.sha256(reader_proof).hexdigest()=='f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)

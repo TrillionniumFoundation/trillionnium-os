@@ -148,6 +148,8 @@ final class PublicPersonalNotesReader {
         // the real organizer root TaskInfo query, without ever calling children().
         Map<Integer,BackgroundOwnedSingleTask.Task> identities=null;
         BackgroundOwnedSingleTask.Task firstRoot=null;
+        PublicPersonalNotesCustody.ActiveRead activeRead=custody==null?null:custody.activeRead(display,uid);
+        boolean resampledOwnedContraction=false;
         for(int attempt=1;attempt<=MAX_TASKINFO_SAMPLES;attempt++){
             check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
             BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
@@ -155,6 +157,22 @@ final class PublicPersonalNotesReader {
             BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
             Map<Integer,BackgroundOwnedSingleTask.Task> first=index(before.displayRoots,"before_all_roots");
             Map<Integer,BackgroundOwnedSingleTask.Task> middle=index(actual,"owned_display_roots"),last=index(after.displayRoots,"after_all_roots");
+            boolean differentRoots=!first.keySet().equals(middle.keySet())||!middle.keySet().equals(last.keySet())
+                    ||identities!=null&&!identities.keySet().equals(first.keySet());
+            if(firstRoot==null&&differentRoots&&activeRead!=null
+                    &&activeContraction(activeRead,identities,first,middle,last,before.global,after.global,attempt)){
+                // Never publish this inconsistent triple. Pin only the exact
+                // surviving identities and spend the existing complete-sample
+                // budget; an empty/new/reappearing set is never admitted.
+                if(attempt==MAX_TASKINFO_SAMPLES){
+                    String stage=first.keySet().equals(middle.keySet())&&middle.keySet().equals(last.keySet())?"between_samples":"within_sample";
+                    throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED",stage,attempt,display,identities,first,middle,last);
+                }
+                identities=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(last);
+                resampledOwnedContraction=true;
+                check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                Thread.sleep(20);continue;
+            }
             if(!first.keySet().equals(middle.keySet())||!middle.keySet().equals(last.keySet())){
                 // Discard one complete bootstrap triple only for empty -> one new root.
                 if(custody==null||attempt!=1||!first.isEmpty()||last.size()!=1
@@ -198,6 +216,10 @@ final class PublicPersonalNotesReader {
                 }
                 check();
                 if(firstRoot!=null)need(custody.firstRootReadActive(firstRoot,display,uid,SystemClock.elapsedRealtime()),"NOTES_BOOTSTRAP_RETIRED");
+                if(resampledOwnedContraction){
+                    verifyActiveCensuses(activeRead,first,middle,last,before.global,after.global,attempt);
+                    check();activeRead.requireScope(display,uid);
+                }
                 return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
             }catch(ActivityStateChanged changed){
                 if(attempt==MAX_TASKINFO_SAMPLES)throw changed;
@@ -206,6 +228,38 @@ final class PublicPersonalNotesReader {
             }
         }
         throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
+    }
+    /** Discard only a monotone contraction of the original active closed set.
+     * Complete global censuses must locate every still-present old root/leaf;
+     * disappearance can never stand for a move, replacement or partial read.
+     * Unrelated physical tasks remain outside this closed identity fence. */
+    private boolean activeContraction(PublicPersonalNotesCustody.ActiveRead active,
+            Map<Integer,BackgroundOwnedSingleTask.Task> previous,
+            Map<Integer,BackgroundOwnedSingleTask.Task> first,Map<Integer,BackgroundOwnedSingleTask.Task> middle,
+            Map<Integer,BackgroundOwnedSingleTask.Task> last,ProfileTaskPolicy.Snapshot before,
+            ProfileTaskPolicy.Snapshot after,int attempt)throws Exception{
+        if(last.isEmpty()||!first.keySet().containsAll(middle.keySet())||!middle.keySet().containsAll(last.keySet())
+                ||previous!=null&&!previous.keySet().containsAll(first.keySet()))return false;
+        verifyActiveCensuses(active,first,middle,last,before,after,attempt);
+        if(previous!=null)for(BackgroundOwnedSingleTask.Task task:first.values())
+            sameIdentity(previous.get(task.id),task,"active_previous_survivor",attempt);
+        return true;
+    }
+    private void verifyActiveCensuses(PublicPersonalNotesCustody.ActiveRead active,
+            Map<Integer,BackgroundOwnedSingleTask.Task> first,Map<Integer,BackgroundOwnedSingleTask.Task> middle,
+            Map<Integer,BackgroundOwnedSingleTask.Task> last,ProfileTaskPolicy.Snapshot before,
+            ProfileTaskPolicy.Snapshot after,int attempt)throws Exception{
+        check();active.requireScope(display,uid);
+        active.requireGlobal(before,first);active.requireGlobal(after,last);
+        for(BackgroundOwnedSingleTask.Task task:first.values()){
+            sameIdentity(active.retained(task.id),task,"active_before_identity",attempt);requireSoleLeaf(before,task);
+        }
+        for(BackgroundOwnedSingleTask.Task task:middle.values())
+            sameIdentity(active.retained(task.id),task,"active_middle_identity",attempt);
+        for(BackgroundOwnedSingleTask.Task task:last.values()){
+            sameIdentity(active.retained(task.id),task,"active_after_identity",attempt);requireSoleLeaf(after,task);
+        }
+        active.requireScope(display,uid);
     }
     private void requireBootstrapCensus(ProfileTaskPolicy.Snapshot census,BackgroundOwnedSingleTask.Task task,boolean present)throws Exception{
         need(census!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
