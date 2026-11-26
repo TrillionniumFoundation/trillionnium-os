@@ -9,7 +9,18 @@ DIAGNOSTIC_PORTS = '    /** Diagnostic-only legacy ports. They cannot classify a
 COHERENT_TEMPLATE = 'fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e'
 COHERENT_ACCEPT = '272b52c9de2479a6569d92999d3f9c71d5876dd15d1bee92e3f61384984f9fd2'
 def sha(raw):return hashlib.sha256(raw).hexdigest()
+READ_DIAGNOSTIC_TEMPLATE = 'ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6'
+TYPED_STALE_PORT = '    // Explicit Android read-failure port. Existing one-argument callers remain untyped.\n    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}\n    }\n'
+READ_DIAGNOSTIC_TYPED_STALE_PORT = '    // Explicit Android read-failure port. Existing one-argument callers remain untyped.\n    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;final String backgroundChildPath;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){this(message,childUnavailable,null);}\n        StaleObservation(String message,boolean childUnavailable,String path){super(message);backgroundChildUnavailable=childUnavailable;backgroundChildPath=path;}\n    }\n'
+def template_before_read_diagnostics(raw):
+    # Proof copy only. Actual compilation keeps the complete three-argument port.
+    if sha(raw)==READ_DIAGNOSTIC_TEMPLATE:
+        if raw.count(READ_DIAGNOSTIC_TYPED_STALE_PORT.encode())!=1:raise RuntimeError("exact typed diagnostic path port required")
+        raw=raw.replace(READ_DIAGNOSTIC_TYPED_STALE_PORT.encode(),TYPED_STALE_PORT.encode(),1)
+        if sha(raw)!=COHERENT_TEMPLATE:raise RuntimeError("typed diagnostic path whole template inverse mismatch")
+    return raw
 def template_predecessor(raw):
+    raw=template_before_read_diagnostics(raw)
     if sha(raw)==COHERENT_TEMPLATE:
         if raw.count(DIAGNOSTIC_PORTS.encode())!=1:raise RuntimeError("exact diagnostic-only template block required")
         raw=raw.replace(DIAGNOSTIC_PORTS.encode(),b"",1)

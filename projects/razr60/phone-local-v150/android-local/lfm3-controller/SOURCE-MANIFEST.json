@@ -11,7 +11,8 @@
     "Keep a proven same-owner empty native AX loading window sampling within its original request deadline; never publish empty content or replay the business action",
     "Show actual automatic-model configuration failures and retain same-call memory admission facts without changing model admission thresholds",
     "Validate the original planning Offer before duplicate controller audit persistence while keeping core durable planning evidence and model-before-journal exclusion",
-    "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority"
+    "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority",
+    "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies"
   ],
   "complete_source_files": 2719,
   "files": [
@@ -10930,10 +10931,10 @@
       "sha256": "060f4123380bfba36fb4a312f1fea9903e2ba7050f7e8abd972a2d916584612e"
     },
     {
-      "bytes": 3217,
-      "mode": 420,
+      "bytes": 5034,
+      "mode": 384,
       "path": "tests/native-ctrip-child-identity/protected_fixture.py",
-      "sha256": "b547ab6a1cef01b4b0aa378dcc409260a72ec039922ab5f106520b6cb2cc55d0"
+      "sha256": "eed7f5888899ee8b3b9540578ebab0e96b6700e758d3b6319e368c8aa913915d"
     },
     {
       "bytes": 15216,
@@ -11008,10 +11009,10 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 99429,
-      "mode": 420,
+      "bytes": 101021,
+      "mode": 384,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "653c9a6657f4470e65fe131f2a076ee092f4c416116c560c5c3169dc1297ec25"
+      "sha256": "affe7913c99d3c4e1573d151138d949194d9127b1331a56cad9c6cf84792b6e8"
     },
     {
       "bytes": 3535,
@@ -11338,10 +11339,10 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 80734,
-      "mode": 420,
+      "bytes": 80997,
+      "mode": 384,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "68da60cba96b6a5bb20d2cb052b6d9fcc9f29f513f010bbcfee19112a015bb9c"
+      "sha256": "dddba1996df3c744b27fc24c9cdd2e4cc98236618991ebb8d3640869893fb6a3"
     },
     {
       "bytes": 7722,
@@ -16326,10 +16327,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "c6db33ca9e7f2ceaa8d3a65f9b02c6ae21830e64757b6bcbe4a7f72c260f7fdb",
-  "predecessor_source_manifest_sha256": "c6db33ca9e7f2ceaa8d3a65f9b02c6ae21830e64757b6bcbe4a7f72c260f7fdb",
+  "predecessor_manifest_sha256": "f1c957e240b091ab7d1213cac647afa8cc676ed868f86176dfbcd24d78bcfffc",
+  "predecessor_source_manifest_sha256": "f1c957e240b091ab7d1213cac647afa8cc676ed868f86176dfbcd24d78bcfffc",
   "production_build_inputs_count": 397,
   "production_input_map_sha256": "83272653f52655ce13dc64291e8a665a7dfd9e801cdb5d361115ffe6046d13a7",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "5fcdc57f691c97e412d4237b85d95927b3c06abd"
+  "source_parent_head": "688dbea61bf461271845be486fb73933b8165424"
 }

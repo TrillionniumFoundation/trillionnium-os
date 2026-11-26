@@ -16,6 +16,7 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import stat
 import sys
 
@@ -78,10 +79,13 @@ def reverse_png_closure(path, raw):
     child_identity_template_inverse = None
     diagnostic_template_inverse = None
     if path == 'tests/observation-pipeline/ObserverPipelineHost.template':
+        # Shared exact proof-only inverse; current template still compiles below.
+        proof=runpy.run_path(str(Path(__file__).resolve().parents[1]/'native-ctrip-child-identity/protected_fixture.py'))
+        raw=proof['template_before_read_diagnostics'](raw)
         # Exact diagnostic-only ports are reversed solely in this proof copy.
         # The actual new template remains the input to events.generate/compilation.
         diagnostic_ports = b'    /** Diagnostic-only legacy ports. They cannot classify a form, alter events,\n     * grant an input, or publish. The dedicated observer bridge replaces this\n     * complete block with the actual production helpers/provider constants. */\n    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}\n    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){return null;}\n    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,\n            ObservationProduct product,ObservationEventWatermark persisted,boolean scoped,boolean complete,boolean retry){return null;}\n    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,IllegalArgumentException failure){}\n'
-        if actual_current_sha256 == 'fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e':
+        if sha(raw) == 'fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e':
             need(len(raw) == 38545 and raw.count(diagnostic_ports) == 1,
                  'exact one diagnostic-only legacy port block required')
             raw = raw.replace(diagnostic_ports, b'', 1)

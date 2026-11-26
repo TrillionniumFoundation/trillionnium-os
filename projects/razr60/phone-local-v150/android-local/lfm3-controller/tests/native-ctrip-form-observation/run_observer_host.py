@@ -146,11 +146,24 @@ REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE = {
     },
 }
 
+def diagnostic_sampling_predecessor(raw,h):
+    # Only the exact two read-only diagnostics are reversed in this historical proof.
+    # The observation section compiled by generate() remains actual current source.
+    if h.sha(raw.encode())=='1a234bbc9a3fa685fb3098e414c99fdadd69369c53abbf5f9d22de27ddd6c339':
+        raw=once(raw,'                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);\n                    recordNativeGraphStale(request,"sample_graph",busy,formStart,request.eventWatermark(),SystemClock.elapsedRealtime());}',
+                     '                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}')
+        raw=once(raw,'                request.graph("sample_graph",graph);\n                recordNativeSampleCensus(request,graph,formStart,formEnd,formCompletedAt);requireObservationWork(request);',
+                     '                request.graph("sample_graph",graph);requireObservationWork(request);')
+        if h.sha(raw.encode())!='4dda78389010012f907200b4b7c1bbc6d612134edea0cab47912e5f45951cb33':
+            raise RuntimeError('complete pre-diagnostic sampling body required')
+    return raw
+
 def form_sampling_body_predecessor(service,anchor,raw,h):
+    raw=diagnostic_sampling_predecessor(raw,h)
     reviewed=REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE.get(anchor)
     if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
         return raw,False
-    proof=h.body(service,reviewed['actual_body_anchor'])
+    proof=diagnostic_sampling_predecessor(h.body(service,reviewed['actual_body_anchor']),h)
     # Current source stays in generated/compiled inputs; only this exact complete body is restored for the historical proof.
     if h.sha(proof.encode())=='ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c':
         proof=once(proof,'                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n','                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')
@@ -187,6 +200,8 @@ def generate(source,output,h):
         StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}
     }
 '''
+    compiled_typed_child_port = (child_proof['READ_DIAGNOSTIC_TYPED_STALE_PORT']
+            if child_proof is not None and h.sha(template.encode())==child_proof.get('READ_DIAGNOSTIC_TEMPLATE') else typed_child_port)
     prior_stale_port = '''    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
 '''
     prior_template_sha = '662c99d5b7703907b40d18f55b716c2ab0660abac3d67f556d5b881dfde2a333'
@@ -447,7 +462,7 @@ def generate(source,output,h):
                   '        if(!owns(task)||!authorizationReady||authorization==null||authorization!=taskAuthorization)throw new IllegalStateException("retired fixture authorization");')
     if child_proof is not None:
         template=once(template,child_proof['PORT'],parts['child_identity_recheck']+'\n'+parts['child_window_fingerprint']+'\n')
-        template=once(template,typed_child_port,parts['actual_stale_type']+'\n')
+        template=once(template,compiled_typed_child_port,parts['actual_stale_type']+'\n')
     if '{{' in template:raise RuntimeError('unfilled host fixture')
     for name,raw in parts.items():
         if name=='provider_constants':continue
