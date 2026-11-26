@@ -68,12 +68,20 @@ public final class Lfm3VlProfileHostTest {
         LocalRuntimeConfig admitted=LocalRuntimeConfig.fromFields(config());
         check(admitted.profile==model&&admitted.visualObservationOnly&&admitted.expectedDevice().equals("HTP0"),"explicit observe config");
         rejects(()->new LocalRuntimeConfig(model,"npu",8192,4),"implicit tools constructor");
-        rejects(()->new LocalRuntimeConfig(model,"npu",8192,4,false),"tools constructor");
+        LocalRuntimeConfig explicitTools=new LocalRuntimeConfig(model,"npu",8192,4,false);
+        check(explicitTools.profile==model&&!explicitTools.visualObservationOnly
+                &&explicitTools.compute.equals("npu")&&explicitTools.contextTokens==8192&&explicitTools.threads==4
+                &&explicitTools.expectedDevice().equals("HTP0"),"explicit tools constructor keeps the closed visual tuple");
+        Map<String,Object> toolsFields=config();toolsFields.put("visual_mode","tools");
+        LocalRuntimeConfig toolsConfig=LocalRuntimeConfig.fromFields(toolsFields);
+        check(toolsConfig.profile==model&&!toolsConfig.visualObservationOnly
+                &&toolsConfig.compute.equals("npu")&&toolsConfig.contextTokens==8192&&toolsConfig.threads==4
+                &&toolsConfig.expectedDevice().equals("HTP0"),"explicit v3 tools config keeps the closed visual tuple");
         for(String field:new String[]{"model_profile","visual_mode","schema","compute","context_tokens","threads"}){
             Map<String,Object> value=config();value.remove(field);
             rejects(()->LocalRuntimeConfig.fromFields(value),"missing config field "+field);
         }
-        for(Object[] pair:new Object[][]{{"visual_mode","tools"},{"visual_mode","auto"},{"compute","gpu"},
+        for(Object[] pair:new Object[][]{{"visual_mode","auto"},{"compute","gpu"},
                 {"context_tokens",4096},{"threads",3},{"model_profile","../lfm3-vl-model"},{"schema","hepta.local-runtime.v2"},
                 {"projector_sha256",P.projectorSha256}}){
             Map<String,Object> value=config();value.put((String)pair[0],pair[1]);

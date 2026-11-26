@@ -20,7 +20,8 @@
     "Repin the independently rebuilt VLM worker to the actual runtime-hardlink native source and retain earlier build provenance",
     "Add explicit restricted LFM3-VL Ctrip tools selection while ordinary LFM3-VL settings remain observation-only and existing automatic preferences remain unchanged",
     "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards",
-    "Keep the legacy mode-less LFM3-VL constructor rejected; route only explicit visual tools settings through the explicit five-argument mode constructor"
+    "Keep the legacy mode-less LFM3-VL constructor rejected; route only explicit visual tools settings through the explicit five-argument mode constructor",
+    "Align only the two explicit LFM3-VL tools profile test expectations with the approved closed configuration; retain implicit/missing mode and all identity/receipt negatives"
   ],
   "complete_source_files": 2728,
   "files": [
@@ -9751,10 +9752,10 @@
       "sha256": "23397c1ba00ab85ed9bfdaadadc0eb96985ea3813a8939262f63aa02757015dd"
     },
     {
-      "bytes": 9853,
+      "bytes": 10628,
       "mode": 420,
       "path": "tests/lfm3-vl-profile/Lfm3VlProfileHostTest.java",
-      "sha256": "502873dc5bd3d1452694d8546173220fb604b319ca7e18142170c820f3044bbb"
+      "sha256": "ed4e6468772084b0781896b37467e8d91742b48e5e39595775db281da14fcd4b"
     },
     {
       "bytes": 3154,
@@ -16389,10 +16390,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "b7466aeeb8476fef0dcba7dd170e29d97b95d8d0eac453f815013756630b7c69",
-  "predecessor_source_manifest_sha256": "b7466aeeb8476fef0dcba7dd170e29d97b95d8d0eac453f815013756630b7c69",
+  "predecessor_manifest_sha256": "40b70624af90f6d6439448c9b79819a7e6e45f0e85edceaba3d4bcce1fe3937d",
+  "predecessor_source_manifest_sha256": "40b70624af90f6d6439448c9b79819a7e6e45f0e85edceaba3d4bcce1fe3937d",
   "production_build_inputs_count": 404,
   "production_input_map_sha256": "c2bed9a532f0d6babb28bfa0e432921c75fd80b63b3da1857ab5d7cf89e37feb",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "a1c70ad5924fcfe0d10da08a53a56a32c0e56ccc"
+  "source_parent_head": "3f3f8e50c0772709244275868c9b89f36670fc6e"
 }
