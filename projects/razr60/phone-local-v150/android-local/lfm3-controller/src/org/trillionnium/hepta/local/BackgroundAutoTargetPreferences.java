@@ -40,7 +40,10 @@ final class BackgroundAutoTargetPreferences {
                 need(p.profile.userId>0&&p.packageName.equals(choice.initial)&&PROFILE.equals(displayMode),"工作资料自动目标身份或显示方式不一致");
                 instanceKey="profile:"+p.profile.userId+":"+p.profile.serial+":"+p.packageName;
             }
+            boolean textTarget=(p==null&&NOTES.equals(choice.initial))
+                    ||(p!=null&&ProfileTarget.XIAOMI.equals(choice.initial));
             boolean supported=ModelProfile.LFM3.id.equals(modelProfile)
+                    ||(textTarget&&(ModelProfile.QWEN35_4B.id.equals(modelProfile)||ModelProfile.LFM25_8B_A1B.id.equals(modelProfile)))
                     ||(p!=null&&ProfileTarget.CTRIP.equals(choice.initial)&&ModelProfile.GUI_OWL_4B.id.equals(modelProfile));
             need(supported&&"npu".equals(compute),"自动目标的首选模型组合不受支持");
             this.choice=choice;this.displayMode=displayMode;this.modelProfile=modelProfile;this.compute=compute;
@@ -55,7 +58,12 @@ final class BackgroundAutoTargetPreferences {
         boolean independentProfile(){return PROFILE.equals(displayMode);}
         boolean independentPersonal(){return PERSONAL.equals(displayMode);}
         String label(){return choice.profileTarget==null?"备忘录 · 个人空间":choice.profileTarget.appLabel()+" · 工作资料 "+choice.profileTarget.profile.userId;}
-        String modelLabel(){return ModelProfile.GUI_OWL_4B.id.equals(modelProfile)?"GUI-Owl 4B · 语言 NPU + 图像 GPU":"LFM3-1.7B · NPU";}
+        String modelLabel(){
+            if(ModelProfile.GUI_OWL_4B.id.equals(modelProfile))return "GUI-Owl 4B · 语言 NPU + 图像 GPU";
+            if(ModelProfile.QWEN35_4B.id.equals(modelProfile))return "Qwen3.5 4B · NPU（实验）";
+            if(ModelProfile.LFM25_8B_A1B.id.equals(modelProfile))return "LFM2.5-8B-A1B · NPU（实验）";
+            return "LFM3-1.7B · NPU";
+        }
         boolean matches(LocalRuntimeConfig actual){
             return actual!=null&&modelProfile.equals(actual.profile.id)&&compute.equals(actual.compute)
                     &&actual.contextTokens==8192&&actual.threads==4&&!actual.visualObservationOnly;

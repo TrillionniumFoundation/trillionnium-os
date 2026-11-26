@@ -611,7 +611,7 @@ final class NativeActionSnapshotCheck {
         return hash(full).equals(n.v.get("ref_signature_sha256"));
     }
     /** Identify one ambiguous blank home banner for a new read only. The full
-     * page and its one-pixel edge neighbour are recorded as overlapping. They
+     * page and its partial edge neighbour are recorded as overlapping. They
      * can never contribute to a role proof, a target, or an effect. */
     static boolean rejectedSearchBannerMotion(Snapshot a,Snapshot b,String target){
         Node banner=searchBanner(a,b,target);
@@ -675,14 +675,15 @@ final class NativeActionSnapshotCheck {
         return banner;
     }
 
-    // 0 hidden, 1 full page, 2 one-pixel visible edge beside a full page.
+    // 0 hidden, 1 full page, 2 partial visible edge beside a full page.
     private static int blankBannerSlot(Node n,Node banner){
         if(!b(n.v,"visible"))return hiddenBannerLeaf(n,banner)?0:-1;
         if(!n.visible()||!blankBannerLeafReference(n))return -1;
         if(n.bounds.equals(banner.bounds))return 1;
         List<Integer> r=n.bounds,outer=banner.bounds;
+        long width=(long)r.get(2)-r.get(0),bannerWidth=(long)outer.get(2)-outer.get(0);
         return r.get(1).equals(outer.get(1))&&r.get(3).equals(outer.get(3))
-                &&(long)r.get(2)-r.get(0)==1
+                &&width>0&&width<bannerWidth
                 &&(r.get(0).equals(outer.get(0))||r.get(2).equals(outer.get(2)))?2:-1;
     }
     private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){

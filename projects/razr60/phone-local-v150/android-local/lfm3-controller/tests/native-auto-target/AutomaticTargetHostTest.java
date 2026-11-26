@@ -191,10 +191,177 @@ public final class AutomaticTargetHostTest {
             }
         });
     }
+
+    private static android.app.AlertDialog textPicker(Env e)throws Exception {
+        List<ProfileTarget> previous=ProfileCatalogueClient.listed;
+        ProfileCatalogueClient.listed=Arrays.asList(e.flight.choice.profileTarget,e.product.choice.profileTarget);
+        try{return picker(e);}finally{ProfileCatalogueClient.listed=previous;}
+    }
+    private static String textModelName(ModelProfile profile){
+        return profile==ModelProfile.QWEN35_4B?"Qwen3.5":profile==ModelProfile.LFM25_8B_A1B?"LFM2.5":"LFM3";
+    }
+    private static BackgroundAutoTargetPreferences.Entry textEntry(Env e,boolean notes){
+        return notes?e.notes:e.product;
+    }
+    private static void pickTextModel(Env e,boolean notes,ModelProfile model,boolean save)throws Exception {
+        android.app.AlertDialog dialog=textPicker(e);String app=notes?"备忘录":"小米";
+        int chosen=dialog.row(app,textModelName(model));
+        check(chosen>=0,"ordinary picker must expose the explicit selected text profile");
+        if(!dialog.checked(chosen))dialog.tap(chosen);
+        dialog.bindVisibleRows();
+        for(ModelProfile option:Arrays.asList(ModelProfile.LFM3,ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B)){
+            int row=dialog.row(app,textModelName(option));check(row>=0,"three explicit text choices exist for this instance");
+            check(dialog.checked(row)==(option==model),"exactly one text model checked after row reuse");
+        }
+        check(dialog.row("携程","Qwen3.5")<0&&dialog.row("携程","LFM2.5")<0,"Ctrip model scope is unchanged");
+        if(save)dialog.save();else dialog.cancel();
+    }
+    private static void reloadSavedAutomaticUi(Env e)throws Exception {
+        String stored=BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app));
+        e.ui.automaticTargets=BackgroundAutoTargetPreferences.empty();e.ui.automaticTargetMode.setChecked(false);
+        java.lang.reflect.Method restore=MainActivity.class.getDeclaredMethod("restoreAutomaticTargets");
+        restore.setAccessible(true);restore.invoke(e.ui);
+        check(stored.equals(BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets))
+                &&e.ui.automaticTargetMode.isChecked(),"actual ordinary restore reads the saved model without migration");
+        check(stored.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),
+                "reopening UI does not rewrite the saved entry");
+    }
+    private static void textAssetPort(Env e,ModelProfile model,boolean notes)throws Exception {
+        // As in Env's original LFM3 fixture, this satisfies only beginTask.isFile.
+        // Model verification/process inventory remain the declared existing IO ports.
+        Files.write(new File(new File(e.directory,"model"),model.fileName).toPath(),new byte[]{1});
+        if(!notes)ProfileCatalogueClient.actual=e.product.choice.profileTarget;
+    }
+    private static void textPreferenceCases()throws Exception {
+        test("legacy_notes_xiaomi_lfm_defaults_and_ctrip_gui_survive_expanded_picker",()->{
+            try(Env e=new Env("legacy-text-model-defaults",NOTE,false)){
+                String raw=BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets),digest=e.ui.automaticTargets.sha256;
+                android.app.AlertDialog dialog=textPicker(e);
+                for(String app:Arrays.asList("备忘录","小米")){
+                    check(dialog.checked(dialog.row(app,"LFM3")),"old LFM3 preference remains selected");
+                    for(String option:Arrays.asList("Qwen3.5","LFM2.5")){
+                        int row=dialog.row(app,option);check(row>=0&&!dialog.checked(row),"new alternatives are not automatically selected");
+                    }
+                }
+                check(dialog.checked(dialog.row("携程","GUI-Owl"))&&!dialog.checked(dialog.row("携程","LFM3")),"old Ctrip GUI preference remains selected");
+                dialog.save();reloadSavedAutomaticUi(e);
+                check(raw.equals(BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets))
+                        &&digest.equals(e.ui.automaticTargets.sha256),"old complete encoding and canonical list digest are unchanged");
+                check(e.app.tasks.schedules==0&&e.app.model.verificationCalls==0,"opening/saving preferences does not start a model or task");
+            }
+        });
+        for(boolean notes:Arrays.asList(true,false)){
+            final boolean personal=notes;final String appName=notes?"notes":"xiaomi";
+            for(ModelProfile model:Arrays.asList(ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B)){
+                final ModelProfile preferred=model;final String suffix=appName+"-"+model.id;
+                test("explicit_text_picker_save_restore_reopen_"+suffix,()->{
+                    try(Env e=new Env("picker-"+suffix,personal?NOTE:PRODUCT,false)){
+                        BackgroundAutoTargetPreferences.Entry original=textEntry(e,personal);
+                        String before=BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets);
+                        pickTextModel(e,personal,preferred,false);
+                        check(before.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),"cancel preserves exact prior saved preferences");
+                        pickTextModel(e,personal,preferred,true);
+                        BackgroundAutoTargetPreferences.Entry saved=BackgroundAutoTargetPreferences.load(e.app).entry(original.instanceKey);
+                        check(saved.modelProfile.equals(preferred.id)&&saved.compute.equals("npu"),"explicit model and NPU are durably saved");
+                        check(saved.instanceKey.equals(original.instanceKey)&&saved.displayMode.equals(original.displayMode)
+                                &&!saved.identitySha256.equals(original.identitySha256),"same installed instance/display mode, model-bound distinct identity");
+                        if(personal)check(saved.choice.packages.get(NOTES).uid==original.choice.packages.get(NOTES).uid
+                                &&saved.choice.packages.get(NOTES).signers.equals(original.choice.packages.get(NOTES).signers),"personal app UID/signers unchanged");
+                        else check(saved.choice.profileTarget.same(original.choice.profileTarget),"managed app/profile identity unchanged");
+                        check(BackgroundAutoTargetPreferences.load(e.app).entry(e.flight.instanceKey).identitySha256.equals(e.flight.identitySha256),"Ctrip GUI entry unchanged");
+                        check(e.app.model.configuration().profile==ModelProfile.LFM3&&e.app.tasks.schedules==0
+                                &&e.app.model.verificationCalls==0,"preference save alone does not alter runtime or start work");
+                        reloadSavedAutomaticUi(e);android.app.AlertDialog reopened=textPicker(e);
+                        check(reopened.checked(reopened.row(personal?"备忘录":"小米",textModelName(preferred))),"reopened picker shows saved alternative");
+                        reopened.cancel();pickTextModel(e,personal,ModelProfile.LFM3,true);
+                        check(before.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),"explicit return to LFM3 restores old complete preferences");
+                    }
+                });
+                test("saved_text_preference_controls_actual_prepare_start_"+suffix,()->{
+                    try(Env e=new Env("start-"+suffix,personal?NOTE:PRODUCT,false)){
+                        pickTextModel(e,personal,preferred,true);reloadSavedAutomaticUi(e);textAssetPort(e,preferred,personal);
+                        BackgroundAutoTargetPreferences.Entry saved=e.ui.automaticTargets.entry(textEntry(e,personal).instanceKey);
+                        String savedBytes=BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets);
+                        e.hold();e.startedSettings();e.finish();
+                        LocalRuntimeConfig actual=e.app.model.configuration();
+                        check(actual.profile==preferred&&actual.compute.equals("npu")&&actual.contextTokens==8192&&actual.threads==4,
+                                "actual prepare uses saved alternative, never forced LFM3");
+                        check(e.app.tasks.schedules==1&&e.app.model.verificationCalls==1&&!e.ui.pending(),"one original settings transaction and one visible Start");
+                        BackgroundSession.Selection selection=e.app.tasks.selection;
+                        check(selection.taskTarget.automaticStart.entry.identitySha256.equals(saved.identitySha256)
+                                &&selection.taskTarget.automaticStart.entry.modelProfile.equals(preferred.id),"scheduled provenance binds the selected model identity");
+                        check(selection.taskTarget.packageName.equals(saved.packageName())
+                                &&selection.independentPersonalDisplay==personal&&selection.independentProfileDisplay!=personal,"original target and isolated display mode retained");
+                        check(savedBytes.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),"start does not rewrite automatic preference");
+                        byte[] current=Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath());
+                        check(new JSONObject(new String(current,StandardCharsets.UTF_8)).getString("model_profile").equals(preferred.id)
+                                &&!RuntimeConfigTransaction.pending(e.directory),"durable runtime contains selected profile and settings transaction committed");
+                        LocalModelEngine.RuntimeGeneration generation=e.app.model.runtimeGeneration();
+                        e.app.tasks.stop();check(e.ui.start(),"a second explicit visible Start may use the same saved profile");
+                        check(e.app.tasks.schedules==2&&e.app.model.verificationCalls==1&&e.app.model.runtimeGeneration()==generation
+                                &&Arrays.equals(current,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath())),
+                                "matching saved profile takes original no-write path and is not overwritten by LFM3");
+                        e.ui.onLocalModelSettingsChanged();check(e.app.tasks.schedules==2,"callback cannot replay the explicit Start");
+                    }
+                });
+            }
+        }
+        test("text_alternatives_keep_npu_model_scope_and_digest_guards",()->{
+            try(Env e=new Env("text-model-closed-boundaries",NOTE,false)){
+                for(BackgroundAutoTargetPreferences.Entry original:Arrays.asList(e.notes,e.product)){
+                    for(ModelProfile model:Arrays.asList(ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B)){
+                        BackgroundAutoTargetPreferences.Entry saved=original.withModel(model);
+                        String encoded=BackgroundAutoTargetPreferences.encode(new BackgroundAutoTargetPreferences.Snapshot(true,Collections.singletonList(saved)));
+                        JSONObject gpu=new JSONObject(encoded);gpu.getJSONArray("targets").getJSONObject(0).put("compute","gpu");
+                        rejects(()->BackgroundAutoTargetPreferences.decode(gpu.toString()));
+                        JSONObject wrongDigest=new JSONObject(encoded);wrongDigest.getJSONArray("targets").getJSONObject(0).put("model_profile",ModelProfile.LFM3.id);
+                        rejects(()->BackgroundAutoTargetPreferences.decode(wrongDigest.toString()));
+                        rejects(()->new BackgroundAutoTargetPreferences.Snapshot(true,Arrays.asList(saved,original)));
+                        rejects(()->e.flight.withModel(model));
+                    }
+                    for(String unknown:Arrays.asList("unreviewed-profile",ModelProfile.QWEN35_9B.id,ModelProfile.GUI_OWL_4B.id,ModelProfile.LFM3_VL_2B.id)){
+                        JSONObject value=new JSONObject(BackgroundAutoTargetPreferences.encode(new BackgroundAutoTargetPreferences.Snapshot(true,Collections.singletonList(original))));
+                        value.getJSONArray("targets").getJSONObject(0).put("model_profile",unknown);
+                        try{BackgroundAutoTargetPreferences.decode(value.toString());throw new AssertionError("unsupported model admitted");}
+                        catch(IllegalArgumentException refused){check(refused.getMessage().contains("首选模型组合"),"unreviewed combination refused before digest validation");}
+                    }
+                }
+                check(e.app.tasks.schedules==0&&e.app.model.verificationCalls==0,"invalid preference cannot grant model or task authority");
+            }
+        });
+        test("new_text_preferences_cancel_pending_start_without_rewriting_choice",()->{
+            for(boolean personal:Arrays.asList(true,false))for(ModelProfile preferred:Arrays.asList(ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B)){
+                try(Env e=new Env("cancel-"+personal+"-"+preferred.id,personal?NOTE:PRODUCT,false)){
+                    pickTextModel(e,personal,preferred,true);textAssetPort(e,preferred,personal);
+                    String saved=BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets);
+                    e.hold();e.startedSettings();e.ui.cancel();e.finish();e.noTask();
+                    check(saved.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),
+                            "cancelling task Start retains explicit saved preference");
+                    check(e.app.model.configuration().profile==preferred&&!RuntimeConfigTransaction.pending(e.directory),
+                            "already started settings transaction finishes without starting a task");
+                }
+            }
+        });
+        test("new_text_asset_failure_keeps_previous_runtime_and_saved_preference",()->{
+            for(boolean personal:Arrays.asList(true,false))for(ModelProfile preferred:Arrays.asList(ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B)){
+                try(Env e=new Env("asset-failure-"+personal+"-"+preferred.id,personal?NOTE:PRODUCT,false)){
+                    pickTextModel(e,personal,preferred,true);textAssetPort(e,preferred,personal);
+                    String saved=BackgroundAutoTargetPreferences.encode(e.ui.automaticTargets);
+                    e.hold();e.app.model.failVerification=true;e.startedSettings();e.finish();e.noTask();
+                    check(e.app.model.configuration().profile==ModelProfile.LFM3
+                            &&Arrays.equals(e.originalConfig,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath())),
+                            "failed actual settings transaction retains original runtime, no model fallback task");
+                    check(saved.equals(BackgroundAutoTargetPreferences.encode(BackgroundAutoTargetPreferences.load(e.app))),
+                            "failed asset validation does not silently replace explicit preference");
+                }
+            }
+        });
+    }
+
     public static void main(String[] args)throws Exception {
         root=Paths.get(args[0]);Files.createDirectories(root);android.os.Looper.getMainLooper();
         ProfileTarget originalCatalogue=ProfileCatalogueClient.actual;
-        try{flightPreferenceCases(Paths.get(args[1]));}
+        try{flightPreferenceCases(Paths.get(args[1]));textPreferenceCases();}
         finally{ProfileCatalogueClient.actual=originalCatalogue;android.app.AlertDialog.shown=null;}
         test("saved_instance_list_roundtrip_digest_and_manual_preferences_untouched",()->{
             try(Env e=new Env("roundtrip",NOTE,false)){

@@ -1,0 +1,44 @@
+{
+  "files": {
+    "tests/native-observation-events/run_host.py": {
+      "current_bytes": 20175,
+      "current_sha256": "1722ca7f5ae7d3ab7f5cfeb9b89504188336907722b89a449154b619473730ad",
+      "operations": [
+        {
+          "current": "extraction=generate(source,generated,h,sampling_ports=False);extraction=add_saved_graph_seed_cases(",
+          "predecessor": "extraction=generate(source,generated,h);extraction=add_saved_graph_seed_cases("
+        },
+        {
+          "current": "    text,sampling_boundary=h.ctrip_sampling_legacy_ports(text)\n    extraction['ctrip_sampling_legacy_boundary']=sampling_boundary\n    path.write_text(text,encoding='utf-8')",
+          "predecessor": "    path.write_text(text,encoding='utf-8')"
+        },
+        {
+          "current": "    h.write(out/'ObserverPipelineHost.java',template,sampling_ports=sampling_ports)",
+          "predecessor": "    h.write(out/'ObserverPipelineHost.java',template)"
+        },
+        {
+          "current": "def generate(source,out,h,sampling_ports=True):",
+          "predecessor": "def generate(source,out,h):"
+        }
+      ],
+      "predecessor_bytes": 19974,
+      "predecessor_sha256": "d21f56ea528f1165fdeff87ecfef732cfd803d8cbb8e8154034f0c9eca8ededd"
+    },
+    "tests/observation-diagnostics/run_host.py": {
+      "current_bytes": 36323,
+      "current_sha256": "90c4aae9751f22c1cb3241aa87e5803f9cf9a0f3f02757c7c815a1f5a8629c5c",
+      "operations": [
+        {
+          "current": "def ctrip_sampling_legacy_ports(template):\n    \"\"\"Type closure for legacy non-Ctrip IO; actual sampling bodies stay verbatim.\n    Scoped Ctrip bridges already carry their real snapshot adapter and are untouched.\n    Every new authority-bearing port refuses instead of returning a census or permit.\n    \"\"\"\n    if '    private static final class CtripFormSample {' not in template:\n        return template,None\n    if '    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(' in template:\n        return template,None\n    original=template;replacements=[]\n    def replace(before,after):\n        nonlocal template\n        if template.count(before)!=1:raise RuntimeError('sampling IO boundary differs: '+before[:100])\n        template=template.replace(before,after,1);replacements.append((before,after))\n    additions=''\n    old_target='        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.'\n    if old_target in template:\n        replace(old_target,'        ProfileTarget profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.')\n        additions+='''    // Unconstructable type carrier: legacy cases cannot mint a managed target.\n    private static final class ProfileTarget {\n        final String packageName=\"unbound-host-port\";final long versionCode=-1;final Map<String,String> apkHashes=Collections.emptyMap();\n        private ProfileTarget(){throw new AssertionError(\"legacy fixture cannot create a Ctrip target\");}\n    }\n'''\n    elif 'ProfileTarget profileTarget()' not in template:\n        raise RuntimeError('sampling type closure requires an explicit absent or real target carrier')\n    else:\n        # Saved-graph tests already have a synthetic profile identity. Preserve its\n        # old equality fields and explicitly exclude it from Ctrip sampling scope.\n        synthetic='    static final class ProfileTarget {final String sha256=EventChecks.OWNER;'\n        if synthetic in template:\n            replace(synthetic,synthetic+'final String packageName=\"legacy-non-ctrip\";final long versionCode=-1;final Map<String,String> apkHashes=Collections.emptyMap();')\n    old_provider='    private static final class NativeCtripFlightPage {static final String PACKAGE=\"ctrip.android.view\";}'\n    if old_provider in template:\n        replace(old_provider,'''    private static final class NativeCtripFlightPage {\n        static final String PACKAGE=\"ctrip.android.view\",BASE_APK_SHA256=\"unbound-host-port\";\n        static final long VERSION_CODE=-1;\n        static boolean supported(NativeAppGoal goal){throw new AssertionError(\"legacy fixture cannot qualify a Ctrip goal\");}\n    }''')\n    elif 'static final long VERSION_CODE=' not in template or 'static boolean supported(NativeAppGoal goal)' not in template:\n        raise RuntimeError('sampling provider closure requires the real dedicated provider')\n    if '    static final class NativeActionSnapshotCheck {' in template:\n        raise RuntimeError('sampling closure requires the compiled actual Node/Snapshot, not a shadow class')\n    replace('    static final class NativeAppEvidence {','''    static final class NativeAppEvidence {\n        static String fingerprint(Object value){throw new AssertionError(\"legacy fixture cannot fingerprint a Ctrip sampling proof\");}''')\n    replace('            boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}', '''            boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}\n            Map<String,Object> evidence(){throw new AssertionError(\"legacy fixture has no entered open-flight permit evidence\");}''')\n    additions+='''    // The dedicated form observer supplies and executes the actual snapshot adapter.\n    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target){\n        throw new AssertionError(\"legacy fixture cannot manufacture a complete Ctrip sampling census\");\n    }\n'''\n    end=template.rfind('\\n}')\n    if end<0:raise RuntimeError('sampling fixture outer class boundary missing')\n    template=template[:end]+'\\n'+additions+template[end:]\n    if template.count('\\n'+additions)!=1:raise RuntimeError('sampling port block must be unique')\n    inverse=template.replace('\\n'+additions,'',1)\n    for before,after in reversed(replacements):\n        if inverse.count(after)!=1:raise RuntimeError('sampling IO inverse boundary changed')\n        inverse=inverse.replace(after,before,1)\n    if inverse!=original:raise RuntimeError('legacy methods and cases must remain byte-identical outside IO ports')\n    return template,dict(schema='hepta.ctrip-sampling.legacy-io-closure.v1',\n        original_fixture_sha256=sha(original.encode()),extended_fixture_sha256=sha(template.encode()),\n        original_fixture_inverse_verified=True,actual_sampling_bodies_unchanged=True,\n        no_census_or_profile_or_permit_authority=True,dedicated_sampling_cases='native-ctrip-sampling-form',\n        new_authority_bearing_ports_throw=True,legacy_target_port_added=old_target in original,\n        legacy_provider_port_added=old_provider in original,\n        helper_source=meta(Path(__file__).resolve()),phone_operations=0,ctrip_sampling_executed=False)\n\ndef write(path,raw,sampling_ports=True):\n    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n    boundary=None\n    if path.name=='ObserverPipelineHost.java' and sampling_ports:\n        text=raw if isinstance(raw,str) else raw.decode()\n        raw,boundary=ctrip_sampling_legacy_ports(text)\n    if isinstance(raw,str):raw=raw.encode()\n    with path.open('xb') as stream:stream.write(raw)\n    os.chmod(path,0o600)\n    if boundary is not None:save(path.with_suffix('.sampling-boundary.json'),boundary)\n",
+          "predecessor": "def write(path,raw):\n    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)\n    if isinstance(raw,str):raw=raw.encode()\n    with path.open('xb') as stream:stream.write(raw)\n    os.chmod(path,0o600)\n"
+        }
+      ],
+      "predecessor_bytes": 30763,
+      "predecessor_sha256": "1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07"
+    }
+  },
+  "original_test_assertions_removed": 0,
+  "production_body_replacements": 0,
+  "proof_copy_only": true,
+  "schema": "hepta.legacy-sampling-io-exact-predecessor.v2"
+}

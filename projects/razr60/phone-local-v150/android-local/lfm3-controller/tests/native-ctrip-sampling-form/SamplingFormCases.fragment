@@ -1,0 +1,214 @@
+    // Host-only scenarios drive the real sample worker, main callback and postDelayed queue.
+    // They create no CtripFormSample, CaptureIdentity, proof, action or Graph directly.
+    static int samplingAssertions;
+    static final List<Map<String,Object>> samplingRecords=new ArrayList<Map<String,Object>>();
+    static void samplingCheck(boolean yes,String reason){samplingAssertions++;expect(yes,reason);}
+    static long samplingNumber(Map<?,?> value,String key){Object v=value.get(key);samplingCheck(v instanceof Number,"numeric "+key);return ((Number)v).longValue();}
+    static final class SamplingFormScenario {
+        final ObserverPipelineHost f;final String scenario;final PhoneObservation prior;
+        final NativeActionSnapshotCheckHostTest.Fixture before,after;
+        final AtomicInteger sampleReads=new AtomicInteger(),captureReads=new AtomicInteger();
+        final List<Long> scheduledDelays=new ArrayList<Long>(),sampleReadStarts=new ArrayList<Long>();
+        final List<Map<String,Object>> accepted=new ArrayList<Map<String,Object>>();
+        final ObservationRequest request;final long deadline,started;
+        boolean lastAfter;String lastKey="sampling-A";int recorded;
+        SamplingFormScenario(String scenario)throws Exception{
+            this.scenario=scenario;
+            mainThread=Thread.currentThread();samplingCheck(!observationIoBusy.get()&&observationIo.active.get()==0,"prior worker drained");
+            SystemClock.now=1000;SystemClock.nextElapsedHook=null;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;Bitmap.streamHook=null;
+            observationIo.reject=false;WebFlightSession.unreleased=false;
+            f=formFixture("unchanged_pair_keeps_legacy_mode");f.captureFormRead();f.finish();
+            samplingCheck(f.delivered.size()==1,"original actual observation published");
+            prior=f.current;f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;
+            before=regionFixture(false);after=regionFixture(true);
+            boolean throttled=scenario.equals("same_key_real_scheduler")||scenario.equals("short_pair_real_scheduler")
+                    ||scenario.equals("classified_ready_real_scheduler");
+            if(!throttled)SystemClock.now+=400;
+            f.ownedController=new LocalTaskController();
+            f.submitted=new NativeAppSession.PostEffectReadPermit(new NativeAppSession(),f.taskAuthorization,f.lease,
+                    f.taskBackground.selection,f.taskBackground.generation,15,SystemClock.now+15000);
+            f.submitted.fixtureOrigin=prior.id;
+            f.readHook=(g,n)->{
+                ObservationRequest active=f.activeObservation;boolean capturing=active!=null&&active.captured!=null;
+                int ordinal=capturing?captureReads.incrementAndGet():sampleReads.incrementAndGet();
+                if(!capturing)sampleReadStarts.add(g.readStartedElapsedMs);
+                long cost=scenario.equals("short_pair_real_scheduler")?40:
+                        (scenario.equals("same_key_real_scheduler")||scenario.equals("classified_ready_real_scheduler"))&&ordinal>=3?40:10;
+                if(scenario.equals("original_settle_deadline")&&!capturing)cost=ordinal==1?9799:2;
+                SystemClock.now+=cost;
+                boolean changed=capturing?lastAfter:
+                        (scenario.equals("same_key_real_scheduler")||scenario.equals("short_pair_real_scheduler"))
+                        ?ordinal>=3&&ordinal%2==1:ordinal%2==0;
+                populate(f,g,changed?after:before,"sampling_fixture",n);
+                g.digest=capturing?lastKey:changed?"sampling-B":"sampling-A";
+                g.nativeActionCapturedAt=SystemClock.now-3;
+                if(!capturing){lastAfter=changed;lastKey=g.digest;}
+                if(!capturing&&ordinal==2){
+                    if(scenario.equals("future_owned_content"))f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+                    if(scenario.equals("boundary_event"))f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,false);
+                    if(scenario.equals("unknown_event"))f.noteObservationEvent(-1);
+                    if(scenario.equals("untyped_event"))f.noteObservationEvent(15);
+                    if(scenario.equals("event_after_census"))f.afterReadHook=()->f.noteObservationEvent(15,96,NativeAppGoal.CTRIP_PACKAGE,true);
+                    if(scenario.equals("foreign_owner"))g.backgroundOwnerSha=NativeActionSnapshotCheckHostTest.repeat('d',64);
+                    if(scenario.equals("foreign_profile"))g.profileWindow=owned(f.taskBackground.profile,96,"44444444-5555-6666-7777-888888888888");
+                    if(scenario.equals("protected_form"))replaceNode(g,"0/0/2/5","text","11月27日后天");
+                    if(scenario.equals("incomplete_census"))g.collectionStats=counters(g,g.nativeActionNodes.size()+1,0,0,0);
+                    if(scenario.equals("cancelled"))f.cancelled.set(true);
+                }
+                if(capturing&&scenario.equals("final_graph_still_required")){
+                    replaceNode(g,"0/0/2/5","text","11月27日后天");g.digest="protected-after-capture";
+                }
+                f.windowValue=frozenObservationWindow(g);
+            };
+            if(scenario.equals("capture_age_unchanged"))Bitmap.encodeHook=()->SystemClock.now+=600;
+            f.beginFormRead();request=f.activeObservation;
+            samplingCheck(request!=null&&request.captured==null&&f.pendingScreenshot==null,"real request starts before capture");
+            samplingCheck(request.postEffectController!=null&&request.readBefore==null&&request.readIdentity==null,"actual entered-open request scope");
+            deadline=request.deadline;started=request.started;
+        }
+        void drive(int sampleLimit)throws Exception{
+            for(int turns=0;turns<32;turns++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"sampling serial worker exit");
+                if(scenario.equals("distinct_clock_domains")&&sampleReads.get()>recorded&&!request.finished&&request.captured==null)
+                    SystemClock.now+=30;
+                f.main.drainUntil(()->f.pendingScreenshot!=null||request.finished);
+                if(f.pendingScreenshot!=null||request.finished)return;
+                int count=sampleReads.get();
+                if(count>recorded){
+                    CtripFormSample candidate=request.ctripSample();
+                    Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("sample",count);row.put("at",SystemClock.now);
+                    row.put("candidate_ordinal",candidate==null?-1:candidate.readOrdinal);
+                    row.put("candidate_accepted",candidate==null?-1:candidate.acceptedAt);
+                    row.put("candidate_census_time",candidate==null?-1:candidate.census.env.get("captured_elapsed_ms"));
+                    row.put("captured",request.captured!=null);row.put("sampling_proof",request.ctripSamplingProof!=null);
+                    accepted.add(row);recorded=count;
+                    if((scenario.equals("same_key_real_scheduler")||scenario.equals("short_pair_real_scheduler"))&&count==2){
+                        samplingCheck(candidate!=null&&candidate.readOrdinal==2,
+                                "same-key accepted census must advance to ordinal 2 before the next real scheduler read");
+                        samplingCheck(candidate.completedAt<=candidate.acceptedAt,"latest completed census precedes its own main acceptance");
+                    }
+                    if(scenario.equals("classified_ready_real_scheduler")&&count==2){
+                        samplingCheck(candidate!=null&&candidate.readOrdinal==2,"classified READY keeps actual second candidate");
+                        samplingCheck(request.ctripSamplingProof==null,"throttled proof is not carried into a future capture");
+                    }
+                }
+                if(sampleLimit>0&&count>=sampleLimit)return;
+                long next=Long.MAX_VALUE;
+                synchronized(f.main){for(Handler.Job job:f.main.jobs)next=Math.min(next,job.when);}
+                samplingCheck(next!=Long.MAX_VALUE&&next>=SystemClock.now,"production queue supplies next bounded scheduler time");
+                long delay=next-SystemClock.now;scheduledDelays.add(delay);
+                // Watchdog jobs may run sooner; only the next actual graph read proves the sample interval.
+                SystemClock.now=next;
+                f.main.drainUntil(()->f.pendingScreenshot!=null||request.finished);
+            }
+            throw new AssertionError("sampling did not settle or stop within bounded real scheduler turns");
+        }
+        Map<String,Object> run(boolean publish,int expectedSamples)throws Exception{
+            Map<String,Object> result=new LinkedHashMap<String,Object>();result.put("scenario",scenario);
+            try{
+                boolean terminal=scenario.equals("original_settle_deadline")||scenario.equals("cancelled");
+                drive(publish||scenario.equals("final_graph_still_required")||terminal?0:2);
+                result.put("sample_reads_before_capture",sampleReads.get());result.put("scheduler_delays",new ArrayList<Long>(scheduledDelays));
+                result.put("actual_sample_read_starts",new ArrayList<Long>(sampleReadStarts));
+                result.put("accepted_samples",new ArrayList<Map<String,Object>>(accepted));
+                if(publish||scenario.equals("final_graph_still_required")){
+                    samplingCheck(f.pendingScreenshot!=null,"actual legal pair reaches real capture callback: "+scenario+" "+f.errors);
+                    samplingCheck(sampleReads.get()==expectedSamples,"exact real scheduler sample count: "+scenario+" got "+sampleReads.get());
+                    if(scenario.equals("short_pair_real_scheduler")){
+                        samplingCheck(accepted.size()==3&&samplingNumber(accepted.get(2),"sample")==3,"third short pair was actually accepted as a new first sample");
+                        samplingCheck(sampleReadStarts.get(3).longValue()==samplingNumber(accepted.get(2),"candidate_accepted")+ObservationStabilityGate.SAMPLE_GAP_MS,
+                                "short changed pair schedules the next actual graph read at original 200ms despite earlier watchdog jobs");
+                    }
+                    long captureAt=f.lastScreenshotAt;
+                    f.finish();
+                    if(publish){
+                        samplingCheck(f.delivered.size()==1,"actual current observer publishes classified sample: "+scenario+" "+f.errors);
+                        samplingCheck(f.delivered.get(0).capturedElapsedMillis==captureAt,"sampling clocks never refresh screenshot capture age");
+                        Map<String,Object> evidence=f.delivered.get(0).captureEvidence;
+                        samplingCheck(evidence.get("sampling_stability") instanceof Map,"real sampling summary attached");
+                        samplingCheck(new org.json.JSONObject(evidence).toString().getBytes(StandardCharsets.UTF_8).length<=8192,"unchanged capture metadata bound");
+                        File[] histories=f.directory.listFiles((parent,name)->name.endsWith("-form-history.json"));
+                        samplingCheck(histories!=null&&histories.length==1,"one immutable complete sampling history");
+                        byte[] raw=Files.readAllBytes(histories[0].toPath());
+                        samplingCheck(raw.length<=786432,"original history byte bound");
+                        Map<String,Object> history=new org.json.JSONObject(new String(raw,StandardCharsets.UTF_8)).toMap();
+                        @SuppressWarnings("unchecked") Map<String,Object> sampling=(Map<String,Object>)history.get("sampling");
+                        samplingCheck(sampling!=null&&Boolean.FALSE.equals(sampling.get("historic_events_reclassified")),"historical event classifications unchanged");
+                        samplingCheck(Boolean.FALSE.equals(sampling.get("grants_action_authority")),"sampling grants no action authority");
+                        @SuppressWarnings("unchecked") Map<String,Object> left=(Map<String,Object>)sampling.get("before_census");
+                        @SuppressWarnings("unchecked") Map<String,Object> right=(Map<String,Object>)sampling.get("after_census");
+                        samplingCheck(((List<?>)left.get("nodes")).size()==before.nodes.size()
+                                &&((List<?>)right.get("nodes")).size()==after.nodes.size(),"both complete actual raw censuses preserved");
+                        List<?> ordinals=(List<?>)sampling.get("sample_ordinals");
+                        samplingCheck(((Number)ordinals.get(1)).intValue()==((Number)ordinals.get(0)).intValue()+1,"actual consecutive sample ordinals retained");
+                        samplingCheck(((Number)ordinals.get(1)).intValue()==expectedSamples,"proof identifies the actual last two samples");
+                        List<?> firstTimes=(List<?>)sampling.get("before_read_elapsed_ms");
+                        long firstAccepted=((Number)firstTimes.get(3)).longValue();
+                        long admitted=samplingNumber(sampling,"sampling_admitted_elapsed_ms");
+                        samplingCheck(admitted-firstAccepted>=ObservationStabilityGate.SAMPLE_GAP_MS,"latest actual classified pair keeps full 200ms gap");
+                        samplingCheck(samplingNumber(sampling,"before_gate_key_accepted_elapsed_ms")<=firstAccepted,"separate real Gate key clock precedes latest acceptance");
+                        if(scenario.equals("distinct_clock_domains")){
+                            @SuppressWarnings("unchecked") Map<String,Object> env=(Map<String,Object>)left.get("envelope");
+                            samplingCheck(firstAccepted>samplingNumber(env,"captured_elapsed_ms"),"raw census and main acceptance clocks really differ");
+                        }
+                        result.put("capture_at",captureAt);result.put("history_bytes",raw.length);result.put("sample_ordinals",ordinals);
+                        result.put("gate_key_accepted_at",sampling.get("before_gate_key_accepted_elapsed_ms"));
+                        result.put("sampling_admitted_at",admitted);
+                        if(scenario.equals("capture_age_unchanged"))samplingCheck(SystemClock.now>=captureAt+600,"encoding delay actually occurred");
+                    }else samplingCheck(f.delivered.isEmpty(),"fresh postcapture full graph guard still rejects protected change");
+                }else{
+                    samplingCheck(f.pendingScreenshot==null&&f.delivered.isEmpty(),"rejected sampling evidence cannot capture/publish: "+scenario);
+                    if(scenario.equals("boundary_event")||scenario.equals("untyped_event")||scenario.equals("unknown_event")||scenario.equals("event_after_census"))
+                        samplingCheck(request.ctripSample()==null,"event boundary/endpoint clears candidate");
+                    if(scenario.equals("unknown_event"))samplingCheck(request.unknownEvents==1,"unknown historical event remains unknown");
+                    if(scenario.equals("boundary_event"))samplingCheck(request.boundaryEvents==1,"historical window/focus boundary remains boundary");
+                    if(scenario.equals("original_settle_deadline")){
+                        samplingCheck(request.finished,"original settle deadline terminates request");
+                        samplingCheck(SystemClock.now>=started+10000&&SystemClock.now<deadline,"capture margin cannot be used to keep sampling");
+                    }
+                }
+                samplingCheck(request.deadline==deadline&&deadline==started+12000,"original request deadline unchanged");
+                samplingCheck(!f.actionWorkPending()&&!f.nativeCancellationWorkPending(),"no action or cancellation work fabricated");
+                result.put("publications",f.delivered.size());result.put("errors",new ArrayList<String>(f.errors));
+                result.put("original_deadline_preserved",true);result.put("all_pass",true);
+            }finally{
+                SystemClock.nextElapsedHook=null;f.selectionHook=null;f.afterReadHook=null;f.windowHook=null;f.dispose();
+            }
+            boolean closed=true;for(Graph g:f.graphs)closed&=g.closed;
+            for(Bitmap b:Bitmap.made)closed&=b.recycled;
+            for(ScreenshotResult shot:f.shots)closed&=shot.buffer.closes==1;
+            samplingCheck(closed&&!observationIoBusy.get()&&observationIo.active.get()==0&&observationIo.uncaught.get()==0,"all real host graph/pixel/buffer workers released");
+            result.put("resources_released",true);return result;
+        }
+    }
+    static void samplingFormMain(String[] args)throws Exception{
+        String only=System.getProperty("hepta.ctrip.sampling.only","");boolean okay=true;
+        String[] names={"distinct_keys","same_key_real_scheduler","short_pair_real_scheduler","classified_ready_real_scheduler",
+                "distinct_clock_domains","future_owned_content","capture_age_unchanged",
+                "boundary_event","unknown_event","untyped_event","event_after_census",
+                "foreign_owner","foreign_profile","protected_form","incomplete_census","cancelled",
+                "original_settle_deadline","final_graph_still_required"};
+        for(String name:names){
+            if(!only.isEmpty()&&!only.equals(name))continue;
+            boolean positive=Arrays.asList("distinct_keys","same_key_real_scheduler","short_pair_real_scheduler",
+                    "classified_ready_real_scheduler","distinct_clock_domains","future_owned_content","capture_age_unchanged").contains(name);
+            int samples=name.equals("short_pair_real_scheduler")?4:
+                    name.equals("same_key_real_scheduler")||name.equals("classified_ready_real_scheduler")?3:2;
+            try{
+                SamplingFormScenario value=new SamplingFormScenario(name);
+                Map<String,Object> result=value.run(positive,samples);samplingRecords.add(result);
+                System.out.println("PASS sampling "+name);
+            }catch(Throwable failed){
+                okay=false;Map<String,Object> result=new LinkedHashMap<String,Object>();result.put("scenario",name);result.put("all_pass",false);
+                result.put("error",failed.toString());samplingRecords.add(result);failed.printStackTrace(System.out);
+            }
+        }
+        samplingCheck(!samplingRecords.isEmpty(),"at least one selected scenario ran");
+        Map<String,Object> report=new LinkedHashMap<String,Object>();
+        report.put("schema","hepta.ctrip-sampling-form-cases.v1");report.put("all_pass",okay);
+        report.put("cases",samplingRecords.size());report.put("assertions",samplingAssertions);report.put("records",samplingRecords);
+        report.put("phone_operations",0);report.put("android_io_is_synthetic",true);report.put("model_executed",false);
+        report.put("business_completion_verified",false);report.put("production_sample_and_capture_methods_verbatim",true);
+        Files.write(Paths.get(args[0]),(new org.json.JSONObject(report).toString(2)+"\n").getBytes(StandardCharsets.UTF_8));
+        if(!okay)throw new AssertionError("sampling host cases failed");
+    }

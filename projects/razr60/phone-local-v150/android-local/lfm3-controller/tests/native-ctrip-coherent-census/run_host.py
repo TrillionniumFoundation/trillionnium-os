@@ -56,6 +56,11 @@ def gate_predecessor(raw):
         raise RuntimeError('classified-pair Gate must reverse to the complete original source')
     return prior
 
+def partial_banner_predecessor(source,raw):
+    helper=source/'tests/native-search-carousel-edge/protected_partial_edge.py'
+    need(sha(helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d','exact reviewed partial-edge inverse helper')
+    return module(helper,'ctrip_partial_banner_proof').predecessor(raw)
+
 def prepare(source,out):
     h=module(source/'tests/observation-diagnostics/run_host.py','coherent_observer_extractor')
     bridge=module(source/'tests/native-ctrip-form-observation/run_observer_host.py','coherent_form_bridge')
@@ -133,6 +138,7 @@ def prepare(source,out):
         source/'tests/native-ctrip-child-identity/protected_fixture.py',
         source/'tests/native-ctrip-child-identity/run_host.py',
         source/'tests/native-ctrip-form-observation/run_observer_host.py',
+        source/'tests/native-search-carousel-edge/protected_partial_edge.py',
         source/'tests/observation-diagnostics/run_host.py',
         source/'tests/native-ctrip-form-observation/form-region-nodes.json',
         source/TEST/'run_host.py',source/TEST/'CtripCoherentHostTest.java',source/TEST/'CtripCoherentCases.fragment',
@@ -152,12 +158,16 @@ def main():
     jar=a.json_jar.resolve();jdk=a.java_home.resolve();pair=a.actual_pair.resolve()
     pair_before=meta(pair);need((pair_before['bytes'],pair_before['sha256'])==(a.actual_pair_bytes,a.actual_pair_sha256),'exact externally pinned complete actual pair')
     need((jar.stat().st_size,sha(jar.read_bytes()))==(78332,'3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'),'original JSON tool')
-    gate_proof=None
+    gate_proof=None;partial_banner_proof=None
     for relative,expected in PROTECTED.items():
         current=(source/relative).read_bytes();proof=current
         if relative=='src/org/trillionnium/hepta/local/ObservationStabilityGate.java':
             proof=gate_predecessor(current)
             gate_proof={'current_sha256':sha(current),'predecessor_sha256':sha(proof),
+                'proof_copy_only':True,'actual_compilation_uses_current_source':True}
+        if relative=='src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java':
+            proof=partial_banner_predecessor(source,current)
+            partial_banner_proof={'current_sha256':sha(current),'predecessor_sha256':sha(proof),
                 'proof_copy_only':True,'actual_compilation_uses_current_source':True}
         need(sha(proof)==expected,'complete original rule/legacy file or exact full-source predecessor '+relative)
     tools=[jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar]
@@ -166,6 +176,7 @@ def main():
     report={'schema':'hepta.ctrip-coherent-census-host.v1','all_pass':False,'source_root':str(source),
         'source_inventory_before':meta(out/'SOURCE-INVENTORY-BEFORE.json'),'tools_before':tool_before,
         'private_pair':pair_before,'stages':[],'phone_operations':0,'complete_form_sampling_gate_inverse':gate_proof,
+        'partial_banner_refusal_inverse':partial_banner_proof,
         'historical_event_watermarks_or_capture_clock_reconstructed':False,'android_bfs_execution':False,
         'actual_75395_failure_predicate_reconstructed':False,'business_completion_claimed':False,
         'declared_new_cases':43,'declared_legacy_observer_cases':68,'legacy_child_41_executed':False}

@@ -59,8 +59,12 @@ assert sha(local_session_proof) in {
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
 # Proof-copy inverse only; compile the actual current comparator below.
-if sha(native_snapshot_raw) in ('b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2','400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593'):
-    native_snapshot_proof=runpy.run_path(str(root/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor']('NativeActionSnapshotCheck.java',native_snapshot_raw)
+partial_helper=root/'tests/native-search-carousel-edge/protected_partial_edge.py'
+assert sha(partial_helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d', 'exact reviewed partial-edge inverse helper'
+if sha(native_snapshot_proof)=='c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346':
+    native_snapshot_proof=runpy.run_path(str(partial_helper))['predecessor'](native_snapshot_proof)
+if sha(native_snapshot_proof) in ('b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2','400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593'):
+    native_snapshot_proof=runpy.run_path(str(root/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor']('NativeActionSnapshotCheck.java',native_snapshot_proof)
 if sha(native_snapshot_proof) in ('dbc72e40e410334c9db300308dc0dfec60339a8e4c3018661239c1a959438d05',
         'de5a0bcd74250ce051595bc9200802ad019a99a69babc18dd9ecc229a6e2afac',
         '5e3366ed3d59c94360663058004bcab06fa896f97a120717f90fd8d8f43e33bf'):
@@ -168,7 +172,7 @@ harness_path.write_bytes(template.read_bytes())
 inputs = [root/row['path'] for row in ns['record']['source_inputs']]
 inputs += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ObservedImeEnter.java','ActionExecutionState.java','RecentActionProjection.java']]
 inputs += [Path(__file__).resolve(), template, a.json_jar.resolve(), root/'tests/native-xiaomi-query-stability/protected_filled_query.py']
-inputs += [root/'tests/native-ctrip-form-observation/scope_predecessor.py']
+inputs += [root/'tests/native-ctrip-form-observation/scope_predecessor.py',partial_helper]
 before = [identity(path) for path in inputs]
 # Real org.json is deliberately used: the legacy host fixture's toString(2)
 # delegates to compact JSON and cannot establish pretty-file byte counts.

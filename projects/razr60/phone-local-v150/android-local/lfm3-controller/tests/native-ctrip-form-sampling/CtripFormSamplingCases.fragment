@@ -297,11 +297,24 @@
                 samplingCheck("sampling-B".equals(a.get("observed_digest"))&&"sampling-C".equals(b.get("observed_digest")),
                         "third actual graph earns a fresh B/C classification");
             }else if("equal_key_interval".equals(scenario)){
-                samplingCheck(h.f.pendingScreenshot==null&&h.request.ctripSamplingProof==null&&h.second==h.first,
-                        "legacy equal-key READY keeps original candidate and no classification proof");
-                h.next(200);h.requireNoClassifiedCapture();
-                samplingCheck(h.request.ctripSample()==null,"skipped read ordinal rejects stale A/C classification");
-                samplingCheck("sampling-C".equals(h.actualKeys.get(3)),"fallback receives actual C key");
+                samplingCheck(h.f.pendingScreenshot==null&&h.request.ctripSamplingProof==null
+                                &&h.second!=null&&h.second!=h.first&&h.second.readOrdinal==2,
+                        "equal-key READY keeps the latest consecutive census without carrying a classification proof");
+                CtripFormSample latest=h.second;
+                samplingCheck(latest.acceptedAt-h.first.acceptedAt>=ObservationStabilityGate.SAMPLE_GAP_MS
+                                &&latest.gateAcceptedAt==h.first.gateAcceptedAt,
+                        "same-key census acceptance advances while the original Gate key clock stays unchanged");
+                h.next(200);Map<String,Object> proof=samplingHistory(h,h.publish());
+                List<?> ordinals=(List<?>)proof.get("sample_ordinals");
+                samplingCheck(((Number)ordinals.get(0)).intValue()==2&&((Number)ordinals.get(1)).intValue()==3,
+                        "the third real read compares consecutive census endpoints 2 and 3");
+                Map<?,?> a=(Map<?,?>)proof.get("before_key"),b=(Map<?,?>)proof.get("after_key");
+                samplingCheck("sampling-A".equals(a.get("observed_digest"))&&"sampling-C".equals(b.get("observed_digest")),
+                        "same-key interval preserves the real A/C keys of the current consecutive pair");
+                List<?> beforeTimes=(List<?>)proof.get("before_read_elapsed_ms");
+                samplingCheck(((Number)beforeTimes.get(3)).longValue()==latest.acceptedAt
+                                &&((Number)proof.get("before_gate_key_accepted_elapsed_ms")).longValue()==h.first.gateAcceptedAt,
+                        "published proof binds latest census time separately from the original Gate key time");
             }else if("diagnostic_bounds".equals(scenario)){
                 samplingCheck(h.second!=null&&h.second.readOrdinal==2,"actual comparison values available before interval wait");
                 StringBuilder longMessage=new StringBuilder("中");for(int i=0;i<300;i++)longMessage.append("\uD83D\uDE80");

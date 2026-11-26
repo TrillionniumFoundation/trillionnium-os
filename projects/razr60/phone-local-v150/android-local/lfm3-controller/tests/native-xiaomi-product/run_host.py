@@ -89,6 +89,9 @@ def main():
     originals={}
     def read(path):v=bound(path);originals[path]=v;return v[0]
     read(Path(__file__).resolve())
+    partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
+    need(sha(read(partial_helper))=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
+    partial_banner_predecessor=runpy.run_path(str(partial_helper))["predecessor"]
     inverse_helper=a.source/"tests/native-xiaomi-query-stability/protected_filled_query.py"
     read(inverse_helper)
     read(a.source/"tests/native-ctrip-form-observation/scope_predecessor.py")
@@ -110,12 +113,13 @@ def main():
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
     for rel in PATHS:
         raw=read(a.source/rel)
-        proof_raw=history_predecessor(raw) if rel==SEARCH_HISTORY_PATH else raw
+        partial_proof=partial_banner_predecessor(raw) if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" else raw
+        proof_raw=history_predecessor(raw) if rel==SEARCH_HISTORY_PATH else partial_proof
         if rel==SEARCH_HISTORY_PATH:need(sha(proof_raw)==PRE_SEARCH_HISTORY_SHARED[rel],"complete history input predecessor")
         if rel==READONLY_OWNER_PATH:
             proof_raw=owner_predecessor(raw)
             need(len(proof_raw)==21582 and sha(proof_raw)==PRE_READONLY_OWNER_SHARED[rel],"complete preceding OWNER source")
-        if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
+        if rel in SHARED:need(sha(partial_proof)==SHARED[rel],"reviewed shared DTO/goal pin or exact partial-edge predecessor")
         if rel==CAPTURE_REUSE_PATH:
             before_getter=direct_capture_predecessor(raw)
             need(sha(before_getter)==PRE_DIRECT_CARD_SHARED[rel],"getter proof copy must reproduce complete preceding capture source")
@@ -150,7 +154,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"pre_direct_card_shared_source_pins":PRE_DIRECT_CARD_SHARED,"direct_card_getter_inverse_verified":True,"pre_search_history_shared_source_pins":PRE_SEARCH_HISTORY_SHARED,"search_history_inverse_verified":True,"pre_readonly_owner_shared_source_pins":PRE_READONLY_OWNER_SHARED,"readonly_owner_inverse_verified":True,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"pre_direct_card_shared_source_pins":PRE_DIRECT_CARD_SHARED,"direct_card_getter_inverse_verified":True,"pre_search_history_shared_source_pins":PRE_SEARCH_HISTORY_SHARED,"search_history_inverse_verified":True,"pre_readonly_owner_shared_source_pins":PRE_READONLY_OWNER_SHARED,"readonly_owner_inverse_verified":True,"pre_partial_banner_shared_source_pins":SHARED,"partial_banner_refusal_inverse_verified":True,"current_shared_source_pins":dict(SHARED,**{"src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java":sha(originals[a.source/"src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java"][0])}),"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

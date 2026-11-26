@@ -78,7 +78,15 @@ def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
     actual = section(service, start, end)
     actual_sha = sha(actual.encode())
     if actual_sha != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":
-        raise RuntimeError("Exact reviewed complete form sampling helper block required")
+        # Proof copy only: retain the actual dual-clock helper block for real Ctrip bridges.
+        if actual_sha != '572fe702f6187416090a6d832bebf6fee02175b31a4fbcc5c48d615eab7feade' or len(actual.encode()) != 14414:
+            raise RuntimeError("Exact reviewed complete form sampling helper block required")
+        proof = actual
+        for revised, prior in [('                        ||before.gateAcceptedAt<request.started||before.gateAcceptedAt>before.acceptedAt\n', ''), ('        out.put("before_gate_key_accepted_elapsed_ms",a.gateAcceptedAt);\n', '')]:
+            if proof.count(revised) != 1:raise RuntimeError("Unique reviewed sampling clock helper delta required")
+            proof = proof.replace(revised, prior, 1)
+        if len(proof.encode()) != 14236 or sha(proof.encode()) != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":
+            raise RuntimeError("Complete original 712 helper block must be restored on the proof copy")
     if parts["observation"].count(actual) != 1:
         raise RuntimeError("Unique complete form sampling helper block required")
     port = """    /** Legacy observer fixtures have no qualified Ctrip sampling owner.
@@ -120,6 +128,8 @@ def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
         "schema": "hepta.observer-form-sampling-legacy-boundary.v1",
         "sampling_helper_present": True,
         "actual_helper_bytes": len(actual.encode()), "actual_helper_sha256": actual_sha,
+        "reviewed_712_helper_sha256": "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e",
+        "sampling_clock_inverse_proof_copy_only": True,
         "compiled_observation_sha256": sha(compiled["observation"].encode()),
         "full_source_observation_sha256": sha(parts["observation"].encode()),
         "retains_actual_sampling_helpers": bool(retain_ctrip_sampling),

@@ -222,6 +222,18 @@ FORM_SAMPLING_HELPER_INVERSE = {
 }
 
 def reverse_form_sampling_helper(path, raw):
+    observed_input_sha256 = sha(raw)
+    clock_inverse_verified = False
+    clock_spec = {'current_bytes': 36632, 'current_sha256': 'f92cd0bae564f8665c1e83ee9ffd301d51e83d7dc1aa244f055fb36b610536c2', 'predecessor_bytes': 35585, 'predecessor_sha256': '5ea3378a54006880a6a3a09e3e41c678f42ad9546e3afdd59b2ca0f77ef6f68d', 'inverse': [('        # Proof copy only: retain the actual dual-clock helper block for real Ctrip bridges.\n        if actual_sha != \'572fe702f6187416090a6d832bebf6fee02175b31a4fbcc5c48d615eab7feade\' or len(actual.encode()) != 14414:\n            raise RuntimeError("Exact reviewed complete form sampling helper block required")\n        proof = actual\n        for revised, prior in [(\'                        ||before.gateAcceptedAt<request.started||before.gateAcceptedAt>before.acceptedAt\\n\', \'\'), (\'        out.put("before_gate_key_accepted_elapsed_ms",a.gateAcceptedAt);\\n\', \'\')]:\n            if proof.count(revised) != 1:raise RuntimeError("Unique reviewed sampling clock helper delta required")\n            proof = proof.replace(revised, prior, 1)\n        if len(proof.encode()) != 14236 or sha(proof.encode()) != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":\n            raise RuntimeError("Complete original 712 helper block must be restored on the proof copy")\n', '        raise RuntimeError("Exact reviewed complete form sampling helper block required")\n'), ('        "reviewed_712_helper_sha256": "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e",\n        "sampling_clock_inverse_proof_copy_only": True,\n', '')]}
+    if path == "tests/observation-diagnostics/run_host.py" and observed_input_sha256 == clock_spec["current_sha256"]:
+        need(len(raw) == clock_spec["current_bytes"], "exact dual-clock helper source length")
+        for revised, prior in clock_spec["inverse"]:
+            current, previous = revised.encode(), prior.encode()
+            need(raw.count(current) == 1, "unique complete dual-clock helper inverse")
+            raw = raw.replace(current, previous, 1)
+        need(len(raw) == clock_spec["predecessor_bytes"] and sha(raw) == clock_spec["predecessor_sha256"],
+             "entire original 712 helper and its refusal ports must be restored")
+        clock_inverse_verified = True
     spec = FORM_SAMPLING_HELPER_INVERSE
     if path != 'tests/observation-diagnostics/run_host.py' or sha(raw) != spec['current_sha256']:
         return raw, None
@@ -237,7 +249,8 @@ def reverse_form_sampling_helper(path, raw):
         restored = restored[:start] + prior + restored[end:]
     need(len(restored) == spec['prior_bytes'] and sha(restored) == spec['prior_sha256'],
          'whole pre-sampling helper must be restored before the original inverse chain')
-    return restored, {'actual_current_sha256': spec['current_sha256'],
+    return restored, {'actual_current_sha256': observed_input_sha256,
+                      'clock_inverse_verified': clock_inverse_verified, 'reviewed_712_helper_sha256': spec['current_sha256'],
                       'whole_prior_sha256': spec['prior_sha256'],
                       'complete_prior_bytes_restored': True, 'proof_copy_only': True,
                       'actual_compilation_uses_unmodified_current_helper': True}

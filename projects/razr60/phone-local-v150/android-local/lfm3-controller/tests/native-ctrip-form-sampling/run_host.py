@@ -72,7 +72,9 @@ def prepare(source,out):
         raw=(source/relative).read_bytes()
         if Path(relative).name=='ObservationStabilityGate.java':
             need(len(raw)==5544 and sha(raw)==GATE_SHA,'actual complete reviewed Gate')
-        else:need(sha(raw)==expected,'unchanged complete classifier and original cases '+relative)
+        else:
+            proof=coherent.partial_banner_predecessor(source,raw) if Path(relative).name=='NativeActionSnapshotCheck.java' else raw
+            need(sha(proof)==expected,'unchanged complete classifier and original cases, or exact partial-edge predecessor '+relative)
     need(sha((source/PKG/'NativeAppSession.java').read_bytes())==SESSION_SHA,'original real Session OPEN contract remains whole-byte unchanged')
     base=out/'coherent-dependency'
     h,compiled,source_inputs,legacy=coherent.prepare(source,base)

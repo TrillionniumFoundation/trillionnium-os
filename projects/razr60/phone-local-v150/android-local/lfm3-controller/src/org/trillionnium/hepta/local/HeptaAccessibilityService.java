@@ -1415,20 +1415,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** Same-request copied census only; no Graph, NodeRef, bitmap or callback survives a sample. */
     private static final class CtripFormSample {
-        final String requestId;final long epoch,acceptedAt,readStartedAt,readCompletedAt,completedAt;
+        // The latest census acceptance and the Gate's unchanged-key timestamp are distinct clocks.
+        final String requestId;final long epoch,acceptedAt,gateAcceptedAt,readStartedAt,readCompletedAt,completedAt;
         final int readOrdinal;final ObservationStabilityGate.FrameKey key;
         final NativeActionSnapshotCheck.Snapshot census;final NativeReadIdentity identity;
         final FrozenObservationWindow window;final ObservationEventWatermark readStart,completed;
         CtripFormSample(ObservationRequest request,Graph graph,NativeActionSnapshotCheck.Snapshot census,
                 FrozenObservationWindow window,ObservationEventWatermark readStart,
                 ObservationEventWatermark completed,long completedAt,long epoch){
-            requestId=request.requestId;this.epoch=epoch;acceptedAt=-1;readOrdinal=request.readWorksStarted;
+            requestId=request.requestId;this.epoch=epoch;acceptedAt=-1;gateAcceptedAt=-1;readOrdinal=request.readWorksStarted;
             readStartedAt=graph.readStartedElapsedMs;readCompletedAt=graph.readCompletedElapsedMs;this.completedAt=completedAt;
             key=frameKey(graph);this.census=census;identity=new NativeReadIdentity(graph);this.window=window;
             this.readStart=readStart;this.completed=completed;
         }
-        CtripFormSample(CtripFormSample value,long acceptedAt){
-            requestId=value.requestId;epoch=value.epoch;this.acceptedAt=acceptedAt;readOrdinal=value.readOrdinal;
+        CtripFormSample(CtripFormSample value,long acceptedAt,long gateAcceptedAt){
+            requestId=value.requestId;epoch=value.epoch;this.acceptedAt=acceptedAt;this.gateAcceptedAt=gateAcceptedAt;readOrdinal=value.readOrdinal;
             readStartedAt=value.readStartedAt;readCompletedAt=value.readCompletedAt;completedAt=value.completedAt;
             key=value.key;census=value.census;identity=value.identity;window=value.window;
             readStart=value.readStart;completed=value.completed;
@@ -2128,6 +2129,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(before!=null){
                 if(!before.requestId.equals(request.requestId)||before.epoch!=epoch
                         ||before.acceptedAt<request.started||before.completedAt>before.acceptedAt
+                        ||before.gateAcceptedAt<request.started||before.gateAcceptedAt>before.acceptedAt
                         ||graph.readStartedElapsedMs<before.acceptedAt||after.readOrdinal!=before.readOrdinal+1
                         ||!before.identity.matches(graph)||!before.window.matches(window)
                         ||!readStart.onlyContentSince(before.completed)||!completed.onlyContentSince(readStart)
@@ -2187,6 +2189,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         out.put("original_transition_deadline_elapsed_ms",request.postEffectTransitionDeadline);
         out.put("settle_limit_ms",ObservationStabilityGate.SETTLE_LIMIT_MS);out.put("sample_gap_ms",ObservationStabilityGate.SAMPLE_GAP_MS);
         out.put("before_read_elapsed_ms",java.util.Arrays.asList(a.readStartedAt,a.readCompletedAt,a.completedAt,a.acceptedAt));
+        out.put("before_gate_key_accepted_elapsed_ms",a.gateAcceptedAt);
         out.put("after_read_elapsed_ms",java.util.Arrays.asList(b.readStartedAt,b.readCompletedAt,b.completedAt));
         out.put("sample_ordinals",java.util.Arrays.asList(a.readOrdinal,b.readOrdinal));
         out.put("forward_binding_elapsed_ms",a.acceptedAt);out.put("forward_binding_watermark",ctripDiagnosticMark(a.completed));
@@ -2319,18 +2322,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 now=SystemClock.elapsedRealtime();
                 result=ObservationStabilityGate.Result.WAIT;
                 if(formCurrent&&formRead.before!=null&&formRead.comparison!=null
-                        &&!formRead.before.key.equals(formRead.after.key)){
-                    result=request.gate.sampleClassifiedPair(now,formRead.before.key,formRead.before.acceptedAt,formRead.after.key,true);
+                        &&!formRead.before.key.equals(formRead.after.key)
+                        &&now>=formRead.before.acceptedAt
+                        &&now-formRead.before.acceptedAt>=ObservationStabilityGate.SAMPLE_GAP_MS){
+                    result=request.gate.sampleClassifiedPair(now,formRead.before.key,formRead.before.gateAcceptedAt,formRead.after.key,true);
                     classified=result==ObservationStabilityGate.Result.READY;
                 }
                 // WAIT still consumes the actual current key; terminal results never obtain another budget.
                 if(result==ObservationStabilityGate.Result.WAIT)
                     result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
                 if(formCurrent&&(result==ObservationStabilityGate.Result.WAIT||result==ObservationStabilityGate.Result.READY)){
-                    if(classified||formRead.before==null||!formRead.before.key.equals(formRead.after.key)){
-                        request.ctripFormSample=new CtripFormSample(formRead.after,now);
-                        if(formRead.before==null)recordCtripSampling(request,"SAMPLE_TARGET_BOUND",request.ctripFormSample,null,null);
-                    }
+                    boolean sameKey=formRead.before!=null&&formRead.before.key.equals(formRead.after.key);
+                    long gateAt=classified||!sameKey?now:formRead.before.gateAcceptedAt;
+                    // Every accepted census advances the consecutive read ordinal and event endpoint.
+                    // Same-key reads keep the Gate's original timestamp without retaining stale census metadata.
+                    request.ctripFormSample=new CtripFormSample(formRead.after,now,gateAt);
+                    if(formRead.before==null)recordCtripSampling(request,"SAMPLE_TARGET_BOUND",request.ctripFormSample,null,null);
                     if(classified)request.ctripSamplingProof=ctripSamplingProof(request,formRead,now);
                 }
             }

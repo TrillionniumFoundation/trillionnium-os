@@ -73,8 +73,19 @@ def main():
     need(sha((base / GOAL).read_bytes()) == BASE_GOAL_SHA, "exact original whole Goal required")
     need(sha((source / AUTH).read_bytes()) == AUTH_SHA and (source / AUTH).read_bytes() == (base / AUTH).read_bytes(),
          "TaskAuthorization must remain whole-byte identical")
+    auto_test_rel="tests/native-auto-target/AutomaticTargetHostTest.java"
+    auto_test_helper=source / "tests/native-auto-target/protected_model_preferences.py"
+    need(sha(auto_test_helper.read_bytes())=="49e99d5b04f0c35b1375f62710c0e0a5e07e545d24d01cc8eafdad94703a60dc","exact reviewed explicit-model test inverse helper")
+    auto_test_predecessor=module(auto_test_helper,"readonly_owner_auto_test_proof").predecessor
+    auto_test_inverse=None
     for rel in ORIGINAL_TESTS + [RESOLVER, "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java"]:
-        need((source / rel).read_bytes() == (base / rel).read_bytes(), "original consumer/test changed: " + rel)
+        current=(source / rel).read_bytes()
+        proof=auto_test_predecessor(current) if rel==auto_test_rel else current
+        need(proof == (base / rel).read_bytes(), "original consumer/test or exact full-file predecessor changed: " + rel)
+        if rel==auto_test_rel:
+            auto_test_inverse={"current":ref(source / rel),"baseline":ref(base / rel),
+                "predecessor_sha256":sha(proof),"helper":ref(auto_test_helper),"proof_copy_only":True,
+                "actual_compilation_uses_current_46_case_test":sha(current)=="964a1dfa97d9bb582e3937c8d01976e836bdea26d64c7bde77930241bf673993"}
     need(sha(jar.read_bytes()) == JSON_SHA, "fixed original pure JSON dependency")
     out.mkdir(mode=0o700, parents=True)
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1",
@@ -85,7 +96,8 @@ def main():
               "source": str(source), "baseline_source": str(base), "source_before": before,
               "baseline_goal": ref(base / GOAL), "authorization": ref(source / AUTH),
               "phone_operations": 0, "android_runtime": False, "business_verified": False,
-              "model_inference": False, "stages": [], "host_ports_explicit": True}
+              "model_inference": False, "stages": [], "host_ports_explicit": True,
+              "explicit_model_test_predecessor":auto_test_inverse}
     record["tools"] = {n: ref(p) for n, p in
                        (("java", jdk / "bin/java"), ("javac", jdk / "bin/javac"), ("json_jar", jar))}
     def run(name, argv):
@@ -106,7 +118,7 @@ def main():
                    source / "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
                    source / "tests/native-auto-target/AutomaticTargetHostTest.java"]
         need(len(inputs) == len(set(inputs)), "duplicate compiler input")
-        for rel in (GOAL, AUTH, RESOLVER, "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java"):
+        for rel in (GOAL, AUTH, RESOLVER, "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",auto_test_rel):
             need(inputs.count(source / rel) == 1, "actual complete consumer compiler input: " + rel)
         record["extraction"] = extraction
         record["compile_inputs_before"] = [ref(x) for x in inputs]
@@ -146,6 +158,8 @@ def main():
         auto_cases = json.loads((out / "auto-cases/RESULT.json").read_text())
         need(auto_cases.get("schema") == "hepta.automatic-target-cases.v1" and auto_cases.get("all_pass") is True
              and auto_cases.get("phone_operations") == 0, "original automatic target cases failed")
+        if auto_test_inverse["actual_compilation_uses_current_46_case_test"]:
+            need(auto_cases.get("cases")==46,"all original 34 plus 12 explicit-model cases must execute")
         record["original_auto_cases"] = auto_cases
         record["compile_inputs_after"] = [ref(x) for x in inputs]
         need(record["compile_inputs_before"] == record["compile_inputs_after"], "compiler input changed")

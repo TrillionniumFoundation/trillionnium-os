@@ -142,11 +142,13 @@
         f.values.nodes.get(SEARCH_BANNER+"/1").put("bounds",Arrays.asList(0,0,1224,395));
     }
     static void successorCases(String[] args)throws Exception{
+        for(final int testedEdgeWidth:new int[]{1,2,1223}){
         for(String scenario:Arrays.asList("fresh_decision","wider_overlap","unrelated_mutation","target_replaced","unknown_event","cancelled","deadline","spent_model_run","spent_successor")){
-            one("ambiguous_banner_"+scenario,()->{
+            one((testedEdgeWidth==1?"ambiguous_banner_":"ambiguous_banner_width_"+testedEdgeWidth+"_")+scenario,()->{
                 HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                    installTestBanner(f,"wider_overlap".equals(scenario)?2:1);
+                    installTestBanner(f,testedEdgeWidth==1&&"wider_overlap".equals(scenario)?2:testedEdgeWidth);
                     NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    final long originalDeadline=old.deadlineElapsed,originalChain=f.base.search.chainDeadlineElapsed;
                     f.graphHook=()->{if(f.graphReads==d){
                         advanceTestBanner(f);
                         if("unrelated_mutation".equals(scenario))f.values.nodes.get("0/2/0").put("selected",true);
@@ -160,19 +162,21 @@
                     if(actionIo.hasJobs())r.marker();else s.main.one();
                     check(r.outcome!=null&&!r.outcome.accepted&&!r.outcome.dispatched&&f.effects==0
                             &&r.work.roleProof==null&&!r.work.platformCallInvoked,"ambiguous pair never grants or dispatches an effect");
-                    if(!"fresh_decision".equals(scenario)&&!"spent_successor".equals(scenario)&&!"spent_model_run".equals(scenario)){
+                    check(old.deadlineElapsed==originalDeadline&&f.base.search.chainDeadlineElapsed==originalChain,"refusal never extends original attempt or chain");
+                    if(!"fresh_decision".equals(scenario)&&!"wider_overlap".equals(scenario)&&!"spent_successor".equals(scenario)&&!"spent_model_run".equals(scenario)){
                         check(r.proof==null,"ineligible variant cannot authorize a new read");return;
                     }
                     check(r.proof!=null&&r.outcome.stale&&"overlapping_blank_home_banner_before_claim".equals(r.proof.evidence().get("rejection_reason")),
                             "one bounded fresh read requires the recorded preclaim banner refusal: "+r.outcome.detail);
                     rejected(()->old.claim(SystemClock.now));
                     r.closeOld();NativeSearchSession.Offer fresh=r.publish();
+                    check(old.deadlineElapsed==originalDeadline&&f.base.search.chainDeadlineElapsed==originalChain,"fresh planning keeps original chain and retired attempt deadlines");
                     if("spent_model_run".equals(scenario)){
                         rejected(()->fresh.reserve(f.base.decision(fresh),old.modelRunId,SystemClock.now,SystemClock.now+8000));
                         check(f.effects==0,"the previous model run never dispatches a second action");return;
                     }
                     if("spent_successor".equals(scenario)){
-                        installTestBanner(f,1);int secondD=f.graphReads+2;
+                        installTestBanner(f,testedEdgeWidth);int secondD=f.graphReads+2;
                         f.graphHook=()->{if(f.graphReads==secondD)advanceTestBanner(f);};
                         NativeSearchSession.Attempt next=fresh.reserve(f.base.decision(fresh),UUID.randomUUID().toString().replace("-",""),SystemClock.now,SystemClock.now+8000);
                         NoEffectRun second=submitCapturedSearch(s,f,next);actionIo.one();second.marker();
@@ -183,6 +187,7 @@
                     }
                 }
             });
+        }
         }
 
         one("successor_opaque_actual_drain_marker_and_graph_release",()->{

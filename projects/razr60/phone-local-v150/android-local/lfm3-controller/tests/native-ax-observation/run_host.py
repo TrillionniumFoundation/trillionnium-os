@@ -24,14 +24,21 @@ def generate(source,out,h,snap):
  # pure-value carrier's two Snapshot references to the already compiled top-level type.
  # The dedicated real form/sampling bridge does not call this generator.
  sampling_carrier=h.body(service,'    private static final class CtripFormSample {')
- if len(sampling_carrier.encode())!=1571 or h.sha(sampling_carrier.encode())!='abd251e1d042c25f814088fd3b8af56e6bf4452700b5fae226890ae6d1172749':
+ sampling_carrier_proof=sampling_carrier
+ if h.sha(sampling_carrier.encode())!='abd251e1d042c25f814088fd3b8af56e6bf4452700b5fae226890ae6d1172749':
+  if len(sampling_carrier.encode())!=1759 or h.sha(sampling_carrier.encode())!='f9a1dc4d0fc7cb143bdeb2362c067169e5baab545400a32a4686288e67d2f662':raise RuntimeError('exact reviewed dual-clock sampling carrier required')
+  for revised,prior in [("        // The latest census acceptance and the Gate's unchanged-key timestamp are distinct clocks.\n        final String requestId;final long epoch,acceptedAt,gateAcceptedAt,readStartedAt,readCompletedAt,completedAt;\n", '        final String requestId;final long epoch,acceptedAt,readStartedAt,readCompletedAt,completedAt;\n'), ('            requestId=request.requestId;this.epoch=epoch;acceptedAt=-1;gateAcceptedAt=-1;readOrdinal=request.readWorksStarted;\n', '            requestId=request.requestId;this.epoch=epoch;acceptedAt=-1;readOrdinal=request.readWorksStarted;\n'), ('        CtripFormSample(CtripFormSample value,long acceptedAt,long gateAcceptedAt){\n            requestId=value.requestId;epoch=value.epoch;this.acceptedAt=acceptedAt;this.gateAcceptedAt=gateAcceptedAt;readOrdinal=value.readOrdinal;\n', '        CtripFormSample(CtripFormSample value,long acceptedAt){\n            requestId=value.requestId;epoch=value.epoch;this.acceptedAt=acceptedAt;readOrdinal=value.readOrdinal;\n')]:
+   if sampling_carrier_proof.count(revised)!=1:raise RuntimeError('unique complete sampling carrier inverse required')
+   sampling_carrier_proof=sampling_carrier_proof.replace(revised,prior,1)
+ if len(sampling_carrier_proof.encode())!=1571 or h.sha(sampling_carrier_proof.encode())!='abd251e1d042c25f814088fd3b8af56e6bf4452700b5fae226890ae6d1172749':
   raise RuntimeError('exact actual Ctrip sampling carrier before AX-only type qualification')
  short_snapshot='NativeActionSnapshotCheck.Snapshot'
  full_snapshot='org.trillionnium.hepta.local.NativeActionSnapshotCheck.Snapshot'
  if sampling_carrier.count(short_snapshot)!=2:raise RuntimeError('exact two sampling Snapshot type references')
  sampling_carrier_host=sampling_carrier.replace(short_snapshot,full_snapshot)
- if (len(sampling_carrier_host.encode())!=1629
-     or h.sha(sampling_carrier_host.encode())!='5eced13663d08a02f108033e451834b1a2a1eaf156735a9b772e835b764c998c'
+ sampling_carrier_host_proof=sampling_carrier_proof.replace(short_snapshot,full_snapshot)
+ if (len(sampling_carrier_host_proof.encode())!=1629
+     or h.sha(sampling_carrier_host_proof.encode())!='5eced13663d08a02f108033e451834b1a2a1eaf156735a9b772e835b764c998c'
      or sampling_carrier_host.count(full_snapshot)!=2
      or sampling_carrier_host.replace(full_snapshot,short_snapshot)!=sampling_carrier):
   raise RuntimeError('AX-only carrier must reverse in full to the actual source member')
@@ -134,6 +141,7 @@ def generate(source,out,h,snap):
              'actual_member_bytes':len(sampling_carrier.encode()),'actual_member_sha256':h.sha(sampling_carrier.encode()),
              'host_member_bytes':len(sampling_carrier_host.encode()),'host_member_sha256':h.sha(sampling_carrier_host.encode()),
              'only_two_snapshot_type_names_qualified':True,'whole_member_inverse_equal':True,
+             'reviewed_712_carrier_proof_sha256':h.sha(sampling_carrier_proof.encode()),'clock_inverse_proof_copy_only':True,
              'legacy_nested_node_port_unchanged':True,'real_form_bridge_uses_original_member':True,
              'actual_top_level_snapshot_source':h.meta(source/PKG/'NativeActionSnapshotCheck.java')},
          'boundary':'Actual mode binding, both complete-census serialization, worker, receipt canonical-byte/hash validation, endpoint gates and publisher. Android graph/window/model capability/file endpoints are explicit fakes; actual full PhoneObservation also compiled by unchanged snapshot source closure. No phone/SDK/model execution.'}
