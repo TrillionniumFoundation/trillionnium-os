@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-  "base_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
+  "base_head": "37cf4364c8487f3486b42728e784ec39f5f900cf",
+  "base_manifest_sha256": "c144830dde3ae02d48d159ebd6726467242915dd95761f09f0a54ab60f4da2d4",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2710,
+  "complete_source_files": 2711,
   "current_coherent_census": {
     "author_ctrip_cases": 43,
     "author_original_observer_cases": 68,
@@ -138,8 +138,8 @@
   },
   "current_integration_freeze": {
     "android_compilation_pending": true,
-    "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-    "description": "Verified native product success before unknown cleanup; fixed bounded normal managed-profile cleanup with reviewed host compatibility; six production files, thirteen tests. Host-only qualification pending.",
+    "base_head": "37cf4364c8487f3486b42728e784ec39f5f900cf",
+    "description": "Exact normal-cleanup host proof compatibility; production unchanged from reviewed 37cf source; previous host failure preserved.",
     "device_success_claimed": false,
     "host_execution_pending": true,
     "source_freeze_only": true,
@@ -7992,6 +7992,11 @@
       "sha256": "5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732"
     },
     {
+      "bytes": 1769,
+      "path": "tests/background-broker/normal_session_history.py",
+      "sha256": "e6b00313ec35d3c324a08ca0406910a5fc9ab26497fea524d30c6a295e8a8dea"
+    },
+    {
       "bytes": 25091,
       "path": "tests/background-broker/run_host_checks.py",
       "sha256": "47ad757452a35a0e736312df2ccd89d4ae39f6112a9fcc99297ab394e5eada4e"
@@ -9852,9 +9857,9 @@
       "sha256": "99b7ad165ce7c7e9b89545bd01ccfe14bd53972363b2d4ab450186cec7573bab"
     },
     {
-      "bytes": 15375,
+      "bytes": 16945,
       "path": "tests/native-profile-live-identity/run_host.py",
-      "sha256": "ddb78afb18dc2c426dfe77fb108e98f4fea1c81fe902a3171b79b8919e7acaed"
+      "sha256": "17ca79a1db82c15b35b9fb90ee0264d670a7de0193d02c5b2a11c13e5bc397f3"
     },
     {
       "bytes": 21344,
@@ -10707,9 +10712,9 @@
       "sha256": "ba35020a2042286b3fc14d7b03de71b09c139d73195607a0f497a60b8eb41f38"
     },
     {
-      "bytes": 17779,
+      "bytes": 18790,
       "path": "tests/notes-history-diagnostics/run_host.py",
-      "sha256": "dff6a4e9100415291cc1313160a924f860ad7bf3187114e1646970259e4e390b"
+      "sha256": "95534c291b9560568147537cd6cf0775840e3dcde9b04e3054c5a29e19d045c1"
     },
     {
       "bytes": 5966,
@@ -10967,14 +10972,14 @@
       "sha256": "809ff16fb568511796cb0322b650af5a7a3b0b11fca2ccb6a5f4bc9da73011a5"
     },
     {
-      "bytes": 14186,
+      "bytes": 15251,
       "path": "tests/notes-workflow-aborted-after-back/prepare.py",
-      "sha256": "ace03c390f3cf026419c7e01d516993d65197416f52038c855c7bf05106ca45f"
+      "sha256": "a3c1948dc2cc07c4d179462fe6a803a90a8eeae34d9e8e782fcc18f0f825fa83"
     },
     {
-      "bytes": 10534,
+      "bytes": 10604,
       "path": "tests/notes-workflow-aborted-after-back/run_host.py",
-      "sha256": "22b6b9853196c4d516f1b92d20aa8a1ebf2f099fea0ebb3835d2860e2d16ea78"
+      "sha256": "94bb1a9322913bfa12a599751fb0afc34a874024bdc9d4f7d340753f219ac64b"
     },
     {
       "bytes": 15099,
@@ -12157,9 +12162,9 @@
       "sha256": "f35f23c719f89b7fb7a54d00632dcbdbabee996dd7e8c0fa18df4d4bcc4e36c7"
     },
     {
-      "bytes": 11656,
+      "bytes": 14846,
       "path": "tests/public-screen-lease/run_host.py",
-      "sha256": "de834160d5ba4d8216da2832d4b3a6b5e97272d15b8f1ead7217f58745a8b1f0"
+      "sha256": "2c1626fd4de891593c0de11888bdd5a79187d81cab4fe86c68bd61d4d2e9d05c"
     },
     {
       "bytes": 42316,
@@ -14041,28 +14046,31 @@
     "prior_preparation_metadata": {
       "prior_preparation_metadata": {
         "prior_preparation_metadata": {
-          "author_cases_are_not_published_same_source_execution": true,
-          "author_ctrip_sampling_gate": {
-            "bytes": 56864,
-            "mode": 420,
-            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
-            "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+          "prior_preparation_metadata": {
+            "author_cases_are_not_published_same_source_execution": true,
+            "author_ctrip_sampling_gate": {
+              "bytes": 56864,
+              "mode": 420,
+              "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+              "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+            },
+            "author_xiaomi_gate": {
+              "bytes": 2051788,
+              "mode": 384,
+              "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+              "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+            },
+            "current_android_build_qualified": false,
+            "current_full_host_suite_completed": false,
+            "phone_qualified": false,
+            "prepublication_original_failed_suites": {
+              "bytes": 5295,
+              "mode": 384,
+              "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+              "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+            }
           },
-          "author_xiaomi_gate": {
-            "bytes": 2051788,
-            "mode": 384,
-            "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
-            "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
-          },
-          "current_android_build_qualified": false,
-          "current_full_host_suite_completed": false,
-          "phone_qualified": false,
-          "prepublication_original_failed_suites": {
-            "bytes": 5295,
-            "mode": 384,
-            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-            "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
-          }
+          "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
         },
         "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
       },
@@ -14494,9 +14502,9 @@
   "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
-  "source_parent_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-  "source_parent_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
-  "source_snapshot_predecessor_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
+  "source_parent_head": "37cf4364c8487f3486b42728e784ec39f5f900cf",
+  "source_parent_manifest_sha256": "c144830dde3ae02d48d159ebd6726467242915dd95761f09f0a54ab60f4da2d4",
+  "source_snapshot_predecessor_manifest_sha256": "c144830dde3ae02d48d159ebd6726467242915dd95761f09f0a54ab60f4da2d4",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

@@ -50,6 +50,14 @@ def admitted_close_proof_copy(text):
   require(sha(text.encode())=="a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44",
    "exact authenticated Notes close inverse must restore the entire profile identity producer")
  return text
+def normal_cleanup_proof_copy(source,name,text):
+ helper=source/"tests/background-broker"/("normal_session_history.py" if name=="BackgroundSession.java" else "normal_cleanup_history.py")
+ expected="e6b00313ec35d3c324a08ca0406910a5fc9ab26497fea524d30c6a295e8a8dea" if name=="BackgroundSession.java" else "5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732"
+ helper_ref=record(helper);require(helper_ref["sha256"]==expected,"exact normal cleanup proof helper required")
+ raw=helper.read_bytes();require(sha(raw)==expected,"proof helper changed before load")
+ namespace={};exec(compile(raw,str(helper),"exec"),namespace)
+ restored,proof=namespace["predecessor"](name,text)
+ return restored,dict(proof,helper=helper_ref)
 def source_contract(source,output):
  config_path=source/"src/org/trillionnium/hepta/local/QualificationScopeConfig.java"
  controller_path=source/"src/org/trillionnium/hepta/local/LocalTaskController.java"
@@ -102,13 +110,21 @@ def source_contract(source,output):
  if ui:
   for new,old in ui_pairs: cp=once(cp,new,old)
  require(sha(cp.encode())==BASE_CONTROLLER,"Controller may differ only by two live callsites and exact sibling UI explanations")
- checks=[];close_proofs=[]
+ checks=[];close_proofs=[];normal_proofs=[]
  for rel,digest in UNCHANGED.items():
   row=record(source/rel)
   if rel=="src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java" and row["sha256"]!=digest:
-   broker_proof=admitted_close_proof_copy((source/rel).read_text())
+   broker_text=(source/rel).read_text()
+   if row["sha256"]=="88d7c99a5216d064b9f6da7def8d9a17a3b9d76a85468bba51cab0bba2a96613":
+    broker_text,normal_proof=normal_cleanup_proof_copy(source,"BackgroundDisplayBroker.java",broker_text)
+    normal_proofs.append(dict(actual_source=row,**normal_proof))
+   broker_proof=admitted_close_proof_copy(broker_text)
    require(sha(broker_proof.encode())==digest,"exact authenticated close producer inverse differs")
    close_proofs.append(dict(actual_source=row,original_whole_sha256=digest,proof_copy_only=True))
+  elif rel=="src/org/trillionnium/hepta/local/BackgroundSession.java" and row["sha256"]!=digest:
+   restored,normal_proof=normal_cleanup_proof_copy(source,"BackgroundSession.java",(source/rel).read_text())
+   require(sha(restored.encode())==digest,"exact whole normal cleanup Session inverse differs")
+   normal_proofs.append(dict(actual_source=row,**normal_proof))
   else:
    require(row["sha256"]==digest,"unchanged full identity/freshness producer differs: "+rel);checks.append(row)
  bridge=output/"LiveIdentityControllerBridge.java"
@@ -118,7 +134,7 @@ def source_contract(source,output):
  return bridge,dict(original_verify_preserved=True,whole_config_inverse_sha256=sha(proof.encode()),
   whole_controller_inverse_sha256=sha(cp.encode()),sibling_ui_explanation_patch=ui,live_callback_sha256=sha(callback.encode()),
   live_after_action_sha256=sha(after.encode()),terminal_callsite_sha256=sha(terminal.encode()),
-  actual_compiled_controller_bridge=record(bridge),unchanged_exact_producers=checks,authenticated_close_inverse_proofs=close_proofs,
+  actual_compiled_controller_bridge=record(bridge),unchanged_exact_producers=checks,authenticated_close_inverse_proofs=close_proofs,normal_cleanup_inverse_proofs=normal_proofs,
   freshness_ms=2000,live_state_rpc_budget_ms=1800,installed_verification_calls_removed=0,
   cached_success_added=False,root_process_or_phone_executed=False)
 def main():
@@ -136,6 +152,7 @@ def main():
  extra=[source/"src/org/trillionnium/hepta/local/VlmPins.java"]
  paths=list(dict.fromkeys(paths+extra))
  originals=list(dict.fromkeys([Path(r["path"]) for r in provenance["production_inputs"]]+extra+[Path(__file__).resolve(),source/"src/org/trillionnium/hepta/local/LocalTaskController.java"]+[source/x for x in UNCHANGED]))
+ originals=list(dict.fromkeys(originals+[Path(row["helper"]["path"]) for row in contract["normal_cleanup_inverse_proofs"]]))
  tools=[jdk/"bin/java",jdk/"bin/javac",jdk/"lib/modules",jar,Path(sys.executable).resolve()]
  before=[record(x) for x in originals];tool_before=[record(x) for x in tools]
  report=dict(schema="hepta.native-profile-live-identity-gate.v1",all_pass=False,source=str(source),source_inputs_before=before,

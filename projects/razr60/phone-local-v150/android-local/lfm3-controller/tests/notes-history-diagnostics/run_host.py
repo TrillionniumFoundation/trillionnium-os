@@ -71,7 +71,16 @@ def extract_broker(source,out):
     first,last=text.index(begin),text.index(end)
     helper=text[first:last]
     methods=helper[helper.index("    static void appendNotesHistoryDiagnostic("):]
-    restored=unique(close_reply_proof_copy(text),helper,"")
+    proof_text=text;normal_proof=None
+    if hashlib.sha256(text.encode()).hexdigest()=="88d7c99a5216d064b9f6da7def8d9a17a3b9d76a85468bba51cab0bba2a96613":
+        proof_path=source/"tests/background-broker/normal_cleanup_history.py"
+        proof_ref=ref(proof_path);expected="5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732"
+        need(proof_ref["sha256"]==expected,"reviewed normal cleanup Broker inverse helper required")
+        proof_raw=proof_path.read_bytes();need(hashlib.sha256(proof_raw).hexdigest()==expected,"normal cleanup proof helper changed")
+        namespace={};exec(compile(proof_raw,str(proof_path),"exec"),namespace)
+        proof_text,normal_proof=namespace["predecessor"]("BackgroundDisplayBroker.java",text)
+        normal_proof=dict(normal_proof,helper=proof_ref)
+    restored=unique(close_reply_proof_copy(proof_text),helper,"")
     call='            if(config.publicOwnGroupScope!=null)appendNotesHistoryDiagnostic(terminal,publicNotesCleanupFailure,\n                    config.publicOwnGroupScope.taskId,config.generation,config.publicOwnGroupScope.sha256,displayId);\n'
     restored=unique(restored,call,"")
     restored=unique(restored,"    private volatile Throwable publicNotesCleanupFailure;\n","")
@@ -90,7 +99,7 @@ final class NotesHistoryBrokerOutputHost {
     target=out/"NotesHistoryBrokerOutputHost.java";target.write_text(body)
     return target,dict(source=ref(path),methods_sha256=hashlib.sha256(methods.encode()).hexdigest(),
                        actual_methods_byte_exact=True,original_broker_whole_sha256=BROKER_PARENT,
-                       original_broker_restored=True,full_android_broker_compiled=False,generated=ref(target))
+                       original_broker_restored=True,normal_cleanup_inverse_proof=normal_proof,full_android_broker_compiled=False,generated=ref(target))
 def decode_pair(value):
     import base64,zlib
     need(value.get("raw_pair_complete") is True,"complete pair required")
@@ -184,6 +193,8 @@ def main():
     tracked=list(dict.fromkeys(java_inputs+[s/"src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
         Path(__file__).resolve(),a.retirement_result.resolve(),a.json_jar.resolve(),a.java_home.resolve()/"bin/javac",
         a.java_home.resolve()/"bin/java",a.java_home.resolve()/"lib/ct.sym"]+nearest+([a.actual_terminal.resolve()] if a.actual_terminal else [])))
+    if derivation["normal_cleanup_inverse_proof"] is not None:
+        tracked.append(Path(derivation["normal_cleanup_inverse_proof"]["helper"]["path"]))
     before=[ref(path) for path in tracked]
     result=dict(schema="hepta.notes-history-diagnostics-host.v1",all_pass=False,phone_operations=0,
                 source=str(s),retirement_result=ref(a.retirement_result),actual_production_inputs=production,

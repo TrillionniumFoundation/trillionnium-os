@@ -2,6 +2,44 @@
 """Production screen-lease policy with explicit inert power and monotonic-clock ports."""
 import argparse, hashlib, json, pathlib, shutil, subprocess, time
 
+def normal_cleanup_contract(source,broker):
+    # Restore only a proof copy; all Java inputs below remain actual current files.
+    from runpy import run_path
+    path=source/'tests/background-broker/normal_cleanup_history.py'
+    raw=path.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!='5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732':
+        raise RuntimeError('exact normal cleanup whole-source proof changed')
+    previous,proof=run_path(str(path))['predecessor']('BackgroundDisplayBroker.java',broker)
+    if proof.get('applied') is not True:
+        raise RuntimeError('exact reviewed current normal cleanup source required')
+    actual_contracts=(
+        'private boolean normalPublicProfileCleanup(){\n'
+        '        return config.profileTarget!=null&&config.publicOwnGroupScope!=null;\n'
+        '    }',
+        'private long profileCleanupWorkDeadline(){\n'
+        '        NormalProfileCleanupWindow window=normalProfileCleanupWindow;\n'
+        '        return window==null?cleanupAt+CLEANUP_MS-100:window.workDeadline;\n'
+        '    }',
+        'private boolean cleanupDeadlineReached(long now){\n'
+        '        NormalProfileCleanupWindow window=normalProfileCleanupWindow;\n'
+        '        return window==null?now-cleanupAt>=CLEANUP_MS:now>=window.cutoff;\n'
+        '    }',
+        'if (cleanupStarted.get() && cleanupDeadlineReached(now) && !releasedProfileReplyMayFlush(now)) {',
+        '            if(normalPublicProfileCleanup()){\n'
+        '                LocalSocket peer=authenticatedProfileClosePeer;\n'
+        '                boolean originalClose=peer!=null&&peer==connection&&requestDeadline>0;\n'
+        '                normalProfileCleanupClosePeer=originalClose?peer:null;\n'
+        '                normalProfileCleanupWindow=new NormalProfileCleanupWindow(cleanupAt,\n'
+        '                        originalClose?requestDeadline:0,SystemClock::elapsedRealtime);\n'
+        '            }',
+    )
+    if any(broker.count(value)!=1 for value in actual_contracts):
+        raise RuntimeError('current normal clock/watchdog or original null-clock fallback changed')
+    proof['actual_contract_sha256']=[hashlib.sha256(value.encode()).hexdigest() for value in actual_contracts]
+    proof['helper']={'path':str(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+    return previous,proof
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--source',type=pathlib.Path)
@@ -12,6 +50,7 @@ def main():
     out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     bg=source/'src/org/trillionnium/hepta/background'
     broker=(bg/'BackgroundDisplayBroker.java').read_text()
+    broker_predecessor,normal_cleanup_proof=normal_cleanup_contract(source,broker)
     framework=(bg/'PublicOwnGroupFramework.java').read_text()
     # Integration checks retain the actual port and lifecycle call sites; the Java test below
     # executes the production state machine, including a real concurrent acquire/retire race.
@@ -48,9 +87,13 @@ def main():
             or broker.count(calendar_release)!=1):
         raise RuntimeError('exact Calendar cleanup retirement/drain integration missing')
     legacy_cleanup=broker.replace(calendar_retire,'',1)
+    current_quarantine=exact['profile_quarantine'].replace('cleanupAt+CLEANUP_MS-100','profileCleanupWorkDeadline()',1)
+    if broker.count(current_quarantine)!=1:
+        raise RuntimeError('actual current bounded diagnostic must precede unique screen retirement')
     for key,value in exact.items():
         actual=(framework if key=='physical_group_census' else
-                legacy_cleanup if key=='cleanup_latch' else broker)
+                legacy_cleanup if key=='cleanup_latch' else
+                broker_predecessor if key=='profile_quarantine' else broker)
         if value not in actual:raise RuntimeError('actual broker/framework power integration missing: '+key)
         if key=='profile_quarantine' and actual.count(value)!=1:
             raise RuntimeError('profile cleanup diagnostic and screen retirement prefix is not unique')
@@ -114,7 +157,8 @@ final class PublicScreenInitializationFixture {
     files=[bg/'PublicOwnGroupScreenLease.java',source/'tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java',
            source/'tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java',initialization]
     files.append(fixture)
-    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve()]
+    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve(),
+                  source/'tests/background-broker/normal_cleanup_history.py']
     def pin(p):
         data=p.read_bytes();return {'path':str(p),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
     before=[pin(p) for p in inputs]
@@ -131,7 +175,11 @@ final class PublicScreenInitializationFixture {
         'release_requires_listener_drain':True,'projection_compiled':False,'calendar_runtime_executed':False,
         'actual_cleanup_hunk_sha256':hashlib.sha256(calendar_cleanup.encode()).hexdigest(),
         'actual_release_hunk_sha256':hashlib.sha256(calendar_release.encode()).hexdigest()}
+    report['normal_cleanup_source_contract']=normal_cleanup_proof
     report['profile_cleanup_diagnostic_source_contract']={'complete_prefix_sha256':hashlib.sha256(exact['profile_quarantine'].encode()).hexdigest(),
+        'actual_current_prefix_sha256':hashlib.sha256(current_quarantine.encode()).hexdigest(),
+        'old_diagnostic_prefix_checked_on_exact_whole_source_inverse':True,
+        'actual_current_watchdog_and_null_clock_fallback_checked':True,
         'original_screen_retire_after_bounded_diagnostic':True,'projection_compiled':False,'diagnostic_runtime_covered_by_separate_gate':True}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)

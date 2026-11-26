@@ -69,7 +69,7 @@ def source_proof(source,base,here):
         assert "".join(restored).encode()==old
         rows.append({"candidate":ref(source/row["path"]),"baseline":ref(base/row["path"]),
                      "exact_full_inverse":True,"known_edit_count":len(row["edits"])})
-    unchanged=[];fixture_predecessors=[]
+    unchanged=[];fixture_predecessors=[];normal_cleanup_predecessors=[]
     for row in proof["unchanged"]:
         a=source/row["path"]; b=base/row["path"]
         current=a.read_bytes();historical=b.read_bytes()
@@ -78,10 +78,19 @@ def source_proof(source,base,here):
             assert restored==historical and sha(restored)==row["sha256"],row["path"]
             fixture_predecessors.append({"candidate":ref(a),"baseline":ref(b),
                 "full_inverse_byte_exact":True,"proof_only":True,"historical_runner_executed":False})
+        elif row["path"]=="src/org/trillionnium/hepta/local/BackgroundSession.java" and current!=historical:
+            helper=source/"tests/background-broker/normal_session_history.py"
+            helper_ref=ref(helper);helper_raw=helper.read_bytes()
+            assert helper_ref["sha256"]=="e6b00313ec35d3c324a08ca0406910a5fc9ab26497fea524d30c6a295e8a8dea" and sha(helper_raw)==helper_ref["sha256"],"reviewed normal cleanup Session inverse helper changed"
+            namespace={};exec(compile(helper_raw,str(helper),"exec"),namespace)
+            restored,detail=namespace["predecessor"]("BackgroundSession.java",current.decode("utf-8"))
+            assert restored.encode("utf-8")==historical and sha(historical)==row["sha256"],row["path"]
+            normal_cleanup_predecessors.append({"candidate":ref(a),"baseline":ref(b),"helper":helper_ref,
+                "full_inverse_byte_exact":True,"proof_only":True,"actual_current_session_still_used":True,"detail":detail})
         else:
             assert current==historical and sha(current)==row["sha256"],row["path"]
             unchanged.append(row)
-    return {"production":rows,"request_eof_predecessors":eof_predecessors,"unchanged":unchanged,"reviewed_fixture_predecessors":fixture_predecessors,
+    return {"production":rows,"request_eof_predecessors":eof_predecessors,"unchanged":unchanged,"reviewed_fixture_predecessors":fixture_predecessors,"normal_cleanup_predecessors":normal_cleanup_predecessors,
             "original_unchanged_contract_members":len(proof["unchanged"]),
             "actual_compiled_request_is_unmodified":True,
             "actual_compiled_client_has_only_original_owned_process_factory_port":True}
