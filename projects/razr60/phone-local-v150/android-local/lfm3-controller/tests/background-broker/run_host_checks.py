@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compile and execute the actual pure-Java protocol guard; never contacts Android."""
 import argparse
+import importlib.util
 import hashlib
 import json
 from pathlib import Path
@@ -26,6 +27,27 @@ def main():
     # Compile the exact production whole-root snapshot and its policy, with only Android IO fields faked.
     broker = root/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java'
     text = broker.read_text()
+    # Historical source contracts use an exact whole-file proof copy. All
+    # fragments below are still extracted from current production text.
+    phase_helper=root/'tests/profile-cleanup-settle/protected_cleanup_phase.py'
+    phase_data=phase_helper.with_name('production-predecessor.json')
+    if hashlib.sha256(phase_helper.read_bytes()).hexdigest()!='a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2':
+        raise RuntimeError('fixed cleanup phase predecessor helper required')
+    spec=importlib.util.spec_from_file_location('broker_cleanup_phase_predecessor',phase_helper)
+    phase=importlib.util.module_from_spec(spec);spec.loader.exec_module(phase)
+    proof_text=phase.predecessor('src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',broker.read_bytes()).decode('utf-8')
+    # These legacy cases intentionally have no active normal-profile phase.
+    # A mistakenly reached phase port fails; the separate settle gate compiles
+    # the actual phase implementation, including its races and effect guards.
+    inactive_phase_ports='''    private final ProfileOwnedTask.CleanupPhase normalProfileCleanup=null;
+    private static final class ProfileOwnedTask {
+        private static final class CleanupPhase {
+            private CleanupPhase(){throw new AssertionError("legacy fixture cannot create cleanup phase");}
+            boolean mayAwait(long now){throw new AssertionError("inactive cleanup phase reached");}
+            long watchdogDeadline(){throw new AssertionError("inactive cleanup phase reached");}
+        }
+    }
+'''
     start = '    private TaskSnapshot snapshot() throws Exception {'
     end = '    private void startWatchdog() {'
     if text.count(start) != 1 or text.count(end) != 1:
@@ -118,9 +140,9 @@ public final class DisplayManager {
             and close['failure_at']==close['screen_released_elapsed_ms']<close['history_checked_elapsed_ms']
             and close['original_cleanup_error']=='后台响应提前结束' and not close['original_cleanup_known']):
         raise RuntimeError('535 actual ordering or historical outcome differs')
-    # Extract the actual two broker methods; host ports supply the clock, socket
+    # Extract the actual broker deadline/close methods; host ports supply the clock, socket
     # identities and independently tested cleanup latch/custody inputs.
-    begin=text.index('    private boolean profileCloseReplyPending(')
+    begin=text.index('    private long cleanupWatchdogDeadline(')
     finish=text.index('    private void shutdown(String reason)',begin)
     methods=text[begin:finish]
     checks=['request.authenticate(config, accepted.getPeerCredentials().getUid());',
@@ -132,10 +154,17 @@ public final class DisplayManager {
         raise RuntimeError('original authenticated single close socket lifecycle changed')
     for fence in ('if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));',
                   'now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)'):
-        if text.count(fence)!=1:raise RuntimeError('normal close monitor/deadline integration changed')
+        if proof_text.count(fence)!=1:raise RuntimeError('historical normal close monitor/deadline integration changed')
+    for fence in ('if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));',
+                  'now >= cleanupWatchdogDeadline() && !releasedProfileReplyMayFlush(now)'):
+        if text.count(fence)!=1:raise RuntimeError('actual normal close monitor/deadline integration changed')
     close_program=root/'tests/background-broker/BrokerCloseReplyHost.template'
     close_java=args.out/'BrokerCloseReplyHost.java'
-    close_java.write_text(close_program.read_text().replace('    METHODS',methods))
+    close_source=close_program.read_text()
+    phase_anchor='    private static final long CLEANUP_MS=1500;\n'
+    if close_source.count(phase_anchor)!=1 or close_source.count('    METHODS')!=1:
+        raise RuntimeError('legacy close fixture insertion anchors changed')
+    close_java.write_text(close_source.replace(phase_anchor,phase_anchor+inactive_phase_ports).replace('    METHODS',methods))
     files.append(close_java)
 
     # Notes close registration regression: execute the actual authenticated
@@ -148,7 +177,8 @@ public final class DisplayManager {
     if text.count(current_registration)!=1 or text.count(current_comment)!=1:
         raise RuntimeError('exact reviewed Notes close registration required')
     parent_text=text.replace(current_registration,parent_registration).replace(current_comment,parent_comment)
-    if hashlib.sha256(parent_text.encode()).hexdigest()!='a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44':
+    parent_proof_text=proof_text.replace(current_registration,parent_registration).replace(current_comment,parent_comment)
+    if hashlib.sha256(parent_proof_text.encode()).hexdigest()!='a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44':
         raise RuntimeError('two-line inverse must equal complete recorded parent Broker')
     def exact_slice(value,first,last):
         if value.count(first)!=1 or value.count(last)!=1:
@@ -164,7 +194,7 @@ public final class DisplayManager {
     if text.count(policy_first)!=1 or text.count(policy_end)!=1:
         raise RuntimeError('actual late policy thread must be unique')
     cleanup_part=exact_slice(text,
-        '                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {\n',
+        '                if (cleanupStarted.get() && now >= cleanupWatchdogDeadline() && !releasedProfileReplyMayFlush(now)) {\n',
         '                if (!closing.get()) {\n')
     perform_start='    private byte[] perform(BrokerProtocol.Request r) throws Exception {\n'
     if text.count(perform_start)!=1:raise RuntimeError('actual perform method must be unique')
@@ -193,6 +223,9 @@ public final class DisplayManager {
     }
     notes_template=root/'tests/background-broker/BrokerNotesCloseReplyHost.template'
     generated=notes_template.read_text()
+    notes_phase_anchor='        final BrokerProtocol.Config config;\n'
+    if generated.count(notes_phase_anchor)!=1:raise RuntimeError('legacy Notes fixture phase insertion anchor changed')
+    generated=generated.replace(notes_phase_anchor,inactive_phase_ports+notes_phase_anchor)
     for marker,replacement_fragment in replacements.items():
         expected=2 if marker.endswith('UID_GATE') or marker.endswith('FRAME_WRITE') else 1
         if generated.count(marker)!=expected:raise RuntimeError('host marker cardinality '+marker)
@@ -203,7 +236,12 @@ public final class DisplayManager {
     extraction={
         'schema':'hepta.notes-close-reply-source-extraction.v1',
         'candidate_broker':{'path':str(broker),'bytes':broker.stat().st_size,'sha256':hashlib.sha256(broker.read_bytes()).hexdigest()},
-        'parent_broker_inverse_sha256':hashlib.sha256(parent_text.encode()).hexdigest(),
+        'parent_broker_inverse_sha256':hashlib.sha256(parent_proof_text.encode()).hexdigest(),
+        'historical_projection_compiled':False,
+        'current_broker_fragments_compiled':True,
+        'normal_profile_phase_scope':'absent in these legacy cases; exact active implementation exercised by profile-cleanup-settle',
+        'inactive_phase_ports_sha256':hashlib.sha256(inactive_phase_ports.encode()).hexdigest(),
+        'cleanup_phase_proof_inputs':{str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in (phase_helper,phase_data)},
         'template':{'path':str(notes_template),'bytes':notes_template.stat().st_size,'sha256':hashlib.sha256(notes_template.read_bytes()).hexdigest()},
         'actual_fragments':{key.strip():{'bytes':len(value.encode()),'sha256':hashlib.sha256(value.encode()).hexdigest()} for key,value in replacements.items()},
         'compiled_protocol':{'path':str(files[0]),'bytes':files[0].stat().st_size,'sha256':hashlib.sha256(files[0].read_bytes()).hexdigest()},
@@ -271,7 +309,7 @@ public final class DisplayManager {
         evidence['notes_close_reply_exit_code']=notes_result.returncode
         evidence['notes_close_source_extraction']=extraction
         evidence['notes_close_input_files']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
-            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture)}
+            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture,phase_helper,phase_data)}
         evidence['tools']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
             ((args.java,args.javac) if args.javac else (args.java,))}
         evidence['expected_notes_close_cases']=['notes_authenticated_close_late_policy_keeps_complete_original_frame', 'parent_registration_same_notes_race_reproduces_eof', 'late_policy_wrong_current_peer_not_protected', 'late_policy_missing_notes_and_profile_custody_not_protected', 'late_policy_no_public_scope_not_protected', 'late_policy_at_original_request_deadline_not_protected', 'wrong_peer_uid_never_parses_or_registers', 'foreign_generation_never_registers', 'foreign_scope_never_registers', 'expired_request_never_registers', 'request_above_original_limit_never_registers', 'authenticated_nonclose_does_not_register_or_begin_cleanup', 'notes_cleanup_at_1499_may_flush', 'notes_cleanup_at_1500_halts_without_profile_extension', 'notes_cleanup_at_2249_still_halts', 'notes_unknown_cleanup_at_1500_is_not_success', 'profile_verified_release_at_1500_retains_original_exception', 'profile_verified_release_at_2249_may_flush', 'profile_verified_release_at_2250_halts', 'profile_exception_stops_at_original_request_deadline', 'shorter_close_request_keeps_original_wait_budget', 'session_expiry_bounds_pending_close_peer']

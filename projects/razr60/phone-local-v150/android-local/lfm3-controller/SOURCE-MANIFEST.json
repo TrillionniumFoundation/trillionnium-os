@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
-  "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-  "base_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
+  "base_head": "cee358fed7e74aaaf5479c54a30baa6638d19e8e",
+  "base_manifest_sha256": "4a492ce73c5a7a924e6b53c7a655362bbc6aafa0dd00bf0b7048972977ffc93d",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
   "complete_source_files": 2710,
@@ -138,8 +138,8 @@
   },
   "current_integration_freeze": {
     "android_compilation_pending": true,
-    "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-    "description": "Separate bounded post-leaf cleanup confirmation from the original effect freshness budget, preserving per-effect identity and deadline checks; recover a verified model-done Xiaomi task only as failed-business retained cleanup after independent absence.",
+    "base_head": "cee358fed7e74aaaf5479c54a30baa6638d19e8e",
+    "description": "Test-only successor: preserve historical broker/power contracts through exact predecessor proof, while compiling actual bounded cleanup methods and retaining all original case bodies. All397 production inputs are byte-identical to cee; combined production qualification baseline is f4.",
     "device_success_claimed": false,
     "host_execution_pending": true,
     "source_freeze_only": true,
@@ -7987,9 +7987,9 @@
       "sha256": "59c0655e0eae7e1242eac2cc2f1ca3746f52797c6ca37873607fbc9bc66bd298"
     },
     {
-      "bytes": 21973,
+      "bytes": 25156,
       "path": "tests/background-broker/run_host_checks.py",
-      "sha256": "ff5ee173773ac546030285ac031b03e7314880649c8d5ad2058b089c48a44e11"
+      "sha256": "32631c83d3d9084927c24fbd2846e0b7e98a007f0b59ef4c6f4c1e986a2795c1"
     },
     {
       "bytes": 3268,
@@ -12157,9 +12157,9 @@
       "sha256": "f35f23c719f89b7fb7a54d00632dcbdbabee996dd7e8c0fa18df4d4bcc4e36c7"
     },
     {
-      "bytes": 11656,
+      "bytes": 13478,
       "path": "tests/public-screen-lease/run_host.py",
-      "sha256": "de834160d5ba4d8216da2832d4b3a6b5e97272d15b8f1ead7217f58745a8b1f0"
+      "sha256": "3c860ad74a325450996676945765970ce4bf3e104c5717eccd8082b712d7ffff"
     },
     {
       "bytes": 42316,
@@ -14041,28 +14041,31 @@
     "prior_preparation_metadata": {
       "prior_preparation_metadata": {
         "prior_preparation_metadata": {
-          "author_cases_are_not_published_same_source_execution": true,
-          "author_ctrip_sampling_gate": {
-            "bytes": 56864,
-            "mode": 420,
-            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
-            "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+          "prior_preparation_metadata": {
+            "author_cases_are_not_published_same_source_execution": true,
+            "author_ctrip_sampling_gate": {
+              "bytes": 56864,
+              "mode": 420,
+              "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+              "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+            },
+            "author_xiaomi_gate": {
+              "bytes": 2051788,
+              "mode": 384,
+              "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+              "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+            },
+            "current_android_build_qualified": false,
+            "current_full_host_suite_completed": false,
+            "phone_qualified": false,
+            "prepublication_original_failed_suites": {
+              "bytes": 5295,
+              "mode": 384,
+              "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+              "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+            }
           },
-          "author_xiaomi_gate": {
-            "bytes": 2051788,
-            "mode": 384,
-            "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
-            "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
-          },
-          "current_android_build_qualified": false,
-          "current_full_host_suite_completed": false,
-          "phone_qualified": false,
-          "prepublication_original_failed_suites": {
-            "bytes": 5295,
-            "mode": 384,
-            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-            "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
-          }
+          "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
         },
         "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
       },
@@ -14494,9 +14497,9 @@
   "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
-  "source_parent_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
-  "source_parent_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
-  "source_snapshot_predecessor_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
+  "source_parent_head": "cee358fed7e74aaaf5479c54a30baa6638d19e8e",
+  "source_parent_manifest_sha256": "4a492ce73c5a7a924e6b53c7a655362bbc6aafa0dd00bf0b7048972977ffc93d",
+  "source_snapshot_predecessor_manifest_sha256": "4a492ce73c5a7a924e6b53c7a655362bbc6aafa0dd00bf0b7048972977ffc93d",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

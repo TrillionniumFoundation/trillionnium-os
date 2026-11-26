@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Production screen-lease policy with explicit inert power and monotonic-clock ports."""
-import argparse, hashlib, json, pathlib, shutil, subprocess, time
+import argparse, hashlib, importlib.util, json, pathlib, shutil, subprocess, time
 
 def main():
     parser=argparse.ArgumentParser()
@@ -13,6 +13,14 @@ def main():
     bg=source/'src/org/trillionnium/hepta/background'
     broker=(bg/'BackgroundDisplayBroker.java').read_text()
     framework=(bg/'PublicOwnGroupFramework.java').read_text()
+    phase_helper=source/'tests/profile-cleanup-settle/protected_cleanup_phase.py'
+    phase_data=phase_helper.with_name('production-predecessor.json')
+    if hashlib.sha256(phase_helper.read_bytes()).hexdigest()!='a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2':
+        raise RuntimeError('fixed cleanup phase predecessor helper required')
+    spec=importlib.util.spec_from_file_location('screen_cleanup_phase_predecessor',phase_helper)
+    phase=importlib.util.module_from_spec(spec);spec.loader.exec_module(phase)
+    proof_broker=phase.predecessor('src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',
+                                  (bg/'BackgroundDisplayBroker.java').read_bytes()).decode('utf-8')
     # Integration checks retain the actual port and lifecycle call sites; the Java test below
     # executes the production state machine, including a real concurrent acquire/retire race.
     exact={
@@ -48,9 +56,18 @@ def main():
             or broker.count(calendar_release)!=1):
         raise RuntimeError('exact Calendar cleanup retirement/drain integration missing')
     legacy_cleanup=broker.replace(calendar_retire,'',1)
+    # Keep the complete historical prefix contract, and separately require its
+    # exact current successor: phase quarantine precedes the original power
+    # retirement. Neither proof copy is compiled.
+    phase_failure='        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();\n'
+    phase_prefix=exact['profile_quarantine'].replace(
+        '    private void quarantineProfile(String reason){\n',
+        '    private void quarantineProfile(String reason){\n'+phase_failure,1)
+    if broker.count(phase_prefix)!=1 or broker.count(phase_failure)!=1:
+        raise RuntimeError('actual phase quarantine before original screen retirement required')
     for key,value in exact.items():
         actual=(framework if key=='physical_group_census' else
-                legacy_cleanup if key=='cleanup_latch' else broker)
+                legacy_cleanup if key=='cleanup_latch' else proof_broker if key=='profile_quarantine' else broker)
         if value not in actual:raise RuntimeError('actual broker/framework power integration missing: '+key)
         if key=='profile_quarantine' and actual.count(value)!=1:
             raise RuntimeError('profile cleanup diagnostic and screen retirement prefix is not unique')
@@ -114,7 +131,7 @@ final class PublicScreenInitializationFixture {
     files=[bg/'PublicOwnGroupScreenLease.java',source/'tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java',
            source/'tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java',initialization]
     files.append(fixture)
-    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve()]
+    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve(),phase_helper,phase_data]
     def pin(p):
         data=p.read_bytes();return {'path':str(p),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
     before=[pin(p) for p in inputs]
@@ -132,7 +149,10 @@ final class PublicScreenInitializationFixture {
         'actual_cleanup_hunk_sha256':hashlib.sha256(calendar_cleanup.encode()).hexdigest(),
         'actual_release_hunk_sha256':hashlib.sha256(calendar_release.encode()).hexdigest()}
     report['profile_cleanup_diagnostic_source_contract']={'complete_prefix_sha256':hashlib.sha256(exact['profile_quarantine'].encode()).hexdigest(),
-        'original_screen_retire_after_bounded_diagnostic':True,'projection_compiled':False,'diagnostic_runtime_covered_by_separate_gate':True}
+        'original_screen_retire_after_bounded_diagnostic':True,'projection_compiled':False,'diagnostic_runtime_covered_by_separate_gate':True,
+        'actual_successor_prefix_sha256':hashlib.sha256(phase_prefix.encode()).hexdigest(),
+        'actual_phase_quarantine_before_screen_retirement':True,'whole_broker_predecessor_sha256':hashlib.sha256(proof_broker.encode()).hexdigest(),
+        'cleanup_phase_runtime_covered_by_separate_gate':True}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)
         stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');stdout.write_bytes(result.stdout);stderr.write_bytes(result.stderr)
