@@ -26,7 +26,8 @@
     "Permit a typed same-owner transient AX seal failure to use one fresh frozen-window proof and the existing serial read drain; preserve complete census and final action fences",
     "Add an independent calendar BACK read-only follow-up permit and its exact current-session controller and service bridge; preserve existing OPEN behavior and single-effect claims",
     "Order only replacement Xiaomi after-target reads so current target and ancestor refresh precedes the new complete D census, then verify real D getters without a second refresh or extending existing budgets",
-    "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation"
+    "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation",
+    "Complete only the legacy qualification host compiler boundary for calendar BACK with refusing types and two typed JSON optional accessors; all production and original cases are unchanged"
   ],
   "complete_source_files": 2740,
   "files": [
@@ -14641,10 +14642,10 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 56918,
+      "bytes": 61082,
       "mode": 420,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "ec44bfda5a4812cac194ab16de8a26d2cad3deac063ba7e82a5502d6e510beb3"
+      "sha256": "acb3d01bc2e07a48ee7ae2b19b5a269ee88da2453caa3a585e73cfaa7ea2b872"
     },
     {
       "bytes": 4054,
@@ -16467,10 +16468,10 @@
   ],
   "main_java_sources": 222,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "c3f3529ec083cdc4a699fc3d2948a529280cc14f2151b193a0c0798d2a43d094",
-  "predecessor_source_manifest_sha256": "c3f3529ec083cdc4a699fc3d2948a529280cc14f2151b193a0c0798d2a43d094",
+  "predecessor_manifest_sha256": "98b0a1dd0a7a518635961a4df2f69024d6b38fbc7198bab78c99fb0041489995",
+  "predecessor_source_manifest_sha256": "98b0a1dd0a7a518635961a4df2f69024d6b38fbc7198bab78c99fb0041489995",
   "production_build_inputs_count": 406,
   "production_input_map_sha256": "3f74840e7703c2797009ac28473b50d7ce19a349e256e692dd06863edb69fd67",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "d848c1e1a9d5140bdc302424352c74de6ea2cf22"
+  "source_parent_head": "c1d5aefaf41448dc48df727838875814e227e220"
 }

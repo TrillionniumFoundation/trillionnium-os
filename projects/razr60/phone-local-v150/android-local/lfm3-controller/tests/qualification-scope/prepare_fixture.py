@@ -319,8 +319,32 @@ def prepare(source, output):
     calendar_nas_anchor='    private static UnsupportedOperationException unavailable(){'
     if calendar_nas_raw.count(calendar_nas_anchor)!=1:
         raise RuntimeError('one original refusing native Session boundary')
+    # New BACK ABI only; this non-native fixture still cannot create any permit.
+    back_nas_ports='''    static abstract class PostActionReadAccess {
+        private PostActionReadAccess(){throw unavailable();}
+        void requireCurrent(){throw unavailable();}
+        String originalObservationId(){throw unavailable();}
+        long transitionDeadline(){throw unavailable();}
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){throw unavailable();}
+        void admit(boolean retry){throw unavailable();}
+        boolean admitted(boolean retry){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    static final class CalendarBackAwait {
+        private CalendarBackAwait(){throw unavailable();}
+        void closeAfterReturnedAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){throw unavailable();}
+        void close(){throw unavailable();}
+    }
+    CalendarBackAwait calendarBackAwait(ActionDecision action,String run,String observation,long issued,long deadline){throw unavailable();}
+    PostActionReadAccess calendarBackReadPermit(ActionDecision action,String run,String observation){throw unavailable();}
+'''
+    old_post_type='    static final class PostEffectReadPermit {'
+    if calendar_nas_raw.count(old_post_type)!=1:
+        raise RuntimeError('one original unavailable post-effect permit type')
+    calendar_nas_compile=calendar_nas_raw.replace(old_post_type,
+        '    static final class PostEffectReadPermit extends PostActionReadAccess {',1)
     (output/'NativeAppSession.java').write_text(
-        calendar_nas_raw.replace(calendar_nas_anchor,calendar_nas_ports+manual_nas_ports+calendar_nas_anchor,1))
+        calendar_nas_compile.replace(calendar_nas_anchor,calendar_nas_ports+manual_nas_ports+back_nas_ports+calendar_nas_anchor,1))
     (output/'VlmInferenceAdapter.java').write_text('''package org.trillionnium.hepta.local;
 /** Callback type only; no Adapter, accepted request or model can be constructed. */
 final class VlmInferenceAdapter {
@@ -329,6 +353,11 @@ final class VlmInferenceAdapter {
 }
 ''')
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
+    back_service_old='NativeAppSession.PostEffectReadPermit permit'
+    if fixture.count(back_service_old)!=2:
+        raise RuntimeError('two original unavailable Service post-effect type endpoints')
+    fixture=fixture.replace(back_service_old,'NativeAppSession.PostActionReadAccess permit')
+
     marker='{{service_interfaces_outcome}}\n'
     if fixture.count(marker)!=1:raise RuntimeError('one legacy Service interface boundary')
     fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports+manual_io_ports+post_effect_cleanup_ports+post_effect_cleanup,1)
@@ -549,9 +578,29 @@ final class PublicProfileBusinessRecoveryClient {
     web_entry_marker='    static void validateSelection(String owner,BackgroundSession.Selection selection){\n'
     if web_io_fixture.count(web_entry_marker)!=1:raise RuntimeError('one legacy Web fixture entry')
     (output/'WebFlightSession.java').write_text(web_io_fixture.replace(web_entry_marker,web_entry_prefix,1))
+    # Local JSON compiler copies add only the two standard typed optional
+    # accessors used by the actual BACK receipt reader. Shared fixtures are
+    # unchanged, including all original parser rejection and controller cases.
+    json_optional_ports={
+        'JSONObject':('    public int optInt(String key,int fallback){',
+            '    public JSONArray optJSONArray(String key){try{return getJSONArray(key);}catch(JSONException missingOrWrongType){return null;}}\n'),
+        'JSONArray':('    @Override public String toString(){',
+            '    public JSONObject optJSONObject(int index){Object value=opt(index);if(value instanceof JSONObject)return (JSONObject)value;if(value instanceof java.util.Map<?,?>)return new JSONObject((java.util.Map<?,?>)value);return null;}\n')}
+    json_optional_copies={}
+    for name,(anchor,addition) in json_optional_ports.items():
+        original=Path(__file__).parent/'fixtures/org/json'/(name+'.java')
+        raw=original.read_text()
+        if raw.count(anchor)!=1 or addition in raw:
+            raise RuntimeError('one original JSON accessor insertion point: '+name)
+        compiled=raw.replace(anchor,addition+anchor,1)
+        (output/(name+'.java')).write_text(compiled)
+        json_optional_copies[name]={'source':str(original),'source_sha256':hashlib.sha256(raw.encode()).hexdigest(),
+            'compiler_sha256':hashlib.sha256(compiled.encode()).hexdigest(),
+            'addition_sha256':hashlib.sha256(addition.encode()).hexdigest(),
+            'whole_inverse_equal':compiled.replace(addition,'',1)==raw}
     files += sorted(output.glob('*.java'))
     files += [p for p in sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
-              if p.name not in ('BackgroundSession.java','WebFlightSession.java')]
+              if p.name not in ('BackgroundSession.java','WebFlightSession.java','JSONObject.java','JSONArray.java')]
     files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'BackgroundFreshnessHostTest.java']
     record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','SessionTerminalEvidence.java','MainActivity.java','BackgroundUiPreferences.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'preferences_'+n:v for n,v in mode_parts.items()},**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
@@ -645,6 +694,15 @@ final class PublicProfileBusinessRecoveryClient {
         'separate_protocol_gate_execution_claimed_here':False,
         'separate_protocol_gate':'tests/order-preview-manual-fixture/run_host.py',
         'android_capture_body_qualification':'full actual Android compilation; not executed by this legacy host IO fixture'}
+    record['calendar_back_legacy_boundary']={
+        'complete_controller_source_unchanged':True,
+        'shared_native_session_and_service_fixtures_unchanged':True,
+        'post_access_type_only':True,'all_new_constructors_and_authority_endpoints_refuse':True,
+        'back_session_ports_sha256':hashlib.sha256(back_nas_ports.encode()).hexdigest(),
+        'local_json_optional_accessor_copies':json_optional_copies,
+        'original_scope_cases_and_assertions_changed':False,
+        'separate_back_gate_execution_claimed_here':False,
+        'actual_back_gate':'tests/native-calendar-back-read/run_host.py'}
     record['calendar_legacy_boundary']={
         'complete_controller_source_unchanged':True,'shared_native_session_fixture_unchanged':True,
         'local_native_session_fixture_source':str(calendar_nas_source.relative_to(source)),
