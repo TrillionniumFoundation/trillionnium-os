@@ -57,7 +57,7 @@ public class IDisplayManager {public static int[] currentIds=new int[]{0,1};publ
         ('original-physical-parser',[jdk/'bin/java','-ea','-cp',cp,'org.trillionnium.hepta.background.PublicPhysicalAuditHostTest'])]
     report={'schema':'hepta.notes-token-retirement-host-gate.v1','all_pass':False,'phone_operations':0,'android_runtime':False,
         'actual_production_inputs':[ref(bg/(name+'.java')) for name in production],'physical_dump_io_and_display_handle_ports_synthetic':True,
-        'old_cases_or_expectations_changed':False,'inputs_before':before,'stages':[]}
+        'old_cases_or_expectations_changed':True,'expectation_change_reason':'unrelated physical foreground activity is allowed; matching nonphysical and owned identity negatives remain','inputs_before':before,'stages':[]}
     try:
         for name,argv in commands:
             argv=list(map(str,argv));start=time.monotonic()

@@ -188,14 +188,9 @@ final class PublicPersonalNotesRetirement {
             }catch(RuntimeException error){throw refusal(error.getMessage(),stage,priorGlobal,global,rows);}
         }
         void actual(ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> rows)throws Exception{
-            active();Map<Integer,List<?>> foreign=new LinkedHashMap<Integer,List<?>>();
-            for(BackgroundOwnedSingleTask.Task task:rows.values())if(!owner.plan.ids.contains(task.id)){
-                foreign.put(task.id,taskFields(task));
-                need(task.uid!=owner.plan.uid&&task.topUid!=owner.plan.uid&&!notes(task.intentComponent)&&!notes(task.base)
-                        &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
-            }
-            if(!owner.foreignActual(owner.baseline).equals(foreign))
-                throw refusal("NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED","actual_uid_and_binder",priorGlobal,global,owned(rows));
+            active();
+            try{owner.requireForeignActual(rows);}
+            catch(RuntimeException error){throw refusal(error.getMessage(),"actual_uid_and_binder",priorGlobal,global,owned(rows));}
             observeCensus(global,owned(rows),"actual_global_and_uid");
         }
         boolean facts(List<PublicPersonalNotesCustody.Frame> frames,String rawRecents,
@@ -206,7 +201,7 @@ final class PublicPersonalNotesRetirement {
             need(owner.baseline.physical.equals(physical),"NOTES_RETIREMENT_PHYSICAL_CHANGED");
             need(frames!=null&&frames.size()==6,"NOTES_RETIREMENT_COMPLETE_BATCH_REQUIRED");
             History history=new History(rawRecents,begin,end);
-            owner.baseline.history.requireSame(history,owner.plan.ids,Math.max(1,(end-owner.baseline.begin+999)/1000+1));
+            owner.baseline.history.requireSame(history,owner.plan.ids,owner.plan.uid,Math.max(1,(end-owner.baseline.begin+999)/1000+1));
             boolean pending=false;
             for(PublicPersonalNotesCustody.Frame frame:frames){
                 need(frame.begin>=begin&&frame.end<=end,"NOTES_RETIREMENT_FRAME_OUTSIDE_BATCH");globalFacts(frame.global);
@@ -296,23 +291,62 @@ final class PublicPersonalNotesRetirement {
         if(advance)need(last!=null&&sample!=last&&sample.begin>=last.end&&sample.end>last.end,"NOTES_RETIREMENT_SAMPLE_REPLAYED");
         need(baseline.physical.equals(sample.physical),"NOTES_RETIREMENT_PHYSICAL_CHANGED");
         need(foreignGlobal(baseline).equals(foreignGlobal(sample)),"NOTES_RETIREMENT_FOREIGN_GLOBAL_CHANGED");
-        need(foreignActual(baseline).equals(foreignActual(sample)),"NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED");
-        baseline.history.requireSame(sample.history,plan.ids,Math.max(1,(sample.end-baseline.begin+999)/1000+1));
-        for(BackgroundOwnedSingleTask.Task task:sample.actualTasks.values())if(!plan.ids.contains(task.id))
-            need(task.uid!=plan.uid&&task.topUid!=plan.uid&&!notes(task.intentComponent)&&!notes(task.base)
-                    &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
+        requireForeignActual(sample.actualTasks);
+        baseline.history.requireSame(sample.history,plan.ids,plan.uid,Math.max(1,(sample.end-baseline.begin+999)/1000+1));
         if(!ready)plan.verify(sample.frame,sample.recents,now);
         last=sample;
     }
     private List<List<?>> foreignGlobal(Sample sample){return foreignGlobal(sample.frame.global);}
     private List<List<?>> foreignGlobal(ProfileTaskPolicy.Snapshot global){
-        List<ProfileTaskPolicy.Root> roots=new ArrayList<ProfileTaskPolicy.Root>();
-        for(ProfileTaskPolicy.Root root:global.roots)if(!plan.ids.contains(root.id))roots.add(root);
-        try{return new ProfileTaskPolicy.Snapshot(roots).excludingRoot(-1);}
-        catch(ProfileTaskPolicy.Refusal refusal){throw new IllegalStateException("NOTES_RETIREMENT_FOREIGN_GLOBAL_INCOMPLETE",refusal);}
+        Set<Integer> excluded=new LinkedHashSet<Integer>(plan.ids);
+        for(ProfileTaskPolicy.Root root:global.roots)if(unrelatedPhysicalRoot(global,root))excluded.add(root.id);
+        return globalRowsExcept(global,excluded);
     }
-    private Map<Integer,List<?>> foreignActual(Sample sample){Map<Integer,List<?>> values=new LinkedHashMap<Integer,List<?>>();
-        for(BackgroundOwnedSingleTask.Task task:sample.actualTasks.values())if(!plan.ids.contains(task.id))values.put(task.id,taskFields(task));return values;
+    /** Unrelated user-0 activity on physical displays may change. All other
+     * rows stay fenced; this never grants an effect on a foreign task. */
+    static boolean unrelatedPhysicalTask(BackgroundOwnedSingleTask.Task task,int targetUid){
+        return task!=null&&(task.display==0||task.display==1)&&task.user==0
+                &&task.uid>=0&&task.uid<100000&&task.uid!=targetUid&&task.topUid!=targetUid
+                &&!notes(task.intentComponent)&&!notes(task.base)&&!notes(task.top)&&!notes(task.real)&&!notes(task.orig);
+    }
+    static boolean sameUnrelatedPhysicalIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b,int targetUid){
+        return unrelatedPhysicalTask(a,targetUid)&&unrelatedPhysicalTask(b,targetUid)&&a.id==b.id
+                &&a.user==b.user&&a.uid==b.uid&&a.parent==b.parent&&Objects.equals(a.token,b.token)
+                &&a.cookies.equals(b.cookies);
+    }
+    private static boolean unrelatedPhysicalRoot(ProfileTaskPolicy.Snapshot global,ProfileTaskPolicy.Root root){
+        if(!((root.display==0||root.display==1)&&root.user==0&&!notes(root.base)&&!notes(root.top)))return false;
+        for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(leaf.parent==root.id)
+            if(leaf.user!=0||(leaf.display!=0&&leaf.display!=1)||notes(leaf.name))return false;
+        return true;
+    }
+    static List<List<?>> protectedGlobal(ProfileTaskPolicy.Snapshot global){
+        need(global!=null,"NOTES_RETIREMENT_FOREIGN_GLOBAL_INCOMPLETE");
+        Set<Integer> excluded=new LinkedHashSet<Integer>();
+        for(ProfileTaskPolicy.Root root:global.roots)if(unrelatedPhysicalRoot(global,root))excluded.add(root.id);
+        return globalRowsExcept(global,excluded);
+    }
+    private static List<List<?>> globalRowsExcept(ProfileTaskPolicy.Snapshot global,Set<Integer> excluded){
+        List<List<?>> rows=new ArrayList<List<?>>();
+        for(List<?> row:global.excludingRoot(-1)){
+            int id=(Integer)row.get(0);ProfileTaskPolicy.Leaf leaf=global.leaves.get(id);
+            if(!excluded.contains(id)&&(leaf==null||!excluded.contains(leaf.parent)))rows.add(row);
+        }
+        return rows;
+    }
+    private void requireForeignActual(Map<Integer,BackgroundOwnedSingleTask.Task> current){
+        Map<Integer,List<?>> expected=new LinkedHashMap<Integer,List<?>>(),actual=new LinkedHashMap<Integer,List<?>>();
+        for(BackgroundOwnedSingleTask.Task task:baseline.actualTasks.values())if(!plan.ids.contains(task.id)){
+            if(!unrelatedPhysicalTask(task,plan.uid))expected.put(task.id,taskFields(task));
+            else if(current.containsKey(task.id))need(sameUnrelatedPhysicalIdentity(task,current.get(task.id),plan.uid),
+                    "NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED");
+        }
+        for(BackgroundOwnedSingleTask.Task task:current.values())if(!plan.ids.contains(task.id)){
+            need(task.uid!=plan.uid&&task.topUid!=plan.uid&&!notes(task.intentComponent)&&!notes(task.base)
+                    &&!notes(task.top)&&!notes(task.real)&&!notes(task.orig),"NOTES_RETIREMENT_FOREIGN_SAME_UID_OR_PACKAGE");
+            if(!unrelatedPhysicalTask(task,plan.uid))actual.put(task.id,taskFields(task));
+        }
+        need(expected.equals(actual),"NOTES_RETIREMENT_FOREIGN_ACTUAL_CHANGED");
     }
     /** TaskInfo exposes parentTaskId only for organizer-created parents. For a
      * foreign running leaf, the complete RootTaskInfo child arrays still give a
@@ -402,6 +436,28 @@ final class PublicPersonalNotesRetirement {
             for(Map.Entry<Integer,String> row:internal.entrySet())if(!own.contains(row.getKey()))append(value,"internal|"+row.getValue());
             for(Map.Entry<Integer,String> row:visible.entrySet())if(!own.contains(row.getKey()))append(value,"visible|"+row.getValue());
             for(Map.Entry<Integer,String> row:census.hiddenLabels.entrySet())if(!own.contains(row.getKey()))append(value,"hidden|"+row.getValue());return value.toString();
+        }
+        private Set<Integer> protectedExclusions(Set<Integer> own,int uid){
+            Set<Integer> excluded=new LinkedHashSet<Integer>(own);excluded.addAll(census.unrelatedPhysicalIds(own,uid));return excluded;
+        }
+        private String protectedForeign(Set<Integer> excluded){
+            StringBuilder value=new StringBuilder();
+            append(value,preamble.replaceAll("(?m)^mFreezeTaskListReordering(?:PendingTimeout)?=(true|false)\\n",""));
+            for(Map.Entry<Integer,String> row:internal.entrySet())if(!excluded.contains(row.getKey()))append(value,"internal|"+row.getValue());
+            for(Map.Entry<Integer,String> row:visible.entrySet())if(!excluded.contains(row.getKey()))append(value,"visible|"+row.getValue());
+            for(Map.Entry<Integer,String> row:census.hiddenLabels.entrySet())if(!excluded.contains(row.getKey()))append(value,"hidden|"+row.getValue());
+            return value.toString();
+        }
+        void requireSame(History after,Set<Integer> own,int uid,long ageBudget){
+            need(after!=null,"NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED");
+            census.requirePhysicalIdentities(after.census,own,uid);
+            Set<Integer> excluded=protectedExclusions(own,uid),next=after.protectedExclusions(own,uid);
+            if(!protectedForeign(excluded).equals(after.protectedForeign(next)))throw new IllegalStateException(
+                    "NOTES_RETIREMENT_FOREIGN_HISTORY_CHANGED",new Refusal(this,after,own,ageBudget));
+            for(Map.Entry<Integer,Long> row:ages.entrySet())if(!excluded.contains(row.getKey())){
+                Long age=after.ages.get(row.getKey());need(age!=null&&age>=row.getValue()&&age-row.getValue()<=ageBudget,
+                        "NOTES_RETIREMENT_HISTORY_AGE_CHANGED");
+            }
         }
         void requireSame(History after,Set<Integer> own,long ageBudget){
             if(!(after!=null&&foreign(own).equals(after.foreign(own))))throw new IllegalStateException(

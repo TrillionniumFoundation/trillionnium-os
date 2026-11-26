@@ -102,7 +102,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
             boolean settle=pending.facts(frames,physical.recents,physical.hashes,begin,end);
             String mismatch=actual.changed?"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED":null;
             if(!before.stable||!after.stable)mismatch="NOTES_RETIREMENT_FRAME_CHANGED_DURING_READ";
-            if(!first.global.excludingRoot(-1).equals(ending.global.excludingRoot(-1)))mismatch="NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ";
+            if(!PublicPersonalNotesRetirement.protectedGlobal(first.global).equals(PublicPersonalNotesRetirement.protectedGlobal(ending.global)))mismatch="NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ";
             else if(first.roots.size()!=ending.roots.size())mismatch="NOTES_RETIREMENT_ROOTS_CHANGED_DURING_READ";
             else for(int i=0;i<ending.roots.size();i++){
                 PublicPersonalNotesCustody.Node root=ending.roots.get(i),old=first.roots.get(i);
@@ -126,7 +126,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         Map<Integer,BackgroundOwnedSingleTask.Task> actual=actualTasks(first.global);
         Physical physical=physical();
         PublicPersonalNotesCustody.Frame ending=after?reader.frameAfterRelease(authority):reader.frame();
-        need(first.global.excludingRoot(-1).equals(ending.global.excludingRoot(-1)),"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
+        need(PublicPersonalNotesRetirement.protectedGlobal(first.global).equals(PublicPersonalNotesRetirement.protectedGlobal(ending.global)),"NOTES_RETIREMENT_GLOBAL_CHANGED_DURING_READ");
         need(first.roots.size()==ending.roots.size(),"NOTES_RETIREMENT_ROOTS_CHANGED_DURING_READ");
         for(int i=0;i<ending.roots.size();i++){
             PublicPersonalNotesCustody.Node root=ending.roots.get(i),old=first.roots.get(i);
@@ -146,7 +146,7 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
     private ActualRead actualTasks(ProfileTaskPolicy.Snapshot expected,PublicPersonalNotesRetirement.PendingRead pending)throws Exception{
         time();Object raw=allRoots.invoke(activities);time();
         ProfileTaskPolicy.Snapshot global=(ProfileTaskPolicy.Snapshot)rootProjection.invoke(null,raw);
-        boolean changed=!global.excludingRoot(-1).equals(expected.excludingRoot(-1));
+        boolean changed=!PublicPersonalNotesRetirement.protectedGlobal(global).equals(PublicPersonalNotesRetirement.protectedGlobal(expected));
         if(pending==null)need(!changed,"NOTES_RETIREMENT_ACTUAL_GLOBAL_CHANGED");
         need(raw instanceof List&&((List<?>)raw).size()<=ProfileTaskPolicy.MAX_ROOTS,"NOTES_RETIREMENT_ROOT_QUERY");
         Map<Integer,BackgroundOwnedSingleTask.Task> out=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
@@ -224,7 +224,8 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
                 component(field(row,"origActivity")),bool(row,"isRunning"),bool(row,"isVisible"));
         BackgroundOwnedSingleTask.Task old=out.put(task.id,task);
         boolean changed=old!=null&&!PublicPersonalNotesRetirement.sameTask(old,task);
-        if(changed&&duplicateRootAllowed&&pending!=null)pending.pair(old,task);
+        if(changed&&duplicateRootAllowed&&PublicPersonalNotesRetirement.sameUnrelatedPhysicalIdentity(old,task,uid))changed=false;
+        else if(changed&&duplicateRootAllowed&&pending!=null)pending.pair(old,task);
         else need(old==null||(duplicateRootAllowed&&!changed),"NOTES_RETIREMENT_DUPLICATE_TASKINFO_CHANGED");
         Object prior=wrappers.put(binder,wrapper);need(prior==null||binder.equals(tokenBinder.invoke(prior)),"NOTES_RETIREMENT_WRAPPER_CHANGED");
         return changed;
@@ -253,27 +254,15 @@ final class PublicPersonalNotesRetirementAdapter implements PublicPersonalNotesR
         Method dump=PublicOwnGroupPhysicalReader.class.getDeclaredMethod("dump",Object.class,String[].class,LongSupplier.class);dump.setAccessible(true);
         Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before=(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>)factsMethod.invoke(null,displays);
         Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
-        String activity=(String)dump.invoke(null,am,new String[]{"-a","activities"},limit);
-        String window=(String)dump.invoke(null,windows,new String[]{"-a","displays"},limit);
         String recents=(String)dump.invoke(null,am,new String[]{"-a","recents"},limit);
         Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after=(Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>)factsMethod.invoke(null,displays);
-        for(int id:new int[]{0,1})need(before.get(id).data().equals(after.get(id).data()),"NOTES_RETIREMENT_PHYSICAL_CHANGED_DURING_READ");
-        // The complete original parser validates every section first. Reuse its
-        // exact hierarchy/focus/IME projection separately from all recents;
-        // the coordinator preserves full nonowned history bodies and order.
-        PublicOwnGroupPhysicalFence.capture(activity,window,recents,after,0);
-        Class<?> hierarchyType=Class.forName("org.trillionnium.hepta.background.PublicOwnGroupPhysicalFence$Hierarchy");
-        Method parse=PublicOwnGroupPhysicalFence.class.getDeclaredMethod("activities",String.class,int.class);parse.setAccessible(true);
-        Object hierarchy=parse.invoke(null,activity,0);
-        Method focus=PublicOwnGroupPhysicalFence.class.getDeclaredMethod("windows",String.class,hierarchyType,Map.class,int.class);focus.setAccessible(true);
-        Map<Integer,String> focused=(Map<Integer,String>)focus.invoke(null,window,hierarchy,after,0);
-        Field rowsField=hierarchyType.getDeclaredField("rows");rowsField.setAccessible(true);Map<?,?> rows=(Map<?,?>)rowsField.get(hierarchy);
         Map<Integer,String> result=new LinkedHashMap<Integer,String>();
+        // This port has no input or focus effect. Keep physical display identity
+        // separate from the user's independently changing foreground task/IME.
         for(int id:new int[]{0,1}){
-            need(rows.get(id)!=null&&focused.get(id)!=null,"NOTES_RETIREMENT_PHYSICAL_PROJECTION_INCOMPLETE");
-            StringBuilder value=new StringBuilder();append(value,"hepta.notes-token-retirement.physical.v1");
-            append(value,after.get(id).data());append(value,rows.get(id).toString());append(value,focused.get(id));
-            result.put(id,ProfileIdentity.sha(value.toString().getBytes(StandardCharsets.UTF_8)));
+            need(before.get(id)!=null&&after.get(id)!=null&&before.get(id).data().equals(after.get(id).data()),
+                    "NOTES_RETIREMENT_PHYSICAL_CHANGED_DURING_READ");
+            result.put(id,ProfileIdentity.sha(("hepta.notes-retirement.physical-identity.v2|"+after.get(id).data()).getBytes(StandardCharsets.UTF_8)));
         }
         time();return new Physical(recents,Collections.unmodifiableMap(result));
     }

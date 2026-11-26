@@ -43,6 +43,16 @@ def body_predecessor(anchor, value, implementation=None):
     if anchor == ACCEPT_ANCHOR:
         if len(value.encode("utf-8")) != ACCEPT_WRAPPER_BYTES or _digest(value) != ACCEPT_WRAPPER_SHA256:
             raise ValueError("exact null-forwarding compatibility wrapper required")
+        # Proof copy only; compile the current complete Service implementation.
+        if type(implementation) is str and _digest(implementation) == 'ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c':
+            if len(implementation.encode('utf-8')) != 9103:
+                raise ValueError('exact current-sample refusal body length required')
+            revised, prior = ('                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n', '                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')
+            if implementation.count(revised) != 1:
+                raise ValueError('unique complete current-sample refusal body inverse required')
+            implementation = implementation.replace(revised, prior, 1)
+            if len(implementation.encode('utf-8')) != 8906 or _digest(implementation) != '202eab36242779bde2456127f364162755442e8c50ad0ec6fe15942e760581d1':
+                raise ValueError('complete d4 dual-clock accept predecessor required')
         return _restore(implementation, record), True
     return _restore(value, record), True
 

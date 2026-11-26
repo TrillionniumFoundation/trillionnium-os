@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
  * causes all personal tasks/history to be omitted. */
 public final class PublicOwnGroupPhysicalFence {
     public static final String SCHEMA="hepta.public-own-group.physical-audit.v1";
+    public static final String BUSINESS_RECOVERY_SCHEMA="hepta.public-profile-recovery.physical-identity.v1";
     private static final String CONTROLLER="org.trillionnium.hepta.local";
     private static final int MAX=2*1024*1024;
     private PublicOwnGroupPhysicalFence(){}
@@ -339,6 +340,53 @@ public final class PublicOwnGroupPhysicalFence {
             }
         }
         return new RecentCensus(out.toString(),rows,hiddenLabels,facts,text);
+    }
+    /** Business recovery reads never mutate tasks or windows. Main-screen
+     * presentation may change between independent dumps; each complete dump still
+     * rejects target-profile/controller escape. Compare typed physical device
+     * facts, not unrelated activity/focus/IME or recent-list presentation. */
+    public static Map<Integer,String> captureBusinessRecovery(String activityRaw,String windowRaw,String recentRaw,
+            Map<Integer,DisplayFacts> displays,ProfileTarget target)throws Exception{
+        need(target!=null&&target.profile.userId==10&&displays!=null&&displays.size()==2
+                &&displays.containsKey(0)&&displays.containsKey(1)&&displays.get(0).id==0&&displays.get(1).id==1
+                &&!displays.get(0).uniqueId.equals(displays.get(1).uniqueId),"PHYSICAL_DISPLAY_CENSUS_INCOMPLETE");
+        activities(activityRaw,target.profile.userId);
+        businessRecoveryWindows(windowRaw,displays,target.profile.userId);
+        recents(recentRaw,0); // Complete census; the business reader validates target absence.
+        Map<Integer,String> result=new LinkedHashMap<Integer,String>();
+        for(int id:new int[]{0,1}){
+            StringBuilder raw=new StringBuilder();append(raw,BUSINESS_RECOVERY_SCHEMA);
+            append(raw,displays.get(id).data());result.put(id,ProfileIdentity.sha(raw.toString().getBytes(StandardCharsets.UTF_8)));
+        }
+        return Collections.unmodifiableMap(result);
+    }
+    private static void businessRecoveryWindows(String raw,Map<Integer,DisplayFacts> displays,int targetUser){
+        String text=checked(raw,"WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)");
+        List<Matcher> heads=matches("^  Display: mDisplayId=([0-9]+)\\b[^\\r\\n]*$",text);Set<Integer> seen=new HashSet<Integer>();
+        Set<Integer> physical=new HashSet<Integer>();
+        for(int i=0;i<heads.size();i++){
+            Matcher h=heads.get(i);int display=n(h.group(1));need(seen.add(display),"PHYSICAL_WINDOW_DISPLAY_DUPLICATE");
+            if(display!=0&&display!=1)continue;
+            need(displays.containsKey(display),"PHYSICAL_DISPLAY_CENSUS_INCOMPLETE");physical.add(display);
+            String body=text.substring(h.end(),i+1<heads.size()?heads.get(i+1).start():text.length());
+            String focus=one("^  mCurrentFocus=([^\\r\\n]+)$",body,"PHYSICAL_WINDOW_FOCUS_MISSING").group(1);
+            String app=one("^  mFocusedApp=([^\\r\\n]+)$",body,"PHYSICAL_FOCUSED_APP_MISSING").group(1);
+            if(!"null".equals(focus)){
+                Matcher w=one("^Window\\{([0-9a-f]+) u([0-9]+) ([^{}\\r\\n]+)\\}$",focus,"PHYSICAL_FOCUS_INVALID");
+                need(n(w.group(2))!=targetUser&&!w.group(3).contains(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_FOCUS_ESCAPED");
+            }
+            if(!"null".equals(app)){
+                Matcher a=one("^ActivityRecord\\{([0-9a-f]+) u([0-9]+) ([A-Za-z0-9_.$]+/[A-Za-z0-9_.$]+) t([0-9]+)(?: f\\})?(?: isExiting)?\\}$",
+                        app,"PHYSICAL_FOCUSED_ACTIVITY_INVALID");
+                need(n(a.group(2))!=targetUser&&!component(a.group(3)).startsWith(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_ACTIVITY_ESCAPED");
+            }
+            for(String key:Arrays.asList("mInputMethodWindow","mImeInputTarget","mImeLayeringTarget","mImeControlTarget")){
+                String value=optional("^  "+key+"=([^\\r\\n]+)$",body);
+                need(!Pattern.compile("(?:^|[ {])u"+targetUser+"(?:[ }]|$)").matcher(value).find()
+                        &&!value.contains(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_IME_ESCAPED");
+            }
+        }
+        need(physical.size()==2,"PHYSICAL_BOTH_FOCI_REQUIRED");
     }
     public static Map<Integer,String> capture(String activities,String windows,String recents,Map<Integer,DisplayFacts> displays,int targetUser){
         need(targetUser>=0&&displays!=null&&displays.size()==2&&displays.containsKey(0)&&displays.containsKey(1)

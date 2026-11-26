@@ -43,6 +43,7 @@ def main():
     ap.add_argument('--incomplete-client-close',action='store_true',help='Use the completed local worker and typed incomplete terminal from an actual lost close reply')
     ap.add_argument('--visual',action='store_true',help='Use an external map of genuine visual-task originals')
     ap.add_argument('--retained-before-model',action='store_true',help='Replay a stopped zero-request task with retained custody')
+    ap.add_argument('--released-client-close',action='store_true',help='Replay normal exited stored close and prove no retained socket/claim')
     a=ap.parse_args();src=a.source.resolve();out=a.output.absolute();out.mkdir(mode=0o700)
     bg=src/'src/org/trillionnium/hepta/background';local=src/'src/org/trillionnium/hepta/local'
     test=src/'tests/public-profile-business-client';helper=src/'tests/background-session/prepare_fixture.py'
@@ -107,6 +108,7 @@ public final class RecoveryControllerIdentity {
     files += [projected,bg/'PublicProfileBusinessAbsenceRecovery.java',bg/'ProfileRecoveryProcesses.java',local/'RecoveryJournalStore.java',
         local/'RecoveryJournalTransaction.java',local/'SessionRecovery.java',src/'tests/public-profile-business-recovery/PublicProfileBusinessRecoveryHostTest.java',
         test/'FakeBusinessRecoveryProcess.java',test/'PublicProfileBusinessClientHostTest.java']
+    if a.released_client_close:files.append(test/'PublicProfileReleasedCloseClientHostTest.java')
     files=list(dict.fromkeys(files));classes=out/'classes';classes.mkdir(mode=0o700)
     inputs=[ref(p) for p in files];generators=[ref(p) for p in [helper,pure_helper,Path(__file__),client]]
     original_fixture_inputs=[ref(p) for p in sorted((src/'tests/qualification-scope/fixtures').rglob('*.java'))]
@@ -115,7 +117,7 @@ public final class RecoveryControllerIdentity {
     stages=[stage('compile',javac,out,src)]
     if stages[0]['exit_code']==0:
         stages.append(stage('client',[str(jdk/'bin/java'),'-Xmx768m','-cp',str(classes)+os.pathsep+str(jar),
-            'org.trillionnium.hepta.local.PublicProfileBusinessClientHostTest',str(a.original_paths.resolve()),str(out/'CASES.json')]+(['--visual'] if a.visual else ['--retained-before-model'] if a.retained_before_model else ['--incomplete-client-close'] if a.incomplete_client_close else []),out,src))
+            'org.trillionnium.hepta.local.'+('PublicProfileReleasedCloseClientHostTest' if a.released_client_close else 'PublicProfileBusinessClientHostTest'),str(a.original_paths.resolve()),str(out/'CASES.json')]+(['--visual'] if a.visual else ['--retained-before-model'] if a.retained_before_model else ['--incomplete-client-close'] if a.incomplete_client_close else []),out,src))
     after=inventory(src);write(out/'SOURCE-AFTER.json',after);tools_after=[ref(p) for p in toolpaths]
     originals_after={k:ref(v) for k,v in original_paths.items()};originals_after['path_map']=ref(a.original_paths)
     counts=json.loads((out/'CASES.json').read_bytes()) if (out/'CASES.json').is_file() else None

@@ -87,6 +87,25 @@ final class PublicOwnGroupPhysicalReader {
         if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
         return PublicOwnGroupPhysicalFence.capture(activities,windows,recents,after,targetUser);
     }
+    /** Complete current absence reads with only typed physical device facts in
+     * the interval comparison. All raw escape/identity checks still execute. */
+    static Map<Integer,String> readBusinessRecovery(Object windowManager,DisplayManager displays,
+            PublicProfileBusinessAbsenceRecovery.Request request,LongSupplier deadline)throws Exception{
+        if(android.os.Build.VERSION.SDK_INT!=36||request==null)throw new IOException("PUBLIC_AUDIT_PHYSICAL_PLATFORM_UNSUPPORTED");
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before=displayFacts(displays);
+        Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
+        String activities=dump(am,new String[]{"-a","activities"},deadline);
+        String windows=dump(windowManager,new String[]{"-a","displays"},deadline);
+        String recents=dump(am,new String[]{"-a","recents"},deadline);
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after=displayFacts(displays);
+        for(int id:new int[]{0,1})if(!before.get(id).data().equals(after.get(id).data()))
+            throw new IOException("PUBLIC_AUDIT_PHYSICAL_STATE_CHANGED_DURING_READ");
+        request.requireRecordedRecentsAbsent(recents);
+        PublicProfileRecentHistory.absence(recents,request.target);
+        Map<Integer,String> result=PublicOwnGroupPhysicalFence.captureBusinessRecovery(activities,windows,recents,after,request.target);
+        if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
+        return result;
+    }
     /** A live broker-held owner token brackets the complete, unchanged raw
      * observations. No serialized task identifier alone enters this path. */
     static Map<Integer,String> readControllerInitialization(Object windowManager,DisplayManager displays,Object activityTasks,

@@ -17,7 +17,7 @@ PKG=Path('src/org/trillionnium/hepta/local')
 TEST=Path('tests/native-ctrip-form-sampling')
 GATE_SHA='2abe6a4074be6c75514755c741d10792e78e80d914e7ae063e1f43ce470d0992'
 SESSION_SHA='48c3802e762baabc170056645f060df779be12ae6c9344ce4972ef55448091e4'
-SERVICE_CASES=["complete_pair","archived_complete_pair","historic_boundary_future_content","same_keys","ordinary_scope","initial_scope","native_ax_scope","first_incomplete","first_not_form","protected_date","protected_query","ancestor_changed","direct_sibling_clickable_readonly_control","nested_clickable_child_rejected","missing_child","pending_child","truncated_graph","ime_unknown","window_changed","generation_changed","profile_token_changed","read_clock_reversed","missing_graph","typed_child_failure","event_content","event_other_display","event_unknown","event_untyped","event_boundary","event_foreign_window","event_foreign_package","queued_content","queued_boundary","authorization_replaced","controller_replaced","background_released","cancelled","permit_retired","installed_version_changed","unsupported_goal","parallel_action","settle_expiry","pure_value_lifecycle","capture_retry_clears_pair","classified_interval","equal_key_interval","diagnostic_bounds","late_window_failure","late_unknown_event"]
+SERVICE_CASES=["complete_pair","archived_complete_pair","historic_boundary_future_content","same_keys","ordinary_scope","initial_scope","native_ax_scope","first_incomplete","first_not_form","protected_date","protected_query","ancestor_changed","direct_sibling_clickable_readonly_control","nested_clickable_child_rejected","missing_child","pending_child","truncated_graph","ime_unknown","window_changed","generation_changed","profile_token_changed","read_clock_reversed","missing_graph","typed_child_failure","event_content","event_other_display","event_unknown","event_untyped","event_boundary","event_foreign_window","event_foreign_package","queued_content","queued_boundary","authorization_replaced","controller_replaced","background_released","cancelled","permit_retired","installed_version_changed","unsupported_goal","parallel_action","settle_expiry","pure_value_lifecycle","capture_retry_clears_pair","classified_interval","equal_key_interval","diagnostic_bounds","late_window_failure","late_unknown_event","history_limit_exact","history_limit_exceeded","queued_content_diagnostic_finished"]
 ACTUAL_MEMBERS=[
     '    private static final class CtripFormSample {',
     '    private static final class CtripFormSampleRead {',
@@ -27,6 +27,7 @@ ACTUAL_MEMBERS=[
     '    private static void recordCtripSampling(',
     '    private CtripFormSampleRead readCtripFormSample(',
     '    private boolean ctripFormSampleCurrent(',
+    '    private static void recordCtripSampleRefusal(',
     '    private static Map<String,Object> ctripSamplingCensus(',
     '    private static Map<String,Object> ctripSamplingHistory(',
     '    private static Map<String,Object> ctripSamplingProof(',

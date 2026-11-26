@@ -200,6 +200,16 @@ public final class PublicProfileRecentHistory {
         need(canonical(first).equals(canonical(new JSONObject(a.evidence())))&&canonical(last).equals(canonical(new JSONObject(b.evidence()))),"PUBLIC_HISTORY_EVIDENCE_DIFFERS");
         a.requireSame(b,maxAgeAdvanceSeconds);
     }
+    /** Business current-absence interval: preserve every nonphysical or unresolved
+     * record and each surviving physical task identity. Unrelated user-0 physical
+     * presentation can advance while the user continues using the main screens. */
+    public static void requireSameRecoveryEvidence(JSONObject first,JSONObject last,ProfileTarget target,long maxAgeAdvanceSeconds)throws Exception{
+        need(first!=null&&last!=null,"PUBLIC_HISTORY_EVIDENCE_MISSING");
+        Snapshot a=absence(first.getString("raw_text"),target),b=absence(last.getString("raw_text"),target);
+        need(canonical(first).equals(canonical(new JSONObject(a.evidence())))&&canonical(last).equals(canonical(new JSONObject(b.evidence()))),
+                "PUBLIC_HISTORY_EVIDENCE_DIFFERS");
+        a.sameProtectedHistory(b,NONE,maxAgeAdvanceSeconds);
+    }
     private static String canonical(Object value)throws Exception{
         if(value==null||value==JSONObject.NULL)return "null";
         if(value instanceof JSONObject){JSONObject object=(JSONObject)value;List<String> keys=new ArrayList<String>();java.util.Iterator<String> it=object.keys();while(it.hasNext())keys.add(it.next());Collections.sort(keys);

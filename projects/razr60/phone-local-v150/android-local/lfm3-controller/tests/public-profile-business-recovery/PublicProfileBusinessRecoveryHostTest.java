@@ -128,7 +128,7 @@ public final class PublicProfileBusinessRecoveryHostTest {
                 .put("recorded_owned_ids_absent",true).put("recorded_display_empty",true))
             .put("recents",new JSONObject(PublicProfileRecentHistory.absence(syntheticRecents(),r.target).evidence()))
             .put("displays",new JSONObject().put("complete",true).put("count",2).put("snapshot_sha256",HASH).put("exact_name_absent",true).put("recorded_id_absent",true))
-            .put("physical",new JSONObject().put("0",HASH).put("1",HASH));
+            .put("physical",new JSONObject().put("schema",PublicOwnGroupPhysicalFence.BUSINESS_RECOVERY_SCHEMA).put("0",HASH).put("1",HASH));
         if(r.retainedCurrentAbsenceRequired())sample.put("firmware_fingerprint_sha256",ProfileIdentity.sha("host-recovery-fixture"));
         if(r.retainedAfterBusiness)sample.getJSONObject("displays").put("including_disabled",true);return sample;
     }

@@ -91,13 +91,14 @@ public final class PublicProfileBusinessRecoveryMain {
         String recentRaw=BackgroundTaskOrganizer.profileRecents(()->r.deadline);
         PublicProfileRecentHistory.Snapshot recents=PublicProfileRecentHistory.absence(recentRaw,r.target);r.requireRecordedRecentsAbsent(recentRaw);
         JSONObject displays=displays(dm,r);
-        Map<Integer,String> physical=PublicOwnGroupPhysicalReader.read(wm,dm,r.target.profile.userId,()->r.deadline);
+        Map<Integer,String> physical=PublicOwnGroupPhysicalReader.readBusinessRecovery(wm,dm,r,()->r.deadline);
         if(!first)processes=processes(proc,r);
         need(SystemClock.elapsedRealtime()<r.deadline,"PUBLIC_RECOVERY_SAMPLE_DEADLINE");
         JSONObject sample=new JSONObject().put("started_elapsed_ms",begin).put("finished_elapsed_ms",SystemClock.elapsedRealtime())
                 .put("process",processes).put("live",liveEvidence(live,r))
                 .put("recents",new JSONObject(recents.evidence()))
-                .put("displays",displays).put("physical",new JSONObject().put("0",physical.get(0)).put("1",physical.get(1)))
+                .put("displays",displays).put("physical",new JSONObject().put("schema",PublicOwnGroupPhysicalFence.BUSINESS_RECOVERY_SCHEMA)
+                        .put("0",physical.get(0)).put("1",physical.get(1)))
                 .put("target_sha256",installation.target.sha256);
         if(r.retainedCurrentAbsenceRequired())sample.put("firmware_fingerprint_sha256",RecoveryControllerIdentity.firmwareFingerprintSha256());
         return sample;

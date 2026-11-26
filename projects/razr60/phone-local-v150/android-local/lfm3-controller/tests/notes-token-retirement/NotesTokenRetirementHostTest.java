@@ -88,10 +88,11 @@ public final class NotesTokenRetirementHostTest {
                 if(throwAfter)throw new IllegalStateException("fixture Binder after-effect ambiguity");
             }
         };
-        World(int count)throws Exception{
+        World(int count)throws Exception{this(count,0);}
+        World(int count,int foreignDisplay)throws Exception{
             current=this;SystemClock.now=10000;SystemClock.step=1;
             ApplicationInfo app=new ApplicationInfo();app.uid=UID;app.enabled=true;app.packageName=PKG;app.sourceDir="/fixture/notes.apk";context.pm.installed=app;
-            add(100,0,10367,"ctrip.android.view/ctrip.android.view.Main");add(101,1,10368,"com.example.cover/com.example.cover.Main");
+            add(100,foreignDisplay,10367,"ctrip.android.view/ctrip.android.view.Main");add(101,1,10368,"com.example.cover/com.example.cover.Main");
             custody=new PublicPersonalNotesCustody(GEN,SHA,UID,BackgroundTaskOrganizer.profileSnapshot(this),PublicOwnGroupPhysicalFence.inspectRecents(recents()));
             custody.beforeCreate();custody.bindDisplay(7);custody.markLaunch();
             for(int i=0;i<count;i++)add(300+i,7,UID,COMP);
@@ -216,7 +217,7 @@ public final class NotesTokenRetirementHostTest {
         test("changed original cookies are rejected before WCT",()->{World w=new World(1);w.beforeEffect=x->x.live.get(300).launchCookies.add(new Binder());refuses(null,w::run);yes(w.calls==0);});
         test("non-leaf root with a child never reaches broad REMOVE_TASK",()->{World w=new World(1);w.live.get(300).childTaskIds=new int[]{302};refuses(null,w::run);yes(w.calls==0&&w.forbidden==0);});
         test("owned root moved onto main refuses",()->{World w=new World(1);w.beforeEffect=x->x.live.get(300).displayId=0;refuses(null,w::run);yes(w.calls==0);});
-        test("foreign physical focus IME change blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.physicalSuffix="Window{ae u0 input}";refuses(null,w::run);yes(w.calls==0);});
+        test("unrelated physical focus permits owned retirement",()->{World w=new World(1);w.beforeEffect=x->x.physicalSuffix="Window{ae u0 input}";w.run();w.released();yes(w.calls==1&&w.custody.known());});
         test("foreign complete recent body change blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.historySuffix="foreign tail changed\n";refuses(null,w::run);yes(w.calls==0);});
         test("owned handle replacement blocks final dispatch",()->{World w=new World(1);w.beforeEffect=x->x.originalHandle=false;refuses(null,w::run);yes(w.calls==0);});
         test("late final sample consumes no new effect",()->{World w=new World(1);w.beforeEffect=x->SystemClock.now=x.deadline;refuses(null,w::run);yes(w.calls==0);});
@@ -235,7 +236,12 @@ public final class NotesTokenRetirementHostTest {
         test("ready plan cannot release after original cleanup deadline",()->{World w=new World(1);w.run();SystemClock.now=w.deadline;
             refuses(null,()->w.retirement.beforeRelease(w.adapter.now()));refuses(null,()->w.custody.enterRelease(w.adapter.now()));
             refuses(null,w.custody::enterRelease);yes(!w.custody.known()&&!new JSONObject(w.custody.evidence()).getBoolean("release_api_entered"));});
-        test("post-release physical change is not known cleanup",()->{World w=new World(1);w.run();w.physicalSuffix="Window{ae u0 input}";refuses(null,w::released);yes(!w.custody.known());});
+        test("post-release unrelated physical focus permits verified cleanup",()->{World w=new World(1);w.run();w.physicalSuffix="Window{ae u0 input}";w.released();yes(w.custody.known());});
+        test("foreground task launch and close preserve owned-only effect",()->{World w=new World(1);
+            w.beforeEffect=x->{x.add(102,0,10400,"com.example.front/com.example.front.Main");x.live.remove(101);x.recent.remove(101);};
+            w.run();w.released();yes(w.effects.equals(Arrays.asList(300))&&w.live.containsKey(102)&&w.custody.known());});
+        test("owned task migration to main refuses every effect",()->{World w=new World(1);
+            w.beforeEffect=x->x.live.get(300).displayId=0;refuses(null,w::run);yes(w.calls==0);});
         test("display absence includes disabled logical displays",()->{
             android.hardware.display.IDisplayManager.currentIds=new int[]{0,1,7};yes(!PublicPersonalNotesRetirementAdapter.displayAbsent(7,"fixture-owned"));
             android.hardware.display.IDisplayManager.currentIds=new int[]{0,1};yes(PublicPersonalNotesRetirementAdapter.displayAbsent(7,"fixture-owned"));});
