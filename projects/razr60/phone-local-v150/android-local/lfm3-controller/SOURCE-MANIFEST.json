@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
-  "base_head": "b4fc4eaf0be368096d8e9c9a51c65a8a66ccd60c",
-  "base_manifest_sha256": "015be09bdabbe8e9a49b6fc418b4ee8dc71d42176dc24eabbde14af3ebdf2440",
+  "base_head": "93d3db4423dcfd57e3042c7a8469764390f47746",
+  "base_manifest_sha256": "b223a7c0b85481553e9d1efc06fdc85f0853eb6a8196b45634c560221b216257",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
   "complete_source_files": 2711,
@@ -138,8 +138,8 @@
   },
   "current_integration_freeze": {
     "android_compilation_pending": true,
-    "base_head": "b4fc4eaf0be368096d8e9c9a51c65a8a66ccd60c",
-    "description": "Move added normal-cleanup proof input after the original pre-EOF Request identity assertion; all production and Java cases unchanged.",
+    "base_head": "93d3db4423dcfd57e3042c7a8469764390f47746",
+    "description": "Extend the Notes routing historical proof with an exact native-success Client whole inverse; current compilation and original cases unchanged.",
     "device_success_claimed": false,
     "host_execution_pending": true,
     "source_freeze_only": true,
@@ -10807,9 +10807,9 @@
       "sha256": "2c4fafb6f6a1275a63fd94b6e0bcf0689e3c2957f2efe8091f397f71f64e71c5"
     },
     {
-      "bytes": 15249,
+      "bytes": 18458,
       "path": "tests/notes-recovery-routing/run_host.py",
-      "sha256": "6bf0b10ade0e01ef9e133a2b229c0e62d3542b457a431755b63d5f1511b80dbf"
+      "sha256": "dc0889d7c86ec2717e9ce23f65e92c16351dfde742c6d65f9bea225f81b3687d"
     },
     {
       "bytes": 23802,
@@ -14048,28 +14048,31 @@
         "prior_preparation_metadata": {
           "prior_preparation_metadata": {
             "prior_preparation_metadata": {
-              "author_cases_are_not_published_same_source_execution": true,
-              "author_ctrip_sampling_gate": {
-                "bytes": 56864,
-                "mode": 420,
-                "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
-                "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+              "prior_preparation_metadata": {
+                "author_cases_are_not_published_same_source_execution": true,
+                "author_ctrip_sampling_gate": {
+                  "bytes": 56864,
+                  "mode": 420,
+                  "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+                  "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+                },
+                "author_xiaomi_gate": {
+                  "bytes": 2051788,
+                  "mode": 384,
+                  "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+                  "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+                },
+                "current_android_build_qualified": false,
+                "current_full_host_suite_completed": false,
+                "phone_qualified": false,
+                "prepublication_original_failed_suites": {
+                  "bytes": 5295,
+                  "mode": 384,
+                  "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+                  "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+                }
               },
-              "author_xiaomi_gate": {
-                "bytes": 2051788,
-                "mode": 384,
-                "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
-                "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
-              },
-              "current_android_build_qualified": false,
-              "current_full_host_suite_completed": false,
-              "phone_qualified": false,
-              "prepublication_original_failed_suites": {
-                "bytes": 5295,
-                "mode": 384,
-                "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-                "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
-              }
+              "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
             },
             "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
           },
@@ -14505,9 +14508,9 @@
   "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
-  "source_parent_head": "b4fc4eaf0be368096d8e9c9a51c65a8a66ccd60c",
-  "source_parent_manifest_sha256": "015be09bdabbe8e9a49b6fc418b4ee8dc71d42176dc24eabbde14af3ebdf2440",
-  "source_snapshot_predecessor_manifest_sha256": "015be09bdabbe8e9a49b6fc418b4ee8dc71d42176dc24eabbde14af3ebdf2440",
+  "source_parent_head": "93d3db4423dcfd57e3042c7a8469764390f47746",
+  "source_parent_manifest_sha256": "b223a7c0b85481553e9d1efc06fdc85f0853eb6a8196b45634c560221b216257",
+  "source_snapshot_predecessor_manifest_sha256": "b223a7c0b85481553e9d1efc06fdc85f0853eb6a8196b45634c560221b216257",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

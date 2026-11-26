@@ -117,6 +117,19 @@ def run(name, argv, output, result, env):
     need(p.returncode == 0 and p.stderr == b'', name + ' failed or emitted stderr')
     return p.stdout
 
+def success_client_predecessor(actual):
+    """Proof copy only; the legacy dependency compiles the current Client."""
+    need(sha(actual.encode()) == '473eeed0877e239bd2b0221f21a469b6373346c0e6f78460839d7346b658355c',
+         'exact native-success Client required')
+    spans = [('        private final TreeMap<File,String> successDirectoryKeys=new TreeMap<File,String>();\n        private final TreeMap<File,TreeSet<String>> successDirectoryMembers=new TreeMap<File,TreeSet<String>>();\n', ''), ('            if(Boolean.TRUE.equals(result.opt("model_reported_success"))){readNativeSuccessOriginals(result);return;}\n', ''), ('            unchanged(true);\n        }\n        /** The success-history variant archives every member of each bound normal\n         * SDK directory. Enumeration is checked before reads and again afterwards. */\n        private void readNativeSuccessOriginals(JSONObject result)throws Exception{\n            java.util.Set<String> paths=PublicProfileBusinessAbsenceRecovery.nativeSuccessModelPaths(result,bytes());\n            TreeMap<String,TreeSet<String>> directories=new TreeMap<String,TreeSet<String>>();\n            for(String path:paths){int slash=path.lastIndexOf(\'/\');String dir=path.substring(0,slash);\n                TreeSet<String> names=directories.get(dir);if(names==null){names=new TreeSet<String>();directories.put(dir,names);}\n                if(!names.add(path.substring(slash+1)))throw new IOException("duplicate native success original");}\n            for(Map.Entry<String,TreeSet<String>> e:directories.entrySet()){\n                File dir=existingDirectory(new File(root.path,e.getKey()));\n                String identity=directoryIdentity(dir);\n                if(!members(dir).equals(e.getValue()))throw new IOException("native success directory is not the complete normal SDK set");\n                successDirectoryKeys.put(dir,identity);successDirectoryMembers.put(dir,new TreeSet<String>(e.getValue()));\n            }\n            for(String path:paths)read(path,PublicProfileBusinessAbsenceRecovery.originalLimit(path));\n', ''), ('            for(Map.Entry<File,String> e:successDirectoryKeys.entrySet())\n                if(!e.getValue().equals(directoryIdentity(e.getKey()))||!successDirectoryMembers.get(e.getKey()).equals(members(e.getKey())))\n                    throw new IOException("native success original directory changed");\n', '')]
+    historical = actual
+    for current, previous in spans:
+        need(historical.count(current) == 1, 'unique native-success Client inverse span required')
+        historical = historical.replace(current, previous, 1)
+    need(sha(historical.encode()) == 'ca23463b793ebbb4d6f261053bff631ecbbb0e32e145c19672994afc048468e0',
+         'full f4c0 Client predecessor differs')
+    return historical
+
 def main():
     parser = argparse.ArgumentParser()
     for name in ('source', 'java-home', 'json-jar', 'private-input-map', 'current-input-map', 'output'):
@@ -156,8 +169,9 @@ def main():
         generated = output / 'routing-fixture'
         generated.mkdir()
         actual = (local / 'PublicProfileBusinessRecoveryClient.java').read_text()
-        need(actual.count(PATCH) == 1, 'only reviewed narrow routing patch expected')
-        predecessor = actual.replace(PATCH, '', 1)
+        proof_client = success_client_predecessor(actual)
+        need(proof_client.count(PATCH) == 1, 'only reviewed narrow routing patch expected')
+        predecessor = proof_client.replace(PATCH, '', 1)
         need(sha(predecessor.encode()) == PARENT_CLIENT_SHA, 'full e818 predecessor differs')
         old_methods = [method(predecessor, anchor) for anchor in (
             '    static boolean hasBusinessOrigin(Context context)', '    private static String originPath(JSONObject current)',
@@ -211,6 +225,9 @@ final class RecoveryOwnerButtonBridge {
         files = sorted(generated.glob('*.java')) + [own / 'NotesRecoveryRoutingHostTest.java']
         result['production_method_extraction'] = dict(owner_button_sha256=sha(owner_button.encode()), service_methods_sha256=[sha(x.encode()) for x in service_methods],
                                                     full_predecessor_client_sha256=PARENT_CLIENT_SHA, all_methods_verbatim=True,
+                                                    actual_current_client_sha256=sha(actual.encode()),
+                                                    f4c0_proof_client_sha256=sha(proof_client.encode()),
+                                                    current_client_inverse_spans=4, proof_copy_not_compiled=True,
                                                     other_service_types_fail_closed=True, host_queues_are_not_android_runtime=True)
         result['generated_inputs'] = [pin(p) for p in files]
         run('compile', [str(java / 'javac'), '--release', '8', '-Xlint:all,-options', '-Werror', '-encoding', 'UTF-8', '-proc:none',
