@@ -21,6 +21,8 @@ public final class LocalRuntimeConfig {
 
     public LocalRuntimeConfig(ModelProfile profile,String compute, int contextTokens, int threads) {
         this(profile,compute,contextTokens,threads,false);
+        if(profile==ModelProfile.LFM3_VL_2B)
+            throw new IllegalArgumentException("LFM3-VL requires an explicit observe or tools mode");
     }
     public LocalRuntimeConfig(ModelProfile profile,String compute,int contextTokens,int threads,boolean visualObservationOnly) {
         if(profile==null)throw new IllegalArgumentException("model profile is required");

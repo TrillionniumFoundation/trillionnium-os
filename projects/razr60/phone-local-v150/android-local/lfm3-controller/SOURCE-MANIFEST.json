@@ -19,7 +19,8 @@
     "Allow positive link counts only for fixed system UID/GID 1000 installed runtime pins while keeping full size/SHA, open-FD/named-path stability, cancellation and private model/input single-link rules",
     "Repin the independently rebuilt VLM worker to the actual runtime-hardlink native source and retain earlier build provenance",
     "Add explicit restricted LFM3-VL Ctrip tools selection while ordinary LFM3-VL settings remain observation-only and existing automatic preferences remain unchanged",
-    "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards"
+    "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards",
+    "Keep the legacy mode-less LFM3-VL constructor rejected; route only explicit visual tools settings through the explicit five-argument mode constructor"
   ],
   "complete_source_files": 2728,
   "files": [
@@ -7986,10 +7987,10 @@
       "sha256": "eea96aacd9d40ef93142332911a0713a5c25cbd4c6afecb005a7d16414ce3835"
     },
     {
-      "bytes": 4955,
+      "bytes": 5102,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
-      "sha256": "cc004b6ca72a011a19b6d7afb61ecb5d5682b1b183699cd9d7da1c5f8e61155f"
+      "sha256": "a01773c57664b7746bbce41f6930aa1f4f0bd8fc8508256db1a4e39217ea65cb"
     },
     {
       "bytes": 303455,
@@ -8448,10 +8449,10 @@
       "sha256": "64e86f4585de784511c0275a4ecc49a6f6cc4cc67c42f043232b1d8a503da110"
     },
     {
-      "bytes": 26730,
+      "bytes": 26736,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/RuntimeConfigTransaction.java",
-      "sha256": "3dcdb3c0367c1db67051173d93fbe211ea6d2b8003cb5cd8797aebc3e5a62628"
+      "sha256": "564965b5dff8f3ada16ba0d2b58c7714034b91a40fb30b51659c214c82ef6066"
     },
     {
       "bytes": 7088,
@@ -16388,10 +16389,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "ce4b3d8446202fa243450a76fe28a442345ec47676faf73dc68e72f8d8054c01",
-  "predecessor_source_manifest_sha256": "ce4b3d8446202fa243450a76fe28a442345ec47676faf73dc68e72f8d8054c01",
+  "predecessor_manifest_sha256": "b7466aeeb8476fef0dcba7dd170e29d97b95d8d0eac453f815013756630b7c69",
+  "predecessor_source_manifest_sha256": "b7466aeeb8476fef0dcba7dd170e29d97b95d8d0eac453f815013756630b7c69",
   "production_build_inputs_count": 404,
-  "production_input_map_sha256": "b4387f8d62cf0142397c3a689f2a835aa329c7da536c79e915dc23d66b0d7e38",
+  "production_input_map_sha256": "c2bed9a532f0d6babb28bfa0e432921c75fd80b63b3da1857ab5d7cf89e37feb",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "9d14428f84add7227b7dd50b4036148879823367"
+  "source_parent_head": "a1c70ad5924fcfe0d10da08a53a56a32c0e56ccc"
 }

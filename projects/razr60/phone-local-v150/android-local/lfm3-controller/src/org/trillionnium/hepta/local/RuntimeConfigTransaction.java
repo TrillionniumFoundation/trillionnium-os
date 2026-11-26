@@ -142,7 +142,7 @@ final class RuntimeConfigTransaction {
         ModelProfile selected=ModelProfile.named(profile);
         if((selected!=ModelProfile.GUI_OWL_4B&&selected!=ModelProfile.LFM3_VL_2B)||!"npu".equals(compute))
             throw new IOException("explicit pinned visual tools require HTP0 language and GPUOpenCL vision");
-        LocalRuntimeConfig config=new LocalRuntimeConfig(selected,compute,8192,4);
+        LocalRuntimeConfig config=new LocalRuntimeConfig(selected,compute,8192,4,false);
         requireSupported(config);
         return new JSONObject().put("schema","hepta.local-runtime.v3").put("model_profile",config.profile.id)
                 .put("compute",compute).put("context_tokens",8192).put("threads",4).put("visual_mode","tools")
