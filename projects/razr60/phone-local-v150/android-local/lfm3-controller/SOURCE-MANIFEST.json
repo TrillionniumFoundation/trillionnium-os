@@ -14,9 +14,10 @@
     "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority",
     "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies",
     "Let one typed incomplete D read recovery precede one complete final census replacement in the same Xiaomi search Attempt; retain the original total eight C reads, absolute 24-second deadline, owner guards and one input",
-    "Require the Activity cached automatic-target snapshot to match persisted preferences before toggling automatic mode; reload and report stale changes without overwriting current target/model choices"
+    "Require the Activity cached automatic-target snapshot to match persisted preferences before toggling automatic mode; reload and report stale changes without overwriting current target/model choices",
+    "Include both nested provenance source manifests in the full component inventory; production bytes are unchanged from the approved two-fix parent"
   ],
-  "complete_source_files": 2718,
+  "complete_source_files": 2720,
   "files": [
     {
       "bytes": 100,
@@ -6805,6 +6806,12 @@
       "sha256": "79ef76eb53f74fea68c3091803ca600338bb5edf44286230708aed47ed7bcd11"
     },
     {
+      "bytes": 4162,
+      "mode": 420,
+      "path": "provenance/mobimind-app-only-r1/SOURCE-MANIFEST.json",
+      "sha256": "4babf01d56f4310d784ac12ff5eb391ab454b5164da36be0ede9d62846924fd6"
+    },
+    {
       "bytes": 2097,
       "mode": 420,
       "path": "provenance/mobimind-app-only-r1/assets/official-gui-prompts.json",
@@ -6929,6 +6936,12 @@
       "mode": 420,
       "path": "provenance/mobimind-worker-r4/README.md",
       "sha256": "11c3ceab6a3aca3788b30c687d091a870f37765af2a2ef18817205fde76aa552"
+    },
+    {
+      "bytes": 4323,
+      "mode": 420,
+      "path": "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json",
+      "sha256": "b642269f327219c23d9fd778621921c85fd19cb8a35def970e5097ca88d2d8f5"
     },
     {
       "bytes": 7208,
@@ -16323,10 +16336,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "ef97da7a682be3a6bca1a580f93a70e39e765a173354d88fb91f53675468fa0d",
-  "predecessor_source_manifest_sha256": "ef97da7a682be3a6bca1a580f93a70e39e765a173354d88fb91f53675468fa0d",
+  "predecessor_manifest_sha256": "c1ae1d5c2bb29cc3415d7c23dc7a602446694b30fdd037106341734db5989724",
+  "predecessor_source_manifest_sha256": "c1ae1d5c2bb29cc3415d7c23dc7a602446694b30fdd037106341734db5989724",
   "production_build_inputs_count": 397,
   "production_input_map_sha256": "c67ce77ddd69a73090687978a04dba13b8b35b9238726de21cd4744930665d8d",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "73db8c958e2a667f22c9d65071e4b8cd86bb885b"
+  "source_parent_head": "ebf87243e87f50390ba7c5df13dc10dd59a35aef"
 }
