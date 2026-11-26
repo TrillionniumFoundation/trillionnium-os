@@ -249,7 +249,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         probePrompt=new EditText(this);probePrompt.setText("只输出 42。");probePrompt.setMinLines(2);diagnostics.addView(probePrompt);
         LinearLayout probes=new LinearLayout(this);diagnostics.addView(probes);
         runText=button("文本推理");probes.addView(runText);
-        runText.setOnClickListener(v -> runProbe(false,128));
+        runText.setOnClickListener(v -> runProbe(false,128,true));
         probeOutput=text("",11);probeOutput.setTypeface(Typeface.MONOSPACE);probeOutput.setTextIsSelectable(true);
         probeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(probeOutput);
         diagnostics.addView(text("私有截图诊断只生成本地视觉模型输出，不会操作手机。",12));
@@ -541,6 +541,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
 
     private void runProbe(boolean image,int maxTokens){
+        runProbe(image,maxTokens,false);
+    }
+    private void runProbe(boolean image,int maxTokens,boolean ordinaryText){
         if(engine.isBusy()||tasks.isRunning()||tasks.isBlocked()){probeOutput.setText("已有任务正在运行或退出待确认，请先停止并等待。");return;}
         String system=getIntent().getStringExtra("system_prompt");
         if(system==null)system="你是在手机本地运行的助手。请直接、简洁地回答用户指令。";
@@ -548,6 +551,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(image){probeOutput.setText("当前本地模型只接收文字；图片不会发送给模型。");return;}
         probeOutput.setText("正在启动手机本地推理……");
         try{
+            // Only the ordinary button derives its budget from the current saved profile.
+            if(ordinaryText)maxTokens=engine.configuration().profile==ModelProfile.LFM25_8B_A1B?256:128;
             engine.start(new LocalModelEngine.Request(probePrompt.getText().toString(),system,
                 null,maxTokens,timeout),
                 result -> runOnUiThread(() -> {renderProbe(result);refresh();}));

@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
-  "base_head": "9f452b7e667cb405860e3ac327b290a4c021a92e",
-  "base_manifest_sha256": "bc209672ab5e3f209c0600e3da688fd47400907f74575009ec96122efc9e1a75",
+  "base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+  "base_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
   "complete_source_files": 2672,
@@ -189,6 +189,18 @@
     "phone_success_claimed": false,
     "readonly_flight_whole_owner_form": true,
     "xiaomi_same_attempt_single_complete_c_d_resample": true
+  },
+  "current_ordinary_text_probe_budget": {
+    "android_compilation_pending": true,
+    "base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+    "explicit_probe_budgets_preserved": true,
+    "native_and_tool_task_code_unchanged": true,
+    "ordinary_lfm25_8b_a1b_max_tokens": 256,
+    "ordinary_other_text_profiles_max_tokens": 128,
+    "original_busy_blocked_image_guards_and_timeout_preserved": true,
+    "patch_sha256": "9dfcefdb7f5826a7d53244169a7dc17e11bbfc068ed401291825beaa55777a02",
+    "phone_success_claimed": false,
+    "project_host_verification_pending": true
   },
   "current_personal_notes_initialization_recovery": {
     "changed_paths": [
@@ -6926,9 +6938,9 @@
       "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
     },
     {
-      "bytes": 104457,
+      "bytes": 104782,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "ed0d7307de09b63c8eb10780faf62a88e2e9882edff64e48e86b8cb35f96f5a0"
+      "sha256": "22a5095f4a43c1a4bf47db2658e5ba939ab0704daf05efb2d2f7f615735630b6"
     },
     {
       "bytes": 4417,
@@ -13765,22 +13777,25 @@
     }
   },
   "host_validation_at_preparation": {
-    "author_cases_are_not_published_same_source_qualification": true,
-    "author_ctrip_qualification": {
-      "bytes": 34569,
-      "mode": 420,
-      "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
-      "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+    "prior_preparation_metadata": {
+      "author_cases_are_not_published_same_source_qualification": true,
+      "author_ctrip_qualification": {
+        "bytes": 34569,
+        "mode": 420,
+        "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
+        "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+      },
+      "author_xiaomi_gate": {
+        "bytes": 1886513,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
+        "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
+      },
+      "current_android_build_qualified": false,
+      "current_full_host_suite_completed": false,
+      "phone_qualified": false
     },
-    "author_xiaomi_gate": {
-      "bytes": 1886513,
-      "mode": 384,
-      "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
-      "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
-    },
-    "current_android_build_qualified": false,
-    "current_full_host_suite_completed": false,
-    "phone_qualified": false
+    "status": "PENDING_EXECUTION_FOR_ORDINARY_TEXT_BUDGET_PATCH"
   },
   "inherited_source_behavior_metadata": {
     "9f452_source_delta": {
@@ -14057,8 +14072,8 @@
     "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
     "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336"
   },
-  "installed_previous_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
-  "mac_cached_source_head": "9f452b7e667cb405860e3ac327b290a4c021a92e",
+  "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+  "mac_cached_source_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "main_java_sources": 220,
   "merged_published_heads": [
     "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
@@ -14066,13 +14081,13 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "4b151502126b759e9cbb23d8c7c5706bbe94b834f4ff8e7b8e7c10fcfb114a9d",
+  "production_input_map_sha256": "5d872bde94b2e4d35e4ba4f4a6858b6e574c36133d6a02a943f000498bae7f71",
   "production_qualification_base_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only successor of the preserved 9f452 qualification failure: explicit legacy refusal for the managed-Ctrip-only helper, exact full-template proof inverse, and removal of one duplicate diagnostic-only provider type. All 397 production inputs, original cases, deadlines and action guards remain byte-identical to 9f452; installed predecessor and qualification basis remain bb2708.",
-  "source_parent_head": "9f452b7e667cb405860e3ac327b290a4c021a92e",
-  "source_parent_manifest_sha256": "bc209672ab5e3f209c0600e3da688fd47400907f74575009ec96122efc9e1a75",
-  "source_snapshot_predecessor_manifest_sha256": "bc209672ab5e3f209c0600e3da688fd47400907f74575009ec96122efc9e1a75",
+  "source_parent_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+  "source_parent_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+  "source_snapshot_predecessor_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
