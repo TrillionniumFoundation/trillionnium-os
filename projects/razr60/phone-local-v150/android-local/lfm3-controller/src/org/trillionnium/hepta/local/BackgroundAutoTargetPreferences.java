@@ -44,7 +44,8 @@ final class BackgroundAutoTargetPreferences {
                     ||(p!=null&&ProfileTarget.XIAOMI.equals(choice.initial));
             boolean supported=ModelProfile.LFM3.id.equals(modelProfile)
                     ||(textTarget&&(ModelProfile.QWEN35_4B.id.equals(modelProfile)||ModelProfile.LFM25_8B_A1B.id.equals(modelProfile)))
-                    ||(p!=null&&ProfileTarget.CTRIP.equals(choice.initial)&&ModelProfile.GUI_OWL_4B.id.equals(modelProfile));
+                    ||(p!=null&&ProfileTarget.CTRIP.equals(choice.initial)
+                        &&(ModelProfile.GUI_OWL_4B.id.equals(modelProfile)||ModelProfile.LFM3_VL_2B.id.equals(modelProfile)));
             need(supported&&"npu".equals(compute),"自动目标的首选模型组合不受支持");
             this.choice=choice;this.displayMode=displayMode;this.modelProfile=modelProfile;this.compute=compute;
             StringBuilder canonical=new StringBuilder();field(canonical,"hepta.auto-target-entry.v1");
@@ -60,6 +61,7 @@ final class BackgroundAutoTargetPreferences {
         String label(){return choice.profileTarget==null?"备忘录 · 个人空间":choice.profileTarget.appLabel()+" · 工作资料 "+choice.profileTarget.profile.userId;}
         String modelLabel(){
             if(ModelProfile.GUI_OWL_4B.id.equals(modelProfile))return "GUI-Owl 4B · 语言 NPU + 图像 GPU";
+            if(ModelProfile.LFM3_VL_2B.id.equals(modelProfile))return "LFM3-VL 2B · 图像工具 · NPU + GPU（携程只读机票）";
             if(ModelProfile.QWEN35_4B.id.equals(modelProfile))return "Qwen3.5 4B · NPU（实验）";
             if(ModelProfile.LFM25_8B_A1B.id.equals(modelProfile))return "LFM2.5-8B-A1B · NPU（实验）";
             return "LFM3-1.7B · NPU";

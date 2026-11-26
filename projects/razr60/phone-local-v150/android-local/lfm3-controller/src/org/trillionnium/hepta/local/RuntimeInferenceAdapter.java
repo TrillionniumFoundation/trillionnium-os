@@ -74,10 +74,10 @@ public final class RuntimeInferenceAdapter implements LocalInference {
     private Binding requireCalendarTask(String taskId,LocalRuntimeConfig config){
         Binding value=current();
         if(!value.taskId.equals(taskId)||value.runtime.configuration()!=config
-                ||config.profile!=ModelProfile.GUI_OWL_4B||config.visualObservationOnly
+                ||!config.nativeCalendarToolsConfiguration()
                 ||!(value.delegate instanceof VlmInferenceAdapter)
                 ||value.delegate.configuration()!=config||!value.delegate.modelOutputDispatchAllowed())
-            throw new IllegalStateException("same reserved GUI-Owl task delegate required");
+            throw new IllegalStateException("same reserved pinned visual task delegate required");
         return value;
     }
     synchronized CalendarModelBinding bindCalendarModel(String taskId,LocalRuntimeConfig config){

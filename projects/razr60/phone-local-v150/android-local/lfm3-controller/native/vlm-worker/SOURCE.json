@@ -10,8 +10,8 @@
     },
     {
       "path": "native/generation-bridge.c",
-      "bytes": 4377,
-      "sha256": "15f0f51bca0b477758e7a034de3b45f7b31d6bd7fd1e46554319170d1194933d"
+      "bytes": 5150,
+      "sha256": "40af0d1aaee6dacc347e1abbfcec6320dd45ef27c05e7421fb31042661cd32b4"
     },
     {
       "path": "native/guard-io.h",
@@ -199,6 +199,11 @@
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
     },
     {
+      "path": "tools/test_runtime_pins.py",
+      "bytes": 3926,
+      "sha256": "053120ef81056270abc868527ee010654e5a415ab412a84690f510de4f0d7777"
+    },
+    {
       "path": "tools/test_stage_clock.py",
       "bytes": 2430,
       "sha256": "fcd2e74bc8a1b47f92a12f33e8ddbe8d2116033b42f14feb0cec210665c658c5"
@@ -222,6 +227,16 @@
       "path": "tests/linked-backends-test.cpp",
       "bytes": 2014,
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
+    },
+    {
+      "path": "tests/runtime-pin-test.c",
+      "bytes": 6376,
+      "sha256": "1579fd248e900cbdd0acb2ec5aeb405192f6a50c9c1f99ff07f6ba7736e2a13b"
+    },
+    {
+      "path": "tests/runtime-pins/d125-installed-runtime-metadata.json",
+      "bytes": 2333,
+      "sha256": "7f652795640171ade2d057c84759948cf4cb1cd7e87079834dee1fb75c5c164e"
     },
     {
       "path": "tests/stage-clock-test.cpp",

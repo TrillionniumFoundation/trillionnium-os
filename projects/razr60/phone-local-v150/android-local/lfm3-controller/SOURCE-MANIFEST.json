@@ -15,9 +15,13 @@
     "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies",
     "Let one typed incomplete D read recovery precede one complete final census replacement in the same Xiaomi search Attempt; retain the original total eight C reads, absolute 24-second deadline, owner guards and one input",
     "Require the Activity cached automatic-target snapshot to match persisted preferences before toggling automatic mode; reload and report stale changes without overwriting current target/model choices",
-    "Include both nested provenance source manifests in the full component inventory; production bytes are unchanged from the approved two-fix parent"
+    "Include both nested provenance source manifests in the full component inventory; production bytes are unchanged from the approved two-fix parent",
+    "Allow positive link counts only for fixed system UID/GID 1000 installed runtime pins while keeping full size/SHA, open-FD/named-path stability, cancellation and private model/input single-link rules",
+    "Repin the independently rebuilt VLM worker to the actual runtime-hardlink native source and retain earlier build provenance",
+    "Add explicit restricted LFM3-VL Ctrip tools selection while ordinary LFM3-VL settings remain observation-only and existing automatic preferences remain unchanged",
+    "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards"
   ],
-  "complete_source_files": 2720,
+  "complete_source_files": 2728,
   "files": [
     {
       "bytes": 100,
@@ -5963,7 +5967,7 @@
       "bytes": 6094,
       "mode": 420,
       "path": "native/local-vlm-runtime-pins.json",
-      "sha256": "8218caa0546dee6a08f2ab6b3b4b3089e6c5dbcdddeecfc1350e19ddc6f5fce5"
+      "sha256": "2321fec1305c8f500b002a5ea2aacc0601921b2d11e123b2803ceab07dfb8b68"
     },
     {
       "bytes": 1495,
@@ -6266,10 +6270,10 @@
       "sha256": "75af717eb17ca62af80f097ea5f6cb6743532d2e8323461d42ddc8794359b7c0"
     },
     {
-      "bytes": 9197,
+      "bytes": 9707,
       "mode": 420,
       "path": "native/vlm-worker/SOURCE.json",
-      "sha256": "f1d11753423a1a71a1e25c755cee1e302ffb6ba86d9469e4bb98ed80e2dfd8b9"
+      "sha256": "8fe01359cd000ee5d7d5a86b31825cead35454039d4e9851884e33cc3059dd39"
     },
     {
       "bytes": 669,
@@ -6278,10 +6282,10 @@
       "sha256": "a5ff6f3de5c3932648cde762e177b9bb20fd89ccdd75e20ca0403fab45d22728"
     },
     {
-      "bytes": 4377,
+      "bytes": 5150,
       "mode": 420,
       "path": "native/vlm-worker/native/generation-bridge.c",
-      "sha256": "15f0f51bca0b477758e7a034de3b45f7b31d6bd7fd1e46554319170d1194933d"
+      "sha256": "40af0d1aaee6dacc347e1abbfcec6320dd45ef27c05e7421fb31042661cd32b4"
     },
     {
       "bytes": 983,
@@ -6362,6 +6366,12 @@
       "sha256": "58545b00b49adc784c933635e97cd3f8f7353e0cf5189b42f761af37d9d649f2"
     },
     {
+      "bytes": 9087,
+      "mode": 420,
+      "path": "native/vlm-worker/provenance/ANDROID-BUILD-RUNTIME-HARDLINK-R1.json",
+      "sha256": "85c53a6ca34034cd4c93a27bd66d94de9b11d06f18f92f4613fc3660e2fb931d"
+    },
+    {
       "bytes": 122,
       "mode": 420,
       "path": "native/vlm-worker/provenance/HOST-GUARDS.json",
@@ -6392,10 +6402,22 @@
       "sha256": "eab88a7443acdb75f54a23ba2b5344c9e266f88c024b5c48f9a36a2a0efadce9"
     },
     {
+      "bytes": 5611,
+      "mode": 420,
+      "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-RUNTIME-HARDLINK-R1.json",
+      "sha256": "00abb7082ed30bd80df92411d0acd91160600b17b05ffc330d95ec8959248224"
+    },
+    {
       "bytes": 663,
       "mode": 420,
       "path": "native/vlm-worker/provenance/REPRODUCIBLE-R4.json",
       "sha256": "2e84e431be18e6a0471481be690653f8e4bf3ab7220ad430d3df43bb5cc923f3"
+    },
+    {
+      "bytes": 5948,
+      "mode": 420,
+      "path": "native/vlm-worker/provenance/RUNTIME-PINS-HOST-R1.json",
+      "sha256": "9f3c33ea3d1a3cef103bfb96d465a6e2cb08c5e84c8e60132379ccc9c8c74d97"
     },
     {
       "bytes": 7155,
@@ -6408,6 +6430,12 @@
       "mode": 420,
       "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
       "sha256": "1a1088f39211eed098d632e2663c33632f3099c5296d49aaea7db98c94863e3c"
+    },
+    {
+      "bytes": 7001,
+      "mode": 420,
+      "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-RUNTIME-HARDLINK-R1.json",
+      "sha256": "4b7a33d8ab0568de15fe939cc9a7f16afb387afe553459bd8d133d3e86c3ed59"
     },
     {
       "bytes": 1430,
@@ -6446,6 +6474,18 @@
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
     },
     {
+      "bytes": 6376,
+      "mode": 420,
+      "path": "native/vlm-worker/tests/runtime-pin-test.c",
+      "sha256": "1579fd248e900cbdd0acb2ec5aeb405192f6a50c9c1f99ff07f6ba7736e2a13b"
+    },
+    {
+      "bytes": 2333,
+      "mode": 420,
+      "path": "native/vlm-worker/tests/runtime-pins/d125-installed-runtime-metadata.json",
+      "sha256": "7f652795640171ade2d057c84759948cf4cb1cd7e87079834dee1fb75c5c164e"
+    },
+    {
       "bytes": 1972,
       "mode": 420,
       "path": "native/vlm-worker/tests/stage-clock-test.cpp",
@@ -6474,6 +6514,12 @@
       "mode": 420,
       "path": "native/vlm-worker/tools/test_linked_backends.py",
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
+    },
+    {
+      "bytes": 3926,
+      "mode": 420,
+      "path": "native/vlm-worker/tools/test_runtime_pins.py",
+      "sha256": "053120ef81056270abc868527ee010654e5a415ab412a84690f510de4f0d7777"
     },
     {
       "bytes": 2430,
@@ -7760,10 +7806,10 @@
       "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
     },
     {
-      "bytes": 13604,
+      "bytes": 13817,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/BackgroundAutoTargetPreferences.java",
-      "sha256": "12e2dd0339404e219e344e42032e269f46ab21e5b10075e1de8facb19740263a"
+      "sha256": "f750a023c4a77d1e5599e84420be7e9ec66df79788522ce8fe67f7bde75704bd"
     },
     {
       "bytes": 7264,
@@ -7928,10 +7974,10 @@
       "sha256": "018f36659f6b5de16a3508e96b1b804f1a87ff88213cc2cbd258838b3d1ed656"
     },
     {
-      "bytes": 10337,
+      "bytes": 10720,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalModelSettings.java",
-      "sha256": "6490356900e03ced54385d13299a1dc7521fc7757e86e58f25e9ffdbeeff0cc1"
+      "sha256": "f9715f812c951567208c52721899832f05fc4fd02a7e7a0c496121f0966026f5"
     },
     {
       "bytes": 17291,
@@ -7940,16 +7986,16 @@
       "sha256": "eea96aacd9d40ef93142332911a0713a5c25cbd4c6afecb005a7d16414ce3835"
     },
     {
-      "bytes": 4748,
+      "bytes": 4955,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
-      "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
+      "sha256": "cc004b6ca72a011a19b6d7afb61ecb5d5682b1b183699cd9d7da1c5f8e61155f"
     },
     {
-      "bytes": 301073,
+      "bytes": 303455,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "770db69258244a7a15ec858b81861cf3895f50307e2aa5f212adadc8e027633d"
+      "sha256": "1bd42251b5861ed5a0172c9d29d6eb4df61f206007af2506c6ca8a8a3c47bb3b"
     },
     {
       "bytes": 60034,
@@ -7958,10 +8004,10 @@
       "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
     },
     {
-      "bytes": 105539,
+      "bytes": 106282,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "6e2c54a8bb9dc7b106db9565983785ccb390444cc2906fd95951869684d439ea"
+      "sha256": "52c56ec92ccc7dd82dce462f0df50a9df9c212b30dd7430af4b180dbe282fdd8"
     },
     {
       "bytes": 4417,
@@ -8018,10 +8064,10 @@
       "sha256": "17f59a7df0d823d0518becaf27dec199025885c3b1d537fee5c8e4820556c9ea"
     },
     {
-      "bytes": 8494,
+      "bytes": 8608,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
+      "sha256": "ad003f4011763177096661cc4e5b4779545caae93174b015269f04a9dfc9eeae"
     },
     {
       "bytes": 87557,
@@ -8054,10 +8100,10 @@
       "sha256": "42b69f8d7fbdf31ac3f2064f6910bad0f1dad8270f9bcdb240dff0052557f2dc"
     },
     {
-      "bytes": 176183,
+      "bytes": 176070,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "48c3802e762baabc170056645f060df779be12ae6c9344ce4972ef55448091e4"
+      "sha256": "7e23cb79aebd80d43517095068591e2ae4dc77f284f7a99139c8d337a83dd822"
     },
     {
       "bytes": 2562,
@@ -8066,10 +8112,10 @@
       "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
     },
     {
-      "bytes": 12026,
+      "bytes": 11904,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/NativeCalendarDateEnvelope.java",
-      "sha256": "63e5063098878551248b630e2daba46ab7efd556f806963e85450238b186d734"
+      "sha256": "2fbef5ebcf0d3d4e1e8f25c4685ab639c391872d9533fe3263127d4f55bf4e51"
     },
     {
       "bytes": 4318,
@@ -8402,16 +8448,16 @@
       "sha256": "64e86f4585de784511c0275a4ecc49a6f6cc4cc67c42f043232b1d8a503da110"
     },
     {
-      "bytes": 26551,
+      "bytes": 26730,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/RuntimeConfigTransaction.java",
-      "sha256": "0346deefa370f27a100e0ae637f47b409271acdf1a26cb3641e05f44ffa90e29"
+      "sha256": "3dcdb3c0367c1db67051173d93fbe211ea6d2b8003cb5cd8797aebc3e5a62628"
     },
     {
-      "bytes": 7109,
+      "bytes": 7088,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/RuntimeInferenceAdapter.java",
-      "sha256": "44017a6d26fba3b7fee310663de0c2edd50be032b8bf96fd1316bdfb8dabe33b"
+      "sha256": "591ceee9258365643fec8fc823788fb3407d4031e3cdd0d39ba9aeda87208f8d"
     },
     {
       "bytes": 8446,
@@ -8522,16 +8568,16 @@
       "sha256": "60a8f5c94205d3b1d60d95981f3f45ad5785e274c28994d72125c49426d4e115"
     },
     {
-      "bytes": 64954,
+      "bytes": 64809,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
-      "sha256": "060e84232e311353fb814cb6fe367c3208f8f672548a08fa63bb4d648d6fdb3f"
+      "sha256": "32f9299adb49c5b9b9bdc8fdd7bcfa23631868fcc9cbfb00687d9e2836332a48"
     },
     {
       "bytes": 1091,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
-      "sha256": "3a8375f8136901dd45411ffe01434a150a45055c2f4d61e5fae796cb41357b2c"
+      "sha256": "6ad8f66ea5e7f3a3c4b360f47fbdb7b5d30eff8475073fe558ae0338b71f50f4"
     },
     {
       "bytes": 36500,
@@ -9872,10 +9918,10 @@
       "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
     },
     {
-      "bytes": 698,
+      "bytes": 706,
       "mode": 420,
       "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
-      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+      "sha256": "908fd68789590c1a42a338ff0e02b5ebd81ac2218ea9dd6530676b12ca45617d"
     },
     {
       "bytes": 2707,
@@ -9884,22 +9930,28 @@
       "sha256": "d46a416bb8cf3dc7ac6d64afd498d4f545e098ceb4831eee5e5176d08aad42e4"
     },
     {
+      "bytes": 459,
+      "mode": 420,
+      "path": "tests/local-model-settings-visual/TOOLS-CASE-CONTRACT.json",
+      "sha256": "45cf299439390b6b16263255f53066fbb52ce1fe70b9739f51cd04b53eaac228"
+    },
+    {
       "bytes": 9165,
       "mode": 420,
       "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
       "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
     },
     {
-      "bytes": 47533,
+      "bytes": 53260,
       "mode": 420,
       "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "sha256": "34ba1d1f8dd67d79592e3dfd5bd0ca75873df52e0491d6d403182d86db4b5b3c"
+      "sha256": "3e05c090bd150028ca94850c50b08da5cd8eb3ea01cb6cb665db74030173da88"
     },
     {
-      "bytes": 20683,
+      "bytes": 21249,
       "mode": 420,
       "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "047bb48a57a5ac4968fd7dc292b28057686319a3ce8916e5cdcb4a6d9497159c"
+      "sha256": "07ba6b1835cbe51ea0723379642cc21972ecb4c03be070588c5e0abcc862273f"
     },
     {
       "bytes": 3621,
@@ -10586,10 +10638,10 @@
       "sha256": "37c0e9b2c5eda2c8607a04ec990dd926909ed0b19d29c85ca901e59d716ad462"
     },
     {
-      "bytes": 58012,
+      "bytes": 62099,
       "mode": 420,
       "path": "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "sha256": "08a9ed65894de83ae57a965e6c92a15d1b5da94600c3f84d429a5b89fc359068"
+      "sha256": "af25f688f8dc4fae90220f14b0019c4e257188f9903a5d029be3589d01bbd638"
     },
     {
       "bytes": 788,
@@ -10748,10 +10800,10 @@
       "sha256": "f451cdd04e4b4905216b8ee84eee7038984d31002fdc49fcf9e7a6f18732886e"
     },
     {
-      "bytes": 27848,
+      "bytes": 28516,
       "mode": 420,
       "path": "tests/native-calendar-date-model/NativeCalendarDateModelHostTest.java",
-      "sha256": "dfcd1cd04b77b3d9603123db9bbbd178302b4b4684864e10d28b0130b82cd618"
+      "sha256": "41ccdfc0785f6e4ad2d447af0330ce31ce4cca153a55df6a123c620aad2c91a9"
     },
     {
       "bytes": 9538,
@@ -10814,16 +10866,16 @@
       "sha256": "9a9c990576fd8f51b8e963aed296b6cd6b15a424f1b2797c853e3ea15e536230"
     },
     {
-      "bytes": 15470,
+      "bytes": 22083,
       "mode": 420,
       "path": "tests/native-calendar-runtime-adapter/NativeCalendarRuntimeAdapterHostTest.java",
-      "sha256": "ce30dbde1851da185372218447872d3e3fd398ceacb7dabcb17ef975f466aa1a"
+      "sha256": "2b8264e5c7fb58852c33e33a3e6f2cad1c148c2d75386d090c4db37f2847c0bc"
     },
     {
-      "bytes": 18950,
+      "bytes": 20698,
       "mode": 420,
       "path": "tests/native-calendar-runtime-adapter/run_host.py",
-      "sha256": "75b7b5bf4f86c3b1fd944df40cbd164daac0b27d4049327e64a2295d659a6446"
+      "sha256": "59af93d4c2a6c13b156f4de784655b4bfe9c2ae93ffc029d3e7dedccc06ad7a7"
     },
     {
       "bytes": 8666,
@@ -15098,10 +15150,10 @@
       "sha256": "b108df1b4264d06a3c54cd3ba7fb1588293ca99a11299e7ff764932693c18600"
     },
     {
-      "bytes": 6185,
+      "bytes": 6203,
       "mode": 420,
       "path": "tests/test_vlm_runtime.py",
-      "sha256": "49b28158ee036355aeba717baecdf46c6d420e4ccf469ab3774f93230485feb5"
+      "sha256": "026195d525bf775c82081c019b09ff427efa133e7500b29b77f2432ce1809fed"
     },
     {
       "bytes": 8573,
@@ -16082,10 +16134,10 @@
       "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
-      "bytes": 68950,
+      "bytes": 72632,
       "mode": 420,
       "path": "tools/run_host_checks.py",
-      "sha256": "edb6cf41c27e9e274d09664e1f7f51d931bd5914a294338de0079a95b2ac7e24"
+      "sha256": "2a419c6bfab04d67c01bd92e77e7e378da0937fa3cecd5b81c7fc93f538450c4"
     },
     {
       "bytes": 13873,
@@ -16316,10 +16368,10 @@
       "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
     },
     {
-      "bytes": 10273,
+      "bytes": 10300,
       "mode": 420,
       "path": "tools/verify_vlm_runtime.py",
-      "sha256": "44017629277fae9bee8b09240ff5a49a1eac2275844e8768ac730931ddf34867"
+      "sha256": "f2da8820eb73d727afc4a6f232cba6ed3528867c1eb851904db63bc238eeff1c"
     },
     {
       "bytes": 6512,
@@ -16336,10 +16388,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "c1ae1d5c2bb29cc3415d7c23dc7a602446694b30fdd037106341734db5989724",
-  "predecessor_source_manifest_sha256": "c1ae1d5c2bb29cc3415d7c23dc7a602446694b30fdd037106341734db5989724",
-  "production_build_inputs_count": 397,
-  "production_input_map_sha256": "c67ce77ddd69a73090687978a04dba13b8b35b9238726de21cd4744930665d8d",
+  "predecessor_manifest_sha256": "ce4b3d8446202fa243450a76fe28a442345ec47676faf73dc68e72f8d8054c01",
+  "predecessor_source_manifest_sha256": "ce4b3d8446202fa243450a76fe28a442345ec47676faf73dc68e72f8d8054c01",
+  "production_build_inputs_count": 404,
+  "production_input_map_sha256": "b4387f8d62cf0142397c3a689f2a835aa329c7da536c79e915dc23d66b0d7e38",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "ebf87243e87f50390ba7c5df13dc10dd59a35aef"
+  "source_parent_head": "9d14428f84add7227b7dd50b4036148879823367"
 }

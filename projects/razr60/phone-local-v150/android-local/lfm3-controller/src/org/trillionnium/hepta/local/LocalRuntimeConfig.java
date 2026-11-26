@@ -33,8 +33,6 @@ public final class LocalRuntimeConfig {
         if(profile.visual()&&(!"npu".equals(compute)||contextTokens!=8192||threads!=4))
             throw new IllegalArgumentException("visual profile requires HTP0, context 8192 and four threads");
         if(visualObservationOnly&&!profile.visual())throw new IllegalArgumentException("observation-only mode requires a visual profile");
-        if(profile==ModelProfile.LFM3_VL_2B&&!visualObservationOnly)
-            throw new IllegalArgumentException("LFM3-VL qualification is observation-only; model output cannot dispatch tools");
         this.compute = compute;
         this.profile = profile;
         this.contextTokens = contextTokens;
@@ -43,6 +41,12 @@ public final class LocalRuntimeConfig {
     }
 
     public static LocalRuntimeConfig defaults() { return new LocalRuntimeConfig("npu", 8192, 4); }
+    /** Closed model/configuration contract only; task and per-action ownership
+     * still come from the original native session and current-frame permits. */
+    public boolean nativeCalendarToolsConfiguration() {
+        return (profile==ModelProfile.GUI_OWL_4B||profile==ModelProfile.LFM3_VL_2B)
+                &&!visualObservationOnly&&"npu".equals(compute)&&contextTokens==8192&&threads==4;
+    }
     public static LocalRuntimeConfig fromFields(java.util.Map<String,?> value){
         if(value==null)throw new IllegalArgumentException("runtime config required");
         boolean legacy="hepta.local-runtime.v1".equals(value.get("schema"));

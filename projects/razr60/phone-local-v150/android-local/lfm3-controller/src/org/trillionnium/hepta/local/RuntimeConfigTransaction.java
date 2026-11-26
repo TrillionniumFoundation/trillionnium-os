@@ -136,14 +136,19 @@ final class RuntimeConfigTransaction {
     }
     /** Visual settings are an explicit v3 tools selection; the text-only API stays closed. */
     static byte[] selectedVisualTools(String compute)throws Exception{
-        if(!"npu".equals(compute))throw new IOException("GUI-Owl requires HTP0 language and GPUOpenCL vision");
-        LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,compute,8192,4);
+        return selectedVisualTools(ModelProfile.GUI_OWL_4B.id,compute);
+    }
+    static byte[] selectedVisualTools(String profile,String compute)throws Exception{
+        ModelProfile selected=ModelProfile.named(profile);
+        if((selected!=ModelProfile.GUI_OWL_4B&&selected!=ModelProfile.LFM3_VL_2B)||!"npu".equals(compute))
+            throw new IOException("explicit pinned visual tools require HTP0 language and GPUOpenCL vision");
+        LocalRuntimeConfig config=new LocalRuntimeConfig(selected,compute,8192,4);
         requireSupported(config);
         return new JSONObject().put("schema","hepta.local-runtime.v3").put("model_profile",config.profile.id)
                 .put("compute",compute).put("context_tokens",8192).put("threads",4).put("visual_mode","tools")
                 .toString(2).getBytes(StandardCharsets.UTF_8);
     }
-    /** LFM3-VL is a distinct closed observation choice; it cannot select tool mode. */
+    /** This original LFM3-VL observation choice never selects tool mode. */
     static byte[] selectedVisualObservation(String compute)throws Exception{
         if(!"npu".equals(compute))throw new IOException("LFM3-VL requires HTP0 language and GPUOpenCL vision");
         LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,compute,8192,4,true);
@@ -153,8 +158,7 @@ final class RuntimeConfigTransaction {
                 .toString(2).getBytes(StandardCharsets.UTF_8);
     }
     static void requireSupported(LocalRuntimeConfig config)throws IOException{
-        if(config!=null&&config.profile==ModelProfile.GUI_OWL_4B&&!config.visualObservationOnly
-                &&"npu".equals(config.compute)&&config.contextTokens==8192&&config.threads==4)return;
+        if(config!=null&&config.nativeCalendarToolsConfiguration())return;
         if(config!=null&&config.profile==ModelProfile.LFM3_VL_2B&&config.visualObservationOnly
                 &&"npu".equals(config.compute)&&config.contextTokens==8192&&config.threads==4)return;
         requireText(config);

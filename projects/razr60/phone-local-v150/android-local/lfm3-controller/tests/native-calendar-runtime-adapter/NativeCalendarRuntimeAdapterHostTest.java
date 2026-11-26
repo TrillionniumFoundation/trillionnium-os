@@ -39,6 +39,8 @@ public final class NativeCalendarRuntimeAdapterHostTest {
 
     public static void main(String[] args)throws Exception{
         NativeCalendarDateFreshHostTest.setup(args);out=Paths.get(args[0]);
+        NativeCalendarDateModelHostTest.lfmTemplate=Files.readAllBytes(Paths.get(args[3]));
+        check(MobiMindContract.sha(NativeCalendarDateModelHostTest.lfmTemplate).equals(VlmResultContract.LFM3_VL_2B.templateSha256),"actual original LFM3-VL template, never GUI substitution");
         one("ordinary_runtime_LTC_private_receipt_registry_and_actual_fresh_publication",()->{try(RuntimeCalendarFixture.Env e=new RuntimeCalendarFixture.Env()){
             Object binding=field(e.router,"binding");
             check(e.controller.inference==e.router&&e.offer.inference==e.router,"LTC and Offer retain the ordinary wrapper, not a replacement VLM");
@@ -138,6 +140,62 @@ public final class NativeCalendarRuntimeAdapterHostTest {
             check(e.service.current==e.sourcePhone,"no newer image silently substituted for the original request");
             e.sourceRetired=false;
         }});
+        one("lfm3vl_tools_early_selection_gate_is_closed_before_any_bootstrap",()->{
+            String owner="在携程查询2026年11月27日北京到上海的单程机票，1名成人，读取真实航班和票价。只查询，不预订、不提交订单、不支付。";
+            org.trillionnium.hepta.background.ProfileTarget profile=NativeProfileIdentityHostTest.ctrip();
+            BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,profile.packageName,Collections.singleton(profile.packageName),profile);
+            BackgroundSession.Selection selected=new BackgroundSession.Selection(target,true);
+            TaskAuthorization auth=TaskAuthorization.parse(owner).forExecutionSelection(selected);
+            LocalRuntimeConfig tools=new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,false);
+            LocalTaskController.requireLfm3VlToolsSelection(tools,owner,auth,selected,target.nativeGoal);
+            check(target.nativeGoal==selected.taskTarget.nativeGoal&&target.nativeGoal.toolCeiling.contains("click")
+                    &&!target.nativeGoal.toolCeiling.contains("submit"),"same immutable read-only literal goal admitted without granting an action");
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner,auth,null,target.nativeGoal));
+            BackgroundSession.Selection regular=new BackgroundSession.Selection(target,false);
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner,TaskAuthorization.parse(owner).forExecutionSelection(regular),regular,target.nativeGoal));
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner+" ",auth,selected,target.nativeGoal));
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner,TaskAuthorization.parse(owner),selected,target.nativeGoal));
+            NativeAppGoal equivalent=NativeAppGoal.parse(owner,profile.packageName);
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner,auth,selected,equivalent));
+            String legacy=NativeCalendarDateSessionHostTest.OWNER;
+            BackgroundTaskTarget legacyTarget=BackgroundTaskTarget.resolveExplicitSelection(legacy,profile.packageName,Collections.singleton(profile.packageName),profile);
+            BackgroundSession.Selection legacySelection=new BackgroundSession.Selection(legacyTarget,true);
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,legacy,TaskAuthorization.parse(legacy).forExecutionSelection(legacySelection),legacySelection,legacyTarget.nativeGoal));
+            org.trillionnium.hepta.background.ProfileTarget wrongVersion=new org.trillionnium.hepta.background.ProfileTarget(profile.profile,profile.fullUid,
+                    profile.packageName,profile.packageName+"/SyntheticActivity",profile.versionCode+1,profile.apkHashes,Collections.singleton(profile.apkHashes.get("base")));
+            BackgroundTaskTarget wrongTarget=BackgroundTaskTarget.resolveExplicitSelection(owner,profile.packageName,Collections.singleton(profile.packageName),wrongVersion);
+            BackgroundSession.Selection wrongSelection=new BackgroundSession.Selection(wrongTarget,true);
+            refuse(()->LocalTaskController.requireLfm3VlToolsSelection(tools,owner,TaskAuthorization.parse(owner).forExecutionSelection(wrongSelection),wrongSelection,wrongTarget.nativeGoal));
+            LocalTaskController.requireLfm3VlToolsSelection(NativeCalendarDateSessionHostTest.gui(),null,null,null,null);
+            LocalTaskController.requireLfm3VlToolsSelection(new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,true),null,null,null,null);
+            check(true,"original GUI and observation modes do not acquire the new route restriction");
+        });
+        one("lfm3vl_pinned_template_actual_adapter_private_proof_and_calendar_chain",()->{
+            LocalRuntimeConfig tools=new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,false);
+            try(RuntimeCalendarFixture.Env e=new RuntimeCalendarFixture.Env(tools)){
+                check(e.offer.runtime==tools&&e.router.configuration()==tools&&e.adapter.configuration()==tools,"same exact configuration object through wrapper and private delegate");
+                e.register();VlmInferenceAdapter.AcceptedRequest proof=e.proof();
+                check(ModelProfile.LFM3_VL_2B.id.equals(proof.evidence().get("profile"))
+                        &&Boolean.FALSE.equals(proof.evidence().get("visual_observation_only")),"LFM3-VL accepted receipt retains actual tools identity");
+                proof.requireBound(e.adapter,e.source,e.grammar);
+                check(e.grammar.actions.equals(Collections.singletonList(NativeCalendarDateIntent.ACTION))&&e.grammar.doneStatuses.isEmpty(),"same calendar grammar cannot claim task success or dispatch arbitrary actions");
+                NativeAppSession.CalendarPermit permit=e.await(true);permit.requireForAction(e.session,e.background);
+                NativeCalendarDateFreshHostTest.noEffect(permit);permit.close();
+                LocalInference.TaskCleanup cleanup=e.closeTaskResult();
+                check(cleanup.cleanupKnown&&cleanup.receiptValid&&cleanup.processExitObserved&&Integer.valueOf(0).equals(cleanup.exitCode),"original aggregate cleanup retires the same LFM3-VL task");
+            }
+        });
+        one("lfm3vl_calendar_binding_cannot_migrate_to_observe_or_replaced_generation",()->{
+            try(RuntimeCalendarFixture.Env e=new RuntimeCalendarFixture.Env(new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,false))){
+                RuntimeInferenceAdapter.CalendarModelBinding token=e.router.bindCalendarModel(TASK,e.offer.runtime);
+                LocalModelEngine.RuntimeGeneration prior=e.engine.fixtureReplaceRuntime(new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,true));
+                try{
+                    refuse(()->token.requireCurrent(TASK,e.offer.runtime));
+                    refuse(()->e.offer.modelCallback(new NativeCalendarDateFreshHostTest.Signal()));
+                    check(e.executor.size()==0,"observation or replaced runtime cannot launch the old calendar tools request");noRegistration(e);
+                }finally{e.engine.fixtureRestoreRuntime(prior);}
+            }
+        });
         boolean ok=true;for(Map<String,Object> value:cases)ok&=Boolean.TRUE.equals(value.get("passed"));
         Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("all_pass",ok);report.put("cases",cases.size());report.put("assertions",total());report.put("case_results",cases);
         report.put("actual_public_runtime_constructor_and_default_factory",true);report.put("actual_LTC_calendar_model_waiter",true);

@@ -45,9 +45,15 @@ final class LocalModelSettings implements AutoCloseable {
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("model settings require ordinary main-thread UI");
     }
     void start(String profile,String compute,boolean restore)throws Exception{
+        startSelection(profile,compute,restore,false);
+    }
+    void startVisualTools(String profile,String compute)throws Exception{
+        startSelection(profile,compute,false,true);
+    }
+    private void startSelection(String profile,String compute,boolean restore,boolean visualTools)throws Exception{
         mainOnly();
         if(closed||active)throw new IllegalStateException("已有模型设置正在处理");
-        final byte[] selected=restore?null:(ModelProfile.GUI_OWL_4B.id.equals(profile)
+        final byte[] selected=restore?null:visualTools?RuntimeConfigTransaction.selectedVisualTools(profile,compute):(ModelProfile.GUI_OWL_4B.id.equals(profile)
                 ?RuntimeConfigTransaction.selectedVisualTools(compute):ModelProfile.LFM3_VL_2B.id.equals(profile)
                 ?RuntimeConfigTransaction.selectedVisualObservation(compute):RuntimeConfigTransaction.selected(profile,compute));
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();

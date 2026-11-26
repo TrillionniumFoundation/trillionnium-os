@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.vlm.runtime-pin-metadata-fixture.v1",
+  "source": {
+    "path": "/home/alex/hepta-razr-ordinary-background-next-20261126-674faf/lfm3vl-observe-r2/runtime-pin-metadata-r1/RESULT.json",
+    "bytes": 30517,
+    "sha256": "6215ce406e841f6cc9504327ea5db9c157ad59f9603414a8aa587316cc3e0e74"
+  },
+  "task_id": "d125b831f0e44893a0a98df612ea876e",
+  "apk_sha256": "b6216ab92272d813e70c48da4025ade4826a5f64a13919e4197adfc512eb5686",
+  "source_head": "73db8c958e2a667f22c9d65071e4b8cd86bb885b",
+  "first_runtime": {
+    "ancestors_non_symlink": true,
+    "canonical_directory_matches": true,
+    "canonical_native_directory": "/data/app/~~2FdVnk17GEA7szrhRIX1qQ==/org.trillionnium.hepta.local-04KFAFonLg4tZ8MRK-J7RA==/lib/arm64",
+    "expected_bytes": 5642424,
+    "expected_sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "file": "libllama.so",
+    "native_qualification_pass_claimed": false,
+    "observed_after": {
+      "bytes": 5642424,
+      "ctime_seconds": 1795704799,
+      "device": 2097218,
+      "gid": 1000,
+      "inode": 320747,
+      "mode": 33133,
+      "mtime_seconds": 1795704799,
+      "nlink": 3,
+      "uid": 1000
+    },
+    "observed_before": {
+      "bytes": 5642424,
+      "ctime_seconds": 1795704799,
+      "device": 2097218,
+      "gid": 1000,
+      "inode": 320747,
+      "mode": 33133,
+      "mtime_seconds": 1795704799,
+      "nlink": 3,
+      "uid": 1000
+    },
+    "phone_path": "/data/app/~~2FdVnk17GEA7szrhRIX1qQ==/org.trillionnium.hepta.local-04KFAFonLg4tZ8MRK-J7RA==/lib/arm64/libllama.so",
+    "raw": {
+      "bytes": 515,
+      "path": "/home/alex/hepta-razr-ordinary-background-next-20261126-674faf/lfm3vl-observe-r2/runtime-pin-metadata-r1/00-libllama.so.txt",
+      "sha256": "b9b2ee5d0afe03fec91ab52bb76ec1180dabe78097b8e1296e5b4690e99155d0"
+    },
+    "regular_non_symlink": true,
+    "runtime_nlink_guard_passes": false,
+    "runtime_size_guard_passes": true,
+    "runtime_uid_or_0600_guard_applies": false,
+    "same_uid_diagnostic_selinux_domain": "u:r:runas_app:s0:c225,c257,c512,c768\u0000",
+    "sample_metadata_stable": true,
+    "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "sha256_matches_compiled_pin": true,
+    "worker_openat_O_PATH_reproduced": false
+  },
+  "phone_qualification_claimed": false
+}

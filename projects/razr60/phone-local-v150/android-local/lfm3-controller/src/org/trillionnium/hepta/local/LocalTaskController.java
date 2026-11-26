@@ -519,6 +519,8 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            if(config.profile==ModelProfile.LFM3_VL_2B&&!config.visualObservationOnly)
+                requireLfm3VlToolsSelection(config,instruction,authorization.authorization,backgroundSelection,completion.nativeGoal());
             if(CALENDAR_WINDOW_PROBE_OWNER.equals(instruction))
                 requireCalendarWindowProbeSelection(taskId,instruction,authorization,backgroundSelection,deadline);
             if(TaskCompletionGate.NOTES.equals(completion.contract.kind)){
@@ -1956,15 +1958,40 @@ public final class LocalTaskController implements AutoCloseable {
         return (Integer.valueOf(0).equals(state)||Integer.valueOf(2).equals(state))&&Boolean.FALSE.equals(live.get("claimed"));
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
+    /** New model qualification covers this existing read-only native provider
+     * only. This runs before background bootstrap, model reservation or input;
+     * later installed/window/permit checks still provide all live authority. */
+    static void requireLfm3VlToolsSelection(LocalRuntimeConfig runtime,String owner,TaskAuthorization authorization,
+            BackgroundSession.Selection selected,NativeAppGoal goal){
+        if(runtime==null)throw new IllegalArgumentException("actual runtime required");
+        if(runtime.profile!=ModelProfile.LFM3_VL_2B||runtime.visualObservationOnly)return;
+        if(!runtime.nativeCalendarToolsConfiguration()||selected==null||!selected.independentProfileDisplay
+                ||selected.independentPersonalDisplay||selected.profileTarget==null||selected.taskTarget==null)
+            throw new IllegalArgumentException("LFM3-VL 图像工具仅支持明确选择的独立资料携程只读机票任务");
+        selected.requireTaskTarget(owner,authorization);
+        BackgroundTaskTarget target=selected.taskTarget;
+        org.trillionnium.hepta.background.ProfileTarget profile=selected.profileTarget;
+        if(!target.explicitSelection||target.webHelper()||target.nativeGoal!=goal||target.profileTarget!=profile
+                ||!NativeAppGoal.CTRIP_PACKAGE.equals(selected.initialPackage)
+                ||selected.allowedPackages.size()!=1||!selected.allowedPackages.contains(NativeAppGoal.CTRIP_PACKAGE)
+                ||!NativeCtripFlightPage.supported(goal)||goal.departureDate==null
+                ||!"complete_literal_native_flight_read_only_no_order.v1".equals(goal.recognition)
+                ||goal.toolCeiling.contains("submit")
+                ||!NativeAppGoal.CTRIP_PACKAGE.equals(profile.packageName)
+                ||profile.versionCode!=NativeCtripFlightPage.VERSION_CODE||profile.apkHashes.size()!=1
+                ||!NativeCtripFlightPage.BASE_APK_SHA256.equals(profile.apkHashes.get("base")))
+            throw new IllegalArgumentException("LFM3-VL 图像工具与本次已核验的携程只读目标或应用身份不符");
+        goal.requireBinding(owner,NativeAppGoal.CTRIP_PACKAGE);
+    }
     private static final String NATIVE_CALENDAR_SYSTEM=
-            "你是手机本地 GUI-Owl 日期格定位器。只使用本次真实截图和完整原始指令，"
+            "你是手机本地图像日期格定位器。只使用本次真实截图和完整原始指令，"
             +"返回语法规定的唯一 calendar.select_date JSON。目标 ISO 日期、package、观察和截图哈希必须逐字匹配。"
             +"只给目标月份区域内一个正面积日期格矩形；矩形是待验证定位，不代表已选中日期。"
             +"不得登录、注册、预订、付款、点击任意位置或更改目标日期；不得输出其他工具或成功声明。";
     private boolean nativeCalendarRoundRequested(PhoneObservation before,LocalRuntimeConfig runtime){
         NativeAppSession task=activeNativeTask;
-        return task!=null&&activeNativeBackground!=null&&activeWebTask==null&&runtime.profile==ModelProfile.GUI_OWL_4B
-                &&!runtime.visualObservationOnly&&inference.acceptsObservedImage()&&inference.modelOutputDispatchAllowed()
+        return task!=null&&activeNativeBackground!=null&&activeWebTask==null&&runtime.nativeCalendarToolsConfiguration()
+                &&inference.acceptsObservedImage()&&inference.modelOutputDispatchAllowed()
                 &&NativeCtripFlightPage.supported(task.goal)&&NativeCtripFlightPage.CALENDAR.equals(task.domain().phase)
                 &&before!=null&&before.id.equals(task.domain().frame.observationId);
     }
@@ -1992,7 +2019,7 @@ public final class LocalTaskController implements AutoCloseable {
             this.after=after;modelRunId=run;selection=proof;
         }
     }
-    /** A dedicated schema in the user's already selected GUI-Owl tools task.
+    /** A dedicated schema in the user's already selected pinned visual tools task.
      * There is one actual model request, no formatting repair or hidden model switch. */
     private CalendarRound runNativeCalendarRound(String taskId,String instruction,File directory,int step,
             TaskAuthorization.Gate authorization,BackgroundSession background,long taskDeadline,PhoneObservation before)throws Exception{
@@ -2000,7 +2027,7 @@ public final class LocalTaskController implements AutoCloseable {
         requireNativeCalendarModelSource(nativeTask,background,taskDeadline);
         if(!nativeCalendarRoundRequested(before,runtime)||authorization!=nativeTask.authorization
                 ||background!=activeNativeBackground||!taskId.equals(nativeTask.taskId))
-            throw new IllegalStateException("calendar branch requires the same explicit GUI-Owl tools native task");
+            throw new IllegalStateException("calendar branch requires the same explicit pinned visual tools native task");
         final AtomicReference<DecisionGrammar> actualGrammar=new AtomicReference<DecisionGrammar>();
         final LocalInference.CurrentFrame image=new LocalInference.CurrentFrame(before.screenshot,taskId,
                 authorization.authorization.instructionSha256,before.id,before.backgroundGeneration,before.packageName,
@@ -2032,7 +2059,7 @@ public final class LocalTaskController implements AutoCloseable {
                             .put("grammar_sha256",offer.protocol.grammarSha256).put("model_profile",runtime.profile.id)
                             .put("task_deadline_elapsed_ms",taskDeadline).put("explicit_existing_tools_configuration",true)
                             .put("implicit_model_switch",false));
-            emit("正在用当前手机 GUI-Owl 模型定位指定日期格…");
+            emit("正在用当前手机图像模型定位指定日期格…");
             NativeAppSession.CalendarModelRequest request=awaitNativeCalendarModel(offer,prompt,taskDeadline);
             record(directory,String.format(java.util.Locale.ROOT,"step-%02d-model-0.json",step),
                     new JSONObject().put("run_id",request.modelRunId()).put("raw_text",request.rawText())

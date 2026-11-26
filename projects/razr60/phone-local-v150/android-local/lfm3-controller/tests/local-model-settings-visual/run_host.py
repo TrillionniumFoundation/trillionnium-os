@@ -66,8 +66,11 @@ def main():
         need(extension["schema"]=="hepta.local-model-settings-lfm3-observe-case-contract.v1"
              and extension["cases"]==8 and extension["assertions"]==74,"complete LFM3 observation extension")
         original_names=list(contract["names"])
-        expected=original_names+extension["names"]
-        need(type(expected)is list and len(expected)==30 and len(set(expected))==30
+        tools_contract=json.loads(take(test/"TOOLS-CASE-CONTRACT.json"))
+        need(tools_contract["schema"]=="hepta.local-model-settings-lfm3-tools-case-contract.v1"
+             and tools_contract["cases"]==4 and tools_contract["assertions"]==46,"complete closed LFM3 tools extension")
+        expected=original_names+extension["names"]+tools_contract["names"]
+        need(type(expected)is list and len(expected)==34 and len(set(expected))==34
              and all(type(n)is str for n in expected),"exact unique case names")
         jar=take(a.json_jar)
         need(len(jar)==78332 and sha(jar)=="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed","pinned org.json required")
@@ -212,17 +215,20 @@ def main():
         result["kernel_memory_io_boundary"]["actual_input_receipt"]=put(out/"KERNEL-MEMORY-INPUTS.json",enc(memory_reads))
         rows=cases.get("case_results")
         need(cases.get("schema")==contract["case_schema"] and cases.get("passed")is True
-          and type(cases.get("cases"))is int and cases["cases"]==30
-          and type(cases.get("assertions"))is int and cases["assertions"]==243,"complete case/assertion contract")
+          and type(cases.get("cases"))is int and cases["cases"]==34
+          and type(cases.get("assertions"))is int and cases["assertions"]==289,"complete case/assertion contract")
         need(type(rows)is list and [r.get("name") for r in rows]==expected
           and all(r.get("passed")is True and type(r.get("assertions"))is int for r in rows)
-          and sum(r["assertions"] for r in rows)==243,"complete ordered case names and real assertions")
+          and sum(r["assertions"] for r in rows)==289,"complete ordered case names and real assertions")
         need([r["name"] for r in rows[:22]]==original_names
              and sum(r["assertions"] for r in rows[:22])==169,"all original GUI settings cases/assertions retained")
-        need([r["name"] for r in rows[22:]]==extension["names"]
-             and sum(r["assertions"] for r in rows[22:])==74,"all LFM3 observation cases/assertions required")
+        need([r["name"] for r in rows[22:30]]==extension["names"]
+             and sum(r["assertions"] for r in rows[22:30])==74,"all LFM3 observation cases/assertions required")
+        need([r["name"] for r in rows[30:]]==tools_contract["names"]
+             and sum(r["assertions"] for r in rows[30:])==46,"all closed LFM3 tools cases/assertions required")
         result["original_visual_cases_retained"]={"cases":22,"assertions":169}
         result["lfm3_observation_extension"]={"cases":8,"assertions":74}
+        result["lfm3_tools_extension"]={"cases":4,"assertions":46}
         need(cases.get("phone_operations")==0 and cases.get("native_model_executed")is False
           and cases.get("positive_backend_qualified")is False,"host scope only")
         result["case_names_sha256"]=sha(json.dumps(expected,ensure_ascii=False,separators=(",",":")).encode())

@@ -81,7 +81,7 @@ public final class VisualSettingsHostTest {
         }
         void choose(int choice)throws Exception{
             AlertDialog.last=null;ui.choose();check(AlertDialog.last!=null,"actual ordinary selection button opened");
-            check(AlertDialog.last.labels.length==8,"six text choices and two existing restricted visual choices");
+            check(AlertDialog.last.labels.length==9,"six text choices, original visual choices and explicit restricted LFM3-VL tools");
             AlertDialog.last.choose(choice);AlertDialog.last.confirm();awaitSettings();
         }
         void restored()throws Exception{
@@ -369,7 +369,7 @@ public final class VisualSettingsHostTest {
     }
     private static LocalRuntimeConfig lfmObserve(){return new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,true);}
     private static void lfmObserveSettings()throws Exception{
-        run("lfm3-observe-v3-is-explicit-and-tools-rejected",()->{
+        run("lfm3-observe-v3-is-explicit-and-implicit-mode-rejected",()->{
             byte[] raw=RuntimeConfigTransaction.selectedVisualObservation("npu");
             JSONObject value=new JSONObject(new String(raw,StandardCharsets.UTF_8));
             check(value.length()==6&&value.getString("schema").equals("hepta.local-runtime.v3"),"closed v3 fields");
@@ -378,10 +378,10 @@ public final class VisualSettingsHostTest {
             check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3,"ordinary default remains text LFM3");
             reject(()->RuntimeConfigTransaction.selected(ModelProfile.LFM3_VL_2B.id,"npu"));
             for(String compute:new String[]{"gpu","cpu","auto","NPU",""})reject(()->RuntimeConfigTransaction.selectedVisualObservation(compute));
-            Path files=fresh("lfm-forbidden-tools");value.put("visual_mode","tools");
+            Path files=fresh("lfm-forbidden-mode");value.put("visual_mode","auto");
             reject(()->RuntimeConfigTransaction.prepare(files.toFile(),value.toString().getBytes(StandardCharsets.UTF_8),true));
-            check(Arrays.equals(ORIGINAL,Files.readAllBytes(files.resolve("model/runtime-config.json"))),"forbidden tools preserves bytes");
-            check(!RuntimeConfigTransaction.pending(files.toFile()),"forbidden tools creates no transaction");
+            check(Arrays.equals(ORIGINAL,Files.readAllBytes(files.resolve("model/runtime-config.json"))),"implicit mode preserves bytes");
+            check(!RuntimeConfigTransaction.pending(files.toFile()),"implicit mode creates no transaction");
         });
         run("ordinary-text-lfm3-observe-gui-tools-text-router",()->{
             Env e=new Env("lfm-roundtrip");e.choose(5);
@@ -526,11 +526,67 @@ public final class VisualSettingsHostTest {
         });
     }
 
+    private static void lfmToolsSettings()throws Exception{
+        run("lfm3-tools-v3-closed-profile-and-hardware",()->{
+            byte[] raw=RuntimeConfigTransaction.selectedVisualTools(ModelProfile.LFM3_VL_2B.id,"npu");
+            JSONObject value=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+            check(value.length()==6&&value.getString("schema").equals("hepta.local-runtime.v3")
+                    &&value.getString("model_profile").equals(ModelProfile.LFM3_VL_2B.id)
+                    &&value.getString("visual_mode").equals("tools"),"explicit separate tools configuration");
+            LocalRuntimeConfig tools=new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,4,false);
+            check(tools.nativeCalendarToolsConfiguration()&&ModelProfile.LFM3_VL_2B.minimumAvailableBytes==(4L<<30),"closed profile and unchanged four GiB admission");
+            check(new JSONObject(new String(RuntimeConfigTransaction.selectedVisualObservation("npu"),StandardCharsets.UTF_8))
+                    .getString("visual_mode").equals("observe"),"old observation endpoint never selects tools");
+            reject(()->RuntimeConfigTransaction.selected(ModelProfile.LFM3_VL_2B.id,"npu"));
+            for(ModelProfile p:new ModelProfile[]{ModelProfile.LFM3,ModelProfile.QWEN35_4B,ModelProfile.LFM25_8B_A1B})
+                reject(()->RuntimeConfigTransaction.selectedVisualTools(p.id,"npu"));
+            for(String compute:new String[]{"gpu","cpu","auto","NPU",""})
+                reject(()->RuntimeConfigTransaction.selectedVisualTools(ModelProfile.LFM3_VL_2B.id,compute));
+            reject(()->new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",4096,4,false));
+            reject(()->new LocalRuntimeConfig(ModelProfile.LFM3_VL_2B,"npu",8192,3,false));
+            for(LocalRuntimeConfig c:new LocalRuntimeConfig[]{lfmObserve(),new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",8192,4,true),LocalRuntimeConfig.defaults()})
+                check(!c.nativeCalendarToolsConfiguration(),"observation and text cannot enter calendar tools");
+            check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3,"ordinary default remains unchanged");
+        });
+        run("lfm3-explicit-tools-menu-distinguishes-observe-and-restores-exact-mode",()->{
+            Env e=new Env("lfm-tools-roundtrip");e.choose(5);byte[] observed=e.config();
+            LocalModelEngine.RuntimeGeneration previous=e.engine.runtimeGeneration();
+            check(previous.configuration().visualObservationOnly,"old explicit observation is still available");
+            e.choose(8);
+            check(e.engine.runtimeGeneration()!=previous&&e.engine.configuration().nativeCalendarToolsConfiguration(),"tools require a new actual settings generation");
+            AlertDialog.last=null;e.ui.choose();check(AlertDialog.last.checked==8,"same model profile cannot select observe row for tools runtime");
+            check(new JSONObject(new String(e.config(),StandardCharsets.UTF_8)).getString("visual_mode").equals("tools"),"actual saved v3 mode is tools");
+            String task=id();e.controller.begin(task);VlmInferenceAdapter visual=(VlmInferenceAdapter)delegate(e.controller.inference);
+            check(e.controller.inference.acceptsObservedImage()&&e.controller.inference.modelOutputDispatchAllowed(),"tools keep the visual adapter and original task binding");
+            LocalInference.CurrentFrame original=frame(e.files,task);e.controller.inference.generateObserved("p","s",original,null,1,1000,null);
+            check(visual.observed==original,"tools receive exact CurrentFrame, never an AX-only surrogate");
+            check(e.controller.finish().cleanupKnown&&!e.engine.isBusy(),"original tools lease completes before restore");
+            e.restored();check(Arrays.equals(observed,e.config())&&e.engine.configuration().visualObservationOnly,"restore retains exact prior observation bytes and mode");
+        });
+        run("lfm3-tools-unknown-cleanup-blocks-observe-switch",()->{
+            Env e=new Env("lfm-tools-unknown");e.choose(8);e.controller.begin(id());
+            VlmInferenceAdapter visual=(VlmInferenceAdapter)delegate(e.controller.inference);visual.known=false;
+            check(!e.controller.finish().cleanupKnown&&e.engine.isBusy(),"unknown cleanup retains original visual task lease");
+            LocalModelEngine.RuntimeGeneration prior=e.engine.runtimeGeneration();
+            reject(()->e.app.modelSettings.start(ModelProfile.LFM3_VL_2B.id,"npu",false));
+            check(e.engine.runtimeGeneration()==prior&&!e.engine.configuration().visualObservationOnly,"refused switch cannot relabel tools generation as observation");
+            visual.known=true;check(e.controller.finish().cleanupKnown&&!e.engine.isBusy(),"only original known cleanup releases model slot");
+            e.choose(5);check(e.engine.configuration().visualObservationOnly,"explicit observation works after cleanup");
+        });
+        run("lfm3-tools-asset-refusal-rolls-back-and-invalid-device-never-reserves",()->{
+            Env e=new Env("lfm-tools-rollback");e.engine.reject=true;e.choose(8);
+            check(Arrays.equals(ORIGINAL,e.config()),"failed explicit tools save restores original exact bytes");
+            check(e.engine.configuration().profile==ModelProfile.LFM3&&!e.engine.settingsBlocked()&&!e.engine.isBusy(),"failed tools save retains usable text generation");
+            reject(()->e.app.modelSettings.startVisualTools(ModelProfile.LFM3_VL_2B.id,"gpu"));
+            check(!e.engine.isBusy()&&!RuntimeConfigTransaction.pending(e.files.toFile()),"invalid device cannot reserve or create a transaction");
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         final boolean qwen=args.length==2&&"--qwen-text".equals(args[1]);
         if(args.length!=1&&!qwen)throw new IllegalArgumentException("output plus optional --qwen-text required");
         output=Paths.get(args[0]);Files.createDirectory(output);boolean passed=false;Throwable error=null;
-        try{if(qwen)qwenTextSettings();else{settings();routing();assets();lfmObserveSettings();}passed=true;}
+        try{if(qwen)qwenTextSettings();else{settings();routing();assets();lfmObserveSettings();lfmToolsSettings();}passed=true;}
         catch(Throwable failure){error=failure;failure.printStackTrace();}
         finally{
             for(Env e:environments)try{e.close();}catch(Exception failure){passed=false;if(error==null)error=failure;failure.printStackTrace();}

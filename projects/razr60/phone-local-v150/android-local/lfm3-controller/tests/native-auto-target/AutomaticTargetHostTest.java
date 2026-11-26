@@ -169,7 +169,7 @@ public final class AutomaticTargetHostTest {
                 e.ui.edit(FLIGHT+" ");dialog.save();check(before.equals(BackgroundAutoTargetPreferences.load(e.app).sha256),"stale activity epoch refused");
                 for(BackgroundAutoTargetPreferences.Entry item:Arrays.asList(e.notes,e.product,e.flight)){
                     JSONObject raw=new JSONObject(BackgroundAutoTargetPreferences.encode(new BackgroundAutoTargetPreferences.Snapshot(true,Collections.singletonList(item))));
-                    raw.getJSONArray("targets").getJSONObject(0).put("model_profile",item==e.flight?ModelProfile.LFM3_VL_2B.id:ModelProfile.GUI_OWL_4B.id);
+                    raw.getJSONArray("targets").getJSONObject(0).put("model_profile",item==e.flight?ModelProfile.GEMMA4_E2B.id:ModelProfile.GUI_OWL_4B.id);
                     try{BackgroundAutoTargetPreferences.decode(raw.toString());throw new AssertionError("unsupported profile admitted");}
                     catch(IllegalArgumentException refusal){check(refusal.getMessage().contains("首选模型组合"),"model allow-list refused before digest");}
                 }
@@ -634,6 +634,46 @@ public final class AutomaticTargetHostTest {
                 e.ui.mode(false);e.ui.manual=e.notes.choice;e.ui.manualPersonal=true;e.ui.backgroundPackages.add(NOTES);
                 check(e.ui.start(),"ordinary manual Start remains allowed");check(e.app.tasks.selection.taskTarget.packageName.equals(NOTES)&&e.app.tasks.selection.taskTarget.nativeGoal==null,"explicit Notes wins flight owner as before");
                 check(e.app.tasks.selection.taskTarget.automaticStart==null&&e.app.model.verificationCalls==0,"no auto provenance or model switch in manual mode");
+            }
+        });
+        test("Ctrip_lfm3vl_tools_row_keeps_one_instance_and_other_targets",()->{
+            try(Env e=new Env("lfm-vl-row",FLIGHT,false)){
+                android.app.AlertDialog d;
+                ProfileCatalogueClient.listed=Arrays.asList(e.flight.choice.profileTarget,e.product.choice.profileTarget);
+                try{d=picker(e);}finally{ProfileCatalogueClient.listed=null;}
+                int image=d.row("携程","LFM3-VL"),gui=d.row("携程","GUI-Owl");
+                check(image>=0&&gui>=0&&image!=gui&&!d.checked(image),"new image tools row is explicit and initially unselected");
+                d.tap(image);d.bindVisibleRows();check(d.checked(image)&&!d.checked(gui),"same installed instance retains one selected model");
+                d.save();BackgroundAutoTargetPreferences.Snapshot saved=BackgroundAutoTargetPreferences.load(e.app);
+                check(saved.entry(e.flight.instanceKey).modelProfile.equals(ModelProfile.LFM3_VL_2B.id),"saved Ctrip preference is exact LFM3-VL profile");
+                check(saved.entry(e.notes.instanceKey).identitySha256.equals(e.notes.identitySha256)
+                        &&saved.entry(e.product.instanceKey).identitySha256.equals(e.product.identitySha256),"unrelated targets remain byte-identical identities");
+                rejects(()->e.notes.withModel(ModelProfile.LFM3_VL_2B));rejects(()->e.product.withModel(ModelProfile.LFM3_VL_2B));
+                check(e.app.tasks.schedules==0&&e.app.model.verificationCalls==0,"preference selection alone never starts work or changes runtime");
+            }
+        });
+        test("Ctrip_same_lfm3vl_observe_runtime_requires_new_explicit_tools_generation",()->{
+            for(boolean fail:new boolean[]{false,true})try(Env e=new Env("lfm-vl-observe-switch-"+fail,FLIGHT,false)){
+                // Explicit asset-presence port only; original settings verification is
+                // still the declared host boundary, not successful real GGUF import.
+                File image=new File(e.directory,ModelProfile.LFM3_VL_2B.visualDirectory());check(image.mkdir(),"fresh LFM3-VL asset-presence boundary");
+                Files.write(new File(image,ModelProfile.LFM3_VL_2B.fileName).toPath(),new byte[]{1});
+                Files.write(new File(image,VlmResultContract.named(ModelProfile.LFM3_VL_2B.id).projectorFilename).toPath(),new byte[]{1});
+                byte[] observe=RuntimeConfigTransaction.selectedVisualObservation("npu");
+                Files.write(new File(e.directory,"model/runtime-config.json").toPath(),observe);
+                e.app.model.hostGeneration(LocalModelEngine.generation(RuntimeConfigTransaction.current(e.directory),new ModelFileVerifier()));
+                LocalModelEngine.RuntimeGeneration prior=e.app.model.runtimeGeneration();
+                android.app.AlertDialog d=picker(e);d.tap(d.row("携程","LFM3-VL"));d.save();
+                e.app.model.failVerification=fail;e.hold();e.startedSettings();e.finish();
+                if(fail){e.noTask();check(e.app.model.configuration().visualObservationOnly
+                        &&Arrays.equals(observe,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath())),"failed qualification preserves exact observation mode and bytes");}
+                else{
+                    check(e.app.model.runtimeGeneration()!=prior&&e.app.model.configuration().nativeCalendarToolsConfiguration(),"same model name cannot skip actual mode-changing settings transaction");
+                    check(e.app.tasks.schedules==1&&e.app.tasks.selection.independentProfileDisplay
+                            &&e.app.tasks.selection.profileTarget.same(e.flight.choice.profileTarget),"one visible Start schedules only the same independent profile instance");
+                    check(e.app.tasks.selection.taskTarget.automaticStart.entry.modelProfile.equals(ModelProfile.LFM3_VL_2B.id),"Start retains exact saved model binding");
+                }
+                check(e.app.model.verificationCalls==1,"one actual settings verification with no retry");
             }
         });
         boolean pass=true;for(JSONObject row:results)pass&=row.getBoolean("passed");

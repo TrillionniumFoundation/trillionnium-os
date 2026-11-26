@@ -5,7 +5,7 @@ No model, Android system, input dispatch, phone or settings transaction is run.
 The existing reviewed fresh producer preparation is reused verbatim; only this
 new gate adds the real runtime router and complete controller model waiter.
 """
-import argparse, hashlib, importlib.util, json, os, stat, subprocess, sys, textwrap, time
+import argparse, hashlib, importlib.util, json, os, re, stat, subprocess, sys, textwrap, time
 from pathlib import Path
 sys.dont_write_bytecode = True
 PKG = Path('src/org/trillionnium/hepta/local')
@@ -73,7 +73,17 @@ final class EngineInferenceAdapter implements LocalInference {
     ltc = (S/PKG/'LocalTaskController.java').read_text()
     const = fresh.section(ltc, '    private static final String NATIVE_CALENDAR_SYSTEM=', '    private boolean nativeCalendarRoundRequested(')
     extraction.append(dict(source=str(S/PKG/'LocalTaskController.java'), start='NATIVE_CALENDAR_SYSTEM', bytes=len(const.encode()), sha256=sha(const.encode()), verbatim=True))
+    run_task=fresh.body(ltc,'    private void runTask(')
+    early_guard='requireLfm3VlToolsSelection(config,instruction,authorization.authorization,backgroundSelection,completion.nativeGoal());'
+    if run_task.count(early_guard)!=1: raise RuntimeError('one actual early LFM3-VL tools guard required')
+    guard_at=run_task.index(early_guard)
+    effects=['BackgroundSession.experimentalPublicOwnGroup(', 'background.startWithPermissionInitialization(',
+             'else background.start(', 'inference.beginTask(']
+    if any(run_task.index(effect)<=guard_at for effect in effects): raise RuntimeError('LFM3-VL guard must precede every original bootstrap/model boundary')
+    report['lfm3vl_early_guard_before_bootstrap_and_model']={'run_task_sha256':sha(run_task.encode()),
+        'guard_offset':guard_at,'effect_offsets':{effect:run_task.index(effect) for effect in effects},'phone_operations':0}
     additions = [const,
+        member('LocalTaskController.java', '    static void requireLfm3VlToolsSelection('),
         member('LocalTaskController.java', '    void requireNativeCalendarModelSource('),
         member('LocalTaskController.java', '    private NativeAppSession.CalendarModelRequest awaitNativeCalendarModel(')]
     if 'class CleanupUnknown' not in controller: additions.append(member('LocalTaskController.java', '    private static final class CleanupUnknown'))
@@ -89,11 +99,18 @@ final class EngineInferenceAdapter implements LocalInference {
     source = fixture_source.read_text(); originals.append(fixture_source)
     old_env = fresh.body(source, '    static final class Env implements AutoCloseable {')
     env = old_env
+    env = replace_one(env,'        Env()throws Exception{',
+        '        final String owner;\n'+
+        '        Env()throws Exception{this(NativeCalendarDateSessionHostTest.gui());}\n'+
+        '        Env(LocalRuntimeConfig selectedRuntime)throws Exception{\n'+
+        '            owner=selectedRuntime.profile==ModelProfile.LFM3_VL_2B?"在携程查询2026年11月27日北京到上海的单程机票，1名成人，读取真实航班和票价。只查询，不预订、不提交订单、不支付。":NativeCalendarDateSessionHostTest.OWNER;')
+    env = re.sub(r'\bOWNER\b',lambda m:'owner',env)
+    env = env.replace('NativeCalendarDateSessionHostTest.owner','NativeCalendarDateSessionHostTest.OWNER')
     env = replace_one(env, 'final LocalModelEngine engine;final VlmInferenceAdapter adapter;',
         'final LocalModelEngine engine;final VlmInferenceAdapter adapter;final RuntimeInferenceAdapter router;')
     env = replace_one(env,
         'engine=new LocalModelEngine(context,NativeCalendarDateSessionHostTest.gui(),executor);adapter=new VlmInferenceAdapter(context,engine);',
-        'engine=new LocalModelEngine(context,NativeCalendarDateSessionHostTest.gui(),executor);router=new RuntimeInferenceAdapter(context,engine);\n'+
+        'engine=new LocalModelEngine(context,selectedRuntime,executor);router=new RuntimeInferenceAdapter(context,engine);\n'+
         '            router.beginTask(TASK);adapter=(VlmInferenceAdapter)field(field(router,"binding"),"delegate");controller.inference=router;')
     env = replace_one(env, 'offer=session.offerCalendarDate(envelope,adapter,clock,START+30000);',
         'offer=session.offerCalendarDate(envelope,router,clock,START+30000);')
@@ -198,7 +215,7 @@ def main():
         env={**os.environ,'JAVA_HOME':str(J),'PATH':str(J/'bin')+':/usr/bin:/bin','PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1'}
         for k in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH','PYTHONPATH','SOURCE_HEAD_SHA','HEPTA_ADMISSION_SOURCE','HEPTA_TEST_JAVA','HEPTA_TEST_JAVAC'):env.pop(k,None)
         stages=[('compile',[J/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all,-options','-Werror','-cp',jar,'-d',classes,*paths]),
-                ('runtime',[J/'bin/java','-Djava.awt.headless=true','-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.NativeCalendarRuntimeAdapterHostTest',O,O/'work',S/'tests/vlm-contract/fixtures/gui-owl-chat-template.jinja'])]
+                ('runtime',[J/'bin/java','-Djava.awt.headless=true','-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.NativeCalendarRuntimeAdapterHostTest',O,O/'work',S/'tests/vlm-contract/fixtures/gui-owl-chat-template.jinja',S/'tests/vlm-contract/fixtures/lfm3-vl-chat-template.jinja'])]
         for name,argv in stages:
             start=time.monotonic(); result=subprocess.run(list(map(str,argv)),cwd=O,env=env,capture_output=True,timeout=180)
             for k,b in [('stdout',result.stdout),('stderr',result.stderr)]: (O/(name+'.'+k)).write_bytes(b)

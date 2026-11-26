@@ -37,9 +37,8 @@ final class NativeCalendarDateEnvelope {
     static NativeCalendarDateEnvelope capture(NativeAppGoal goal,NativeAppEvidence.Frame facts,
             LocalInference.CurrentFrame image,ProfileTarget profile,LocalRuntimeConfig runtime,NativeCalendarDateProtocol.Clock clock)throws Exception{
         need(clock!=null,"actual elapsed-realtime clock required");long now=clock.elapsedRealtime();
-        need(runtime!=null&&runtime.profile==ModelProfile.GUI_OWL_4B&&!runtime.visualObservationOnly
-                &&"npu".equals(runtime.compute)&&runtime.contextTokens==8192&&runtime.threads==4,
-                "only the explicit GUI-Owl tools configuration can produce this proposal");
+        need(runtime!=null&&runtime.nativeCalendarToolsConfiguration(),
+                "only an explicit pinned visual tools configuration can produce this proposal");
         need(NativeCtripFlightPage.supported(goal)&&goal.departureDate!=null&&facts!=null&&image!=null&&profile!=null,
                 "same supported literal flight goal, pixel frame and selected profile required");
         need(profile.versionCode==NativeCtripFlightPage.VERSION_CODE&&profile.apkHashes.size()==1

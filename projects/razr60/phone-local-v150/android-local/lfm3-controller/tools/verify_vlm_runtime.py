@@ -47,10 +47,10 @@ def load_pins(root):
         _need(len(data)==row['bytes'] and _sha(data)==row['sha256'],'VLM source differs: '+str(rel))
     _need(_read_regular(source/'native/owned-generation.inc',131072)==
           _read_regular(root/'native/owned-generation.inc',131072),'VLM must preserve the ordinary generation cleanup core')
-    reference=_read_regular(source/'provenance/ANDROID-BUILD-LFM3-VL-R1.json',131072)
+    reference=_read_regular(source/'provenance/ANDROID-BUILD-RUNTIME-HARDLINK-R1.json',131072)
     _need(_sha(reference)==pins['reference_build_receipt_sha256'],'VLM reference build receipt differs')
     reference_data=json.loads(reference)
-    host_raw=_read_regular(source/'provenance/LINKED-BACKENDS-HOST-LFM3-VL-R1.json',131072)
+    host_raw=_read_regular(source/'provenance/LINKED-BACKENDS-HOST-RUNTIME-HARDLINK-R1.json',131072)
     _need(_sha(host_raw)==reference_data.get('linked_backend_host_receipt_sha256'),
           'VLM reference linked backend regression receipt differs')
     host=json.loads(host_raw)
@@ -69,7 +69,7 @@ def load_pins(root):
     _need(all(_same_json({k:host['sources'][name].get(k) for k in ('bytes','sha256')},
                         {k:recipe_sources[name][k] for k in ('bytes','sha256')}) for name in host_sources),
           'VLM linked backend regression source identity differs')
-    order_raw=_read_regular(source/'provenance/VISION-INIT-ORDER-HOST-LFM3-VL-R1.json',131072)
+    order_raw=_read_regular(source/'provenance/VISION-INIT-ORDER-HOST-RUNTIME-HARDLINK-R1.json',131072)
     _need(_sha(order_raw)==reference_data.get('vision_init_order_host_receipt_sha256'),
           'VLM reference vision initialization regression receipt differs')
     order=json.loads(order_raw)

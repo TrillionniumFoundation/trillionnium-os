@@ -3,7 +3,7 @@
   "cases": 8,
   "assertions": 74,
   "names": [
-    "lfm3-observe-v3-is-explicit-and-tools-rejected",
+    "lfm3-observe-v3-is-explicit-and-implicit-mode-rejected",
     "ordinary-text-lfm3-observe-gui-tools-text-router",
     "ordinary-lfm3-observe-restore-keeps-exact-bytes",
     "lfm3-unknown-cleanup-retains-observe-authority",

@@ -101,12 +101,11 @@ public final class VlmInferenceAdapter implements LocalInference {
         }
     }
     private void requireAcceptedCalendarRound(Round round,boolean initial)throws Exception{
-        need(round!=null&&configuration.profile==ModelProfile.GUI_OWL_4B&&!configuration.visualObservationOnly
-                &&"npu".equals(configuration.compute)&&configuration.contextTokens==8192&&configuration.threads==4
+        need(round!=null&&configuration.nativeCalendarToolsConfiguration()
                 &&NativeCalendarDateIntent.SCHEMA.equals(round.grammar.schema)
                 &&round.grammar.actions.equals(Collections.singletonList(NativeCalendarDateIntent.ACTION))
                 &&round.grammar.doneStatuses.isEmpty()&&!round.grammar.successAllowed,
-                "only the original GUI-Owl calendar tools request can issue this proof");
+                "only the original pinned visual calendar tools request can issue this proof");
         Task value=round.owner;
         synchronized(value){
             need(task==value&&!value.failed&&!value.ending&&!value.publicationFailed&&value.current==null

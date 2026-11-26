@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.local-model-settings-lfm3-tools-case-contract.v1",
+  "cases": 4,
+  "assertions": 46,
+  "names": [
+    "lfm3-tools-v3-closed-profile-and-hardware",
+    "lfm3-explicit-tools-menu-distinguishes-observe-and-restores-exact-mode",
+    "lfm3-tools-unknown-cleanup-blocks-observe-switch",
+    "lfm3-tools-asset-refusal-rolls-back-and-invalid-device-never-reserves"
+  ],
+  "scope": "host_only; no model, Android input or business qualification"
+}

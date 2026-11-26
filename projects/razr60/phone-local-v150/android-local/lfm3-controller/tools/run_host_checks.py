@@ -58,8 +58,9 @@ def main():
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
         paths.add(ROOT/"tests/vlm-contract/requirements.txt")
+        paths.add(ROOT/"native/vlm-worker/tests/runtime-pins/d125-installed-runtime-metadata.json")
         paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
-        paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","OBSERVE-CASE-CONTRACT.json","README.md"))
+        paths.update(ROOT/"tests/local-model-settings-visual"/name for name in ("CASE-CONTRACT.json","OBSERVE-CASE-CONTRACT.json","TOOLS-CASE-CONTRACT.json","README.md"))
         paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
         paths.add(ROOT/"tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt")
         paths.add(ROOT/"tests/background-broker/535-close-reply.json")
@@ -303,18 +304,18 @@ final class NativeCalendarDateIntent {
         visual_rows=visual_cases.get("case_results")
         if (visual_cases.get("schema")!="hepta.local-model-settings-visual-cases.v1"
                 or visual_cases.get("passed") is not True
-                or type(visual_cases.get("cases")) is not int or visual_cases["cases"]!=30
-                or type(visual_cases.get("assertions")) is not int or visual_cases["assertions"]!=243
-                or type(visual_rows) is not list or len(visual_rows)!=30
+                or type(visual_cases.get("cases")) is not int or visual_cases["cases"]!=34
+                or type(visual_cases.get("assertions")) is not int or visual_cases["assertions"]!=289
+                or type(visual_rows) is not list or len(visual_rows)!=34
                 or any(type(row) is not dict or row.get("passed") is not True
                     or type(row.get("name")) is not str or type(row.get("assertions")) is not int
                     or row["assertions"]<1 for row in visual_rows)
-                or sum(row["assertions"] for row in visual_rows)!=243):
+                or sum(row["assertions"] for row in visual_rows)!=289):
             raise RuntimeError("Visual settings exact original/new case assertions differ")
         visual_names=[row["name"] for row in visual_rows]
         visual_names_sha=hashlib.sha256(json.dumps(visual_names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()
         visual_contract=json.loads((ROOT/"tests/local-model-settings-visual/CASE-CONTRACT.json").read_bytes())
-        if (len(set(visual_names))!=30 or visual_names_sha!="e5d32582f6bfa5797dedb933949b69f87d37719e03c49d088588bffde850362a"
+        if (len(set(visual_names))!=34 or visual_names_sha!="c23f4eadad7bea93bd82d259be7546f75e1e757b4e8db32c81cb932e90926d25"
                 or visual_gate.get("case_names_sha256")!=visual_names_sha
                 or visual_contract.get("schema")!="hepta.local-model-settings-visual-case-contract.v1"
                 or visual_contract.get("case_schema")!=visual_cases["schema"]
@@ -329,11 +330,18 @@ final class NativeCalendarDateIntent {
                     "7afd16285a00eb25340ef178f2b9c11b2e036e8bde8bd810e5c3d1ddc31adf73"
                 or visual_extension.get("schema")!="hepta.local-model-settings-lfm3-observe-case-contract.v1"
                 or visual_extension.get("cases")!=8 or visual_extension.get("assertions")!=74
-                or visual_extension.get("names")!=visual_names[22:]
-                or sum(row["assertions"] for row in visual_rows[22:])!=74
+                or visual_extension.get("names")!=visual_names[22:30]
+                or sum(row["assertions"] for row in visual_rows[22:30])!=74
                 or visual_gate.get("original_visual_cases_retained")!={"cases":22,"assertions":169}
                 or visual_gate.get("lfm3_observation_extension")!={"cases":8,"assertions":74}):
             raise RuntimeError("Original GUI or LFM3 observation case/assertion boundaries differ")
+        visual_tools=json.loads((ROOT/"tests/local-model-settings-visual/TOOLS-CASE-CONTRACT.json").read_bytes())
+        if (visual_tools.get("schema")!="hepta.local-model-settings-lfm3-tools-case-contract.v1"
+                or visual_tools.get("cases")!=4 or visual_tools.get("assertions")!=46
+                or visual_tools.get("names")!=visual_names[30:]
+                or sum(row["assertions"] for row in visual_rows[30:])!=46
+                or visual_gate.get("lfm3_tools_extension")!={"cases":4,"assertions":46}):
+            raise RuntimeError("Closed LFM3 tools case/assertion boundaries differ")
         if (type(visual_cases.get("phone_operations")) is not int or visual_cases["phone_operations"]!=0
                 or visual_cases.get("native_model_executed") is not False or visual_cases.get("positive_backend_qualified") is not False
                 or any(visual_cases.get(key) is not True for key in ("actual_owner_button_methods",
@@ -760,6 +768,44 @@ final class NativeCalendarDateIntent {
         run("vlm-template-render",[sys.executable,"-B",ROOT/"tests/vlm-contract/check_template.py",
             "--template",ROOT/"tests/vlm-contract/fixtures/gui-owl-chat-template.jinja",
             "--output",out/"vlm-template-render"])
+        run("vlm-runtime-pin-hardlinks",[sys.executable,"-B",ROOT/"native/vlm-worker/tools/test_runtime_pins.py",
+            "--out",out/"vlm-runtime-pin-hardlinks","--require-runtime-io"])
+        runtime_pin_raw=(out/"vlm-runtime-pin-hardlinks/RESULT.json").read_bytes()
+        runtime_pin_gate=json.loads(runtime_pin_raw)
+        runtime_pin_cases=runtime_pin_gate.get("result",{})
+        if (runtime_pin_gate.get("schema")!="hepta.vlm.runtime-pin-host-run.v1"
+                or runtime_pin_gate.get("passed") is not True
+                or runtime_pin_gate.get("metadata_policy_is_struct_replay") is not True
+                or runtime_pin_gate.get("runtime_file_io_is_actual_os") is not True
+                or runtime_pin_gate.get("actual_phone_metadata_replayed") is not False
+                or runtime_pin_gate.get("phone_contacted") is not False
+                or runtime_pin_gate.get("model_inference_performed") is not False
+                or runtime_pin_cases.get("schema")!="hepta.vlm.runtime-pin-host.v1"
+                or runtime_pin_cases.get("passed") is not True
+                or runtime_pin_cases.get("policy_cases")!=17 or runtime_pin_cases.get("io_cases")!=12
+                or runtime_pin_cases.get("checks")!=82
+                or runtime_pin_cases.get("runtime_real_file_io_verified") is not True
+                or runtime_pin_cases.get("host_uid")!=1000 or runtime_pin_cases.get("host_gid")!=1000
+                or runtime_pin_cases.get("phone_contacted") is not False
+                or runtime_pin_cases.get("model_inference_performed") is not False):
+            raise RuntimeError("Runtime-only hardlink pin policy or actual OS IO cases differ")
+        if json.loads((out/"vlm-runtime-pin-hardlinks/run.stdout").read_bytes())!=runtime_pin_cases:
+            raise RuntimeError("Runtime pin cases differ from actual C stdout")
+        runtime_pin_inputs=runtime_pin_gate.get("source_inputs")
+        if type(runtime_pin_inputs) is not list or not runtime_pin_inputs:
+            raise RuntimeError("Runtime pin producer inputs missing")
+        runtime_pin_paths=set()
+        for item in runtime_pin_inputs:
+            path=Path(item["path"])
+            if (not path.is_absolute() or path.is_symlink() or str(path) in runtime_pin_paths
+                    or ROOT/"native/vlm-worker" not in path.parents):
+                raise RuntimeError("Runtime pin input is aliased, duplicate or outside its fixed source")
+            runtime_pin_paths.add(str(path));data=path.read_bytes()
+            if len(data)!=item["bytes"] or hashlib.sha256(data).hexdigest()!=item["sha256"]:
+                raise RuntimeError("Runtime pin input changed during its gate")
+        report["vlm_runtime_pin_hardlinks_gate"]={"bytes":len(runtime_pin_raw),
+            "sha256":hashlib.sha256(runtime_pin_raw).hexdigest(),"cases":runtime_pin_cases,
+            "phone_contacted":False,"model_inference_performed":False}
         run("vlm-adapter-lifecycle",[sys.executable,"-B",ROOT/"tests/vlm-adapter/run_host.py",
             "--source",ROOT,"--output",out/"vlm-adapter-lifecycle","--java-home",java_home,
             "--json-jar",json_jar,"--template",ROOT/"tests/vlm-contract/fixtures/gui-owl-chat-template.jinja"])

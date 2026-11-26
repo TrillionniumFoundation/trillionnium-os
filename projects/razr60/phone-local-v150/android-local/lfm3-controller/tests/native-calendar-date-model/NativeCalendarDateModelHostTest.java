@@ -16,7 +16,7 @@ import org.json.JSONObject;
  * no AcceptedRequest/Offer constructor or accepted/contract flags are fabricated. */
 public final class NativeCalendarDateModelHostTest {
     static final String TASK=NativeCalendarDateSessionHostTest.TASK;
-    static Path root,out;static byte[] template;static int checks;
+    static Path root,out;static byte[] template,lfmTemplate;static int checks;
     static final List<Map<String,Object>> cases=new ArrayList<Map<String,Object>>();
     interface Work{void run()throws Exception;}
     static void check(boolean v,String why){checks++;if(!v)throw new AssertionError(why);}
@@ -178,16 +178,23 @@ public final class NativeCalendarDateModelHostTest {
         Map<String,Object> q=VlmResultContract.jsonObject(in.get("request.json"));
         Map<String,Object> owner=VlmResultContract.jsonObject(in.get("owner.json"));
         byte[] identity=MobiMindPrivateFiles.read(new File((File)field(round,"generationDirectory"),"worker-generation.identity"),2047,true).bytes;
-        side.put("raw.txt",environmentRaw.get(round));side.put("gguf-chat-template.jinja",template);
-        side.put("formatted-prompt.txt",b("<|im_start|>system\n"+new String(in.get("system.txt"),StandardCharsets.UTF_8)
+        VlmResultContract.Profile p=VlmResultContract.named((String)q.get("profile"));
+        byte[] actualTemplate=p==VlmResultContract.LFM3_VL_2B?lfmTemplate:template;
+        if(p==VlmResultContract.LFM3_VL_2B)check(actualTemplate!=null&&sha(actualTemplate).equals(p.templateSha256),"actual pinned LFM3-VL template fixture");
+        side.put("raw.txt",environmentRaw.get(round));side.put("gguf-chat-template.jinja",actualTemplate);
+        String system=new String(in.get("system.txt"),StandardCharsets.UTF_8);
+        String formatted="<|im_start|>system\n"+system
                 +"<|im_end|>\n<|im_start|>user\n<__media__>"+new String(in.get("prompt.txt"),StandardCharsets.UTF_8)
-                +"<|im_end|>\n<|im_start|>assistant\n"));
+                +"<|im_end|>\n<|im_start|>assistant\n";
+        if(p==VlmResultContract.LFM3_VL_2B)formatted="<|startoftext|>"+(system.isEmpty()?"":"<|im_start|>system\n"+system+"<|im_end|>\n")
+                +"<|im_start|>user\n<__media__>"+new String(in.get("prompt.txt"),StandardCharsets.UTF_8)
+                +"<|im_end|>\n<|im_start|>assistant\n<think></think>";
+        side.put("formatted-prompt.txt",b(formatted));
         Map<String,Object> text=new LinkedHashMap<>(),image=new LinkedHashMap<>();
         text.put("index",0);text.put("type",0);text.put("tokens",127);text.put("positions",127);
         text.put("token_ids_sha256_le32",sha(b("synthetic-host-token-ids")));
         image.put("index",1);image.put("type",1);image.put("tokens",80);image.put("positions",9);
         image.put("image_sha256",sha(in.get("screen.png")));side.put("chunks.json",json(Arrays.asList(text,image)));
-        VlmResultContract.Profile p=VlmResultContract.GUI_OWL_4B;
         Map<String,Object> r=new LinkedHashMap<>();
         r.put("schema","hepta.vlm.result.v1");r.put("request_id",q.get("request_id"));r.put("task_id",TASK);
         r.put("generation",q.get("generation"));r.put("scope_token",owner.get("scope_token"));r.put("profile",p.id);
@@ -212,7 +219,7 @@ public final class NativeCalendarDateModelHostTest {
         r.put("lm_device_description","host fixture only");r.put("vision_device_description","host fixture only");
         r.put("vision_max_allocation_bytes",1073741824L);r.put("architecture",p.architecture);
         r.put("tokenizer_pre",p.tokenizerPre);r.put("tokenizer_model",p.tokenizerModel);
-        r.put("chat_template_sha256",p.templateSha256);r.put("chat_template_bytes",template.length);
+        r.put("chat_template_sha256",p.templateSha256);r.put("chat_template_bytes",actualTemplate.length);
         r.put("template_now_unix_ms",System.currentTimeMillis());
         r.put("formatted_prompt_sha256",sha(side.get("formatted-prompt.txt")));r.put("chunks_sha256",sha(side.get("chunks.json")));
         r.put("prompt_tokens",207);r.put("prompt_positions",136);r.put("image_tokens",80);

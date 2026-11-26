@@ -30,10 +30,12 @@ public final class ModelProfile {
     public static final ModelProfile LFM25_8B_A1B=new ModelProfile("lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B（实验）",
             "LiquidAI/LFM2.5-8B-A1B-GGUF","49c14831707011e64d70b2ebd8462ba08d608434","LFM2.5-8B-A1B-Q4_0.gguf",4844678368L,
             "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",true,7L<<30);
-    // Observation-only qualification candidate. The language weights are distinct
+    // Pinned visual candidate. The original observation choice remains explicit;
+    // tools are restricted to the qualified native flight route before bootstrap.
+    // The language weights are distinct
     // from text LFM3 even though both use lfm3. A pinned F16 projector is required.
     // Four GiB is engineering admission headroom, not measured peak memory.
-    public static final ModelProfile LFM3_VL_2B=new ModelProfile("lfm3-vl-2b-qad-q4_0","LFM3-VL 2B（仅视觉观察候选）",
+    public static final ModelProfile LFM3_VL_2B=new ModelProfile("lfm3-vl-2b-qad-q4_0","LFM3-VL 2B（视觉候选）",
             "LiquidAI/LFM3-VL-2B-GGUF","1add221a5ea6c047fcf1eaaf2d247939d7cf8849",
             "LFM3-VL-2B-QAD-Q4_0.gguf",1049615648L,
             "621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6","lfm3",true,4L<<30);

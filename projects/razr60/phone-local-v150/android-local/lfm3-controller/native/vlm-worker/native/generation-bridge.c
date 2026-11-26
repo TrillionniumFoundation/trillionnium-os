@@ -38,15 +38,28 @@ int hv_publish(const char *path, const char *nonce, const void *data, size_t siz
 int hv_private_directory(const char *path, struct stat *out) {
     return private_directory_stat(path,out);
 }
+/* Only the fixed runtime_pins loop uses private_model==0. Request::parse
+ * already binds that directory to the installed worker's canonical /proc/self/exe
+ * parent. Installed system-owned runtime files can have multiple directory
+ * links (d125 observed three). Their complete size/SHA and held-FD /
+ * named-path identity must still remain unchanged for this request.
+ * App-owned models keep the original single-link / UID / 0600 policy. */
+static bool pin_metadata_allowed(const struct stat *st, uint64_t bytes, int private_model) {
+    if (!S_ISREG(st->st_mode) || st->st_nlink == 0 || st->st_size <= 0
+        || (uint64_t)st->st_size != bytes) return false;
+    if (private_model == 1) return st->st_nlink == 1 && st->st_uid == getuid()
+        && (st->st_mode & 0777) == 0600;
+    if (private_model != 0) return false;
+    return st->st_uid == 1000 && st->st_gid == 1000
+        && !(st->st_mode & (S_IWGRP | S_IWOTH | S_ISUID | S_ISGID));
+}
 int hv_pin(HeptaInput *in, const char *path, uint64_t bytes, const char *sha,
            int private_model, int (*fence)(void *), void *data) {
     in->fd = -1; in->path = path; in->bytes = NULL;
     if (!sha || strlen(sha) != 64) return 0;
     in->fd = open_canonical(path,O_RDONLY);
-    if (in->fd < 0 || fstat(in->fd,&in->before) != 0 || !S_ISREG(in->before.st_mode)
-        || in->before.st_nlink != 1 || in->before.st_size <= 0
-        || (uint64_t)in->before.st_size != bytes
-        || (private_model && (in->before.st_uid != getuid() || (in->before.st_mode & 0777) != 0600))) return 0;
+    if (in->fd < 0 || fstat(in->fd,&in->before) != 0
+        || !pin_metadata_allowed(&in->before,bytes,private_model)) return 0;
     in->size = (size_t)bytes;
     Sha256 hash; sha_init(&hash);
     unsigned char *buffer = malloc(1024*1024);

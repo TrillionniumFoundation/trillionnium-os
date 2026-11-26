@@ -721,9 +721,8 @@ final class NativeAppSession {
     private static void requireCalendarRuntime(LocalInference inference,LocalRuntimeConfig original){
         need(inference!=null&&inference.acceptsObservedImage()&&inference.modelOutputDispatchAllowed(),
                 "explicit visual tools adapter required");LocalRuntimeConfig value=inference.configuration();
-        need(value!=null&&(original==null||value==original)&&value.profile==ModelProfile.GUI_OWL_4B
-                &&!value.visualObservationOnly&&"npu".equals(value.compute)&&value.contextTokens==8192&&value.threads==4,
-                "only the same GUI-Owl tools configuration may receive a calendar Offer");
+        need(value!=null&&(original==null||value==original)&&value.nativeCalendarToolsConfiguration(),
+                "only the same pinned visual tools configuration may receive a calendar Offer");
     }
 
 

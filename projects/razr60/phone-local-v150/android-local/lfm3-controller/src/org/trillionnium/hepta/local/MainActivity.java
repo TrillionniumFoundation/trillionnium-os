@@ -428,13 +428,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             "GUI-Owl 4B · 语言 NPU + 图像 GPU（实验）\nQ4_0 + F16 视觉投影 · 可用内存门槛 6 GiB",
             "LFM3-VL 2B · 语言 NPU + 图像 GPU（仅观察）\nQAD Q4_0 + F16 视觉投影 · 可用内存门槛 4 GiB",
             "Qwen3.5 4B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 5 GiB",
-            "Qwen3.5 4B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 5 GiB"};
+            "Qwen3.5 4B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 5 GiB",
+            "LFM3-VL 2B · 图像工具（携程只读机票）\n语言 NPU + 图像 GPU · 可用内存门槛 4 GiB"};
         final ModelProfile[] profiles={ModelProfile.LFM3,ModelProfile.LFM3,ModelProfile.LFM25_8B_A1B,ModelProfile.LFM25_8B_A1B,
-                ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.QWEN35_4B};
-        final String[] computes={"npu","gpu","npu","gpu","npu","npu","npu","gpu"};
+                ModelProfile.GUI_OWL_4B,ModelProfile.LFM3_VL_2B,ModelProfile.QWEN35_4B,ModelProfile.QWEN35_4B,ModelProfile.LFM3_VL_2B};
+        final String[] computes={"npu","gpu","npu","gpu","npu","npu","npu","gpu","npu"};
+        final boolean[] observationOnly={false,false,false,false,false,true,false,false,false};
         int current=0;
         try{LocalRuntimeConfig config=engine.configuration();
-            for(int i=0;i<profiles.length;i++)if(config.profile==profiles[i]&&config.compute.equals(computes[i])){current=i;break;}}
+            for(int i=0;i<profiles.length;i++)if(config.profile==profiles[i]&&config.compute.equals(computes[i])
+                    &&config.visualObservationOnly==observationOnly[i]){current=i;break;}}
         catch(Exception unavailable){/* The actual apply still rejects an unreadable prior configuration. */}
         final int[] selected={current};
         new AlertDialog.Builder(this).setTitle("选择本地模型 · 8192 上下文 / 4 线程")
@@ -444,7 +447,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     try{
                         if(choice<0||choice>=labels.length||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
                             throw new IllegalStateException("设置范围或当前空闲状态已变化");
-                        modelSettings.start(profiles[choice].id,computes[choice],false);refresh();
+                        if(profiles[choice].visual()&&!observationOnly[choice])modelSettings.startVisualTools(profiles[choice].id,computes[choice]);
+                        else modelSettings.start(profiles[choice].id,computes[choice],false);
+                        refresh();
                     }catch(Exception error){localModelSettingsState.setText("未更改配置："+HeptaAccessibilityService.message(error));}
                 }).show();
     }
@@ -871,8 +876,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 for(org.trillionnium.hepta.background.ProfileTarget target:ProfileCatalogueClient.load(context)){
                     BackgroundAutoTargetPreferences.Entry item=BackgroundAutoTargetPreferences.captureProfile(target);
                     candidates.add(item);
-                    if(org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.packageName))
-                        candidates.add(item.withModel(ModelProfile.LFM3));
+                    if(org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.packageName)){
+                        candidates.add(item.withModel(ModelProfile.LFM3));candidates.add(item.withModel(ModelProfile.LFM3_VL_2B));
+                    }
                     else if(org.trillionnium.hepta.background.ProfileTarget.XIAOMI.equals(target.packageName)){
                         candidates.add(item.withModel(ModelProfile.QWEN35_4B));
                         candidates.add(item.withModel(ModelProfile.LFM25_8B_A1B));
@@ -997,7 +1003,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         if(!app.canChangeLocalModelSettings(false)){invalidateAutomaticStart();throw new IllegalStateException("请先完成模型设置或清理，再开始任务");}
         pending.settingsStarted=true;automaticStartFeedback="正在准备 "+entry.label()+" 的首选模型 "+entry.modelLabel()+"，完成后开始本次任务……";taskState.setText(automaticStartFeedback);
-        try{modelSettings.start(entry.modelProfile,entry.compute,false);refresh();return true;}
+        try{
+            if(ModelProfile.named(entry.modelProfile).visual())modelSettings.startVisualTools(entry.modelProfile,entry.compute);
+            else modelSettings.start(entry.modelProfile,entry.compute,false);
+            refresh();return true;
+        }
         catch(Exception error){invalidateAutomaticStart();throw error;}
     }
     private boolean finishAutomaticPreparation(AutomaticStart pending){

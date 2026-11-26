@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.vlm.runtime-pin-host-run.v1",
+  "passed": true,
+  "source_inputs": [
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/tests/runtime-pin-test.c",
+      "bytes": 6376,
+      "sha256": "1579fd248e900cbdd0acb2ec5aeb405192f6a50c9c1f99ff07f6ba7736e2a13b"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/tests/runtime-pins/d125-installed-runtime-metadata.json",
+      "bytes": 2333,
+      "sha256": "7f652795640171ade2d057c84759948cf4cb1cd7e87079834dee1fb75c5c164e"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/tools/test_runtime_pins.py",
+      "bytes": 3926,
+      "sha256": "053120ef81056270abc868527ee010654e5a415ab412a84690f510de4f0d7777"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/admission.h",
+      "bytes": 669,
+      "sha256": "a5ff6f3de5c3932648cde762e177b9bb20fd89ccdd75e20ca0403fab45d22728"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/generation-bridge.c",
+      "bytes": 5150,
+      "sha256": "40af0d1aaee6dacc347e1abbfcec6320dd45ef27c05e7421fb31042661cd32b4"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/guard-io.h",
+      "bytes": 983,
+      "sha256": "3d078ffd79765ec27e9485a5c7ce1bede84536b3052de9e54346f71a06ee89ba"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/link-probe.cpp",
+      "bytes": 2496,
+      "sha256": "71fb7ced9634d7f869cc5fed3c69b32bbdc96e844df9bf01b39f6bac3bd52c4a"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/linked-backends.h",
+      "bytes": 1826,
+      "sha256": "fa05d6bc14e288bcd9136f6e80b7c026d96751dba388da5da160546673dc74d2"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/owned-generation.inc",
+      "bytes": 36777,
+      "sha256": "03a827537c6ebdb13cbeb66f8d79fcaa132dc4482626f1408151fffb5a9157ce"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/private-io.inc",
+      "bytes": 8085,
+      "sha256": "dee754f003de1bb6e748d5f258f312415d1e34ee445bbee44f8a96c5746f8446"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/stage-clock.h",
+      "bytes": 1641,
+      "sha256": "c357de9b80631ff94e49fa22049776280b27f4626931d1788d1d50e5cf047ee4"
+    },
+    {
+      "path": "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/native/vlm-worker.cpp",
+      "bytes": 30909,
+      "sha256": "8f83e592ff9c78f6e70379d4074e6477552b8e4f05d4c653b58cd87888e68b82"
+    }
+  ],
+  "actual_phone_metadata": {
+    "path": "/home/alex/hepta-razr-ordinary-background-next-20261126-674faf/lfm3vl-observe-r2/runtime-pin-metadata-r1/RESULT.json",
+    "bytes": 30517,
+    "sha256": "6215ce406e841f6cc9504327ea5db9c157ad59f9603414a8aa587316cc3e0e74"
+  },
+  "actual_phone_metadata_replayed": true,
+  "metadata_policy_is_struct_replay": true,
+  "runtime_file_io_is_actual_os": true,
+  "compile_argv": [
+    "cc",
+    "-std=c11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/native/vlm-worker/tests/runtime-pin-test.c",
+    "-o",
+    "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/runtime-pin-host-r1/runtime-pin-test"
+  ],
+  "run_argv": [
+    "/home/alex/hepta-razr-vlm-runtime-hardlinks-20261126-674faf-npu-r1/runtime-pin-host-r1/runtime-pin-test",
+    "2097218",
+    "320747",
+    "33133",
+    "1000",
+    "1000",
+    "3",
+    "5642424",
+    "1795704799",
+    "1795704799"
+  ],
+  "result": {
+    "schema": "hepta.vlm.runtime-pin-host.v1",
+    "policy_cases": 17,
+    "io_cases": 12,
+    "checks": 82,
+    "passed": true,
+    "runtime_real_file_io_verified": true,
+    "host_uid": 1000,
+    "host_gid": 1000,
+    "phone_contacted": false,
+    "model_inference_performed": false
+  },
+  "elapsed_seconds": 1.627536892076023,
+  "phone_contacted": false,
+  "model_inference_performed": false
+}
