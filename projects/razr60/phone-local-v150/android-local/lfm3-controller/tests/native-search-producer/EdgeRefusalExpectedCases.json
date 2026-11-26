@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.xiaomi-edge-refusal-case-inventory.v1",
+  "synthetic_actual_call_path": [
+    "edge_refusal_valid_1_left_after",
+    "edge_refusal_valid_1_left_before",
+    "edge_refusal_valid_1_right_after",
+    "edge_refusal_valid_1_right_before",
+    "edge_refusal_valid_2_left_after",
+    "edge_refusal_valid_2_left_before",
+    "edge_refusal_valid_2_right_after",
+    "edge_refusal_valid_2_right_before",
+    "edge_refusal_valid_1223_left_after",
+    "edge_refusal_valid_1223_left_before",
+    "edge_refusal_valid_1223_right_after",
+    "edge_refusal_valid_1223_right_before",
+    "edge_refusal_invalid_full_width",
+    "edge_refusal_invalid_not_at_edge",
+    "edge_refusal_invalid_top_mismatch",
+    "edge_refusal_invalid_bottom_mismatch",
+    "edge_refusal_invalid_outside_viewport",
+    "edge_refusal_invalid_two_edges",
+    "edge_refusal_invalid_both_frames_edge",
+    "edge_refusal_invalid_text",
+    "edge_refusal_invalid_description",
+    "edge_refusal_invalid_click_capability",
+    "edge_refusal_invalid_editable",
+    "edge_refusal_invalid_selected",
+    "edge_refusal_invalid_unrelated",
+    "edge_refusal_invalid_target",
+    "edge_refusal_late_unknown_still_refuses",
+    "edge_refusal_late_untyped_still_refuses",
+    "edge_refusal_late_boundary_still_refuses",
+    "edge_refusal_two_pixel_fresh_pair_requires_new_decision"
+  ],
+  "archived_pair_optional_external": [
+    "edge_refusal_b813_unchanged_full_pair_still_cannot_return_role",
+    "edge_refusal_b813_complete_nodes_actual_service_synthetic_current_scope"
+  ],
+  "legacy_466_names_preserved": true,
+  "changed_legacy_case": "ambiguous_banner_wider_overlap",
+  "only_changed_legacy_expectation": "eligible opaque refusal proof; original zero claim/effect assertions unchanged"
+}

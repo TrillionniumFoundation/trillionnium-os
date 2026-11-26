@@ -1,0 +1,180 @@
+    /** New edge classification is a refusal, never a Role or an input permission.
+     * Existing actual Service/Session/no-effect machinery is used unchanged. */
+    static final List<Map<String,Object>> edgeRefusalEvidence=new ArrayList<Map<String,Object>>();
+    static void edgeBounds(Fixture f,String path,int width,boolean right){
+        f.values.nodes.get(path).put("bounds",Arrays.asList(right?1224-width:0,0,right?1224:width,395));
+    }
+    static void installEdgeFixture(Fixture f,int width,boolean right,boolean first){
+        installTestBanner(f,first?width:0);
+        if(first)edgeBounds(f,SEARCH_BANNER+"/1",width,right);
+        else f.values.nodes.get(SEARCH_BANNER+"/1").put("visible",false);
+    }
+    static void moveEdgeFixture(Fixture f,int width,boolean right,boolean first){
+        if(first)advanceTestBanner(f);
+        else {edgeBounds(f,SEARCH_BANNER+"/1",width,right);f.values.nodes.get(SEARCH_BANNER+"/1").put("visible",true);}
+    }
+    static void edgeNoEffect(NoEffectRun run,Fixture f){
+        check(run.outcome!=null&&!run.outcome.accepted&&!run.outcome.dispatched&&f.effects==0,
+                "overlap cannot enter an Android action");
+        check(run.work.roleProof==null&&!run.work.platformCallInvoked
+                &&!Boolean.TRUE.equals(run.attempt.evidence().get("claimed"))
+                &&!Boolean.TRUE.equals(run.work.state.evidence().get("effect_entered")),"original Role/claim/effect gates reject");
+        check(run.work.state.isDrained()&&run.work.currentGraph==null&&!actionSlot.pending(),"original worker finally disposed graph and drained");
+        for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all held nodes recycled before callback");
+    }
+    static void edgeRecord(String name,NoEffectRun run,Fixture f){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("case",name);
+        out.put("graph_reads",f.graphReads);out.put("effects",f.effects);out.put("opaque_successor_available",run.proof!=null);
+        out.put("claimed",run.attempt.evidence().get("claimed"));out.put("execution",run.outcome.actionExecution.toMap());
+        out.put("android_nodes_clock_window_owner_and_model_io_synthetic",true);out.put("replayed_device_success",false);
+        out.put("phone_operations",0);edgeRefusalEvidence.add(out);
+    }
+    static void edgeRefusalCases()throws Exception{
+        for(final int width:new int[]{1,2,1223})for(final boolean right:new boolean[]{false,true})for(final boolean first:new boolean[]{false,true}){
+            final String name="edge_refusal_valid_"+width+"_"+(right?"right":"left")+"_"+(first?"before":"after");
+            one(name,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installEdgeFixture(f,width,right,first);NativeSearchSession.Attempt old=f.intent();
+                    final long deadline=old.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed,task=f.base.search.taskDeadlineElapsed;
+                    int d=f.graphReads+2;f.graphHook=()->{if(f.graphReads==d)moveEdgeFixture(f,width,right,first);};
+                    NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;
+                    if(actionIo.hasJobs())run.marker();else s.main.one();
+                    edgeNoEffect(run,f);
+                    check(run.proof!=null&&run.outcome.stale&&"overlapping_blank_home_banner_before_claim".equals(run.proof.evidence().get("rejection_reason")),
+                            "proper edge yields only the original opaque rejection successor");
+                    check(old.deadlineElapsed==deadline&&f.base.search.chainDeadlineElapsed==chain&&f.base.search.taskDeadlineElapsed==task,"no old clock is renewed");
+                    rejected(()->old.claim(SystemClock.now));edgeRecord(name,run,f);
+                }
+            });
+        }
+        for(final String variant:Arrays.asList("full_width","not_at_edge","top_mismatch","bottom_mismatch","outside_viewport",
+                "two_edges","both_frames_edge","text","description","click_capability","editable","selected","unrelated","target")){
+            final String name="edge_refusal_invalid_"+variant;
+            one(name,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    boolean before="both_frames_edge".equals(variant);installEdgeFixture(f,2,false,before);
+                    if("two_edges".equals(variant)){
+                        f.values.add(SEARCH_BANNER+"/2","android.widget.FrameLayout","","","",Arrays.asList(1224,0,1224,395));
+                        f.values.click(SEARCH_BANNER+"/2");f.values.nodes.get(SEARCH_BANNER+"/2").put("visible",false);
+                        f.values.nodes.get(SEARCH_BANNER+"/2").put("ime_enter",ObservedImeEnter.ABSENT.fingerprintInput());f.values.link();
+                    }
+                    NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    f.graphHook=()->{if(f.graphReads==d){
+                        Map<String,Object> leaf=f.values.nodes.get(SEARCH_BANNER+"/1");leaf.put("visible",true);edgeBounds(f,SEARCH_BANNER+"/1",2,false);
+                        if("full_width".equals(variant))edgeBounds(f,SEARCH_BANNER+"/1",1224,false);
+                        else if("not_at_edge".equals(variant))leaf.put("bounds",Arrays.asList(2,0,4,395));
+                        else if("top_mismatch".equals(variant))leaf.put("bounds",Arrays.asList(0,1,2,395));
+                        else if("bottom_mismatch".equals(variant))leaf.put("bounds",Arrays.asList(0,0,2,394));
+                        else if("outside_viewport".equals(variant))leaf.put("bounds",Arrays.asList(-2,0,0,395));
+                        else if("two_edges".equals(variant)){edgeBounds(f,SEARCH_BANNER+"/2",2,true);f.values.nodes.get(SEARCH_BANNER+"/2").put("visible",true);}
+                        else if("both_frames_edge".equals(variant))edgeBounds(f,SEARCH_BANNER+"/1",3,false);
+                        else if("text".equals(variant))leaf.put("text","nonblank");
+                        else if("description".equals(variant))leaf.put("description","nonblank");
+                        else if("click_capability".equals(variant)){leaf.put("clickable",false);leaf.put("action_click",false);}
+                        else if("editable".equals(variant))leaf.put("editable",true);
+                        else if("selected".equals(variant))leaf.put("selected",true);
+                        else if("unrelated".equals(variant))f.values.nodes.get("0/2/0").put("selected",true);
+                        else if("target".equals(variant))f.values.nodes.get("0/0/0").put("selected",true);
+                    }};
+                    NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;
+                    if(actionIo.hasJobs())run.marker();else s.main.one();
+                    edgeNoEffect(run,f);check(run.proof==null,"invalid geometry/content/capability cannot qualify a successor");edgeRecord(name,run,f);
+                }
+            });
+        }
+        for(final int kind:new int[]{0,1,2}){
+            final String name="edge_refusal_late_"+(kind==0?"unknown":kind==1?"untyped":"boundary")+"_still_refuses";
+            one(name,()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installEdgeFixture(f,2,true,false);NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    f.graphHook=()->{if(f.graphReads==d)moveEdgeFixture(f,2,true,false);};
+                    NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;successorEvent(s,kind);
+                    if(actionIo.hasJobs())run.marker();else s.main.one();
+                    edgeNoEffect(run,f);check(run.proof==null,"late non-content event cannot authorize any successor");edgeRecord(name,run,f);
+                }
+            });
+        }
+        one("edge_refusal_two_pixel_fresh_pair_requires_new_decision",()->{
+            // A rejected old model run consumes its Offer under the unchanged one-use contract.
+            {
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installEdgeFixture(f,2,false,true);NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    final long deadline=old.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed,task=f.base.search.taskDeadlineElapsed;
+                    f.graphHook=()->{if(f.graphReads==d)moveEdgeFixture(f,2,false,true);};
+                    NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;run.marker();edgeNoEffect(run,f);
+                    edgeRecord("edge_refusal_two_pixel_fresh_pair_requires_new_decision_before_new_read",run,f);
+                    check(run.proof!=null,"actual typed rejection supplies original bounded one-use proof");
+                    run.closeOld();int before=f.graphReads;NativeSearchSession.Offer fresh=run.publish();
+                    check(f.graphReads==before+2&&f.effects==0,"new full A/B and no effect from old click");
+                    rejected(()->fresh.reserve(f.base.decision(fresh),old.modelRunId,SystemClock.now,SystemClock.now+8000));
+                    check(old.deadlineElapsed==deadline&&f.base.search.chainDeadlineElapsed==chain&&f.base.search.taskDeadlineElapsed==task,"old task/chain/attempt clocks unchanged");
+                    rejected(()->fresh.grammar());
+                    check(f.effects==0&&f.graphReads==before+2,"rejected old model decision cannot enter input or additional reads");
+                    edgeRecord("edge_refusal_two_pixel_old_run_rejected_and_offer_consumed",run,f);
+                }
+            }
+            // A separate complete Fixture obtains its own proof, full A/B and fresh Offer.
+            {
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installEdgeFixture(f,2,false,true);NativeSearchSession.Attempt old=f.intent();int d=f.graphReads+2;
+                    final long deadline=old.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed,task=f.base.search.taskDeadlineElapsed;
+                    f.graphHook=()->{if(f.graphReads==d)moveEdgeFixture(f,2,false,true);};
+                    NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;run.marker();edgeNoEffect(run,f);
+                    check(run.proof!=null,"independent fixture supplies its own original bounded one-use proof");
+                    run.closeOld();int before=f.graphReads;NativeSearchSession.Offer fresh=run.publish();
+                    check(f.graphReads==before+2&&f.effects==0,"independent new full A/B precedes any new decision");
+                    check(old.deadlineElapsed==deadline&&f.base.search.chainDeadlineElapsed==chain&&f.base.search.taskDeadlineElapsed==task,"independent old clocks remain unchanged");
+                    completeFreshSearch(s,f,fresh,UUID.randomUUID().toString().replace("-",""));
+                    check(f.effects==1,"only new host model decision with subsequent full C/D enters once");
+                    int afterEffectReads=f.graphReads,afterEffectAdmissions=s.taskObservationAdmissions;
+                    run.submit();check(f.error!=null&&f.graphReads==afterEffectReads&&s.taskObservationAdmissions==afterEffectAdmissions&&f.effects==1,
+                            "spent proof cannot admit a second read or add another effect");
+                    edgeRecord("edge_refusal_two_pixel_independent_new_decision_once",run,f);
+                }
+            }
+        });
+        String path=System.getProperty("hepta.test.edgeRefusalOriginal");
+        if(path==null)return;
+        byte[] raw=Files.readAllBytes(Paths.get(path));
+        check(raw.length==213701&&"cb97f512faccc62e826157b09181a503abc32c14c53b58fb4fca583e2fcf19ec".equals(sha(raw)),"exact complete b813 action original");
+        final JSONObject action=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+        final JSONObject execution=action.getJSONObject("action_execution").getJSONObject("native_search_execution");
+        final NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(execution.getJSONObject("current_C")),d=fullSwapSnapshot(execution.getJSONObject("latest_D"));
+        one("edge_refusal_b813_unchanged_full_pair_still_cannot_return_role",()->{
+            check(c.nodes.size()==75&&d.nodes.size()==75
+                    &&"7542bae2d85c4060ba69830cb29263ecfeb86eedf5a4f0c22b3c4386f794bca3".equals(c.sha)
+                    &&"b964653b61328c37e666659d86d34b4502d3314522f46a7bc27c0eb874b01e2a".equals(d.sha),"two complete original canonical censuses");
+            check(!execution.getBoolean("platform_call_invoked")&&!action.getJSONObject("action_execution").getBoolean("effect_entered")
+                    &&!execution.getBoolean("overlapping_blank_banner_pair_rejected"),"original failure and old nonclassification remain historical facts");
+            NativeSearchRole initial=NativeSearchRole.compare(c,c);
+            boolean typed=false;try{NativeSearchRole.compareForExecution(c,d);}
+            catch(NativeSearchRole.RejectedBannerMotion refusal){typed=true;check(refusal.first==c&&refusal.second==d,"typed refusal carries exact complete pair");}
+            check(typed&&NativeActionSnapshotCheck.rejectedSearchBannerMotion(c,d,initial.targetPath),"only typed rejected-banner eligibility changed");
+            check(NativeActionSnapshotCheck.fullPageSearchBannerSwap(c,d,initial.targetPath,Collections.<String>emptySet())==null,"overlap still cannot satisfy full coverage");
+            // Exact malformed references remain negative in the pure original pair.
+            for(String key:Arrays.asList("ref_signature_sha256","label")){
+                JSONObject changed=new JSONObject(execution.getJSONObject("latest_D").toString());
+                swapNode(changed,"0/0/1/0/0/5").put(key,"label".equals(key)?"unexplained":NativeAppEvidence.hash("unexplained"));
+                NativeActionSnapshotCheck.Snapshot wrong=fullSwapSnapshot(changed);
+                check(!NativeActionSnapshotCheck.rejectedSearchBannerMotion(c,wrong,initial.targetPath),"no guessed label/reference authority");
+                rejected(()->NativeSearchRole.compareForExecution(c,wrong));
+            }
+            Map<String,Object> evidence=new LinkedHashMap<String,Object>();evidence.put("kind","unchanged_device_failure_pair");
+            evidence.put("input_path",path);evidence.put("input_sha256",sha(raw));evidence.put("first_sha256",c.sha);evidence.put("second_sha256",d.sha);
+            evidence.put("original_device_failure_unchanged",true);evidence.put("new_device_success_claimed",false);edgeRefusalEvidence.add(evidence);
+        });
+        one("edge_refusal_b813_complete_nodes_actual_service_synthetic_current_scope",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.graphHook=()->recordedHomeSample(f,execution.getJSONObject(f.graphReads==4?"latest_D":"current_C"));
+                NativeSearchSession.Attempt old=f.intent();long chain=f.base.search.chainDeadlineElapsed,task=f.base.search.taskDeadlineElapsed,deadline=old.deadlineElapsed;
+                NoEffectRun run=submitCapturedSearch(s,f,old);actionIo.one();f.graphHook=null;
+                if(actionIo.hasJobs())run.marker();else s.main.one();
+                edgeNoEffect(run,f);check(f.graphReads==4&&run.proof!=null,"same full 75-node values reach actual no-effect successor branch");
+                JSONObject retained=finalCensusEvidence(f);
+                check(retained.getJSONObject("current_C").getJSONArray("nodes").length()==75
+                        &&retained.getJSONObject("latest_D").getJSONArray("nodes").length()==75,"no projection or residual fragment substitutes complete C/D");
+                check(old.deadlineElapsed==deadline&&chain==f.base.search.chainDeadlineElapsed&&task==f.base.search.taskDeadlineElapsed,"no deadline extends");
+                edgeRecord("edge_refusal_b813_complete_nodes_actual_service_synthetic_current_scope",run,f);
+            }
+        });
+    }

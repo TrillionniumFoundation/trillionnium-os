@@ -15,6 +15,7 @@ def main():
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
  ap.add_argument('--loading-original',type=Path)
  ap.add_argument('--captured-label-original',type=Path)
+ ap.add_argument('--edge-refusal-original',type=Path)
  ap.add_argument('--after-target-original',type=Path,action='append',default=[])
  args=ap.parse_args();source=args.source.resolve();out=args.output.resolve();jdk=args.java_home.resolve();jar=args.json_jar.resolve()
  if out.exists() or source in out.parents:raise RuntimeError('fresh outside-source output required')
@@ -23,6 +24,8 @@ def main():
  if after_target_before and [(x['bytes'],x['sha256']) for x in after_target_before]!=[(271012,'9bd6ffbb6b0b154fc002ea189db778bf982b673bb3835dd8d2485a318eb416bc'),(271493,'6222aa65845d2040fbf51769f3e794c811544f846572f55d8e743f4a301dc603')]:raise RuntimeError('exact archived c78b whole action bytes required')
  captured_original_before=meta(args.captured_label_original) if args.captured_label_original else None
  if captured_original_before and (captured_original_before['bytes'],captured_original_before['sha256'])!=(121578,'77eee186865f051c625b39b9c28da421519c371ad95099f0387d3a673f310c7e'):raise RuntimeError('exact complete a774 original required')
+ edge_original_before=meta(args.edge_refusal_original) if args.edge_refusal_original else None
+ if edge_original_before and (edge_original_before['bytes'],edge_original_before['sha256'])!=(213701,'cb97f512faccc62e826157b09181a503abc32c14c53b58fb4fca583e2fcf19ec'):raise RuntimeError('exact complete b813 action original required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
  test=source/'tests/native-search-producer';pkg=source/'src/org/trillionnium/hepta/local'
  query=module(source/'tests/web-flight/run_query_host_tests.py','producer_query')
@@ -92,10 +95,10 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
- parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();\n        initialClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()+(test/'InitialClientCacheCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();\n        initialClientCacheCases();\n        edgeRefusalCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()+(test/'InitialClientCacheCases.fragment').read_text()+(test/'EdgeRefusalCases.fragment').read_text()
  cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
  if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
- parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);',1)
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);\n        report.put("edge_refusal_evidence",edgeRefusalEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -210,6 +213,7 @@ def main():
  report['external_after_target_replay_enabled']=bool(after_target_before)
  report['external_loading_original']=original_before
  report['external_captured_label_original_before']=captured_original_before
+ report['external_edge_refusal_original_before']=edge_original_before
  report['captured_label_fixture_boundary']={'original_bytes_not_transformed':True,'exact_original_supplied':bool(captured_original_before),'full_bfs_android_io_is_synthetic':True,'missing_raw_metadata_is_explicit_host_fixture':['input_type','long_clickable','action_long_click','action_set_text','directional_action_membership'],'new_device_success_claimed':False}
  write(out/'EXTRACTION.json',json.dumps(extraction,ensure_ascii=False,indent=2)+'\n')
  env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1'
@@ -223,7 +227,7 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+(['-Dhepta.test.edgeRefusalOriginal='+str(args.edge_refusal_original.resolve())] if args.edge_refusal_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
     expected=json.loads((test/'AfterTargetExpectedCases.json').read_text())
     names=[r['name'] for r in report['case_result']['results']]
@@ -249,12 +253,32 @@ def main():
     report['initial_cache_expected_cases']=initial_expected;report['initial_cache_observed_cases']=initial_observed
     report['initial_cache_exact_cases']=len(names)==len(set(names)) and len(initial_observed)==len(initial_expected) and set(initial_observed)==set(initial_expected)
     report['all_pass']=report['all_pass'] and report['initial_cache_exact_cases']
+    edge_expected=json.loads((test/'EdgeRefusalExpectedCases.json').read_text())
+    edge_required=edge_expected['synthetic_actual_call_path']+(edge_expected['archived_pair_optional_external'] if edge_original_before else [])
+    edge_observed=[n for n in names if n.startswith('edge_refusal_')]
+    report['edge_refusal_expected_cases']=edge_required;report['edge_refusal_observed_cases']=edge_observed
+    report['edge_refusal_exact_cases']=len(names)==len(set(names)) and len(edge_observed)==len(edge_required) and set(edge_observed)==set(edge_required)
+    legacy=json.loads((test/'EdgeRefusalLegacyCases.json').read_text())
+    legacy_required=list(legacy['actual_names'])
+    if not after_target_before:legacy_required=[n for n in legacy_required if n not in expected['archived_pair_optional_external']]
+    if not captured_original_before:legacy_required=[n for n in legacy_required if n not in captured_expected['archived_original_and_derived_host']]
+    if args.loading_original:legacy_required.append('actual_private_14_to_83_pair_is_loading_classification_only_never_planning')
+    legacy_observed=[n for n in names if not n.startswith('edge_refusal_')]
+    report['legacy_required_case_names']=legacy_required;report['legacy_observed_case_names']=legacy_observed
+    report['legacy_exact_case_names']=len(legacy_observed)==len(legacy_required) and set(legacy_observed)==set(legacy_required)
+    report['legacy_changed_classification_case']='ambiguous_banner_wider_overlap'
+    report['legacy_change_scope']='Only opaque refusal-proof eligibility changes; Role remains rejected and the old case still has zero claim/effect.'
+    report['new_private_pair_boundary']={'original_device_failure_unchanged':True,'synthetic_runtime_for_service_counterfactual':True,'no_device_success_claimed':True}
+    report['all_pass']=report['all_pass'] and report['edge_refusal_exact_cases'] and report['legacy_exact_case_names']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']
   report['external_original_unchanged']=original_before is None or original_before==meta(args.loading_original)
   report['external_after_target_originals_after']=[meta(p) for p in args.after_target_original]
   report['external_after_target_originals_unchanged']=after_target_before==report['external_after_target_originals_after']
+  report['external_edge_refusal_original_after']=meta(args.edge_refusal_original) if args.edge_refusal_original else None
+  report['external_edge_refusal_original_unchanged']=edge_original_before==report['external_edge_refusal_original_after']
+  report['all_pass']=report['all_pass'] and report['external_edge_refusal_original_unchanged']
   report['external_captured_label_original_after']=meta(args.captured_label_original) if args.captured_label_original else None
   report['external_captured_label_original_unchanged']=captured_original_before==report['external_captured_label_original_after']
   report['all_pass']=report['all_pass'] and report['external_captured_label_original_unchanged']

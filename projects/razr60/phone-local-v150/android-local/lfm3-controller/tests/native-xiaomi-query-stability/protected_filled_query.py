@@ -68,7 +68,7 @@ def predecessor(name, raw):
         raise ValueError("known filled-query source and bytes required")
     # Proof-copy ordering only. The original filled-query PINS/INVERSES below
     # are unchanged; Ctrip's helper stops at e30 and never calls this helper.
-    if name=="NativeActionSnapshotCheck.java" and hashlib.sha256(raw).hexdigest()=="400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593":
+    if name=="NativeActionSnapshotCheck.java" and hashlib.sha256(raw).hexdigest() in ("400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593","367baab566b2fe72ca0eada021d07236a87817903b422c6268807229e873900f"):
         scope=Path(__file__).resolve().parents[1]/"native-ctrip-form-observation/scope_predecessor.py"
         raw=runpy.run_path(str(scope))["predecessor"](raw)
         if hashlib.sha256(raw).hexdigest()!="b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2":

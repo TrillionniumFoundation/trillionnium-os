@@ -142,14 +142,17 @@ final class PublicPersonalNotesReader {
     synchronized PublicPersonalNotesCustody.Frame frame()throws Exception{return frame(null);}
     synchronized PublicPersonalNotesCustody.Frame frame(PublicPersonalNotesCustody custody)throws Exception{
         long begin=SystemClock.elapsedRealtime();check();
+        PublicPersonalNotesCustody.ActiveRead activeAtStart=custody==null?null:custody.activeRead(display,uid,begin);
         // Ordinary Intent-created Notes roots are not organizer-created containers.
         // Android 16 getChildTasks() returns null for such tasks; null is not an
         // empty-child proof. Use two complete independent ATM leaf censuses around
         // the real organizer root TaskInfo query, without ever calling children().
         Map<Integer,BackgroundOwnedSingleTask.Task> identities=null;
         BackgroundOwnedSingleTask.Task firstRoot=null;
+        ActiveRootRead activeRoots=null;
         for(int attempt=1;attempt<=MAX_TASKINFO_SAMPLES;attempt++){
             check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+            if(activeRoots!=null)activeRoots.requireCurrent();
             BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
             List<BackgroundOwnedSingleTask.Task> actual=reader.roots();
             BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
@@ -158,8 +161,20 @@ final class PublicPersonalNotesReader {
             if(!first.keySet().equals(middle.keySet())||!middle.keySet().equals(last.keySet())){
                 // Discard one complete bootstrap triple only for empty -> one new root.
                 if(custody==null||attempt!=1||!first.isEmpty()||last.size()!=1
-                        ||(!middle.isEmpty()&&!middle.keySet().equals(last.keySet())))
-                    throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","within_sample",attempt,display,identities,first,middle,last);
+                        ||(!middle.isEmpty()&&!middle.keySet().equals(last.keySet()))){
+                    CensusChanged changed=new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","within_sample",attempt,display,identities,first,middle,last);
+                    if(custody==null||firstRoot!=null||attempt==MAX_TASKINFO_SAMPLES)throw changed;
+                    if(activeRoots==null){
+                        if(first.isEmpty()||!first.keySet().containsAll(middle.keySet())
+                                ||!middle.keySet().containsAll(last.keySet())||first.keySet().equals(last.keySet()))throw changed;
+                        if(activeAtStart==null)throw changed;
+                        activeRoots=new ActiveRootRead(activeAtStart,identities==null?first:identities);
+                    }
+                    activeRoots.discard(changed,before,first,middle,last,after,attempt);
+                    if(identities==null)identities=first;
+                    check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                    activeRoots.requireCurrent();Thread.sleep(20);continue;
+                }
                 BackgroundOwnedSingleTask.Task candidate=last.values().iterator().next();
                 try{requireBootstrapCensus(before.global,candidate,false);requireBootstrapCensus(after.global,candidate,true);}
                 catch(IOException conflict){
@@ -173,8 +188,9 @@ final class PublicPersonalNotesReader {
                 Thread.sleep(20);continue;
             }
             if(identities==null)identities=first;
-            if(!identities.keySet().equals(first.keySet()))
+            if(!(activeRoots==null?identities.keySet():activeRoots.remaining).equals(first.keySet()))
                 throw new CensusChanged("NOTES_ROOT_CENSUS_CHANGED","between_samples",attempt,display,identities,first,middle,last);
+            if(activeRoots!=null)activeRoots.requireTriple(before,first,middle,last,after,attempt);
             if(firstRoot!=null){
                 need(custody.firstRootReadActive(firstRoot,display,uid,SystemClock.elapsedRealtime()),"NOTES_BOOTSTRAP_RETIRED");
                 requireBootstrapCensus(before.global,first.get(firstRoot.id),true);
@@ -198,6 +214,7 @@ final class PublicPersonalNotesReader {
                 }
                 check();
                 if(firstRoot!=null)need(custody.firstRootReadActive(firstRoot,display,uid,SystemClock.elapsedRealtime()),"NOTES_BOOTSTRAP_RETIRED");
+                if(activeRoots!=null)activeRoots.requireCurrent();
                 return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
             }catch(ActivityStateChanged changed){
                 if(attempt==MAX_TASKINFO_SAMPLES)throw changed;
@@ -206,6 +223,61 @@ final class PublicPersonalNotesReader {
             }
         }
         throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
+    }
+    /** Kept only for this frame's bounded active read. All discarded triples
+     * remain unusable as Frames, and the original identity anchors never move. */
+    private final class ActiveRootRead {
+        private final PublicPersonalNotesCustody.ActiveRead custody;
+        private final Map<Integer,BackgroundOwnedSingleTask.Task> anchors;
+        private final java.util.Set<Integer> removed=new java.util.LinkedHashSet<Integer>();
+        private java.util.Set<Integer> remaining;
+        private ActiveRootRead(PublicPersonalNotesCustody.ActiveRead custody,Map<Integer,BackgroundOwnedSingleTask.Task> anchors){
+            this.custody=custody;
+            this.anchors=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(anchors));
+            remaining=new java.util.LinkedHashSet<Integer>(anchors.keySet());
+        }
+        private void requireCurrent(){custody.requireCurrent(display,uid);}
+        private void requireRows(Map<Integer,BackgroundOwnedSingleTask.Task> rows,String stage,int attempt)throws Exception{
+            for(BackgroundOwnedSingleTask.Task task:rows.values()){
+                need(!removed.contains(task.id),"NOTES_ACTIVE_READ_REMOVED_TASK_REAPPEARED");
+                sameIdentity(custody.retained(task.id),task,stage,attempt);
+                sameIdentity(anchors.get(task.id),task,stage,attempt);
+            }
+        }
+        private void requireCensus(ProfileTaskPolicy.Snapshot global,Map<Integer,BackgroundOwnedSingleTask.Task> rows)throws Exception{
+            custody.requireGlobal(global);
+            java.util.Set<Integer> roots=new java.util.LinkedHashSet<Integer>(),leaves=new java.util.LinkedHashSet<Integer>();
+            for(ProfileTaskPolicy.Root root:global.roots){
+                if(root.display==display)roots.add(root.id);
+                else need(!inPackage(root.base)&&!inPackage(root.top),"NOTES_ACTIVE_READ_FOREIGN_TARGET");
+            }
+            for(ProfileTaskPolicy.Leaf leaf:global.leaves.values()){
+                if(leaf.display==display)leaves.add(leaf.id);
+                else need(!inPackage(leaf.name),"NOTES_ACTIVE_READ_FOREIGN_TARGET");
+            }
+            need(roots.equals(rows.keySet())&&leaves.equals(rows.keySet()),"NOTES_GLOBAL_OWNED_TREE_DISAGREES");
+            for(BackgroundOwnedSingleTask.Task task:rows.values())requireSoleLeaf(global,task);
+        }
+        private void requireTriple(BackgroundTaskOrganizer.ReadOnlyRootCensus before,
+                Map<Integer,BackgroundOwnedSingleTask.Task> first,Map<Integer,BackgroundOwnedSingleTask.Task> middle,
+                Map<Integer,BackgroundOwnedSingleTask.Task> last,BackgroundTaskOrganizer.ReadOnlyRootCensus after,int attempt)throws Exception{
+            requireCurrent();
+            requireRows(first,"active_read_before",attempt);requireRows(middle,"active_read_organizer",attempt);
+            requireRows(last,"active_read_after",attempt);
+            requireCensus(before.global,first);requireCensus(after.global,last);
+            requireCurrent();
+        }
+        private void discard(CensusChanged changed,BackgroundTaskOrganizer.ReadOnlyRootCensus before,
+                Map<Integer,BackgroundOwnedSingleTask.Task> first,Map<Integer,BackgroundOwnedSingleTask.Task> middle,
+                Map<Integer,BackgroundOwnedSingleTask.Task> last,BackgroundTaskOrganizer.ReadOnlyRootCensus after,int attempt)throws Exception{
+            // Only the actual within-sample refusal calls this method. New roots,
+            // resurrection and between-sample changes never qualify for retry.
+            if(!remaining.equals(first.keySet())||!first.keySet().containsAll(middle.keySet())
+                    ||!middle.keySet().containsAll(last.keySet())||first.keySet().equals(last.keySet()))throw changed;
+            requireTriple(before,first,middle,last,after,attempt);
+            for(int id:remaining)if(!last.containsKey(id))removed.add(id);
+            remaining=new java.util.LinkedHashSet<Integer>(last.keySet());
+        }
     }
     private void requireBootstrapCensus(ProfileTaskPolicy.Snapshot census,BackgroundOwnedSingleTask.Task task,boolean present)throws Exception{
         need(census!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");

@@ -72,6 +72,9 @@ SHARED[SEARCH_HISTORY_PATH]="6802c799ab5308594b9f817a3f00439f95ec3a27d5be991e2c3
 PRE_READONLY_OWNER_SHARED=dict(SHARED)
 READONLY_OWNER_PATH="src/org/trillionnium/hepta/local/NativeAppGoal.java"
 SHARED[READONLY_OWNER_PATH]="65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447"
+PRE_EDGE_REFUSAL_SHARED=dict(SHARED)
+EDGE_REFUSAL_PATH="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java"
+SHARED[EDGE_REFUSAL_PATH]="367baab566b2fe72ca0eada021d07236a87817903b422c6268807229e873900f"
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def enc(value):return (json.dumps(value,ensure_ascii=False,indent=2)+"\n").encode()
@@ -92,6 +95,7 @@ def main():
     inverse_helper=a.source/"tests/native-xiaomi-query-stability/protected_filled_query.py"
     read(inverse_helper)
     read(a.source/"tests/native-ctrip-form-observation/scope_predecessor.py")
+    edge_predecessor=runpy.run_path(str(a.source/"tests/native-ctrip-form-observation/scope_predecessor.py"))["edge_predecessor"]
     filled_predecessor=runpy.run_path(str(inverse_helper))["predecessor"]
     capture_inverse=a.source/"tests/native-ax-canonical-reuse/protected_canonical_reuse.py"
     read(capture_inverse)
@@ -115,6 +119,9 @@ def main():
         if rel==READONLY_OWNER_PATH:
             proof_raw=owner_predecessor(raw)
             need(len(proof_raw)==21582 and sha(proof_raw)==PRE_READONLY_OWNER_SHARED[rel],"complete preceding OWNER source")
+        if rel==EDGE_REFUSAL_PATH:
+            proof_raw=edge_predecessor(raw)
+            need(sha(proof_raw)==PRE_EDGE_REFUSAL_SHARED[rel],"complete proper-edge refusal predecessor")
         if rel in SHARED:need(sha(raw)==SHARED[rel],"reviewed shared DTO/goal pin")
         if rel==CAPTURE_REUSE_PATH:
             before_getter=direct_capture_predecessor(raw)
@@ -150,7 +157,7 @@ def main():
     for row in provenance["files"]:
         raw=read(a.source/row["fixture_path"]);need(len(raw)==row["bytes"] and sha(raw)==row["sha256"],"published fixture byte pin "+row["name"])
     a.output.mkdir(mode=0o700);classes=a.output/"classes";classes.mkdir()
-    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"pre_direct_card_shared_source_pins":PRE_DIRECT_CARD_SHARED,"direct_card_getter_inverse_verified":True,"pre_search_history_shared_source_pins":PRE_SEARCH_HISTORY_SHARED,"search_history_inverse_verified":True,"pre_readonly_owner_shared_source_pins":PRE_READONLY_OWNER_SHARED,"readonly_owner_inverse_verified":True,"current_shared_source_pins":SHARED,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
+    result={"schema":SCHEMA,"all_pass":False,"steps":[],"original_shared_source_pins":ORIGINAL_SHARED,"pre_form_history_shared_source_pins":PRE_FORM_HISTORY_SHARED,"pre_input_history_shared_source_pins":PRE_INPUT_HISTORY_SHARED,"pre_filled_query_shared_source_pins":PRE_FILLED_QUERY_SHARED,"filled_query_inverse_verified":True,"pre_canonical_reuse_shared_source_pins":PRE_CANONICAL_REUSE_SHARED,"canonical_reuse_inverse_verified":True,"pre_ax_publication_shared_source_pins":PRE_AX_PUBLICATION_SHARED,"ax_publication_inverse_verified":True,"pre_ctrip_form_shared_source_pins":PRE_CTRIP_FORM_SHARED,"pre_direct_card_shared_source_pins":PRE_DIRECT_CARD_SHARED,"direct_card_getter_inverse_verified":True,"pre_search_history_shared_source_pins":PRE_SEARCH_HISTORY_SHARED,"search_history_inverse_verified":True,"pre_readonly_owner_shared_source_pins":PRE_READONLY_OWNER_SHARED,"readonly_owner_inverse_verified":True,"current_shared_source_pins":SHARED,"pre_edge_refusal_shared_source_pins":PRE_EDGE_REFUSAL_SHARED,"edge_refusal_inverse_verified":True,"phone_operations":0,"model_inference":False,"android_runtime":False,"business_verified":False,"started_epoch":time.time()}
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE="1")
     for key in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS","CLASSPATH"):env.pop(key,None)
     def command(name,argv):

@@ -133,6 +133,7 @@ def prepare(source,out):
         source/'tests/native-ctrip-child-identity/protected_fixture.py',
         source/'tests/native-ctrip-child-identity/run_host.py',
         source/'tests/native-ctrip-form-observation/run_observer_host.py',
+        source/'tests/native-ctrip-form-observation/scope_predecessor.py',
         source/'tests/observation-diagnostics/run_host.py',
         source/'tests/native-ctrip-form-observation/form-region-nodes.json',
         source/TEST/'run_host.py',source/TEST/'CtripCoherentHostTest.java',source/TEST/'CtripCoherentCases.fragment',
@@ -155,6 +156,9 @@ def main():
     gate_proof=None
     for relative,expected in PROTECTED.items():
         current=(source/relative).read_bytes();proof=current
+        if relative=='src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java':
+            edge=module(source/'tests/native-ctrip-form-observation/scope_predecessor.py','coherent_edge_refusal_inverse')
+            proof=edge.edge_predecessor(current)
         if relative=='src/org/trillionnium/hepta/local/ObservationStabilityGate.java':
             proof=gate_predecessor(current)
             gate_proof={'current_sha256':sha(current),'predecessor_sha256':sha(proof),

@@ -174,6 +174,10 @@ def form_sampling_body_predecessor(service,anchor,raw,h):
     if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
         return raw,False
     proof=h.body(service,reviewed['actual_body_anchor'])
+    # Only the exact new complete accept body is inverted for the historical proof.
+    # The generated Service body and the new failure-only helper stay current.
+    if h.sha(proof.encode())=='92d44cc2291c8fbf6c54017b61783644b01c79bde90f19abe4b7cecd6a5474ec':
+        proof=once(proof,'                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n','                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')
     if h.sha(proof.encode())!=reviewed['actual_body_sha256']:
         raise RuntimeError('exact complete current FORM sampling producer body required: '+anchor)
     for current,prior in reviewed['inverse']:proof=once(proof,current,prior)
@@ -316,7 +320,7 @@ def generate(source,output,h):
                 'proof_copy_only':True,'actual_compilation_uses_current_source':True}
             continue
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
-        if name=='NativeActionSnapshotCheck.java' and actual=='400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593':
+        if name=='NativeActionSnapshotCheck.java' and actual in ('400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593','367baab566b2fe72ca0eada021d07236a87817903b422c6268807229e873900f'):
             prior=runpy.run_path(str(source/'tests/native-ctrip-form-observation/scope_predecessor.py'))['predecessor'](current)
             prior=runpy.run_path(str(source/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor'](name,prior)
             proof=runpy.run_path(str(source/'tests/native-search-producer/protected_snapshot.py'))['predecessor'](prior)

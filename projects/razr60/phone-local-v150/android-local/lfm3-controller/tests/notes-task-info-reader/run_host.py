@@ -56,9 +56,19 @@ def main():
              and later==retained['later_owned_tasks'] and all(cleanup[key]==retained[key] for key in ('absence_reads','cleanup_known','launch_dispatched')),
              'actual first failure and independent later cleanup must match the minimized record')
         tracked.append(terminal)
+    active_inverse=own/'active_root_predecessor.py'
+    proof_spec=importlib.util.spec_from_file_location('notes_active_root_proof_copy',active_inverse)
+    proof_module=importlib.util.module_from_spec(proof_spec);proof_spec.loader.exec_module(proof_module)
+    active_proofs={}
+    for name in ('PublicPersonalNotesReader.java','PublicPersonalNotesCustody.java'):
+        actual=raw(bg/name);previous=proof_module.predecessor(name,actual)
+        active_proofs[name]={'current_sha256':hashlib.sha256(actual).hexdigest(),
+            'predecessor_sha256':hashlib.sha256(previous).hexdigest(),'proof_copy_only':True,
+            'actual_compilation_uses_current_complete_class':True}
+    tracked.append(active_inverse)
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f','approved reader differs')
+    need(active_proofs['PublicPersonalNotesReader.java']['predecessor_sha256']=='f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f','complete approved reader predecessor differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)
@@ -70,6 +80,7 @@ def main():
         ('compile-original-private',[jdk/'bin/javac',*flags,'-cp',jar,'-d',pc,*private_files]),
         ('original-private-cases',[jdk/'bin/java','-ea','-cp',str(pc)+os.pathsep+str(jar),'org.trillionnium.hepta.background.ProfileBrokerHostTest'])]
     report={'schema':'hepta.notes-task-info-reader-gate.v2','all_pass':False,'phone_operations':0,'android_runtime':False,'hardware_qualification_claimed':False,'framework_and_binder_fixtures_synthetic':True,'input_fixture':pin(capture),'input_mode':input_mode,'archived_capture_replayed':actual_capture,'reference_capture_sha256':CAPTURE_SHA,'inputs_before':before,'stages':[]}
+    report['active_root_complete_inverse']=active_proofs
     report['first_root_historical_failure']={'original_replayed':a.actual_failure_terminal is not None,'census_shape_recorded':False,'retained':retained}
     try:
         for name,argv in commands:

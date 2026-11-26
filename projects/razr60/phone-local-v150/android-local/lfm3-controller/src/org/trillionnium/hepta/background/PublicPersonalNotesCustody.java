@@ -114,6 +114,45 @@ final class PublicPersonalNotesCustody {
         if(bootstrapReadUsed||!firstRootReadActive(task,actualDisplay,actualUid,now))return false;
         bootstrapReadUsed=true;return true;
     }
+    /** A read-only snapshot of already observed, still active custody. It is
+     * neither a retirement/release capability nor an absence or cleanup proof. */
+    static final class ActiveRead {
+        private final PublicPersonalNotesCustody owner;
+        private final int display,uid,launches;
+        private final long observedAt;
+        private final Map<Integer,BackgroundOwnedSingleTask.Task> tasks;
+        private ActiveRead(PublicPersonalNotesCustody owner){
+            this.owner=owner;display=owner.display;uid=owner.uid;launches=owner.launchCount;
+            observedAt=owner.lastObservation;
+            tasks=Collections.unmodifiableMap(new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>(owner.observed));
+        }
+        void requireCurrent(int actualDisplay,int actualUid){synchronized(owner){
+            need(owner.activeReadAvailable()&&actualDisplay==display&&actualUid==uid
+                    &&owner.display==display&&owner.launchCount==launches&&owner.lastObservation==observedAt
+                    &&owner.observed.keySet().equals(tasks.keySet()),"NOTES_ACTIVE_READ_RETIRED_OR_CHANGED");
+            for(Map.Entry<Integer,BackgroundOwnedSingleTask.Task> entry:tasks.entrySet())
+                need(owner.observed.get(entry.getKey())==entry.getValue(),"NOTES_ACTIVE_READ_RETIRED_OR_CHANGED");
+        }}
+        BackgroundOwnedSingleTask.Task retained(int id){
+            BackgroundOwnedSingleTask.Task task=tasks.get(id);
+            need(task!=null,"NOTES_ACTIVE_READ_UNOBSERVED_TASK");return task;
+        }
+        void requireGlobal(ProfileTaskPolicy.Snapshot global){
+            need(global!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");
+            for(ProfileTaskPolicy.Root root:global.roots)if(tasks.containsKey(root.id))
+                need(root.display==display&&root.user==0,"NOTES_OBSERVED_TASK_ESCAPED");
+            for(ProfileTaskPolicy.Leaf leaf:global.leaves.values())if(tasks.containsKey(leaf.id)||tasks.containsKey(leaf.parent))
+                need(leaf.display==display&&leaf.user==0,"NOTES_OBSERVED_TASK_ESCAPED");
+        }
+    }
+    private boolean activeReadAvailable(){
+        return attempted&&launched&&display>1&&lastObservation>=0&&!observed.isEmpty()
+                &&!retiring&&!unknown&&!known&&!releasePrepared&&!releaseAttempted&&!releaseReturned;
+    }
+    synchronized ActiveRead activeRead(int actualDisplay,int actualUid,long frameBegin){
+        if(!activeReadAvailable()||actualDisplay!=display||actualUid!=uid||frameBegin<0||lastObservation>frameBegin)return null;
+        return new ActiveRead(this);
+    }
     synchronized void observe(Frame frame,long now){
         if(retiring)return; // A late monitor read cannot reopen or overwrite retirement.
         try{observeChecked(frame,now);}catch(RuntimeException error){unresolved(error.getMessage());throw error;}

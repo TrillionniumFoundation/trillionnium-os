@@ -17,7 +17,7 @@ PKG=Path('src/org/trillionnium/hepta/local')
 TEST=Path('tests/native-ctrip-form-sampling')
 GATE_SHA='2abe6a4074be6c75514755c741d10792e78e80d914e7ae063e1f43ce470d0992'
 SESSION_SHA='48c3802e762baabc170056645f060df779be12ae6c9344ce4972ef55448091e4'
-SERVICE_CASES=["complete_pair","archived_complete_pair","historic_boundary_future_content","same_keys","ordinary_scope","initial_scope","native_ax_scope","first_incomplete","first_not_form","protected_date","protected_query","ancestor_changed","direct_sibling_clickable_readonly_control","nested_clickable_child_rejected","missing_child","pending_child","truncated_graph","ime_unknown","window_changed","generation_changed","profile_token_changed","read_clock_reversed","missing_graph","typed_child_failure","event_content","event_other_display","event_unknown","event_untyped","event_boundary","event_foreign_window","event_foreign_package","queued_content","queued_boundary","authorization_replaced","controller_replaced","background_released","cancelled","permit_retired","installed_version_changed","unsupported_goal","parallel_action","settle_expiry","pure_value_lifecycle","capture_retry_clears_pair","classified_interval","equal_key_interval","diagnostic_bounds","late_window_failure","late_unknown_event"]
+SERVICE_CASES=["complete_pair","archived_complete_pair","historic_boundary_future_content","same_keys","ordinary_scope","initial_scope","native_ax_scope","first_incomplete","first_not_form","protected_date","protected_query","ancestor_changed","direct_sibling_clickable_readonly_control","nested_clickable_child_rejected","missing_child","pending_child","truncated_graph","ime_unknown","window_changed","generation_changed","profile_token_changed","read_clock_reversed","missing_graph","typed_child_failure","event_content","event_other_display","event_unknown","event_untyped","event_boundary","event_foreign_window","event_foreign_package","queued_content","queued_boundary","authorization_replaced","controller_replaced","background_released","cancelled","permit_retired","installed_version_changed","unsupported_goal","parallel_action","settle_expiry","pure_value_lifecycle","capture_retry_clears_pair","classified_interval","equal_key_interval","diagnostic_bounds","late_window_failure","late_unknown_event","history_limit_exact","history_limit_exceeded","queued_content_diagnostic_finished"]
 ACTUAL_MEMBERS=[
     '    private static final class CtripFormSample {',
     '    private static final class CtripFormSampleRead {',
@@ -27,6 +27,7 @@ ACTUAL_MEMBERS=[
     '    private static void recordCtripSampling(',
     '    private CtripFormSampleRead readCtripFormSample(',
     '    private boolean ctripFormSampleCurrent(',
+    '    private static void recordCtripSampleRefusal(',
     '    private static Map<String,Object> ctripSamplingCensus(',
     '    private static Map<String,Object> ctripSamplingHistory(',
     '    private static Map<String,Object> ctripSamplingProof(',
@@ -68,10 +69,14 @@ def inventory(root):
     return rows
 def prepare(source,out):
     coherent=module(source/'tests/native-ctrip-coherent-census/run_host.py','sampling_coherent_generation')
+    edge_path=source/'tests/native-ctrip-form-observation/scope_predecessor.py'
+    edge_proof=module(edge_path,'sampling_edge_refusal_proof')
     for relative,expected in coherent.PROTECTED.items():
         raw=(source/relative).read_bytes()
         if Path(relative).name=='ObservationStabilityGate.java':
             need(len(raw)==5544 and sha(raw)==GATE_SHA,'actual complete reviewed Gate')
+        elif Path(relative).name=='NativeActionSnapshotCheck.java':
+            need(sha(edge_proof.edge_predecessor(raw))==expected,'exact whole proper-edge proof-copy predecessor')
         else:need(sha(raw)==expected,'unchanged complete classifier and original cases '+relative)
     need(sha((source/PKG/'NativeAppSession.java').read_bytes())==SESSION_SHA,'original real Session OPEN contract remains whole-byte unchanged')
     base=out/'coherent-dependency'
@@ -100,6 +105,7 @@ def prepare(source,out):
     need(len(compiled)==len(set(map(str,compiled))),'unique actual compile inputs')
     source_inputs += [source/TEST/n for n in ('run_host.py','CtripFormSamplingCases.fragment','CtripFormSamplingGateHostTest.java','CtripFormSamplingHostTest.java')]
     source_inputs += [source/PKG/'NativeAppSession.java']
+    if edge_path not in source_inputs:source_inputs.append(edge_path)
     extraction={
         'schema':'hepta.ctrip-form-sampling-extraction.v1','coherent_dependency_extraction':meta(base/'EXTRACTION.json'),
         'unchanged_generated_base':meta(old_host),'compiled_sampling_host':meta(host),'added_fixture':meta(fragment),

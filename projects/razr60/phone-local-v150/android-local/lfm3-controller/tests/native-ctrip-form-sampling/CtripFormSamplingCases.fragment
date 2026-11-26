@@ -233,6 +233,71 @@
         samplingCheck(raw.length<=786432,"original private form-history cap retained");
         return proof;
     }
+    // The complete actual serializer is tested at its file boundary only.
+    // This synthetic padding map is never admitted as an observation or proof.
+    private static ObservationProduct samplingHistoryBoundProduct(SamplingFixture h,int padding){
+        ObservationProduct product=new ObservationProduct(new CaptureIdentity(h.f.currentGraph,
+                SystemClock.now,h.request.eventWatermark(),true),SystemClock.now);
+        product.id="cccccccccccccccccccccccccccccccc";product.digest=TEST_SHA;
+        char[] chars=new char[padding];Arrays.fill(chars,'x');
+        Map<String,Object> pair=new LinkedHashMap<String,Object>();pair.put("synthetic_test_padding",new String(chars));
+        product.formPair=java.util.Collections.unmodifiableMap(pair);return product;
+    }
+    private static Map<String,Object> samplingFinalHistoryBound(SamplingFixture h,boolean overflow)throws Exception{
+        samplingCheck(!isMain(),"final serializer boundary runs on the original serial IO worker");
+        ObservationProduct baseline=samplingHistoryBoundProduct(h,0);int fixed;
+        try{
+            h.f.persistCtripFormHistory(h.request,baseline);fixed=baseline.formHistoryBytes;
+            samplingCheck(fixed>0&&fixed<786432,"actual serializer establishes fixed bytes without copied encoding logic");
+        }finally{baseline.close();}
+        int wanted=786432+(overflow?1:0);
+        ObservationProduct product=samplingHistoryBoundProduct(h,wanted-fixed);boolean refused=false;
+        File expected=new File(h.request.directory,product.id+"-form-history.json");
+        try{
+            try{h.f.persistCtripFormHistory(h.request,product);}
+            catch(IllegalStateException failure){
+                samplingCheck("complete form evidence byte bound".equals(failure.getMessage()),"original final byte-bound refusal");
+                refused=true;
+            }
+            if(overflow){
+                samplingCheck(refused&&product.formHistoryPath==null&&!expected.exists(),
+                        "cap plus one refused before a history file is created");
+            }else{
+                samplingCheck(!refused&&product.formHistoryPath!=null&&product.formHistoryBytes==wanted,
+                        "complete combined history exactly at original cap is retained");
+                byte[] bytes=Files.readAllBytes(product.formHistoryPath.toPath());
+                samplingCheck(bytes.length==wanted&&sha(bytes).equals(product.formHistoryDigest),
+                        "actual whole written bytes and digest match the inclusive boundary");
+            }
+            samplingCheck(h.f.delivered.isEmpty()&&h.f.current==h.oldFrame&&!product.published,
+                    "serializer boundary testing grants no publication or action");
+            Map<String,Object> out=h.outcome();out.put("serializer_requested_bytes",wanted);
+            out.put("serializer_refused_before_file_create",refused);out.put("serializer_test_input_synthetic",true);
+            return out;
+        }finally{product.close();}
+    }
+    @SuppressWarnings("unchecked")
+    private static void samplingCurrentRefusal(SamplingFixture h,ObservationEventWatermark before,
+            ObservationEventWatermark atCheck,long epoch,String kind){
+        Map<String,Object> diag=h.request.ctripReadDiagnostic.snapshot();
+        Object last=diag.get("last_helper");
+        samplingCheck(last instanceof Map,"actual failed main check produces bounded diagnostic values");
+        Map<String,Object> detail=(Map<String,Object>)last;
+        samplingCheck("SAMPLE_CURRENT_REFUSED".equals(detail.get("reason"))
+                &&Boolean.FALSE.equals(detail.get("initial_current")),"unchanged initial currentness gate actually refused");
+        int mask=((Number)detail.get("failure_mask")).intValue();
+        samplingCheck((mask&4)!=0&&(mask&32)!=0,"actual initial-result and changed-endpoint bits");
+        samplingCheck(ctripDiagnosticMark(before).equals(detail.get("end_marks"))
+                &&ctripDiagnosticMark(atCheck).equals(detail.get("current_marks")),"original read endpoint and actual locked endpoint remain distinct");
+        List<?> epochs=(List<?>)detail.get("epochs");
+        samplingCheck(((Number)epochs.get(1)).longValue()==epoch,"diagnostic records pre-clear actual epoch");
+        if("boundary".equals(kind))samplingCheck((mask&8)!=0&&(mask&16)!=0,"boundary retired epoch and prior sample before callback");
+        else samplingCheck((mask&8)==0&&(mask&16)==0,"content-only event did not replace the prior sample identity");
+        samplingCheck(new org.json.JSONObject(detail).toString().getBytes(StandardCharsets.UTF_8).length<=768
+                &&new org.json.JSONObject(detail).toString(2).getBytes(StandardCharsets.UTF_8).length<=768,"original helper bound in both encodings");
+        samplingCheck(new org.json.JSONObject(diag).toString().getBytes(StandardCharsets.UTF_8).length<=4096
+                &&new org.json.JSONObject(diag).toString(2).getBytes(StandardCharsets.UTF_8).length<=4096,"original total diagnostic bound in both encodings");
+    }
     static Map<String,Object> exerciseFormSampling(String scenario)throws Exception{
         SamplingFixture h=new SamplingFixture(scenario);Map<String,Object> out;
         try{
@@ -245,6 +310,18 @@
             samplingCheck(h.first!=null&&h.request.captured==null,"complete actual first sample binds only pure values");
             samplingCheck(h.first.readOrdinal==1&&h.first.acceptedAt>=h.first.completedAt,"first actual worker read and gate acceptance recorded");
             samplingCheck(h.f.graphs.get(h.f.graphs.size()-1).closed,"first graph closed before retaining copied census");
+            if("history_limit_exact".equals(scenario)||"history_limit_exceeded".equals(scenario)){
+                java.util.concurrent.FutureTask<Map<String,Object>> work=new java.util.concurrent.FutureTask<Map<String,Object>>(
+                        ()->samplingFinalHistoryBound(h,"history_limit_exceeded".equals(scenario)));
+                observationIo.execute(work);
+                try{return work.get(10,java.util.concurrent.TimeUnit.SECONDS);}
+                catch(java.util.concurrent.ExecutionException failure){
+                    Throwable cause=failure.getCause();
+                    if(cause instanceof Exception)throw (Exception)cause;
+                    if(cause instanceof Error)throw (Error)cause;
+                    throw new IllegalStateException("actual serializer worker failed",cause);
+                }
+            }
             if("pure_value_lifecycle".equals(scenario)){
                 for(java.lang.reflect.Field field:CtripFormSample.class.getDeclaredFields()){
                     Class<?> t=field.getType();
@@ -284,8 +361,17 @@
             if("classified_interval".equals(scenario)||"equal_key_interval".equals(scenario)||"diagnostic_bounds".equals(scenario))
                 h.f.lastScreenshotAt=SystemClock.now;
             if(scenario.startsWith("queued_")){
-                h.nextWithoutMainDelivery(200);samplingEvent(h.f,scenario.substring("queued_".length()));h.deliverQueued();
-                h.requireNoClassifiedCapture();out=h.outcome();return out;
+                boolean frozen="queued_content_diagnostic_finished".equals(scenario);
+                String kind=frozen?"content":scenario.substring("queued_".length());
+                h.nextWithoutMainDelivery(200);ObservationEventWatermark before=h.request.eventWatermark();
+                samplingEvent(h.f,kind);ObservationEventWatermark atCheck=h.request.eventWatermark();
+                long epoch=h.request.ctripFormSampleEpoch,helperCount=h.request.ctripReadDiagnostic.helperRecords;
+                if(frozen)h.request.ctripReadDiagnostic.finish();
+                h.deliverQueued();h.requireNoClassifiedCapture();
+                if(frozen)samplingCheck(h.request.ctripReadDiagnostic.helperRecords==helperCount,
+                        "finished optional diagnostic retains no later record and cannot admit a stale pair");
+                else samplingCurrentRefusal(h,before,atCheck,epoch,kind);
+                out=h.outcome();return out;
             }
             h.next("settle_expiry".equals(scenario)?10000:200);
             if("classified_interval".equals(scenario)){

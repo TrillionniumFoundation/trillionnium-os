@@ -2167,6 +2167,29 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     &&value.window.matches(frozenObservationWindow(graph));
         }
     }
+    /** Diagnostic values at the actual failed main-thread check, before clearing
+     * its sample. Bit 4 is the aggregate result of the unchanged initial check;
+     * the remaining bits describe this locked endpoint, not an inferred cause
+     * inside that earlier check. No graph, SDK object or authority is retained. */
+    private static void recordCtripSampleRefusal(ObservationRequest request,CtripFormSampleRead read,boolean initialCurrent){
+        try{
+            CtripFormSample after=read==null?null:read.after;
+            ObservationEventWatermark current=request.eventWatermark();
+            int mask=(read==null?1:0)|(after==null?2:0)|(!initialCurrent?4:0);
+            if(after!=null&&after.epoch!=request.ctripFormSampleEpoch)mask|=8;
+            if(read!=null&&request.ctripFormSample!=read.before)mask|=16;
+            if(after!=null&&!sameObservationWatermark(after.completed,current))mask|=32;
+            long at=SystemClock.elapsedRealtime();
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("stage","sampling");out.put("reason","SAMPLE_CURRENT_REFUSED");out.put("at_ms",at);
+            out.put("failure_mask",mask);out.put("initial_current",initialCurrent);
+            out.put("epochs",java.util.Arrays.asList(after==null?-1:after.epoch,request.ctripFormSampleEpoch));
+            out.put("read_completed_ms",after==null?-1:after.readCompletedAt);
+            out.put("end_marks",ctripDiagnosticMark(after==null?null:after.completed));
+            out.put("current_marks",ctripDiagnosticMark(current));
+            request.ctripReadDiagnostic.helper(out);
+        }catch(RuntimeException unavailable){/* Optional diagnostics never alter a decision. */}
+    }
     private static Map<String,Object> ctripSamplingCensus(NativeActionSnapshotCheck.Snapshot census){
         Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("envelope",census.env);
         List<Map<String,Object>> nodes=new ArrayList<Map<String,Object>>();
@@ -2194,8 +2217,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         out.put("historic_events_reclassified",false);out.put("sampling_only",true);
         out.put("fresh_screenshot_and_saved_graph_checks_required",true);out.put("fresh_action_validation_required",true);
         out.put("grants_action_authority",false);out.put("business_completion_verified",false);
-        if(new JSONObject(out).toString().getBytes(StandardCharsets.UTF_8).length>786432)
-            throw new IllegalArgumentException("complete sampling history exceeds original form-history byte bound");
+        // This is an unpublished immutable value. The complete combined history is
+        // encoded and bounded once by persistCtripFormHistory before publication.
         return java.util.Collections.unmodifiableMap(out);
     }
     private static Map<String,Object> ctripSamplingProof(ObservationRequest request,CtripFormSampleRead read,long admittedAt){
@@ -2312,10 +2335,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             long now;ObservationStabilityGate.Result result;
             synchronized(request){
                 request.ctripSamplingProof=null;
+                boolean initialFormCurrent=formCurrent;
                 formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch
                         &&request.ctripFormSample==formRead.before
                         &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());
-                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");
+                if(!formCurrent){
+                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);
+                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");
+                }
                 now=SystemClock.elapsedRealtime();
                 result=ObservationStabilityGate.Result.WAIT;
                 if(formCurrent&&formRead.before!=null&&formRead.comparison!=null

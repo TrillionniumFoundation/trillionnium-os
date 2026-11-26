@@ -1,0 +1,436 @@
+{
+  "schema": "hepta.notes-v13-exact-source-inverse.v1",
+  "production": [
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "base_sha256": "29c4ffe4ba47637a94610f203e08d2d2b94c2846c2d717d9dfdfb7970a2dd786",
+      "candidate_sha256": "aad22b14be14a33f0e12823f06b8ac780a023653eba7caebc4945ea281218100",
+      "edits": [
+        {
+          "a0": 27,
+          "a1": 27,
+          "b0": 27,
+          "b1": 34,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "5c3fe529f81a0da4e444c8a506b9964f25b96145522b9d9a72cc1ce82f242b0b"
+        },
+        {
+          "a0": 75,
+          "a1": 75,
+          "b0": 82,
+          "b1": 84,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "24296f58d4f766a832051e5666a91ba276fea117dd15478f53e288b229fad988"
+        },
+        {
+          "a0": 86,
+          "a1": 86,
+          "b0": 95,
+          "b1": 98,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "c591d11c9cc9a90a94e4d0edaa77b781974e47be35af6f7f9268a2b5fe07bab4"
+        },
+        {
+          "a0": 89,
+          "a1": 90,
+          "b0": 101,
+          "b1": 102,
+          "old_sha256": "9b1e9fb1ba07a9ed066924bc7442e1c81d7b9aa0b1843251feee548cf054cfab",
+          "new_sha256": "9db09e00e914d7a26dec1692fd310b1a85b5ef2eb0da77d59efda6e8af83d864"
+        },
+        {
+          "a0": 92,
+          "a1": 93,
+          "b0": 104,
+          "b1": 105,
+          "old_sha256": "93d3674abf62152cc7aa285dada419b7a8bb826e1b79deacf303bce84a2165ed",
+          "new_sha256": "161a9f8cf093392474ba619a9ae23dec0f47665059e35defa47fc245f35f60aa"
+        },
+        {
+          "a0": 218,
+          "a1": 219,
+          "b0": 230,
+          "b1": 231,
+          "old_sha256": "c37b8a3e6fd104469affaa00090827f5694accb038ef96cda10738fed4cf24c2",
+          "new_sha256": "1f67f9115fa35573f056a8dc7fb1b84282bd40f81b267a1b8ff9eb1c14127fd3"
+        },
+        {
+          "a0": 226,
+          "a1": 226,
+          "b0": 238,
+          "b1": 240,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "8062af13e722bda2bb963cbfc84a13bc2eb94f8de4bd2dd1f09364c1d08ce8eb"
+        },
+        {
+          "a0": 258,
+          "a1": 259,
+          "b0": 272,
+          "b1": 275,
+          "old_sha256": "a5bc377f438558b22b1977753fde46201fdcfeab3cfab5cdb58daf0382639844",
+          "new_sha256": "a1e27aa37ca7e982ec4df6e188f11235f5da1456a16bf82a99cc89b0d16cd8cc"
+        },
+        {
+          "a0": 289,
+          "a1": 289,
+          "b0": 305,
+          "b1": 306,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "b13aa99ef0aa5805525491d85318e3a67ae357d29123ea0ebdcf01a419d473ff"
+        },
+        {
+          "a0": 291,
+          "a1": 291,
+          "b0": 308,
+          "b1": 684,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "18ccb0c2bfb3ebf59f1eca556bb0140f1f9962dc152ac22033750addf9d45497"
+        },
+        {
+          "a0": 1590,
+          "a1": 1591,
+          "b0": 1983,
+          "b1": 1984,
+          "old_sha256": "52fd62e9aa51f3c84a57a6b2a600045b61cfada142ac1da61f59f6ed368ea5e4",
+          "new_sha256": "a8aeac54a9d503347d22971cbb7723a9112701b3f09b8acbc0d74e0270e2ad36"
+        },
+        {
+          "a0": 1624,
+          "a1": 1624,
+          "b0": 2017,
+          "b1": 2024,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "80f779f2d8be6c46f00d1879c9e59e78e6b4004258b4a50c02e33f33d4addc55"
+        },
+        {
+          "a0": 1648,
+          "a1": 1649,
+          "b0": 2048,
+          "b1": 2049,
+          "old_sha256": "46d5667b9aaf545b79ce55808c6f030937cafc2ae4b5c1dacbeabcc841ac902a",
+          "new_sha256": "5265117b1a78cf58a1d9aa10f5bc48ce9fc8ff57064b73cf7402efc5cbe0b271"
+        },
+        {
+          "a0": 1650,
+          "a1": 1651,
+          "b0": 2050,
+          "b1": 2051,
+          "old_sha256": "292ce9c7ff2163b0bec0d96f173502e93afc67cebc61329fdfc66a022883743c",
+          "new_sha256": "f99807f9c17b1245876cdc3ef431a69cfa58e8535e34fdc05c723c20c6fb1c91"
+        },
+        {
+          "a0": 1687,
+          "a1": 1687,
+          "b0": 2087,
+          "b1": 2108,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "bfcaf3e0de042ac693671504ce0cb2a5b16985ac6ed082660926e765857231af"
+        },
+        {
+          "a0": 1706,
+          "a1": 1707,
+          "b0": 2127,
+          "b1": 2128,
+          "old_sha256": "fce0168d0bafc11b20341dda7e261a52c6628bf5d4f616fede41d19850fe32a6",
+          "new_sha256": "adf2d328518b228741e4a07e93b87a05b5bffa84df84e08c7a10f5a75e4b0555"
+        },
+        {
+          "a0": 1709,
+          "a1": 1711,
+          "b0": 2130,
+          "b1": 2132,
+          "old_sha256": "faa46e1da7e69f7debdb1fc47895ce1f7a701c8464a01f010c8222f12937376b",
+          "new_sha256": "2524f7208876bc8a5345ff31c050468dfcf5813ea91e01074b0b4420f9407b71"
+        }
+      ]
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
+      "base_sha256": "2d8db023a62b3c8f1410bacf0b3af0f2632cb474714020badac79963052bab5d",
+      "candidate_sha256": "d80c2e7c725980b07e5ae6f2a425f5f914cc8c3db7a4c5d8dc6ec55a009df0de",
+      "edits": [
+        {
+          "a0": 32,
+          "a1": 33,
+          "b0": 32,
+          "b1": 34,
+          "old_sha256": "c2ed4aa0463902817e140b74aacf799bfb464bdd7f4e265f1c576e0d0e2d29b0",
+          "new_sha256": "ec459a71c371b85a3e5d4f4abf2ce110cedd0c01f2f48d554459b12f8f9b5219"
+        },
+        {
+          "a0": 38,
+          "a1": 40,
+          "b0": 39,
+          "b1": 44,
+          "old_sha256": "08865d48148bece6930a337f447474419dae79fb7db5fd167458ad9d9f1d7edc",
+          "new_sha256": "46eda3a8ea86de7ad66e040dc01bd792421d3a0db906986ef960cc883b3013a1"
+        },
+        {
+          "a0": 46,
+          "a1": 46,
+          "b0": 50,
+          "b1": 51,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "de070e8d2a0f4e34844d5d0d095fd7c5bffe8401a71541c9421abf15d344f81f"
+        },
+        {
+          "a0": 47,
+          "a1": 48,
+          "b0": 52,
+          "b1": 53,
+          "old_sha256": "4ce2c8030af49493c8221ee29b1e11d9d501916a0381ce54af47a0eda245ddbf",
+          "new_sha256": "21472d4756cb2df43ac3fb9b6a459a04a2537109840f994c7683b837541b91c7"
+        },
+        {
+          "a0": 63,
+          "a1": 63,
+          "b0": 68,
+          "b1": 69,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "67e24c7cdb368c270bccf8598122d22647eb7d5f6b236ae4babb1c414b41f421"
+        },
+        {
+          "a0": 85,
+          "a1": 85,
+          "b0": 91,
+          "b1": 97,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "7fe98c5af07ae5cdeea6ae39ad07b3df9a7fe86e4645c87695919e072debc51e"
+        },
+        {
+          "a0": 101,
+          "a1": 101,
+          "b0": 113,
+          "b1": 114,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "eae8699c681f82a44fff89e15dad5ab6525ec554795982256763ea7504123e6f"
+        },
+        {
+          "a0": 143,
+          "a1": 143,
+          "b0": 156,
+          "b1": 158,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "191302b8f88acb3db9acd80796ecd5bc2de4f6722bf7dfa12bd3408a447fcee9"
+        },
+        {
+          "a0": 151,
+          "a1": 152,
+          "b0": 166,
+          "b1": 168,
+          "old_sha256": "a4e01681d44487ec06dbceb58869d9a7c38b6b0e0ad21810919b228064dd0a3c",
+          "new_sha256": "d4d3ef842754b548acfd87f912cd01c7356bf4788a4b287cf74738d7f929aa82"
+        },
+        {
+          "a0": 162,
+          "a1": 163,
+          "b0": 178,
+          "b1": 179,
+          "old_sha256": "15da8d2bfe64bac437464138b8a8508137d174c1992023ae47b6c9e7a2b51b0e",
+          "new_sha256": "2b646a4a64629a558fdf11904bb52667cb6c88554682551f4f84dd167d0d671a"
+        },
+        {
+          "a0": 175,
+          "a1": 175,
+          "b0": 191,
+          "b1": 195,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "efec81eb80c9bfddbde19a09e5d94ebe8482455eed60c9bc40d0e1c366996cdc"
+        },
+        {
+          "a0": 180,
+          "a1": 180,
+          "b0": 200,
+          "b1": 201,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "f4b3d8ca0efca4456ebd64b631c643275827bb89ee85b09edd1a3f911b84abcd"
+        },
+        {
+          "a0": 183,
+          "a1": 184,
+          "b0": 204,
+          "b1": 205,
+          "old_sha256": "dd8731f0f77f18bfff96e869e8e8b0a36a57ae298888c12de18ea0860eb927a8",
+          "new_sha256": "8fffdc5b54002389b480ac6b9186039180e662645d0f7e8dcbd7e4c5dbdacc8e"
+        },
+        {
+          "a0": 195,
+          "a1": 196,
+          "b0": 216,
+          "b1": 217,
+          "old_sha256": "b90d4be5d3b50781fd1a0ecccb01dddbb2cfed544e81b08c521d81efdfef8f58",
+          "new_sha256": "00ba54eeec52f93bc8c902cd604c99984ca732cb83070ca8e1e7c588e49d8094"
+        },
+        {
+          "a0": 302,
+          "a1": 302,
+          "b0": 323,
+          "b1": 324,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "af909441f74fa19751a9279f9eb5cab2b727e9132d20b7b3a34db8a1f488b28e"
+        },
+        {
+          "a0": 334,
+          "a1": 334,
+          "b0": 356,
+          "b1": 408,
+          "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "new_sha256": "53c297bb4f8d28d4c308bb51aa69cdb85a1c5599fdd2c9d3811d1882c20cf088"
+        }
+      ]
+    }
+  ],
+  "unchanged": [
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "sha256": "8109ceb4acc2d2c8577bc5fc5e8d37ce259117100e42b846a601a371f1641eb1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "sha256": "9bf20793a50815d82d4a9447f5aaa290ab3dafe506f21179f6bf28b560d0ff9e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "sha256": "f9c79691e3f0e1cb0a2c5f3d7fd8828e3fc8556eef213b9e17ea3e3831546e40"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionJournalQueue.java",
+      "sha256": "7f03d59f36a240b09e40c30812a151bb6e093bc1afabb399ba1bf271eb0a73d9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionTerminalEvidence.java",
+      "sha256": "566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+      "sha256": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+      "sha256": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "sha256": "a86f308053da7f615c05fb9da03634df73f0f131ad1576165c7a1b07bd63d471"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJournal.java",
+      "sha256": "9b28de19a9ecd0546b32a44bb96e2eb17de302b0c046e38d4d1d8ccd777e8978"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceMain.java",
+      "sha256": "db8371471e52fb3fbdf20c7fb48bdf441f410bc6c8ddd40afebf3337cea93ac3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
+      "sha256": "2ae56ac9bdd45aecf1b125efb6dc86fa19dc747cd855deae63e82c54a27a2bcc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "sha256": "736ce29d462ac2a2f42ca58a1c0ace1f7ef0cf0df1081b8a4979ac968c1fa7c0"
+    },
+    {
+      "path": "tests/notes-workflow-released-reply-lost/run_host.py",
+      "sha256": "ad05c9ef9b7a9e59a57629411269dc11e6dabd78008138d501a081adef53c1a0"
+    },
+    {
+      "path": "tests/notes-workflow-released-reply-lost/NotesWorkflowReleasedReplyLostHostTest.java",
+      "sha256": "be0e2a87bbc65cc7a0233550fb594e13d6b094e18e3b3db0a227cb3dd60e7336"
+    },
+    {
+      "path": "tests/notes-workflow-foreign-history/NotesWorkflowForeignHistoryHostTest.java",
+      "sha256": "b66777c0efea08ec7666d6d010292ad11b11c1951172f0cfb99f4e3b6629a158"
+    },
+    {
+      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
+      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
+    },
+    {
+      "path": "tests/session-terminal/run_host.py",
+      "sha256": "a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540"
+    },
+    {
+      "path": "tests/session-terminal/SessionTerminalHost.template",
+      "sha256": "c0a96563da5fd5ea3dbde362c0b0e8c051bb068b8dead3bbec85e7f3524ce269"
+    },
+    {
+      "path": "tests/personal-notes-absence/run_host.py",
+      "sha256": "5676e910f1f36ac76346cee23ee1363d0917617d81b72931ae289cb5414a5440"
+    },
+    {
+      "path": "tests/personal-notes-absence/FakePersonalNotesRecoveryProcess.java",
+      "sha256": "0b1a6bd5490976f2420a90173fd5e862230d4d27881efe29d51070f2fdcb935f"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesAbsenceHostTest.java",
+      "sha256": "ea28f00f00d5aba650d5f03b85d1c45720c277e7f48d4e274993c97c2854d3c8"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesDisplayCensusHostTest.java",
+      "sha256": "dbda70c2b916aacb7dd188443b8b5715462be8b2a92a741e866d60bfc0432238"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesLostLaunchClientHostTest.java",
+      "sha256": "3f3d1c6a35a874ffce08c37bc138f7841daa307ba0fd6cdcf5256cf759b2fead"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesLostLaunchHostTest.java",
+      "sha256": "e01d3dd9105c2fd00dd82a298aea9fc76ee208d906592f573e2ab4ac2cd266df"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesPostModelHostTest.java",
+      "sha256": "6582475c168436ce7975f982372b8ea0e13b03ca38cf44fd42632d63175cc2bc"
+    },
+    {
+      "path": "tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java",
+      "sha256": "39147f1f1fc618c981e1d46a6f6dca4585a19699371cd6e9c63cd3adf1614390"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WorkerGenerationProof.java",
+      "sha256": "38dcc6d07d9d9dcbd49497f4974661df81f2acfc22f2e093c87fb6fed1a00e19"
+    }
+  ],
+  "fixture_successor": {
+    "path": "tests/notes-workflow-released-reply-lost/run_host.py",
+    "base_sha256": "ad05c9ef9b7a9e59a57629411269dc11e6dabd78008138d501a081adef53c1a0",
+    "candidate_sha256": "c25ade152c2cc0619b4eb841257a29683ebc280688a068e682a456f2f77f38ed",
+    "edits": [
+      {
+        "a0": 24,
+        "a1": 24,
+        "b0": 24,
+        "b1": 42,
+        "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "new_sha256": "e65fd379f8d3b2df9215198ccd387511fe2d7cc9c5c6f30d63f614911d072658"
+      },
+      {
+        "a0": 37,
+        "a1": 37,
+        "b0": 55,
+        "b1": 56,
+        "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "new_sha256": "7d3d69d27236c303ac7223fa2e152c10ca649007411189f87d4e9eb03523e9a1"
+      },
+      {
+        "a0": 39,
+        "a1": 40,
+        "b0": 58,
+        "b1": 64,
+        "old_sha256": "20d3fdb0aa0c1378156d5899832b92091e3d3ffdd2336c27783dafb94f8a10db",
+        "new_sha256": "a57468fba5d7aa29a3420bfb657c92cc2ea0a25a56124e94f73d29e501aa9bb8"
+      },
+      {
+        "a0": 53,
+        "a1": 54,
+        "b0": 77,
+        "b1": 79,
+        "old_sha256": "798147964c3945ed980521700f19baa7d178badc5d94a3037cd39272dd87b4fc",
+        "new_sha256": "a05f4b423e21de38be3507388c188e9c23395258c9a5543b9a0a1d321da84908"
+      }
+    ]
+  }
+}

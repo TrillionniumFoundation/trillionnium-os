@@ -160,6 +160,10 @@
                     if(actionIo.hasJobs())r.marker();else s.main.one();
                     check(r.outcome!=null&&!r.outcome.accepted&&!r.outcome.dispatched&&f.effects==0
                             &&r.work.roleProof==null&&!r.work.platformCallInvoked,"ambiguous pair never grants or dispatches an effect");
+                    if("wider_overlap".equals(scenario)){
+                        check(r.proof!=null&&!Boolean.TRUE.equals(old.evidence().get("claimed")),
+                                "proper two-pixel edge yields only eligible refusal; the unchanged Role/zero-effect rejection remains");return;
+                    }
                     if(!"fresh_decision".equals(scenario)&&!"spent_successor".equals(scenario)&&!"spent_model_run".equals(scenario)){
                         check(r.proof==null,"ineligible variant cannot authorize a new read");return;
                     }

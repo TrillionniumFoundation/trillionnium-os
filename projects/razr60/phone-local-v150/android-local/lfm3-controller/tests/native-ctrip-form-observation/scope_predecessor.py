@@ -11,6 +11,8 @@ def predecessor(raw):
     if not isinstance(raw,bytes):
         raise ValueError("Ctrip scope source bytes required")
     actual=hashlib.sha256(raw).hexdigest()
+    if actual==EDGE_CURRENT_SHA256:
+        raw=edge_predecessor(raw);actual=hashlib.sha256(raw).hexdigest()
     if actual==PREDECESSOR_SHA256:
         return raw
     if actual!=CURRENT_SHA256:
@@ -22,4 +24,34 @@ def predecessor(raw):
     restored=text.replace(BLOCK,"").replace(CURRENT,PRIOR).replace(REFERENCE,"").encode("utf-8")
     if hashlib.sha256(restored).hexdigest()!=PREDECESSOR_SHA256:
         raise RuntimeError("complete e30 comparator inverse")
+    return restored
+
+
+# Refusal-only proper-edge changes are reversed only in this proof copy.
+EDGE_CURRENT_SHA256="367baab566b2fe72ca0eada021d07236a87817903b422c6268807229e873900f"
+EDGE_PREDECESSOR_SHA256="400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593"
+EDGE_INVERSES=[
+  [
+    "     * page and its strict sub-width edge neighbour are recorded as overlapping. They\n",
+    "     * page and its one-pixel edge neighbour are recorded as overlapping. They\n"
+  ],
+  [
+    "    // 0 hidden, 1 full page, 2 strict horizontal subedge beside a full page.\n    private static int blankBannerSlot(Node n,Node banner){\n        if(!b(n.v,\"visible\"))return hiddenBannerLeaf(n,banner)?0:-1;\n        if(!n.visible()||!blankBannerLeafReference(n))return -1;\n        if(n.bounds.equals(banner.bounds))return 1;\n        List<Integer> r=n.bounds,outer=banner.bounds;\n        long width=(long)r.get(2)-r.get(0),outerWidth=(long)outer.get(2)-outer.get(0);\n        return r.get(1).equals(outer.get(1))&&r.get(3).equals(outer.get(3))\n                &&width>0&&width<outerWidth\n                &&(r.get(0).equals(outer.get(0))||r.get(2).equals(outer.get(2)))?2:-1;\n    }\n",
+    "    // 0 hidden, 1 full page, 2 one-pixel visible edge beside a full page.\n    private static int blankBannerSlot(Node n,Node banner){\n        if(!b(n.v,\"visible\"))return hiddenBannerLeaf(n,banner)?0:-1;\n        if(!n.visible()||!blankBannerLeafReference(n))return -1;\n        if(n.bounds.equals(banner.bounds))return 1;\n        List<Integer> r=n.bounds,outer=banner.bounds;\n        return r.get(1).equals(outer.get(1))&&r.get(3).equals(outer.get(3))\n                &&(long)r.get(2)-r.get(0)==1\n                &&(r.get(0).equals(outer.get(0))||r.get(2).equals(outer.get(2)))?2:-1;\n    }\n"
+  ]
+]
+def edge_predecessor(raw):
+    """Exact complete current comparator back to its 712 predecessor; never compile this copy."""
+    if not isinstance(raw,bytes):
+        raise ValueError("complete comparator source bytes required")
+    actual=hashlib.sha256(raw).hexdigest()
+    if actual==EDGE_PREDECESSOR_SHA256:return raw
+    if actual!=EDGE_CURRENT_SHA256:raise ValueError("exact reviewed proper-edge comparator required")
+    text=raw.decode("utf-8")
+    for current,previous in EDGE_INVERSES:
+        if text.count(current)!=1:raise RuntimeError("unique complete edge-refusal inverse")
+        text=text.replace(current,previous,1)
+    restored=text.encode("utf-8")
+    if hashlib.sha256(restored).hexdigest()!=EDGE_PREDECESSOR_SHA256:
+        raise RuntimeError("whole edge-refusal predecessor mismatch")
     return restored

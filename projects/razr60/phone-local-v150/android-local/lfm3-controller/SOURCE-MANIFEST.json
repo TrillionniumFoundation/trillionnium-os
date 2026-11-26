@@ -1,10 +1,26 @@
 {
   "android_qualified": false,
-  "base_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
-  "base_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
+  "base_head": "71257931bdda370d23d6299a01976536550bccd6",
+  "base_manifest_sha256": "82477b2c2ce40ff2f0f30fbe53963b998174b6a7dcf573003c0cd8f628167be1",
   "candidate_exact_git_head": null,
-  "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2678,
+  "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_FULL_HOST_AND_ANDROID_QUALIFICATION",
+  "complete_source_files": 2691,
+  "current_712_three_app_repair": {
+    "ctrip_final_history_cap_bytes": 786432,
+    "ctrip_only_duplicate_prepublication_encoding_removed": true,
+    "ctrip_original_currentness_predicate_unchanged": true,
+    "new_runtime_deadline_extension": false,
+    "notes_active_read_frozen_before_first_triple": true,
+    "notes_historical_cleanup_unknown_and_eof_false_preserved": true,
+    "notes_only_typed_within_sample_owned_monotone_shrink": true,
+    "notes_original_1500ms_and_three_attempts_preserved": true,
+    "notes_recovery_v13_exact_aborted_history": true,
+    "notes_retired_custody_not_reactivated": true,
+    "phone_efficacy_proved": false,
+    "phone_operations": 0,
+    "role_and_coverage_success_conditions_unchanged": true,
+    "xiaomi_edge_hint_refusal_only": true
+  },
   "current_coherent_census": {
     "author_ctrip_cases": 43,
     "author_original_observer_cases": 68,
@@ -96,7 +112,11 @@
       "calendar-date-fresh",
       "calendar-date-actions",
       "xiaomi-initial-cache",
-      "ctrip-form-sampling"
+      "ctrip-form-sampling",
+      "xiaomi-edge-refusal",
+      "notes-active-root-read",
+      "ctrip-current-sample",
+      "notes-workflow-aborted-after-back"
     ],
     "current_execution_pending": true,
     "required_canonical_checks": 133,
@@ -253,7 +273,7 @@
     "phone_latency_improvement_measured": false
   },
   "current_published_parent_heads": [
-    "1cca2349eb0b1495e3ad3a0d38633964e5381f2b"
+    "71257931bdda370d23d6299a01976536550bccd6"
   ],
   "current_query_stability_and_profile_cleanup": {
     "review_inputs": {
@@ -304,45 +324,74 @@
     "targeted_report_sha256": "70d34c0e7b0ed19b4002d09c20ce53806d0faf4cca79edbcf0f0ed875974d451"
   },
   "current_successor_delta": {
-    "baseline": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
-    "inherited_production_changes_from_installed": [
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/ObservationStabilityGate.java"
+    "baseline": "71257931bdda370d23d6299a01976536550bccd6",
+    "new_files": [
+      "tests/native-search-producer/EdgeRefusalCases.fragment",
+      "tests/native-search-producer/EdgeRefusalExpectedCases.json",
+      "tests/native-search-producer/EdgeRefusalLegacyCases.json",
+      "tests/notes-active-root-reader/ExpectedCases.json",
+      "tests/notes-active-root-reader/NotesActiveRootReaderHostTest.java",
+      "tests/notes-active-root-reader/run_host.py",
+      "tests/notes-task-info-reader/active_root_predecessor.py",
+      "tests/notes-workflow-aborted-after-back/NotesAbortedProcessesHost.java",
+      "tests/notes-workflow-aborted-after-back/NotesAbortedStartupProducerHost.java",
+      "tests/notes-workflow-aborted-after-back/NotesWorkflowAbortedAfterBackHostTest.java",
+      "tests/notes-workflow-aborted-after-back/prepare.py",
+      "tests/notes-workflow-aborted-after-back/run_host.py",
+      "tests/notes-workflow-aborted-after-back/source-inverse.json"
     ],
-    "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-    "model_weights_unchanged": true,
-    "native_unchanged": true,
-    "phone_success_claimed": false,
-    "production_changes": [],
-    "test_changes": [
-      "tests/local-model-settings-visual/README.md",
-      "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "tests/local-model-settings-visual/run_host.py",
-      "tests/native-ax-observation/run_host.py"
+    "prepublication_source": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/source-r8",
+    "prepublication_to_canonical_changes": [
+      "SOURCE-MANIFEST.json"
+    ],
+    "production_changed_files": [
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
+      "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java"
+    ],
+    "source_parent_and_installed_predecessor_equal": true,
+    "test_and_fixture_changed_files": [
+      "tests/native-ctrip-coherent-census/run_host.py",
+      "tests/native-ctrip-form-observation/run_observer_host.py",
+      "tests/native-ctrip-form-observation/scope_predecessor.py",
+      "tests/native-ctrip-form-sampling/CtripFormSamplingCases.fragment",
+      "tests/native-ctrip-form-sampling/CtripFormSamplingHostTest.java",
+      "tests/native-ctrip-form-sampling/run_host.py",
+      "tests/native-observation-screenshot-seed/run_host.py",
+      "tests/native-search-producer/EdgeRefusalCases.fragment",
+      "tests/native-search-producer/EdgeRefusalExpectedCases.json",
+      "tests/native-search-producer/EdgeRefusalLegacyCases.json",
+      "tests/native-search-producer/NoEffectSuccessorCases.fragment",
+      "tests/native-search-producer/run_producer.py",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-direct-card/run_host.py",
+      "tests/native-xiaomi-product/run_host.py",
+      "tests/native-xiaomi-query-stability/protected_filled_query.py",
+      "tests/notes-active-root-reader/ExpectedCases.json",
+      "tests/notes-active-root-reader/NotesActiveRootReaderHostTest.java",
+      "tests/notes-active-root-reader/run_host.py",
+      "tests/notes-task-info-reader/active_root_predecessor.py",
+      "tests/notes-task-info-reader/run_host.py",
+      "tests/notes-workflow-aborted-after-back/NotesAbortedProcessesHost.java",
+      "tests/notes-workflow-aborted-after-back/NotesAbortedStartupProducerHost.java",
+      "tests/notes-workflow-aborted-after-back/NotesWorkflowAbortedAfterBackHostTest.java",
+      "tests/notes-workflow-aborted-after-back/prepare.py",
+      "tests/notes-workflow-aborted-after-back/run_host.py",
+      "tests/notes-workflow-aborted-after-back/source-inverse.json",
+      "tests/notes-workflow-released-reply-lost/run_host.py",
+      "tests/observation-diagnostics/run_host.py"
     ]
   },
   "current_test_fixture_compatibility": {
-    "actual_parser_admission_low_memory_engine_hash_expectations_unchanged": true,
-    "ax_only_two_snapshot_type_names_qualified": true,
-    "carrier_whole_member_inverse_required": true,
-    "failed_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
-    "generated_memory_io_only": true,
-    "memory_whole_class_inverse_required": true,
-    "original_failed_full": {
-      "bytes": 112173,
-      "mode": 384,
-      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r2/validation-full-host-r1/HOST-VERIFIED.json",
-      "sha256": "caaac97d65c0f43bcd399130a5a030a65942b2a46856f6cd349b7e429c8e1ada"
-    },
-    "prepublication_original_suites": {
-      "bytes": 5295,
-      "mode": 384,
-      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-      "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
-    },
-    "production_unchanged_from_git_parent": true,
-    "real_form_sampling_source_members_unchanged": true,
-    "synthetic_kernel_input_receipts_required": true
+    "compiled_current_production": true,
+    "current_client_classes_required_for_final_legacy_v12": true,
+    "deterministic_host_io_boundaries_explicit": true,
+    "exact_whole_source_inverses": true,
+    "original_success_assertions_preserved_except_explicit_refusal_hint_lineage": true,
+    "v13_result_consumer_exact_legacy_cas_schema": true
   },
   "current_xiaomi_protected_history_prefix": {
     "exact_single_AX3000T_prefix": true,
@@ -6723,14 +6772,14 @@
       "sha256": "db8371471e52fb3fbdf20c7fb48bdf441f410bc6c8ddd40afebf3337cea93ac3"
     },
     {
-      "bytes": 198170,
+      "bytes": 246507,
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "sha256": "29c4ffe4ba47637a94610f203e08d2d2b94c2846c2d717d9dfdfb7970a2dd786"
+      "sha256": "aad22b14be14a33f0e12823f06b8ac780a023653eba7caebc4945ea281218100"
     },
     {
-      "bytes": 33249,
+      "bytes": 35845,
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "sha256": "c369d89fd467fd07f2375f37a9bce073240ad3484012074830849b0c37c1ec00"
+      "sha256": "4d74511b7111a5e2f98fbcd35131f675a8f249dd1b80017a3900bf86d6d73f30"
     },
     {
       "bytes": 13325,
@@ -6738,9 +6787,9 @@
       "sha256": "2ae56ac9bdd45aecf1b125efb6dc86fa19dc747cd855deae63e82c54a27a2bcc"
     },
     {
-      "bytes": 28676,
+      "bytes": 34068,
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-      "sha256": "f51e3185d30986687df604bfbc4e0e457e779bbf43183e01f7a1571a8c6ae27f"
+      "sha256": "68c1177aedb3f7b56fc2a2d4f739d2dc589f4db6655df03bcdf8f1fadf9d096a"
     },
     {
       "bytes": 38719,
@@ -6918,9 +6967,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 766008,
+      "bytes": 767896,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "bef6ae82a6bf6c66b2443f084f82c391ca0be3081256554d13e15e1eec386722"
+      "sha256": "658f969b49079b0935a78c89b49ee7c087e0d1bc7eb52b24b9ed54598efc3f80"
     },
     {
       "bytes": 711,
@@ -7038,9 +7087,9 @@
       "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
     },
     {
-      "bytes": 87473,
+      "bytes": 87569,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593"
+      "sha256": "367baab566b2fe72ca0eada021d07236a87817903b422c6268807229e873900f"
     },
     {
       "bytes": 15512,
@@ -7283,9 +7332,9 @@
       "sha256": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688"
     },
     {
-      "bytes": 41092,
+      "bytes": 47894,
       "path": "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "sha256": "2d8db023a62b3c8f1410bacf0b3af0f2632cb474714020badac79963052bab5d"
+      "sha256": "d80c2e7c725980b07e5ae6f2a425f5f914cc8c3db7a4c5d8dc6ec55a009df0de"
     },
     {
       "bytes": 41288,
@@ -9468,9 +9517,9 @@
       "sha256": "cd21415ddb0318c5eca41360ce39e1801d8d88ec740fa79f03d72378262ff86d"
     },
     {
-      "bytes": 15829,
+      "bytes": 16164,
       "path": "tests/native-ctrip-coherent-census/run_host.py",
-      "sha256": "295312196a96207c5afe269c5974d51eca2837c026c49fc5f9abe7d9eb7cf5c4"
+      "sha256": "3d51ce244a9773ccb91e8be571a3552274099073a46d65121f9bede56d06c82e"
     },
     {
       "bytes": 10293,
@@ -9508,9 +9557,9 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 96870,
+      "bytes": 98247,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "a1b395f2fce6b05ce4ff5112a2eb53a8a9f0f08595a358888705b99a979ce3b3"
+      "sha256": "769f3886d21a6499390c43f9ad6459b38440347357ba035840216cecf545917c"
     },
     {
       "bytes": 3535,
@@ -9523,14 +9572,14 @@
       "sha256": "f5b6b369a23baf1da1cbd752c6a0a34ddfba6cf7c49917deeebe597120be37f5"
     },
     {
-      "bytes": 11283,
+      "bytes": 13998,
       "path": "tests/native-ctrip-form-observation/scope_predecessor.py",
-      "sha256": "3929e15fcc91aedf2a9a7bd181aeb46423feb8de6c0761a8efcd72f4701a4e54"
+      "sha256": "6fd5edf912f707e8bc5ef120855c781693649fd9193533a0abe84b40a82f1cc5"
     },
     {
-      "bytes": 27820,
+      "bytes": 34513,
       "path": "tests/native-ctrip-form-sampling/CtripFormSamplingCases.fragment",
-      "sha256": "918af5e90927849557c2cf1361c81617ad7f7200ac789f98b70fcaaa007c6ff6"
+      "sha256": "6f830c5847cc0ad672868629380f19542e22a37013620ec9c2ccf6ce5d0d78f2"
     },
     {
       "bytes": 11896,
@@ -9538,14 +9587,14 @@
       "sha256": "6b1cc7174f714c3dd35dd2f537d9e01b83a102b57e45e811a2d7b1dbf8c37eb5"
     },
     {
-      "bytes": 5362,
+      "bytes": 5836,
       "path": "tests/native-ctrip-form-sampling/CtripFormSamplingHostTest.java",
-      "sha256": "42ecb216c3379cae7889f5ec68853cf7c5f172e16064fcd1a825e38a48b8d9f6"
+      "sha256": "6a30a07ae7ac8f461ce75f6f11c0f72f652b4464d050758fe2f6c1bf3ed0733b"
     },
     {
-      "bytes": 13276,
+      "bytes": 13813,
       "path": "tests/native-ctrip-form-sampling/run_host.py",
-      "sha256": "e24dbc03917ce5490422eb826dd2029d8a85282ecedceb97eee73d81adca672b"
+      "sha256": "d60ffadfc50af85ff16a8c2e8af43cd8b5c95630b993bf70ca4436d7c478e1f5"
     },
     {
       "bytes": 25791,
@@ -9758,9 +9807,9 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 71647,
+      "bytes": 74686,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "0011318d758145a127f05c03c0cc074a3044a171bcf1cd85125547c8c3164af4"
+      "sha256": "2a1e0ec4b3590626cc278a13dc030bc155fba4fbfda67518a5a0c051be187251"
     },
     {
       "bytes": 7722,
@@ -9968,6 +10017,21 @@
       "sha256": "4a3709413e76d16c3ae84e2cecb9c843fba230d2dadd5d0547193e3edcb757a1"
     },
     {
+      "bytes": 16370,
+      "path": "tests/native-search-producer/EdgeRefusalCases.fragment",
+      "sha256": "e0caca80884ec147737f595258b5761465ef5292415996b82b780459129df6f7"
+    },
+    {
+      "bytes": 1762,
+      "path": "tests/native-search-producer/EdgeRefusalExpectedCases.json",
+      "sha256": "6c5ff16b14bfccb254a071cd1fcf967dc381c04dade29cf15c750de5f8ebd3ce"
+    },
+    {
+      "bytes": 30342,
+      "path": "tests/native-search-producer/EdgeRefusalLegacyCases.json",
+      "sha256": "24e5738ca95e6f25181d999c960b9acffab41e735df9a67a072db35d1a979f39"
+    },
+    {
       "bytes": 11452,
       "path": "tests/native-search-producer/FullPageSwapCases.fragment",
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
@@ -10018,9 +10082,9 @@
       "sha256": "5fdb5f01b514ad03cb9cd9ace1978ea52769c702d2a2e6f20e5def44c81311b4"
     },
     {
-      "bytes": 59160,
+      "bytes": 59482,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "383e1663ebb75d87e7624b3dc5a40bf6e89e31e6916444ec8199fff5f25f946c"
+      "sha256": "b6a8c8a42b433c7999bd18804ce2d35f8edf703b7b0d6af56074e38a1ffdeb21"
     },
     {
       "bytes": 32307,
@@ -10083,9 +10147,9 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 27417,
+      "bytes": 30396,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "ac16f550f40a7572302694b27ff93a764a8b5809b961346a2c738aa6af0ff717"
+      "sha256": "cde8b3defd7905e8c59a635c642ec3bb0fe75b35c644f5852adbcf89154c7b48"
     },
     {
       "bytes": 14431,
@@ -10133,9 +10197,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 16289,
+      "bytes": 16356,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "df4d4d83a3a3e80dfa965de3a1a6fe136880809a11bb575bd3bfc95c29a92b0e"
+      "sha256": "5ee0696fd4f4857b6fb517771ced8e0764366c2b30612f94b4108b655c9289cf"
     },
     {
       "bytes": 14162,
@@ -10203,9 +10267,9 @@
       "sha256": "13715c8b38ab6abf5ed2a913b9869370e5690e15eaf21360b8400e52af3ce65a"
     },
     {
-      "bytes": 17297,
+      "bytes": 17614,
       "path": "tests/native-xiaomi-direct-card/run_host.py",
-      "sha256": "368a0bacfb33fcab33e10f969fb19bf52fc8653373587eb16a8bffb0088a505e"
+      "sha256": "46488608e625ff491ebe0cb6f93eb054e25dc0900a1f983afc4c3bd30d9d29e1"
     },
     {
       "bytes": 17559,
@@ -10413,9 +10477,9 @@
       "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
     },
     {
-      "bytes": 15732,
+      "bytes": 16360,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "499bad7d89728f452a9afded9dcb34f3871f280ed2b5cfbcdd6dbb551c0288cf"
+      "sha256": "e9fbeb9ed7be6945462c43b1caf67104fc92dc0a29b2eaa5262a2798b2030e7e"
     },
     {
       "bytes": 14737,
@@ -10438,9 +10502,9 @@
       "sha256": "66ffd133f221789518fc9a2f8ddbc0d2db3af3e0905a7c89077404e52e173bef"
     },
     {
-      "bytes": 23927,
+      "bytes": 23998,
       "path": "tests/native-xiaomi-query-stability/protected_filled_query.py",
-      "sha256": "b3f24fff2093ccafd6145f8499ee84bca9e2a8b48297ee9db4b38e1c49b51b5d"
+      "sha256": "16f45d0f87c292ed0fc0fe4e139860822e064cc2b635fa33a914f9e60d8f74da"
     },
     {
       "bytes": 362584,
@@ -10561,6 +10625,21 @@
       "bytes": 10477,
       "path": "tests/native-xiaomi-single-toolbar/run_host.py",
       "sha256": "baa1bd44727341401524cca1faec210923ae95b7124bc66aacf1a23b2ab99621"
+    },
+    {
+      "bytes": 3189,
+      "path": "tests/notes-active-root-reader/ExpectedCases.json",
+      "sha256": "8ff8f772f206439de41c47c9523015644d7f583662a17c466ab65a07cd5384ee"
+    },
+    {
+      "bytes": 25520,
+      "path": "tests/notes-active-root-reader/NotesActiveRootReaderHostTest.java",
+      "sha256": "b85054419189ffadc9434c38dc466a87e98a6337c0685d31a3657157fa5176dd"
+    },
+    {
+      "bytes": 11570,
+      "path": "tests/notes-active-root-reader/run_host.py",
+      "sha256": "bf0f05920f59556ac99fa6f14fad89a1a22796f7d0cc6e42a974c53362d22ed5"
     },
     {
       "bytes": 29195,
@@ -10763,6 +10842,11 @@
       "sha256": "12d667d38bda9f165f0df7b82485c80ae4a516891f2d85f94883d1aca397aca4"
     },
     {
+      "bytes": 16697,
+      "path": "tests/notes-task-info-reader/active_root_predecessor.py",
+      "sha256": "212d02af12ee06b3137d8071811e4eb885b49821b92c2b703a342c3d1f28b2c7"
+    },
+    {
       "bytes": 6622,
       "path": "tests/notes-task-info-reader/first_root_history.py",
       "sha256": "d1758cea4b837477a4284423b785f6c842be4634ae1e14938d0a649e2060e1ff"
@@ -10773,9 +10857,9 @@
       "sha256": "884478f84b67f4c8679f60997d96ad6ea5389a657d2e39585854f078f453686d"
     },
     {
-      "bytes": 11724,
+      "bytes": 12539,
       "path": "tests/notes-task-info-reader/run_host.py",
-      "sha256": "30e0447f03bd367c2743586eb23784048414cbbf830f03a7e5d552f37655bce1"
+      "sha256": "04e8664e00798af561f66d1989c2dd3b7adc015c952a996ccfd1ede13f681141"
     },
     {
       "bytes": 18714,
@@ -10863,6 +10947,36 @@
       "sha256": "56f06430ceecb158e0614c0d377332d80acf254333087e13e49b478a450b8587"
     },
     {
+      "bytes": 2787,
+      "path": "tests/notes-workflow-aborted-after-back/NotesAbortedProcessesHost.java",
+      "sha256": "39bf03da297804876a76cd39560ba7634104f3f233dbede464b6dc158196f13d"
+    },
+    {
+      "bytes": 6284,
+      "path": "tests/notes-workflow-aborted-after-back/NotesAbortedStartupProducerHost.java",
+      "sha256": "c5b174b004427c69371232b5ea8ff38311509f65fe0af2cfc646d9ac6d980e78"
+    },
+    {
+      "bytes": 37605,
+      "path": "tests/notes-workflow-aborted-after-back/NotesWorkflowAbortedAfterBackHostTest.java",
+      "sha256": "e71278092e6c65317bb3b04a577474c96ecf615b99ed72567f253ece55de16d3"
+    },
+    {
+      "bytes": 11259,
+      "path": "tests/notes-workflow-aborted-after-back/prepare.py",
+      "sha256": "0800f0b27c2e05a504d8522876c4ac3bb306a5ff7cfdf4b3d568b3f9f162231a"
+    },
+    {
+      "bytes": 10241,
+      "path": "tests/notes-workflow-aborted-after-back/run_host.py",
+      "sha256": "0cb6c03208d977e268c0f161286aec73a93e2e137fe62dc0de61c8998953592d"
+    },
+    {
+      "bytes": 16468,
+      "path": "tests/notes-workflow-aborted-after-back/source-inverse.json",
+      "sha256": "dbb0b2c9689f5065cf3d5d294e47fdf62e64cb35899271ce036d9b73f289e33d"
+    },
+    {
       "bytes": 21773,
       "path": "tests/notes-workflow-close-recovery/NotesWorkflowCloseRecoveryHostTest.java",
       "sha256": "4503ad8614025fefd460ed849adaa985641b308b40c89f78a57b583b3707db7f"
@@ -10913,9 +11027,9 @@
       "sha256": "be0e2a87bbc65cc7a0233550fb594e13d6b094e18e3b3db0a227cb3dd60e7336"
     },
     {
-      "bytes": 7449,
+      "bytes": 11569,
       "path": "tests/notes-workflow-released-reply-lost/run_host.py",
-      "sha256": "ad05c9ef9b7a9e59a57629411269dc11e6dabd78008138d501a081adef53c1a0"
+      "sha256": "c25ade152c2cc0619b4eb841257a29683ebc280688a068e682a456f2f77f38ed"
     },
     {
       "bytes": 3259,
@@ -11033,9 +11147,9 @@
       "sha256": "743e0b8ab9eb900f1349b9b883b5083e45f0d97374242bae2ee196b0d86bfc52"
     },
     {
-      "bytes": 35585,
+      "bytes": 38522,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "5ea3378a54006880a6a3a09e3e41c678f42ad9546e3afdd59b2ca0f77ef6f68d"
+      "sha256": "ad3a6f930782c4d25de5e955313756fcbe9bcfca81b33068839d8cbe449d0de1"
     },
     {
       "bytes": 13092,
@@ -13754,12 +13868,19 @@
     }
   ],
   "historical_provenance": {
+    "current_author_failed_attempts_preserved": true,
     "failed_parent_full_preserved": true,
     "focused_failed_r1_r2_preserved": true,
     "historical_failed_tasks_preserved": true,
     "immediate_parent_component_tree": "e803d8b4da8560383706f6dc6b038f994f704ec8",
     "immediate_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
     "immediate_parent_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
+    "installed_712_manifest": {
+      "bytes": 561182,
+      "mode": 420,
+      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r4/signed-candidate-r1/source/SOURCE-MANIFEST.json",
+      "sha256": "82477b2c2ce40ff2f0f30fbe53963b998174b6a7dcf573003c0cd8f628167be1"
+    },
     "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
     "prior_provenance": {
       "focused_failed_r1_r2_preserved": true,
@@ -13869,27 +13990,42 @@
     }
   },
   "host_validation_at_preparation": {
-    "author_cases_are_not_published_same_source_execution": true,
-    "author_ctrip_sampling_gate": {
-      "bytes": 56864,
-      "mode": 420,
-      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
-      "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
-    },
-    "author_xiaomi_gate": {
-      "bytes": 2051788,
+    "actual_author_results": [
+      {
+        "bytes": 3962917,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/validation-xiaomi-edge-r2/RESULT.json",
+        "sha256": "4f9b7222749ac8b249c50b5ce4df8ed548d644b046a38a1e8f003409632214a4"
+      },
+      {
+        "bytes": 90367,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/validation-notes-active-root-r2/RESULT.json",
+        "sha256": "c6cdfd5145bfdfa5e33805bfddb82c9d5f563a0f037f6eed2dd5268848e24e6b"
+      },
+      {
+        "bytes": 54923,
+        "mode": 420,
+        "path": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r4/RESULT.json",
+        "sha256": "e3e685c9707f6d3b3d3e45494ffd460b2fe7f4723fded27998dccaa8e9434c4d"
+      },
+      {
+        "bytes": 1068902,
+        "mode": 384,
+        "path": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/validation-notes-workflow-aborted-consumed-r1/RESULT.json",
+        "sha256": "26495473c67ee992ba9b7d8ac0e62207efb70417ebc2e31ad0b63ba01ffd837a"
+      }
+    ],
+    "complete_current_full_host_validation_pending": true,
+    "execution_repeated_on_published_source": false,
+    "phone_qualification_claimed": false,
+    "published_source_input_equivalence_pending": true,
+    "v13_nine_original_jvm_stages_consumed_without_rerun": true,
+    "v13_original_failed_runner_preserved": {
+      "bytes": 284043,
       "mode": 384,
-      "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
-      "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
-    },
-    "current_android_build_qualified": false,
-    "current_full_host_suite_completed": false,
-    "phone_qualified": false,
-    "prepublication_original_failed_suites": {
-      "bytes": 5295,
-      "mode": 384,
-      "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-      "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+      "path": "/home/alex/hepta-razr-712-three-app-repair-20261126-56dad1-model-r1/validation-notes-workflow-aborted-r3/RESULT.json",
+      "sha256": "57f36a2765b91242bbc611b111126921df28a6fc9840ac782f6df30353e57073"
     }
   },
   "inherited_source_behavior_metadata": {
@@ -14028,6 +14164,88 @@
       "current_android_build_qualified": false,
       "current_full_host_suite_completed": false,
       "phone_qualified": false
+    },
+    "712_preparation_metadata": {
+      "current_host_closure": {
+        "additional_named_scopes": [
+          "xiaomi-captured-labels",
+          "ctrip-coherent-census",
+          "ctrip-child-identity",
+          "notes-workflow-released-reply-lost",
+          "calendar-date-fresh",
+          "calendar-date-actions",
+          "xiaomi-initial-cache",
+          "ctrip-form-sampling"
+        ],
+        "current_execution_pending": true,
+        "required_canonical_checks": 133,
+        "required_full_stages": 50
+      },
+      "current_successor_delta": {
+        "baseline": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+        "inherited_production_changes_from_installed": [
+          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+          "src/org/trillionnium/hepta/local/ObservationStabilityGate.java"
+        ],
+        "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+        "model_weights_unchanged": true,
+        "native_unchanged": true,
+        "phone_success_claimed": false,
+        "production_changes": [],
+        "test_changes": [
+          "tests/local-model-settings-visual/README.md",
+          "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+          "tests/local-model-settings-visual/run_host.py",
+          "tests/native-ax-observation/run_host.py"
+        ]
+      },
+      "current_test_fixture_compatibility": {
+        "actual_parser_admission_low_memory_engine_hash_expectations_unchanged": true,
+        "ax_only_two_snapshot_type_names_qualified": true,
+        "carrier_whole_member_inverse_required": true,
+        "failed_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+        "generated_memory_io_only": true,
+        "memory_whole_class_inverse_required": true,
+        "original_failed_full": {
+          "bytes": 112173,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r2/validation-full-host-r1/HOST-VERIFIED.json",
+          "sha256": "caaac97d65c0f43bcd399130a5a030a65942b2a46856f6cd349b7e429c8e1ada"
+        },
+        "prepublication_original_suites": {
+          "bytes": 5295,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+          "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+        },
+        "production_unchanged_from_git_parent": true,
+        "real_form_sampling_source_members_unchanged": true,
+        "synthetic_kernel_input_receipts_required": true
+      },
+      "host_validation_at_preparation": {
+        "author_cases_are_not_published_same_source_execution": true,
+        "author_ctrip_sampling_gate": {
+          "bytes": 56864,
+          "mode": 420,
+          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+          "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+        },
+        "author_xiaomi_gate": {
+          "bytes": 2051788,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+          "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+        },
+        "current_android_build_qualified": false,
+        "current_full_host_suite_completed": false,
+        "phone_qualified": false,
+        "prepublication_original_failed_suites": {
+          "bytes": 5295,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+          "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+        }
+      }
     },
     "9f452_source_delta": {
       "baseline": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
@@ -14303,8 +14521,8 @@
     "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": "4869a3f7c1e3a2b349ca413c5480f18ccbb1042bae61d790233f0003b45281e9",
     "src/org/trillionnium/hepta/local/NativeAppSession.java": "d23e1340b175f85bb8e0d2d894019d0bdfe4478da77874036343962204764336"
   },
-  "installed_previous_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "mac_cached_source_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
+  "installed_previous_head": "71257931bdda370d23d6299a01976536550bccd6",
+  "mac_cached_source_head": "71257931bdda370d23d6299a01976536550bccd6",
   "main_java_sources": 220,
   "merged_published_heads": [
     "e30c32969f20b1fb996bdfde00b6f2d32af69d01",
@@ -14312,13 +14530,13 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "c1acc976fc322b0a07b342e90e10c5284284ef214822eb237cff595ab72e0db2",
-  "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
+  "production_input_map_sha256": "2fd814934596d8dca48a9c258dea334f6152d8d864b922c23e026aa73f8172df",
+  "production_qualification_base_head": "71257931bdda370d23d6299a01976536550bccd6",
   "schema": "hepta.local-source.v3",
-  "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
-  "source_parent_head": "1cca2349eb0b1495e3ad3a0d38633964e5381f2b",
-  "source_parent_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
-  "source_snapshot_predecessor_manifest_sha256": "9d4dca92de6f1cb629db77e333b3b46812b405c4c6871b766db8c66271a9242b",
+  "scope": "Reviewed child of installed 712. Preserve complete observation/action authority while adding proper-edge refusal-only Xiaomi hints, bounded active Notes root-shrink resampling, removing duplicate Ctrip sampling-history pre-encoding, and exact aborted-after-Back Notes recovery history. New host fixtures retain original refusal, currentness, clock, ownership, final persistence and recovery guards. No phone or business success is claimed.",
+  "source_parent_head": "71257931bdda370d23d6299a01976536550bccd6",
+  "source_parent_manifest_sha256": "82477b2c2ce40ff2f0f30fbe53963b998174b6a7dcf573003c0cd8f628167be1",
+  "source_snapshot_predecessor_manifest_sha256": "82477b2c2ce40ff2f0f30fbe53963b998174b6a7dcf573003c0cd8f628167be1",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

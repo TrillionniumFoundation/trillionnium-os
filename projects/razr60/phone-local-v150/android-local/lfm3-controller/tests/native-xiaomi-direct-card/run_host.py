@@ -41,11 +41,15 @@ def main():
     need(owner_meta["sha256"]=="14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353","exact reviewed read-only OWNER inverse helper")
     originals[str(owner_helper)]=owner_meta
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
+    edge_helper=a.source/"tests/native-ctrip-form-observation/scope_predecessor.py"
+    originals[str(edge_helper)]=info(edge_helper)
+    edge_predecessor=runpy.run_path(str(edge_helper))["edge_predecessor"]
     for rel,pin in PIN_DATA.items():
         meta=info(a.source/rel)
         proof_raw=history_predecessor((a.source/rel).read_bytes()) if rel==PKG+"NativeXiaomiSearchInputObservation.java" else None
         if rel==PKG+"NativeXiaomiProductPage.java":proof_raw=detail_predecessor((a.source/rel).read_bytes())
         if rel==PKG+"NativeAppGoal.java":proof_raw=owner_predecessor((a.source/rel).read_bytes())
+        if rel==PKG+"NativeActionSnapshotCheck.java":proof_raw=edge_predecessor((a.source/rel).read_bytes())
         need((len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"]) if proof_raw is not None
              else (meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"]),"exact source/fixture predecessor pin: "+rel)
         originals[str(a.source/rel)]=meta

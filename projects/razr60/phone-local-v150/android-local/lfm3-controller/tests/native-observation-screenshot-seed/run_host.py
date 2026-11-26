@@ -221,7 +221,60 @@ FORM_SAMPLING_HELPER_INVERSE = {
   ]
 }
 
+CURRENT_SAMPLE_HELPER_INVERSE = {
+  "current_bytes": 38522,
+  "current_sha256": "ad3a6f930782c4d25de5e955313756fcbe9bcfca81b33068839d8cbe449d0de1",
+  "prior_bytes": 35585,
+  "prior_sha256": "5ea3378a54006880a6a3a09e3e41c678f42ad9546e3afdd59b2ca0f77ef6f68d",
+  "operations": [
+    {
+      "start": 4318,
+      "end": 7065,
+      "current_chunk_sha256": "2ad31257aa3d1cbfba028775552a42ad8a888d4751ad4365add95808e79bdf36",
+      "restore_hex": "2020202069662061637475616c5f73686120213d202237353532623630623638303639333537376663363864366631646135613136653031346463393964353566353038386365376362333839363838346365353465223a0a202020202020202072616973652052756e74696d654572726f722822457861637420726576696577656420636f6d706c65746520666f726d2073616d706c696e672068656c70657220626c6f636b20726571756972656422290a",
+      "restore_sha256": "356b6b504a2b18d0ce7983a050286b3281b17adc7781760ef7fef80f7a3b81d7"
+    },
+    {
+      "start": 8636,
+      "end": 8869,
+      "current_chunk_sha256": "55dddec036a2b618a933f66ff2e125ccb027ce2a22486e1f4e35c464b613faa7",
+      "restore_hex": "",
+      "restore_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "start": 10145,
+      "end": 10281,
+      "current_chunk_sha256": "486588e0a2b1f3e2923f3bbcbd2ee58836465679a5b4065388a2c473bb127d21",
+      "restore_hex": "",
+      "restore_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
+
+def reverse_current_sample_helper(path, raw):
+    """Exact proof-copy inverse; events generation imports the actual current helper."""
+    spec = CURRENT_SAMPLE_HELPER_INVERSE
+    if path != 'tests/observation-diagnostics/run_host.py' or sha(raw) != spec['current_sha256']:
+        return raw, None
+    need(len(raw) == spec['current_bytes'], 'exact current sample diagnostic helper bytes required')
+    restored = raw
+    for operation in reversed(spec['operations']):
+        start, end = operation['start'], operation['end']
+        need(0 <= start <= end <= len(restored)
+             and sha(restored[start:end]) == operation['current_chunk_sha256'],
+             'exact current sample helper inverse span required')
+        prior = bytes.fromhex(operation['restore_hex'])
+        need(sha(prior) == operation['restore_sha256'], 'exact current sample helper predecessor span required')
+        restored = restored[:start] + prior + restored[end:]
+    need(len(restored) == spec['prior_bytes'] and sha(restored) == spec['prior_sha256'],
+         'whole pre-current-sample helper must be restored before the original form/PNG chain')
+    return restored, {'actual_current_sha256': spec['current_sha256'],
+                      'whole_prior_sha256': spec['prior_sha256'],
+                      'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+                      'actual_compilation_uses_unmodified_current_helper': True}
+
 def reverse_form_sampling_helper(path, raw):
+    raw, current_sample_inverse = reverse_current_sample_helper(path, raw)
     spec = FORM_SAMPLING_HELPER_INVERSE
     if path != 'tests/observation-diagnostics/run_host.py' or sha(raw) != spec['current_sha256']:
         return raw, None
@@ -240,7 +293,8 @@ def reverse_form_sampling_helper(path, raw):
     return restored, {'actual_current_sha256': spec['current_sha256'],
                       'whole_prior_sha256': spec['prior_sha256'],
                       'complete_prior_bytes_restored': True, 'proof_copy_only': True,
-                      'actual_compilation_uses_unmodified_current_helper': True}
+                      'actual_compilation_uses_unmodified_current_helper': True,
+                      'current_sample_helper_inverse': current_sample_inverse}
 
 
 def reverse_calendar_helper(path, raw):
