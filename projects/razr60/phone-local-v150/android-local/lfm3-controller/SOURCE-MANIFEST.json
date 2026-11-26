@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_CURRENT_CANONICAL_REQUIRED_HOST_AND_ANDROID_BUILD",
+  "candidate_status": "SOURCE_FROZEN_PENDING_CURRENT_CANONICAL_REQUIRED_HOST",
   "changes": [
     "profile cleanup accepts separately validated normal cleanup diagnostics",
     "released close history binds original exit and fresh absence",
@@ -27,7 +27,8 @@
     "Add an independent calendar BACK read-only follow-up permit and its exact current-session controller and service bridge; preserve existing OPEN behavior and single-effect claims",
     "Order only replacement Xiaomi after-target reads so current target and ancestor refresh precedes the new complete D census, then verify real D getters without a second refresh or extending existing budgets",
     "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation",
-    "Complete only the legacy qualification host compiler boundary for calendar BACK with refusing types and two typed JSON optional accessors; all production and original cases are unchanged"
+    "Complete only the legacy qualification host compiler boundary for calendar BACK with refusing types and two typed JSON optional accessors; all production and original cases are unchanged",
+    "Extend only existing observer host ABI with an abstract post-read type and a closed refusing BACK port; preserve original OPEN cases and exact historical proof-copy inverses."
   ],
   "complete_source_files": 2740,
   "files": [
@@ -10784,10 +10785,10 @@
       "sha256": "155f26edb8295389d78edd5f4d192f1eb016ce261f082cc53ad74d1078a580f3"
     },
     {
-      "bytes": 18168,
+      "bytes": 20425,
       "mode": 420,
       "path": "tests/native-calendar-back-ax/run_host.py",
-      "sha256": "1efe933a2eeb4789c6a54ce38b8063c8fdd62366dc880c43deed62eb2f3722ac"
+      "sha256": "cdd76cc017347ae3a513d44a163e407e209cc8ef9d4ac01d3215a83333814981"
     },
     {
       "bytes": 21965,
@@ -11048,10 +11049,10 @@
       "sha256": "060f4123380bfba36fb4a312f1fea9903e2ba7050f7e8abd972a2d916584612e"
     },
     {
-      "bytes": 5034,
+      "bytes": 7497,
       "mode": 420,
       "path": "tests/native-ctrip-child-identity/protected_fixture.py",
-      "sha256": "eed7f5888899ee8b3b9540578ebab0e96b6700e758d3b6319e368c8aa913915d"
+      "sha256": "413e536d0bd7c22bde5411388949332676b82a78081ca025a3c1cd7369b90f2b"
     },
     {
       "bytes": 15216,
@@ -11456,10 +11457,10 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 80997,
+      "bytes": 83358,
       "mode": 420,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "dddba1996df3c744b27fc24c9cdd2e4cc98236618991ebb8d3640869893fb6a3"
+      "sha256": "27c40783dcda8687ace0c98bb822c83e87a5387f2025de62723b6a36c00ed093"
     },
     {
       "bytes": 7722,
@@ -13130,10 +13131,10 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 38719,
+      "bytes": 40195,
       "mode": 420,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6"
+      "sha256": "a7ec7dcd36a7e15ab3f5a97606a1082b341cd94e6069ae047281da573e3291ab"
     },
     {
       "bytes": 10020,
@@ -16468,10 +16469,10 @@
   ],
   "main_java_sources": 222,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "98b0a1dd0a7a518635961a4df2f69024d6b38fbc7198bab78c99fb0041489995",
-  "predecessor_source_manifest_sha256": "98b0a1dd0a7a518635961a4df2f69024d6b38fbc7198bab78c99fb0041489995",
+  "predecessor_manifest_sha256": "ee8e5fa696b944736547ca6aa82174307da89aac82130ec78dac068f18ba9399",
+  "predecessor_source_manifest_sha256": "ee8e5fa696b944736547ca6aa82174307da89aac82130ec78dac068f18ba9399",
   "production_build_inputs_count": 406,
   "production_input_map_sha256": "3f74840e7703c2797009ac28473b50d7ce19a349e256e692dd06863edb69fd67",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "c1d5aefaf41448dc48df727838875814e227e220"
+  "source_parent_head": "370d03ac47a26e7a491a92262afb0dc55c152248"
 }

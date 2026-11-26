@@ -12,7 +12,24 @@ def sha(raw):return hashlib.sha256(raw).hexdigest()
 READ_DIAGNOSTIC_TEMPLATE = 'ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6'
 TYPED_STALE_PORT = '    // Explicit Android read-failure port. Existing one-argument callers remain untyped.\n    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}\n    }\n'
 READ_DIAGNOSTIC_TYPED_STALE_PORT = '    // Explicit Android read-failure port. Existing one-argument callers remain untyped.\n    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;final String backgroundChildPath;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){this(message,childUnavailable,null);}\n        StaleObservation(String message,boolean childUnavailable,String path){super(message);backgroundChildUnavailable=childUnavailable;backgroundChildPath=path;}\n    }\n'
+BACK_READ_TEMPLATE = 'a7ec7dcd36a7e15ab3f5a97606a1082b341cd94e6069ae047281da573e3291ab'
+BACK_READ_TYPE_PORTS = '        // Type-only BACK ABI. The original synthetic OPEN IO carrier remains below.\n        static abstract class PostActionReadAccess {\n            private PostActionReadAccess(){}\n            abstract void requireCurrent();\n            abstract long transitionDeadline();\n            abstract void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display);\n            abstract void admit(boolean retry);\n            abstract boolean admitted(boolean retry);\n        }\n        static final class CalendarBackReadPermit extends PostActionReadAccess {\n            private CalendarBackReadPermit(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireCurrent(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            long transitionDeadline(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void admit(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            boolean admitted(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n        }\n'
+BACK_POST_ORIGINAL = '        static final class PostEffectReadPermit {'
+BACK_POST_EXTENDED = '        static final class PostEffectReadPermit extends PostActionReadAccess {'
+
+def template_before_back_read_types(raw):
+    # Historical proof only. Actual observer compilation keeps both closed ABI types.
+    if sha(raw)==BACK_READ_TEMPLATE:
+        if raw.count(BACK_READ_TYPE_PORTS.encode())!=1 or raw.count(BACK_POST_EXTENDED.encode())!=1:
+            raise RuntimeError("exact closed BACK ABI and original OPEN carrier required")
+        raw=raw.replace(BACK_READ_TYPE_PORTS.encode(),b"",1).replace(
+            BACK_POST_EXTENDED.encode(),BACK_POST_ORIGINAL.encode(),1)
+        if len(raw)!=38719 or sha(raw)!=READ_DIAGNOSTIC_TEMPLATE:
+            raise RuntimeError("whole pre-BACK observer template inverse mismatch")
+    return raw
+
 def template_before_read_diagnostics(raw):
+    raw=template_before_back_read_types(raw)
     # Proof copy only. Actual compilation keeps the complete three-argument port.
     if sha(raw)==READ_DIAGNOSTIC_TEMPLATE:
         if raw.count(READ_DIAGNOSTIC_TYPED_STALE_PORT.encode())!=1:raise RuntimeError("exact typed diagnostic path port required")

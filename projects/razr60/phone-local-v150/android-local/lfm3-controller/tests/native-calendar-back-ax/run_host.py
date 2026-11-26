@@ -113,6 +113,15 @@ def generate(source,out,h):
     fragment=(HERE/'AxTransientReadCases.fragment').read_text()
     # Session is an explicit IO carrier here. The companion suite exercises the
     # actual private Session and Controller before this Service can be reached.
+    # Reconstruct the unchanged synthetic OPEN carrier before the existing two-mode IO extension.
+    # The shared observer-only template has a closed BACK type; this dedicated suite still
+    # exercises its original explicit synthetic OPEN/BACK carrier and actual Service body.
+    template_raw=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_bytes()
+    if __import__('hashlib').sha256(template_raw).hexdigest()!='a7ec7dcd36a7e15ab3f5a97606a1082b341cd94e6069ae047281da573e3291ab':
+        raise RuntimeError('exact current shared observer BACK type boundary')
+    back_types='        // Type-only BACK ABI. The original synthetic OPEN IO carrier remains below.\n        static abstract class PostActionReadAccess {\n            private PostActionReadAccess(){}\n            abstract void requireCurrent();\n            abstract long transitionDeadline();\n            abstract void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display);\n            abstract void admit(boolean retry);\n            abstract boolean admitted(boolean retry);\n        }\n        static final class CalendarBackReadPermit extends PostActionReadAccess {\n            private CalendarBackReadPermit(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireCurrent(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            long transitionDeadline(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void admit(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            boolean admitted(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n        }\n'
+    text=once(text,back_types,'')
+    text=once(text,'        static final class PostEffectReadPermit extends PostActionReadAccess {','        static final class PostEffectReadPermit {')
     port=h.body(text,'        static final class PostEffectReadPermit {')
     base=port.replace('static final class PostEffectReadPermit','static class PostActionReadAccess',1).replace(
         'PostEffectReadPermit(NativeAppSession owner,','PostActionReadAccess(NativeAppSession owner,',1)

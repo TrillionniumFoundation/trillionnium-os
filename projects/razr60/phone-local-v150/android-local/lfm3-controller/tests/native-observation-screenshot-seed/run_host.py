@@ -305,6 +305,15 @@ def verify_original_fixtures(source, before):
 '''
     raw = (source / template).read_bytes()
     need(before[template]['sha256']==sha(raw),'actual current template inventory differs')
+    back_type_inverse = None
+    if sha(raw)=='a7ec7dcd36a7e15ab3f5a97606a1082b341cd94e6069ae047281da573e3291ab':
+        added_types=b'        // Type-only BACK ABI. The original synthetic OPEN IO carrier remains below.\n        static abstract class PostActionReadAccess {\n            private PostActionReadAccess(){}\n            abstract void requireCurrent();\n            abstract long transitionDeadline();\n            abstract void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display);\n            abstract void admit(boolean retry);\n            abstract boolean admitted(boolean retry);\n        }\n        static final class CalendarBackReadPermit extends PostActionReadAccess {\n            private CalendarBackReadPermit(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireCurrent(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            long transitionDeadline(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            void admit(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n            boolean admitted(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}\n        }\n'
+        extended_type=b'        static final class PostEffectReadPermit extends PostActionReadAccess {'
+        need(raw.count(added_types)==1 and raw.count(extended_type)==1,'exact closed BACK observer type extension')
+        current_back_sha=sha(raw)
+        raw=raw.replace(added_types,b'',1).replace(extended_type,b'        static final class PostEffectReadPermit {',1)
+        need(len(raw)==38719 and sha(raw)=='ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6','whole pre-BACK observer template required')
+        back_type_inverse={'current_sha256':current_back_sha,'prior_sha256':sha(raw),'complete_prior_bytes_restored':True,'proof_copy_only':True,'actual_compilation_keeps_current_types':True}
     raw, png_inverse = reverse_png_closure(template, raw)
     current_sha = '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2'
     need(sha(raw) == current_sha,
@@ -430,7 +439,7 @@ def verify_original_fixtures(source, before):
          'saved-seed scheduling inverse must restore the complete original fixture')
     need(all(before[name]['sha256'] == digest for name, digest in PINNED_FIXTURES.items() if name not in (template, diagnostic, event_runner, seed_fixture)),
          'original reviewed fixture bytes differ')
-    return {'template': template, 'current_sha256': png_inverse['current_sha256'], 'png_closure_inverse': png_inverse,
+    return {'template': template, 'current_sha256': before[template]['sha256'], 'back_type_inverse': back_type_inverse, 'png_closure_inverse': png_inverse,
             'typed_child_port_inverse': {'prior_complete_sha256': prior_template_sha,
                 'exact_current_block_sha256': sha(typed_child_port), 'proof_copy_only': True,
                 'actual_compilation_uses_current_template': True},

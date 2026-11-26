@@ -72,7 +72,24 @@ public final class ObserverPipelineHost {
     /** Explicit Session IO carrier for observer-only tests. This is not an entered
      * action receipt; the separate Controller consumer gate runs the real Session. */
     static final class NativeAppSession {
-        static final class PostEffectReadPermit {
+        // Type-only BACK ABI. The original synthetic OPEN IO carrier remains below.
+        static abstract class PostActionReadAccess {
+            private PostActionReadAccess(){}
+            abstract void requireCurrent();
+            abstract long transitionDeadline();
+            abstract void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display);
+            abstract void admit(boolean retry);
+            abstract boolean admitted(boolean retry);
+        }
+        static final class CalendarBackReadPermit extends PostActionReadAccess {
+            private CalendarBackReadPermit(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+            void requireCurrent(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+            long transitionDeadline(){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+            void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+            void admit(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+            boolean admitted(boolean retry){throw new AssertionError("BACK authority unavailable in observer-only fixture");}
+        }
+        static final class PostEffectReadPermit extends PostActionReadAccess {
             final NativeAppSession owner;final Object authorization,selection;final String task,generation;
             final int display;final long transition;final AtomicInteger admissions=new AtomicInteger();boolean valid=true;
             PostEffectReadPermit(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int display,long transition){
