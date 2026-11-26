@@ -9,7 +9,7 @@
   "post_back_cache_root_path_does_not_invoke_or_claim_cache",
   "post_back_cache_noncanonical_path_does_not_invoke_or_claim_cache",
   "post_back_cache_oversized_path_does_not_invoke_or_claim_cache",
-  "post_back_cache_ordinary_initial_read_never_uses_modal_reset",
+  "post_back_cache_ordinary_initial_uses_distinct_initial_reset_without_modal_authority",
   "post_back_cache_second_graph_failure_cannot_reset_after_any_complete_graph",
   "post_back_cache_pending_child_census_rejected_before_graph_return",
   "post_back_cache_sampling_deadline_before_catch_has_no_cache_call",

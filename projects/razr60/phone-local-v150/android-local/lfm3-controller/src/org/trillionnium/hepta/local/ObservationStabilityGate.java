@@ -68,6 +68,21 @@ public final class ObservationStabilityGate {
         }
         previous=frame;previousAt=now;return Result.WAIT;
     }
+    /** Explicit classified pair over two REAL keys. The caller must have compared complete values.
+     * This timing helper grants no action or graph authority and never substitutes a digest. */
+    Result sampleClassifiedPair(long now,FrameKey expectedPrevious,long expectedAt,FrameKey actual,boolean allowed){
+        if(retired||!allowed)return Result.CANCELLED;
+        if(!requestAlive(now,true)||now>=settleDeadline)return Result.EXPIRED;
+        boolean sameWindow=expectedPrevious!=null&&actual!=null&&!expectedPrevious.truncated&&!actual.truncated
+                &&expectedPrevious.packageName.equals(actual.packageName)&&expectedPrevious.windowId==actual.windowId
+                &&expectedPrevious.rotation==actual.rotation&&expectedPrevious.left==actual.left&&expectedPrevious.top==actual.top
+                &&expectedPrevious.right==actual.right&&expectedPrevious.bottom==actual.bottom;
+        if(sameWindow&&previous!=null&&previous.equals(expectedPrevious)&&previousAt==expectedAt
+                &&now>=expectedAt&&now-expectedAt>=SAMPLE_GAP_MS){
+            previous=actual;previousAt=now;return Result.READY;
+        }
+        return Result.WAIT;
+    }
     /** Drop evidence after a changed screenshot; the original deadlines do not move. */
     public void resetEvidence(){previous=null;previousAt=0;}
     public long nextSampleDelay(long now){return Math.max(0,Math.min(SAMPLE_GAP_MS,settleDeadline-now));}

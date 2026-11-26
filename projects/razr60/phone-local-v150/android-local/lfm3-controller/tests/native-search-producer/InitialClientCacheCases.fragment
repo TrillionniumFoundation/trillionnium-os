@@ -1,0 +1,333 @@
+
+    /** Initial admission only. Actual producer/Session/owner/clock/refresh guards,
+     * with the existing explicitly synthetic Android traversal and cache API ports.
+     * These cases establish no device cache cause or successful phone recovery. */
+    static final List<Map<String,Object>> initialCacheEvidence=new ArrayList<Map<String,Object>>();
+    static final class InitialCacheRun {
+        final NativeSearchRequest request;final long chainDeadline,taskDeadline;
+        InitialCacheRun(Fixture f,NativeSearchRequest request){this.request=request;
+            chainDeadline=f.base.search.chainDeadlineElapsed;taskDeadline=f.base.search.taskDeadlineElapsed;}
+    }
+    static InitialCacheRun initialCacheStart(HeptaAccessibilityService s,Fixture f){
+        f.refreshGraphChildren=true;NativeSearchRequest r=f.startPlanning(null,30000);
+        check(r!=null&&r.session==f.base.search&&r.admitted&&r.admissionOrdinal==1
+                &&s.nativeSearchInitialAdmissionBase==0&&s.taskObservationAdmissions==1
+                &&f.base.search.imageModalPreludeUnused(),"the actual first admission, without a modal or successor");
+        check(r.deadline==r.started+30000&&r.samplingDeadline==r.deadline-2000,
+                "original thirty-second request and two-second publication reserve");
+        return new InitialCacheRun(f,r);
+    }
+    static void initialCacheClocks(Fixture f,InitialCacheRun run){
+        NativeSearchRequest r=run.request;
+        check(r.deadline==r.started+30000&&r.samplingDeadline==r.deadline-2000
+                &&f.base.search.chainDeadlineElapsed==run.chainDeadline&&f.base.search.taskDeadlineElapsed==run.taskDeadline,
+                "no initial sampling, request, chain or task deadline renewed");
+        check(f.effects==0&&f.syntheticBackEffects==0&&!f.base.search.navigationEffectRecorded()
+                &&actionIo.submissions==0,"initial cache recovery creates no model intent, Back or platform effect");
+    }
+    static boolean[] initialCacheAtFailedRead(NativeSearchRequest r,Runnable probe){
+        final boolean[] fired={false};
+        SystemClock.beforeRead=()->{
+            NativeSearchGraphReadTrace read=r.lastGraphRead;
+            if(read!=null&&read.failure instanceof StaleObservation
+                    &&((StaleObservation)read.failure).backgroundChildUnavailable
+                    &&read.completed>=read.started&&!r.clientCacheResetClaimed){
+                SystemClock.beforeRead=null;fired[0]=true;probe.run();
+            }
+        };
+        return fired;
+    }
+    static void initialCacheAssertNoClaim(HeptaAccessibilityService s,Fixture f,NativeSearchRequest r,StaleObservation failed){
+        s.resetInitialNativeSearchClientCacheAfterChildFailure(r,failed);
+        check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&!r.clientCacheResetInitialAdmission,
+                "this changed eligibility cannot claim or invoke the initial cache branch");
+    }
+    static void initialClientCacheCases()throws Exception{
+        one("initial_cache_typed_failure_disposes_whole_partial_graph_then_requires_new_full_A_B",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                cachePartialFailure(f);List<NodeData> original=new ArrayList<NodeData>(f.nodes.values());
+                f.cacheHook=()->{
+                    NativeSearchRequest r=s.activeNativeSearchObservation;
+                    for(NodeData n:original)check(n.obtained==n.recycled,"all original partial graph references released before cache API");
+                    check(r.graphReturns==0&&r.lastCompletePair==null&&r.activePublicationTrace.encodeAttempts==0,
+                            "no graph, pair or encoded evidence authorizes this cache call");
+                    s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    cacheRestoreNodes(f);
+                };
+                InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);cachePump(s);
+                check(f.planning!=null&&f.error==null&&r.published&&f.callbackCount==1,
+                        "only a newly complete sealed pair publishes: "+f.error);
+                check(f.cacheCalls==1&&r.clientCacheResetInitialAdmission&&r.graphReadAttempts==3
+                        &&r.graphReturns==2&&f.graphReads==3,"one real failed read followed by exactly two new whole reads");
+                JSONObject d=cacheDiagnostics(s,r),c=d.getJSONObject("client_cache_reset");
+                check(c.getBoolean("initial_planning_admission")&&c.getBoolean("attempt_claimed")
+                        &&c.getInt("trigger_read_ordinal")==1&&"0/0/0".equals(c.getString("trigger_child_path")),
+                        "fixed typed read identity and explicit initial branch diagnostic");
+                check(!c.getBoolean("observation_or_transition_verified")&&!d.getBoolean("event_counters_reset")
+                        &&c.getJSONObject("before").getLong("events")==1&&c.getJSONObject("after").getLong("events")==2
+                        &&r.events.mark().events==2,"cache is no proof and all old/new events survive");
+                check(d.getJSONArray("reads").getJSONObject(0).getBoolean("typed_child_unavailable")
+                        &&!d.getJSONArray("reads").getJSONObject(0).getBoolean("graph_returned"),"actual refresh failure retained");
+                NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);
+                check(offer!=null&&!f.base.search.imageModalHomePlanning(),"original Session accepts the new historical pair without modal authority");
+                Map<String,Object> evidence=new LinkedHashMap<String,Object>();initialCacheEvidence.add(evidence);
+                evidence.put("scenario","initial_complete_pair");evidence.put("graph_read_diagnostics",HeptaAccessibilityService.nativeSearchGraphReadDiagnostics(r));
+                evidence.put("graph_reads",f.graphReads);evidence.put("cache_calls",f.cacheCalls);evidence.put("effects",f.effects);
+                initialCacheClocks(f,run);
+                for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"new full graph references also released before publication");
+            }
+        });
+        for(String result:Arrays.asList("true","false","throw","unsupported")){
+            one("initial_cache_"+result+"_persistent_typed_failure_consumes_once_and_remains_failure",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);f.cacheResult=!"false".equals(result);f.cacheThrows="throw".equals(result);
+                    if("unsupported".equals(result))android.os.Build.VERSION.SDK_INT=32;
+                    InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;cachePump(s);
+                    check(r.clientCacheResetClaimed&&r.clientCacheResetInitialAdmission
+                            &&f.cacheCalls==("unsupported".equals(result)?0:1),"false, throw, unsupported and persistent failures cannot refund one claim");
+                    check(f.planning==null&&f.error!=null&&r.graphReturns==0&&r.lastCompletePair==null&&r.path==null,
+                            "no residual fragment or API outcome becomes planning");
+                    JSONObject raw=cacheFailedFile(f,r),d=raw.getJSONObject("graph_read_diagnostics"),c=d.getJSONObject("client_cache_reset");
+                    check(d.getJSONArray("reads").length()==8&&d.getInt("omitted_read_count")>0
+                            &&c.getInt("trigger_read_ordinal")==1&&"0/0/0".equals(c.getString("trigger_child_path")),
+                            "bounded last-eight records retain the actual first trigger separately");
+                    check(d.toString().getBytes(StandardCharsets.UTF_8).length<=12288,"original diagnostic bound unchanged");
+                    check(!raw.getBoolean("complete_pair_available")&&!raw.getBoolean("planning_published"),"failure evidence stays failure");
+                    if("throw".equals(result))check("IllegalStateException".equals(c.getString("failure_class"))&&c.isNull("clear_cache_returned"),"real API-port exception remains separate");
+                    else if("unsupported".equals(result))check(!c.getBoolean("api33_supported")&&c.isNull("clear_cache_returned"),"unsupported API not invoked");
+                    else check(c.getBoolean("clear_cache_returned")=="true".equals(result),"exact API return retained");
+                    initialCacheClocks(f,run);
+                    for(NodeData n:f.nodes.values())check(n.obtained==n.recycled,"all failed read handles released");
+                }
+            });
+        }
+        one("initial_cache_false_return_is_not_authority_but_fresh_complete_pair_may_publish",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                cachePartialFailure(f);f.cacheResult=false;f.cacheHook=()->cacheRestoreNodes(f);
+                InitialCacheRun run=initialCacheStart(s,f);cachePump(s);
+                check(f.cacheCalls==1&&f.planning!=null&&run.request.graphReturns==2
+                        &&Boolean.FALSE.equals(run.request.clientCacheResetReturned),"false API value cannot replace the independent full pair");
+                initialCacheClocks(f,run);
+            }
+        });
+        for(String kind:Arrays.asList("untyped_same_message","root_path","noncanonical_path","oversized_path")){
+            one("initial_cache_"+kind+"_does_not_claim_or_invoke",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    String path="root_path".equals(kind)?"0":"noncanonical_path".equals(kind)?"0/01":"0/"+String.join("",Collections.nCopies(250,"1"));
+                    f.graphHook=()->{
+                        if("untyped_same_message".equals(kind))throw new StaleObservation("后台子节点已不可用，需重新观察");
+                        throw new StaleObservation("explicit malformed synthetic child path",true,path);
+                    };
+                    InitialCacheRun run=initialCacheStart(s,f);cachePump(s);
+                    check(f.cacheCalls==0&&!run.request.clientCacheResetClaimed&&f.planning==null&&f.error!=null,
+                            "matching text and malformed paths never substitute for the actual typed nonroot read");
+                    initialCacheClocks(f,run);
+                }
+            });
+        }
+        for(String kind:Arrays.asList("different_exception","missing_last_read","different_window_binding")){
+            one("initial_cache_"+kind+"_cannot_consume_actual_failed_read",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);f.cacheHook=()->cacheRestoreNodes(f);
+                    InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                    boolean[] fired=initialCacheAtFailedRead(r,()->{
+                        NativeSearchGraphReadTrace actual=r.lastGraphRead;int window=r.events.window;
+                        StaleObservation failed=(StaleObservation)actual.failure;
+                        try{
+                            if("different_exception".equals(kind))failed=new StaleObservation(failed.getMessage(),true,failed.backgroundChildPath);
+                            else if("missing_last_read".equals(kind))r.lastGraphRead=null;
+                            else r.events.window=window+1;
+                            initialCacheAssertNoClaim(s,f,r,failed);
+                        }finally{r.lastGraphRead=actual;r.events.window=window;}
+                    });
+                    cachePump(s);check(fired[0]&&f.cacheCalls==1&&f.planning!=null,
+                            "only the subsequently original read object and owner window can use the existing caller");
+                    initialCacheClocks(f,run);
+                }
+            });
+        }
+        for(String kind:Arrays.asList("tracker","initial_base","admission_ordinal","admission_count","encode_started",
+                "capture_pending","ordinary_read_pending","permission_pending","cancellation_pending","worker_not_owned","effect_pending")){
+            one("initial_cache_"+kind+"_refuses_before_claim",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);f.cacheHook=()->cacheRestoreNodes(f);
+                    InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                    boolean[] fired=initialCacheAtFailedRead(r,()->{
+                        NativeSearchRequest tracker=s.nativeSearchSamplingTracked;
+                        int base=s.nativeSearchInitialAdmissionBase,ordinal=r.admissionOrdinal,count=s.taskObservationAdmissions,encodes=r.activePublicationTrace.encodeAttempts;
+                        Object observation=s.activeObservation;ActionExecutionState effect=null;
+                        try{
+                            if("tracker".equals(kind))s.nativeSearchSamplingTracked=null;
+                            else if("initial_base".equals(kind))s.nativeSearchInitialAdmissionBase=1;
+                            else if("admission_ordinal".equals(kind))r.admissionOrdinal=2;
+                            else if("admission_count".equals(kind))s.taskObservationAdmissions=2;
+                            else if("encode_started".equals(kind))r.activePublicationTrace.encodeAttempts=1;
+                            else if("capture_pending".equals(kind))s.capturePending=true;
+                            else if("ordinary_read_pending".equals(kind))s.activeObservation=new Object();
+                            else if("permission_pending".equals(kind))ProfilePermissionUiSession.pending=true;
+                            else if("cancellation_pending".equals(kind))s.cancellationPending=true;
+                            else if("worker_not_owned".equals(kind))observationIoBusy.set(false);
+                            else{effect=legacyState(NativeSearchSessionHostTest.id(),SystemClock.now);
+                                check(actionSlot.acquire(effect),"actual action slot acquired for a negative parallel-effect probe");
+                                effect.enterEffect(false,true);check(Boolean.TRUE.equals(effect.evidence().get("effect_entered")),"actual effect state entered");}
+                            initialCacheAssertNoClaim(s,f,r,(StaleObservation)r.lastGraphRead.failure);
+                        }finally{
+                            if(effect!=null){effect.effectReturned(Boolean.TRUE);effect.drained();actionSlot.release(effect);}
+                            s.nativeSearchSamplingTracked=tracker;s.nativeSearchInitialAdmissionBase=base;r.admissionOrdinal=ordinal;
+                            s.taskObservationAdmissions=count;r.activePublicationTrace.encodeAttempts=encodes;
+                            s.capturePending=false;s.activeObservation=observation;ProfilePermissionUiSession.pending=false;s.cancellationPending=false;observationIoBusy.set(true);
+                        }
+                    });
+                    cachePump(s);check(fired[0]&&f.cacheCalls==1&&f.planning!=null,
+                            "negative eligibility probe creates no cache call; restored authentic state can follow the original producer");
+                    initialCacheClocks(f,run);
+                }
+            });
+        }
+        one("initial_cache_second_graph_failure_cannot_reset_after_complete_A",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.graphHook=()->{if(f.graphReads>=2)cachePartialFailure(f);};
+                InitialCacheRun run=initialCacheStart(s,f);cachePump(s);NativeSearchRequest r=run.request;
+                check(r.graphReturns==1&&f.cacheCalls==0&&!r.clientCacheResetClaimed&&f.planning==null,
+                        "B failure and later first-graph attempts cannot erase a previously returned whole graph");
+                initialCacheClocks(f,run);
+            }
+        });
+        one("initial_cache_returned_incomplete_IME_graph_also_excludes_reset",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                final NativeSearchGraphReadTrace[] first={null};
+                f.graphHook=()->{if(f.graphReads>1)cachePartialFailure(f);};
+                f.afterCapturedNodesHook=graph->{if(f.graphReads==1)first[0]=s.activeNativeSearchObservation.lastGraphRead;};
+                f.afterCapturedApplyHook=graph->{if(f.graphReads==1)graph.state.imeVisibility=ImeVisibility.UNKNOWN;};
+                InitialCacheRun run=initialCacheStart(s,f);cachePump(s);
+                check(first[0]!=null&&first[0].graphReturned&&!first[0].fullGraph
+                        &&first[0].failure instanceof StaleObservation,"actual returned whole BFS rejected by original final-IME completeness guard");
+                check(run.request.graphReturns>=1&&f.planning==null&&f.cacheCalls==0&&!run.request.clientCacheResetClaimed,
+                        "even an unusable returned graph cannot enter the zero-return initial option");
+                initialCacheClocks(f,run);
+            }
+        });
+        one("initial_cache_real_modal_route_has_no_initial_reset_authority",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                ModalRead modal=new ModalRead(f);NativeSearchRequest old=modalReady(s,f,modal);
+                s.beginNativeSearchImageModalPrelude(s.ownedController,f.base.search,f.directory,f.base.search.taskDeadlineElapsed);
+                check(!f.base.search.imageModalPreludeUnused()&&f.base.search.allowsImageModalObservation()
+                        &&f.cacheCalls==0&&!old.clientCacheResetInitialAdmission,"actual accepted modal prelude is a separate Session phase");
+            }
+        });
+        one("initial_cache_real_post_Back_uses_only_unchanged_modal_branch",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                CacheHomeFixture home=cachePrepareHome(s,f);cachePartialFailure(f);f.cacheHook=()->cacheRestoreNodes(f);
+                NativeSearchRequest r=cacheStartHome(s,f,home);cachePump(s);
+                check(f.cacheCalls==1&&r.clientCacheResetClaimed&&!r.clientCacheResetInitialAdmission&&f.planning!=null,
+                        "initial helper declines the real post-Back Session; the unchanged original helper owns its own one attempt");
+                check(!cacheDiagnostics(s,r).getJSONObject("client_cache_reset").getBoolean("initial_planning_admission"),
+                        "diagnostic distinguishes the existing post-Back admission");
+                cacheOriginalClocks(f,home,r);
+            }
+        });
+        for(String limit:Arrays.asList("sampling","request")){
+            one("initial_cache_"+limit+"_deadline_before_catch_prevents_claim",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                    f.nodes.get("0/0/0").beforeRefresh=()->SystemClock.now="sampling".equals(limit)?r.samplingDeadline:r.deadline;
+                    cachePump(s);check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&f.planning==null,"original absolute deadline wins before cache admission");
+                    initialCacheClocks(f,run);
+                }
+            });
+            one("initial_cache_api_crosses_"+limit+"_deadline_without_new_read_budget",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                    f.cacheHook=()->{cacheRestoreNodes(f);SystemClock.now="sampling".equals(limit)?r.samplingDeadline:r.deadline;};
+                    cachePump(s);check(f.cacheCalls==1&&r.graphReturns==0&&f.planning==null,"cache time consumes original remaining budget");
+                    initialCacheClocks(f,run);
+                }
+            });
+        }
+        for(String guard:Arrays.asList("cancel","owner","sampling","profile_expiry")){
+            one("initial_cache_"+guard+"_after_claim_before_API_keeps_consumption_and_rejects",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                    final boolean[] fired={false};
+                    SystemClock.beforeRead=()->{if(r.clientCacheResetClaimed&&!r.clientCacheResetInvoked){
+                        SystemClock.beforeRead=null;fired[0]=true;
+                        if("cancel".equals(guard))f.cancelled=true;
+                        else if("owner".equals(guard))s.ownedController=new Object();
+                        else if("sampling".equals(guard))SystemClock.now=r.samplingDeadline;
+                        else SystemClock.now=r.lastGraphRead.eventWindow.profileWindow.expiresElapsedMs;
+                    }};
+                    cachePump(s);check(fired[0]&&r.clientCacheResetClaimed&&r.clientCacheResetInitialAdmission
+                            &&f.cacheCalls==0&&r.clientCacheResetFailure==null&&f.planning==null,
+                            "real policy/profile exception outside API catch neither invokes nor refunds nor becomes an API error");
+                    initialCacheClocks(f,run);
+                }
+            });
+        }
+        one("initial_cache_owner_changed_before_failed_read_catch_never_claims",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                cachePartialFailure(f);InitialCacheRun run=initialCacheStart(s,f);
+                f.nodes.get("0/0/0").beforeRefresh=()->s.ownedController=new Object();
+                cachePump(s);check(f.cacheCalls==0&&!run.request.clientCacheResetClaimed&&f.planning==null,"original exact controller ownership rejects before initial admission");
+                initialCacheClocks(f,run);
+            }
+        });
+        one("initial_cache_expired_actual_pre_BFS_profile_proof_never_claims",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                cachePartialFailure(f);InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;
+                final int[] expirations={0};
+                // The existing Android refresh port consumes beforeRefresh once.
+                // Each later whole-root read obtains its own proof: expire that proof too,
+                // rather than treating the first expired proof as a request-wide veto.
+                f.graphHook=()->{
+                    if(f.graphReads>1)check(f.cacheCalls==0&&!r.clientCacheResetClaimed,
+                            "every preceding expired proof reached the catch without any cache claim");
+                    f.nodes.get("0/0/0").beforeRefresh=()->{
+                        NativeSearchGraphReadTrace read=r.lastGraphRead;
+                        check(read.eventWindow!=null&&read.eventWindow.profileWindow!=null&&!read.graphReturned,
+                                "expiry is injected into this actual incomplete read and its broker-issued proof");
+                        expirations[0]++;SystemClock.now=read.eventWindow.profileWindow.expiresElapsedMs;
+                    };
+                };
+                cachePump(s);check(expirations[0]>1&&f.cacheCalls==0&&!r.clientCacheResetClaimed&&f.planning==null,
+                        "each freshly obtained proof expired during its own partial read, so none authorizes cache work");
+                Map<String,Object> evidence=new LinkedHashMap<String,Object>();initialCacheEvidence.add(evidence);
+                evidence.put("scenario","initial_all_current_proofs_expired");evidence.put("actual_expiry_injections",expirations[0]);
+                evidence.put("cache_calls",f.cacheCalls);evidence.put("claim",r.clientCacheResetClaimed);
+                evidence.put("graph_read_diagnostics",HeptaAccessibilityService.nativeSearchGraphReadDiagnostics(r));
+                initialCacheClocks(f,run);
+            }
+        });
+        for(String kind:Arrays.asList("unknown","boundary","untyped")){
+            one("initial_cache_historical_"+kind+"_survives_and_fresh_C_D_still_rejects_new_event",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    cachePartialFailure(f);f.cacheHook=()->cacheRestoreNodes(f);
+                    f.graphHook=()->{if(f.cacheCalls>0&&f.graphReads>=3)cacheEvent(s,kind);};
+                    InitialCacheRun run=initialCacheStart(s,f);NativeSearchRequest r=run.request;cachePump(s);
+                    check(f.cacheCalls==1&&f.planning!=null&&f.error==null&&r.graphReturns==2&&r.events.mark().events>0,
+                            "historical full A/B keeps its event history rather than pretending current action authority");
+                    Map<String,Object> publication=f.planning.publication;
+                    check(Boolean.TRUE.equals(publication.get("planning_as_of_B"))
+                            &&Boolean.TRUE.equals(publication.get("no_event_neutrality_claim"))
+                            &&Boolean.TRUE.equals(publication.get("fresh_effect_census_required"))
+                            &&f.planning.context.sealed.events==r.events.mark().events,"original history/publication contract unchanged");
+                    initialCacheClocks(f,run);f.graphHook=null;
+                    NativeSearchSession.Offer offer=f.base.search.offer(f.planning,SystemClock.now);
+                    NativeSearchSession.Attempt attempt=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
+                    final boolean[] injected={false};
+                    f.graphHook=()->{SearchActionWork work=s.activeSearchAction;
+                        if(work!=null&&work.currentSnapshot!=null&&!injected[0]){injected[0]=true;cacheEvent(s,kind);}};
+                    f.action(attempt);
+                    check(injected[0]&&f.outcome!=null&&!f.outcome.accepted&&!f.outcome.dispatched&&f.effects==0
+                            &&f.cacheCalls==1&&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"new current C/D event cannot claim or enter effect");
+                    check(f.outcome.detail.contains("unknown, boundary or untyped event")
+                            &&!f.outcome.actionExecution.getBoolean("effect_entered"),"original actual pair-event guard is still the refusing consumer");
+                    check(r.events.mark().events==f.planning.context.sealed.events&&f.syntheticBackEffects==0,"historical counter stays unchanged and no Back is invented");
+                    Map<String,Object> evidence=new LinkedHashMap<String,Object>();initialCacheEvidence.add(evidence);
+                    evidence.put("scenario","initial_current_"+kind);evidence.put("historical",f.planning.context.evidence());
+                    evidence.put("action_detail",f.outcome.detail);evidence.put("action_execution",f.outcome.actionExecution);
+                    evidence.put("cache_calls",f.cacheCalls);evidence.put("effects",f.effects);
+                }
+            });
+        }
+    }

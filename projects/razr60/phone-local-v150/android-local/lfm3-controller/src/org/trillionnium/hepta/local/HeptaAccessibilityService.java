@@ -784,7 +784,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 Map<String,Object> value=copy(source,768);
                 if(value==null){rejectedRecords++;return;}
                 if(firstHelper==null)firstHelper=first(value);
-                if("HELPER_ENTERED".equals(value.get("reason"))||"CLOCK_CHECK".equals(value.get("reason"))){
+                if("HELPER_ENTERED".equals(value.get("reason"))||"CLOCK_CHECK".equals(value.get("reason"))
+                        ||Boolean.TRUE.equals(value.get("sampling_lifecycle"))){
                     lastHelperProgress=first(value);
                     if(lastHelper==null)lastHelper=value;
                 }else lastHelper=value;
@@ -808,7 +809,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             out.put("outer_records",outerRecords);out.put("first_outer",firstOuter);out.put("last_outer",lastOuter);out.put("last_precheck",lastPrecheck);
             out.put("helper_records",helperRecords);out.put("first_helper",firstHelper);out.put("last_helper",lastHelper);out.put("last_helper_progress",lastHelperProgress);
             out.put("event_fields","ordinal,elapsed_ms,type,display,window,captured_window,package_match,content_type,classification,unknown,request_events");
-            out.put("event_classification","0=legacy_untyped,1=content,2=boundary; original classification unchanged");
+            out.put("event_classification","0=legacy_untyped,1=owned_capture_or_complete_form_sample_content,2=boundary; historical counters unchanged");
             out.put("first_events",new ArrayList<List<Long>>(firstEvents));out.put("last_events",new ArrayList<List<Long>>(lastEvents));
             out.put("event_records",eventRecords);out.put("event_omitted",eventRecords-firstEvents.size()-lastEvents.size());
             out.put("record_rejections",rejectedRecords);out.put("grants_action_authority",false);
@@ -1225,6 +1226,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         void resetPostEffectSampling(){postEffectSamplingIdentity=null;postEffectSamplingKey=null;}
         WindowOwnership postEffectProfileOwner;boolean postEffectProfileBound;
         NativeResampleSeed resampleSeed; // Main-owned first-sample lineage only.
+        private CtripFormSample ctripFormSample;private long ctripFormSampleEpoch;
+        private Map<String,Object> ctripSamplingProof;
+        synchronized CtripFormSample ctripSample(){return ctripFormSample;}
+        synchronized void clearCtripSample(String reason){
+            if(ctripFormSample!=null)recordCtripSampling(this,reason,ctripFormSample,null,null);
+            if(ctripFormSample!=null||ctripSamplingProof!=null)ctripFormSampleEpoch++;
+            ctripFormSample=null;ctripSamplingProof=null;
+        }
         boolean readRecoveryRejected;String lastReadDigest;long failedAt=-1;
         int readWorksStarted,readWorksFinished,readGraphChanges,readCaptureFailures,readSealedEventFailures;
         boolean postEffectPublicationRecheckAttempted,postEffectChildIdentityRecheckAttempted;
@@ -1242,6 +1251,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         synchronized void recordEvent(boolean unknown,int kind){
             if(finished)return;
             if(unknown)unknownEvents++;events++;
+            if(unknown||kind!=1)clearCtripSample(unknown?"SAMPLE_UNKNOWN_EVENT":"SAMPLE_BOUNDARY_OR_UNTYPED_EVENT");
             if(kind==1){contentEvents++;note(ObservationDiagnostics.Event.EVENT_TARGET_CONTENT);}
             else if(kind==2){boundaryEvents++;note(ObservationDiagnostics.Event.EVENT_TARGET_BOUNDARY);}
             note(unknown?ObservationDiagnostics.Event.EVENT_UNKNOWN:ObservationDiagnostics.Event.EVENT_TARGET);
@@ -1270,6 +1280,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             boolean sameChildIdentity=event==ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE
                     &&typedChildUnavailable&&rechecked!=null&&rechecked.current(this);
             if(rechecked!=null)rechecked.recordNote(this,sameChildIdentity);
+            if(event==ObservationDiagnostics.Event.SAMPLE_NO_ROOT||event==ObservationDiagnostics.Event.SAMPLE_STALE_ROOT
+                    ||event==ObservationDiagnostics.Event.SAMPLE_ERROR||event==ObservationDiagnostics.Event.SAMPLE_EVENT_RESET
+                    ||event==ObservationDiagnostics.Event.CAPTURE_RETRY)clearCtripSample("SAMPLE_"+event.name());
             if(postEffectController!=null){
                 if(event==ObservationDiagnostics.Event.SAMPLE_STALE_ROOT||event==ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE){
                     if(typedChildUnavailable)postEffectSamplingTypedChildFailures++;
@@ -1363,11 +1376,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final FrozenObservationWindow frozenWindow;
         final WindowOwnership profileWindow;
         final ObservationDiagnostics.GraphStamp diagnosticStamp;
-        final ObservationEventWatermark eventWatermark;
+        final ObservationEventWatermark eventWatermark;final Map<String,Object> samplingFormProof;
         CaptureIdentity(Graph graph,long capturedAt,long events,long unknownEvents,boolean nativeRecheck){
             this(graph,capturedAt,new ObservationEventWatermark(events,unknownEvents,0,0),nativeRecheck);
         }
         CaptureIdentity(Graph graph,long capturedAt,ObservationEventWatermark watermark,boolean nativeRecheck){
+            this(graph,capturedAt,watermark,nativeRecheck,null);
+        }
+        CaptureIdentity(Graph graph,long capturedAt,ObservationEventWatermark watermark,boolean nativeRecheck,Map<String,Object> samplingProof){
+            samplingFormProof=samplingProof;
             eventWatermark=watermark;long events=watermark.events,unknownEvents=watermark.unknownEvents;
             frame=frameKey(graph);displayId=graph.displayId;generation=graph.backgroundGeneration;profileWindow=graph.profileWindow;
             this.capturedAt=capturedAt;this.events=events;this.unknownEvents=unknownEvents;this.nativeRecheck=nativeRecheck;
@@ -1394,6 +1411,35 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return other!=null&&packageName.equals(other.packageName)&&windowId==other.windowId&&displayId==other.displayId
                     &&rotation==other.rotation&&left==other.left&&top==other.top&&right==other.right&&bottom==other.bottom
                     &&width==other.width&&height==other.height&&metadata.equals(other.metadata)&&windows.equals(other.windows);
+        }
+    }
+    /** Same-request copied census only; no Graph, NodeRef, bitmap or callback survives a sample. */
+    private static final class CtripFormSample {
+        // The latest census acceptance and the Gate's unchanged-key timestamp are distinct clocks.
+        final String requestId;final long epoch,acceptedAt,gateAcceptedAt,readStartedAt,readCompletedAt,completedAt;
+        final int readOrdinal;final ObservationStabilityGate.FrameKey key;
+        final NativeActionSnapshotCheck.Snapshot census;final NativeReadIdentity identity;
+        final FrozenObservationWindow window;final ObservationEventWatermark readStart,completed;
+        CtripFormSample(ObservationRequest request,Graph graph,NativeActionSnapshotCheck.Snapshot census,
+                FrozenObservationWindow window,ObservationEventWatermark readStart,
+                ObservationEventWatermark completed,long completedAt,long epoch){
+            requestId=request.requestId;this.epoch=epoch;acceptedAt=-1;gateAcceptedAt=-1;readOrdinal=request.readWorksStarted;
+            readStartedAt=graph.readStartedElapsedMs;readCompletedAt=graph.readCompletedElapsedMs;this.completedAt=completedAt;
+            key=frameKey(graph);this.census=census;identity=new NativeReadIdentity(graph);this.window=window;
+            this.readStart=readStart;this.completed=completed;
+        }
+        CtripFormSample(CtripFormSample value,long acceptedAt,long gateAcceptedAt){
+            requestId=value.requestId;epoch=value.epoch;this.acceptedAt=acceptedAt;this.gateAcceptedAt=gateAcceptedAt;readOrdinal=value.readOrdinal;
+            readStartedAt=value.readStartedAt;readCompletedAt=value.readCompletedAt;completedAt=value.completedAt;
+            key=value.key;census=value.census;identity=value.identity;window=value.window;
+            readStart=value.readStart;completed=value.completed;
+        }
+    }
+    /** The actual serial worker's comparison; it cannot dispatch, change a key or renew a clock. */
+    private static final class CtripFormSampleRead {
+        final CtripFormSample before,after;final Map<String,Object> comparison,history;
+        CtripFormSampleRead(CtripFormSample before,CtripFormSample after,Map<String,Object> comparison,Map<String,Object> history){
+            this.before=before;this.after=after;this.comparison=comparison;this.history=history;
         }
     }
     /** Ephemeral result of a real window-only read after a discarded child read.
@@ -1479,6 +1525,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 e.put("first_publication_check_event_watermark",firstPublicationCheckEvents);
                 e.put("historical_pair_after_known_target_event",true);
             }
+            if(identity.samplingFormProof!=null)
+                e.put("sampling_stability",ctripSamplingSummary(identity.samplingFormProof,formHistoryPath,formHistoryBytes,formHistoryDigest));
             if(formPair!=null){
                 e.put("form_pair_comparison",NativeCtripFormObservation.captureSummary(formPair,formHistoryPath.getName(),formHistoryBytes,formHistoryDigest,"pre_encoding"));
                 e.put("form_pair_target_events_at_read_start",pairEvents);
@@ -1522,7 +1570,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             request.recordEvent(displayId<0,0);
     }
     /** SDK event metadata only: no source-node traversal, model label or package whitelist.
-     * A content event must belong to the complete native graph currently owned by this capture.
+     * Content belongs to the actual complete capture, or the same request's validated full FORM sample.
      * Window/focus/unknown/foreign-owner events remain boundaries even when later values match. */
     private void noteObservationEvent(int displayId,int windowId,String packageName,boolean contentType){
         noteObservationEvent(displayId,windowId,packageName,contentType,-1);
@@ -1532,14 +1580,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         noteNativeSearchEvent(displayId,windowId,packageName,contentType,true);
         ObservationRequest request=activeObservation;
         if(request==null||request.finished||(displayId>=0&&displayId!=request.displayId))return;
-        Graph captured=request.captured;boolean content=false;
+        Graph captured=request.captured;boolean content=false;CtripFormSample sampled=request.ctripSample();boolean sampledContent=false;
         try{
             content=displayId>=0&&contentType&&captured!=null&&windowId>=0
                     &&windowId==captured.windowId&&packageName!=null&&packageName.equals(captured.packageName)
                     &&nativeObservationRecheckAllowed(request,captured);
-        }catch(RuntimeException unavailable){content=false;}
-        request.recordSdkEvent(displayId<0,content?1:2,sdkEventType,displayId,windowId,
-                captured==null?-1:captured.windowId,captured!=null&&packageName!=null&&packageName.equals(captured.packageName),contentType);
+            // Forward only from a completed, actually validated FORM. No historical event is relabelled.
+            sampledContent=!content&&captured==null&&sampled!=null&&displayId==request.displayId&&contentType
+                    &&windowId>=0&&windowId==sampled.window.windowId&&packageName!=null
+                    &&packageName.equals(sampled.window.packageName)&&ctripFormSamplingOwner(request,SystemClock.elapsedRealtime());
+        }catch(RuntimeException unavailable){content=false;sampledContent=false;}
+        synchronized(request){
+            if(sampledContent)content=request.ctripFormSample==sampled&&sampled.epoch==request.ctripFormSampleEpoch;
+            request.recordSdkEvent(displayId<0,content?1:2,sdkEventType,displayId,windowId,
+                    captured==null?-1:captured.windowId,captured!=null&&packageName!=null&&packageName.equals(captured.packageName),contentType);
+        }
     }
     /** One typed read, using the existing observation request/PNG publication.
      * This callback never grants input and never changes the native Session domain. */
@@ -2011,27 +2066,199 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(target.packageName))
                 &&background.selection.allowedPackages.equals(graph.backgroundAllowedPackages);
     }
+    private boolean ctripFormSamplingOwner(ObservationRequest request,long now){
+        if(request.finished||activeObservation!=request||request.cancel.isCancelled()
+                ||request.initialController!=null||request.initialRetrySubmission!=null||request.nativeAxMode!=null
+                ||request.retrySubmission!=null||request.postEffectRetrySubmission!=null
+                ||request.readBefore!=null||request.readIdentity!=null||request.postEffectIdentity!=null
+                ||request.postEffectIdentityRejected||request.captured!=null||request.background==null||request.displayId<=1
+                ||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
+                ||!postEffectObservationOwner(request)||capturePending||request.shotPending
+                ||actionWorkPending()||nativeCancellationWorkPending()||request.unknownEvents!=0
+                ||now<request.started||now>=request.deadline||now>=request.postEffectTaskDeadline
+                ||now>=request.postEffectTransitionDeadline
+                ||now-request.started>=ObservationStabilityGate.SETTLE_LIMIT_MS)return false;
+        ProfileTarget target=request.background.profileTarget();BackgroundTaskTarget task=request.background.selection.taskTarget;
+        return target!=null&&NativeCtripFlightPage.PACKAGE.equals(target.packageName)
+                &&target.versionCode==NativeCtripFlightPage.VERSION_CODE
+                &&NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
+                &&task!=null&&NativeCtripFlightPage.supported(task.nativeGoal);
+    }
+    private static boolean sameObservationWatermark(ObservationEventWatermark a,ObservationEventWatermark b){
+        return a!=null&&b!=null&&a.events==b.events&&a.unknownEvents==b.unknownEvents
+                &&a.contentEvents==b.contentEvents&&a.boundaryEvents==b.boundaryEvents;
+    }
+    private static Map<String,Object> ctripSampleKey(ObservationStabilityGate.FrameKey key){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("package",key.packageName);out.put("window_id",key.windowId);
+        out.put("rotation",key.rotation);out.put("bounds",java.util.Arrays.asList(key.left,key.top,key.right,key.bottom));
+        out.put("observed_digest",key.observedDigest);out.put("truncated",key.truncated);return java.util.Collections.unmodifiableMap(out);
+    }
+    private static void recordCtripSampling(ObservationRequest request,String reason,CtripFormSample a,CtripFormSample b,Exception failure){
+        try{
+            Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("stage","sampling");out.put("reason",reason);
+            out.put("at_ms",SystemClock.elapsedRealtime());
+            if(b==null&&failure==null)out.put("sampling_lifecycle",true);
+            if(a!=null){out.put("a_key",NativeAppEvidence.fingerprint(ctripSampleKey(a.key)));out.put("a_census",a.census.sha);}
+            if(b!=null){out.put("b_key",NativeAppEvidence.fingerprint(ctripSampleKey(b.key)));out.put("b_census",b.census.sha);}
+            out.put("times",java.util.Arrays.asList(a==null?-1:a.acceptedAt,b==null?-1:b.readStartedAt,
+                    b==null?-1:b.readCompletedAt,request.started,request.deadline));
+            ObservationEventWatermark first=a==null?null:a.completed,last=b==null?request.eventWatermark():b.completed;
+            out.put("marks",java.util.Arrays.asList(first==null?-1:first.events,first==null?-1:first.unknownEvents,
+                    first==null?-1:first.contentEvents,first==null?-1:first.boundaryEvents,
+                    last.events,last.unknownEvents,last.contentEvents,last.boundaryEvents));
+            if(failure!=null){String raw=message(failure),small=CtripReadDiagnostic.utf8Prefix(raw,64);
+                out.put("exception_class",CtripReadDiagnostic.utf8Prefix(failure.getClass().getSimpleName(),48));
+                out.put("exception_message",small);if(!raw.equals(small))out.put("message_prefix",true);}
+            request.ctripReadDiagnostic.helper(out);
+        }catch(RuntimeException unavailable){/* Optional values never alter evidence or admission. */}
+    }
+    /** Runs on the existing serial read worker, before posting the actual graph to main. */
+    private CtripFormSampleRead readCtripFormSample(ObservationRequest request,Graph graph,CtripFormSample before,
+            ObservationEventWatermark readStart,ObservationEventWatermark completed,long completedAt,long epoch){
+        CtripFormSample after=null;String stage="SAMPLE_SCOPE";
+        try{
+            if(graph==null||!ctripFormSamplingOwner(request,SystemClock.elapsedRealtime())
+                    ||!nativeObservationRecheckAllowed(request,graph)||completed.unknownEvents!=0)return null;
+            if(before!=null&&request.ctripSample()!=before){recordCtripSampling(request,"SAMPLE_EPOCH_CHANGED",before,null,null);return null;}
+            FrozenObservationWindow window=frozenObservationWindow(graph);if(window==null)return null;
+            if(graph.readStartedElapsedMs<request.started||graph.readCompletedElapsedMs<graph.readStartedElapsedMs
+                    ||graph.readCompletedElapsedMs>completedAt)return null;
+            stage="SAMPLE_SNAPSHOT";
+            NativeActionSnapshotCheck.Snapshot census=nativeCtripFormSnapshot(request,graph,request.background.profileTarget());
+            after=new CtripFormSample(request,graph,census,window,readStart,completed,completedAt,epoch);
+            if(before!=null){
+                if(!before.requestId.equals(request.requestId)||before.epoch!=epoch
+                        ||before.acceptedAt<request.started||before.completedAt>before.acceptedAt
+                        ||before.gateAcceptedAt<request.started||before.gateAcceptedAt>before.acceptedAt
+                        ||graph.readStartedElapsedMs<before.acceptedAt||after.readOrdinal!=before.readOrdinal+1
+                        ||!before.identity.matches(graph)||!before.window.matches(window)
+                        ||!readStart.onlyContentSince(before.completed)||!completed.onlyContentSince(readStart)
+                        ||!completed.onlyContentSince(before.completed)){
+                    recordCtripSampling(request,"SAMPLE_IDENTITY_OR_BOUNDARY",before,after,null);return null;
+                }
+                stage="SAMPLE_COMPARE";
+                Map<String,Object> proof=null;
+                try{proof=NativeCtripFormObservation.compare(before.census,census);}
+                catch(IllegalArgumentException rejected){
+                    recordCtripSampling(request,"SAMPLE_COMPARE_REJECTED",before,after,rejected);
+                    // A changed pair supplies no stability. A newly complete actual FORM may only seed another read.
+                }
+                if(proof!=null){
+                    requireObservationWork(request);
+                    if(!ctripFormSamplingOwner(request,SystemClock.elapsedRealtime()))return null;
+                    stage="SAMPLE_HISTORY";Map<String,Object> history=ctripSamplingHistory(request,before,after,proof);
+                    requireObservationWork(request);
+                    if(!ctripFormSamplingOwner(request,SystemClock.elapsedRealtime()))return null;
+                    recordCtripSampling(request,"SAMPLE_COMPARE_ACCEPTED",before,after,null);
+                    return new CtripFormSampleRead(before,after,proof,history);
+                }
+            }
+            stage="SAMPLE_SELF_COMPARE";NativeCtripFormObservation.compare(census,census);
+            requireObservationWork(request);
+            return ctripFormSamplingOwner(request,SystemClock.elapsedRealtime())?new CtripFormSampleRead(before,after,null,null):null;
+        }catch(IllegalArgumentException refused){recordCtripSampling(request,stage+"_REJECTED",before,after,refused);return null;}
+    }
+    private boolean ctripFormSampleCurrent(ObservationRequest request,Graph graph,CtripFormSampleRead read){
+        if(read==null||read.after==null||!ctripFormSamplingOwner(request,SystemClock.elapsedRealtime())
+                ||!nativeObservationRecheckAllowed(request,graph))return false;
+        CtripFormSample value=read.after;
+        synchronized(request){
+            return value.requestId.equals(request.requestId)&&value.epoch==request.ctripFormSampleEpoch
+                    &&request.ctripFormSample==read.before&&sameObservationWatermark(value.completed,request.eventWatermark())
+                    &&value.key.equals(frameKey(graph))&&value.identity.matches(graph)
+                    &&value.window.matches(frozenObservationWindow(graph));
+        }
+    }
+    private static Map<String,Object> ctripSamplingCensus(NativeActionSnapshotCheck.Snapshot census){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("envelope",census.env);
+        List<Map<String,Object>> nodes=new ArrayList<Map<String,Object>>();
+        for(NativeActionSnapshotCheck.Node node:census.nodes.values())nodes.add(node.v);
+        out.put("nodes",java.util.Collections.unmodifiableList(nodes));return java.util.Collections.unmodifiableMap(out);
+    }
+    /** Existing private form-history transport; complete actual values, not diagnostic reconstruction. */
+    private static Map<String,Object> ctripSamplingHistory(ObservationRequest request,CtripFormSample a,CtripFormSample b,
+            Map<String,Object> comparison){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema","hepta.ctrip-form-sampling-pair.v1");
+        out.put("request_id",request.requestId);out.put("sample_epoch",b.epoch);
+        out.put("before_key",ctripSampleKey(a.key));out.put("after_key",ctripSampleKey(b.key));
+        out.put("before_census_sha256",a.census.sha);out.put("after_census_sha256",b.census.sha);
+        out.put("before_census",ctripSamplingCensus(a.census));out.put("after_census",ctripSamplingCensus(b.census));
+        out.put("comparison",comparison);out.put("entered_open_read_permit",request.postEffectPermit.evidence());
+        out.put("original_started_elapsed_ms",request.started);out.put("original_deadline_elapsed_ms",request.deadline);
+        out.put("original_task_deadline_elapsed_ms",request.postEffectTaskDeadline);
+        out.put("original_transition_deadline_elapsed_ms",request.postEffectTransitionDeadline);
+        out.put("settle_limit_ms",ObservationStabilityGate.SETTLE_LIMIT_MS);out.put("sample_gap_ms",ObservationStabilityGate.SAMPLE_GAP_MS);
+        out.put("before_read_elapsed_ms",java.util.Arrays.asList(a.readStartedAt,a.readCompletedAt,a.completedAt,a.acceptedAt));
+        out.put("before_gate_key_accepted_elapsed_ms",a.gateAcceptedAt);
+        out.put("after_read_elapsed_ms",java.util.Arrays.asList(b.readStartedAt,b.readCompletedAt,b.completedAt));
+        out.put("sample_ordinals",java.util.Arrays.asList(a.readOrdinal,b.readOrdinal));
+        out.put("forward_binding_elapsed_ms",a.acceptedAt);out.put("forward_binding_watermark",ctripDiagnosticMark(a.completed));
+        out.put("after_read_start_watermark",ctripDiagnosticMark(b.readStart));out.put("after_event_watermark",ctripDiagnosticMark(b.completed));
+        out.put("historic_events_reclassified",false);out.put("sampling_only",true);
+        out.put("fresh_screenshot_and_saved_graph_checks_required",true);out.put("fresh_action_validation_required",true);
+        out.put("grants_action_authority",false);out.put("business_completion_verified",false);
+        if(new JSONObject(out).toString().getBytes(StandardCharsets.UTF_8).length>786432)
+            throw new IllegalArgumentException("complete sampling history exceeds original form-history byte bound");
+        return java.util.Collections.unmodifiableMap(out);
+    }
+    private static Map<String,Object> ctripSamplingProof(ObservationRequest request,CtripFormSampleRead read,long admittedAt){
+        if(read.before==null||read.comparison==null||read.history==null||read.after.epoch!=request.ctripFormSampleEpoch)
+            throw new IllegalStateException("classified sampling proof lost its actual pair");
+        Map<String,Object> out=new LinkedHashMap<String,Object>(read.history);
+        out.put("sampling_admitted_elapsed_ms",admittedAt);return java.util.Collections.unmodifiableMap(out);
+    }
+    private boolean ctripSamplingProofCurrent(ObservationRequest request,Map<String,Object> proof){
+        long now=SystemClock.elapsedRealtime();CtripFormSample value=request.ctripSample();
+        return value!=null&&request.captured!=null&&!request.finished&&!request.cancel.isCancelled()
+                &&postEffectObservationOwner(request)&&!request.postEffectIdentityRejected
+                &&request.readAuthorization==taskAuthorization&&nativeObservationRecheckAllowed(request,request.captured)
+                &&request.requestId.equals(proof.get("request_id"))&&Long.valueOf(value.epoch).equals(proof.get("sample_epoch"))
+                &&value.epoch==request.ctripFormSampleEpoch&&value.key.equals(frameKey(request.captured))
+                &&ctripSampleKey(value.key).equals(proof.get("after_key"))&&value.census.sha.equals(proof.get("after_census_sha256"))
+                &&sameObservationWatermark(value.completed,request.eventWatermark())
+                &&now>=value.acceptedAt&&now<request.deadline&&now<request.postEffectTaskDeadline&&now<request.postEffectTransitionDeadline;
+    }
+    private static Map<String,Object> ctripSamplingSummary(Map<String,Object> proof,File path,int bytes,String digest){
+        if(path==null||bytes<=0||digest==null)throw new IllegalStateException("preserved complete sampling history required");
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema","hepta.ctrip-form-sampling-summary.v1");
+        out.put("before_key_sha256",NativeAppEvidence.fingerprint(proof.get("before_key")));
+        out.put("after_key_sha256",NativeAppEvidence.fingerprint(proof.get("after_key")));
+        out.put("before_census_sha256",proof.get("before_census_sha256"));out.put("after_census_sha256",proof.get("after_census_sha256"));
+        out.put("file",path.getName());out.put("bytes",bytes);out.put("sha256",digest);out.put("part","sampling");
+        out.put("sampling_admitted_elapsed_ms",proof.get("sampling_admitted_elapsed_ms"));
+        out.put("fresh_action_validation_required",true);out.put("grants_action_authority",false);return java.util.Collections.unmodifiableMap(out);
+    }
     private void sampleObservation(final ObservationRequest request){
         if(!observationActive(request))return;
         if(!observationIoBusy.compareAndSet(false,true)){failObservation(request,"先前屏幕读取尚未退出");return;}
         request.note(ObservationDiagnostics.Event.SAMPLE_START);request.worker(true);request.phase("sample_graph");
         try{observationIo.execute(new Runnable(){public void run(){
             Graph graph=null;String error=null;final long unknownEvents=request.unknownEvents,events=request.events;
+            CtripFormSampleRead formRead=null;CtripFormSample previous;ObservationEventWatermark formStart;
+            synchronized(request){previous=request.ctripFormSample;formStart=request.eventWatermark();}
             try{
                 requireObservationWork(request);
                 try{graph=readGraph(observationBudget(request),request.background);}
                 catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAMPLE_NO_ROOT);}
                 catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}
+                // Freeze the real census endpoint before diagnostics or any pure form comparison.
+                final ObservationEventWatermark formEnd;final long formEpoch;
+                synchronized(request){formEnd=request.eventWatermark();formEpoch=request.ctripFormSampleEpoch;}
+                final long formCompletedAt=SystemClock.elapsedRealtime();
                 request.graph("sample_graph",graph);requireObservationWork(request);
+                formRead=readCtripFormSample(request,graph,previous,formStart,formEnd,formCompletedAt,formEpoch);
             }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error="无法读取当前活动窗口："+message(failure);}
             finally{request.worker(false);observationIoBusy.set(false);}
-            final Graph sampled=graph;final String failure=error;
+            final Graph sampled=graph;final String failure=error;final CtripFormSampleRead sampledForm=formRead;
             boolean posted=false;
-            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents);}});}
+            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents,sampledForm);}});}
             finally{if(!posted&&sampled!=null)sampled.close();}
         }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,"屏幕观察队列不可用："+message(unavailable));}
     }
     private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){
+        acceptSample(request,graph,error,events,unknownEvents,null);
+    }
+    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){
         try{
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
@@ -2063,7 +2290,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         &&graph.readStartedElapsedMs>=seed.graphCompletedAt
                         &&graph.readCompletedElapsedMs>=graph.readStartedElapsedMs;
                 if(!same){
-                    request.resampleSeed=null;request.gate.resetEvidence();request.nativeSample=false;
+                    request.resampleSeed=null;request.clearCtripSample("SAMPLE_SEED_RESET");request.gate.resetEvidence();request.nativeSample=false;
                     if(request.trace!=null)request.trace.reset();nativeSeedDecision(request,"invalidated_before_sample");
                 }else if(!seed.key.equals(frameKey(graph))){
                     request.resampleSeed=null;nativeSeedDecision(request,"replaced_by_sample");
@@ -2077,15 +2304,43 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     // Target events request fresh evidence; the original gate still compares the whole observed graph.
                     request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RECHECKED);
                 }else{
-                    if(graph!=null){graph.close();graph=null;}request.resampleSeed=null;request.gate.resetEvidence();nativeRecheck=false;
+                    if(graph!=null){graph.close();graph=null;}request.resampleSeed=null;request.clearCtripSample("SAMPLE_EVENT_RESET");request.gate.resetEvidence();nativeRecheck=false;
                     request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RESET);if(request.trace!=null)request.trace.reset();
                 }
             }
             // Two complete native samples are required; an earlier legacy/incomplete sample cannot seed this path.
-            if(nativeRecheck!=request.nativeSample){request.resampleSeed=null;request.gate.resetEvidence();if(request.trace!=null)request.trace.reset();}
+            if(nativeRecheck!=request.nativeSample){request.resampleSeed=null;request.clearCtripSample("SAMPLE_MODE_RESET");request.gate.resetEvidence();if(request.trace!=null)request.trace.reset();}
             request.nativeSample=nativeRecheck;
-            long now=SystemClock.elapsedRealtime();
-            ObservationStabilityGate.Result result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
+            boolean formCurrent=ctripFormSampleCurrent(request,graph,formRead),classified=false;
+            long now;ObservationStabilityGate.Result result;
+            synchronized(request){
+                request.ctripSamplingProof=null;
+                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch
+                        &&request.ctripFormSample==formRead.before
+                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());
+                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");
+                now=SystemClock.elapsedRealtime();
+                result=ObservationStabilityGate.Result.WAIT;
+                if(formCurrent&&formRead.before!=null&&formRead.comparison!=null
+                        &&!formRead.before.key.equals(formRead.after.key)
+                        &&now>=formRead.before.acceptedAt
+                        &&now-formRead.before.acceptedAt>=ObservationStabilityGate.SAMPLE_GAP_MS){
+                    result=request.gate.sampleClassifiedPair(now,formRead.before.key,formRead.before.gateAcceptedAt,formRead.after.key,true);
+                    classified=result==ObservationStabilityGate.Result.READY;
+                }
+                // WAIT still consumes the actual current key; terminal results never obtain another budget.
+                if(result==ObservationStabilityGate.Result.WAIT)
+                    result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
+                if(formCurrent&&(result==ObservationStabilityGate.Result.WAIT||result==ObservationStabilityGate.Result.READY)){
+                    boolean sameKey=formRead.before!=null&&formRead.before.key.equals(formRead.after.key);
+                    long gateAt=classified||!sameKey?now:formRead.before.gateAcceptedAt;
+                    // Every accepted census advances the consecutive read ordinal and event endpoint.
+                    // Same-key reads keep the Gate's original timestamp without retaining stale census metadata.
+                    request.ctripFormSample=new CtripFormSample(formRead.after,now,gateAt);
+                    if(formRead.before==null)recordCtripSampling(request,"SAMPLE_TARGET_BOUND",request.ctripFormSample,null,null);
+                    if(classified)request.ctripSamplingProof=ctripSamplingProof(request,formRead,now);
+                }
+            }
             if(graph==null&&request.trace!=null)request.trace.missingSample();
             request.note(ObservationDiagnostics.Event.valueOf("SAMPLE_"+result.name()));
             if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){
@@ -2109,7 +2364,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 request.captured=graph;graph=null;captureObservation(request);return;
             }
             long delay=request.gate.nextSampleDelay(now);
-            if(result==ObservationStabilityGate.Result.READY){request.note(ObservationDiagnostics.Event.SCREENSHOT_INTERVAL_WAIT);delay=Math.min(delay,screenshotDelay);}
+            if(result==ObservationStabilityGate.Result.READY){
+                // The next read must earn its own pair; a throttled classified READY is not carried forward.
+                synchronized(request){request.ctripSamplingProof=null;}
+                request.note(ObservationDiagnostics.Event.SCREENSHOT_INTERVAL_WAIT);delay=Math.min(delay,screenshotDelay);
+            }
             request.phase("sample_gap");
             main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},delay);
         }catch(Exception failure){failObservation(request,"无法接收当前活动窗口："+message(failure));}
@@ -2200,7 +2459,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(request.finished)return null;
         String diagnostic=request.diagnostic(error);
         request.note(ObservationDiagnostics.Event.REQUEST_ERROR);if(request.trace!=null)request.trace.finish("failed",SystemClock.elapsedRealtime());
-        request.failedAt=SystemClock.elapsedRealtime();request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.resampleSeed=null;request.gate.retire();
+        request.failedAt=SystemClock.elapsedRealtime();request.clearCtripSample("SAMPLE_REQUEST_RETIRED");request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.resampleSeed=null;request.gate.retire();
         if(request.shotPending&&captureSerial==request.token){capturePending=false;captureSerial++;}
         request.shotPending=false;
         if(request.captured!=null){request.captured.close();request.captured=null;}
@@ -2301,7 +2560,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         retryObservation(request,delay,null);
     }
     private void retryObservation(final ObservationRequest request,long delay,NativeResampleSeed seed){
-        request.resetPostEffectSampling();request.resampleSeed=null;
+        request.resetPostEffectSampling();request.resampleSeed=null;request.clearCtripSample("SAMPLE_CAPTURE_RETRY");
         if(request.captured!=null){request.captured.close();request.captured=null;}
         request.gate.resetEvidence();request.nativeSample=false;request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);
         if(request.trace!=null)request.trace.reset();
@@ -2346,8 +2605,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // Non-native/unknown/incomplete evidence keeps both post-capture whole-graph checks.
         // A complete native pair may be sealed before encoding; publication still checks
         // the current owned window and a final event fence, never grants action freshness.
+        final Map<String,Object> samplingProof=request.ctripSamplingProof;
+        if(samplingProof!=null&&!ctripSamplingProofCurrent(request,samplingProof)){
+            failObservation(request,"完整表单采样的当前窗口或事件绑定已变化");return;
+        }
         final CaptureIdentity identity=new CaptureIdentity(request.captured,SystemClock.elapsedRealtime(),
-                request.eventWatermark(),request.nativeSample&&nativeObservationRecheckAllowed(request,request.captured));
+                request.eventWatermark(),request.nativeSample&&nativeObservationRecheckAllowed(request,request.captured),samplingProof);
+        request.clearCtripSample("SAMPLE_CAPTURE_TRANSFER");
         request.note(ObservationDiagnostics.Event.CAPTURE_START);
         capturePending=true;request.shotPending=true;lastScreenshotAt=identity.capturedAt;
         final long token=++captureSerial;request.token=token;request.phase("screenshot_callback");
@@ -2572,7 +2836,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Preserve full readonly comparisons once; compact capture metadata never
      * substitutes a reconstructed proof or raises PhoneObservation's byte cap. */
     private void persistCtripFormHistory(ObservationRequest request,ObservationProduct product)throws Exception{
-        if(product.formPair==null&&product.postEncodingFormPair==null)return;
+        if(product.formPair==null&&product.postEncodingFormPair==null&&product.identity.samplingFormProof==null)return;
         requireObservationWork(request);
         if(product.formHistoryPath!=null||product.id==null||product.digest==null)
             throw new IllegalStateException("form evidence ownership changed");
@@ -2581,6 +2845,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         evidence.put("observation_id",product.id);evidence.put("png_sha256",product.digest);
         evidence.put("captured_elapsed_ms",product.capturedAt);evidence.put("request_id",request.requestId);
         evidence.put("original_deadline_elapsed_ms",request.deadline);
+        if(product.identity.samplingFormProof!=null)evidence.put("sampling",product.identity.samplingFormProof);
         if(product.formPair!=null)evidence.put("pre_encoding",product.formPair);
         if(product.postEncodingFormPair!=null)evidence.put("post_encoding",product.postEncodingFormPair);
         evidence.put("grants_action_authority",false);evidence.put("business_completion_verified",false);
@@ -2785,7 +3050,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
-            request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;
+            request.clearCtripSample("SAMPLE_REQUEST_PUBLISHED");request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;
             request.callback.onObservation(observation);
         }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}
         finally{if(!transferred)product.close();}
@@ -3445,7 +3710,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // Keep the last eight actual reads and the total, including failed first graphs.
         final List<NativeSearchGraphReadTrace> graphReadTraces=new ArrayList<NativeSearchGraphReadTrace>();
         int graphReadAttempts,graphReturns;NativeSearchGraphReadTrace lastGraphRead;
-        volatile boolean clientCacheResetClaimed;boolean clientCacheResetInvoked;
+        volatile boolean clientCacheResetClaimed;boolean clientCacheResetInvoked,clientCacheResetInitialAdmission;
         Boolean clientCacheApiSupported,clientCacheResetReturned;String clientCacheResetFailure;
         int clientCacheResetReadOrdinal=-1;String clientCacheResetChildPath;
         long clientCacheResetClaimedAt=-1,clientCacheResetStarted=-1,clientCacheResetCompleted=-1;
@@ -3909,6 +4174,71 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             synchronized(request){trace.completed=completed;trace.after=after;}
         }
     }
+    /** One initial-admission cache invalidation, not the post-Back recovery branch.
+     * The exact failed read has disposed its entire partial graph before entry.
+     * A cache result never supplies a node, planning receipt, or input authority.
+     */
+    private void resetInitialNativeSearchClientCacheAfterChildFailure(NativeSearchRequest request,StaleObservation failed){
+        requireNativeSearchRead(request);
+        long now=SystemClock.elapsedRealtime();
+        if(!failed.backgroundChildUnavailable||failed.backgroundChildPath==null
+                ||failed.backgroundChildPath.length()>240||!failed.backgroundChildPath.matches("0(?:/(?:0|[1-9][0-9]*))+")
+                ||!"planning_first_graph".equals(request.phase)||!request.session.imageModalPreludeUnused()
+                ||nativeSearchInitialAdmissionBase!=0||request.admissionOrdinal!=1||taskObservationAdmissions!=1
+                ||!nativeSearchPlanningAdmitted||!request.admitted||nativeSearchModalResumePending||nativeSearchModalPending!=null
+                ||nativeSearchRetryPending!=null||activeObservation!=null||capturePending
+                ||actionWorkPending()||nativeCancellationWorkPending()||!observationIoBusy.get()
+                ||locked(request.session.background)||now>=request.samplingDeadline)return;
+        request.session.requireBeforeFirstPlanning(now);
+        NativeSearchGraphReadTrace read=request.lastGraphRead;
+        if(read==null||read.failure!=failed||read.graphReturned||read.fullGraph||read.completed<read.started
+                ||!"planning_first_graph".equals(read.phase)||read.eventWindow==null||read.eventWindow.profileWindow==null
+                ||read.eventWindowBound<read.started||read.eventWindowBound>read.completed
+                ||now>=read.eventWindow.profileWindow.expiresElapsedMs)return;
+        BackgroundSession background=request.session.background;
+        NativeAppEvidence.requireProfileTarget(background.profileTarget(),read.eventWindow.profileWindow);
+        background.requireProfileWindow(read.eventWindow.profileWindow,read.eventWindow.windowId,
+                read.eventWindow.profileWindow.taskId,now);
+        synchronized(nativeSearchEventLock){
+            if(nativeSearchSamplingTracked!=request||nativeSearchTrackedAction!=null
+                    ||request.events.window!=read.eventWindow.windowId
+                    ||request.events.display!=read.eventWindow.displayId
+                    ||!request.events.packageName.equals(read.eventWindow.packageName))return;
+            synchronized(request){
+                NativeSearchPublicationTrace producer=request.activePublicationTrace;
+                if(request.clientCacheResetClaimed||request.finished||request.workerDrained||request.published
+                        ||request.callbackDelivered.get()||request.failureReason!=null||request.failureDiagnosticClaimed
+                        ||request.diagnosticWritePending||request.samplingTrackingClosed||request.samplingRecoveryPending
+                        ||request.samplingDrainUncertain||request.retryDrainPending||request.retryDrainUncertain
+                        ||request.path!=null||request.retrySubmission!=null||request.samplingSubmission!=null||request.replanSubmission!=null
+                        ||request.publicationOriginal!=null||request.publicationReplacements!=0
+                        ||request.publicationReplacementQueued||request.publicationReplacementUncertain
+                        ||producer==null||producer.ordinal!=0||producer.encodeAttempts!=0
+                        ||request.lastCompletePair!=null||request.graphReturns!=0||request.lastGraphRead!=read)return;
+                // Consume before Android, including false, throw, unsupported, or later policy refusal.
+                request.clientCacheResetClaimed=true;request.clientCacheResetInitialAdmission=true;
+                request.clientCacheResetClaimedAt=now;request.clientCacheResetReadOrdinal=read.ordinal;
+                request.clientCacheResetChildPath=failed.backgroundChildPath;request.clientCacheBefore=request.events.mark();
+                request.clientCacheApiSupported=Boolean.valueOf(android.os.Build.VERSION.SDK_INT>=33);
+            }
+        }
+        // Cache work never renews the original Session, sampling clock, or window proof.
+        requireNativeSearchRead(request);now=SystemClock.elapsedRealtime();request.session.requireBeforeFirstPlanning(now);
+        if(!request.session.imageModalPreludeUnused()||nativeSearchInitialAdmissionBase!=0
+                ||request.admissionOrdinal!=1||taskObservationAdmissions!=1||activeObservation!=null||capturePending
+                ||actionWorkPending()||nativeCancellationWorkPending()||!observationIoBusy.get()
+                ||locked(background))throw new ObservationAbandoned();
+        if(now>=request.samplingDeadline)throwNativeSearchSamplingExhausted(request,"initial_client_cache_reset");
+        background.requireProfileWindow(read.eventWindow.profileWindow,read.eventWindow.windowId,
+                read.eventWindow.profileWindow.taskId,now);
+        if(Boolean.TRUE.equals(request.clientCacheApiSupported)){
+            request.clientCacheResetStarted=SystemClock.elapsedRealtime();request.clientCacheResetInvoked=true;
+            try{request.clientCacheResetReturned=Boolean.valueOf(clearCache());}
+            catch(RuntimeException unavailable){request.clientCacheResetFailure=unavailable.getClass().getSimpleName();}
+            finally{request.clientCacheResetCompleted=SystemClock.elapsedRealtime();request.clientCacheAfter=request.events.mark();}
+        }
+        requireNativeSearchRead(request);
+    }
     /** One public client-cache invalidation after an actual failed first graph.
      * readGraph has already recycled its whole partial tree before this call.
      * This is the whole service's Android client cache, not a display/provider reset.
@@ -3956,6 +4286,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             e.put("read_attempts",request.graphReadAttempts);e.put("graph_returns",request.graphReturns);
             e.put("retained_read_limit",8);e.put("omitted_read_count",request.graphReadAttempts-reads.size());e.put("reads",reads);
             Map<String,Object> cache=new LinkedHashMap<String,Object>();cache.put("attempt_claimed",request.clientCacheResetClaimed);
+            cache.put("initial_planning_admission",request.clientCacheResetInitialAdmission);
             cache.put("api33_supported",request.clientCacheApiSupported);cache.put("clear_cache_invoked",request.clientCacheResetInvoked);
             cache.put("clear_cache_returned",request.clientCacheResetReturned);cache.put("claimed_elapsed_ms",request.clientCacheResetClaimedAt);
             cache.put("failure_class",request.clientCacheResetFailure);cache.put("started_elapsed_ms",request.clientCacheResetStarted);
@@ -4127,6 +4458,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }catch(StaleObservation unavailable){
                     if(!unavailable.backgroundChildUnavailable)disqualifyNativeSearchSampling(request,"unclassified graph freshness rejection");
                     last=message(unavailable);request.lastSampleRejection=last;
+                    resetInitialNativeSearchClientCacheAfterChildFailure(request,unavailable);
                     resetNativeSearchClientCacheAfterChildFailure(request,unavailable);
                 }
                 if(encoded==null)waitNativeSearchSample(request,SystemClock.elapsedRealtime()+200);

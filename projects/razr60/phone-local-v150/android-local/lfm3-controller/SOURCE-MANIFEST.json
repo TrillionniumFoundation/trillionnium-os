@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "base_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+  "base_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
+  "base_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2672,
+  "complete_source_files": 2677,
   "current_coherent_census": {
     "author_ctrip_cases": 43,
     "author_original_observer_cases": 68,
@@ -107,6 +107,15 @@
     "production_behavior_changed": false,
     "registered_descriptor_operations_synchronized": true,
     "unknown_and_retired_descriptors_still_refused": true
+  },
+  "current_integration_freeze": {
+    "android_compilation_pending": true,
+    "base_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
+    "description": "Integrate LFM8 ordinary 256-token probe, Ctrip form sampling repair and Xiaomi initial client-cache repair.",
+    "device_success_claimed": false,
+    "host_execution_pending": true,
+    "source_freeze_only": true,
+    "source_membership_taken_from_git_index": true
   },
   "current_manifest_map_serialization": {
     "exact_canonical_producer": "tests/native-observation-screenshot-seed/run_host.py:packed",
@@ -2968,6 +2977,16 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
+      "bytes": 1696,
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "bytes": 0,
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "bytes": 3187,
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -3006,16 +3025,6 @@
       "bytes": 1882,
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
-    },
-    {
-      "bytes": 1696,
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "bytes": 0,
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "bytes": 0,
@@ -6078,6 +6087,11 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
+      "bytes": 3066,
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
+    },
+    {
       "bytes": 1257,
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -6186,11 +6200,6 @@
       "bytes": 3372,
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
-    },
-    {
-      "bytes": 3066,
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "bytes": 607,
@@ -6873,9 +6882,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 737610,
+      "bytes": 766815,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "3208f0203a56b446a4d5f54fd26896c6a8a423bc0742e7a42b52458e42a0070c"
+      "sha256": "54743ae29e47f4cc2a655fcafa328d3ae1ebdf5854748e3c2cf37bdada12c241"
     },
     {
       "bytes": 711,
@@ -7118,9 +7127,9 @@
       "sha256": "e684c9a53f25176b687333d49144a33ced4020cb1190b455f59f4c929527552a"
     },
     {
-      "bytes": 4368,
+      "bytes": 5544,
       "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
-      "sha256": "426100c4f31e825c9e0f0c556c8c89d23aa45a40593978cb5fd8d5946a4beeb8"
+      "sha256": "2abe6a4074be6c75514755c741d10792e78e80d914e7ae063e1f43ce470d0992"
     },
     {
       "bytes": 1258,
@@ -8143,6 +8152,16 @@
       "sha256": "9727c15d205c9b1d7f87af534b7ac232049f49698fa59202c2dcfbe35c1dfb66"
     },
     {
+      "bytes": 29532,
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "bytes": 148856,
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
+    },
+    {
       "bytes": 4298,
       "path": "tests/completion/NotesNamedReopenTest.java",
       "sha256": "c4462a30fffbe8ae96208f4c087f431643a71147d02be67c8332694ac7cbbfb6"
@@ -8196,16 +8215,6 @@
       "bytes": 22278,
       "path": "tests/completion/test_notes_completion.py",
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
-    },
-    {
-      "bytes": 29532,
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "bytes": 148856,
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "bytes": 22667,
@@ -8413,6 +8422,46 @@
       "sha256": "6a73c6a91dca0841e4331b84a5e10ac9cf06b2d4bec2a138461c4e010ea3ec0a"
     },
     {
+      "bytes": 1676,
+      "path": "tests/local-model-settings-qwen/README.md",
+      "sha256": "38d391302a5ba38f8a635288bee941fbf0044ce7b07065d711c8f5ba09b2f8ac"
+    },
+    {
+      "bytes": 4714,
+      "path": "tests/local-model-settings-qwen/run_host.py",
+      "sha256": "49b9b9e4da904d13da42d703238bedbdd2d25e1f81cf328c4fb7b6e9a225193b"
+    },
+    {
+      "bytes": 1562,
+      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
+      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
+    },
+    {
+      "bytes": 698,
+      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
+      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
+    },
+    {
+      "bytes": 1927,
+      "path": "tests/local-model-settings-visual/README.md",
+      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
+    },
+    {
+      "bytes": 9165,
+      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
+      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
+    },
+    {
+      "bytes": 47387,
+      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
+      "sha256": "e2b865d416be72e5afa489b35c80cd6aa540bfa1828ad0e61da1df2e19442b41"
+    },
+    {
+      "bytes": 15454,
+      "path": "tests/local-model-settings-visual/run_host.py",
+      "sha256": "71acaef1592ae7a06524652614bceac48657d5b11c24006e58e02c30f6a43fa3"
+    },
+    {
       "bytes": 3794,
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
       "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
@@ -8511,46 +8560,6 @@
       "bytes": 12158,
       "path": "tests/local-model-settings/run_host.py",
       "sha256": "9b9d4c44b18bef99c69543140a1dc7dbde0fb7edec3016b9b2ac4cdacc8eaf6f"
-    },
-    {
-      "bytes": 1676,
-      "path": "tests/local-model-settings-qwen/README.md",
-      "sha256": "38d391302a5ba38f8a635288bee941fbf0044ce7b07065d711c8f5ba09b2f8ac"
-    },
-    {
-      "bytes": 4714,
-      "path": "tests/local-model-settings-qwen/run_host.py",
-      "sha256": "49b9b9e4da904d13da42d703238bedbdd2d25e1f81cf328c4fb7b6e9a225193b"
-    },
-    {
-      "bytes": 1562,
-      "path": "tests/local-model-settings-visual/CASE-CONTRACT.json",
-      "sha256": "f6b3305efd36477afeb9d3f0929469fb60a74ac3ebeda39ab57d0d52392b956e"
-    },
-    {
-      "bytes": 698,
-      "path": "tests/local-model-settings-visual/OBSERVE-CASE-CONTRACT.json",
-      "sha256": "4d55b60e7cff5ea4e0a19ee98045e43fe015a08a8aa751cebc5ea3b905fbb60a"
-    },
-    {
-      "bytes": 1927,
-      "path": "tests/local-model-settings-visual/README.md",
-      "sha256": "3ce5ad224946ea9c23f07073f0aa44207a6ae36eee8097a322c0a933f729fc8e"
-    },
-    {
-      "bytes": 9165,
-      "path": "tests/local-model-settings-visual/VisualSettingsBoundary.template",
-      "sha256": "908d167b0e0565a5d198697055a13649019daac4eb7d4dcf88511094a9d83598"
-    },
-    {
-      "bytes": 47387,
-      "path": "tests/local-model-settings-visual/VisualSettingsHostTest.java",
-      "sha256": "e2b865d416be72e5afa489b35c80cd6aa540bfa1828ad0e61da1df2e19442b41"
-    },
-    {
-      "bytes": 15454,
-      "path": "tests/local-model-settings-visual/run_host.py",
-      "sha256": "71acaef1592ae7a06524652614bceac48657d5b11c24006e58e02c30f6a43fa3"
     },
     {
       "bytes": 3621,
@@ -8676,46 +8685,6 @@
       "bytes": 35514,
       "path": "tests/native-action-integration/run_host.py",
       "sha256": "e6f049e0f15de4180b066fd24c4a5671f08f516c6664c19b17d73d8e77a1e8b2"
-    },
-    {
-      "bytes": 1091,
-      "path": "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
-      "sha256": "4341eca0c3e5f4e81eee05e2a89f7bb1070475a59d5e5ff28c8c70016ec70e08"
-    },
-    {
-      "bytes": 6744,
-      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
-    },
-    {
-      "bytes": 663,
-      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
-      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
-    },
-    {
-      "bytes": 697,
-      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
-      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
-    },
-    {
-      "bytes": 1925,
-      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
-      "sha256": "ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889"
-    },
-    {
-      "bytes": 1506,
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
-      "sha256": "bfc170c4e4a7e623ab7702f9ad0b25f2d3f590709ca8e91e7dca2189533205f4"
-    },
-    {
-      "bytes": 3996,
-      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
-      "sha256": "538ca69c03981e1e29799c1fcaf2d5e1160f20afe2ca5900f0eef03bcef46114"
-    },
-    {
-      "bytes": 566,
-      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
-      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "bytes": 717,
@@ -9121,6 +9090,46 @@
       "bytes": 23472,
       "path": "tests/native-app-routing/run_host.py",
       "sha256": "37c0e9b2c5eda2c8607a04ec990dd926909ed0b19d29c85ca901e59d716ad462"
+    },
+    {
+      "bytes": 1091,
+      "path": "tests/native-app/legacy-boundary/BackgroundAutoTargetResolver.java",
+      "sha256": "4341eca0c3e5f4e81eee05e2a89f7bb1070475a59d5e5ff28c8c70016ec70e08"
+    },
+    {
+      "bytes": 6744,
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "sha256": "3fff6e7e892adca8a9e895a852447f55237124e6545c1fb3aa2c9b047a0e3ddd"
+    },
+    {
+      "bytes": 663,
+      "path": "tests/native-app/legacy-boundary/NativeSearchPlanning.java",
+      "sha256": "f4fe1776af38cfdffc7c79ba753df970f5e6311ad27de99f34c0889c6038369c"
+    },
+    {
+      "bytes": 697,
+      "path": "tests/native-app/legacy-boundary/NativeSearchSession.java",
+      "sha256": "e8b5bd980f286c2a30c2186ba94e4c4044e08e2fd3a77b28def75ffa24655ba2"
+    },
+    {
+      "bytes": 1925,
+      "path": "tests/native-app/legacy-boundary/prepare_search_pure.py",
+      "sha256": "ffc48511fe5bee96cc27853570ab7cde1ddf54f9162de50991afff2501888889"
+    },
+    {
+      "bytes": 1506,
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchPlanning.template",
+      "sha256": "bfc170c4e4a7e623ab7702f9ad0b25f2d3f590709ca8e91e7dca2189533205f4"
+    },
+    {
+      "bytes": 3996,
+      "path": "tests/native-app/legacy-boundary/search-controller/NativeSearchSession.template",
+      "sha256": "538ca69c03981e1e29799c1fcaf2d5e1160f20afe2ca5900f0eef03bcef46114"
+    },
+    {
+      "bytes": 566,
+      "path": "tests/native-app/legacy-boundary/search-pure/NativeAppEvidence.java",
+      "sha256": "c39b93029d9e37b68dcca3ce09c203ea0a5be825a7e96e2b5a3b278a979940f6"
     },
     {
       "bytes": 33714,
@@ -9543,6 +9552,21 @@
       "sha256": "f84b6fa7b73e13010ebc3f00c9caeb67c8642d9420d00119949ef351adbe163b"
     },
     {
+      "bytes": 3926,
+      "path": "tests/native-ctrip-sampling-form/README.md",
+      "sha256": "a05d82e9c042f7f23b6c63b89334b7003ef2ff4848b3cb4c9cbbbb11e4b21b70"
+    },
+    {
+      "bytes": 19356,
+      "path": "tests/native-ctrip-sampling-form/SamplingFormCases.fragment",
+      "sha256": "c736143f7f7b124e285fe49ddf490d2921c4cbbc17aab15bdd0648a02bbb202f"
+    },
+    {
+      "bytes": 10609,
+      "path": "tests/native-ctrip-sampling-form/run_host.py",
+      "sha256": "1deef174837ed2d7af2988a483c73aab1582c96f04a62b83090a7c2d4bcdf1e8"
+    },
+    {
       "bytes": 12928,
       "path": "tests/native-ctrip-saved-graph/SavedGraphCases.fragment",
       "sha256": "4c32f2f99fc7610c9b0b9f307f2f0f5e14b6d9fb54f332f796972fb6f2230ed8"
@@ -9913,6 +9937,16 @@
       "sha256": "e007ff4f1183b5b2bf7b9b3ec9f47cd0965aa11223c277ad312dc530d550c626"
     },
     {
+      "bytes": 27926,
+      "path": "tests/native-search-producer/InitialClientCacheCases.fragment",
+      "sha256": "a419fa36decee38ce99fd63b77d9e2162f4ae9e73b833053493e41975fcc77b3"
+    },
+    {
+      "bytes": 2868,
+      "path": "tests/native-search-producer/InitialClientCacheExpectedCases.json",
+      "sha256": "67c12f90dbd2ab68a02437216af8096808c2ead809fb897ef0a332f1c41fe9c1"
+    },
+    {
       "bytes": 1382,
       "path": "tests/native-search-producer/LoadingControllerHost.template",
       "sha256": "08aeb77c0b982439f52cd899a532aff0d0c227e74d076cde1d0a44d907acc552"
@@ -9948,14 +9982,14 @@
       "sha256": "383e1663ebb75d87e7624b3dc5a40bf6e89e31e6916444ec8199fff5f25f946c"
     },
     {
-      "bytes": 32216,
+      "bytes": 32307,
       "path": "tests/native-search-producer/PostBackClientCacheCases.fragment",
-      "sha256": "35af9a566f51b6471c241cfd2ec9eefe9d34781178f1569e977d86451897a77f"
+      "sha256": "e25ff08d12723fc2a4c95eb3f3113ae2d2e8a5da2727b06ad807130de91b4fcf"
     },
     {
-      "bytes": 2289,
+      "bytes": 2313,
       "path": "tests/native-search-producer/PostBackClientCacheExpectedCases.json",
-      "sha256": "70f2c0102c0aa8a0bc5ea9ad09aea2259222cebb1500b8705bf0fef2b1f543e1"
+      "sha256": "1f7489a4f31e674ef73a9ee810cfcb60c5650ec413d3ef1679034fa8efd1606f"
     },
     {
       "bytes": 76775,
@@ -10008,9 +10042,9 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 26730,
+      "bytes": 27417,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "7fdee87ea03fa4a21a5a11ede044784ad0911141d04e7640b6310fdd3714870b"
+      "sha256": "ac16f550f40a7572302694b27ff93a764a8b5809b961346a2c738aa6af0ff717"
     },
     {
       "bytes": 14431,
@@ -10443,21 +10477,6 @@
       "sha256": "f0707ab4cf37fc0fab8707ca9070ce7913c57f3c9b50ba2392b3917ddc3fb2a2"
     },
     {
-      "bytes": 34653,
-      "path": "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
-      "sha256": "416ff522f52b14898d44e3986472b9a658216ded42008bf4d8275c20980419c3"
-    },
-    {
-      "bytes": 703748,
-      "path": "tests/native-xiaomi-search-input/real-censuses.json",
-      "sha256": "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
-    },
-    {
-      "bytes": 6602,
-      "path": "tests/native-xiaomi-search-input/run_host.py",
-      "sha256": "29213760b3435e74460b3a98b5427cb1bce5c187f35dda81ab2f9fba0e0e82ff"
-    },
-    {
       "bytes": 12952,
       "path": "tests/native-xiaomi-search-input-bridge/InputActionCases.fragment",
       "sha256": "e2129e54d877a2795d131fb001a8096fbb91e54dc366e5999b8470a55372d741"
@@ -10476,6 +10495,21 @@
       "bytes": 5828,
       "path": "tests/native-xiaomi-search-input-bridge/run_observer_host.py",
       "sha256": "bd27f7d4ac7b9d3f07190198151e30b93ffec360fd0a4418600034d4b387581a"
+    },
+    {
+      "bytes": 34653,
+      "path": "tests/native-xiaomi-search-input/NativeXiaomiSearchInputHostTest.java",
+      "sha256": "416ff522f52b14898d44e3986472b9a658216ded42008bf4d8275c20980419c3"
+    },
+    {
+      "bytes": 703748,
+      "path": "tests/native-xiaomi-search-input/real-censuses.json",
+      "sha256": "a7680b4a53cc702c98da44439543984a933e67e0193e774df23ff07a8c569644"
+    },
+    {
+      "bytes": 6602,
+      "path": "tests/native-xiaomi-search-input/run_host.py",
+      "sha256": "29213760b3435e74460b3a98b5427cb1bce5c187f35dda81ab2f9fba0e0e82ff"
     },
     {
       "bytes": 23264,
@@ -11558,36 +11592,6 @@
       "sha256": "d8696b940d62d69be2afaaa7c18b87e59c1f55e6cd06d5fd76dd5b208d443f9b"
     },
     {
-      "bytes": 2271,
-      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
-      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
-    },
-    {
-      "bytes": 12421,
-      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
-      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
-    },
-    {
-      "bytes": 7006,
-      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
-      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
-    },
-    {
-      "bytes": 326,
-      "path": "tests/profile-recovery/RecoveryProofFixture.java",
-      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
-    },
-    {
-      "bytes": 3372,
-      "path": "tests/profile-recovery/run_host.py",
-      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
-    },
-    {
-      "bytes": 5291,
-      "path": "tests/profile-recovery/run_session_host.py",
-      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
-    },
-    {
       "bytes": 7075,
       "path": "tests/profile-recovery-census/BusinessRecoveryCensusHostTest.java",
       "sha256": "010f083be0e1a17ae0a9f8894ae248b9dfd2565d8499338f1d6ebca5e00b076d"
@@ -11641,6 +11645,36 @@
       "bytes": 11077,
       "path": "tests/profile-recovery-platform/run_fd_host.py",
       "sha256": "53c59e8588c358fed5847e82ced456255c8c273433bfb848d1847780d389a31a"
+    },
+    {
+      "bytes": 2271,
+      "path": "tests/profile-recovery/FakeRecoveryProcess.java",
+      "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
+    },
+    {
+      "bytes": 12421,
+      "path": "tests/profile-recovery/ProfileRecoveryHostTest.java",
+      "sha256": "c4a79be65b4f38114c041e2c2a1cddb219532f0c09e9608cc78b83acb984d223"
+    },
+    {
+      "bytes": 7006,
+      "path": "tests/profile-recovery/ProfileRecoverySessionHostTest.java",
+      "sha256": "4cc3ee20f162699034bec5224c97c6dd43b03ca5307046c85b1e535001c3030f"
+    },
+    {
+      "bytes": 326,
+      "path": "tests/profile-recovery/RecoveryProofFixture.java",
+      "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
+    },
+    {
+      "bytes": 3372,
+      "path": "tests/profile-recovery/run_host.py",
+      "sha256": "0c0aa3f013ebc5be7ba642bcf650e6651c82bd0c86efed8f70003f48a9975b2e"
+    },
+    {
+      "bytes": 5291,
+      "path": "tests/profile-recovery/run_session_host.py",
+      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
     },
     {
       "bytes": 18748,
@@ -13778,24 +13812,27 @@
   },
   "host_validation_at_preparation": {
     "prior_preparation_metadata": {
-      "author_cases_are_not_published_same_source_qualification": true,
-      "author_ctrip_qualification": {
-        "bytes": 34569,
-        "mode": 420,
-        "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
-        "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+      "prior_preparation_metadata": {
+        "author_cases_are_not_published_same_source_qualification": true,
+        "author_ctrip_qualification": {
+          "bytes": 34569,
+          "mode": 420,
+          "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
+          "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+        },
+        "author_xiaomi_gate": {
+          "bytes": 1886513,
+          "mode": 384,
+          "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
+          "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
+        },
+        "current_android_build_qualified": false,
+        "current_full_host_suite_completed": false,
+        "phone_qualified": false
       },
-      "author_xiaomi_gate": {
-        "bytes": 1886513,
-        "mode": 384,
-        "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
-        "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
-      },
-      "current_android_build_qualified": false,
-      "current_full_host_suite_completed": false,
-      "phone_qualified": false
+      "status": "PENDING_EXECUTION_FOR_ORDINARY_TEXT_BUDGET_PATCH"
     },
-    "status": "PENDING_EXECUTION_FOR_ORDINARY_TEXT_BUDGET_PATCH"
+    "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
   },
   "inherited_source_behavior_metadata": {
     "9f452_source_delta": {
@@ -14081,13 +14118,13 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "5d872bde94b2e4d35e4ba4f4a6858b6e574c36133d6a02a943f000498bae7f71",
+  "production_input_map_sha256": "11e126b05705e3e4d608a9689205969e602e188db3204ca95f39561cd108820d",
   "production_qualification_base_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only successor of the preserved 9f452 qualification failure: explicit legacy refusal for the managed-Ctrip-only helper, exact full-template proof inverse, and removal of one duplicate diagnostic-only provider type. All 397 production inputs, original cases, deadlines and action guards remain byte-identical to 9f452; installed predecessor and qualification basis remain bb2708.",
-  "source_parent_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
-  "source_parent_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
-  "source_snapshot_predecessor_manifest_sha256": "5c6fa69e63412fdf19d692cf1533394de10506245ef428db0a3f49b0a8a32812",
+  "source_parent_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
+  "source_parent_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
+  "source_snapshot_predecessor_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }
