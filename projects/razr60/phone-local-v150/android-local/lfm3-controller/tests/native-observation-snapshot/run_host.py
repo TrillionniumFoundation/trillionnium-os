@@ -18,7 +18,7 @@ def load(path,name):
 def once(text,before,after):
     if text.count(before)!=1:raise RuntimeError('nonunique fixture boundary '+before[:100])
     return text.replace(before,after,1)
-def generate(source,out,h):
+def generate(source,out,h,sampling_ports=True):
     service=(source/PKG/JAVA[0]).read_text();phone=(source/PKG/JAVA[1]).read_text();evidence=(source/PKG/'NativeAppEvidence.java').read_text()
     parts={
       'observation_callback':h.section(service,'    public interface ObservationCallback','    public interface Cancellation'),
@@ -91,7 +91,7 @@ def generate(source,out,h):
         for required in ('selectedRoot(', 'isVisibleToUser()', 'readWindowMetadata(', 'readNativeActionWindows(', 'getRealMetrics(', 'requireTaskAuthorization(', 'root.recycle()'):
             if required not in adapter:raise RuntimeError('identity IO contract missing '+required)
         parts['identity_android_adapter_pinned_not_executed']=adapter
-    h.write(out/'ObserverPipelineHost.java',template)
+    h.write(out/'ObserverPipelineHost.java',template,sampling_ports=sampling_ports)
     return {'schema':'hepta.native-observation-snapshot-extraction.v1','feature_present':feature,
         'production_observer_bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
         'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,

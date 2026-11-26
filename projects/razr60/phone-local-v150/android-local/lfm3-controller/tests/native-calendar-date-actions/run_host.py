@@ -73,6 +73,15 @@ def main():
    '    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,',
    '    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,']:
    ha.append(member('HeptaAccessibilityService.java',H,anchor))
+  # Retain the real Ctrip sampling dependencies reached by the shared request,
+  # product and persistence methods; existing calendar refusal ports stay intact.
+  for anchor in [
+   '    private static Map<String,Object> ctripSampleKey(',
+   '    private static boolean sameObservationWatermark(',
+   '    private static void recordCtripSampling(',
+   '    private boolean ctripSamplingProofCurrent(',
+   '    private static Map<String,Object> ctripSamplingSummary(']:
+   ha.append(member('HeptaAccessibilityService.java',H,anchor))
   # Preserve the exact already-selected generic-session Service refusal ports
   # when this calendar fixture replaces that enclosing host class.
   inherited_service=selected['org.trillionnium.hepta.local.HeptaAccessibilityService']

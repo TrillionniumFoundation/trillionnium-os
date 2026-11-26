@@ -73,7 +73,36 @@ def reverse_input_history_helper(path, raw):
 # Exact PNG type/compile closure inverse; historical proof only, never the compiled source.
 PNG_CLOSURE_INVERSES = {'tests/observation-pipeline/ObserverPipelineHost.template': {'current_sha256': '7f78539e600115f929a743b0e36e4399227faaae2701af64ba2482c122634b6f', 'prior_sha256': '1c6df78b51e766282001d5f4b0233efd31a82dc3f04b1182072eaa769aa6a7d2', 'operations': [['        int getWidth(){return 1080;}int getHeight(){return 2400;}\n', '        // Unknown pixel color metadata keeps all legacy IO/scheduling fixtures on the original encoder.\n        android.graphics.ColorSpace getColorSpace(){return null;}\n        Config getConfig(){return Config.ARGB_8888;}\n        boolean isMutable(){return false;}\n        boolean hasGainmap(){return false;}\n        int getGenerationId(){return 1;}\n        void getPixels(int[] out,int offset,int stride,int x,int y,int width,int height){\n            throw new AssertionError("legacy fixture has no qualified sRGB pixel plane");\n        }\n        int getWidth(){return 1080;}int getHeight(){return 2400;}\n']]}, 'tests/observation-diagnostics/run_host.py': {'current_sha256': '0c0610d43854b188e0da3861009a4efda978cc27405b9171d107ee523ef6827f', 'prior_sha256': 'd70aee4bdb21724d9a0c88bca02b5653bd60b02cfe9931be964b085f44bb3d0c', 'operations': [['def sha(raw):', "def png_sources(source):\n    # Exact production encoder plus explicit Android metadata type ports; no graph/owner authority.\n    return [source/PKG/'ObservationPngEncoder.java',\n            source/'tests/observation-png/stubs/android/graphics/ColorSpace.java',\n            source/'tests/observation-png/stubs/android/os/Build.java']\n\ndef sha(raw):"], ['    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n', '    paths += png_sources(source)\n    before=[meta(x) for x in paths];tools_before=[meta(x) for x in tools]\n'], ["        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += png_sources(source)\n        command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}, 'tests/native-observation-events/run_host.py': {'current_sha256': 'd47a7dc865b678a5cd5c4d49c45635886ae0e49da0b90749bc6e7401d9536a27', 'prior_sha256': '70b3abf2899f84f59ae09b2324c7b3581551c426005ecb6d629a859659984dc2', 'operations': [['    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n', '    inputs += h.png_sources(source)\n    before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]\n'], ["        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n", "        sources += h.png_sources(source)\n        argv=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))\n"]]}}
 
+def reverse_sampling_legacy_io(path, raw):
+    if path not in ('tests/observation-diagnostics/run_host.py','tests/native-observation-events/run_host.py'):
+        return raw, None
+    spec_path = Path(__file__).resolve().parents[1] / 'native-ctrip-sampling-form/legacy-port-predecessor.json'
+    encoded_spec = spec_path.read_bytes()
+    need(sha(encoded_spec) == 'c2652733b1bf1b01062d1459ff4b7edb5b4621b1fcbc7d0b9b8ddb2b32ffb462', 'reviewed exact legacy IO inverse changed')
+    spec = json.loads(encoded_spec)['files'][path]
+    current = sha(raw)
+    if current == spec['predecessor_sha256']:
+        return raw, None
+    need(current == spec['current_sha256'] and len(raw) == spec['current_bytes'],
+         'exact reviewed sampling IO helper required')
+    restored = raw
+    for operation in spec['operations']:
+        revised, prior = operation['current'].encode(), operation['predecessor'].encode()
+        need(restored.count(revised) == 1, 'unique reviewed legacy sampling IO extension')
+        restored = restored.replace(revised, prior, 1)
+    need(len(restored) == spec['predecessor_bytes'] and sha(restored) == spec['predecessor_sha256'],
+         'entire pre-sampling helper and original assertions must be restored')
+    return restored, {'actual_input_sha256':current, 'predecessor_sha256':sha(restored),
+                      'spec_sha256':sha(encoded_spec), 'proof_copy_only':True,
+                      'production_bodies_replaced':False, 'old_assertions_removed':False,
+                      'actual_compilation_uses_current_helper':True}
+
+
 def reverse_png_closure(path, raw):
+    observed_input_sha256 = sha(raw)
+    sampling_io_inverse = None
+    if path == 'tests/observation-diagnostics/run_host.py':
+        raw, sampling_io_inverse = reverse_sampling_legacy_io(path, raw)
     actual_current_sha256 = sha(raw)
     child_identity_template_inverse = None
     diagnostic_template_inverse = None
@@ -136,7 +165,8 @@ def reverse_png_closure(path, raw):
         need(restored.count(current)==1,'unique exact PNG closure inverse required: '+path)
         restored=restored.replace(current,prior,1)
     need(sha(restored)==spec['prior_sha256'],'complete pre-PNG closure bytes must be restored: '+path)
-    return restored,{'current_sha256':actual_current_sha256,'prior_sha256':sha(restored),
+    return restored,{'current_sha256':observed_input_sha256,'prior_sha256':sha(restored),
+                     'sampling_legacy_io_inverse':sampling_io_inverse,
                      'operations':len(spec['operations']),'proof_copy_only':True,
                      'compile_dependency_inverse':dependency_inverse,
                      'child_identity_template_inverse':child_identity_template_inverse,
@@ -150,6 +180,8 @@ POSTCAPTURE_CASE_NAMES = ['post_capture_settle_no_new_read_at_11277', 'post_capt
 LEGACY_EVENT_CASE_NAMES_SHA256 = '92278b7f6dfa081f4eb83cd02aec19841802387dc71a67242109a25e5e2b51e5'
 
 def reverse_postcapture_event_helper(raw):
+    observed_input_sha256 = sha(raw)
+    raw, sampling_io_inverse = reverse_sampling_legacy_io('tests/native-observation-events/run_host.py', raw)
     actual_current_sha256 = sha(raw)
     # Current compilation uses the real form-summary dependency closure.
     # Reverse only its exact declaration in the historical proof copy.
@@ -176,7 +208,8 @@ def reverse_postcapture_event_helper(raw):
         need(restored.count(current) == 1, 'unique exact postcapture test addition required')
         restored = restored.replace(current, prior, 1)
     need(sha(restored) == spec['prior_sha256'], 'complete pre-postcapture event runner must be restored')
-    return restored, {'actual_current_sha256': actual_current_sha256, 'whole_prior_sha256': sha(restored),
+    return restored, {'actual_current_sha256': observed_input_sha256, 'whole_prior_sha256': sha(restored),
+                      'sampling_legacy_io_inverse': sampling_io_inverse,
                       'form_summary_compile_dependency_inverse': dependency_inverse,
                       'inverse_operation_count': len(spec['operations']), 'proof_copy_only': True,
                       'actual_compilation_uses_unmodified_current_helper': True}
@@ -489,7 +522,7 @@ def main():
         result['tools_before'] = tool_before
         generated = output / 'generated'
         generated.mkdir()
-        extraction = events.generate(source, generated, helper)
+        extraction = events.generate(source, generated, helper, sampling_ports=False)
         extraction = events.add_saved_graph_seed_cases(source, generated, helper, extraction)
         path = generated / 'ObserverPipelineHost.java'
         original = path.read_text()

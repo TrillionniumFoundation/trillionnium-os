@@ -116,6 +116,7 @@ def prepare(source,out):
         source/'tests/native-ctrip-child-identity/protected_fixture.py',
         source/'tests/native-ctrip-child-identity/run_host.py',
         source/'tests/native-ctrip-form-observation/run_observer_host.py',
+        source/'tests/native-ctrip-sampling-form/protected_sampling.py',
         source/'tests/observation-diagnostics/run_host.py',
         source/'tests/native-ctrip-form-observation/form-region-nodes.json',
         source/TEST/'run_host.py',source/TEST/'CtripCoherentHostTest.java',source/TEST/'CtripCoherentCases.fragment',
@@ -135,13 +136,22 @@ def main():
     jar=a.json_jar.resolve();jdk=a.java_home.resolve();pair=a.actual_pair.resolve()
     pair_before=meta(pair);need((pair_before['bytes'],pair_before['sha256'])==(a.actual_pair_bytes,a.actual_pair_sha256),'exact externally pinned complete actual pair')
     need((jar.stat().st_size,sha(jar.read_bytes()))==(78332,'3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'),'original JSON tool')
-    for relative,expected in PROTECTED.items():need(sha((source/relative).read_bytes())==expected,'unchanged complete original rule/legacy case file '+relative)
+    sampling_helper=source/'tests/native-ctrip-sampling-form/protected_sampling.py'
+    need(sha(sampling_helper.read_bytes())=='6451dc424492f8efb146e5c2ec220fd0042e63ef77de087c2c41f7462da1d43d','exact reviewed sampling Gate inverse helper')
+    sampling=module(sampling_helper,'coherent_sampling_gate_proof');sampling_gate_proof=None
+    for relative,expected in PROTECTED.items():
+        current=(source/relative).read_bytes();proof=current
+        if relative==str(PKG/'ObservationStabilityGate.java'):
+            proof,changed=sampling.gate_predecessor(current)
+            sampling_gate_proof={'current':meta(source/relative),'predecessor_sha256':sha(proof),'reviewed_inverse_verified':changed,'proof_copy_only':True,'helper':meta(sampling_helper)}
+        need(sha(proof)==expected,'unchanged complete original rule/legacy case file '+relative)
     tools=[jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar]
     before=inventory(source);tool_before=[meta(p) for p in tools]
     save(out/'SOURCE-INVENTORY-BEFORE.json',before)
     report={'schema':'hepta.ctrip-coherent-census-host.v1','all_pass':False,'source_root':str(source),
         'source_inventory_before':meta(out/'SOURCE-INVENTORY-BEFORE.json'),'tools_before':tool_before,
         'private_pair':pair_before,'stages':[],'phone_operations':0,
+        'sampling_gate_proof':sampling_gate_proof,
         'historical_event_watermarks_or_capture_clock_reconstructed':False,'android_bfs_execution':False,
         'actual_75395_failure_predicate_reconstructed':False,'business_completion_claimed':False,
         'declared_new_cases':43,'declared_legacy_observer_cases':68,'legacy_child_41_executed':False}

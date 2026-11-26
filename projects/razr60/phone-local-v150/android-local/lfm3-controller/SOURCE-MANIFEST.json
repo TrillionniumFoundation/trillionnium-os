@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
-  "base_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
+  "base_head": "a02aa4817c784a045b844f805e70adbcc5507dc8",
+  "base_manifest_sha256": "d9ed2ffb69b9e695dda3885d7ea702a51e8f66961ccab902e40d4f5cf8446368",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2677,
+  "complete_source_files": 2679,
   "current_coherent_census": {
     "author_ctrip_cases": 43,
     "author_original_observer_cases": 68,
@@ -110,8 +110,8 @@
   },
   "current_integration_freeze": {
     "android_compilation_pending": true,
-    "base_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
-    "description": "Integrate LFM8 ordinary 256-token probe, Ctrip form sampling repair and Xiaomi initial client-cache repair.",
+    "base_head": "a02aa4817c784a045b844f805e70adbcc5507dc8",
+    "description": "Align legacy host fixtures with scoped Ctrip sampling while preserving original assertions and production bytes.",
     "device_success_claimed": false,
     "host_execution_pending": true,
     "source_freeze_only": true,
@@ -9192,9 +9192,9 @@
       "sha256": "2d6f71ebd6b93bbc348ef18c0b9fb7c78e40c659540de25319d555ca6cfe59fe"
     },
     {
-      "bytes": 38278,
+      "bytes": 39174,
       "path": "tests/native-ax-observation/AxPipelineCases.fragment",
-      "sha256": "ea45ff43e8430f1ce07ef57c1819ee2feb0a0eccca6a04336f6c483af4d3c1d5"
+      "sha256": "3ad77666eb7273e1b5d1efa4aa6a54b83a9f49a1ebd6c93a5122d3520b2471f9"
     },
     {
       "bytes": 18744,
@@ -9202,9 +9202,9 @@
       "sha256": "857385c38cc55ffbf923381130903fb323e21d3e3329282d2dc006c7f4b52f0e"
     },
     {
-      "bytes": 13686,
+      "bytes": 13597,
       "path": "tests/native-ax-observation/run_host.py",
-      "sha256": "612f2cb7c231dd6a6db9f0138a621740b5f0575d9f7e3cc047fa48aa9bde149c"
+      "sha256": "c218e7626ff31d7f17affb77966fdf9ed14270d4a3ebbe0200b5f746dce45767"
     },
     {
       "bytes": 15114,
@@ -9227,9 +9227,9 @@
       "sha256": "b31fc44038c3248992852dcff27be984eb95fa7d6deae951046c5b3d7f9ef5e2"
     },
     {
-      "bytes": 25352,
+      "bytes": 25885,
       "path": "tests/native-calendar-date-actions/run_host.py",
-      "sha256": "c5a2d3401a478a5ae1600e1f853f1b9107bf19df545a63f3978d5b2b551ab8a8"
+      "sha256": "b7fac323c8422914ac5571f0ac6c96e4e75a67a7c264f52354794f414d967a26"
     },
     {
       "bytes": 3371,
@@ -9247,9 +9247,9 @@
       "sha256": "f6ab1b948cfd654f6902eed978b0acba1232187b3efe8ccaa7a31f7470254937"
     },
     {
-      "bytes": 21497,
+      "bytes": 22030,
       "path": "tests/native-calendar-date-fresh/run_host.py",
-      "sha256": "780c5a42f16a56298fa0fd54112aef50a259f8ad6b869a9bf0206c64afbe717a"
+      "sha256": "0eb637f107118fde76e24d15ce8a6efd902b95b00a6e7d863a8af827ffc83973"
     },
     {
       "bytes": 27848,
@@ -9432,9 +9432,9 @@
       "sha256": "cd21415ddb0318c5eca41360ce39e1801d8d88ec740fa79f03d72378262ff86d"
     },
     {
-      "bytes": 13275,
+      "bytes": 14091,
       "path": "tests/native-ctrip-coherent-census/run_host.py",
-      "sha256": "061957fa5adfba3e227535b60fc07268f3d6101a5e3328d616dbfcaece444c67"
+      "sha256": "0af93eab8a2e453b4768de03e3383c84a07fb8ac22d0780dae6d5360dd31a83f"
     },
     {
       "bytes": 10293,
@@ -9472,9 +9472,9 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 79799,
+      "bytes": 81679,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "dee521e2df36806f2dd91e57f1d26408c4f9def9740ffa2a43294a6330faffdb"
+      "sha256": "b87d4fd08fe96f0af392122800ab11084f7dec861d39844cb575f5c278413e02"
     },
     {
       "bytes": 3535,
@@ -9560,6 +9560,16 @@
       "bytes": 19356,
       "path": "tests/native-ctrip-sampling-form/SamplingFormCases.fragment",
       "sha256": "c736143f7f7b124e285fe49ddf490d2921c4cbbc17aab15bdd0648a02bbb202f"
+    },
+    {
+      "bytes": 7931,
+      "path": "tests/native-ctrip-sampling-form/legacy-port-predecessor.json",
+      "sha256": "c2652733b1bf1b01062d1459ff4b7edb5b4621b1fcbc7d0b9b8ddb2b32ffb462"
+    },
+    {
+      "bytes": 11207,
+      "path": "tests/native-ctrip-sampling-form/protected_sampling.py",
+      "sha256": "6451dc424492f8efb146e5c2ec220fd0042e63ef77de087c2c41f7462da1d43d"
     },
     {
       "bytes": 10609,
@@ -9677,9 +9687,9 @@
       "sha256": "2f427a6221011b52d3781201f6b98652600d3d7a09e8c7fb1fc9bc1efe6fb446"
     },
     {
-      "bytes": 19974,
+      "bytes": 20175,
       "path": "tests/native-observation-events/run_host.py",
-      "sha256": "d21f56ea528f1165fdeff87ecfef732cfd803d8cbb8e8154034f0c9eca8ededd"
+      "sha256": "1722ca7f5ae7d3ab7f5cfeb9b89504188336907722b89a449154b619473730ad"
     },
     {
       "bytes": 90012,
@@ -9717,9 +9727,9 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 68058,
+      "bytes": 70136,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "c42928f485d9cda79d3d200447fb1dbc493a50f64b2bb507e154cf4cc6e9316d"
+      "sha256": "1bd2f89b2294421a886d3b41d766e538248db134677170e20722153a27d0e7f6"
     },
     {
       "bytes": 7722,
@@ -9737,9 +9747,9 @@
       "sha256": "8409606030bd29e26664e2bde1f5c407e1b91bc4f0a711f109b30944ec7e1eb0"
     },
     {
-      "bytes": 14865,
+      "bytes": 14915,
       "path": "tests/native-observation-snapshot/run_host.py",
-      "sha256": "b9ce923f3c00f84717c7003334d2a02f25c19765637e440d01f60a8cea193e9a"
+      "sha256": "40ce4a58b0d7e7efc7b6b288b7f27f84ac45fecb2aaa302aebfe48b4fdb40bc4"
     },
     {
       "bytes": 23264,
@@ -10992,9 +11002,9 @@
       "sha256": "743e0b8ab9eb900f1349b9b883b5083e45f0d97374242bae2ee196b0d86bfc52"
     },
     {
-      "bytes": 30763,
+      "bytes": 36323,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07"
+      "sha256": "90c4aae9751f22c1cb3241aa87e5803f9cf9a0f3f02757c7c815a1f5a8629c5c"
     },
     {
       "bytes": 13092,
@@ -11027,9 +11037,9 @@
       "sha256": "fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e"
     },
     {
-      "bytes": 9529,
+      "bytes": 10344,
       "path": "tests/observation-pipeline/run_host_tests.py",
-      "sha256": "3366405a85e3d26e1dd016274357319d54f36a1409428430e162841fe4c1d280"
+      "sha256": "05dacea933d284ead39eb73fd01f1edaa9009f0d96d3bf208d37b81fe209f8be"
     },
     {
       "bytes": 685,
@@ -13813,24 +13823,27 @@
   "host_validation_at_preparation": {
     "prior_preparation_metadata": {
       "prior_preparation_metadata": {
-        "author_cases_are_not_published_same_source_qualification": true,
-        "author_ctrip_qualification": {
-          "bytes": 34569,
-          "mode": 420,
-          "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
-          "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+        "prior_preparation_metadata": {
+          "author_cases_are_not_published_same_source_qualification": true,
+          "author_ctrip_qualification": {
+            "bytes": 34569,
+            "mode": 420,
+            "path": "/home/alex/hepta-razr-ctrip-75395-coherent-census-tests-20261125-56dad1-prior/HOST-QUALIFIED.json",
+            "sha256": "b6960e2203732af292d79f8b3031547154837cd8684ddb232117add86e1b9cde"
+          },
+          "author_xiaomi_gate": {
+            "bytes": 1886513,
+            "mode": 384,
+            "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
+            "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
+          },
+          "current_android_build_qualified": false,
+          "current_full_host_suite_completed": false,
+          "phone_qualified": false
         },
-        "author_xiaomi_gate": {
-          "bytes": 1886513,
-          "mode": 384,
-          "path": "/home/alex/hepta-razr-xiaomi-captured-label-tests-20261125-56dad1-vd/validation-producer-r2/RESULT.json",
-          "sha256": "eed2cdd6b25ceab79effa2824be5049f312035682a6db4fe75758dcfd85f5170"
-        },
-        "current_android_build_qualified": false,
-        "current_full_host_suite_completed": false,
-        "phone_qualified": false
+        "status": "PENDING_EXECUTION_FOR_ORDINARY_TEXT_BUDGET_PATCH"
       },
-      "status": "PENDING_EXECUTION_FOR_ORDINARY_TEXT_BUDGET_PATCH"
+      "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
     },
     "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
   },
@@ -14122,9 +14135,9 @@
   "production_qualification_base_head": "bb2708e5bbd8cb5f7c4813075a885e626c75423c",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only successor of the preserved 9f452 qualification failure: explicit legacy refusal for the managed-Ctrip-only helper, exact full-template proof inverse, and removal of one duplicate diagnostic-only provider type. All 397 production inputs, original cases, deadlines and action guards remain byte-identical to 9f452; installed predecessor and qualification basis remain bb2708.",
-  "source_parent_head": "f12813efc1eb1a93ad153b2293beddc75fac1a51",
-  "source_parent_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
-  "source_snapshot_predecessor_manifest_sha256": "67f6fb5e1eff456c3490b047566177d3fc2baca77314f1d7468f3cfb174805d8",
+  "source_parent_head": "a02aa4817c784a045b844f805e70adbcc5507dc8",
+  "source_parent_manifest_sha256": "d9ed2ffb69b9e695dda3885d7ea702a51e8f66961ccab902e40d4f5cf8446368",
+  "source_snapshot_predecessor_manifest_sha256": "d9ed2ffb69b9e695dda3885d7ea702a51e8f66961ccab902e40d4f5cf8446368",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

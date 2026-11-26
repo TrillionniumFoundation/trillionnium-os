@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import runpy
 import subprocess
 import time
 
@@ -59,6 +60,10 @@ template_path=Path(__file__).with_name('ObserverPipelineHost.template')
 template=template_path.read_text()
 for key,value in compiled_parts.items():template=template.replace('{{'+key+'}}',value)
 if '{{' in template:raise RuntimeError('unfilled fixture')
+sampling_helper_path=Path(__file__).resolve().parents[1]/'observation-diagnostics/run_host.py'
+sampling_helper_sha256=hashlib.sha256(sampling_helper_path.read_bytes()).hexdigest()
+sampling_helper=runpy.run_path(str(sampling_helper_path))
+template,sampling_boundary=sampling_helper['ctrip_sampling_legacy_ports'](template)
 fixture=out/'ObserverPipelineHost.java';fixture.write_text(template)
 record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
         'template_sha256':hashlib.sha256(template_path.read_bytes()).hexdigest(),
@@ -72,6 +77,8 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
         'extracted':{key:hashlib.sha256(value.encode()).hexdigest() for key,value in parts.items()},'phone_operations':False,'android_runtime':False,'native_inference':False,'production_methods_executed':['acquireTask','recoveryControllerIdle','observe','sampleObservation','acceptSample','watchObservation','captureObservation','watchCapture','processScreenshot','acceptScreenshot','failObservation','retryObservation','copyScreenshot'],'boundary':'Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.'}
 record['calendar_legacy_boundary']=calendar_boundary
+record['ctrip_sampling_legacy_boundary']=sampling_boundary
+record['ctrip_sampling_helper']={'path':str(sampling_helper_path),'sha256':sampling_helper_sha256}
 png_sources=[root/'src/org/trillionnium/hepta/local/ObservationPngEncoder.java',
              root/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
              root/'tests/observation-png/stubs/android/os/Build.java']
@@ -93,6 +100,10 @@ for name,command in commands:
     record['stages'].append({'name':name,'exit_code':result.returncode,'elapsed_s':time.monotonic()-begin})
     if result.returncode:
         record['status']='failed';(out/'RESULT.json').write_text(json.dumps(record,indent=2)+'\n');print(result.stdout);print(result.stderr);raise SystemExit(result.returncode)
+if hashlib.sha256(sampling_helper_path.read_bytes()).hexdigest()!=sampling_helper_sha256:
+    record['status']='failed';record['error']='shared sampling helper changed during execution'
+    (out/'RESULT.json').write_text(json.dumps(record,indent=2)+'\n');raise SystemExit(1)
+record['ctrip_sampling_helper_unchanged']=True
 record['status']='passed';record['compiler_contract']='Java 8 API release' if a.release8 else 'Java 8 syntax/class target only; strict release gate remains pending'
 record['passed_cases']=sum(line.startswith('PASS ') for line in (out/'tests.stdout').read_text().splitlines())
 (out/'RESULT.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2))

@@ -99,6 +99,9 @@ def generate(source,output,h):
     phone=(source/PKG/'PhoneObservation.java').read_text()
     page=(source/PKG/'NativeCtripFlightPage.java').read_text()
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
+    sampling_fixture=source/'tests/native-ctrip-sampling-form/protected_sampling.py'
+    if h.sha(sampling_fixture.read_bytes())!='6451dc424492f8efb146e5c2ec220fd0042e63ef77de087c2c41f7462da1d43d':raise RuntimeError('exact reviewed sampling inverse helper required')
+    sampling_form=runpy.run_path(str(sampling_fixture))
     child_fixture=source/'tests/native-ctrip-child-identity/protected_fixture.py'
     child_proof=runpy.run_path(str(child_fixture)) if child_fixture.is_file() else None
     proof_template=child_proof['template_predecessor'](template.encode()).decode() if child_proof else template
@@ -177,6 +180,11 @@ def generate(source,output,h):
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
         raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        sampling_implementation=None
+        if anchor==sampling_form['ACCEPT_ANCHOR'] and sampling_form['ACCEPT_IMPLEMENTATION_ANCHOR'] in service:
+            sampling_implementation=h.body(service,sampling_form['ACCEPT_IMPLEMENTATION_ANCHOR'])
+        proof,sampling_form_inverse=sampling_form['body_predecessor'](anchor,proof,sampling_implementation)
+        sampling_form_predecessor=h.sha(proof.encode()) if sampling_form_inverse else None
         if child_proof is not None and anchor=='    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){':
             proof=child_proof['accept_predecessor'](proof.encode()).decode()
         # Reverse only the reviewed Xiaomi original-literal type guard for the
@@ -196,7 +204,7 @@ def generate(source,output,h):
             proof=once(proof,'                // A discarded post-navigation screenshot requires a new pair even when it seeds\n                // the first sample. Starting another Binder read cannot satisfy a sub-gap budget.\n                long remaining=request.deadline-SystemClock.elapsedRealtime();\n                if(request.postEffectController!=null&&remaining<=ObservationStabilityGate.SAMPLE_GAP_MS){\n                    failObservation(request,"操作后的页面仍在变化，本次观察剩余时间不足以重新采样");return;\n                }\n', '')
             if h.sha(proof.encode())!='d86064ad2a7361af1e3be8e1b601b542d3faa73795b849c742b86397a76d710f':raise RuntimeError('historical form publication must restore exact R32 owner check')
         sampling=REVIEWED_SAMPLING_BODY_INVERSE.get(anchor);sampling_inverse=False
-        if sampling is not None and actual==sampling['sha256']:
+        if sampling is not None and h.sha(proof.encode())==sampling['sha256']:
             for revised,prior in sampling['inverse']:proof=once(proof,revised,prior)
             if h.sha(proof.encode())!=sampling['predecessor_sha256']:
                 raise RuntimeError('reviewed sampling body must reverse to exact predecessor: '+anchor)
@@ -212,11 +220,19 @@ def generate(source,output,h):
         protected[anchor]={'bytes':len(raw.encode()),'sha256':actual,'legacy_sha256':expected,
                            'reviewed_ax_inverse_verified':ax_inverse,
                            'reviewed_sampling_inverse_verified':sampling_inverse,
-                           'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
+                           'sampling_predecessor_sha256':predecessor if sampling_inverse else None,
+                           'reviewed_sampling_form_inverse_verified':sampling_form_inverse,
+                           'sampling_form_predecessor_sha256':sampling_form_predecessor,
+                           'sampling_actual_implementation_sha256':h.sha(sampling_implementation.encode()) if sampling_form_inverse and sampling_implementation is not None else None}
     protected_files={}
-    readonly_owner_inverse=None
+    readonly_owner_inverse=None;sampling_form_gate_inverse=None
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
+        if name=='ObservationStabilityGate.java':
+            gate_proof,gate_changed=sampling_form['gate_predecessor'](current)
+            if h.sha(gate_proof)!=expected:raise RuntimeError('classified-pair timing helper must restore the complete protected Gate')
+            sampling_form_gate_inverse={'current_sha256':actual,'predecessor_sha256':h.sha(gate_proof),'reviewed_inverse_verified':gate_changed,'proof_copy_only':True}
+            protected_files[name]=actual;continue
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
         if name=='NativeActionSnapshotCheck.java' and actual=='400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593':
             prior=runpy.run_path(str(source/'tests/native-ctrip-form-observation/scope_predecessor.py'))['predecessor'](current)
@@ -377,6 +393,8 @@ def generate(source,output,h):
             'protected_production_bodies':protected,'protected_files':protected_files,
             'child_identity_fixture_proof':h.meta(child_fixture) if child_proof is not None else None,
             'readonly_owner_inverse':readonly_owner_inverse,
+            'sampling_form_fixture_proof':h.meta(sampling_fixture),
+            'sampling_form_gate_inverse':sampling_form_gate_inverse,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
             'legacy_fixture_only_fail_closed_port':True,'initial_current_frame_created_by_actual_observer':True,
             'pair_snapshot_uses_actual_full_node_and_snapshot_classes':True,
@@ -399,6 +417,7 @@ def main():
                source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']
     inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
     inputs += [source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py']
+    inputs += [source/'tests/native-ctrip-sampling-form/protected_sampling.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],

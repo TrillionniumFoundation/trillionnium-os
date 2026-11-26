@@ -12,7 +12,7 @@ def once(text,before,after):
  if text.count(before)!=1:raise RuntimeError('nonunique AX extraction boundary: '+before[:120])
  return text.replace(before,after,1)
 def generate(source,out,h,snap):
- base=out/'base';base.mkdir();meta=snap.generate(source,base,h)
+ base=out/'base';base.mkdir();meta=snap.generate(source,base,h,sampling_ports=False)
  path=out/'ObserverPipelineHost.java';s=(base/'ObserverPipelineHost.java').read_text()
  service=(source/PKG/'HeptaAccessibilityService.java').read_text()
  # The shared legacy template has a diagnostic-only PACKAGE type port.
@@ -57,9 +57,7 @@ def generate(source,out,h,snap):
         final Profile profile;LocalRuntimeConfig(boolean v){profile=new Profile(v);}
     }
     static final class TaskAuthorization {static final class Gate {}}
-    static final class NativeActionSnapshotCheck {
-        static final class Node {final Map<String,Object> v;Node(Map<String,Object> v){this.v=ObservationCaptureEvidence.freezeMap(v);}}
-    }
+    // Compile the real NativeActionSnapshotCheck Node/Snapshot dependency closure.
     private boolean ownsAuthorization(String task,Object auth){return owns(task)&&auth!=null&&auth==taskAuthorization;}
     static final class MobiMindPrivateFiles {
         static Runnable writeHook,unchangedHook;static java.util.function.Consumer<byte[]> readHook;static int writes,reads;

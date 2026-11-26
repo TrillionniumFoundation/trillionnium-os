@@ -29,7 +29,7 @@ def replace(text,before,after):
     if text.count(before)!=1:raise RuntimeError('nonunique fixture boundary '+before[:80])
     return text.replace(before,after,1)
 
-def generate(source,out,h):
+def generate(source,out,h,sampling_ports=True):
     service=(source/PKG/JAVA[0]).read_text();phone=(source/PKG/JAVA[1]).read_text()
     parts={
       'observation_callback':h.section(service,'    public interface ObservationCallback','    public interface Cancellation'),
@@ -102,7 +102,7 @@ def generate(source,out,h):
             or form_branch.replace(form_condition,legacy_condition,1)!=branch):
         raise RuntimeError('history call-site inverse must preserve the original native guard and fallback')
     if service.count(actual_branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
-    h.write(out/'ObserverPipelineHost.java',template)
+    h.write(out/'ObserverPipelineHost.java',template,sampling_ports=sampling_ports)
     return {'schema':'hepta.native-observation-events-extraction.v1',
         'bodies_verbatim':not calendar_boundary['calendar_producer_excluded'],
         'original_observer_methods_and_hooks_verbatim':True,'calendar_legacy_boundary':calendar_boundary,
@@ -151,6 +151,8 @@ def add_saved_graph_seed_cases(source,out,h,extraction):
         '            Runnable hook=afterWorkerPost;if(!isMain()&&hook!=null)hook.run();return posted;}')
     extraction['saved_graph_profile_predicates']={key:{'bytes':len(value.encode()),'sha256':h.sha(value.encode())} for key,value in profile_parts.items()}
     extraction['profile_fields_synthetic_not_device_ownership']=True
+    text,sampling_boundary=h.ctrip_sampling_legacy_ports(text)
+    extraction['ctrip_sampling_legacy_boundary']=sampling_boundary
     path.write_text(text,encoding='utf-8')
     extraction['saved_graph_seed_cases']={
         'existing_runner_executes_new_cases':True,
@@ -182,7 +184,7 @@ def main():
        'observation_budget':{'settle_ms':10000,'capture_margin_ms':2000,'total_ms':12000,
            'task_deadline_caps_total':True,'retry_renews_deadline':False,'legacy_explicit_ten_second_cases_retained':True}}
     try:
-        generated=output/'generated';generated.mkdir();extraction=generate(source,generated,h);extraction=add_saved_graph_seed_cases(source,generated,h,extraction);h.save(output/'EXTRACTION.json',extraction)
+        generated=output/'generated';generated.mkdir();extraction=generate(source,generated,h,sampling_ports=False);extraction=add_saved_graph_seed_cases(source,generated,h,extraction);h.save(output/'EXTRACTION.json',extraction)
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/n for n in JAVA if n not in ('HeptaAccessibilityService.java','PhoneObservation.java')]
         sources += [source/TEST/'EventChecks.java',generated/'ObserverPipelineHost.java']

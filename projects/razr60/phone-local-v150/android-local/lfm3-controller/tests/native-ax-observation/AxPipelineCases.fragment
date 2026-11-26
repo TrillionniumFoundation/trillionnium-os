@@ -11,8 +11,18 @@
     static List<NativeActionSnapshotCheck.Node> axNodes(String text){
         List<NativeActionSnapshotCheck.Node> nodes=new ArrayList<NativeActionSnapshotCheck.Node>();
         for(String path:new String[]{"0","0/0","0/1"}){
+            // Explicit complete Android IO values: compile and construct the actual production Node.
             Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("path",path);
             row.put("text","0/1".equals(path)?text:"");row.put("window_id",7);row.put("package",SnapshotChecks.APP);
+            row.put("class","0".equals(path)?"android.widget.FrameLayout":"android.widget.TextView");
+            row.put("parent_class","0".equals(path)?"":"android.widget.FrameLayout");
+            row.put("view_id","");row.put("description","");row.put("label",null);
+            row.put("scroll_actions","");row.put("ime_enter","");
+            row.put("ref_signature_sha256",null);row.put("input_sha256",null);
+            row.put("bounds",Arrays.asList(0,0,1080,"0".equals(path)?2400:100));
+            row.put("children","0".equals(path)?2:0);
+            for(String key:Arrays.asList("visible","enabled","clickable","editable","scrollable","focused","password","selected","checkable","checked","action_click"))
+                row.put(key,"visible".equals(key)||"enabled".equals(key));
             nodes.add(new NativeActionSnapshotCheck.Node(row));
         }return Collections.unmodifiableList(nodes);
     }

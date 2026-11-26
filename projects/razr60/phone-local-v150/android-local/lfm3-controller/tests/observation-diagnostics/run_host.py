@@ -34,11 +34,85 @@ def sha(raw):return hashlib.sha256(raw).hexdigest()
 def meta(path):
     path=Path(path).absolute();raw=path.read_bytes()
     return {'path':str(path),'bytes':len(raw),'sha256':sha(raw),'mode':path.stat().st_mode&0o777}
-def write(path,raw):
+def ctrip_sampling_legacy_ports(template):
+    """Type closure for legacy non-Ctrip IO; actual sampling bodies stay verbatim.
+    Scoped Ctrip bridges already carry their real snapshot adapter and are untouched.
+    Every new authority-bearing port refuses instead of returning a census or permit.
+    """
+    if '    private static final class CtripFormSample {' not in template:
+        return template,None
+    if '    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(' in template:
+        return template,None
+    original=template;replacements=[]
+    def replace(before,after):
+        nonlocal template
+        if template.count(before)!=1:raise RuntimeError('sampling IO boundary differs: '+before[:100])
+        template=template.replace(before,after,1);replacements.append((before,after))
+    additions=''
+    old_target='        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.'
+    if old_target in template:
+        replace(old_target,'        ProfileTarget profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.')
+        additions+='''    // Unconstructable type carrier: legacy cases cannot mint a managed target.
+    private static final class ProfileTarget {
+        final String packageName="unbound-host-port";final long versionCode=-1;final Map<String,String> apkHashes=Collections.emptyMap();
+        private ProfileTarget(){throw new AssertionError("legacy fixture cannot create a Ctrip target");}
+    }
+'''
+    elif 'ProfileTarget profileTarget()' not in template:
+        raise RuntimeError('sampling type closure requires an explicit absent or real target carrier')
+    else:
+        # Saved-graph tests already have a synthetic profile identity. Preserve its
+        # old equality fields and explicitly exclude it from Ctrip sampling scope.
+        synthetic='    static final class ProfileTarget {final String sha256=EventChecks.OWNER;'
+        if synthetic in template:
+            replace(synthetic,synthetic+'final String packageName="legacy-non-ctrip";final long versionCode=-1;final Map<String,String> apkHashes=Collections.emptyMap();')
+    old_provider='    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}'
+    if old_provider in template:
+        replace(old_provider,'''    private static final class NativeCtripFlightPage {
+        static final String PACKAGE="ctrip.android.view",BASE_APK_SHA256="unbound-host-port";
+        static final long VERSION_CODE=-1;
+        static boolean supported(NativeAppGoal goal){throw new AssertionError("legacy fixture cannot qualify a Ctrip goal");}
+    }''')
+    elif 'static final long VERSION_CODE=' not in template or 'static boolean supported(NativeAppGoal goal)' not in template:
+        raise RuntimeError('sampling provider closure requires the real dedicated provider')
+    if '    static final class NativeActionSnapshotCheck {' in template:
+        raise RuntimeError('sampling closure requires the compiled actual Node/Snapshot, not a shadow class')
+    replace('    static final class NativeAppEvidence {','''    static final class NativeAppEvidence {
+        static String fingerprint(Object value){throw new AssertionError("legacy fixture cannot fingerprint a Ctrip sampling proof");}''')
+    replace('            boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}', '''            boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}
+            Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no entered open-flight permit evidence");}''')
+    additions+='''    // The dedicated form observer supplies and executes the actual snapshot adapter.
+    private NativeActionSnapshotCheck.Snapshot nativeCtripFormSnapshot(ObservationRequest request,Graph graph,ProfileTarget target){
+        throw new AssertionError("legacy fixture cannot manufacture a complete Ctrip sampling census");
+    }
+'''
+    end=template.rfind('\n}')
+    if end<0:raise RuntimeError('sampling fixture outer class boundary missing')
+    template=template[:end]+'\n'+additions+template[end:]
+    if template.count('\n'+additions)!=1:raise RuntimeError('sampling port block must be unique')
+    inverse=template.replace('\n'+additions,'',1)
+    for before,after in reversed(replacements):
+        if inverse.count(after)!=1:raise RuntimeError('sampling IO inverse boundary changed')
+        inverse=inverse.replace(after,before,1)
+    if inverse!=original:raise RuntimeError('legacy methods and cases must remain byte-identical outside IO ports')
+    return template,dict(schema='hepta.ctrip-sampling.legacy-io-closure.v1',
+        original_fixture_sha256=sha(original.encode()),extended_fixture_sha256=sha(template.encode()),
+        original_fixture_inverse_verified=True,actual_sampling_bodies_unchanged=True,
+        no_census_or_profile_or_permit_authority=True,dedicated_sampling_cases='native-ctrip-sampling-form',
+        new_authority_bearing_ports_throw=True,legacy_target_port_added=old_target in original,
+        legacy_provider_port_added=old_provider in original,
+        helper_source=meta(Path(__file__).resolve()),phone_operations=0,ctrip_sampling_executed=False)
+
+def write(path,raw,sampling_ports=True):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
+    boundary=None
+    if path.name=='ObserverPipelineHost.java' and sampling_ports:
+        text=raw if isinstance(raw,str) else raw.decode()
+        raw,boundary=ctrip_sampling_legacy_ports(text)
     if isinstance(raw,str):raw=raw.encode()
     with path.open('xb') as stream:stream.write(raw)
     os.chmod(path,0o600)
+    if boundary is not None:save(path.with_suffix('.sampling-boundary.json'),boundary)
 def save(path,value):write(path,json.dumps(value,indent=2,ensure_ascii=False,sort_keys=True)+'\n')
 def section(raw,start,end):
     if raw.count(start)!=1 or raw.count(end)!=1:raise RuntimeError('nonunique source anchors: '+start)
