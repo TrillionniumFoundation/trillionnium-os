@@ -94,6 +94,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
         if(path.matches("runs/[0-9a-f]{32}/(?:app-session-receipt\\.json|native-session-result\\.json|worker-generation\\.identity|generation-cleanup-[0-9a-f]{32}\\.json|app-receipt\\.json|native-result\\.json|raw-text\\.txt)"))known=true;
         if(path.matches("runs/[0-9a-f]{32}/vlm-task-(?:terminal|pending)\\.json")||
                 path.matches("runs/[0-9a-f]{32}/vlm/[0-9a-f]{32}/(?:app-receipt\\.json|app-delivery\\.json|native-result\\.json|owner\\.json|raw\\.txt)"))known=true;
+        if(path.matches("runs/[0-9a-f]{32}/(?:stdout\\.log|stderr\\.log|generation-cleanup-[0-9a-f]{32}\\.(?:stdout|stderr)|prompt\\.txt|system\\.txt|grammar\\.gbnf|formatted-prompt\\.txt|formatted-input-ids\\.le32|prompt-evidence\\.json)"))known=true;
         need(known,"BUSINESS_PATH_NOT_ALLOWLISTED");
     }
     /** Build paths from typed identifiers. Recorded absolute paths are only cross-checks. */
@@ -133,6 +134,31 @@ public final class PublicProfileBusinessAbsenceRecovery {
         need(number(d,"mtime_seconds")>=0&&number(d,"ctime_seconds")>=0,"BUSINESS_FILE_CLOCK");
     }
 
+    /** Complete normal native originals for the narrow successful-query history.
+     * This is only a path plan: neither it nor a serialized success flag is authority.
+     * The caller supplies all task originals plus the real app-session receipt. */
+    public static java.util.Set<String> nativeSuccessModelPaths(JSONObject result,Map<String,byte[]> files)throws Exception{
+        String task=string(result,"task_id"),generation=string(result.getJSONObject("model_session"),"worker_generation");
+        need(task.matches("[0-9a-f]{32}")&&generation.matches("[0-9a-f]{32}")&&!task.equals(generation),"NATIVE_SUCCESS_MODEL_IDS");
+        String prefix="runs/"+generation+"/",taskPrefix="control-tasks/"+task+"/";
+        byte[] sessionBytes=files.get(prefix+"app-session-receipt.json");need(sessionBytes!=null,"NATIVE_SUCCESS_SESSION_MISSING");
+        JSONObject session=object(sessionBytes);
+        need(task.equals(string(session,"task_id"))&&generation.equals(string(session,"worker_generation")),"NATIVE_SUCCESS_SESSION_BINDING");
+        String nonce=string(session.getJSONObject("worker_generation_cleanup"),"cleanup_nonce");
+        need(nonce.matches("[0-9a-f]{32}"),"NATIVE_SUCCESS_NONCE");
+        TreeSet<String> paths=new TreeSet<String>(),ids=new TreeSet<String>();ids.add(task);ids.add(generation);
+        for(String leaf:new String[]{"app-session-receipt.json","native-session-result.json","worker-generation.identity","stdout.log","stderr.log",
+                "generation-cleanup-"+nonce+".json","generation-cleanup-"+nonce+".stdout","generation-cleanup-"+nonce+".stderr"})paths.add(prefix+leaf);
+        int requests=0;
+        for(String path:files.keySet())if(path.startsWith(taskPrefix)&&path.substring(taskPrefix.length()).matches("step-[0-9]+-model-[0-9]+\\.json")){
+            String run=string(object(files.get(path)),"run_id");need(run.matches("[0-9a-f]{32}")&&ids.add(run),"NATIVE_SUCCESS_REQUEST_IDS");requests++;
+            for(String leaf:new String[]{"app-receipt.json","native-result.json","raw-text.txt","prompt.txt","system.txt","grammar.gbnf",
+                    "formatted-prompt.txt","formatted-input-ids.le32","prompt-evidence.json"})paths.add("runs/"+run+"/"+leaf);
+        }
+        need(requests>0&&requests<=256&&paths.size()==8+9*requests&&paths.size()<=MAX_FILES,"NATIVE_SUCCESS_MODEL_SET_BOUND");
+        return Collections.unmodifiableSet(paths);
+    }
+
     public static final class Request {
         public final Manifest manifest;
         public final int ownerUid,oldBoot,requestBoot,displayId,ownedRootTaskId,ownedLeafTaskId,steps,modelRequests;
@@ -142,6 +168,8 @@ public final class PublicProfileBusinessAbsenceRecovery {
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final boolean postlaunch=true;
         public final boolean retainedBeforeFirstModel,retainedAfterBusiness,historicalBrokerExitObserved;
+        /** Historical category only; never current cleanup or business-success authority. */
+        public final boolean verifiedNativeSuccessBeforeCleanup;
         public final Integer historicalBrokerExitCode;
         private final Map<String,byte[]> originals;
         private final String taskPrefix,modelPrefix;
@@ -198,9 +226,11 @@ public final class PublicProfileBusinessAbsenceRecovery {
             requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
             JSONObject owned=retainedBeforeFirstModel?retainedOrigin(bootstrap,cleanup,output):retainedAfterBusiness?retainedBusinessOrigin(bootstrap,cleanup,output):businessOrigin(bootstrap,cleanup,output);ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");ownedLeafTaskToken=string(owned,"leaf_task_token");
             long count=number(result,"steps");need((count>0||retainedBeforeFirstModel)&&count>=0&&count<=256&&taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status")),"BUSINESS_TERMINAL");steps=(int)count;
-            no(result,"cleanup_known","completion_verified","model_reported_success","external_model","automatic_replay","controller_completion_requested");
+            no(result,"cleanup_known","completion_verified","external_model","automatic_replay","controller_completion_requested");
+            boolean nativeSuccessReported=Boolean.TRUE.equals(result.opt("model_reported_success"));
+            if(!nativeSuccessReported)no(result,"model_reported_success");
             for(String k:new String[]{"observation_read_worker_pending_at_terminal","action_worker_pending_at_terminal","native_cancel_worker_pending_at_terminal"})no(result,k);
-            requireIncompleteModelDisposition(result);
+            if(!nativeSuccessReported)requireIncompleteModelDisposition(result);
             need(result.get("completion_actor")==JSONObject.NULL&&result.get("profile_permission_preparation")==JSONObject.NULL
                     &&result.getJSONArray("submit_attempts").length()==0&&result.getJSONArray("fixed_intent_attempts").length()==0,"BUSINESS_UNSUPPORTED_PENDING_CONTRACT");
             JSONObject cancellation=result.getJSONObject("native_cancellation");need(taskId.equals(string(cancellation,"task_id"))&&cancellation.get("run_id")==JSONObject.NULL,"BUSINESS_NATIVE_IDENTITY");
@@ -218,13 +248,254 @@ public final class PublicProfileBusinessAbsenceRecovery {
                 modelRequests=requireVisualClose(result.getJSONObject("model_session"),broker);
             }else{
                 modelRequests=requireNormalModelClose(result.getJSONObject("model_session"),broker);
-                requireOnlyBoundModelPaths();
+                if(nativeSuccessReported)requireOnlyNativeSuccessModelPaths(result);else requireOnlyBoundModelPaths();
             }
+            if(nativeSuccessReported){requireVerifiedNativeSuccessBeforeCleanup(result,owner,terminal);verifiedNativeSuccessBeforeCleanup=true;}
+            else verifiedNativeSuccessBeforeCleanup=false;
             requireControl(result,owner);
             journalSha256=ProfileIdentity.sha(original(JOURNAL));originalsSha256=ProfileIdentity.sha(canonical(inputHashes()));requireFence(started,requestBoot);
         }
         public byte[] task(String leaf)throws Exception{return original(taskPrefix+leaf);}
         public byte[] model(String leaf)throws Exception{return original(modelPrefix+leaf);}
+        /** Historical classification only. All original failed cleanup facts remain false.
+         * The normal model close and every request have already been validated. */
+        private void requireVerifiedNativeSuccessBeforeCleanup(JSONObject result,JSONObject owner,long terminal)throws Exception{
+            need(retainedAfterBusiness&&!retainedBeforeFirstModel&&steps>0&&modelRequests==steps
+                    &&!originals.containsKey(modelPrefix+"vlm-task-terminal.json")
+                    &&"com.xiaomi.shop".equals(target.packageName),"NATIVE_SUCCESS_HISTORY_KIND");
+            yes(result,"model_reported_success");no(result,"model_done_synthesized","goal_independently_verified");
+            need("success".equals(string(result,"model_done_status")),"NATIVE_SUCCESS_MODEL_DISPOSITION");
+            JSONObject contract=owner.getJSONObject("completion_contract"),goal=contract.getJSONObject("native_app_goal");
+            need("native_product_price".equals(string(contract,"kind"))&&"native_app".equals(string(contract,"route"))
+                    &&"complete_literal_native_product_read_only_report.v2".equals(string(contract,"recognition"))
+                    &&"native_product_price".equals(string(goal,"kind"))&&target.packageName.equals(string(goal,"package_name"))
+                    &&ownerSha256.equals(string(goal,"owner_sha256")),"NATIVE_SUCCESS_OWNER_GOAL");
+            no(contract,"model_may_change_goal","grants_tool_authority");no(goal,"owner_rewritten","grants_tool_authority","business_verified");
+            JSONObject finalEvidence=result.getJSONObject("completion_evidence");
+            need("hepta.native-app-terminal-completion.v1".equals(string(finalEvidence,"schema"))
+                    &&same(contract,finalEvidence.getJSONObject("contract")),"NATIVE_SUCCESS_FINAL_SCHEMA");
+            nativeSuccessIdentity(finalEvidence,owner,false);
+            yes(finalEvidence,"one_terminal_attempt","action_domain_retired","same_final_native_result_snapshot","model_success_claim_verified",
+                    "observation_chain_verified","scope_rechecked_after_worker_exit","installed_app_rechecked_after_cleanup","owner_rechecked","native_normal0_parent_session_bound");
+            no(finalEvidence,"all_cleanup_known","background_released","completion_verified","business_verified","terminal_binding_and_cleanup_verified",
+                    "profile_cleanup_bound_to_final_window","cancelled","grants_tool_authority","model_done_synthesized","controller_completion_requested");
+            need(finalEvidence.get("profile_cleanup")==JSONObject.NULL&&finalEvidence.get("completion_actor")==JSONObject.NULL
+                    &&taskId.equals(string(finalEvidence,"worker_task_id"))&&modelGeneration.equals(string(finalEvidence,"worker_generation"))
+                    &&ProfileIdentity.sha(model("app-session-receipt.json")).equals(string(finalEvidence,"worker_receipt_sha256")),"NATIVE_SUCCESS_FINAL_MODEL");
+            JSONObject terminalEvidence=finalEvidence.getJSONObject("terminal_native_completion");
+            Iterator<String> terminalKeys=terminalEvidence.keys();while(terminalKeys.hasNext()){String key=terminalKeys.next();
+                need(finalEvidence.has(key)&&same(terminalEvidence.get(key),finalEvidence.get(key)),"NATIVE_SUCCESS_TERMINAL_PROJECTION");}
+            String step=String.format(java.util.Locale.ROOT,"%02d",steps);
+            JSONObject check=object(task("step-"+step+"-completion-check.json"));
+            need("hepta.task-completion.v1".equals(string(check,"schema"))&&"native_product_price".equals(string(check,"kind"))
+                    &&taskId.equals(string(check,"task_id"))&&ownerSha256.equals(string(check,"owner_sha256"))
+                    &&same(contract,check.getJSONObject("contract"))&&number(check,"check_step")==steps,"NATIVE_SUCCESS_COMPLETION_BINDING");
+            yes(check,"completion_verified","model_reported_success","accepted_as_completed","final_observation_stable");
+            no(check,"retry_allowed","search_quote_scope_required","search_quote_scope_verified","grants_tool_authority","writes_required_for_unknown_or_read_only_goal");
+            need(check.get("identity_failure")==JSONObject.NULL&&check.getJSONArray("missing").length()==0,"NATIVE_SUCCESS_COMPLETION_COMPLETE");
+            String run=string(check,"check_model_run_id");JSONObject action=object(task("step-"+step+"-action.json"));
+            JSONObject done=action.getJSONObject("action"),outcome=object(task("native-app-outcome-"+step+".json")),attempt=outcome.getJSONObject("attempt");
+            nativeSuccessIdentity(outcome,owner,false);
+            need(run.equals(string(action,"model_run_id"))&&run.equals(string(attempt,"model_run_id"))&&number(attempt,"step")==steps
+                    &&"done".equals(string(done,"action"))&&"success".equals(string(done,"status"))&&target.packageName.equals(string(done,"package"))
+                    &&string(result,"model_done_summary").equals(string(done,"summary"))
+                    &&"done".equals(string(attempt,"action"))&&"done".equals(string(attempt,"purpose"))
+                    &&"success".equals(string(attempt,"done_status")),"NATIVE_SUCCESS_DONE_ACTION");
+            yes(action,"accepted","done_success_eligible","model_issued");no(action,"dispatched","stale");
+            JSONObject actionExecution=action.getJSONObject("action_execution");
+            need(same(actionExecution,result.getJSONObject("last_action_execution"))&&run.equals(string(actionExecution,"model_run_id"))
+                    &&string(done,"observation_id").equals(string(actionExecution,"observation_id")),"NATIVE_SUCCESS_LAST_ACTION");
+            no(actionExecution,"effect_entered","effect_returned","automatic_redispatch");yes(actionExecution,"worker_drained","callback_published","callback_authority_current");
+            need(actionExecution.get("api_accepted")==JSONObject.NULL,"NATIVE_SUCCESS_DONE_NO_EFFECT");
+            JSONObject receipt=attempt.getJSONObject("actual_action_receipt");
+            yes(receipt,"accepted","model_issued");no(receipt,"dispatched","stale","pre_effect_stale_recovery_available");
+            need(ProfileIdentity.sha(task("step-"+step+"-action.json")).equals(string(receipt,"step_action_record_sha256")),"NATIVE_SUCCESS_ACTION_BYTES");
+            int matches=0;
+            for(String path:originals.keySet())if(path.startsWith(taskPrefix)&&path.substring(taskPrefix.length()).matches("step-"+step+"-model-[0-9]+\\.json")){
+                JSONObject record=object(original(path));matches++;
+                need(run.equals(string(record,"run_id"))&&string(done,"observation_id").equals(string(record,"observation_id"))
+                        &&same(done,object(string(record,"raw_text").getBytes(StandardCharsets.UTF_8))),"NATIVE_SUCCESS_DONE_NATIVE_TEXT");
+            }
+            need(matches==1,"NATIVE_SUCCESS_DONE_MODEL_UNIQUE");
+            JSONObject value=check.getJSONObject("public_native_result"),frame=value.getJSONObject("current_frame");
+            nativeSuccessIdentity(value,owner,false);
+            need("hepta.native-xiaomi-displayed-product-price.v1".equals(string(value,"schema"))&&same(value,finalEvidence.getJSONObject("public_native_result"))
+                    &&same(goal,value.getJSONObject("goal"))&&string(goal,"product_model").equals(string(value,"model")),"NATIVE_SUCCESS_RESULT_BINDING");
+            no(value,"business_verified_before_terminal","external_model");
+            need(string(result,"final_observation_id").equals(string(frame,"observation_id"))
+                    &&same(frame,check.getJSONObject("native_app_session").getJSONObject("current_domain").getJSONObject("source_frame")),"NATIVE_SUCCESS_FINAL_OBSERVATION");
+            JSONObject before=attempt.getJSONObject("before");
+            nativeSuccessFrame(before,owner,terminal);nativeSuccessFrame(frame,owner,terminal);
+            need(string(done,"observation_id").equals(string(before,"observation_id"))
+                    &&Arrays.equals(task("step-"+step+"-before.json"),task("native-app-frame-"+string(before,"observation_id")+".json"))
+                    &&Arrays.equals(task("step-"+step+"-after.json"),task("native-app-frame-"+string(frame,"observation_id")+".json")),"NATIVE_SUCCESS_DONE_OBSERVATIONS");
+            for(String key:new String[]{"app_tree_sha256","observation_state_sha256","window_id","display_id","rotation","package","background_generation"})
+                need(same(before.get(key),frame.get(key)),"NATIVE_SUCCESS_FINAL_STABILITY");
+            need(number(before,"captured_elapsed_ms")<=number(actionExecution,"queued_elapsed_ms")
+                    &&number(frame,"captured_elapsed_ms")>=number(actionExecution,"worker_drained_elapsed_ms")
+                    &&number(attempt,"dispatch_started_elapsed_ms")>=created&&number(attempt,"dispatch_finished_elapsed_ms")<=number(frame,"captured_elapsed_ms"),"NATIVE_SUCCESS_DONE_CLOCKS");
+            nativeSuccessSameWindow(before.getJSONObject("actual_profile_window"),frame.getJSONObject("actual_profile_window"));
+            need(same(frame.getJSONObject("actual_profile_window"),finalEvidence.getJSONObject("final_actual_profile_window")),"NATIVE_SUCCESS_FINAL_WINDOW");
+            JSONArray claims=check.getJSONArray("model_success_claims");
+            need(claims.length()==1&&same(claims,finalEvidence.getJSONArray("model_success_claims")),"NATIVE_SUCCESS_CLAIM_SET");
+            JSONObject claim=claims.getJSONObject(0);
+            need("native_done_success_claim".equals(string(claim,"kind"))&&number(claim,"step")==steps&&run.equals(string(claim,"model_run_id"))
+                    &&string(frame,"observation_id").equals(string(claim,"before_observation_id"))
+                    &&string(frame,"observation_id").equals(string(claim,"after_observation_id")),"NATIVE_SUCCESS_CLAIM_BINDING");
+            yes(claim,"original_whole_tree_stable","completion_verified");no(claim,"search_quote_scope_required","search_quote_scope_verified");
+            JSONObject page=null;int pages=0;
+            for(String path:originals.keySet())if(path.startsWith(taskPrefix)&&path.substring(taskPrefix.length()).matches("native-app-page-[0-9]+\\.json")){
+                JSONObject candidate=object(original(path));
+                if(string(frame,"observation_id").equals(string(candidate.getJSONObject("frame"),"observation_id"))){page=candidate;pages++;}
+            }
+            need(pages==1&&page!=null,"NATIVE_SUCCESS_PAGE_UNIQUE");nativeSuccessIdentity(page,owner,false);
+            need(same(frame,page.getJSONObject("frame"))&&same(value,page.getJSONObject("domain").getJSONObject("result"))
+                    &&same(frame,page.getJSONObject("domain").getJSONObject("source_frame"))
+                    &&same(value.getJSONObject("detail_quote"),page.getJSONObject("provider").getJSONObject("quote")),"NATIVE_SUCCESS_PAGE_BYTES");
+            JSONObject domain=page.getJSONObject("domain");yes(domain,"result_ready");
+            no(domain,"booking_purchase_or_payment_allowed","web_helper_allowed","external_model_allowed","grants_service_dispatch");
+            JSONObject retired=object(task("native-app-retired.json"));nativeSuccessIdentity(retired,owner,false);
+            yes(retired,"action_domain_retired","accepted_completion_candidate");no(retired,"pending_action","invalid");
+            JSONObject progress=retired.getJSONObject("progress");
+            need(retired.get("invalid_reason")==JSONObject.NULL&&same(progress,page.getJSONObject("progress"))
+                    &&same(progress,finalEvidence.getJSONObject("native_app_session").getJSONObject("progress"))
+                    &&same(domain,finalEvidence.getJSONObject("native_app_session").getJSONObject("current_domain"))
+                    &&same(progress.getJSONArray("transitions"),finalEvidence.getJSONArray("actual_query_transitions"))
+                    &&number(progress,"actual_model_actions")==steps&&progress.get("pending")==JSONObject.NULL,"NATIVE_SUCCESS_RETIRED_PROGRESS");
+            yes(progress,"typed_search_navigation_observed","product_query_observed","product_detail_navigation_observed");
+            no(progress,"typed_search_navigation_pending","product_login_exit_reserved","flight_login_exit_attempted","flight_login_returned_to_form");
+            nativeSuccessReadOnlyActions(owner,goal,terminal);
+            JSONObject nav=value.getJSONObject("actual_query_and_card_navigation"),open=nav.getJSONObject("attempt"),query=nav.getJSONObject("query");
+            need("open_exact_product".equals(string(open,"purpose"))&&"submit_product_query".equals(string(query.getJSONObject("attempt"),"purpose"))
+                    &&number(query.getJSONObject("attempt"),"step")<number(open,"step")&&number(open,"step")<steps,"NATIVE_SUCCESS_QUERY_CHAIN");
+            nativeSuccessRecordedAttempt(open,owner);nativeSuccessRecordedAttempt(query.getJSONObject("attempt"),owner);
+            nativeSuccessFrame(nav.getJSONObject("after"),owner,terminal);nativeSuccessFrame(query.getJSONObject("after"),owner,terminal);
+            need(same(nav.getJSONObject("search_card"),query.getJSONObject("search_result_quote"))
+                    &&same(value.getJSONObject("detail_quote").getJSONObject("frame"),frame)
+                    &&"detail_display".equals(string(value.getJSONObject("detail_quote"),"quote_kind")),"NATIVE_SUCCESS_QUOTE_CHAIN");
+            for(JSONObject quote:new JSONObject[]{nav.getJSONObject("search_card"),nav.getJSONObject("detail"),value.getJSONObject("detail_quote")}){
+                no(quote,"promotions_deducted_from_amount","lowest_price_verified","selected_sku_verified","delivery_address_verified",
+                        "inventory_verified","final_checkout_price_verified","order_submitted","query_dispatched","task_complete");
+            }
+            JSONObject installed=object(task("completion-installed-identity.json"));
+            need(same(installed.getJSONObject("profile_target"),new JSONObject(target.evidence()))&&target.packageName.equals(string(installed,"package"))
+                    &&number(installed,"uid")==target.fullUid&&number(installed,"version_code")==target.versionCode
+                    &&same(installed.getJSONObject("apk_hashes"),new JSONObject(target.apkHashes))
+                    &&target.apkSetSha256.equals(string(installed,"apk_set_sha256")),"NATIVE_SUCCESS_INSTALLED_IDENTITY");
+            JSONObject bound=object(task("native-app-binding.json"));nativeSuccessIdentity(bound,owner,false);
+            need(same(goal,bound.getJSONObject("goal"))&&same(bound.getJSONObject("installed_app"),value.getJSONObject("installed_app")),"NATIVE_SUCCESS_INITIAL_BINDING");
+        }
+        private void nativeSuccessIdentity(JSONObject value,JSONObject owner,boolean frame)throws Exception{
+            String auth=frame?"task_authorization_sha256":"authorization_sha256";
+            need(taskId.equals(string(value,"task_id"))&&ownerSha256.equals(string(value,"owner_sha256"))
+                    &&string(owner,"task_authorization_sha256").equals(string(value,auth))
+                    &&string(owner.getJSONObject("task_authorization").getJSONObject("execution_target"),"target_sha256").equals(string(value,"execution_target_sha256")),"NATIVE_SUCCESS_IDENTITY");
+            if(!frame)need(same(value.getJSONObject("profile_target"),new JSONObject(target.evidence())),"NATIVE_SUCCESS_PROFILE");
+        }
+        private void nativeSuccessSameWindow(JSONObject a,JSONObject b)throws Exception{
+            for(String key:new String[]{"generation","target_identity_sha256","task_token_id","display_id","window_id","task_id","parent_task_id","user_id","user_serial","full_uid"})
+                need(same(a.get(key),b.get(key)),"NATIVE_SUCCESS_WINDOW_IDENTITY");
+        }
+        private void nativeSuccessFrame(JSONObject frame,JSONObject owner,long terminal)throws Exception{
+            nativeSuccessIdentity(frame,owner,true);String id=string(frame,"observation_id");
+            need(id.matches("[0-9a-f]{32}")&&"hepta.native-app-observation.v1".equals(string(frame,"schema"))
+                    &&target.packageName.equals(string(frame,"package"))&&generation.equals(string(frame,"background_generation"))
+                    &&number(frame,"display_id")==displayId&&number(frame,"captured_elapsed_ms")>=created&&number(frame,"captured_elapsed_ms")<=terminal,"NATIVE_SUCCESS_FRAME_IDENTITY");
+            yes(frame,"window_metadata_observed","actual_collection_complete");no(frame,"nodes_truncated","screenshot_observed","screenshots_used_as_text");
+            need("native_ax".equals(string(frame,"capture_kind"))&&frame.get("screen_sha256")==JSONObject.NULL,"NATIVE_SUCCESS_FRAME_KIND");
+            JSONObject profile=frame.getJSONObject("actual_profile_window");
+            need(target.sha256.equals(string(profile,"target_identity_sha256"))&&generation.equals(string(profile,"generation"))
+                    &&number(profile,"display_id")==displayId&&number(profile,"window_id")==number(frame,"window_id")
+                    &&number(profile,"task_id")==ownedLeafTaskId&&number(profile,"parent_task_id")==ownedRootTaskId
+                    &&ownedLeafTaskToken.equals(string(profile,"task_token_id"))&&number(profile,"user_id")==target.profile.userId
+                    &&number(profile,"user_serial")==target.profile.serial&&number(profile,"full_uid")==target.fullUid,"NATIVE_SUCCESS_FRAME_PROFILE");
+            no(profile,"serialized_token_is_authority","grants_action_authority");
+            byte[] phoneBytes=task("native-app-frame-"+id+".json");JSONObject phone=object(phoneBytes),capture=frame.getJSONObject("capture");
+            need(ProfileIdentity.sha(phoneBytes).equals(string(frame,"phone_observation_record_sha256"))&&id.equals(string(phone,"observation_id"))
+                    &&same(capture,phone.getJSONObject("ax_capture")),"NATIVE_SUCCESS_PHONE_RECORD");
+            for(String key:new String[]{"package","captured_elapsed_ms","rotation","window_id","app_tree_sha256","observation_state_sha256","capture_kind","screenshot_observed","nodes_truncated"})
+                need(same(frame.get(key),phone.get(key)),"NATIVE_SUCCESS_PHONE_PROJECTION");
+            JSONObject collection=phone.getJSONObject("collection");
+            for(String key:new String[]{"pending_nodes_at_stop","child_slots_omitted_by_traversal_limit","nodes_omitted_by_node_limit","nodes_omitted_by_text_limit"})
+                need(number(collection,key)==0,"NATIVE_SUCCESS_PHONE_INCOMPLETE");
+            need(collection.getJSONArray("truncation_reasons").length()==0&&phone.getJSONArray("nodes").length()==number(frame,"retained_nodes"),"NATIVE_SUCCESS_PHONE_NODE_SET");
+            need((id+"-native-ax.json").equals(string(capture,"receipt_file"))&&"hepta.native-ax-capture.v1".equals(string(capture,"receipt_schema")),"NATIVE_SUCCESS_AX_PATH");
+            byte[] axBytes=task(string(capture,"receipt_file"));need(axBytes.length==number(capture,"receipt_bytes")
+                    &&ProfileIdentity.sha(axBytes).equals(string(capture,"receipt_sha256")),"NATIVE_SUCCESS_AX_BYTES");
+            yes(capture,"full_two_censuses");no(capture,"business_completion_verified","grants_action_authority","publication_refreshes_capture_age","screenshot_present");
+            JSONObject ax=object(axBytes),binding=ax.getJSONObject("binding");
+            need("hepta.native-ax-capture.v1".equals(string(ax,"schema"))&&"native_ax".equals(string(ax,"kind")),"NATIVE_SUCCESS_AX_SCHEMA");
+            yes(ax,"complete_census_endpoint_frozen");no(ax,"business_completion_verified","grants_action_authority","publication_refreshes_capture_age","screenshot_present","visual_model");
+            for(String key:new String[]{"task_id","owner_sha256","execution_target_sha256","task_authorization_sha256","actual_selection_sha256","observation_id",
+                    "package","background_generation","display_id","window_id","rotation","app_tree_sha256","observation_state_sha256","captured_elapsed_ms"})
+                need(same(frame.get(key),binding.get(key)),"NATIVE_SUCCESS_AX_BINDING");
+            need(same(profile,binding.getJSONObject("profile_window")),"NATIVE_SUCCESS_AX_PROFILE");
+            JSONObject first=ax.getJSONObject("first"),second=ax.getJSONObject("second");
+            for(JSONObject census:new JSONObject[]{first,second}){
+                yes(census,"complete");no(census,"truncated");
+                for(String key:new String[]{"pending","child_slots_omitted","node_budget_omissions","text_budget_omissions"})need(number(census,key)==0,"NATIVE_SUCCESS_AX_INCOMPLETE");
+                need(census.getJSONArray("nodes").length()==number(census,"visited")&&number(census,"retained")==number(frame,"retained_nodes"),"NATIVE_SUCCESS_AX_NODES");
+                for(String key:new String[]{"task_id","owner_sha256","execution_target_sha256","task_authorization_sha256","actual_selection_sha256","package",
+                        "background_generation","display_id","window_id","rotation","app_tree_sha256","observation_state_sha256"})
+                    need(same(frame.get(key),census.getJSONObject("identity").get(key)),"NATIVE_SUCCESS_AX_CENSUS_IDENTITY");
+                nativeSuccessSameWindow(profile,census.getJSONObject("profile_window"));
+            }
+            need(same(first.getJSONArray("nodes"),second.getJSONArray("nodes"))&&same(first.getJSONObject("window"),second.getJSONObject("window"))
+                    &&same(ax.getJSONObject("capture_watermark"),ax.getJSONObject("second_start_watermark"))
+                    &&same(ax.getJSONObject("capture_watermark"),ax.getJSONObject("second_completed_watermark")),"NATIVE_SUCCESS_AX_WHOLE_STABILITY");
+        }
+        private void nativeSuccessRecordedAttempt(JSONObject attempt,JSONObject owner)throws Exception{
+            long step=number(attempt,"step");need(step>0&&step<steps,"NATIVE_SUCCESS_QUERY_STEP");
+            String leaf=String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",step);
+            JSONObject outcome=object(task(leaf));nativeSuccessIdentity(outcome,owner,false);
+            need(same(attempt,outcome.getJSONObject("attempt")),"NATIVE_SUCCESS_QUERY_ATTEMPT");
+        }
+        private void nativeSuccessReadOnlyActions(JSONObject owner,JSONObject goal,long terminal)throws Exception{
+            for(int i=1;i<=steps;i++){
+                String prefix=String.format(java.util.Locale.ROOT,"step-%02d-",i);
+                JSONObject record=object(task(prefix+"model-0.json")),action=object(task(prefix+"action.json")),raw=action.getJSONObject("action");
+                need(same(raw,object(string(record,"raw_text").getBytes(StandardCharsets.UTF_8)))
+                        &&string(record,"run_id").equals(string(action,"model_run_id"))&&string(record,"observation_id").equals(string(raw,"observation_id")),"NATIVE_SUCCESS_ACTION_MODEL");
+                yes(action,"accepted","model_issued");no(action,"stale");
+                JSONObject e=action.getJSONObject("action_execution");
+                need(taskId.equals(string(e,"task_id"))&&generation.equals(string(e,"background_generation"))&&number(e,"display_id")==displayId
+                        &&string(owner,"task_authorization_sha256").equals(string(e,"authorization_sha256"))
+                        &&string(record,"run_id").equals(string(e,"model_run_id"))&&string(record,"observation_id").equals(string(e,"observation_id"))
+                        &&number(e,"queued_elapsed_ms")>=created&&number(e,"worker_drained_elapsed_ms")<=terminal,"NATIVE_SUCCESS_ACTION_IDENTITY");
+                yes(e,"worker_drained","callback_published","callback_authority_current");no(e,"automatic_redispatch");
+                if(i==steps)continue;
+                yes(action,"dispatched");yes(e,"effect_entered","effect_returned","api_accepted");
+                String tool=string(raw,"action");
+                if(i==1&&"native.open_search".equals(tool))continue;
+                JSONObject outcome=object(task(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",i)));
+                nativeSuccessIdentity(outcome,owner,false);JSONObject attempt=outcome.getJSONObject("attempt"),receipt=attempt.getJSONObject("actual_action_receipt");
+                need(number(attempt,"step")==i&&string(record,"run_id").equals(string(attempt,"model_run_id"))
+                        &&tool.equals(string(attempt,"action"))&&ProfileIdentity.sha(task(prefix+"action.json")).equals(string(receipt,"step_action_record_sha256")),"NATIVE_SUCCESS_STEP_RECEIPT");
+                yes(receipt,"accepted","dispatched","model_issued");no(receipt,"stale","pre_effect_stale_recovery_available");
+                String purpose=string(attempt,"purpose");
+                need("type".equals(tool)&&"set_product_query".equals(purpose)&&string(goal,"product_model").equals(string(raw,"text"))
+                        ||"click".equals(tool)&&("submit_product_query".equals(purpose)||"open_exact_product".equals(purpose)),"NATIVE_SUCCESS_READ_ONLY_ACTION");
+            }
+        }
+        private void requireOnlyNativeSuccessModelPaths(JSONObject result)throws Exception{
+            TreeSet<String> actual=new TreeSet<String>();for(String p:originals.keySet())if(p.startsWith("runs/"))actual.add(p);
+            need(actual.equals(nativeSuccessModelPaths(result,originals)),"NATIVE_SUCCESS_NATIVE_CLOSED_SET");
+        }
+        private void requireNativeSuccessControl(JSONObject origin,JSONObject result)throws Exception{
+            yes(origin,"model_reported_success","background_lease_unreleased");no(origin,"completion_verified","cleanup_known","goal_independently_verified","web_helper_lease_unreleased");
+            need(number(origin,"steps")==steps,"NATIVE_SUCCESS_CONTROL_STEPS");
+            if(origin.has("task_result_reference")){
+                JSONObject ref=origin.getJSONObject("task_result_reference"),summary=origin.getJSONObject("completion_evidence");
+                need("hepta.session-terminal-summary.v1".equals(string(summary,"schema"))&&"native_product_price".equals(string(summary,"kind"))
+                        &&ownerSha256.equals(string(summary,"owner_sha256"))&&string(result.getJSONObject("completion_evidence"),"contract_sha256").equals(string(summary,"contract_sha256"))
+                        &&"typed_sorted_json_semantics.v1".equals(string(summary,"digest_encoding"))&&string(summary,"digest_encoding").equals(string(ref,"digest_encoding"))
+                        &&ProfileIdentity.hash(string(summary,"full_completion_evidence_sha256"))
+                        &&string(summary,"full_completion_evidence_sha256").equals(string(ref,"completion_evidence_sha256")),"NATIVE_SUCCESS_CONTROL_SUMMARY");
+                no(summary,"full_evidence_embedded","grants_tool_authority","completion_verified","business_verified","terminal_binding_and_cleanup_verified");
+                // The unchanged result reference below binds the entire actual result bytes.
+                // This summary digest is cross-linked, not substituted for that full-file proof.
+            }
+        }
         private void requireIncompleteModelDisposition(JSONObject result)throws Exception{
             if(result.get("model_done_status")==JSONObject.NULL)return;
             need(steps>0&&"failure".equals(result.get("model_done_status")),"BUSINESS_MODEL_DISPOSITION");
@@ -699,7 +970,8 @@ public final class PublicProfileBusinessAbsenceRecovery {
             JSONObject current=object(original(CONTROL)),origin=object(original(manifest.originSummary));
             requireControlIdentity(origin);need("blocked".equals(string(origin,"status"))&&number(origin,"steps")==steps&&same(origin.getJSONObject("background_request"),owner.getJSONObject("background_request"))
                     &&string(origin,"task_authorization_sha256").equals(string(result,"task_authorization_sha256")),"BUSINESS_ORIGINAL_CONTROL");
-            no(origin,"completion_verified","model_reported_success");
+            if(verifiedNativeSuccessBeforeCleanup)requireNativeSuccessControl(origin,result);
+            else no(origin,"completion_verified","model_reported_success");
             if(origin.has("terminal_evidence_schema")||origin.has("task_result_reference")){
                 JSONObject ref=origin.getJSONObject("task_result_reference"),d=manifest.descriptor(taskPrefix+"result.json");
                 need("hepta.session-terminal-evidence.v1".equals(string(origin,"terminal_evidence_schema"))&&"hepta.session-task-result-reference.v1".equals(string(ref,"schema"))

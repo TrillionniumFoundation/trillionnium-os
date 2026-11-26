@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 final class BrokerCloseReplyHost {
     private static final long CLEANUP_MS=1500;
+    NORMAL_CLEANUP_TYPE
+    // This original legacy scope never creates the new normal-profile clock.
+    private NormalProfileCleanupWindow normalProfileCleanupWindow;
+    private LocalSocket normalProfileCleanupClosePeer;
     private final CountDownLatch cleanupDone=new CountDownLatch(1);
     private final AtomicBoolean closing=new AtomicBoolean();
     private final Custody profileCustody=new Custody();

@@ -1,0 +1,153 @@
+package org.trillionnium.hepta.background;
+
+import android.app.ActivityOptions;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.function.LongSupplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/** Explicit synthetic Android/Binder/time ports. No device operations or successful permission substitute. */
+final class NormalCleanupIO {
+    static NormalCleanupIO current;
+    static String before;
+    final ProfileBrokerHostTest.Fake f=new ProfileBrokerHostTest.Fake();
+    final List<String> reads=new ArrayList<String>();
+    final List<Long> readDeadlines=new ArrayList<Long>();
+    LongSupplier deadline=()->Long.MAX_VALUE,sampleStarted=()->-1;
+    boolean cleanup,partialGlobal,foreignAfterDelete,removeThrows,deleteThrows,keepRecents,keepDisplay;
+    boolean rootTokenChanged,lateLeafReturn,staleFinalHistory;
+    String raw=before,locationArm="",expireAt="",changeIdentityAt="";
+    long cleanupAt,leafGoneAt=-1,rootGoneAt=-1,leafDelay=0,rootDelay=40;
+    int removeCalls,deleteCalls,releaseCalls,expiryHits,packageReads;
+    long removedAt=-1,deletedAt=-1,releasedAt=-1;
+    boolean displayPresent=true;
+    void sync() {
+        if(leafGoneAt>=0&&f.now>=leafGoneAt){f.app=false;if(!keepRecents)f.recentsApp=false;leafGoneAt=-1;}
+        if(rootGoneAt>=0&&f.now>=rootGoneAt){f.root=false;rootGoneAt=-1;}
+    }
+    void tick(String kind,int cost)throws Exception {
+        if(cleanup){f.now+=cost;reads.add(kind);readDeadlines.add(deadline.getAsLong());}
+        sync();
+    }
+    ProfileTaskPolicy.Snapshot snapshot()throws Exception {
+        tick("global",30);
+        if(partialGlobal)return new ProfileTaskPolicy.Snapshot(Collections.<ProfileTaskPolicy.Root>emptyList());
+        return f.snapshot();
+    }
+    List<BackgroundOwnedSingleTask.Task> roots()throws Exception {
+        tick("roots",15);
+        if(rootTokenChanged&&removeCalls>0&&f.root)return Collections.singletonList(
+            new BackgroundOwnedSingleTask.Task(200,7,0,-1,0,-1,0,new Object(),
+                Collections.singletonList(f.rootCookie),null,null,null,null,null,false,false));
+        return f.roots();
+    }
+    List<BackgroundOwnedSingleTask.Task> children(Object token)throws Exception {tick("children",15);return f.children(token);}
+    String recents(LongSupplier until)throws Exception {
+        tick("recents",60);
+        if(cleanup&&f.now>=until.getAsLong())throw new IOException("PROFILE_RECENTS_DEADLINE");
+        if(cleanup){
+            if(removeCalls==0&&f.app)locationArm="leaf";
+            else if(deleteCalls==0&&!f.app)locationArm="root";
+            else if(deleteCalls>0&&!f.root)locationArm="vd";
+            if(staleFinalHistory&&deleteCalls>0&&!f.root)f.now=sampleStarted.getAsLong()+1500;
+        }
+        return f.recentsApp?withLeaf(raw):raw;
+    }
+    ProfilePackages.Readback packageRead(boolean ready,long until)throws Exception {
+        tick("package",25);packageReads++;
+        String arm=locationArm;locationArm="";
+        if(cleanup&&!changeIdentityAt.isEmpty()&&arm.equals(changeIdentityAt))f.actual=ProfileBrokerHostTest.target(11,1010367);
+        if(cleanup&&arm.equals(expireAt)&&!arm.isEmpty()){
+            f.now=sampleStarted.getAsLong()+1500;expiryHits++;
+            // Return a complete but late read; the actual post-location freshness guard must reject.
+        }else if(cleanup&&f.now>=until)throw new IOException("PROFILE_READ_DEADLINE");
+        return new ProfilePackages.Readback(f.actual);
+    }
+    void remove(Object token)throws Exception {
+        ProfileBrokerHostTest.yes(token==f.leafToken,"synthetic Binder received other leaf");
+        removeCalls++;removedAt=f.now;f.mutations.add("remove_leaf");
+        if(removeThrows)throw new IOException("PROFILE_SYNTHETIC_REMOVE_FAILED");
+        leafGoneAt=leafDelay==0?f.now:cleanupAt+leafDelay;
+        if(lateLeafReturn)f.now=cleanupAt+6001;
+        sync();
+    }
+    boolean delete(Object token)throws Exception {
+        ProfileBrokerHostTest.yes(token==f.rootToken&&!f.app,"synthetic Binder received other/nonempty root");
+        deleteCalls++;deletedAt=f.now;f.mutations.add("delete_root");
+        if(deleteThrows)throw new IOException("PROFILE_SYNTHETIC_DELETE_FAILED");
+        rootGoneAt=f.now+rootDelay;if(foreignAfterDelete)f.foreign=true;sync();return true;
+    }
+    void release()throws Exception {
+        releaseCalls++;releasedAt=f.now;
+        if(!keepDisplay)displayPresent=false;
+    }
+    static String withLeaf(String raw) {
+        String row="  * Recent #0: Task{aabb300 #300 type=standard A=1010367:ctrip.android.view}\n"
+            +"    userId=10 effectiveUid=u10a367 mCallingUid=0\n    affinity=1010367:ctrip.android.view\n"
+            +"    intent={flg=0x10000000 cmp="+ProfileBrokerHostTest.SPLASH+"}\n"
+            +"    mActivityComponent="+ProfileBrokerHostTest.HOME+"\n"
+            +"    Activities=[ActivityRecord{aabb u10 "+ProfileBrokerHostTest.HOME+" t300}]\n"
+            +"    taskId=300 rootTaskId=200\n    lastActiveTime=355000000 (inactive for 0s)\n    lastDisplayId=7\n";
+        int at=raw.indexOf("  Recent tasks:\n");
+        if(at<0||at!=raw.lastIndexOf("  Recent tasks:\n"))throw new AssertionError("raw fixture seam");
+        String s=raw.substring(0,at)+"  Recent tasks:\n"+row+raw.substring(at+"  Recent tasks:\n".length());
+        Matcher m=Pattern.compile("(?m)^  \\* Recent #[0-9]+:").matcher(s);StringBuffer out=new StringBuffer();int i=0;
+        while(m.find())m.appendReplacement(out,Matcher.quoteReplacement("  * Recent #"+(i++)+":"));m.appendTail(out);return out.toString();
+    }
+}
+
+final class ProfilePackages {
+    static final class Readback {
+        final ProfileTarget target;final ProfileTaskPolicy.Activity activity;
+        Readback(ProfileTarget t){target=t;activity=new ProfileTaskPolicy.Activity(t.packageName,t.component,t.fullUid,0,0,0,1,
+            true,true,true,null,null,"/synthetic/installed/base.apk",t.fullUid+":"+t.packageName);}
+    }
+    Readback read(int user,String pkg,boolean ready,long deadline)throws Exception {
+        if(user!=10||!ProfileTarget.CTRIP.equals(pkg))throw new AssertionError("unexpected profile IO");
+        return NormalCleanupIO.current.packageRead(ready,deadline);
+    }
+    ProfilePermissionTransient.Authority permissionController(int user,long deadline)throws Exception {
+        throw new IOException("SYNTHETIC_PERMISSION_PORT_UNBOUND");
+    }
+}
+
+/** All read endpoints are synthetic. The three effect members below are verbatim production extractions. */
+final class BackgroundTaskOrganizer {
+    interface Check {void check()throws Exception;}
+    final Check locationCheck;final Class<?> transactionType=Transaction.class;
+    final Method remove,apply,delete;
+    final Object windowOrganizer=new Organizer(),organizer=windowOrganizer;
+    final Map<Object,Object> tokenWrappers=new HashMap<Object,Object>();
+    BackgroundTaskOrganizer(Object atm,ActivityOptions options,int display,Check active,Check location,LongSupplier deadline)throws Exception {
+        if(display!=7)throw new AssertionError("synthetic display identity");
+        locationCheck=location;
+        remove=Transaction.class.getMethod("removeTask",Object.class);
+        apply=Organizer.class.getMethod("applyTransaction",Transaction.class);
+        delete=Organizer.class.getMethod("deleteRootTask",Object.class);
+    }
+    static ProfileTaskPolicy.Snapshot profileSnapshot(Object atm)throws Exception{return NormalCleanupIO.current.snapshot();}
+    static String profileRecents(LongSupplier deadline)throws Exception{return NormalCleanupIO.current.recents(deadline);}
+    List<BackgroundOwnedSingleTask.Task> roots()throws Exception {
+        List<BackgroundOwnedSingleTask.Task> rows=NormalCleanupIO.current.roots();
+        for(BackgroundOwnedSingleTask.Task r:rows)tokenWrappers.put(r.token,r.token);return rows;
+    }
+    List<BackgroundOwnedSingleTask.Task> children(Object token)throws Exception {
+        List<BackgroundOwnedSingleTask.Task> rows=NormalCleanupIO.current.children(token);
+        for(BackgroundOwnedSingleTask.Task r:rows)tokenWrappers.put(r.token,r.token);return rows;
+    }
+    void createRoot(Object cookie){NormalCleanupIO.current.f.createRoot(cookie);}
+    void bindProfileRoot(Object token,Object cookie){NormalCleanupIO.current.f.bindRoot(token,cookie);}
+    String activitiesDump()throws IOException{throw new IOException("SYNTHETIC_PERMISSION_PORT_UNBOUND");}
+    public static final class Transaction {
+        Object token;public Transaction(){}
+        public void removeTask(Object value){token=value;}
+    }
+    public static final class Organizer {
+        public Organizer(){}
+        public void applyTransaction(Transaction t)throws Exception{NormalCleanupIO.current.remove(t.token);}
+        public boolean deleteRootTask(Object token)throws Exception{return NormalCleanupIO.current.delete(token);}
+    }
+    /*__ORGANIZER_MEMBERS__*/
+}

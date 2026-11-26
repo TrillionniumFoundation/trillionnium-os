@@ -1,10 +1,10 @@
 {
   "android_qualified": false,
-  "base_head": "8f058711b3e275d1f6317f5e0ed1150bbaed35fe",
-  "base_manifest_sha256": "86b6f42f42ff818a098e7c7313605dcfb223e43c2b3cabc2633c94af10537eca",
+  "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
+  "base_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
   "candidate_exact_git_head": null,
   "candidate_status": "FROZEN_SOURCE_PENDING_CURRENT_HOST_AND_ANDROID_QUALIFICATION",
-  "complete_source_files": 2700,
+  "complete_source_files": 2710,
   "current_coherent_census": {
     "author_ctrip_cases": 43,
     "author_original_observer_cases": 68,
@@ -138,8 +138,8 @@
   },
   "current_integration_freeze": {
     "android_compilation_pending": true,
-    "base_head": "8f058711b3e275d1f6317f5e0ed1150bbaed35fe",
-    "description": "Preserve active personal Notes task identity across a closed-set child retirement and recover an aborted after-Back workflow only after independently verified absence; retain all original failure and EOF lifecycle evidence.",
+    "base_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
+    "description": "Verified native product success before unknown cleanup; fixed bounded normal managed-profile cleanup with reviewed host compatibility; six production files, thirteen tests. Host-only qualification pending.",
     "device_success_claimed": false,
     "host_execution_pending": true,
     "source_freeze_only": true,
@@ -6547,9 +6547,9 @@
       "sha256": "c77cef46cececa13757a439048c55262c81f18479822c306d042d95dd5ad3cff"
     },
     {
-      "bytes": 160154,
+      "bytes": 165540,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c"
+      "sha256": "88d7c99a5216d064b9f6da7def8d9a17a3b9d76a85468bba51cab0bba2a96613"
     },
     {
       "bytes": 25279,
@@ -6617,9 +6617,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 64339,
+      "bytes": 65919,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "c1c7cc2b3d8a3d43ec9b2ce8ddb6f23ceab7697ab4eafcf6e948f6630bbaef08"
+      "sha256": "38beb5a282fa15c6938f46a09b8d9e3ee2578a24f9cbcdd4f0e8585dc38d71e6"
     },
     {
       "bytes": 21140,
@@ -6672,9 +6672,9 @@
       "sha256": "268dc50e7d3205cc8fb35883843fbdf8a10cc517f773867a9aae6d00fe07f2fd"
     },
     {
-      "bytes": 8249,
+      "bytes": 8834,
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
-      "sha256": "ecdd2e0ee3153456042bc8c76dda9d122d8617ee432aaf551e1b0cdfb9f4ac84"
+      "sha256": "f55ca98e317927cbc173b29aa921ed60144753ecdada01eded98fbc12cffa6f4"
     },
     {
       "bytes": 16852,
@@ -6767,9 +6767,9 @@
       "sha256": "60f901b4a6d863f2e712d49aaa166859c4a2437fbf46a2562e16413acb3a65c4"
     },
     {
-      "bytes": 109498,
+      "bytes": 140025,
       "path": "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
-      "sha256": "d68bc585593f0014888fa06a914fa713d2c440e91b310b6777347d5268b4de1b"
+      "sha256": "f987f368c77ed78bbcbd59ff1d2a3c41c79a952fd3ba77b38afc37f2651d36c3"
     },
     {
       "bytes": 25290,
@@ -6852,9 +6852,9 @@
       "sha256": "d35e4e2ec7d9daed58e45151fcbb6bd2e859ca070ba43fb7dc4fea201d8ba410"
     },
     {
-      "bytes": 156312,
+      "bytes": 156411,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "8109ceb4acc2d2c8577bc5fc5e8d37ce259117100e42b846a601a371f1641eb1"
+      "sha256": "928b207a6b254c127a839955567aec07b056af06ecfdefa0161e47baeae9ec7f"
     },
     {
       "bytes": 10735,
@@ -7297,9 +7297,9 @@
       "sha256": "d80c2e7c725980b07e5ae6f2a425f5f914cc8c3db7a4c5d8dc6ec55a009df0de"
     },
     {
-      "bytes": 41288,
+      "bytes": 43361,
       "path": "src/org/trillionnium/hepta/local/PublicProfileBusinessRecoveryClient.java",
-      "sha256": "ca23463b793ebbb4d6f261053bff631ecbbb0e32e145c19672994afc048468e0"
+      "sha256": "473eeed0877e239bd2b0221f21a469b6373346c0e6f78460839d7346b658355c"
     },
     {
       "bytes": 18666,
@@ -7967,14 +7967,14 @@
       "sha256": "251696da23360e7212b7095763f088a7d3d09414de50286f1cf9aaa86f83879f"
     },
     {
-      "bytes": 4081,
+      "bytes": 4305,
       "path": "tests/background-broker/BrokerCloseReplyHost.template",
-      "sha256": "7e88c2b456a3bae20f29bbea0af1fc009b0a8231ffebf17343cd1a964d093d7d"
+      "sha256": "407f1a5658b6dde84783f045382f790f5b0e3fb9276e99e8eaa9d6dc3021d781"
     },
     {
-      "bytes": 18038,
+      "bytes": 18306,
       "path": "tests/background-broker/BrokerNotesCloseReplyHost.template",
-      "sha256": "f5480f0aa7995050466cfe8e41802242dd531a21c1b0081e8b4cfcd0a38cc067"
+      "sha256": "b1c02b927caaca36c505bfc91eb960eeb61d529017f8d0a0e1cbe1908ed27cf9"
     },
     {
       "bytes": 16222,
@@ -7987,9 +7987,14 @@
       "sha256": "59c0655e0eae7e1242eac2cc2f1ca3746f52797c6ca37873607fbc9bc66bd298"
     },
     {
-      "bytes": 21973,
+      "bytes": 5501,
+      "path": "tests/background-broker/normal_cleanup_history.py",
+      "sha256": "5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732"
+    },
+    {
+      "bytes": 25091,
       "path": "tests/background-broker/run_host_checks.py",
-      "sha256": "ff5ee173773ac546030285ac031b03e7314880649c8d5ad2058b089c48a44e11"
+      "sha256": "47ad757452a35a0e736312df2ccd89d4ae39f6112a9fcc99297ab394e5eada4e"
     },
     {
       "bytes": 3268,
@@ -11542,6 +11547,31 @@
       "sha256": "6285c50bf973ecc023940c25929ffab758f2f46a029a5a8e991d8b495dbada69"
     },
     {
+      "bytes": 8960,
+      "path": "tests/profile-normal-cleanup-window/NormalCleanupIO.template",
+      "sha256": "df57fa4ac3e53b9bb8ea301711fadc494a5327b4238bfa38e02a55b942d540d6"
+    },
+    {
+      "bytes": 24767,
+      "path": "tests/profile-normal-cleanup-window/ProfileNormalCleanupHost.template",
+      "sha256": "f541f0096c0d27d87051120078440ad1c8a4d9b28b7404f197f668d9fecda756"
+    },
+    {
+      "bytes": 2707,
+      "path": "tests/profile-normal-cleanup-window/README.md",
+      "sha256": "5c23f866c12c7a9f4a5fa22ddb671f60cbd86b781a09fc995f12ad1881aacc7a"
+    },
+    {
+      "bytes": 10051,
+      "path": "tests/profile-normal-cleanup-window/SOURCE-PINS.json",
+      "sha256": "d643e8dd39cfafdc4280dc2bdc662bfd4c42c16ec244c42b561f6c9f7c2f3197"
+    },
+    {
+      "bytes": 10193,
+      "path": "tests/profile-normal-cleanup-window/run_host.py",
+      "sha256": "d3d6f6fc27e3ba0080f3f42bc3281beaa4a81a8228bd3bf387c27756eb341ff9"
+    },
+    {
       "bytes": 3866,
       "path": "tests/profile-observation/ParcelReaderHostTest.java",
       "sha256": "8c9aaf8b37cc528e88ac5def8b30916eec5c579a46939fd9e534258b2685e1bd"
@@ -12070,6 +12100,26 @@
       "bytes": 5904,
       "path": "tests/public-profile-history/run_host.py",
       "sha256": "bd7284bedf937c257a3d805ef8dd0922a6a8989d4e4ca74e27e15b9862f092c4"
+    },
+    {
+      "bytes": 8038,
+      "path": "tests/public-profile-native-success-recovery/NativeSuccessClientHostTest.java",
+      "sha256": "1ff96023da46fe43cfc0caedcbd6a1125769025475ff0f1f50228ef0c50c3e8c"
+    },
+    {
+      "bytes": 10408,
+      "path": "tests/public-profile-native-success-recovery/NativeSuccessRecoveryHostTest.java",
+      "sha256": "35716a606c0258b5b4220fa699ba5eb3f967410793e0295e79c8ed5a59c4c8d0"
+    },
+    {
+      "bytes": 12250,
+      "path": "tests/public-profile-native-success-recovery/RUNNER-DERIVATION.json",
+      "sha256": "a39e4f154f3f48fe8725244b2af66cc1450b0e9f4c3042e85c6601437d789571"
+    },
+    {
+      "bytes": 14695,
+      "path": "tests/public-profile-native-success-recovery/run_host.py",
+      "sha256": "da16cb7417b96bd9067cb64f6cb7109f7fb0165d598d270065e47ce7e807457e"
     },
     {
       "bytes": 3717,
@@ -13990,28 +14040,31 @@
   "host_validation_at_preparation": {
     "prior_preparation_metadata": {
       "prior_preparation_metadata": {
-        "author_cases_are_not_published_same_source_execution": true,
-        "author_ctrip_sampling_gate": {
-          "bytes": 56864,
-          "mode": 420,
-          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
-          "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+        "prior_preparation_metadata": {
+          "author_cases_are_not_published_same_source_execution": true,
+          "author_ctrip_sampling_gate": {
+            "bytes": 56864,
+            "mode": 420,
+            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r1/validation-ctrip-form-sampling-r3/RESULT.json",
+            "sha256": "5f3af8534d1f76d693f274b0fc4bf900d31c980051d06ffe560c6fd68679f34c"
+          },
+          "author_xiaomi_gate": {
+            "bytes": 2051788,
+            "mode": 384,
+            "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
+            "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
+          },
+          "current_android_build_qualified": false,
+          "current_full_host_suite_completed": false,
+          "phone_qualified": false,
+          "prepublication_original_failed_suites": {
+            "bytes": 5295,
+            "mode": 384,
+            "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
+            "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
+          }
         },
-        "author_xiaomi_gate": {
-          "bytes": 2051788,
-          "mode": 384,
-          "path": "/home/alex/hepta-razr-xiaomi-initial-cache-reset-20261126-56dad1-model-r1/validation-producer-r2/RESULT.json",
-          "sha256": "70abdca412900163c08d7888f3e86e45627fdb049c9a96e194e26cf6633dfa90"
-        },
-        "current_android_build_qualified": false,
-        "current_full_host_suite_completed": false,
-        "phone_qualified": false,
-        "prepublication_original_failed_suites": {
-          "bytes": 5295,
-          "mode": 384,
-          "path": "/home/alex/hepta-razr-0a8-native-observation-successor-20261126-56dad1-model-r3/validation-fixture-preflight-r1/RESULT.json",
-          "sha256": "1b80c77390e71dd3e4b5c5351b8e4d833edd113ba529c0d8a6d44dca6f9d47c2"
-        }
+        "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
       },
       "status": "PENDING_EXECUTION_FOR_THIS_EXACT_FINAL_INTEGRATION"
     },
@@ -14437,13 +14490,13 @@
   ],
   "phone_qualified": false,
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "5eacc9cf6ff972045b939a2200b72ee8d6d5210a5713a240f9e6962aaf737a30",
+  "production_input_map_sha256": "05dd25cf81e27dc37837303d53c712afb4c2620cd75d2e09320400a5ea7133a3",
   "production_qualification_base_head": "0a8ca847fd2d8d667a229e068c02f5d8044609fb",
   "schema": "hepta.local-source.v3",
   "scope": "Test-only child of failed 1cca. Production initial Xiaomi cache recovery and complete Ctrip form sampling remain byte-identical. Four test/document changes make kernel memory IO explicit in generated settings fixtures and qualify two Snapshot type references in the AX-only carrier. Installed predecessor remains 0a8ca; no phone qualification is claimed.",
-  "source_parent_head": "8f058711b3e275d1f6317f5e0ed1150bbaed35fe",
-  "source_parent_manifest_sha256": "86b6f42f42ff818a098e7c7313605dcfb223e43c2b3cabc2633c94af10537eca",
-  "source_snapshot_predecessor_manifest_sha256": "86b6f42f42ff818a098e7c7313605dcfb223e43c2b3cabc2633c94af10537eca",
+  "source_parent_head": "f4c0e216a9cca92951d3b69d5b77e6c9d7effbdc",
+  "source_parent_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
+  "source_snapshot_predecessor_manifest_sha256": "79e9364323308cc8da8e8fcff261ecb39be9447b0240f298a6dec20d673bc959",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

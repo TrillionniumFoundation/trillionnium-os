@@ -35,6 +35,12 @@ public final class ProfileOwnedTask {
         default ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf)throws Exception{return null;}
     }
+    /** Normal-public cleanup time is read-only authority; it never grants an input or task capability. */
+    public interface CleanupReadWindow {
+        long deadline();
+        void beginSample()throws Exception;
+        void requireFresh()throws Exception;
+    }
     /** Package-local public-mode observation seam. The default private path has
      * no dependency on public recents/JSON adapters and retains its strict gate. */
     interface PublicRecentHistory {
@@ -265,13 +271,28 @@ public final class ProfileOwnedTask {
             value.put("serialized_evidence_is_authority",false);return Collections.unmodifiableMap(value);
         }
     }
+    private CleanupReadWindow normalCleanupReadWindow;
+    /** The original public history and retained live capabilities remain the sole task authority. */
+    public synchronized void retire(long deadline,CleanupReadWindow readWindow)throws Exception{
+        need(publicHistory!=null&&readWindow!=null&&normalCleanupReadWindow==null
+                &&deadline==readWindow.deadline(),"PROFILE_NORMAL_CLEANUP_WINDOW_INVALID");
+        normalCleanupReadWindow=readWindow;
+        try{retire(deadline);}finally{normalCleanupReadWindow=null;}
+    }
+    private void beginNormalCleanupSample()throws Exception{
+        if(normalCleanupReadWindow!=null)normalCleanupReadWindow.beginSample();
+    }
+    private void requireNormalCleanupSampleFresh()throws Exception{
+        if(normalCleanupReadWindow!=null)normalCleanupReadWindow.requireFresh();
+    }
     public synchronized void retire(long deadline)throws Exception{
         need(!retiring,"PROFILE_RETIRE_ALREADY_ATTEMPTED");retiring=true;
         try{
-            actual(false);
+            beginNormalCleanupSample();actual(false);
             if(!rootAttempted){
                 platform.snapshot().requireDedicatedEmpty(target);requireRecentEmpty(readRecents());
                 need(checked(platform.roots()).isEmpty(),"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
+                requireNormalCleanupSampleFresh();
                 liveAbsent=true;recentsAbsent=true;cleanupKnown=true;return;
             }
             need(root!=null,"PROFILE_ROOT_CREATE_UNRESOLVED");
@@ -294,15 +315,17 @@ public final class ProfileOwnedTask {
                     requireRecentOnlyOwned(readRecents(),leaf.id);
                     if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
+                    requireNormalCleanupSampleFresh();
                     leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;
                 }else{
                     requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
                     if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!recentIds(readRecents()).contains(leaf.id),
                             "PROFILE_DETACHED_RECENT_LEAF_UNRESOLVED");
+                    requireNormalCleanupSampleFresh();
                 }
                 while(platform.now()<deadline){
-                    actual(false);
+                    beginNormalCleanupSample();actual(false);
                     ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
                     boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
                     List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;
@@ -326,17 +349,19 @@ public final class ProfileOwnedTask {
                         List<BackgroundOwnedSingleTask.Task> currentChildren=sampledChildren==null
                                 ?checked(platform.children(root.token)):sampledChildren;
                         need(currentChildren.isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
+                        requireNormalCleanupSampleFresh();
                         rootDeleteAttempted=true;
                         need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
                     current.requireOnlyOwned(target,display,root.id,liveLeafGone?-1:leaf.id);
-                    platform.pause();
+                    requireNormalCleanupSampleFresh();platform.pause();
                 }
                 need(rootRemoved,"PROFILE_LEAF_RETIRE_NOT_CONFIRMED");
             }else{
                 need(!global.allIds.contains(root.id),"PROFILE_ROOT_MOVED_OUTSIDE_DISPLAY");
                 if(leaf!=null)need(!global.allIds.contains(leaf.id),"PROFILE_LEAF_MOVED_OUTSIDE_DISPLAY");
+                requireNormalCleanupSampleFresh();
             }
             while(platform.now()<deadline){
                 if(absent())return;platform.pause();
@@ -350,7 +375,7 @@ public final class ProfileOwnedTask {
     }
     public synchronized boolean absent()throws Exception{
         if(identityUnknown||!retiring)return false;
-        actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
+        beginNormalCleanupSample();actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
         ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
         global.requireDedicatedEmpty(target);requireRecentEmpty(recent);
         List<BackgroundOwnedSingleTask.Task> remaining=checked(platform.roots());
@@ -358,8 +383,9 @@ public final class ProfileOwnedTask {
             need(rootRemoved&&remaining.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
             requireRoot(remaining.get(0),false);
             need(checked(platform.children(root.token)).isEmpty(),"PROFILE_FOREIGN_CHILD_TASK");
-            return false;
+            requireNormalCleanupSampleFresh();return false;
         }
+        requireNormalCleanupSampleFresh();
         liveAbsent=(root==null||!global.allIds.contains(root.id))&&(leaf==null||!global.allIds.contains(leaf.id));
         recentsAbsent=(root==null||!recentIds(recent).contains(root.id))&&(leaf==null||!recentIds(recent).contains(leaf.id));
         cleanupKnown=liveAbsent&&recentsAbsent&&(!dispatchMarked||leaf!=null);

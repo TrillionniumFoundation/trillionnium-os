@@ -1,0 +1,13 @@
+# Normal public managed-profile cleanup timing regression
+
+This gate is a host regression. It does not contact a phone, build an APK, acquire current task authority, or claim that historical Xiaomi task 277631 would have passed.
+
+It compiles the entire current ProfileOwnedTask, ProfileTaskPlatform, PublicProfileRecentHistory, ProfileTaskPolicy and ProfileDisplayCustody with their real pure dependencies. The normal window, admission anchor, cleanup thread, freshness/deadline helpers, original-socket reply predicate, and failure recorder are complete verbatim members of the candidate BackgroundDisplayBroker. The original organizer leaf/root effect methods and token lookup are also complete verbatim members. Extraction is locked by whole source and member SHA-256. Generated proof/IO ports do not replace any compiled production body.
+
+The Android TaskInfo/package/display reads, Binder targets, clock, socket identity objects and read latencies are explicit synthetic ports. A real JVM thread runs the extracted broker cleanup method. Actual task ownership, history parsing, ordered samples, tokens, one-shot flags and freshness predicates remain production code. The package endpoint can return a complete read at an injected stale time so the real callback after the read must refuse before a Binder target is reached. The test does not claim kernel or vendor Android behavior.
+
+Thirty-four focused cases include a leaf scripted to disappear 1408 ms after cleanup starts, an original 1400 ms budget failure control, fixed 6 s/5.9 s total boundaries, strict sample age below 1500 ms, stale package reads before each of leaf/root/VD effects, invalid identity/user/UID/cookie/display, foreign or incomplete census/history, late and throwing effects, repeated cleanup, retained-deadline precedence, legacy private budget behavior and original-peer released reply grace. The case inventory is fixed in SOURCE-PINS.json. The unchanged original ProfileBrokerHostTest and ProfileRootRefusalHostTest then execute against the same compiled current policy.
+
+The 904-byte existing synthetic recents fixture is retained exactly. It is not the historical device dump. No old report is rewritten or reclassified. BackgroundSession's 8000 ms public-profile close branch is source-pinned; the full app/socket transport and Android broker are not executed in this gate.
+
+One command uses the existing fixed JDK and JSON jar. It performs strict compile, the 34 focused cases, then the two original policy regressions. On the first failed stage it stops, retains stdout/stderr/generated sources and actual partial case evidence, and emits a false RESULT.json. No automatic rerun or permission relaxation is included.

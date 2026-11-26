@@ -1,0 +1,312 @@
+package org.trillionnium.hepta.background;
+
+import android.os.SystemClock;
+import android.app.ActivityOptions;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.*;
+
+/** Actual normal-cleanup members; framework/time endpoints below are synthetic and grant no device authority. */
+public final class ProfileNormalCleanupHostTest {
+    private static final long STARTUP_MS=8000,CLEANUP_MS=1500;
+    private static final class Config {
+        final ProfileTarget profileTarget;final Object publicOwnGroupScope;final String generation=ProfileBrokerHostTest.GEN;
+        Config(ProfileTarget t,boolean pub){profileTarget=t;publicOwnGroupScope=pub?new Object():null;}
+    }
+    private final Config config;
+    private final CountDownLatch cleanupDone=new CountDownLatch(1);
+    private final AtomicBoolean closing=new AtomicBoolean(),cleanupStarted=new AtomicBoolean(),publicAdmissionRetired=new AtomicBoolean();
+    private final Object dispatchGate=new Object(),activityTasks=new Object();
+    private final ProfileDisplayCustody profileCustody=new ProfileDisplayCustody();
+    private final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
+    private final ThreadLocal<Long> retainedReadDeadline=new ThreadLocal<Long>();
+    private final ThreadLocal<NormalProfileCleanupWindow> normalProfileCleanupRead=new ThreadLocal<NormalProfileCleanupWindow>();
+    private volatile NormalProfileCleanupWindow normalProfileCleanupWindow;
+    private volatile LocalSocket normalProfileCleanupClosePeer,authenticatedProfileClosePeer,connection;
+    private volatile long cleanupAt,requestDeadline=20000,started=1000,expires=30000;
+    private volatile String state="ACTIVE",terminalReason="",bootReadRetirementFailure;
+    private volatile boolean serve=true,createInFlight,effectInFlight,profileDisplayReleaseAttempted;
+    private ProfileOwnedTask profileOwnedTask;
+    private ProfileTaskPlatform platform;
+    private ProfilePackages profilePackages=new ProfilePackages();
+    private ProfilePackages.Readback profileReadback;
+    private PublicProfileRecentHistory.Baseline publicProfileHistory;
+    private Map<String,Object> profileCleanupReadback,profilePersonalAudit;
+    private BackgroundOwnedSingleTask ownedSingleTask;
+    private WindowInfosCapture calendarWindowCapture;
+    private NotesPort publicNotesCustody;
+    private final int displayId=7;
+    private final String displayName="synthetic-owned-display";
+    private VirtualDisplay virtual=new VirtualDisplay();
+    private DisplayManager displays=new DisplayManager();
+    private ImageReader surfaceReader=new ImageReader();
+    private HandlerThread displayThread=new HandlerThread();
+    private LocalServerSocket server;
+    private int notesBranch,screenRetires,bootRetires,surfaceDetaches;
+    final NormalCleanupIO io;
+    ProfileNormalCleanupHostTest(boolean pub,boolean launch)throws Exception {
+        io=new NormalCleanupIO();NormalCleanupIO.current=io;SystemClock.clock=()->io.f.now;
+        config=new Config(ProfileBrokerHostTest.target(10,1010367),pub);
+        io.deadline=()->profileDeadline();
+        io.sampleStarted=()->normalProfileCleanupWindow==null?-1:normalProfileCleanupWindow.sampleStarted;
+        platform=new ProfileTaskPlatform(activityTasks,new ActivityOptions(),displayId,profilePackages,config.profileTarget,
+            ()->io.f.guard(),()->profileDeadline(),()->requireNormalProfileCleanupFresh());
+        if(pub)publicProfileHistory=new PublicProfileRecentHistory.Baseline(
+            PublicProfileRecentHistory.absence(NormalCleanupIO.before,config.profileTarget),io.f.now);
+        if(launch){
+            profileOwnedTask=new ProfileOwnedTask(platform,config.profileTarget,ProfileBrokerHostTest.GEN,
+                ProfileBrokerHostTest.REQUEST,displayId,publicProfileHistory);
+            profileOwnedTask.prepare();profileOwnedTask.beforeDispatch();io.f.launch();profileOwnedTask.accepted(0);
+            yes(profileOwnedTask.observe(),"actual admission did not bind leaf");
+        }
+        profileCustody.beforeCreate();
+        connection=new LocalSocket();authenticatedProfileClosePeer=connection;
+    }
+    private static final class LocalSocket {}
+    private static final class LocalServerSocket {void close()throws IOException{}}
+    private static final class WindowInfosCapture {void retire(){}boolean locallyDrained(){return true;}}
+    private static final class NotesPort {void retireAdmission(){}}
+    private static final class ImageReader {void close(){}}
+    private static final class HandlerThread {void quitSafely(){}}
+    private static final class VirtualDisplay {void release()throws Exception{NormalCleanupIO.current.release();}}
+    private static final class Display {String getName(){return "synthetic-owned-display";}}
+    private static final class DisplayManager {
+        Display getDisplay(int id)throws Exception{NormalCleanupIO.current.tick("display",20);return NormalCleanupIO.current.displayPresent?new Display():null;}
+        Display[] getDisplays()throws Exception{NormalCleanupIO.current.tick("displays",20);return NormalCleanupIO.current.displayPresent?new Display[]{new Display()}:new Display[0];}
+    }
+    private static final class InputChannelIsolation {
+        static final class Refusal extends Exception {private static final long serialVersionUID=1L;final String code;Refusal(String c){super(c);code=c;}}
+    }
+    private void retirePublicScreenLease(){screenRetires++;}
+    private void retireBootRead(){bootRetires++;}
+    private void beginPublicSurfaceDetach(){surfaceDetaches++;}
+    private void beginPublicNotesCleanup(){notesBranch++;cleanupDone.countDown();}
+    /*__BROKER_MEMBERS__*/
+
+    private static int assertions;
+    private static final JSONArray results=new JSONArray();
+    private static final Map<String,Object> evidence=new LinkedHashMap<String,Object>();
+    private interface Work {void run()throws Exception;}
+    private static void yes(boolean ok,String why){assertions++;if(!ok)throw new AssertionError(why);}
+    private static String refused(Work work)throws Exception {
+        try{work.run();throw new AssertionError("expected refusal");}
+        catch(Exception expected){assertions++;return expected.getMessage();}
+    }
+    private static void test(String name,Work body)throws Exception {
+        int begin=assertions;try{body.run();results.put(new JSONObject().put("name",name).put("passed",true).put("assertions",assertions-begin));}
+        catch(Throwable e){results.put(new JSONObject().put("name",name).put("passed",false).put("assertions",assertions-begin).put("error",e.toString()));
+            write(false);if(e instanceof Exception)throw (Exception)e;if(e instanceof Error)throw (Error)e;throw new AssertionError(e);}
+    }
+    private static Path output;
+    private static void write(boolean passed)throws Exception {
+        JSONObject value=new JSONObject().put("schema","hepta.profile-normal-cleanup-window-cases.v1").put("passed",passed)
+            .put("cases",results).put("case_count",results.length()).put("assertions",assertions).put("evidence",evidence)
+            .put("synthetic_framework_and_latency",true).put("phone_contacted",false)
+            .put("historical_277631_success_claimed",false).put("complete_android_broker_compiled",false);
+        Files.write(output,value.toString(2).getBytes(StandardCharsets.UTF_8));
+        if(passed)System.out.println(value.toString());
+    }
+    private void runCleanup()throws Exception {
+        io.cleanup=true;io.cleanupAt=io.f.now;beginCleanup("client_close");
+        yes(cleanupDone.await(8,TimeUnit.SECONDS),"synthetic cleanup did not finish");
+        yes(normalProfileCleanupWindow!=null,"normal public cleanup clock missing");
+    }
+    private void released() {
+        yes("RELEASED".equals(state)&&profileCustody.known(),"not released: "+state+" / "+profileCleanupFailures.evidence());
+        yes(io.removeCalls==1&&io.deleteCalls==1&&io.releaseCalls==1,"effect count differs");
+        yes(profileOwnedTask.cleanupKnown(),"task proof missing");
+    }
+    private void unknown(int leaf,int root,int vd) {
+        yes("CLEANUP_UNKNOWN".equals(state)&&!profileCustody.known(),"failure converted to release");
+        yes(io.removeCalls==leaf&&io.deleteCalls==root&&io.releaseCalls==vd,"refusal effect counts: "+io.removeCalls+"/"+io.deleteCalls+"/"+io.releaseCalls);
+    }
+    public static void main(String[] args)throws Exception {
+        NormalCleanupIO.before=new String(Files.readAllBytes(Paths.get(args[0])),StandardCharsets.UTF_8);
+        output=Paths.get(args[1]);
+        test("owned_leaf_1408ms_after_start_full_fresh_pairs_then_single_root_and_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.leafDelay=1408;
+            b.runCleanup();b.released();
+            yes(b.io.deletedAt-b.cleanupAt>=1408&&b.io.f.now<b.normalProfileCleanupWindow.workDeadline,"late leaf or total window not exercised");
+            yes(b.io.readDeadlines.size()>8,"complete reads were not repeated");
+            for(Long deadline:b.io.readDeadlines)yes(deadline<=b.normalProfileCleanupWindow.workDeadline,"IO escaped total work deadline");
+            Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("leaf_disappearance_scripted_at_ms",1408);
+            row.put("root_effect_ms",b.io.deletedAt-b.cleanupAt);row.put("vd_effect_ms",b.io.releasedAt-b.cleanupAt);
+            row.put("completed_ms",b.io.f.now-b.cleanupAt);row.put("read_deadlines",b.io.readDeadlines);row.put("read_order",b.io.reads);
+            row.put("effect_counts",Arrays.asList(b.io.removeCalls,b.io.deleteCalls,b.io.releaseCalls));evidence.put("late_leaf",row);
+        });
+        test("same_delayed_leaf_refuses_original_1400ms_window",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.leafDelay=1408;
+            b.io.cleanup=true;b.io.cleanupAt=b.io.f.now;b.cleanupAt=b.io.f.now;b.cleanupStarted.set(true);long end=b.io.f.now+1400;
+            String reason=refused(()->b.profileOwnedTask.retire(end));
+            yes(!b.profileOwnedTask.cleanupKnown()&&b.io.removeCalls==1&&b.io.deleteCalls==0&&b.io.releaseCalls==0,"old budget silently passed");
+            evidence.put("old_1400ms_control",reason);
+        });
+        test("sample_1499_allowed_1500_refused_without_renewal",()->{
+            long[] now={1000};NormalProfileCleanupWindow w=new NormalProfileCleanupWindow(1000,9000,()->now[0]);w.beginSample();
+            now[0]=2499;w.requireFresh();yes(w.readDeadline()==2500,"sample deadline changed");
+            now[0]=2500;yes(refused(w::requireFresh).contains("STALE_OR_DEADLINE"),"1500 boundary accepted");
+            yes(w.deadline()==6900&&w.readDeadline()==2500,"failure renewed budget");
+        });
+        test("same_sample_checked_after_real_location_read_before_leaf_binder",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.expireAt="leaf";b.runCleanup();b.unknown(0,0,0);
+            yes(b.io.expiryHits==1&&b.profileDisplayReleaseAttempted==false,"leaf location guard not exercised");
+        });
+        test("same_sample_checked_after_real_location_read_before_root_binder",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.expireAt="root";b.runCleanup();b.unknown(1,0,0);yes(b.io.expiryHits==1,"root location not exercised");
+        });
+        test("same_sample_checked_after_profile_read_before_original_vd_release",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.expireAt="vd";b.runCleanup();b.unknown(1,1,0);yes(b.io.expiryHits==1,"VD location not exercised");
+        });
+        test("installed_identity_changes_in_final_leaf_location_read_refuse",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.changeIdentityAt="leaf";b.runCleanup();b.unknown(0,0,0);
+        });
+        test("installed_identity_changes_in_final_root_location_read_refuse",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.changeIdentityAt="root";b.runCleanup();b.unknown(1,0,0);
+        });
+        test("foreign_profile_task_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.f.foreign=true;b.runCleanup();b.unknown(0,0,0);
+        });
+        test("incomplete_global_census_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.partialGlobal=true;b.runCleanup();b.unknown(0,0,0);
+        });
+        test("foreign_history_identity_change_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.raw=b.io.raw.replace("cc00009","cc00008");b.runCleanup();b.unknown(0,0,0);
+        });
+        test("owned_leaf_moved_to_other_display_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.f.wrongDisplay=true;b.runCleanup();b.unknown(0,0,0);
+        });
+        test("owned_leaf_wrong_user_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.f.wrongUser=true;b.runCleanup();b.unknown(0,0,0);
+        });
+        test("owned_leaf_wrong_uid_refuses_before_effect",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.f.wrongUid=true;b.runCleanup();b.unknown(0,0,0);
+        });
+        test("first_claim_cookie_required_and_retained_cookie_loss_keeps_exact_identity",()->{
+            Map<String,Object> both=new LinkedHashMap<String,Object>();evidence.put("cookie_lifecycle",both);
+            ProfileNormalCleanupHostTest first=new ProfileNormalCleanupHostTest(true,false);
+            first.profileOwnedTask=new ProfileOwnedTask(first.platform,first.config.profileTarget,ProfileBrokerHostTest.GEN,
+                ProfileBrokerHostTest.REQUEST,first.displayId,first.publicProfileHistory);
+            first.profileOwnedTask.prepare();first.profileOwnedTask.beforeDispatch();first.io.f.launch();first.profileOwnedTask.accepted(0);
+            // No observe(): this is a real first-claim cleanup attempt, without a retained leaf.
+            first.io.f.wrongCookie=true;first.runCleanup();
+            Map<String,Object> firstRow=new LinkedHashMap<String,Object>();
+            firstRow.put("state",first.state);firstRow.put("custody_known",first.profileCustody.known());
+            firstRow.put("effect_counts",Arrays.asList(first.io.removeCalls,first.io.deleteCalls,first.io.releaseCalls));
+            firstRow.put("validator",first.profileOwnedTask.lastLeafValidation());both.put("unclaimed",firstRow);
+            first.unknown(0,0,0);
+            Map<String,Object> firstDetail=first.profileOwnedTask.lastLeafValidation();
+            yes("first_claim".equals(firstDetail.get("phase"))&&Boolean.FALSE.equals(firstDetail.get("launch_cookie_present"))
+                &&Boolean.FALSE.equals(((Map<?,?>)firstDetail.get("checks")).get("first_claim_launch_cookie"))
+                &&"PROFILE_NEW_LEAF_NOT_PROVEN".equals(firstDetail.get("refusal_code")),"missing-cookie first claim did not reach original predicate");
+            yes(first.profileOwnedTask.evidence().get("leaf_task_id")==null,"refused first claim retained a leaf");
+
+            ProfileNormalCleanupHostTest retained=new ProfileNormalCleanupHostTest(true,true);
+            String token=(String)retained.profileOwnedTask.evidence().get("leaf_token_id");
+            retained.io.f.wrongCookie=true;retained.runCleanup();
+            Map<String,Object> retainedRow=new LinkedHashMap<String,Object>();
+            retainedRow.put("state",retained.state);retainedRow.put("custody_known",retained.profileCustody.known());
+            retainedRow.put("effect_counts",Arrays.asList(retained.io.removeCalls,retained.io.deleteCalls,retained.io.releaseCalls));
+            retainedRow.put("validator",retained.profileOwnedTask.lastLeafValidation());both.put("retained",retainedRow);
+            retained.released();
+            Map<String,Object> detail=retained.profileOwnedTask.lastLeafValidation();
+            yes("retained_leaf".equals(detail.get("phase"))&&Boolean.TRUE.equals(detail.get("valid"))
+                &&Boolean.FALSE.equals(detail.get("launch_cookie_present"))
+                &&Boolean.TRUE.equals(detail.get("actual_task_token_equal_to_retained"))
+                &&Boolean.TRUE.equals(detail.get("retained_task_identity_matches")),"retained actual token predicate not exercised");
+            yes(token.equals(retained.profileOwnedTask.evidence().get("leaf_token_id")),"cookie loss replaced task authority");
+        });
+        test("root_token_changed_after_leaf_effect_refuses_root_and_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.rootTokenChanged=true;b.runCleanup();b.unknown(1,0,0);
+        });
+        test("new_foreign_task_after_root_effect_prevents_vd_release",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.foreignAfterDelete=true;b.runCleanup();b.unknown(1,1,0);
+        });
+        test("original_leaf_effect_throws_not_reissued_by_second_cleanup_call",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.removeThrows=true;b.runCleanup();b.unknown(1,0,0);
+            long cutoff=b.normalProfileCleanupWindow.cutoff;b.io.f.now+=50;b.beginCleanup("second");
+            yes(cutoff==b.normalProfileCleanupWindow.cutoff&&b.io.removeCalls==1,"attempt retried or deadline renewed");
+        });
+        test("original_root_effect_throws_not_reissued_by_second_cleanup_call",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.deleteThrows=true;b.runCleanup();b.unknown(1,1,0);
+            b.beginCleanup("second");yes(b.io.deleteCalls==1,"root retried");
+        });
+        test("late_leaf_effect_return_does_not_grant_root_or_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.lateLeafReturn=true;b.runCleanup();b.unknown(1,0,0);
+        });
+        test("owned_leaf_still_live_at_fixed_total_deadline_never_retries_remove",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.leafDelay=8000;b.runCleanup();b.unknown(1,0,0);
+            yes(b.io.f.now>=b.normalProfileCleanupWindow.workDeadline,"total boundary not exercised");
+        });
+        test("owned_recents_remains_refuses_root_and_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.keepRecents=true;b.runCleanup();b.unknown(1,0,0);
+        });
+        test("root_disappearance_after_fixed_total_deadline_cannot_release_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.rootDelay=8000;b.runCleanup();b.unknown(1,1,0);
+        });
+        test("final_task_absence_sample_stale_does_not_release_vd",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.staleFinalHistory=true;b.runCleanup();b.unknown(1,1,0);
+        });
+        test("display_absence_requires_complete_post_release_read_within_same_total",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.keepDisplay=true;b.runCleanup();b.unknown(1,1,1);
+            yes(b.profileDisplayReleaseAttempted,"original VD attempt missing");b.beginCleanup("second");yes(b.io.releaseCalls==1,"VD reissued");
+        });
+        test("short_original_close_request_tightens_all_cleanup_windows",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.requestDeadline=b.io.f.now+2000;b.io.leafDelay=1408;b.runCleanup();b.unknown(1,0,0);
+            yes(b.normalProfileCleanupWindow.cutoff==b.cleanupAt+1250&&b.normalProfileCleanupWindow.workDeadline==b.cleanupAt+1150
+                &&b.normalProfileCleanupWindow.replyDeadline==b.requestDeadline,"authenticated request did not tighten total");
+        });
+        test("first_begin_cleanup_anchor_is_never_renewed",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.runCleanup();b.released();
+            NormalProfileCleanupWindow original=b.normalProfileCleanupWindow;long start=b.cleanupAt;b.io.f.now+=500;
+            b.beginCleanup("second");yes(b.normalProfileCleanupWindow==original&&b.cleanupAt==start,"anchor replaced");
+            yes(b.cleanupWaitMillis(0)==Math.max(1,original.cutoff-b.io.f.now),"await uses fresh duration");
+            yes(!b.cleanupDeadlineReached(original.cutoff-1)&&b.cleanupDeadlineReached(original.cutoff),"watchdog boundary moved");
+            yes(b.io.removeCalls==1&&b.io.deleteCalls==1&&b.io.releaseCalls==1,"second effect occurred");
+        });
+        test("retained_deadline_dominates_normal_tls_read_window",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,false);
+            NormalProfileCleanupWindow w=new NormalProfileCleanupWindow(1000,9000,()->b.io.f.now);w.beginSample();
+            b.normalProfileCleanupRead.set(w);b.retainedReadDeadline.set(1200L);yes(b.profileDeadline()==1200,"retained deadline broadened");
+            b.retainedReadDeadline.remove();yes(b.profileDeadline()==2500,"normal deadline missing");b.normalProfileCleanupRead.remove();
+        });
+        test("legacy_private_cleanup_wait_watchdog_and_deadline_unchanged",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(false,false);b.cleanupAt=1000;b.cleanupStarted.set(true);
+            yes(!b.normalPublicProfileCleanup()&&b.normalProfileCleanupWindow==null,"private branch opted in");
+            yes(b.cleanupWaitMillis(0)==1500&&b.profileCleanupWorkDeadline()==2400&&b.profileDeadline()==2400,"legacy budget changed");
+            yes(!b.cleanupDeadlineReached(2499)&&b.cleanupDeadlineReached(2500),"legacy watchdog changed");
+        });
+        test("normal_window_requires_original_public_history_capability",()->{
+            ProfileBrokerHostTest.Fake f=new ProfileBrokerHostTest.Fake();ProfileOwnedTask t=ProfileBrokerHostTest.active(f);
+            NormalProfileCleanupWindow w=new NormalProfileCleanupWindow(1000,9000,()->f.now);
+            yes("PROFILE_NORMAL_CLEANUP_WINDOW_INVALID".equals(refused(()->t.retire(w.deadline(),w))),"private task borrowed public window");
+        });
+        test("cleanup_window_mismatched_deadline_or_reversed_clock_rejects",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);
+            NormalProfileCleanupWindow w=new NormalProfileCleanupWindow(1000,9000,()->b.io.f.now);
+            yes("PROFILE_NORMAL_CLEANUP_WINDOW_INVALID".equals(refused(()->b.profileOwnedTask.retire(w.deadline()+1,w))),"foreign deadline accepted");
+            w.beginSample();b.io.f.now=999;yes(refused(w::requireFresh).contains("STALE_OR_DEADLINE"),"backward clock accepted");
+        });
+        test("reply_grace_only_after_known_release_and_original_socket",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.runCleanup();b.released();
+            NormalProfileCleanupWindow w=b.normalProfileCleanupWindow;
+            yes(b.releasedProfileReplyMayFlush(w.replyDeadline-1),"known original reply could not finish");
+            yes(!b.releasedProfileReplyMayFlush(w.replyDeadline),"reply grace renewed");
+            b.connection=new LocalSocket();yes(!b.releasedProfileReplyMayFlush(w.replyDeadline-1),"new socket inherited reply");
+        });
+        test("unknown_cleanup_never_uses_verified_reply_grace",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.io.removeThrows=true;b.runCleanup();
+            yes(!b.releasedProfileReplyMayFlush(b.normalProfileCleanupWindow.replyDeadline-1),"unknown got reply grace");
+        });
+        test("tls_freshness_cannot_be_borrowed_by_other_thread",()->{
+            ProfileNormalCleanupHostTest b=new ProfileNormalCleanupHostTest(true,true);b.runCleanup();b.released();
+            yes(b.normalProfileCleanupRead.get()==null,"normal sample escaped cleanup worker");
+            yes(b.profileDeadline()==b.cleanupAt+1400,"other thread borrowed enlarged sample");
+        });
+        write(true);
+    }
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.native-success-focused-runner-derivation.v1",
+  "predecessor_sha256": "9af87e9c978ffd70248799848d3ac465be0de483ec9b14a3b4478ea364215e88",
+  "replacements": [
+    {
+      "old": "\"\"\"Actual positive-step client and lease CAS; explicit Android/stat/PM/root-process IO.\"\"\"",
+      "new": "\"\"\"Actual successful-native history and complete Client input boundary. No cleanup effect, Phone, CAS or full suite.\"\"\""
+    },
+    {
+      "old": "p=subprocess.run(argv,cwd=cwd,capture_output=True,timeout=120);code,so,se=p.returncode,p.stdout,p.stderr",
+      "new": "env=dict(os.environ)\n        for key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH'):env.pop(key,None)\n        p=subprocess.run(argv,cwd=cwd,capture_output=True,timeout=120,env=env);code,so,se=p.returncode,p.stdout,p.stderr"
+    },
+    {
+      "old": "for name in ('source','output','java-home','json-jar','original-paths'):",
+      "new": "for name in ('source','output','java-home','json-jar','original-paths','manifest'):"
+    },
+    {
+      "old": "    ap.add_argument('--incomplete-client-close',action='store_true',help='Use the completed local worker and typed incomplete terminal from an actual lost close reply')\n    ap.add_argument('--visual',action='store_true',help='Use an external map of genuine visual-task originals')\n    ap.add_argument('--retained-before-model',action='store_true',help='Replay a stopped zero-request task with retained custody')\n",
+      "new": "    # This focused runner has exactly the successful-native history mode.\n"
+    },
+    {
+      "old": "    test=src/'tests/public-profile-business-client';helper=src/'tests/background-session/prepare_fixture.py'",
+      "new": "    test=src/'tests/public-profile-business-client';helper=src/'tests/background-session/prepare_fixture.py'\n    newtest=src/'tests/public-profile-native-success-recovery'\n    predecessor=test/'run_host.py'\n    if ref(predecessor)['sha256']!='9af87e9c978ffd70248799848d3ac465be0de483ec9b14a3b4478ea364215e88':raise RuntimeError('original complete generator changed')\n    derivation_input=json.loads((newtest/'RUNNER-DERIVATION.json').read_bytes())\n    inverse=Path(__file__).read_text()\n    for row in reversed(derivation_input['replacements']):\n        if inverse.count(row['new'])!=1:raise RuntimeError('runner whole inverse span changed')\n        inverse=inverse.replace(row['new'],row['old'])\n    if inverse.encode()!=predecessor.read_bytes():raise RuntimeError('runner whole predecessor inverse failed')"
+    },
+    {
+      "old": "originals_before['path_map']=ref(a.original_paths)",
+      "new": "originals_before['path_map']=ref(a.original_paths);originals_before['manifest']=ref(a.manifest)"
+    },
+    {
+      "old": "        test/'FakeBusinessRecoveryProcess.java',test/'PublicProfileBusinessClientHostTest.java']",
+      "new": "        test/'FakeBusinessRecoveryProcess.java',test/'PublicProfileBusinessClientHostTest.java',\n        newtest/'NativeSuccessRecoveryHostTest.java',newtest/'NativeSuccessClientHostTest.java']"
+    },
+    {
+      "old": "inputs=[ref(p) for p in files];generators=[ref(p) for p in [helper,pure_helper,Path(__file__),client]]",
+      "new": "inputs=[ref(p) for p in files];generators=[ref(p) for p in [helper,pure_helper,Path(__file__),predecessor,newtest/'RUNNER-DERIVATION.json',client]]"
+    },
+    {
+      "old": "    stages=[stage('compile',javac,out,src)]\n    if stages[0]['exit_code']==0:\n        stages.append(stage('client',[str(jdk/'bin/java'),'-Xmx768m','-cp',str(classes)+os.pathsep+str(jar),\n            'org.trillionnium.hepta.local.PublicProfileBusinessClientHostTest',str(a.original_paths.resolve()),str(out/'CASES.json')]+(['--visual'] if a.visual else ['--retained-before-model'] if a.retained_before_model else ['--incomplete-client-close'] if a.incomplete_client_close else []),out,src))\n    after=inventory(src);write(out/'SOURCE-AFTER.json',after);tools_after=[ref(p) for p in toolpaths]\n    originals_after={k:ref(v) for k,v in original_paths.items()};originals_after['path_map']=ref(a.original_paths)\n    counts=json.loads((out/'CASES.json').read_bytes()) if (out/'CASES.json').is_file() else None\n    result=dict(schema='hepta.public-profile-business-client-host.v1',all_pass=len(stages)==2 and all(x['exit_code']==0 for x in stages)\n        and counts is not None and counts['status']=='PASS' and before==after and tools_before==tools_after and originals_before==originals_after,\n        source=str(src),source_before=ref(out/'SOURCE-BEFORE.json'),source_after=ref(out/'SOURCE-AFTER.json'),source_unchanged=before==after,\n        tools_before=tools_before,tools_after=tools_after,tools_unchanged=tools_before==tools_after,external_originals_before=originals_before,\n        external_originals_after=originals_after,external_originals_unchanged=originals_before==originals_after,\n        inputs=inputs,generators=generators,original_fixture_inputs=original_fixture_inputs,fixture_derivation=derivation,\n        client_source=ref(client),client_projection=ref(projected),client_factory_single_replacement=True,\n        compiled_business_projection_overrides_shared_refusing_projection='business_client_projection' in derivation,stages=stages,\n        cases=ref(out/'CASES.json') if counts else None,counts={k:counts[k] for k in ('cases','assertions')} if counts else None,\n        actual_full_client_inputs_workerproof_receipt_and_background_cas=True,\n        android_stat_uid_clock_pm_and_root_process_are_explicit_synthetic_boundaries=True,android_runtime_tested=False,phone_operations=0)\n    write(out/'RESULT.json',result)\n    print(json.dumps({'all_pass':result['all_pass'],'counts':result['counts'],'stages':[{'name':r['name'],'exit_code':r['exit_code']}for r in stages],'result':ref(out/'RESULT.json')}))\n    return 0 if result['all_pass'] else 1\n",
+      "new": "    stages=[stage('compile',javac,out,src)]\n    case_files={'policy':out/'POLICY-CASES.json','client':out/'CLIENT-CASES.json'}\n    expected={\n        'policy':derivation_input['policy_case_names'],\n        'client':derivation_input['client_case_names']}\n    counts={};case_reports={};case_inventory={}\n    commands=[\n        ('policy',[str(jdk/'bin/java'),'-Xmx768m','-cp',str(classes)+os.pathsep+str(jar),\n            'org.trillionnium.hepta.background.NativeSuccessRecoveryHostTest',str(a.manifest.resolve()),str(a.original_paths.resolve()),str(case_files['policy'])]),\n        ('client',[str(jdk/'bin/java'),'-Xmx768m','-cp',str(classes)+os.pathsep+str(jar),\n            'org.trillionnium.hepta.local.NativeSuccessClientHostTest',str(a.original_paths.resolve()),str(case_files['client'])])]\n    if stages[0]['exit_code']==0:\n        for name,argv in commands:\n            observed=stage(name,argv,out,src);stages.append(observed)\n            if case_files[name].is_file():\n                data=json.loads(case_files[name].read_bytes());counts[name]={'cases':data['cases'],'assertions':data['assertions'],'all_pass':data['all_pass']}\n                names=[r['name'] for r in data['case_results']]\n                case_inventory[name]=len(names)==len(set(names)) and sorted(names)==sorted(expected[name])\n                case_reports[name]=ref(case_files[name])\n            if observed['exit_code']!=0 or name not in counts or counts[name]['all_pass'] is not True or not case_inventory[name]:break\n    after=inventory(src);write(out/'SOURCE-AFTER.json',after);tools_after=[ref(p) for p in toolpaths]\n    originals_after={k:ref(v) for k,v in original_paths.items()};originals_after['path_map']=ref(a.original_paths);originals_after['manifest']=ref(a.manifest)\n    compiled_sources={}\n    for p in sorted(classes.rglob('*.class')):\n        key=p.relative_to(classes).as_posix().split('$')[0].removesuffix('.class')+'.java'\n        for base in (fixture,src/'src'):\n            candidate=base/key\n            if candidate.is_file():compiled_sources[str(candidate)]=ref(candidate);break\n    compiled_classes=[ref(p) for p in sorted(classes.rglob('*.class'))]\n    input_after=[ref(p) for p in files];generator_after=[ref(p['path']) for p in generators]\n    policy=counts.get('policy',{});client_counts=counts.get('client',{})\n    passed=len(stages)==3 and all(x['exit_code']==0 for x in stages) and all(case_inventory.get(k) is True for k in ('policy','client')) \\\n        and policy.get('all_pass') is True and client_counts.get('all_pass') is True \\\n        and before==after and tools_before==tools_after and originals_before==originals_after and inputs==input_after and generators==generator_after\n    result=dict(schema='hepta.public-profile-native-success-recovery-host.v1',all_pass=passed,\n        source=str(src),source_before=ref(out/'SOURCE-BEFORE.json'),source_after=ref(out/'SOURCE-AFTER.json'),source_unchanged=before==after,\n        tools_before=tools_before,tools_after=tools_after,tools_unchanged=tools_before==tools_after,external_originals_before=originals_before,\n        external_originals_after=originals_after,external_originals_unchanged=originals_before==originals_after,\n        inputs=inputs,inputs_after=input_after,inputs_unchanged=inputs==input_after,generators=generators,generators_after=generator_after,\n        original_fixture_inputs=original_fixture_inputs,fixture_derivation=derivation,compiled_source_candidates=list(compiled_sources.values()),\n        compiled_classes=compiled_classes,client_source=ref(client),client_projection=ref(projected),client_factory_single_replacement=True,\n        client_projection_inverse_full_source_equal=projected.read_text().replace('FakeBusinessRecoveryProcess.start(command)',seam)==raw,\n        compiled_business_projection_overrides_shared_refusing_projection='business_client_projection' in derivation,stages=stages,\n        case_reports=case_reports,counts=counts,exact_case_inventory=case_inventory,\n        actual_complete_request_and_client_inputs=True,retained_before_effect_checked=True,\n        actual_absence_collected=False,after_effect_executed=False,retained_socket_effect_executed=False,\n        journal_cas_executed=False,old_failure_visual_zero_model_suites_executed=False,\n        android_stat_uid_clock_pm_and_root_process_are_explicit_synthetic_boundaries=True,android_runtime_tested=False,\n        current_device_recovery_proved=False,business_verified=False,phone_operations=0)\n    write(out/'RESULT.json',result)\n    print(json.dumps({'all_pass':passed,'counts':counts,'stages':[{'name':r['name'],'exit_code':r['exit_code']}for r in stages],'result':ref(out/'RESULT.json')}))\n    return 0 if passed else 1\n"
+    }
+  ],
+  "policy_case_names": [
+    "actual_complete_history_classifies_without_rewriting_terminal",
+    "startup_archive_preserves_same_success_history",
+    "raw_input_hash_mismatch_refused",
+    "missing_generation_stdout_refused",
+    "missing_request_grammar_refused",
+    "extra_native_run_member_refused",
+    "old_false_model_branch_still_rejects_success_done",
+    "success_flag_with_failure_disposition_refused",
+    "unverified_final_model_claim_refused",
+    "unstable_preterminal_completion_refused",
+    "other_model_run_completion_refused",
+    "changed_final_ax_bytes_refused",
+    "foreign_task_terminal_refused",
+    "foreign_owner_record_refused",
+    "forged_cleanup_success_refused",
+    "forged_business_success_refused",
+    "original_expiry_and_deadline_fences_remain",
+    "request_before_expiry_grace_refused",
+    "request_at_deadline_refused",
+    "changed_current_boot_refused"
+  ],
+  "client_case_names": [
+    "actual_complete_client_read_and_unchanged_pre_effect_check",
+    "extra_generation_member_before_prepare_refused",
+    "extra_request_member_before_prepare_refused",
+    "missing_request_member_before_prepare_refused",
+    "same_bytes_native_inode_replacement_after_prepare_refused",
+    "generation_directory_identity_replacement_after_prepare_refused",
+    "extra_task_member_after_prepare_refused",
+    "permission_preparation_after_prepare_refused",
+    "retired_reservation_after_prepare_refused",
+    "original_request_deadline_after_prepare_refused"
+  ],
+  "original_client_generator_and_ports_preserved": true,
+  "old_test_mains_executed": false
+}

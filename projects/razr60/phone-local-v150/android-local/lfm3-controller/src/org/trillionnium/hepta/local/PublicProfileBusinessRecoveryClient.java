@@ -255,6 +255,8 @@ final class PublicProfileBusinessRecoveryClient {
         final String taskId,ownerSha,origin,taskKey;
         final TreeSet<String> taskFiles;
         private File otherModelTerminal;
+        private final TreeMap<File,String> successDirectoryKeys=new TreeMap<File,String>();
+        private final TreeMap<File,TreeSet<String>> successDirectoryMembers=new TreeMap<File,TreeSet<String>>();
         final TreeMap<String,MobiMindPrivateFiles.Read> reads=new TreeMap<String,MobiMindPrivateFiles.Read>();
         Inputs(Context context,MobiMindPrivateFiles.Read journal)throws Exception{
             this.context=context;root=new QualificationScopeConfig.FilesRoot(context);root.unchanged(context);
@@ -285,6 +287,7 @@ final class PublicProfileBusinessRecoveryClient {
                 unchanged(true);return;
             }
             read(prefix+"app-session-receipt.json",PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
+            if(Boolean.TRUE.equals(result.opt("model_reported_success"))){readNativeSuccessOriginals(result);return;}
             if(number(result,"steps")==0){
                 neverStartedDirectory=existingDirectory(new File(root.path,"runs/"+generation));
                 neverStartedDirectoryKey=directoryIdentity(neverStartedDirectory);
@@ -298,6 +301,23 @@ final class PublicProfileBusinessRecoveryClient {
                 String run=string(object(get("control-tasks/"+taskId+"/"+name)),"run_id");if(!run.matches("[0-9a-f]{32}"))throw new IOException("业务恢复原模型 request 无效");
                 for(String leaf:new String[]{"app-receipt.json","native-result.json","raw-text.txt"})read("runs/"+run+"/"+leaf,PublicProfileBusinessAbsenceRecovery.MAX_ORIGINAL);
             }
+            unchanged(true);
+        }
+        /** The success-history variant archives every member of each bound normal
+         * SDK directory. Enumeration is checked before reads and again afterwards. */
+        private void readNativeSuccessOriginals(JSONObject result)throws Exception{
+            java.util.Set<String> paths=PublicProfileBusinessAbsenceRecovery.nativeSuccessModelPaths(result,bytes());
+            TreeMap<String,TreeSet<String>> directories=new TreeMap<String,TreeSet<String>>();
+            for(String path:paths){int slash=path.lastIndexOf('/');String dir=path.substring(0,slash);
+                TreeSet<String> names=directories.get(dir);if(names==null){names=new TreeSet<String>();directories.put(dir,names);}
+                if(!names.add(path.substring(slash+1)))throw new IOException("duplicate native success original");}
+            for(Map.Entry<String,TreeSet<String>> e:directories.entrySet()){
+                File dir=existingDirectory(new File(root.path,e.getKey()));
+                String identity=directoryIdentity(dir);
+                if(!members(dir).equals(e.getValue()))throw new IOException("native success directory is not the complete normal SDK set");
+                successDirectoryKeys.put(dir,identity);successDirectoryMembers.put(dir,new TreeSet<String>(e.getValue()));
+            }
+            for(String path:paths)read(path,PublicProfileBusinessAbsenceRecovery.originalLimit(path));
             unchanged(true);
         }
         void read(String relative,int limit)throws Exception{
@@ -318,6 +338,9 @@ final class PublicProfileBusinessRecoveryClient {
             if(!leasePresent&&MobiMindPrivateFiles.exists(new File(root.path,PublicProfileBusinessAbsenceRecovery.JOURNAL)))throw new IOException("业务恢复已提交后租约再次出现");
         }
         private void stableMetadata()throws Exception{
+            for(Map.Entry<File,String> e:successDirectoryKeys.entrySet())
+                if(!e.getValue().equals(directoryIdentity(e.getKey()))||!successDirectoryMembers.get(e.getKey()).equals(members(e.getKey())))
+                    throw new IOException("native success original directory changed");
             if(neverStartedDirectory!=null&&(!neverStartedDirectoryKey.equals(directoryIdentity(neverStartedDirectory))
                     ||!members(neverStartedDirectory).equals(Collections.singleton("app-session-receipt.json"))))
                 throw new IOException("零次模型请求的原始目录已改变");

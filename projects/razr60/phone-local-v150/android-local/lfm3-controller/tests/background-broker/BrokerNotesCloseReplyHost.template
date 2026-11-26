@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 final class BrokerNotesCloseReplyHost {
     CONSTANTS
+    NORMAL_CLEANUP_TYPE
     private static final String G="11111111-2222-4333-8444-555555555555";
     private static final String OTHER="22222222-3333-4444-8555-666666666666";
     private static final String ID="33333333-4444-4555-8666-777777777777";
@@ -89,6 +90,9 @@ final class BrokerNotesCloseReplyHost {
         final AtomicBoolean cleanupStarted=new AtomicBoolean();
         final CountDownLatch policyEntered=new CountDownLatch(1),policyMayFail=new CountDownLatch(1);
         volatile LocalSocket connection,authenticatedProfileClosePeer;
+        // Original legacy completion port: no normal-profile clock is fabricated.
+        private NormalProfileCleanupWindow normalProfileCleanupWindow;
+        private LocalSocket normalProfileCleanupClosePeer;
         volatile boolean serve=true;
         volatile String state="ACTIVE";
         long requestDeadline,connectionDeadline,cleanupAt;
@@ -210,6 +214,7 @@ final class BrokerNotesCloseReplyHost {
         }
         SHUTDOWN
         CLOSE_METHODS
+        NORMAL_CLEANUP_HELPERS
         void watchdogOnce(long now){
             WATCHDOG_CLEANUP
         }

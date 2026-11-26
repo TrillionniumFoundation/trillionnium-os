@@ -1,0 +1,189 @@
+{
+  "case_names": [
+    "owned_leaf_1408ms_after_start_full_fresh_pairs_then_single_root_and_vd",
+    "same_delayed_leaf_refuses_original_1400ms_window",
+    "sample_1499_allowed_1500_refused_without_renewal",
+    "same_sample_checked_after_real_location_read_before_leaf_binder",
+    "same_sample_checked_after_real_location_read_before_root_binder",
+    "same_sample_checked_after_profile_read_before_original_vd_release",
+    "installed_identity_changes_in_final_leaf_location_read_refuse",
+    "installed_identity_changes_in_final_root_location_read_refuse",
+    "foreign_profile_task_refuses_before_effect",
+    "incomplete_global_census_refuses_before_effect",
+    "foreign_history_identity_change_refuses_before_effect",
+    "owned_leaf_moved_to_other_display_refuses_before_effect",
+    "owned_leaf_wrong_user_refuses_before_effect",
+    "owned_leaf_wrong_uid_refuses_before_effect",
+    "first_claim_cookie_required_and_retained_cookie_loss_keeps_exact_identity",
+    "root_token_changed_after_leaf_effect_refuses_root_and_vd",
+    "new_foreign_task_after_root_effect_prevents_vd_release",
+    "original_leaf_effect_throws_not_reissued_by_second_cleanup_call",
+    "original_root_effect_throws_not_reissued_by_second_cleanup_call",
+    "late_leaf_effect_return_does_not_grant_root_or_vd",
+    "owned_leaf_still_live_at_fixed_total_deadline_never_retries_remove",
+    "owned_recents_remains_refuses_root_and_vd",
+    "root_disappearance_after_fixed_total_deadline_cannot_release_vd",
+    "final_task_absence_sample_stale_does_not_release_vd",
+    "display_absence_requires_complete_post_release_read_within_same_total",
+    "short_original_close_request_tightens_all_cleanup_windows",
+    "first_begin_cleanup_anchor_is_never_renewed",
+    "retained_deadline_dominates_normal_tls_read_window",
+    "legacy_private_cleanup_wait_watchdog_and_deadline_unchanged",
+    "normal_window_requires_original_public_history_capability",
+    "cleanup_window_mismatched_deadline_or_reversed_clock_rejects",
+    "reply_grace_only_after_known_release_and_original_socket",
+    "unknown_cleanup_never_uses_verified_reply_grace",
+    "tls_freshness_cannot_be_borrowed_by_other_thread"
+  ],
+  "extracted_members": {
+    "BackgroundDisplayBroker.java": {
+      "private String releasedState()": "b309146df33192d260aab2c44ef7d6372e90579b339edb2511bbf39313218804",
+      "private boolean cleanupDeadlineReached(long now)": "774272fca87ab974ad8f9354ebd384c4036ea031723ca19c5b5a53340324595e",
+      "private boolean normalPublicProfileCleanup()": "3dbf21bdb6b351097f65d7a26f3ba5ec7ad977cf06f664eeba2ae86e2eb3321f",
+      "private boolean profileCloseReplyPending(long now)": "931d9859b3a8cf46416f860a1dfb2051abfde5e185f101e1e7bcd16a14f61f1a",
+      "private boolean releasedProfileReplyMayFlush(long now)": "28606fdfd8725974af6154521376e2b336c93c3ff136b448d30834197327e462",
+      "private java.util.Map<String,Object> emptyProfileCleanup(boolean known)": "d5d667a09f8d318fa5df68dec79f93b9fb61646724bc3eef5b862ab01d2bfe1d",
+      "private long cleanupWaitMillis(long originalRequestDeadline)": "28cc56882a55ea6a95e848e8db1e8e48a3f317a264388f615fdad733a261fa5c",
+      "private long profileCleanupWorkDeadline()": "41d999e50454d786c80f4173a3ef2aa9986d7af805a52c5079e0f400cef6640f",
+      "private long profileDeadline()": "8fd1f8bb272ceab472c97341bc52543d9c3f9eb196e346f5f08d982dc374401f",
+      "private static String code(Throwable error)": "92a55bf0aebc668dd4e193abfa887c59be6f8ff8a7df1206f93f44e29e20e68a",
+      "private static final class NormalProfileCleanupWindow": "92db58bd504802def1a1e79aa02e8c87fdb27baa830b6bd7b7ad45ef5e8fd451",
+      "private void beginCleanup(String reason)": "58b5dfbe48d420a6f0c152460e9a002c9a6e118a330ea913a8df7fb2f627dc91",
+      "private void beginProfileCleanup()": "d788452f1168a3025af724c32cb8b3356f2d70fe4196731a90ad034184079192",
+      "private void quarantineProfile(String reason)": "cdbd7613f337534282bc99228e24f32200087305fac8275b595e8c3a8ffff9e8",
+      "private void recheckProfile(boolean ready,long deadline)": "2c21cec6f1bcda6b02425cc7686b16606bcea1029dbf8bfd9517b21058f4d61a",
+      "private void refreshProfileTaskEvidence()": "8cb1031c29acc6620f40b4c48db616d8c8b4a475fc1a1492cf16a2e8bb39d06c",
+      "private void requireNormalProfileCleanupFresh()": "7758e7dfeb657e4a25c215b8428eb7143d3350c370b3fe89b7f402071e6bbed4",
+      "private void requireUnlaunchedProfileEmpty()": "ccdd5f6fa3f40838c9b6a80b80c47d96dcc0366baf39d9f0f40e9281b30a6a8e",
+      "static final class ProfileCleanupFailureAudit": "93b9d2e6112fe29dc64d26912c98ddb980a0de11690a85fe5df0b1c4a98ca867"
+    },
+    "BackgroundTaskOrganizer.java": {
+      "private Object wrapper(Object binder)": "dce8c848cefe173b28c5a4be93915c0b7f76fbaebe489a258e370dbb30ba8d13",
+      "public boolean deleteOwnedContainer(Object token)": "5091b3ae4c112af15238c47fdac1993423d641a39ab50149280c47f349989da0",
+      "public void removeOwnedLeaf(Object token)": "7feea5662afd307855e1792353d267a771cf27735918334d0f20082da1c147da"
+    }
+  },
+  "schema": "hepta.profile-normal-cleanup-focused-source-pins.v1",
+  "source_inputs": {
+    "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": {
+      "bytes": 165540,
+      "mode": "0644",
+      "sha256": "88d7c99a5216d064b9f6da7def8d9a17a3b9d76a85468bba51cab0bba2a96613"
+    },
+    "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java": {
+      "bytes": 25279,
+      "mode": "0644",
+      "sha256": "c11744cde9daad3723388b44ea3bcc600ca64fe525aba994278e2a62ce168269"
+    },
+    "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java": {
+      "bytes": 6083,
+      "mode": "0644",
+      "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+    },
+    "src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java": {
+      "bytes": 29736,
+      "mode": "0644",
+      "sha256": "70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec"
+    },
+    "src/org/trillionnium/hepta/background/BrokerProtocol.java": {
+      "bytes": 31772,
+      "mode": "0644",
+      "sha256": "f2a137bde87ba56891ce165d354c240be48a3c08aafbf29f116abe6e8514cb97"
+    },
+    "src/org/trillionnium/hepta/background/FixedIntentTools.java": {
+      "bytes": 4137,
+      "mode": "0644",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    "src/org/trillionnium/hepta/background/ProfileDisplayCustody.java": {
+      "bytes": 1667,
+      "mode": "0644",
+      "sha256": "245cb70d0ab59918e6bbc1fa032120bfbea18065a31d6172483d4768ae409b75"
+    },
+    "src/org/trillionnium/hepta/background/ProfileIdentity.java": {
+      "bytes": 2811,
+      "mode": "0644",
+      "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
+    },
+    "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": {
+      "bytes": 65919,
+      "mode": "0644",
+      "sha256": "38beb5a282fa15c6938f46a09b8d9e3ee2578a24f9cbcdd4f0e8585dc38d71e6"
+    },
+    "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java": {
+      "bytes": 32289,
+      "mode": "0644",
+      "sha256": "7367d708d764fd050e2e770ee81de982b31b9ca6861fad25d3d9f42ddbe9b3aa"
+    },
+    "src/org/trillionnium/hepta/background/ProfileTarget.java": {
+      "bytes": 6796,
+      "mode": "0644",
+      "sha256": "268dc50e7d3205cc8fb35883843fbdf8a10cc517f773867a9aae6d00fe07f2fd"
+    },
+    "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java": {
+      "bytes": 8834,
+      "mode": "0644",
+      "sha256": "f55ca98e317927cbc173b29aa921ed60144753ecdada01eded98fbc12cffa6f4"
+    },
+    "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java": {
+      "bytes": 16852,
+      "mode": "0644",
+      "sha256": "7dc2f1fd533715c486f430c05bd2c681ff851090d522f6136b7df8e714fdb117"
+    },
+    "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java": {
+      "bytes": 30914,
+      "mode": "0644",
+      "sha256": "b6f7c22818c2ced9b3e73c699c89ef246b0d21a2e253e9a3b73a2ab1006e5a8b"
+    },
+    "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java": {
+      "bytes": 18987,
+      "mode": "0644",
+      "sha256": "f959004a176c61752c694d7d77927ee5b2fff908ee2d1b1780297bdaef1dd7a0"
+    },
+    "src/org/trillionnium/hepta/background/PublicPermissionControllerUi.java": {
+      "bytes": 8894,
+      "mode": "0644",
+      "sha256": "878ef7a5662d54e2ac3f92889b5870c46f9d145ed868e76fdf3e4a38bb84c247"
+    },
+    "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java": {
+      "bytes": 32870,
+      "mode": "0644",
+      "sha256": "4e07a5630cb2fdf69bb82d82430e0b2e84d8c773327c1417b22779dbba15aac5"
+    },
+    "src/org/trillionnium/hepta/background/WindowOwnership.java": {
+      "bytes": 5829,
+      "mode": "0644",
+      "sha256": "60ccf09113a3463179dfa64cc463eeca363006a30f5518747751420cfc1fb80c"
+    },
+    "src/org/trillionnium/hepta/local/BackgroundSession.java": {
+      "bytes": 156411,
+      "mode": "0644",
+      "sha256": "928b207a6b254c127a839955567aec07b056af06ecfdefa0161e47baeae9ec7f"
+    },
+    "tests/profile-broker/ProfileBrokerHostTest.java": {
+      "bytes": 27862,
+      "mode": "0644",
+      "sha256": "5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04"
+    },
+    "tests/profile-broker/ProfileRootRefusalHostTest.java": {
+      "bytes": 35279,
+      "mode": "0644",
+      "sha256": "7bcd80dd104982be55003d7b6b9a6d67cb8e8646c7dc1ca40943f291cd84baae"
+    },
+    "tests/profile-cleanup-sampling/fixtures-synthetic/before-recents.txt": {
+      "bytes": 904,
+      "mode": "0644",
+      "sha256": "b3a758e849b621bac4b21c508fa330dce03df38329b82ea260f01b635d44b0c9"
+    },
+    "tests/profile-normal-cleanup-window/NormalCleanupIO.template": {
+      "bytes": 8960,
+      "mode": "0644",
+      "sha256": "df57fa4ac3e53b9bb8ea301711fadc494a5327b4238bfa38e02a55b942d540d6"
+    },
+    "tests/profile-normal-cleanup-window/ProfileNormalCleanupHost.template": {
+      "bytes": 24767,
+      "mode": "0644",
+      "sha256": "f541f0096c0d27d87051120078440ad1c8a4d9b28b7404f197f668d9fecda756"
+    }
+  }
+}

@@ -7,6 +7,38 @@ from pathlib import Path
 import subprocess
 
 
+def normal_cleanup_proof(root,name,text):
+    from runpy import run_path
+    helper=root/'tests/background-broker/normal_cleanup_history.py'
+    if hashlib.sha256(helper.read_bytes()).hexdigest()!='5fc3eec45cfdb8d516c019c86c73b9114a67c541d3f8a43a660b1c2f4db91732':
+        raise RuntimeError('exact normal cleanup proof helper changed')
+    module=run_path(str(helper))
+    return module['predecessor'](name,text)
+
+
+def method(text,marker):
+    if text.count(marker)!=1:raise RuntimeError("unique full-member marker required: "+marker)
+    start=text.index(marker);first=text.index("{",start);depth,index,state=0,first,"code"
+    while index<len(text):
+        char=text[index];pair=text[index:index+2]
+        if state=="line":
+            if char=="\n":state="code"
+        elif state=="block":
+            if pair=="*/":state="code";index+=1
+        elif state in ("string","char"):
+            if char=="\\":index+=1
+            elif char==('"' if state=="string" else "'"):state="code"
+        elif pair=="//":state="line";index+=1
+        elif pair=="/*":state="block";index+=1
+        elif char=='"':state="string"
+        elif char=="'":state="char"
+        elif char=="{":depth+=1
+        elif char=="}":
+            depth-=1
+            if depth==0:return text[start:index+1]
+        index+=1
+    raise AssertionError("incomplete member: "+marker)
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--java', required=True, type=Path)
@@ -26,6 +58,10 @@ def main():
     # Compile the exact production whole-root snapshot and its policy, with only Android IO fields faked.
     broker = root/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java'
     text = broker.read_text()
+    proof_text,normal_cleanup_source=normal_cleanup_proof(root,"BackgroundDisplayBroker.java",text)
+    if normal_cleanup_source.get("applied") is not True:raise RuntimeError("exact reviewed normal cleanup candidate required")
+    normal_type=method(text,"private static final class NormalProfileCleanupWindow")
+    normal_helpers="\n\n".join(method(text,x) for x in ("private long cleanupWaitMillis(long originalRequestDeadline)","private boolean cleanupDeadlineReached(long now)"))
     start = '    private TaskSnapshot snapshot() throws Exception {'
     end = '    private void startWatchdog() {'
     if text.count(start) != 1 or text.count(end) != 1:
@@ -107,6 +143,8 @@ public final class DisplayManager {
 }
 ''')
     files += [geometry,metrics,clock,display,display_manager]
+    files += [root/'src/org/trillionnium/hepta/background'/(name+'.java') for name in
+              ('ProfileOwnedTask','ProfileTaskPolicy','ProfilePermissionTransient','WindowOwnership')]
     close_fixture=root/'tests/background-broker/535-close-reply.json'
     raw=close_fixture.read_bytes()
     if hashlib.sha256(raw).hexdigest()!='251696da23360e7212b7095763f088a7d3d09414de50286f1cf9aaa86f83879f':
@@ -131,11 +169,13 @@ public final class DisplayManager {
     if any(text.count(h)!=1 for h in checks) or [text.index(h) for h in checks]!=sorted(text.index(h) for h in checks):
         raise RuntimeError('original authenticated single close socket lifecycle changed')
     for fence in ('if(!profileCloseReplyPending(SystemClock.elapsedRealtime()))shutdown(code(error));',
-                  'now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)'):
+                  'cleanupDeadlineReached(now) && !releasedProfileReplyMayFlush(now)'):
         if text.count(fence)!=1:raise RuntimeError('normal close monitor/deadline integration changed')
     close_program=root/'tests/background-broker/BrokerCloseReplyHost.template'
     close_java=args.out/'BrokerCloseReplyHost.java'
-    close_java.write_text(close_program.read_text().replace('    METHODS',methods))
+    close_template=close_program.read_text()
+    if close_template.count('    NORMAL_CLEANUP_TYPE')!=1:raise RuntimeError('normal cleanup type marker differs')
+    close_java.write_text(close_template.replace('    NORMAL_CLEANUP_TYPE',normal_type).replace('    METHODS',methods))
     files.append(close_java)
 
     # Notes close registration regression: execute the actual authenticated
@@ -147,7 +187,8 @@ public final class DisplayManager {
     parent_comment = '// Only the authenticated, already admitted work-profile close RPC can own this peer.'
     if text.count(current_registration)!=1 or text.count(current_comment)!=1:
         raise RuntimeError('exact reviewed Notes close registration required')
-    parent_text=text.replace(current_registration,parent_registration).replace(current_comment,parent_comment)
+    # Only this proof copy restores the old whole Broker before its prior two-line inverse.
+    parent_text=proof_text.replace(current_registration,parent_registration).replace(current_comment,parent_comment)
     if hashlib.sha256(parent_text.encode()).hexdigest()!='a74cd6c88a4468631c8e3d2f70fab7e1a6e7d66a6749cfc0c98742456a3f6f44':
         raise RuntimeError('two-line inverse must equal complete recorded parent Broker')
     def exact_slice(value,first,last):
@@ -164,7 +205,7 @@ public final class DisplayManager {
     if text.count(policy_first)!=1 or text.count(policy_end)!=1:
         raise RuntimeError('actual late policy thread must be unique')
     cleanup_part=exact_slice(text,
-        '                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {\n',
+        '                if (cleanupStarted.get() && cleanupDeadlineReached(now) && !releasedProfileReplyMayFlush(now)) {\n',
         '                if (!closing.get()) {\n')
     perform_start='    private byte[] perform(BrokerProtocol.Request r) throws Exception {\n'
     if text.count(perform_start)!=1:raise RuntimeError('actual perform method must be unique')
@@ -180,6 +221,8 @@ public final class DisplayManager {
     if len(constants)!=1:raise RuntimeError('actual broker deadline constants required')
     replacements={
         '    CONSTANTS':constants[0],
+        '    NORMAL_CLEANUP_TYPE':normal_type,
+        '        NORMAL_CLEANUP_HELPERS':normal_helpers,
         '                UID_GATE':'                if (accepted.getPeerCredentials().getUid() != config.ownerUid) continue;',
         '                CURRENT_ADMISSION':exact_slice(text,admission_first,admission_last).rstrip(),
         '                PARENT_ADMISSION':exact_slice(parent_text,admission_first,admission_last).rstrip(),
@@ -202,6 +245,9 @@ public final class DisplayManager {
     files.append(notes_java)
     extraction={
         'schema':'hepta.notes-close-reply-source-extraction.v1',
+        'normal_cleanup_proof_copy':normal_cleanup_source,
+        'normal_cleanup_proof_helper':{'path':str(root/'tests/background-broker/normal_cleanup_history.py'),'bytes':(root/'tests/background-broker/normal_cleanup_history.py').stat().st_size,'sha256':hashlib.sha256((root/'tests/background-broker/normal_cleanup_history.py').read_bytes()).hexdigest()},
+        'normal_cleanup_fixture_scope':'Legacy close fixtures keep normalProfileCleanupWindow null; real new helper bodies compile, and actual normal-clock behavior is covered by the separate focused gate.',
         'candidate_broker':{'path':str(broker),'bytes':broker.stat().st_size,'sha256':hashlib.sha256(broker.read_bytes()).hexdigest()},
         'parent_broker_inverse_sha256':hashlib.sha256(parent_text.encode()).hexdigest(),
         'template':{'path':str(notes_template),'bytes':notes_template.stat().st_size,'sha256':hashlib.sha256(notes_template.read_bytes()).hexdigest()},
@@ -222,6 +268,7 @@ public final class DisplayManager {
     evidence = {'schema': 'hepta.background-broker-host-run.v1', 'android_runtime': False,
                 'phone_operations': False, 'source_files': {str(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in files},
                 'broker_sha256': hashlib.sha256(broker.read_bytes()).hexdigest(),
+                'normal_cleanup_proof_copy':normal_cleanup_source,
                 'snapshot_sha256': hashlib.sha256(part.encode()).hexdigest(),
                 'snapshot_boundary': 'Exact production method/row policy; Android ComponentName and RootTaskInfo fields are controlled host fixtures',
                 'geometry_sha256': hashlib.sha256(geometry_part.encode()).hexdigest(),
@@ -271,7 +318,7 @@ public final class DisplayManager {
         evidence['notes_close_reply_exit_code']=notes_result.returncode
         evidence['notes_close_source_extraction']=extraction
         evidence['notes_close_input_files']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
-            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture)}
+            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture,root/'tests/background-broker/normal_cleanup_history.py')}
         evidence['tools']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
             ((args.java,args.javac) if args.javac else (args.java,))}
         evidence['expected_notes_close_cases']=['notes_authenticated_close_late_policy_keeps_complete_original_frame', 'parent_registration_same_notes_race_reproduces_eof', 'late_policy_wrong_current_peer_not_protected', 'late_policy_missing_notes_and_profile_custody_not_protected', 'late_policy_no_public_scope_not_protected', 'late_policy_at_original_request_deadline_not_protected', 'wrong_peer_uid_never_parses_or_registers', 'foreign_generation_never_registers', 'foreign_scope_never_registers', 'expired_request_never_registers', 'request_above_original_limit_never_registers', 'authenticated_nonclose_does_not_register_or_begin_cleanup', 'notes_cleanup_at_1499_may_flush', 'notes_cleanup_at_1500_halts_without_profile_extension', 'notes_cleanup_at_2249_still_halts', 'notes_unknown_cleanup_at_1500_is_not_success', 'profile_verified_release_at_1500_retains_original_exception', 'profile_verified_release_at_2249_may_flush', 'profile_verified_release_at_2250_halts', 'profile_exception_stops_at_original_request_deadline', 'shorter_close_request_keeps_original_wait_budget', 'session_expiry_bounds_pending_close_peer']

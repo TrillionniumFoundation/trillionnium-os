@@ -1337,7 +1337,8 @@ final class BackgroundSession {
                 ensureProfileCleanup(lastResponse);ensurePersonalNotesCleanup(lastResponse);known=true;deleteJournal();
             }
             else{
-                JSONObject response=call("close",null,3500);accept(response,false);
+                int closeBudget=publicOwnGroupScope!=null&&profileTarget()!=null?8000:3500;
+                JSONObject response=call("close",null,closeBudget);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
                 if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}else saveJournal();
             }

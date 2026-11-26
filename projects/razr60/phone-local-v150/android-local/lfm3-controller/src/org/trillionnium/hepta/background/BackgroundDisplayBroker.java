@@ -50,6 +50,34 @@ import org.json.JSONObject;
  */
 public final class BackgroundDisplayBroker {
     private static final long STARTUP_MS = 8000, SOCKET_MS = 3000, CLEANUP_MS = 1500;
+    /** One normal public-profile cleanup interval; polling never renews its overall deadline. */
+    private static final class NormalProfileCleanupWindow implements ProfileOwnedTask.CleanupReadWindow {
+        final long started,cutoff,workDeadline,replyDeadline;
+        private final java.util.function.LongSupplier clock;
+        private long sampleStarted=-1,sampleDeadline=-1;
+        NormalProfileCleanupWindow(long started,long authenticatedCloseDeadline,java.util.function.LongSupplier clock){
+            if(started<0||started>Long.MAX_VALUE-6750||authenticatedCloseDeadline<0||clock==null)
+                throw new IllegalArgumentException("PROFILE_NORMAL_CLEANUP_CLOCK_INVALID");
+            this.started=started;this.clock=clock;
+            long end=started+6000;
+            if(authenticatedCloseDeadline>0)end=Math.min(end,Math.max(started,authenticatedCloseDeadline-750));
+            cutoff=end;workDeadline=end-100;
+            replyDeadline=authenticatedCloseDeadline>0?Math.min(end+750,authenticatedCloseDeadline):end+750;
+        }
+        @Override public long deadline(){return workDeadline;}
+        long readDeadline(){return sampleDeadline;}
+        @Override public void beginSample()throws ProfileTaskPolicy.Refusal{
+            long now=clock.getAsLong();
+            ProfileTaskPolicy.need(now>=started&&now<workDeadline,"PROFILE_NORMAL_CLEANUP_DEADLINE");
+            sampleStarted=now;sampleDeadline=now+Math.min(1500,workDeadline-now);
+        }
+        @Override public void requireFresh()throws ProfileTaskPolicy.Refusal{
+            long now=clock.getAsLong();
+            ProfileTaskPolicy.need(sampleStarted>=started&&sampleDeadline>sampleStarted
+                    &&now>=sampleStarted&&now<sampleDeadline&&now<workDeadline&&now-sampleStarted<1500,
+                    "PROFILE_NORMAL_CLEANUP_CENSUS_STALE_OR_DEADLINE");
+        }
+    }
     private final BrokerProtocol.Config config;
     private final BrokerProtocol.Receipts receipts = new BrokerProtocol.Receipts();
     // Published before the watchdog starts; cancellation addresses only this owned read-only child.
@@ -82,6 +110,10 @@ public final class BackgroundDisplayBroker {
     private volatile long connectionDeadline;
     private volatile long lastUnlockedCheck;
     private volatile long cleanupAt;
+    private volatile NormalProfileCleanupWindow normalProfileCleanupWindow;
+    private volatile LocalSocket normalProfileCleanupClosePeer;
+    private final ThreadLocal<NormalProfileCleanupWindow> normalProfileCleanupRead=new ThreadLocal<NormalProfileCleanupWindow>();
+
     private final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
     private volatile int displayId = -1;
     private volatile int displayFlags;
@@ -171,7 +203,7 @@ public final class BackgroundDisplayBroker {
             final BackgroundDisplayBroker owner = broker;
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 owner.beginCleanup("process_shutdown");
-                owner.awaitCleanup(CLEANUP_MS);
+                owner.awaitCleanup(owner.cleanupWaitMillis(0));
                 owner.holdProfileCustody();
                 owner.holdPublicNotesCustody();
             }, "HeptaBackgroundShutdown"));
@@ -189,7 +221,7 @@ public final class BackgroundDisplayBroker {
                 broker.serve = false;
                 broker.closeSockets();
                 broker.beginCleanup("process_finally");
-                broker.awaitCleanup(CLEANUP_MS);
+                broker.awaitCleanup(broker.cleanupWaitMillis(0));
                 broker.printTerminal();
                 if (!"RELEASED".equals(broker.state)) exit = 70;
             }
@@ -371,7 +403,7 @@ public final class BackgroundDisplayBroker {
         try {
             if ("close".equals(r.operation)) {
                 beginCleanup("client_close");
-                awaitCleanup(Math.max(1, Math.min(CLEANUP_MS, r.deadline - SystemClock.elapsedRealtime())));
+                awaitCleanup(cleanupWaitMillis(r.deadline));
                 return response(r, "RELEASED".equals(state), "RELEASED".equals(state) ? null : "CLEANUP_NOT_CONFIRMED", false);
             }
             guard(r, false);
@@ -652,7 +684,7 @@ public final class BackgroundDisplayBroker {
         } catch (Throwable error) {
             if(config.profileTarget!=null)dispatched|=profileRequestDispatched;
             beginCleanup(code(error));
-            awaitCleanup(Math.max(1, Math.min(CLEANUP_MS, r.deadline - SystemClock.elapsedRealtime())));
+            awaitCleanup(cleanupWaitMillis(r.deadline));
             serve = false;
             return response(r, false, code(error), dispatched);
         } finally {if(config.profileTarget!=null)activeProfileRequest=null;}
@@ -684,9 +716,34 @@ public final class BackgroundDisplayBroker {
         // Both actual Binder samples still require every target-profile live root/leaf absent.
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);return actual;
     }
+    private boolean normalPublicProfileCleanup(){
+        return config.profileTarget!=null&&config.publicOwnGroupScope!=null;
+    }
+    private long cleanupWaitMillis(long originalRequestDeadline){
+        NormalProfileCleanupWindow window=normalProfileCleanupWindow;
+        long now=SystemClock.elapsedRealtime();
+        if(window==null)return originalRequestDeadline>0?
+                Math.max(1,Math.min(CLEANUP_MS,originalRequestDeadline-now)):CLEANUP_MS;
+        long end=originalRequestDeadline>0?Math.min(window.cutoff,originalRequestDeadline):window.cutoff;
+        return Math.max(1,end-now);
+    }
+    private boolean cleanupDeadlineReached(long now){
+        NormalProfileCleanupWindow window=normalProfileCleanupWindow;
+        return window==null?now-cleanupAt>=CLEANUP_MS:now>=window.cutoff;
+    }
+    private long profileCleanupWorkDeadline(){
+        NormalProfileCleanupWindow window=normalProfileCleanupWindow;
+        return window==null?cleanupAt+CLEANUP_MS-100:window.workDeadline;
+    }
+    private void requireNormalProfileCleanupFresh()throws Exception{
+        NormalProfileCleanupWindow window=normalProfileCleanupRead.get();
+        if(window!=null)window.requireFresh();
+    }
     private long profileDeadline(){
         Long retainedDeadline=retainedReadDeadline.get();
         if(retainedDeadline!=null)return retainedDeadline.longValue();
+        NormalProfileCleanupWindow normal=normalProfileCleanupRead.get();
+        if(normal!=null)return normal.readDeadline();
         return cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:
                 Math.min(expires,requestDeadline>0?requestDeadline:started+STARTUP_MS);
     }
@@ -752,7 +809,7 @@ public final class BackgroundDisplayBroker {
             guard(r,true);requireUnlaunchedProfileEmpty();
             if(!initial.same(profileReadback.activity))throw new BrokerProtocol.Refusal("PROFILE_ACTIVITY_INFO_CHANGED");
             profilePlatform=new ProfileTaskPlatform(activityTasks,options,displayId,profilePackages,
-                    config.profileTarget,()->profileActiveGuard(),()->profileDeadline());
+                    config.profileTarget,()->profileActiveGuard(),()->profileDeadline(),()->requireNormalProfileCleanupFresh());
             profileOwnedTask=new ProfileOwnedTask(profilePlatform,config.profileTarget,config.generation,r.requestId,displayId,publicProfileHistory);
             effectInFlight=true;
             try{profileOwnedTask.prepare();}finally{effectInFlight=false;}
@@ -1431,7 +1488,7 @@ public final class BackgroundDisplayBroker {
                 // This independent watchdog is the authoritative absolute screen-lease deadline.
                 if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);
                 if(config.publicOwnGroupScope!=null)publicSurfaceRetirement.observeDeadline(now);
-                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {
+                if (cleanupStarted.get() && cleanupDeadlineReached(now) && !releasedProfileReplyMayFlush(now)) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
                     if(config.profileTarget!=null&&profileCustody.known()){
                         state=releasedState();haltAfterBootRead(0);
@@ -1475,8 +1532,12 @@ public final class BackgroundDisplayBroker {
         // The cleanup deadline and unknown-custody watchdog are unchanged. Only a
         // verified release may finish its reply on the original socket, within both
         // the original request deadline and a short independent write bound.
+        NormalProfileCleanupWindow normal=normalProfileCleanupWindow;
         return profileCloseReplyPending(now)&&cleanupDone.getCount()==0&&"RELEASED".equals(state)
-                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;
+                &&profileCustody.known()&&now>=cleanupAt
+                &&(normal==null?now-cleanupAt<CLEANUP_MS+750:
+                    normalProfileCleanupClosePeer!=null&&normalProfileCleanupClosePeer==authenticatedProfileClosePeer
+                    &&now<normal.replyDeadline);
     }
 
     private void shutdown(String reason) {
@@ -1510,8 +1571,20 @@ public final class BackgroundDisplayBroker {
         retireBootRead();
         if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();
         if(config.publicOwnGroupScope!=null){publicAdmissionRetired.set(true);beginPublicSurfaceDetach();}
-        if (!cleanupStarted.compareAndSet(false, true)) return;
-        cleanupAt = SystemClock.elapsedRealtime(); terminalReason = reason; state = "CLOSING";
+        synchronized(cleanupStarted){
+            if(cleanupStarted.get())return;
+            cleanupAt=SystemClock.elapsedRealtime();
+            if(normalPublicProfileCleanup()){
+                LocalSocket peer=authenticatedProfileClosePeer;
+                boolean originalClose=peer!=null&&peer==connection&&requestDeadline>0;
+                normalProfileCleanupClosePeer=originalClose?peer:null;
+                normalProfileCleanupWindow=new NormalProfileCleanupWindow(cleanupAt,
+                        originalClose?requestDeadline:0,SystemClock::elapsedRealtime);
+            }
+            terminalReason=reason;state="CLOSING";
+            // Publish the fixed clock before the watchdog can observe cleanupStarted.
+            if(!cleanupStarted.compareAndSet(false,true))return;
+        }
         if(config.profileTarget!=null){beginProfileCleanup();return;}
         if(publicNotesCustody!=null){beginPublicNotesCleanup();return;}
         Thread cleanup = new Thread(() -> {
@@ -1665,58 +1738,80 @@ public final class BackgroundDisplayBroker {
 
     private void beginProfileCleanup(){
         Thread cleanup=new Thread(()->{
+            NormalProfileCleanupWindow normal=normalProfileCleanupWindow;
+            if(normal!=null)normalProfileCleanupRead.set(normal);
             try{
                 synchronized(dispatchGate){
                     ProfileOwnedTask tasks=profileOwnedTask;
                     if(tasks!=null){
                         profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.TASK_RETIRE);
-                        tasks.retire(cleanupAt+CLEANUP_MS-100);
+                        if(normal==null)tasks.retire(profileCleanupWorkDeadline());
+                        else tasks.retire(normal.deadline(),normal);
                         refreshProfileTaskEvidence();
                         if(!tasks.cleanupKnown())throw new IOException("PROFILE_TASK_RETIRE_UNCONFIRMED");
                     }else{
                         profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.UNLAUNCHED_PROFILE);
-                        recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                        if(normal!=null)normal.beginSample();
+                        recheckProfile(false,profileDeadline());
                         requireUnlaunchedProfileEmpty();
+                        if(normal!=null)normal.requireFresh();
                         profileCleanupReadback=emptyProfileCleanup(true);
                     }
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_RELEASE);
+                    if(normal!=null){
+                        recheckProfile(false,normal.readDeadline());
+                        normal.requireFresh();
+                    }
                     profileCustody.tasksVerified();
                     // The watchdog can mark uncertainty while a Binder call is in flight. It is
                     // monotonic: an observed quarantine refuses a new release call. A release
                     // already in flight can still time out; its custodian then remains alive.
                     if(!profileCustody.mayRelease())throw new IOException("PROFILE_CUSTODY_QUARANTINED");
                     VirtualDisplay owned=virtual;
-                    if(owned!=null){profileDisplayReleaseAttempted=true;owned.release();}
+                    if(owned!=null){
+                        if(normal!=null)normal.requireFresh();
+                        profileDisplayReleaseAttempted=true;owned.release();
+                    }
                     ImageReader reader=surfaceReader;if(reader!=null)reader.close();
                     HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
                 }
                 profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_ABSENCE);
                 if(createInFlight||effectInFlight)throw new IOException("PROFILE_EFFECT_UNRESOLVED");
                 boolean gone=false;
-                while(SystemClock.elapsedRealtime()<cleanupAt+CLEANUP_MS-100){
+                while(SystemClock.elapsedRealtime()<profileCleanupWorkDeadline()){
+                    if(normal!=null)normal.beginSample();
                     DisplayManager dm=displays;
-                    if(dm==null){gone=virtual==null&&!createInFlight&&!effectInFlight;break;}
+                    if(dm==null){
+                        gone=virtual==null&&!createInFlight&&!effectInFlight;
+                        if(normal!=null)normal.requireFresh();
+                        break;
+                    }
                     boolean present=displayId>0&&dm.getDisplay(displayId)!=null;
                     for(Display display:dm.getDisplays())if(displayName.equals(display.getName()))present=true;
+                    if(normal!=null)normal.requireFresh();
                     if(!present){gone=true;break;}
                     Thread.sleep(25);
                 }
                 if(!gone)throw new IOException("PROFILE_DISPLAY_ABSENCE_UNCONFIRMED");
                 if(publicProfileHistory!=null){
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PROFILE_IDENTITY);
-                    recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                    recheckProfile(false,profileDeadline());
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_GLOBAL_TASKS);
                     BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(config.profileTarget);
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PUBLIC_RECENTS);
-                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->cleanupAt+CLEANUP_MS-100),
+                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->profileDeadline()),
                             config.profileTarget,SystemClock.elapsedRealtime());
                 }
+                if(normal!=null)normal.requireFresh();
                 profileCustody.displayVerifiedAbsent();state=releasedState();
             }catch(Throwable error){
                 // Never release, close the surface, halt, or exit merely because retire failed.
                 if(profileOwnedTask!=null)refreshProfileTaskEvidence();
                 quarantineProfile(code(error));
-            }finally{cleanupDone.countDown();}
+            }finally{
+                normalProfileCleanupRead.remove();
+                cleanupDone.countDown();
+            }
         },"HeptaProfileCleanup");
         cleanup.setDaemon(true);cleanup.start();
     }
@@ -1740,7 +1835,7 @@ public final class BackgroundDisplayBroker {
     private void quarantineProfile(String reason){
         // Keep the first cleanup refusal separate from the original close/Stop reason.
         // Diagnostics never change custody, deadlines, or the cleanup outcome.
-        try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}
+        try{profileCleanupFailures.record(reason,cleanupAt,profileCleanupWorkDeadline(),SystemClock.elapsedRealtime());}
         catch(Throwable unavailable){/* Original quarantine remains authoritative. */}
         retirePublicScreenLease();
         profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";

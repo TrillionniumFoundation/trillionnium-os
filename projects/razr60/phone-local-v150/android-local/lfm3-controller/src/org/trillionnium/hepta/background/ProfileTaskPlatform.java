@@ -19,9 +19,18 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     private volatile java.util.Map<String,Object> firstPermissionReadMismatch=java.util.Collections.emptyMap();
     ProfileTaskPlatform(Object activityTasks,ActivityOptions options,int display,ProfilePackages packages,
             ProfileTarget expected,BackgroundTaskOrganizer.Check active,LongSupplier deadline)throws Exception {
+        this(activityTasks,options,display,packages,expected,active,deadline,null);
+    }
+    ProfileTaskPlatform(Object activityTasks,ActivityOptions options,int display,ProfilePackages packages,
+            ProfileTarget expected,BackgroundTaskOrganizer.Check active,LongSupplier deadline,
+            BackgroundTaskOrganizer.Check normalCleanupFreshness)throws Exception {
         this.activityTasks=activityTasks;this.packages=packages;this.expected=expected;
         this.active=active;this.deadline=deadline;
-        organizer=new BackgroundTaskOrganizer(activityTasks,options,display,active,()->recheck(false),deadline);
+        organizer=new BackgroundTaskOrganizer(activityTasks,options,display,active,()->{
+            recheck(false);
+            // The package read can consume time. Check the same sample after it, before the Binder effect.
+            if(normalCleanupFreshness!=null)normalCleanupFreshness.check();
+        },deadline);
     }
     static ProfilePackages.Readback preflight(Object activityTasks,ProfilePackages packages,
             ProfileTarget expected,long deadline)throws Exception {
