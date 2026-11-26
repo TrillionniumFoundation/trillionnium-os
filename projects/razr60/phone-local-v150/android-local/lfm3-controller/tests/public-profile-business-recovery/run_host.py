@@ -77,6 +77,7 @@ def main():
     ap.add_argument("--retained-before-model", action="store_true", help="Replay original retained-custody capture before the first model request")
     ap.add_argument("--retained-after-business", action="store_true", help="Replay retained failed business originals and independent current-absence policy")
     ap.add_argument("--model-done-cleanup", action="store_true", help="Replay a verified native product model claim followed by a failed retained close")
+    ap.add_argument("--released-client-close", action="store_true", help="Replay a stored RELEASED close with actual zero exit and complete EOF")
     args = ap.parse_args()
     source = args.source.resolve(strict=True)
     output = args.output.absolute()
@@ -95,7 +96,9 @@ def main():
         special_name = "PublicProfileRetainedBusinessHostTest"
     if args.model_done_cleanup:
         special_name = "PublicProfileModelDoneCleanupHostTest"
-    special = args.visual or args.retained_before_model or args.incomplete_client_close or args.retained_after_business or args.model_done_cleanup
+    if args.released_client_close:
+        special_name = "PublicProfileReleasedCloseHostTest"
+    special = args.visual or args.retained_before_model or args.incomplete_client_close or args.retained_after_business or args.model_done_cleanup or args.released_client_close
     visual_test = host_test.with_name(special_name+".java")
     before = inventory(source)
     tools_before = {n: ref(p) for n,p in (("java",java),("javac",javac),("json_jar",jar),("runner",script))}
@@ -108,6 +111,8 @@ def main():
             "-cp", str(jar), "-sourcepath", str(source/"src"), "-d", str(classes), str(host_test)]
     if special:
         argv.append(str(visual_test))
+    if args.released_client_close:
+        argv.append(str(host_test.with_name("PublicProfileBusinessIncompleteHostTest.java")))
     stages = [stage("compile", argv, output, source)]
     if stages[0]["exit_code"] == 0:
         stages.append(stage("policy", [str(java), "-Xmx512m", "-cp", str(classes)+os.pathsep+str(jar),
@@ -134,6 +139,8 @@ def main():
     used.add(host_test.relative_to(source).as_posix())
     if special:
         used.add(visual_test.relative_to(source).as_posix())
+    if args.released_client_close:
+        used.add(host_test.with_name("PublicProfileBusinessIncompleteHostTest.java").relative_to(source).as_posix())
     inputs = {}
     for relative in sorted(used):
         inputs[relative] = ref(source/relative)

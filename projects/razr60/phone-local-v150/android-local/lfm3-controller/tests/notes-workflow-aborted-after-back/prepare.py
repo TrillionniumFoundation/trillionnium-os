@@ -47,6 +47,13 @@ def v12_runner_predecessor(raw):
     assert len(restored)==7449 and sha(restored)=="ad05c9ef9b7a9e59a57629411269dc11e6dabd78008138d501a081adef53c1a0", "v12 full predecessor mismatch"
     return restored
 
+def _session_cleanup_diagnostic_proof(source, raw):
+    from runpy import run_path
+    helper=source/"tests/profile-cleanup-evidence/session_predecessor.py"
+    if hashlib.sha256(helper.read_bytes()).hexdigest()!="4a8fab44046379d8a948af6712101ba4ed86095371f8996f7e2305bc16c11afe":
+        raise RuntimeError("fixed complete Session diagnostic source inverse differs")
+    return run_path(str(helper))["session_predecessor"](raw)
+
 def source_proof(source,base,here):
     proof=json.loads((here/"source-inverse.json").read_text())
     rows=[];eof_predecessors=[]
@@ -73,7 +80,13 @@ def source_proof(source,base,here):
     for row in proof["unchanged"]:
         a=source/row["path"]; b=base/row["path"]
         current=a.read_bytes();historical=b.read_bytes()
-        if row["path"]=="tests/notes-workflow-released-reply-lost/run_host.py" and current!=historical:
+        if row["path"]=="src/org/trillionnium/hepta/local/BackgroundSession.java" and current!=historical:
+            restored=_session_cleanup_diagnostic_proof(source,current)
+            assert restored==historical and sha(restored)==row["sha256"],row["path"]
+            fixture_predecessors.append({"candidate":ref(a),"baseline":ref(b),
+                "full_inverse_byte_exact":True,"proof_only":True,"actual_current_session_source_preserved":True,
+                "kind":"optional_public_cleanup_diagnostic"})
+        elif row["path"]=="tests/notes-workflow-released-reply-lost/run_host.py" and current!=historical:
             restored=v12_runner_predecessor(current)
             assert restored==historical and sha(restored)==row["sha256"],row["path"]
             fixture_predecessors.append({"candidate":ref(a),"baseline":ref(b),

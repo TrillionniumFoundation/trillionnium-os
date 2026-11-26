@@ -1438,15 +1438,43 @@ final class BackgroundSession {
         }
         return new JSONObject(proof.toString());
     }
+    /** Optional producer diagnostics only. The original cleanup, scope, task and
+     * history fields below remain the authority for consuming a terminal reply. */
+    private static JSONObject profileCleanupFieldView(JSONObject proof,boolean publicCleanup)throws Exception{
+        if(!proof.has("normal_cleanup_phase"))return proof;
+        if(!publicCleanup)throw new IOException("profile normal cleanup diagnostic outside public scope");
+        JSONObject phase=proof.getJSONObject("normal_cleanup_phase");
+        requireProfileFields(phase,"schema","original_task_reads_deadline_elapsed_ms",
+                "bounded_convergence_deadline_elapsed_ms","maximum_census_to_effect_age_ms",
+                "read_convergence_activated","failed","last_sample_started_elapsed_ms",
+                "leaf_effect_entered_elapsed_ms","leaf_effect_returned_elapsed_ms",
+                "root_effect_entered_elapsed_ms","root_effect_returned_elapsed_ms",
+                "display_effect_entered_elapsed_ms","display_effect_returned_elapsed_ms",
+                "business_admission_restored","serialized_evidence_is_authority");
+        if(!"hepta.profile-normal-cleanup-phase.v1".equals(phase.getString("schema"))
+                ||strictLong(phase,"maximum_census_to_effect_age_ms")!=1500
+                ||!(phase.get("read_convergence_activated") instanceof Boolean)
+                ||!(phase.get("failed") instanceof Boolean)
+                ||!Boolean.FALSE.equals(phase.get("business_admission_restored"))
+                ||!Boolean.FALSE.equals(phase.get("serialized_evidence_is_authority")))
+            throw new IOException("profile normal cleanup diagnostic differs");
+        for(String key:new String[]{"original_task_reads_deadline_elapsed_ms","bounded_convergence_deadline_elapsed_ms"})
+            if(strictLong(phase,key)<=0)throw new IOException("profile normal cleanup diagnostic deadline differs");
+        for(String key:new String[]{"last_sample_started_elapsed_ms","leaf_effect_entered_elapsed_ms","leaf_effect_returned_elapsed_ms",
+                "root_effect_entered_elapsed_ms","root_effect_returned_elapsed_ms","display_effect_entered_elapsed_ms","display_effect_returned_elapsed_ms"})
+            if(strictLong(phase,key)<-1)throw new IOException("profile normal cleanup diagnostic clock differs");
+        JSONObject fields=new JSONObject(proof.toString());fields.remove("normal_cleanup_phase");return fields;
+    }
     private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,PublicOwnGroupPolicy.Scope publicScope,
             String generation,int display,boolean launched)throws Exception{
         if(response==null||!Boolean.TRUE.equals(response.get("profile_cleanup_known"))
                 ||!target.same(ProfileTarget.fromWire(response.getString("profile_target_wire"))))
             throw new IOException("profile cleanup missing actual broker scope");
         JSONObject proof=response.getJSONObject("profile_cleanup");
-        if(publicScope==null)requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+        JSONObject fields=profileCleanupFieldView(proof,publicScope!=null);
+        if(publicScope==null)requireProfileFields(fields,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                 "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks");
-        else requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+        else requireProfileFields(fields,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                 "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks",
                 "public_foreign_recent_history","recents_absence_scope");
         if(!"hepta.profile-task-cleanup.v1".equals(proof.getString("schema"))

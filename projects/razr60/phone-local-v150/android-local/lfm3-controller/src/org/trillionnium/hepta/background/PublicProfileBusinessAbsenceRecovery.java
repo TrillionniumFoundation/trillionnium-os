@@ -199,7 +199,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
             need(same(broker,finalBroker)&&Boolean.TRUE.equals(broker.get("persisted")),"BUSINESS_BROKER_RECEIPT");byte[] output=task("background-broker-"+generation+".bin");
             need(number(broker,"stored_bytes")==output.length&&number(broker,"observed_bytes")==output.length&&ProfileIdentity.sha(output).equals(string(broker,"stored_sha256")),"BUSINESS_BROKER_BYTES");
             requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
-            JSONObject owned=retainedBeforeFirstModel?retainedOrigin(bootstrap,cleanup,output):retainedAfterBusiness?retainedBusinessOrigin(bootstrap,cleanup,output):businessOrigin(bootstrap,cleanup,output);ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");ownedLeafTaskToken=string(owned,"leaf_task_token");
+            JSONObject owned=retainedBeforeFirstModel?retainedOrigin(bootstrap,cleanup,output):retainedAfterBusiness?retainedBusinessOrigin(bootstrap,cleanup,output):postBusinessOrigin(bootstrap,cleanup,output);ownedRootTaskId=(int)number(owned,"root_task_id");ownedLeafTaskId=(int)number(owned,"leaf_task_id");ownedLeafTaskToken=string(owned,"leaf_task_token");
             long count=number(result,"steps");need((count>0||retainedBeforeFirstModel)&&count>=0&&count<=256&&taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status")),"BUSINESS_TERMINAL");steps=(int)count;
             no(result,"cleanup_known","completion_verified","external_model","automatic_replay","controller_completion_requested");
             if(retainedModelDoneCleanupFailure)yes(result,"model_reported_success");else no(result,"model_reported_success");
@@ -538,6 +538,104 @@ public final class PublicProfileBusinessAbsenceRecovery {
             for(String path:manifest.paths())if(path.startsWith("runs/"))need(path.equals(modelPrefix+"app-session-receipt.json"),"BEFORE_MODEL_GENERATION_MEMBERSHIP");
             for(String leaf:manifest.taskFiles())need(!leaf.startsWith("step-")&&!leaf.startsWith("ime-submit-")&&!leaf.startsWith("fixed-intent-")
                     &&!leaf.startsWith("controller-completion-"),"BEFORE_MODEL_EFFECT_FILE");
+        }
+        /** A stored close reply is already RELEASED, so it cannot be validated as
+         * the preceding ACTIVE display readback. This additional origin is history
+         * only: exit/EOF, complete originals and fresh double absence remain required. */
+        private JSONObject postBusinessOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
+            if("RELEASED".equals(string(cleanup.getJSONObject("last_broker_response"),"state")))
+                return releasedBusinessOrigin(bootstrap,cleanup,output);
+            return businessOrigin(bootstrap,cleanup,output);
+        }
+        private JSONObject releasedBusinessOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
+            need(historicalBrokerExitObserved&&historicalBrokerExitCode!=null&&historicalBrokerExitCode==0
+                    &&!retainedBeforeFirstModel&&!retainedAfterBusiness,"BUSINESS_RELEASED_CLOSE_EXIT");
+            JSONObject terminal=object(output);
+            need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))&&generation.equals(string(terminal,"generation"))&&number(terminal,"display_id")==displayId
+                    &&"RELEASED".equals(string(terminal,"state"))&&publicScope.sha256.equals(string(terminal,"display_scope_sha256"))
+                    &&terminal.get("boot_count_read_retirement_failure")==JSONObject.NULL&&terminal.get("owned_single_task")==JSONObject.NULL,"BUSINESS_HISTORICAL_TERMINAL");
+            yes(terminal,"release_confirmed","public_scope_admission_retired");no(terminal,"profile_custody_retained");
+            String reason=string(terminal,"reason");
+            need("client_close".equals(reason),"BUSINESS_RELEASED_CLOSE_REASON");
+            JSONObject first=bootstrap.getJSONObject("last_broker_response"),last=cleanup.getJSONObject("last_broker_response");
+            requireHistoricalResponse(first,bootstrap.getJSONObject("app_display_readback"));
+            need("launch".equals(string(first,"operation"))&&Boolean.TRUE.equals(first.get("dispatched")),"BUSINESS_RELEASED_CLOSE_LAUNCH");
+            requireReleasedResponse(last,terminal,bootstrap.getJSONObject("app_display_readback"),cleanup.getJSONObject("app_display_readback"));
+            need(number(bootstrap.getJSONObject("app_display_readback"),"observed_ended_elapsed_ms")<=number(cleanup.getJSONObject("app_display_readback"),"observed_ended_elapsed_ms"),"BUSINESS_RESPONSE_CLOCK");
+            JSONObject cleaned=releasedCleanupFieldView(terminal.getJSONObject("profile_cleanup")),history=cleaned.getJSONObject("public_foreign_recent_history");
+            boolean concurrent="hepta.public-profile-history-custody.v2".equals(string(history,"schema"));
+            String historyScope=concurrent?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved";
+            keys(cleaned,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid","cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks","public_foreign_recent_history","recents_absence_scope");
+            need("hepta.profile-task-cleanup.v1".equals(string(cleaned,"schema"))&&generation.equals(string(cleaned,"generation"))&&number(cleaned,"display_id")==displayId
+                    &&target.sha256.equals(string(cleaned,"target_sha256"))&&number(cleaned,"user_id")==target.profile.userId&&number(cleaned,"user_serial")==target.profile.serial
+                    &&number(cleaned,"full_uid")==target.fullUid&&historyScope.equals(string(cleaned,"recents_absence_scope")),"BUSINESS_HISTORICAL_CLEANUP");
+            yes(cleaned,"cleanup_known","live_tasks_absent","recents_tasks_absent");no(cleaned,"foreign_tasks_present","identity_unknown");
+            JSONArray tasks=cleaned.getJSONArray("owned_tasks");need(tasks.length()==1,"BUSINESS_OWNED_COUNT");JSONObject task=tasks.getJSONObject(0);
+            keys(task,"task_id","parent_task_id","task_token_id","user_id","user_serial","full_uid","live_absent","recents_absent");
+            long root=number(task,"parent_task_id"),leaf=number(task,"task_id");String token=string(task,"task_token_id");
+            need(root>0&&root<=Integer.MAX_VALUE&&leaf>0&&leaf<=Integer.MAX_VALUE&&root!=leaf&&ProfileIdentity.uuid(token)
+                    &&number(task,"user_id")==target.profile.userId&&number(task,"user_serial")==target.profile.serial&&number(task,"full_uid")==target.fullUid,"BUSINESS_OWNED_IDENTITY");
+            yes(task,"live_absent","recents_absent");requireHistoricalLeaf(terminal.getJSONObject("profile_last_leaf_validation"),root,leaf);
+            requireHistoricalHistory(history,root,leaf,true);
+            for(JSONObject response:new JSONObject[]{first}){
+                JSONObject previous=releasedCleanupFieldView(response.getJSONObject("profile_cleanup"));JSONArray rows=previous.getJSONArray("owned_tasks");
+                need(rows.length()==1&&same(without(previous,"cleanup_known","live_tasks_absent","recents_tasks_absent","owned_tasks","public_foreign_recent_history"),
+                        without(cleaned,"cleanup_known","live_tasks_absent","recents_tasks_absent","owned_tasks","public_foreign_recent_history")),"BUSINESS_CUSTODY_TRANSITION");
+                no(previous,"cleanup_known","live_tasks_absent","recents_tasks_absent");JSONObject old=rows.getJSONObject(0);
+                need(same(without(old,"live_absent","recents_absent"),without(task,"live_absent","recents_absent")),"BUSINESS_OWNED_IDENTITY_CHANGED");no(old,"live_absent","recents_absent");
+                requireHistoricalLeaf(response.getJSONObject("profile_last_leaf_validation"),root,leaf);
+                JSONObject priorHistory=previous.getJSONObject("public_foreign_recent_history");requireHistoricalHistory(priorHistory,root,leaf,false);
+                for(String k:new String[]{"schema","target_sha256","baseline_elapsed_ms","baseline_raw_sha256","baseline_task_ids","owned_task_ids"})
+                    need(same(priorHistory.get(k),history.get(k)),"BUSINESS_HISTORY_ORIGIN_CHANGED");
+                if(concurrent)need(string(priorHistory,"protected_history_sha256").equals(string(history,"protected_history_sha256")),"BUSINESS_PROTECTED_HISTORY_CHANGED");
+                else need(string(priorHistory,"nonowned_history_sha256").equals(string(history,"nonowned_history_sha256")),"BUSINESS_HISTORY_CHANGED");
+            }
+            return new JSONObject().put("root_task_id",root).put("leaf_task_id",leaf).put("leaf_task_token",token);
+        }
+        private void requireReleasedResponse(JSONObject last,JSONObject terminal,JSONObject firstRead,JSONObject lastRead)throws Exception{
+            need(number(last,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION&&ProfileIdentity.uuid(string(last,"request_id"))
+                    &&generation.equals(string(last,"generation"))&&displayId==number(last,"display_id")&&displayName.equals(string(last,"display_name"))
+                    &&publicScope.sha256.equals(string(last,"display_scope_sha256"))&&"RELEASED".equals(string(last,"state"))
+                    &&"close".equals(string(last,"operation"))&&expires==number(last,"expires_elapsed_ms")&&target.wire().equals(string(last,"profile_target_wire"))
+                    &&string(terminal,"reason").equals(string(last,"terminal_reason"))&&last.get("public_own_group_readback_wire")==JSONObject.NULL,
+                    "BUSINESS_RELEASED_CLOSE_RESPONSE");
+            yes(last,"ok","profile_cleanup_known","public_scope_admission_retired","public_scope_closing","always_unlocked");
+            no(last,"dispatched","profile_custody_retained","profile_current_identity_verified","capture_secure");
+            need("hide".equals(string(last,"ime_policy")),"BUSINESS_RELEASED_CLOSE_FLAGS");
+            for(String key:new String[]{"profile_cleanup","profile_last_leaf_validation","public_surface_detach","profile_cleanup_diagnostics",
+                    "profile_first_root_refusal","profile_permission_first_read_mismatch","public_policy_diagnostics"})
+                need(same(terminal.get(key),last.get(key)),"BUSINESS_RELEASED_CLOSE_TERMINAL_BINDING");
+            // The app readback is the last successful ACTIVE read, not a read of
+            // the destroyed display. Preserve its full identity and monotonicity.
+            String[] changing={"broker_request_id","broker_readback_sha256","observed_started_elapsed_ms","observed_ended_elapsed_ms"};
+            need(same(without(firstRead,changing),without(lastRead,changing))
+                    &&ProfileIdentity.uuid(string(lastRead,"broker_request_id"))&&ProfileIdentity.hash(string(lastRead,"broker_readback_sha256"))
+                    &&number(lastRead,"observed_started_elapsed_ms")>=number(firstRead,"observed_ended_elapsed_ms")
+                    &&number(lastRead,"observed_ended_elapsed_ms")>=number(lastRead,"observed_started_elapsed_ms")
+                    &&number(lastRead,"observed_ended_elapsed_ms")<expires,"BUSINESS_RELEASED_CLOSE_LAST_READBACK");
+        }
+        /** Validate the optional diagnostic vocabulary before making a field view.
+         * Original bytes and the complete close/terminal comparison retain it; no
+         * diagnostic flag is used as cleanup, mutation, or current absence authority. */
+        private JSONObject releasedCleanupFieldView(JSONObject value)throws Exception{
+            if(!value.has("normal_cleanup_phase"))return value;
+            JSONObject phase=value.getJSONObject("normal_cleanup_phase");
+            keys(phase,"schema","original_task_reads_deadline_elapsed_ms","bounded_convergence_deadline_elapsed_ms",
+                    "maximum_census_to_effect_age_ms","read_convergence_activated","failed","last_sample_started_elapsed_ms",
+                    "leaf_effect_entered_elapsed_ms","leaf_effect_returned_elapsed_ms","root_effect_entered_elapsed_ms",
+                    "root_effect_returned_elapsed_ms","display_effect_entered_elapsed_ms","display_effect_returned_elapsed_ms",
+                    "business_admission_restored","serialized_evidence_is_authority");
+            need("hepta.profile-normal-cleanup-phase.v1".equals(string(phase,"schema"))
+                    &&number(phase,"maximum_census_to_effect_age_ms")==1500
+                    &&phase.get("read_convergence_activated") instanceof Boolean&&phase.get("failed") instanceof Boolean,
+                    "BUSINESS_RELEASED_PHASE_SHAPE");
+            no(phase,"business_admission_restored","serialized_evidence_is_authority");
+            for(String key:new String[]{"original_task_reads_deadline_elapsed_ms","bounded_convergence_deadline_elapsed_ms"})
+                need(number(phase,key)>0,"BUSINESS_RELEASED_PHASE_CLOCK");
+            for(String key:new String[]{"last_sample_started_elapsed_ms","leaf_effect_entered_elapsed_ms","leaf_effect_returned_elapsed_ms",
+                    "root_effect_entered_elapsed_ms","root_effect_returned_elapsed_ms","display_effect_entered_elapsed_ms","display_effect_returned_elapsed_ms"})
+                need(number(phase,key)>=-1,"BUSINESS_RELEASED_PHASE_CLOCK");
+            return without(value,"normal_cleanup_phase");
         }
         private JSONObject businessOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
             JSONObject terminal=object(output);

@@ -151,6 +151,11 @@ def form_sampling_body_predecessor(service,anchor,raw,h):
     if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
         return raw,False
     proof=h.body(service,reviewed['actual_body_anchor'])
+    # Current source stays in generated/compiled inputs; only this exact complete body is restored for the historical proof.
+    if h.sha(proof.encode())=='ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c':
+        proof=once(proof,'                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n','                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')
+        if h.sha(proof.encode())!='202eab36242779bde2456127f364162755442e8c50ad0ec6fe15942e760581d1':
+            raise RuntimeError('complete d4 dual-clock accept body inverse required')
     if h.sha(proof.encode())!=reviewed['actual_body_sha256']:
         raise RuntimeError('exact complete current FORM sampling producer body required: '+anchor)
     for current,prior in reviewed['inverse']:proof=once(proof,current,prior)

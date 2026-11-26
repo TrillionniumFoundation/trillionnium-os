@@ -40,6 +40,13 @@ def _cleanup_phase_proof(relative, raw):
         raise RuntimeError("fixed cleanup proof helper differs")
     return run_path(str(helper))["predecessor"](relative, raw)
 
+def _session_cleanup_diagnostic_proof(source, raw):
+    from runpy import run_path
+    helper=source/"tests/profile-cleanup-evidence/session_predecessor.py"
+    if hashlib.sha256(helper.read_bytes()).hexdigest()!="4a8fab44046379d8a948af6712101ba4ed86095371f8996f7e2305bc16c11afe":
+        raise RuntimeError("fixed complete Session diagnostic source inverse differs")
+    return run_path(str(helper))["session_predecessor"](raw)
+
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def record(path):
  p=Path(path).resolve();raw=p.read_bytes()
@@ -120,7 +127,12 @@ def source_contract(source,output):
  checks=[];close_proofs=[]
  for rel,digest in UNCHANGED.items():
   row=record(source/rel)
-  if rel=="src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java" and row["sha256"]!=digest:
+  if rel=="src/org/trillionnium/hepta/local/BackgroundSession.java" and row["sha256"]!=digest:
+   session_proof=_session_cleanup_diagnostic_proof(source,(source/rel).read_bytes())
+   require(sha(session_proof)==digest,"exact complete Session cleanup diagnostic inverse differs")
+   close_proofs.append(dict(actual_source=row,original_whole_sha256=digest,proof_copy_only=True,
+       kind="optional_public_cleanup_diagnostic",actual_current_session_compiled=True))
+  elif rel=="src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java" and row["sha256"]!=digest:
    broker_proof=admitted_close_proof_copy((source/rel).read_text())
    require(sha(broker_proof.encode())==digest,"exact authenticated close producer inverse differs")
    close_proofs.append(dict(actual_source=row,original_whole_sha256=digest,proof_copy_only=True))
@@ -152,6 +164,7 @@ def main():
  paths=list(dict.fromkeys(paths+extra))
  originals=list(dict.fromkeys([Path(r["path"]) for r in provenance["production_inputs"]]+extra+[Path(__file__).resolve(),source/"src/org/trillionnium/hepta/local/LocalTaskController.java"]+[source/x for x in UNCHANGED]))
  originals += _cleanup_phase_inputs()
+ originals += [source/"tests/profile-cleanup-evidence/session_predecessor.py"]
  tools=[jdk/"bin/java",jdk/"bin/javac",jdk/"lib/modules",jar,Path(sys.executable).resolve()]
  before=[record(x) for x in originals];tool_before=[record(x) for x in tools]
  report=dict(schema="hepta.native-profile-live-identity-gate.v1",all_pass=False,source=str(source),source_inputs_before=before,

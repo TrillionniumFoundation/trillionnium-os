@@ -62,7 +62,10 @@ public final class CtripFormSamplingHostTest {
             "equal_key_interval",
             "diagnostic_bounds",
             "late_window_failure",
-            "late_unknown_event"
+            "late_unknown_event",
+            "history_limit_exact",
+            "history_limit_exceeded",
+            "queued_content_diagnostic_finished"
     );
     public static void main(String[] args)throws Exception{
         if(args.length!=1)throw new IllegalArgumentException("one fresh output required");
@@ -96,6 +99,8 @@ public final class CtripFormSamplingHostTest {
         out.put("android_graph_window_clock_synthetic",true);out.put("existing_session_io_carrier_synthetic",true);
         out.put("actual_session_entered_receipt_proved",false);out.put("phone_operations",0);out.put("action_dispatches",0);
         out.put("worker_case_lineage","r2 48: replace incorrect interactive_variable_child expectation with direct-sibling read-only control plus original nested-click refusal; now 49");
+        out.put("current_successor_lineage","Original 49 cases retain assertions; three added cases test the unchanged final history boundary and frozen optional diagnostics.");
+        out.put("current_diagnostic_mask_scope","bit4 is the original initial-check result; remaining bits are the actual locked endpoint, not an earlier unlogged cause.");
         out.put("host_json_nullable_decode",Arrays.asList("label","ref_signature_sha256","input_sha256"));
         out.put("decoded_census_requires_original_complete_sha",true);
         out.put("business_completion_verified",false);out.put("defb_missing_pair_reconstructed",false);

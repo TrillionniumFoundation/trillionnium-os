@@ -25,6 +25,7 @@ fixed=[a.actual_input_map,a.legacy_input_map_v12,a.legacy_input_map_v11,jar,Path
 fixed+=sorted(here.glob("*.java"))
 fixed += [here/"eof_predecessor.py",here/"source_predecessor.py",a.pre_eof_source/"src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java"]
 assert ref(fixed[-1])["sha256"]=="aad22b14be14a33f0e12823f06b8ac780a023653eba7caebc4945ea281218100"
+fixed += [source/"tests/profile-cleanup-evidence/session_predecessor.py"]
 for row in readjson(here/"source-inverse.json")["production"]:
     fixed += [source/row["path"],base/row["path"]]
 for row in readjson(here/"source-inverse.json")["unchanged"]:fixed+=[source/row["path"],base/row["path"]]
@@ -101,7 +102,9 @@ try:
         old_client=source/"tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java"
         fake=source/"tests/personal-notes-absence/FakePersonalNotesRecoveryProcess.java"
         command("candidate-compile",[javac]+options+["-cp",cp,"-d",candidate,source/request,source/processes,client,fake,
+                                                       source/"src/org/trillionnium/hepta/local/BackgroundSession.java",
                                                        newtest,proc_test,legacy12,legacy11,old_client])
+        report["candidate_background_session_class"]=ref(candidate/"org/trillionnium/hepta/local/BackgroundSession.class")
         report["candidate"]=runtime("candidate",candidate,"org.trillionnium.hepta.local.NotesWorkflowAbortedAfterBackHostTest",
             [a.actual_input_map,out/"candidate-scratch","candidate",out/"startup-actual/RESULT.json"])
         assert report["candidate"]["cases"]==24 and report["candidate"]["actual_collect_and_cas_cases"]==8 and report["candidate"]["eof_only_cases"]==5

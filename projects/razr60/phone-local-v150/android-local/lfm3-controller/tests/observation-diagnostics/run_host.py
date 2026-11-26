@@ -77,11 +77,19 @@ def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
                              "sampling_helper_present": False, "sampling_producer_executed": False}
     actual = section(service, start, end)
     actual_sha = sha(actual.encode())
-    if actual_sha != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":
+    proof = actual
+    current_refusal_inverse_verified = False
+    if actual_sha == '32cb9cce6e16596dc4be6f92b7ac4ea85e1f9cbcd8b827e15196a7b625bce6ed':
+        for revised, prior in [('    /** Diagnostic values at the actual failed main-thread check, before clearing\n     * its sample. Bit 4 is the aggregate result of the unchanged initial check;\n     * the remaining bits describe this locked endpoint, not an inferred cause\n     * inside that earlier check. No graph, SDK object or authority is retained. */\n    private static void recordCtripSampleRefusal(ObservationRequest request,CtripFormSampleRead read,boolean initialCurrent){\n        try{\n            CtripFormSample after=read==null?null:read.after;\n            ObservationEventWatermark current=request.eventWatermark();\n            int mask=(read==null?1:0)|(after==null?2:0)|(!initialCurrent?4:0);\n            if(after!=null&&after.epoch!=request.ctripFormSampleEpoch)mask|=8;\n            if(read!=null&&request.ctripFormSample!=read.before)mask|=16;\n            if(after!=null&&!sameObservationWatermark(after.completed,current))mask|=32;\n            long at=SystemClock.elapsedRealtime();\n            Map<String,Object> out=new LinkedHashMap<String,Object>();\n            out.put("stage","sampling");out.put("reason","SAMPLE_CURRENT_REFUSED");out.put("at_ms",at);\n            out.put("failure_mask",mask);out.put("initial_current",initialCurrent);\n            out.put("epochs",java.util.Arrays.asList(after==null?-1:after.epoch,request.ctripFormSampleEpoch));\n            out.put("read_completed_ms",after==null?-1:after.readCompletedAt);\n            out.put("end_marks",ctripDiagnosticMark(after==null?null:after.completed));\n            out.put("current_marks",ctripDiagnosticMark(current));\n            request.ctripReadDiagnostic.helper(out);\n        }catch(RuntimeException unavailable){/* Optional diagnostics never alter a decision. */}\n    }\n', ''), ('        // This is an unpublished immutable value. The complete combined history is\n        // encoded and bounded once by persistCtripFormHistory before publication.\n', '        if(new JSONObject(out).toString().getBytes(StandardCharsets.UTF_8).length>786432)\n            throw new IllegalArgumentException("complete sampling history exceeds original form-history byte bound");\n')]:
+            if proof.count(revised) != 1:raise RuntimeError("Unique complete current-sample helper inverse required")
+            proof = proof.replace(revised, prior, 1)
+        if len(proof.encode()) != 14414 or sha(proof.encode()) != "572fe702f6187416090a6d832bebf6fee02175b31a4fbcc5c48d615eab7feade":
+            raise RuntimeError("Complete d4 dual-clock sampling helper block must be restored on the proof copy")
+        current_refusal_inverse_verified = True
+    if sha(proof.encode()) != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":
         # Proof copy only: retain the actual dual-clock helper block for real Ctrip bridges.
-        if actual_sha != '572fe702f6187416090a6d832bebf6fee02175b31a4fbcc5c48d615eab7feade' or len(actual.encode()) != 14414:
+        if sha(proof.encode()) != '572fe702f6187416090a6d832bebf6fee02175b31a4fbcc5c48d615eab7feade' or len(proof.encode()) != 14414:
             raise RuntimeError("Exact reviewed complete form sampling helper block required")
-        proof = actual
         for revised, prior in [('                        ||before.gateAcceptedAt<request.started||before.gateAcceptedAt>before.acceptedAt\n', ''), ('        out.put("before_gate_key_accepted_elapsed_ms",a.gateAcceptedAt);\n', '')]:
             if proof.count(revised) != 1:raise RuntimeError("Unique reviewed sampling clock helper delta required")
             proof = proof.replace(revised, prior, 1)
@@ -109,6 +117,9 @@ def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
         if(read!=null)throw new AssertionError("legacy observer cannot receive a qualified Ctrip pair");
         return false;
     }
+    private static void recordCtripSampleRefusal(ObservationRequest request,CtripFormSampleRead read,boolean initialCurrent){
+        throw new AssertionError("legacy observer cannot receive a qualified Ctrip sample refusal");
+    }
     private static Map<String,Object> ctripSamplingProof(ObservationRequest request,CtripFormSampleRead read,long admittedAt){
         throw new AssertionError("legacy observer cannot construct classified sampling evidence");
     }
@@ -128,6 +139,8 @@ def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
         "schema": "hepta.observer-form-sampling-legacy-boundary.v1",
         "sampling_helper_present": True,
         "actual_helper_bytes": len(actual.encode()), "actual_helper_sha256": actual_sha,
+        "current_refusal_inverse_verified": current_refusal_inverse_verified,
+        "current_refusal_proof_copy_only": True,
         "reviewed_712_helper_sha256": "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e",
         "sampling_clock_inverse_proof_copy_only": True,
         "compiled_observation_sha256": sha(compiled["observation"].encode()),
