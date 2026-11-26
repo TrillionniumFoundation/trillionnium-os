@@ -24,8 +24,8 @@ deps=a.dependency_classes; assert deps.is_dir()
 fixed=[a.actual_input_map,a.legacy_input_map_v12,a.legacy_input_map_v11,jar,Path(__file__).resolve(),here/"prepare.py",here/"source-inverse.json"]
 fixed+=sorted(here.glob("*.java"))
 fixed += [here/"eof_predecessor.py",here/"source_predecessor.py",a.pre_eof_source/"src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java"]
-fixed += [source/"tests/background-broker/normal_session_history.py"]
 assert ref(fixed[-1])["sha256"]=="aad22b14be14a33f0e12823f06b8ac780a023653eba7caebc4945ea281218100"
+fixed += [source/"tests/background-broker/normal_session_history.py"]
 for row in readjson(here/"source-inverse.json")["production"]:
     fixed += [source/row["path"],base/row["path"]]
 for row in readjson(here/"source-inverse.json")["unchanged"]:fixed+=[source/row["path"],base/row["path"]]
