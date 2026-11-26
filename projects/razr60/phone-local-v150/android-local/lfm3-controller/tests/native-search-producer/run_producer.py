@@ -15,6 +15,7 @@ def main():
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
  ap.add_argument('--loading-original',type=Path)
  ap.add_argument('--initial-read-order-original',type=Path)
+ ap.add_argument('--final-preclaim-original',type=Path)
  ap.add_argument('--prepare-only',action='store_true')
  ap.add_argument('--incomplete-final-original',type=Path)
  ap.add_argument('--repeated-after-target-original',type=Path)
@@ -33,6 +34,8 @@ def main():
  if repeated_before and (repeated_before['bytes'],repeated_before['sha256'])!=(488040,'3b06fcd3a914eef1283a223f5e2b71f1d2ca66e2f352b838e7de09e0031e79fb'):raise RuntimeError('exact complete 88b original required')
  initial_before=meta(args.initial_read_order_original) if args.initial_read_order_original else None
  if initial_before and (initial_before['bytes'],initial_before['sha256'])!=(487924,'d3de699ddbe7bea127a9b383cddf72a22190f9d3cf181b494d3a5ec4c112c6f0'):raise RuntimeError('exact complete 34a8 action original required')
+ final_preclaim_before=meta(args.final_preclaim_original) if args.final_preclaim_original else None
+ if final_preclaim_before and (final_preclaim_before['bytes'],final_preclaim_before['sha256'])!=(488993,'1419e8b1ed182eb1a0b68592ee58673e584b2d35d2785b87f6a4ca4e5641af8a'):raise RuntimeError('exact complete feb5 action original required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
  test=source/'tests/native-search-producer';pkg=source/'src/org/trillionnium/hepta/local'
  query=module(source/'tests/web-flight/run_query_host_tests.py','producer_query')
@@ -103,12 +106,12 @@ def main():
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  first_case='        one("actual_profile_reply_contract_for_producer_fixture",()->{'
  if parts['cases'].count(first_case)!=1:raise RuntimeError('one first production case anchor')
- parts['cases']=parts['cases'].replace(first_case,'        initialReadOrderCases();\n        replacementReadOrderCases();\n'+first_case,1)+(test/'ReplacementReadOrderCases.fragment').read_text()+(test/'InitialReadOrderCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace(first_case,'        finalPreclaimReadOrderCases();\n        initialReadOrderCases();\n        replacementReadOrderCases();\n'+first_case,1)+(test/'ReplacementReadOrderCases.fragment').read_text()+(test/'InitialReadOrderCases.fragment').read_text()+(test/'FinalPreclaimReadOrderCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
  parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        incompleteThenFinalCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();\n        initialClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'IncompleteThenFinalCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()+(test/'InitialClientCacheCases.fragment').read_text()
  cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
  if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
- parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);\n        report.put("incomplete_then_final_evidence",incompleteThenFinalEvidence);\n        report.put("replacement_read_order_evidence",replacementReadOrderEvidence);\n        report.put("initial_read_order_evidence",initialReadOrderEvidence);',1)
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);\n        report.put("incomplete_then_final_evidence",incompleteThenFinalEvidence);\n        report.put("replacement_read_order_evidence",replacementReadOrderEvidence);\n        report.put("initial_read_order_evidence",initialReadOrderEvidence);\n        report.put("final_preclaim_read_order_evidence",finalPreclaimReadOrderEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -220,6 +223,7 @@ def main():
  report['modal_fixture_before']=meta(modal_fixture)
  original_before=meta(args.loading_original) if args.loading_original else None
  report['external_initial_read_order_original_before']=initial_before
+ report['external_final_preclaim_original_before']=final_preclaim_before
  report['external_incomplete_final_original_before']=incomplete_final_before
  report['external_repeated_after_target_original_before']=repeated_before
  report['incomplete_final_policy_boundary']={'intentional_shared_budget_contract_change':True,'incomplete_D_replacement_once_before_complete_replacement_only':True,'complete_final_replacement_once':True,'original_total_C_read_cap':8,'original_navigation_deadline_ms':24000,'same_attempt_model_slot_and_owner':True,'new_device_success_claimed':False}
@@ -244,10 +248,13 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+(['-Dhepta.test.incompleteFinalOriginal='+str(args.incomplete_final_original.resolve())] if args.incomplete_final_original else [])+(['-Dhepta.test.repeatedAfterTargetOriginal='+str(args.repeated_after_target_original.resolve())] if args.repeated_after_target_original else [])+(['-Dhepta.test.initialReadOrderOriginal='+str(args.initial_read_order_original.resolve())] if args.initial_read_order_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+(['-Dhepta.test.incompleteFinalOriginal='+str(args.incomplete_final_original.resolve())] if args.incomplete_final_original else [])+(['-Dhepta.test.repeatedAfterTargetOriginal='+str(args.repeated_after_target_original.resolve())] if args.repeated_after_target_original else [])+(['-Dhepta.test.initialReadOrderOriginal='+str(args.initial_read_order_original.resolve())] if args.initial_read_order_original else [])+(['-Dhepta.test.finalPreclaimOriginal='+str(args.final_preclaim_original.resolve())] if args.final_preclaim_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
     expected=json.loads((test/'AfterTargetExpectedCases.json').read_text())
     names=[r['name'] for r in report['case_result']['results']]
+    report['final_preclaim_order_observed_cases']=[n for n in names if n.startswith('final_preclaim_order_')]
+    report['final_preclaim_order_exact_count']=len(report['final_preclaim_order_observed_cases'])==(16 if final_preclaim_before else 14)
+    report['all_pass']=report['all_pass'] and report['final_preclaim_order_exact_count']
     report['initial_read_order_observed_cases']=[n for n in names if n.startswith('initial_read_order_')]
     report['initial_read_order_exact_count']=len(report['initial_read_order_observed_cases'])==(13 if initial_before else 12)
     report['all_pass']=report['all_pass'] and report['initial_read_order_exact_count']
@@ -288,6 +295,9 @@ def main():
   report['external_incomplete_final_original_after']=meta(args.incomplete_final_original) if args.incomplete_final_original else None
   report['external_incomplete_final_original_unchanged']=incomplete_final_before==report['external_incomplete_final_original_after']
   report['all_pass']=report['all_pass'] and report['external_incomplete_final_original_unchanged']
+  report['external_final_preclaim_original_after']=meta(args.final_preclaim_original) if args.final_preclaim_original else None
+  report['external_final_preclaim_original_unchanged']=final_preclaim_before==report['external_final_preclaim_original_after']
+  report['all_pass']=report['all_pass'] and report['external_final_preclaim_original_unchanged']
   report['external_initial_read_order_original_after']=meta(args.initial_read_order_original) if args.initial_read_order_original else None
   report['external_initial_read_order_original_unchanged']=initial_before==report['external_initial_read_order_original_after']
   report['all_pass']=report['all_pass'] and report['external_initial_read_order_original_unchanged']

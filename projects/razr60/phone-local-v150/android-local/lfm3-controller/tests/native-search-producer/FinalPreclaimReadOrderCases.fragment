@@ -1,0 +1,192 @@
+    /** Actual Service/Session/Attempt methods; Android objects, event delivery and
+     * clock are explicit host IO. The feb5 original remains a failed device run. */
+    static final List<Map<String,Object>> finalPreclaimReadOrderEvidence=new ArrayList<Map<String,Object>>();
+    static void preclaimReadOrderSequence(HeptaAccessibilityService s,Fixture f,int refreshEvent){
+        finalCensusEvent(s,0,1);
+        f.graphHook=()->{if(f.graphReads==5){
+            check(sameReferenceDrained(f),"old complete pair closes before replacement C");
+            f.nodes.clear();f.syncNodes();readOrderRootEvent(s,f,refreshEvent);
+        }};
+    }
+    static void preclaimReadOrderTrace(Fixture f,SearchActionWork w,String kind){
+        Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("kind",kind);
+        row.put("effects",f.effects);row.put("graph_reads",f.graphReads);
+        row.put("execution",f.outcome==null?null:f.outcome.actionExecution.toMap());
+        row.put("attempt",w.attempt.evidence());row.put("phone_operations",0);
+        row.put("android_execution",false);row.put("new_device_success_claimed",false);
+        finalPreclaimReadOrderEvidence.add(row);
+    }
+    static void preclaimReadOrderAccepted(Fixture f,SearchActionWork w,boolean[] checked)throws Exception{
+        preclaimReadOrderTrace(f,w,"actual_FINAL_PRECLAIM_replacement_before_behavior_assertion");
+        // This behavior check is also compiled against the unchanged whole 5b Service.
+        check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,
+                "FINAL_PRECLAIM replacement must prepare C before D and dispatch once");
+        check(checked[0]&&sameReferenceDrained(f),"the actual new D reference effects and all references drain");
+        JSONObject e=finalCensusEvidence(f),order=e.getJSONObject("final_preclaim_replacement_read_order");
+        JSONObject discarded=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+        check("FINAL_PRECLAIM".equals(discarded.getString("producer_boundary"))
+                &&"FINAL_PRECLAIM".equals(order.getString("producer_boundary"))
+                &&"hepta.native-search-final-preclaim-read-order.v1".equals(order.getString("schema")),"proof preserves its actual private source boundary");
+        check(!e.has("after_target_replacement_read_order")&&!e.getBoolean("after_target_read_repair_selected"),"no AFTER_TARGET capability is fabricated");
+        check(order.getLong("pre_D_target_chain_refresh_completed_elapsed_ms")<=order.getLong("replacement_D_started_elapsed_ms")
+                &&order.getLong("replacement_D_started_elapsed_ms")<=e.getLong("D_read_returned_elapsed_ms")
+                &&e.getLong("D_read_returned_elapsed_ms")<=order.getLong("post_D_getter_check_completed_elapsed_ms"),"complete replacement D follows active C refresh");
+        check(order.getBoolean("new_D_dispatch_reference_bound")&&!order.getBoolean("post_D_event_exemption")
+                &&!order.getBoolean("additional_census_allowance")&&w.finalCensusResamples==1
+                &&w.incompleteCensusResamples==0&&w.currentReadAttempts.size()==2
+                &&w.attempt.deadlineElapsed-w.attempt.startedElapsed==24000,"existing once-only budget and clock remain exact");
+        check(w.ancestorChainChecked&&w.windowsChecked&&w.profileBeforeEffect!=null
+                &&w.finalPreclaimEventsElapsed>=0&&!w.hasNoEffectReplanFence(),"every original final fence runs, no new model successor");
+    }
+    static void preclaimReadOrderRefused(Fixture f,SearchActionWork w,String detail){
+        noEffect(f,detail);
+        check(w.finalCensusResamples==1&&w.currentReadAttempts.size()==2&&f.graphReads<=6
+                &&w.attempt.deadlineElapsed-w.attempt.startedElapsed==24000,"no third pair or renewed deadline");
+        check(!w.platformCallInvoked&&!w.state.effectEntered()&&!Boolean.TRUE.equals(w.attempt.evidence().get("claimed"))
+                &&sameReferenceDrained(f)&&!w.hasNoEffectReplanFence(),"no input, new model or retained SDK references");
+    }
+    static void finalPreclaimReadOrderCases()throws Exception{
+        one("final_preclaim_order_refresh_event_is_covered_by_new_D",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);
+                final int[] atD={-1},atEffect={-1};final boolean[] checked={false};
+                f.afterCapturedApplyHook=g->{if(f.graphReads==6)atD[0]=initialRefreshCalls(f);};
+                readOrderEffectIdentity(s,f,checked);Runnable identity=f.effectHook;
+                f.effectHook=()->{identity.run();atEffect[0]=initialRefreshCalls(f);};
+                SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderAccepted(f,w,checked);
+                JSONObject e=finalCensusEvidence(f),order=e.getJSONObject("final_preclaim_replacement_read_order");
+                check(atD[0]==atEffect[0]&&atD[0]>0,"no active target refresh occurs after replacement D");
+                check(order.getJSONObject("pre_D_refresh_watermark").getLong("content")==2
+                        &&e.getJSONObject("D_completed_watermark").getLong("content")==2
+                        &&e.getJSONObject("before_effect_watermark").getLong("content")==2,"both actual content events remain in the original cumulative tracker");
+            }
+        });
+        for(int kind=0;kind<3;kind++){final int k=kind;
+            one("final_preclaim_order_pre_D_"+new String[]{"unknown","boundary","untyped"}[kind]+"_refused",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,k);
+                    SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"forbidden event before replacement D");
+                    check(f.graphReads==5,"unknown/boundary/untyped events cannot start D");
+                }
+            });
+        }
+        for(int kind=0;kind<4;kind++){final int k=kind;
+            one("final_preclaim_order_post_D_"+new String[]{"unknown","boundary","untyped","content"}[kind]+"_refused",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);
+                    final boolean[] changed={false};Runnable first=SystemClock.beforeRead;
+                    readOrderAfterD(s,()->{changed[0]=true;successorEvent(s,k);});Runnable second=SystemClock.beforeRead;
+                    SystemClock.beforeRead=()->{first.run();second.run();};
+                    SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"new event after replacement D remains terminal");
+                    check(changed[0]&&f.graphReads==6,"the actual post-D event was reached without another census");
+                }
+            });
+        }
+        one("final_preclaim_order_second_final_preclaim_event_refused",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);int[] events=finalCensusEvent(s,0,2);
+                SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"second final-preclaim rejection cannot renew its spent allowance");
+                check(events[0]==2&&w.typedFinalPreclaimContentRejected&&f.graphReads==6,"same original and one replacement pair only");
+            }
+        });
+        for(int fault=0;fault<3;fault++){final int k=fault;
+            one("final_preclaim_order_preparation_"+new String[]{"deadline","installed_identity","cancel"}[fault]+"_refused",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);Runnable old=f.graphHook;
+                    f.graphHook=()->{old.run();if(f.graphReads==5)f.nodes.get("0").beforeRefresh=()->{
+                        if(k==0)SystemClock.now=a.deadlineElapsed;else if(k==1)f.base.verifierFails=true;else f.cancelled=true;
+                    };};
+                    SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"original authority and time are checked before D");
+                    check(f.graphReads==5,"failed preparation cannot read a new D or reach input");
+                }
+            });
+        }
+        one("final_preclaim_order_replacement_still_requires_same_C_D_sdk_identity",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);Runnable old=f.graphHook;
+                f.graphHook=()->{old.run();if(f.graphReads==5)f.replaceTargetOnSecond=true;};
+                SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"replacement target identity changed");
+                check(f.graphReads==6&&f.outcome.detail.contains("replaced"),"equal node values cannot replace the actual C/D SDK identity");
+            }
+        });
+        one("final_preclaim_order_old_initial_target_proof_refused",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=afterTargetIntent(f);preclaimReadOrderSequence(s,f,3);Runnable old=f.graphHook;
+                final NativeSearchReplacementTargetProof[] retired={null};final boolean[] changed={false};
+                f.graphHook=()->{if(f.graphReads==4)retired[0]=s.activeSearchAction.replacementTargetProof;old.run();};
+                Runnable first=SystemClock.beforeRead;
+                SystemClock.beforeRead=()->{first.run();SearchActionWork w=s.activeSearchAction;
+                    if(!changed[0]&&w!=null&&w.finalCensusResamples==1&&w.replacementTargetProof!=null
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$NativeSearchReplacementTargetProof","beforeD")){
+                        changed[0]=true;w.replacementTargetProof=retired[0];
+                    }};
+                SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();preclaimReadOrderRefused(f,w,"closed initial C proof cannot authorize the successor");
+                check(changed[0]&&retired[0]!=null&&f.graphReads==5,"wrong private proof fails before D");
+            }
+        });
+        String original=System.getProperty("hepta.test.finalPreclaimOriginal");
+        if(original!=null)finalPreclaimRecordedFeb5(original);
+    }
+    static void finalPreclaimRecordedFeb5(String path)throws Exception{
+        byte[] raw=Files.readAllBytes(Paths.get(path));String originalSha="1419e8b1ed182eb1a0b68592ee58673e584b2d35d2785b87f6a4ca4e5641af8a";
+        check(raw.length==488993&&originalSha.equals(sha(raw)),"unchanged full feb5 action bytes");
+        JSONObject action=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+        JSONObject execution=action.getJSONObject("action_execution"),x=execution.getJSONObject("native_search_execution");
+        JSONObject discarded=x.getJSONArray("discarded_final_censuses").getJSONObject(0);
+        one("final_preclaim_order_recorded_feb5_remains_a_real_failed_run",()->{
+            check(!action.getBoolean("accepted")&&!action.getBoolean("dispatched")&&!execution.getBoolean("effect_entered")
+                    &&!execution.getBoolean("effect_returned")&&!x.getBoolean("platform_call_invoked"),"original failure is never rewritten as a success");
+            check("feb5ddda513e4b53a3f10a57dfa82917".equals(x.getJSONObject("attempt").getString("task_id"))
+                    &&"FINAL_PRECLAIM".equals(discarded.getString("producer_boundary"))
+                    &&x.getInt("complete_census_resamples")==1&&x.getInt("complete_census_resample_limit")==1,"actual spent private boundary and original one-replacement limit");
+            check(discarded.getJSONObject("D_completed_watermark").getLong("content")==23
+                    &&discarded.getJSONObject("rejection_watermark").getLong("content")==25
+                    &&x.getJSONObject("D_completed_watermark").getLong("content")==46
+                    &&x.getJSONObject("after_target_refresh_event_rejection_watermark").getLong("content")==49,"actual two separate post-D content deltas remain preserved");
+            check(discarded.has("pre_D_target_read_order")&&!x.has("final_preclaim_replacement_read_order")
+                    &&!x.has("after_target_replacement_read_order"),"initial proof exists but successor used the old post-D path");
+            check(x.getLong("D_read_returned_elapsed_ms")==1101184041L
+                    &&x.getLong("first_final_event_check_elapsed_ms")==1101184082L
+                    &&x.getLong("after_target_refresh_event_check_elapsed_ms")==1101184241L
+                    &&x.getLong("original_attempt_deadline_elapsed_ms")==1101201583L,"original time order and 17.342 seconds remaining, no timeout inference");
+            for(JSONObject pair:Arrays.asList(discarded,x)){
+                NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(pair.getJSONObject("current_C")),d=fullSwapSnapshot(pair.getJSONObject("latest_D"));
+                Map<String,Object> compared=NativeSearchRole.compareForExecution(c,d).evidence();
+                check(c.nodes.size()==75&&d.nodes.size()==75
+                        &&Boolean.valueOf(pair.getJSONObject("role_comparison").getBoolean("full_tree_equal")).equals(compared.get("full_tree_equal"))
+                        &&pair.getJSONObject("role_comparison").getJSONArray("changed_paths").toList().equals(compared.get("changed_paths")),"both complete 75-node pairs reproduce their recorded comparison, including first-pair banner/hint changes");
+            }
+            check(!discarded.getJSONObject("role_comparison").getBoolean("full_tree_equal")
+                    &&discarded.getJSONObject("role_comparison").getJSONArray("changed_paths").length()==12
+                    &&x.getJSONObject("role_comparison").getBoolean("full_tree_equal"),"first pair has nine banner and three hint changes; only the successor pair is identical");
+        });
+        one("final_preclaim_order_recorded_nodes_and_event_delivery_host_regression",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                f.refreshGraphChildren=true;
+                f.graphHook=()->{
+                    if(f.graphReads==5){check(sameReferenceDrained(f),"recorded host initial pair fully closed");f.nodes.clear();}
+                    JSONObject pair=f.graphReads<=4?discarded:x;
+                    recordedHomeSample(f,pair.getJSONObject(f.graphReads==3||f.graphReads==5?"current_C":"latest_D"));f.syncNodes();
+                    if(f.graphReads==3||f.graphReads==5){final int count=f.graphReads==3?21:3;
+                        f.nodes.get("0").beforeRefresh=()->{for(int n=0;n<count;n++)successorEvent(s,3);};}
+                    if(f.graphReads==4||f.graphReads==6)for(int n=0;n<(f.graphReads==4?2:21);n++)successorEvent(s,3);
+                };
+                NativeSearchSession.Attempt a=afterTargetIntent(f);final boolean[] fired={false},checked={false};
+                SystemClock.beforeRead=()->{if(!fired[0]&&finalCensusPreclaimBoundary(s)){
+                    fired[0]=true;successorEvent(s,3);successorEvent(s,3);
+                }};
+                readOrderEffectIdentity(s,f,checked);SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();
+                preclaimReadOrderAccepted(f,w,checked);JSONObject e=finalCensusEvidence(f);
+                check(fired[0]&&e.getJSONObject("current_C").getJSONArray("nodes").length()==75
+                        &&e.getJSONObject("latest_D").getJSONArray("nodes").length()==75,"both fresh host captures retain the full archived native census");
+                check(e.getJSONArray("discarded_final_censuses").getJSONObject(0).getJSONObject("D_completed_watermark").getLong("content")==23
+                        &&e.getJSONArray("discarded_final_censuses").getJSONObject(0).getJSONObject("rejection_watermark").getLong("content")==25
+                        &&e.getJSONObject("D_completed_watermark").getLong("content")==49
+                        &&e.getJSONObject("before_effect_watermark").getLong("content")==49,"new read order covers pre-D delivery while retaining all 49 actual host events");
+                Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("kind","archived_feb5_nodes_explicit_host_event_delivery");
+                row.put("original_path",path);row.put("original_sha256",originalSha);row.put("original_device_success",false);
+                row.put("Android_getters_clock_owner_event_delivery_are_synthetic",true);row.put("original_event_causation_proved",false);
+                row.put("new_device_success_claimed",false);row.put("phone_operations",0);finalPreclaimReadOrderEvidence.add(row);
+            }
+        });
+    }
