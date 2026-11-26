@@ -263,6 +263,40 @@ final class RuntimeConfigTransaction {
         return prepare(files,previous.before.bytes,previous.before.exists);
     }
     Snapshot target(){return recoveringPending?before:after;}
+    /** Append one diagnostic sample to this existing transaction; never grants admission. */
+    void recordMemoryAdmission(LocalRuntimeConfig selected,MemoryAvailability memory,long elapsedMs)throws Exception{
+        Snapshot pending=requirePending(),now=current(files);LocalRuntimeConfig target=decode(target());
+        if(selected==null||memory==null||elapsedMs<0||selected.profile!=target.profile
+                ||!selected.compute.equals(target.compute)||selected.contextTokens!=target.contextTokens
+                ||selected.threads!=target.threads||selected.visualObservationOnly!=target.visualObservationOnly)
+            throw new IOException("memory evidence does not match the settings target");
+        if(!now.sameBytes(before)&&!now.sameBytes(after))throw new IOException("configuration changed before memory evidence");
+        String admissionId=UUID.randomUUID().toString().replace("-","");
+        JSONObject value=new JSONObject().put("schema","hepta.local-model-settings-memory-admission.v1")
+                .put("id",id).put("admission_id",admissionId).put("app_uid",android.os.Process.myUid())
+                .put("configuration_sha256",target().sha()).put("configuration_present",target().exists)
+                .put("recovering_pending",recoveringPending).put("model_profile",selected.profile.id)
+                .put("compute",selected.compute).put("context_tokens",selected.contextTokens).put("threads",selected.threads)
+                .put("observed_elapsed_ms",elapsedMs).put("available_memory_bytes",memory.availableBytes)
+                .put("minimum_available_memory_bytes",selected.profile.minimumAvailableBytes)
+                .put("available_memory_source",memory.source).put("memory_measurement_valid",memory.measurementValid)
+                .put("android_low_memory",memory.lowMemory).put("activity_manager_available_bytes",memory.activityManagerAvailable)
+                .put("activity_manager_total_bytes",memory.activityManagerTotal)
+                .put("kernel_memavailable_bytes",memory.kernelAvailable==null?JSONObject.NULL:memory.kernelAvailable)
+                .put("kernel_memtotal_bytes",memory.kernelTotal==null?JSONObject.NULL:memory.kernelTotal)
+                .put("kernel_memory_status",memory.kernelStatus).put("kernel_memory_detail",memory.detail==null?JSONObject.NULL:memory.detail)
+                .put("admitted",memory.admits(selected.profile.minimumAvailableBytes))
+                .put("memory_threshold_is_not_peak_memory_proof",true).put("inference_executed",false)
+                .put("model_asset_verified_by_this_record",false).put("grants_admission",false);
+        byte[] raw=value.toString(2).getBytes(StandardCharsets.UTF_8);
+        if(raw.length>INTENT_LIMIT)throw new IOException("memory evidence above bound");
+        pending.unchanged();now.unchanged();originals();
+        File path=new File(directory,"memory-admission-"+admissionId+".json");
+        MobiMindPrivateFiles.writeNew(path,raw);
+        MobiMindPrivateFiles.Read saved=MobiMindPrivateFiles.read(path,INTENT_LIMIT,true);
+        if(!Arrays.equals(raw,saved.bytes))throw new IOException("memory evidence readback differs");
+        saved.unchangedPath();requirePending();now.unchanged();
+    }
     private void originals()throws Exception{
         intentRead.unchangedPath();beforeRead.unchangedPath();afterRead.unchangedPath();lastBackupRead.unchangedPath();
     }

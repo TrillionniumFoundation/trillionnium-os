@@ -142,6 +142,99 @@
         f.values.nodes.get(SEARCH_BANNER+"/1").put("bounds",Arrays.asList(0,0,1224,395));
     }
     static void successorCases(String[] args)throws Exception{
+
+        for(final boolean successor:new boolean[]{false,true}){
+        one("planning_handoff_slow_journal_"+(successor?"successor":"initial")+"_keeps_original_offer_and_fresh_effect",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);final int[] journals={0};final long chain=f.base.search.chainDeadlineElapsed;
+                android.system.Os.beforeChmod=path->{
+                    if(!new File(path).getName().startsWith("native-search-planning-"))return;
+                    check(controller.modelCalls==journals[0]&&f.effects==0,"publication journal finishes before its model and any effect");
+                    try{
+                        JSONObject publication=new JSONObject(new String(Files.readAllBytes(Paths.get(path)),StandardCharsets.UTF_8));
+                        String id=publication.getString("observation_id");
+                        byte[] core=Files.readAllBytes(new File(f.directory,id+"-native-search-planning.json").toPath());
+                        check(sha(core).equals(publication.getString("receipt_sha256")),"complete producer receipt is already durable and bound");
+                        long captured=publication.getJSONObject("timing").getLong("second_census_captured_elapsed_ms");
+                        long published=publication.getJSONObject("publication").getLong("published_elapsed_ms");
+                        check(published-captured<=2000,"publication still uses the original two-second bound");
+                        SystemClock.now+=2500;
+                        check(SystemClock.now-captured>2000,"additional journal delay crosses the old duplicate check without refreshing B");
+                    }catch(Exception error){throw new AssertionError(error);}
+                    journals[0]++;
+                };
+                controller.beforeModel=n->{
+                    check(journals[0]==n&&controller.modelCalls==n,"same actual publication journal completed before each model transport");
+                    if(successor&&n==1)armFirstFinalEvent(s,3);
+                };
+                Throwable failure=pumpController(controller,f);if(failure!=null)throw new AssertionError("slow publication journal rejected a fresh handoff",failure);
+                int expected=successor?2:1;
+                check(journals[0]==expected&&controller.modelCalls==expected&&controller.completedSteps==expected
+                        &&controller.oldAxCalls==1&&f.effects==1,"original model sequence and exactly one fresh C/D effect");
+                check(f.graphReads==expected*4&&s.taskObservationAdmissions==expected,"each real Offer and Attempt still requires complete independent A/B and C/D");
+                check(f.base.search.chainDeadlineElapsed==chain,"journal cannot extend the original chain");
+            }finally{android.system.Os.beforeChmod=null;}
+        });}
+        one("planning_handoff_already_stale_before_offer_still_refused",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);final NativeSearchRequest[] request={null};final boolean[] advanced={false};
+                f.graphHook=()->{if(s.activeNativeSearchObservation!=null)request[0]=s.activeNativeSearchObservation;};
+                SystemClock.beforeRead=()->{
+                    NativeSearchRequest r=request[0];
+                    if(r!=null&&r.publishedPlanning!=null&&successorStack("org.trillionnium.hepta.local.NativeSearchNoEffectControllerHost","awaitNativeSearchPlanningOnce")){
+                        SystemClock.beforeRead=null;SystemClock.now=r.publishedPlanning.capturedElapsed+2001;advanced[0]=true;
+                    }
+                };
+                Throwable failure=pumpController(controller,f);
+                check(advanced[0]&&failure!=null&&failure.getMessage().contains("planning receipt not current for the same Session"),
+                        "unchanged Session guard rejects a receipt already expired at handoff");
+                check(controller.modelCalls==0&&f.effects==0&&!actionSlot.pending(),"stale handoff never creates a model request or effect");
+                check(!new File(f.directory,"native-search-planning-"+request[0].id+".json").exists(),"expired offer does not produce a successful publication-consumer journal");
+            }finally{SystemClock.beforeRead=null;}
+        });
+        for(final String failureKind:Arrays.asList("journal_failure","cancelled","deadline")){
+        one("planning_handoff_initial_"+failureKind+"_before_model",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);final boolean[] entered={false};
+                android.system.Os.beforeChmod=path->{
+                    if(!new File(path).getName().startsWith("native-search-planning-"))return;
+                    entered[0]=true;check(controller.modelCalls==0&&f.effects==0,"fresh in-memory Offer is not a model or action");
+                    if("journal_failure".equals(failureKind))throw new IllegalStateException("synthetic publication journal failure");
+                    if("cancelled".equals(failureKind))controller.cancelled.set(true);
+                    if("deadline".equals(failureKind))SystemClock.now=f.base.search.chainDeadlineElapsed+1;
+                };
+                Throwable failure=pumpController(controller,f);
+                check(entered[0]&&failure!=null&&controller.modelCalls==0&&f.effects==0&&controller.oldAxCalls==0,
+                        "publication failure/cancel/original expiry blocks every model and input");
+                check(!actionSlot.pending()&&s.activeSearchAction==null,"journal failure owns no action worker or slot");
+                f.base.search.retire();rejected(()->f.base.search.requireLive(SystemClock.now));
+            }finally{android.system.Os.beforeChmod=null;}
+        });}
+        for(final boolean acceptedJournal:new boolean[]{false,true}){
+        one("planning_handoff_successor_"+(acceptedJournal?"accepted":"publication")+"_journal_failure_no_new_model",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
+            try(Fixture f=s.new Fixture(controller)){
+                controller.bind(f);final int[] publications={0};final boolean[] failed={false};
+                controller.beforeModel=n->{if(n==1)armFirstFinalEvent(s,3);};
+                android.system.Os.beforeChmod=path->{
+                    String name=new File(path).getName();
+                    if(name.startsWith("native-search-planning-"))publications[0]++;
+                    if(acceptedJournal?name.equals("native-search-successor-planning-accepted-01.json"):
+                            name.startsWith("native-search-planning-")&&publications[0]==2){
+                        failed[0]=true;check(controller.modelCalls==1&&f.effects==0,"only the preserved old no-effect model preceded this journal");
+                        throw new IllegalStateException("synthetic successor journal failure");
+                    }
+                };
+                Throwable failure=pumpController(controller,f);
+                check(failed[0]&&failure!=null&&controller.modelCalls==1&&f.effects==0&&controller.oldAxCalls==0,
+                        "failed successor publication cannot reach another model or an effect");
+                check(s.taskObservationAdmissions==2&&!actionSlot.pending()&&new File(f.directory,"step-01-action.json").isFile(),
+                        "actual old failed action and fresh read remain distinct without replay");
+            }finally{android.system.Os.beforeChmod=null;}
+        });}
         for(final int testedEdgeWidth:new int[]{1,2,1223}){
         for(String scenario:Arrays.asList("fresh_decision","wider_overlap","unrelated_mutation","target_replaced","unknown_event","cancelled","deadline","spent_model_run","spent_successor")){
             one((testedEdgeWidth==1?"ambiguous_banner_":"ambiguous_banner_width_"+testedEdgeWidth+"_")+scenario,()->{

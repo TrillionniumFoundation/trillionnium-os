@@ -1015,7 +1015,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             pending.consumed=true;automaticStartPending=null;automaticReadyStart=pending;automaticStartFeedback=null;
             try{return beginTask(pending.owner,pending.source,pending.originalNonce);}
             finally{automaticReadyStart=null;refresh();}
-        }catch(Exception error){invalidateAutomaticStart();automaticStartFeedback="自动任务未开始："+HeptaAccessibilityService.message(error);taskState.setText(automaticStartFeedback);refresh();return false;}
+        }catch(Exception error){
+            String settingsFailure=pending.settingsStarted?modelSettings.failure():null;
+            String rejected=HeptaAccessibilityService.message(error);
+            invalidateAutomaticStart();automaticStartFeedback="自动任务未开始："+(settingsFailure==null?rejected:settingsFailure+"（"+rejected+"）");
+            taskState.setText(automaticStartFeedback);refresh();return false;
+        }
     }
     private BackgroundSession.Selection automaticStartSelection(String owner)throws Exception{
         AutomaticStart pending=automaticReadyStart;

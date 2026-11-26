@@ -2263,12 +2263,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 requireObservationWork(request);
                 try{graph=readGraph(observationBudget(request),request.background);}
                 catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAMPLE_NO_ROOT);}
-                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}
+                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);
+                    recordNativeGraphStale(request,"sample_graph",busy,formStart,request.eventWatermark(),SystemClock.elapsedRealtime());}
                 // Freeze the real census endpoint before diagnostics or any pure form comparison.
                 final ObservationEventWatermark formEnd;final long formEpoch;
                 synchronized(request){formEnd=request.eventWatermark();formEpoch=request.ctripFormSampleEpoch;}
                 final long formCompletedAt=SystemClock.elapsedRealtime();
-                request.graph("sample_graph",graph);requireObservationWork(request);
+                request.graph("sample_graph",graph);
+                recordNativeSampleCensus(request,graph,formStart,formEnd,formCompletedAt);requireObservationWork(request);
                 formRead=readCtripFormSample(request,graph,previous,formStart,formEnd,formCompletedAt,formEpoch);
             }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error="无法读取当前活动窗口："+message(failure);}
             finally{request.worker(false);observationIoBusy.set(false);}
@@ -2439,6 +2441,26 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(request.trace==null)return;
         try{request.trace.fullGraphChange(stage,nativeDiagnosticCensus(before),nativeDiagnosticCensus(after),SystemClock.elapsedRealtime());}
         catch(RuntimeException unavailable){/* Optional value diagnostics cannot replace the original refusal. */}
+    }
+    /** Only existing completed Ctrip AX values; no extra node/window read or new worker. */
+    private static Map<String,Object> observationDiagnosticWatermark(ObservationEventWatermark value){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("events",value.events);
+        out.put("unknown",value.unknownEvents);out.put("content",value.contentEvents);out.put("boundary",value.boundaryEvents);return out;
+    }
+    private static void recordNativeSampleCensus(ObservationRequest request,Graph graph,
+            ObservationEventWatermark readStart,ObservationEventWatermark readEnd,long endpoint){
+        if(request.trace==null||request.nativeAxMode==null||request.background==null
+                ||!NativeCtripFlightPage.PACKAGE.equals(request.background.selection.initialPackage))return;
+        try{request.trace.sampleCensus(nativeDiagnosticCensus(graph),observationDiagnosticWatermark(readStart),observationDiagnosticWatermark(readEnd),
+                endpoint,SystemClock.elapsedRealtime());}catch(RuntimeException unavailable){/* Non-authoritative diagnostics. */}
+    }
+    private static void recordNativeGraphStale(ObservationRequest request,String stage,StaleObservation failure,
+            ObservationEventWatermark readStart,ObservationEventWatermark readEnd,long observedAt){
+        if(request.trace==null||request.nativeAxMode==null||request.background==null
+                ||!NativeCtripFlightPage.PACKAGE.equals(request.background.selection.initialPackage))return;
+        try{request.trace.graphStale(stage,failure.getMessage(),failure.backgroundChildUnavailable,failure.backgroundChildPath,
+                observationDiagnosticWatermark(readStart),observationDiagnosticWatermark(readEnd),observedAt);
+        }catch(RuntimeException unavailable){/* The original stale refusal is unchanged. */}
     }
     private void nativeSeedDecision(ObservationRequest request,String decision){
         if(request.trace!=null)try{request.trace.seedDecision(decision,SystemClock.elapsedRealtime());}
@@ -4959,6 +4981,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.AX_GRAPH_MISSING);retry=true;
                     product.reject(product.stage,"graph_missing",request.eventWatermark(),SystemClock.elapsedRealtime());}
                 catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.AX_GRAPH_STALE);retry=true;
+                    recordNativeGraphStale(request,product.stage,busy,start,request.eventWatermark(),SystemClock.elapsedRealtime());
                     product.reject(product.stage,"graph_stale",request.eventWatermark(),SystemClock.elapsedRealtime());}
                 // This exact endpoint is frozen before diagnostics, serialization or persistence.
                 product.completed=request.eventWatermark();product.completedAt=SystemClock.elapsedRealtime();

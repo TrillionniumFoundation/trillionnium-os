@@ -8,9 +8,12 @@
     "avoid duplicate unpublished Ctrip sample encoding and record currentness refusal",
     "Notes retirement permits unrelated personal foreground changes with owned task isolation preserved",
     "business recovery compares typed physical display identity and protected recents while unrelated personal foreground remains usable",
-    "Keep a proven same-owner empty native AX loading window sampling within its original request deadline; never publish empty content or replay the business action"
+    "Keep a proven same-owner empty native AX loading window sampling within its original request deadline; never publish empty content or replay the business action",
+    "Show actual automatic-model configuration failures and retain same-call memory admission facts without changing model admission thresholds",
+    "Validate the original planning Offer before duplicate controller audit persistence while keeping core durable planning evidence and model-before-journal exclusion",
+    "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority"
   ],
-  "complete_source_files": 2718,
+  "complete_source_files": 2719,
   "files": [
     {
       "bytes": 100,
@@ -7873,10 +7876,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 773597,
-      "mode": 420,
+      "bytes": 775813,
+      "mode": 384,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "04ce9008f9f269096164e9c39e19054125f50722f41f59db2d6be97ff491154a"
+      "sha256": "06f45f8c93f9c671ed9a22226ff79193f1e64eec508ef31cd558d7f8045d677b"
     },
     {
       "bytes": 711,
@@ -7897,10 +7900,10 @@
       "sha256": "73d906b09ed2b8670faceab8b27152bbb0f2227ebdbb29eb7e4c987d3f3df7d3"
     },
     {
-      "bytes": 89525,
+      "bytes": 90504,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "sha256": "7df84726370ef61cbe40aadc1482ef7486e419a91c51c55e279c47d92e632297"
+      "sha256": "5c729b54c3703d635affba3e66393db570fea868505f26278e814b0c435fb308"
     },
     {
       "bytes": 9457,
@@ -7921,10 +7924,10 @@
       "sha256": "018f36659f6b5de16a3508e96b1b804f1a87ff88213cc2cbd258838b3d1ed656"
     },
     {
-      "bytes": 9423,
+      "bytes": 10337,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalModelSettings.java",
-      "sha256": "e2e42501ecab0d06a9926c68e26ae8dd252929389073e03ab79f648e969d97da"
+      "sha256": "6490356900e03ced54385d13299a1dc7521fc7757e86e58f25e9ffdbeeff0cc1"
     },
     {
       "bytes": 17291,
@@ -7939,10 +7942,10 @@
       "sha256": "0ba2619ec145010820fc86c93015c0bc17e727ef10c7ff72a33065543178e06b"
     },
     {
-      "bytes": 300773,
-      "mode": 420,
+      "bytes": 301073,
+      "mode": 384,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "9f4b64e6afcf7be8024ad80120ca0c3839c6a431822ff1189ca03d7987088f06"
+      "sha256": "770db69258244a7a15ec858b81861cf3895f50307e2aa5f212adadc8e027633d"
     },
     {
       "bytes": 60034,
@@ -7951,10 +7954,10 @@
       "sha256": "8e482c0595c7f8dec8758fd3c831d89622023ad18523ded496c14810ce3f089b"
     },
     {
-      "bytes": 105301,
+      "bytes": 105524,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "3a367882ae26a8af7dc676289aadf7e6c63cd9798b63d480c869136cc922024d"
+      "sha256": "23ea28b07ed16f23d8b0e4fdf5641d15a4bc216c8db562b6b0f67602d105436d"
     },
     {
       "bytes": 4417,
@@ -8155,10 +8158,10 @@
       "sha256": "e7306d40d576efda5541e139abfc7e07c794f538aee7522f8f1f466947935f4c"
     },
     {
-      "bytes": 56161,
-      "mode": 420,
+      "bytes": 66663,
+      "mode": 384,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "23a258b78d2ce262afb8bacc8cdb3ed4c307c91482d95993c3da812004b7abd9"
+      "sha256": "9811f011c97748b760c95a99d8bc76750512d82d6c6a785fa0674bd875132cb3"
     },
     {
       "bytes": 5285,
@@ -8395,10 +8398,10 @@
       "sha256": "64e86f4585de784511c0275a4ecc49a6f6cc4cc67c42f043232b1d8a503da110"
     },
     {
-      "bytes": 23303,
+      "bytes": 26551,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/RuntimeConfigTransaction.java",
-      "sha256": "671b5a8743b267507f93f9e6fd0abd197ef124a23180997cbd348614c94c00dc"
+      "sha256": "0346deefa370f27a100e0ae637f47b409271acdf1a26cb3641e05f44ffa90e29"
     },
     {
       "bytes": 7109,
@@ -9841,6 +9844,12 @@
       "sha256": "9b9d4c44b18bef99c69543140a1dc7dbde0fb7edec3016b9b2ac4cdacc8eaf6f"
     },
     {
+      "bytes": 11038,
+      "mode": 420,
+      "path": "tests/local-model-settings-diagnostics/SettingsMemoryAdmissionHostTest.java",
+      "sha256": "e797dc574d131b13d977e53c705a9d7bd2f3415bb0811dc127d4fce908df07ff"
+    },
+    {
       "bytes": 1676,
       "mode": 420,
       "path": "tests/local-model-settings-qwen/README.md",
@@ -10573,10 +10582,10 @@
       "sha256": "37c0e9b2c5eda2c8607a04ec990dd926909ed0b19d29c85ca901e59d716ad462"
     },
     {
-      "bytes": 48955,
+      "bytes": 51935,
       "mode": 420,
       "path": "tests/native-auto-target/AutomaticTargetHostTest.java",
-      "sha256": "964a1dfa97d9bb582e3937c8d01976e836bdea26d64c7bde77930241bf673993"
+      "sha256": "80ee40976d6c85edcd16d5807caf2b1acbbc4dcbd89706fc00d71e2ecdf84dd3"
     },
     {
       "bytes": 788,
@@ -10585,10 +10594,10 @@
       "sha256": "a81058189584615f52dea098d79ba7d78fef59f996e38456009a1e1eb36949d7"
     },
     {
-      "bytes": 23205,
+      "bytes": 23554,
       "mode": 420,
       "path": "tests/native-auto-target/host_ports.py",
-      "sha256": "66e5409960610b4463172d2541dc7022bfb59cecdae9f315524419e644dff302"
+      "sha256": "e7fcf3624f4b495b515715125e875b3f0f453f8d63b43edfc93d4df6bb97ccde"
     },
     {
       "bytes": 5737,
@@ -10603,10 +10612,10 @@
       "sha256": "49e99d5b04f0c35b1375f62710c0e0a5e07e545d24d01cc8eafdad94703a60dc"
     },
     {
-      "bytes": 9365,
+      "bytes": 9386,
       "mode": 420,
       "path": "tests/native-auto-target/run_host.py",
-      "sha256": "496ce8d38e882a6c9a3b8d08d565f60c22b0e8b7109f9fd6163d5a02d6654dc9"
+      "sha256": "7580bb5552a725d2dcce322d1dc0b351109f2716aa92fa94674dd257b0b6214b"
     },
     {
       "bytes": 10500,
@@ -11665,10 +11674,10 @@
       "sha256": "5fdb5f01b514ad03cb9cd9ace1978ea52769c702d2a2e6f20e5def44c81311b4"
     },
     {
-      "bytes": 59850,
-      "mode": 420,
+      "bytes": 68029,
+      "mode": 384,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "eaa2a2ff90e40aaa45e7f6986c23488fe915332895426ab0632679d21727906a"
+      "sha256": "255922adaa582c5b51a384c297c555be5e1bd2a8554664a1b323674ea8f70a81"
     },
     {
       "bytes": 32307,
@@ -12943,10 +12952,10 @@
       "sha256": "ef73eba984f9c406917097cd498af12f5db650c675e17743763c4f10f204fa3f"
     },
     {
-      "bytes": 12654,
-      "mode": 420,
+      "bytes": 22829,
+      "mode": 384,
       "path": "tests/observation-diagnostics/PrivateCensusDiagnosticsHostTest.java",
-      "sha256": "bb7356339e22f4b0ac40f9691efd1be5e5c163b53531d6224a0236709210a63c"
+      "sha256": "719a698f4106c0e3579555bdb533103473815c2ab762024767e1d706e38f1fd0"
     },
     {
       "bytes": 4255,
@@ -12991,10 +13000,10 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 38545,
-      "mode": 420,
+      "bytes": 38719,
+      "mode": 384,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e"
+      "sha256": "ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6"
     },
     {
       "bytes": 10020,
@@ -16317,10 +16326,10 @@
   ],
   "main_java_sources": 220,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "6521473c3e5d9f32ad4d513e012c589966aaaf9690e4ed74e7d7630ffc80a2df",
-  "predecessor_source_manifest_sha256": "6521473c3e5d9f32ad4d513e012c589966aaaf9690e4ed74e7d7630ffc80a2df",
+  "predecessor_manifest_sha256": "c6db33ca9e7f2ceaa8d3a65f9b02c6ae21830e64757b6bcbe4a7f72c260f7fdb",
+  "predecessor_source_manifest_sha256": "c6db33ca9e7f2ceaa8d3a65f9b02c6ae21830e64757b6bcbe4a7f72c260f7fdb",
   "production_build_inputs_count": 397,
-  "production_input_map_sha256": "04b79f56938c54a0776d6a1421542c0ced6bf5a2294a90ed5118117f011e1ba1",
+  "production_input_map_sha256": "83272653f52655ce13dc64291e8a665a7dfd9e801cdb5d361115ffe6046d13a7",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "79e91a89d41a40eebcb0026b85b00838f9f817a0"
+  "source_parent_head": "5fcdc57f691c97e412d4237b85d95927b3c06abd"
 }

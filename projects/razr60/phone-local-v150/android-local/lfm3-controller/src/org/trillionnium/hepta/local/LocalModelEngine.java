@@ -49,6 +49,7 @@ public final class LocalModelEngine implements AutoCloseable {
     }
     private volatile RuntimeGeneration runtime;
     private volatile boolean settingsBlocked;
+    private SettingsMemoryCheck settingsMemoryCheck;
     private SettingsReservation settingsReservation;
 
     public LocalModelEngine(Context context) {
@@ -733,6 +734,13 @@ public final class LocalModelEngine implements AutoCloseable {
                     &&!ACTIVE_CANCELLATION.pending()&&executorIdle();
         }
     }
+    /** The immutable sample used by this reservation; never a later diagnostic reread. */
+    static final class SettingsMemoryCheck {
+        final SettingsReservation owner;final LocalRuntimeConfig configuration;final MemoryAvailability memory;final long elapsedMs;
+        SettingsMemoryCheck(SettingsReservation owner,LocalRuntimeConfig configuration,MemoryAvailability memory,long elapsedMs){
+            this.owner=owner;this.configuration=configuration;this.memory=memory;this.elapsedMs=elapsedMs;
+        }
+    }
     /** A settings reservation cannot attach a Process, signal a PID or borrow recovery authority. */
     final class SettingsReservation {
         private final LocalModelEngine owner=LocalModelEngine.this;
@@ -764,10 +772,16 @@ public final class LocalModelEngine implements AutoCloseable {
         if(lease==null||lease.owner!=this)throw new IllegalStateException("settings reservation belongs to another engine");
         lease.requireOwned();
     }
+    SettingsMemoryCheck settingsMemoryCheck(SettingsReservation lease){
+        requireSettingsOwner(lease);SettingsMemoryCheck value=settingsMemoryCheck;
+        return value!=null&&value.owner==lease?value:null;
+    }
     ModelFileVerifier verifySettingsModel(SettingsReservation lease,LocalRuntimeConfig selected)throws Exception{
         requireSettingsOwner(lease);RuntimeConfigTransaction.requireSupported(selected);
         ActivityManager.MemoryInfo info=memoryInfo();
-        if(!MemoryAvailability.read(info.availMem,info.totalMem,info.lowMemory).admits(selected.profile.minimumAvailableBytes))
+        MemoryAvailability memory=MemoryAvailability.read(info.availMem,info.totalMem,info.lowMemory);
+        settingsMemoryCheck=new SettingsMemoryCheck(lease,selected,memory,android.os.SystemClock.elapsedRealtime());
+        if(!memory.admits(selected.profile.minimumAvailableBytes))
             throw new IOException("available memory is below the selected profile admission threshold");
         File directory=modelDirectory(selected).getCanonicalFile(),model=modelFile(selected).getCanonicalFile();
         String directoryName=selected.profile.visual()?selected.profile.visualDirectory():"model";
@@ -818,7 +832,7 @@ public final class LocalModelEngine implements AutoCloseable {
         synchronized(PROCESS_ADMISSION){
             requireSettingsOwner(lease);settingsBlocked=!exactStorageKnown;
             if(!PROCESS_ACTIVE.compareAndSet(lease.handle,null))throw new IllegalStateException("settings slot changed");
-            lease.finished=true;settingsReservation=null;
+            lease.finished=true;settingsReservation=null;settingsMemoryCheck=null;
         }
     }
     public long availableMemoryBytes() {

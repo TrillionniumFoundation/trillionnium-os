@@ -1602,6 +1602,10 @@ public final class LocalTaskController implements AutoCloseable {
         final NativeSearchSession search=activeNativeSearch;PhoneObservation observation=null;int steps=result.steps;
         NativeSearchPlanning planning=awaitNativeSearchPlanning(taskId,evidence,search,deadline);
         NativeSearchSession.Offer offer=search.offer(planning,SystemClock.elapsedRealtime());
+        // The full planning receipt is already fsynced and read back by the producer.
+        // Consume its fresh Offer before this additional publication journal; no model
+        // request may start until the journal below has completed successfully.
+        record(evidence,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));
         for(int successor=0;;successor++){
             if(steps>=MAX_STEPS)throw new IllegalStateException("native search step budget exhausted");
             result.steps=++steps;
@@ -1629,6 +1633,13 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("automatic_redispatch",false).put("business_verified",false));
                 planning=awaitNativeSearchPlanningAfterNoEffect(taskId,evidence,search,deadline,failed.proof);
                 offer=search.offerAfterNoEffect(planning,failed.proof,SystemClock.elapsedRealtime());
+                record(evidence,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));
+                record(evidence,"native-search-successor-planning-accepted-01.json",new JSONObject()
+                        .put("schema","hepta.native-search-successor-planning-accepted.v1").put("task_id",taskId)
+                        .put("new_observation_id",planning.id).put("new_planning_receipt_sha256",planning.receiptSha256)
+                        .put("new_request_started_elapsed_ms",planning.timing.requestStarted).put("new_request_deadline_elapsed_ms",planning.timing.requestDeadline)
+                        .put("chain_deadline_elapsed_ms",search.chainDeadlineElapsed).put("no_effect_proof",new JSONObject(failed.proof.evidence()))
+                        .put("old_census_reused",false).put("new_model_still_required",true).put("grants_action_authority",false));
             }
         }
         result.observation=observation;
@@ -1710,7 +1721,7 @@ public final class LocalTaskController implements AutoCloseable {
                 throw new IllegalStateException(error.get());
             }
             NativeSearchPlanning planning=value.get();if(planning==null||planning.publication==null)throw new IllegalStateException("缺少实际已发布的历史规划收据");
-            record(directory,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));return planning;
+            return planning;
         }finally{
             abandoned.set(true);
             if(sampling!=null)sampling.close();
@@ -1766,13 +1777,6 @@ public final class LocalTaskController implements AutoCloseable {
             NativeSearchPlanning planning=value.get();if(planning==null||planning.publication==null)
                 throw new IllegalStateException("缺少后继实际完整规划收据");
             proof.requirePublishedPlanning(session,planning);
-            record(directory,"native-search-planning-"+planning.id+".json",NativeSearchPlanning.json(planning.evidence()));
-            record(directory,"native-search-successor-planning-accepted-01.json",new JSONObject()
-                    .put("schema","hepta.native-search-successor-planning-accepted.v1").put("task_id",id)
-                    .put("new_observation_id",planning.id).put("new_planning_receipt_sha256",planning.receiptSha256)
-                    .put("new_request_started_elapsed_ms",planning.timing.requestStarted).put("new_request_deadline_elapsed_ms",planning.timing.requestDeadline)
-                    .put("chain_deadline_elapsed_ms",session.chainDeadlineElapsed).put("no_effect_proof",new JSONObject(proof.evidence()))
-                    .put("old_census_reused",false).put("new_model_still_required",true).put("grants_action_authority",false));
             return planning;
         }finally{abandoned.set(true);}
     }

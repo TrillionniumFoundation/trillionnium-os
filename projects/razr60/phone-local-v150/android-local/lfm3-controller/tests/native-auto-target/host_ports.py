@@ -90,7 +90,7 @@ ENGINE_HEADER='''package org.trillionnium.hepta.local;
 import java.io.*;import java.util.*;import java.util.concurrent.*;import java.util.concurrent.atomic.*;
 /** Exact settings methods; native assets, cancellation inventory and unrelated inference are ports. */
 final class LocalModelEngine {
- private final File files;private volatile RuntimeGeneration runtime;private volatile boolean settingsBlocked;private SettingsReservation settingsReservation;
+ private final File files;private volatile RuntimeGeneration runtime;private volatile boolean settingsBlocked;private SettingsReservation settingsReservation;private SettingsMemoryCheck settingsMemoryCheck;
  private static final Object PROCESS_ADMISSION=new Object();private static final AtomicReference<RunHandle> PROCESS_ACTIVE=new AtomicReference<RunHandle>();
  private final AtomicReference<RunHandle> active=new AtomicReference<RunHandle>();private final AtomicReference<Object> warmActive=new AtomicReference<Object>();private final AtomicBoolean closed=new AtomicBoolean();
  private final ThreadPoolExecutor executor=new ThreadPoolExecutor(1,1,0L,TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>());
@@ -101,6 +101,8 @@ final class LocalModelEngine {
  boolean isBusy(){return settingsReservation!=null||externalBusy;}void cancelActive(){}
  ModelFileVerifier verifySettingsModel(SettingsReservation lease,LocalRuntimeConfig target)throws Exception {
   requireSettingsOwner(lease);RuntimeConfigTransaction.requireSupported(target);verificationCalls++;
+  // Explicit synthetic memory/clock port; the actual coordinator persists this same sample.
+  settingsMemoryCheck=new SettingsMemoryCheck(lease,target,MemoryAvailability.fromText(12L<<30,16L<<30,false,null),1L);
   if(verificationEntered!=null)verificationEntered.countDown();if(verificationRelease!=null&&!verificationRelease.await(10,TimeUnit.SECONDS))throw new IOException("asset port timeout");
   if(failVerification)throw new IOException("declared unavailable model asset port");requireSettingsOwner(lease);return new ModelFileVerifier();
  }
@@ -187,8 +189,8 @@ def prepare(source, fixture, java_block):
     eng=blocks(pkg/'LocalModelEngine.java',[
         'static final class RuntimeGeneration {','public LocalRuntimeConfig configuration()',
         'RuntimeGeneration runtimeGeneration()','static RuntimeGeneration generation(', 'boolean settingsBlocked()',
-        'private boolean executorIdle()', 'boolean settingsAdmissionAvailable(', 'final class SettingsReservation {',
-        'SettingsReservation reserveSettings(', 'private void requireSettingsOwner(', 'void publishSettings(', 'void finishSettings(',
+        'private boolean executorIdle()', 'boolean settingsAdmissionAvailable(', 'static final class SettingsMemoryCheck {', 'final class SettingsReservation {',
+        'SettingsReservation reserveSettings(', 'private void requireSettingsOwner(', 'SettingsMemoryCheck settingsMemoryCheck(', 'void publishSettings(', 'void finishSettings(',
         'public File modelDirectory()', 'public File modelFile()', 'private File modelDirectory(', 'private File modelFile('])
     emit('org/trillionnium/hepta/local/LocalModelEngine.java',ENGINE_HEADER+eng+'\n}\n')
     app=blocks(pkg/'LocalProbeApplication.java',['boolean canChangeLocalModelSettings(', 'void requireModelSettingsIdle(', 'private static void recoveryMainThread()'])

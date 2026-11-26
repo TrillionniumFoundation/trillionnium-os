@@ -28,7 +28,7 @@ def prepare(source, out):
     files=[p for p in files if not (p.parent.name=='json' and p.parent.parent.name=='org')]
     actual=[source/p for p in query.PURE_PATHS if p!='tests/web-flight/WebFlightQueryHostTest.java']
     names=['BackgroundUiPreferences','BackgroundAutoTargetPreferences','BackgroundAutoTargetResolver',
-           'LocalRuntimeConfig','ModelProfile','LocalModelSettings','RuntimeConfigTransaction','ModelFileVerifier',
+           'LocalRuntimeConfig','ModelProfile','LocalModelSettings','RuntimeConfigTransaction','ModelFileVerifier','MemoryAvailability',
            'MobiMindPrivateFiles','MobiMindContract','MobiMindPins','VlmPins','VlmResultContract']
     actual += [pkg/(n+'.java') for n in names]
     # The default old client boundary must not shadow the actual automatic producer.

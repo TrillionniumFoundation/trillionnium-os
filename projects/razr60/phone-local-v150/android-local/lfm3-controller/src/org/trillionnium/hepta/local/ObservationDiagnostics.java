@@ -55,6 +55,14 @@ final class ObservationDiagnostics {
     private long privatePairAt=-1,privatePairOrdinal;
     private Map<String,Object> lastAxPublicationRejection,privatePairPublication;
     private long axPublicationRejections;
+    // Failure-only fallback from complete sampling reads. Never a publication pair.
+    private CensusStamp sampleBefore,sampleAfter;
+    private Map<String,Object> sampleBeforeFacts,sampleAfterFacts,privatePairSampling;
+    private Map<String,Object> sampleBeforeSummary,sampleAfterSummary;
+    private String samplePairStatus="no_complete_sample_pair";
+    private long completeSampleCount;
+    private final List<Map<String,Object>> graphStaleReads=new ArrayList<Map<String,Object>>();
+    private long graphStaleReadCount;
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -103,6 +111,96 @@ final class ObservationDiagnostics {
             lastSampleGraphChange=Collections.unmodifiableMap(delta);
         }
         previousSampleStamp=after;
+    }
+    /** Actual completed Ctrip samples, copied before their Graph is released.
+     * Gaps and events remain recorded facts; this does not classify stability. */
+    synchronized void sampleCensus(CensusStamp after,Map<String,Object> readStart,Map<String,Object> readEnd,
+                                   long endpoint,long recordedAt){
+        if(ended||!"ctrip.android.view".equals(packageName)||after==null)return;
+        try{
+            require(recordedAt>=endpoint&&endpoint>=started&&endpoint<deadline
+                    &&after.belongs(this)&&after.identity.keySet().containsAll(CENSUS_PROFILE)
+                    &&after.privateContextReady(this,endpoint));
+            long ordinal=counts[Event.SAMPLE_START.ordinal()];require(ordinal>0);
+            Map<String,Object> begin=diagnosticWatermark(readStart),end=diagnosticWatermark(readEnd);
+            require(forwardWatermarks(begin,end));
+            Map<String,Object> facts=map();facts.put("sample_ordinal",ordinal);
+            facts.put("complete_endpoint_elapsed_ms",endpoint);facts.put("read_start_watermark",begin);facts.put("read_end_watermark",end);
+            facts=Collections.unmodifiableMap(facts);
+            boolean same=sampleAfter!=null&&sampleAfterFacts!=null&&sampleAfter.identity.equals(after.identity)
+                    &&integer(sampleAfter.privateReadContext,"read_completed_elapsed_ms")<=integer(after.privateReadContext,"read_started_elapsed_ms")
+                    &&integer(sampleAfterFacts,"sample_ordinal")<ordinal
+                    &&integer(sampleAfterFacts,"complete_endpoint_elapsed_ms")<=integer(after.privateReadContext,"read_started_elapsed_ms")
+                    &&forwardWatermarks(object(sampleAfterFacts.get("read_end_watermark")),begin);
+            sampleBefore=same?sampleAfter:null;sampleBeforeFacts=same?sampleAfterFacts:null;
+            sampleBeforeSummary=same?sampleAfter.summary():null;
+            sampleAfter=after;sampleAfterFacts=facts;sampleAfterSummary=after.summary();
+            completeSampleCount=plus(completeSampleCount,1);clock(recordedAt);
+            samplePairStatus=same?"complete_sample_pair_unpublished":"no_same_identity_complete_sample_pair";
+            long factsBudget=privateBudget(facts)+privateBudget(sampleBeforeFacts)+2048;
+            if(after.privateValueBudget>MAX_PRIVATE_PAIR_VALUES-factsBudget
+                    ||(same&&sampleBefore.privateValueBudget>MAX_PRIVATE_PAIR_VALUES-factsBudget-after.privateValueBudget)){
+                sampleBefore=null;sampleAfter=null;samplePairStatus="complete_pair_value_budget_exceeded";
+            }
+        }catch(RuntimeException unavailable){/* Diagnostics cannot change a read decision. */}
+    }
+    /** Fixed cause codes from the actual exception, never inferred from an event or hash. */
+    static String graphStaleCause(String message){
+        if(message==null)return "unclassified_stale";
+        switch(message){
+            case "stale:后台根节点已不可用，需重新观察":return "root_refresh_unavailable";
+            case "stale:后台子节点已不可用，需重新观察":return "child_refresh_unavailable";
+            case "stale:后台子树已变化，需重新观察":return "child_slot_unavailable";
+            case "stale:后台标签子节点已不可用，需重新观察":return "label_child_refresh_unavailable";
+            case "stale:profile 同任务窗口在完整读取中换代":return "profile_window_changed_during_read";
+            case "stale:complete captured search label identity required":return "captured_label_identity_invalid";
+            case "stale:duplicate or over-budget captured search label node":return "captured_label_duplicate_or_node_limit";
+            case "stale:captured search labels exceed the original native text bound":return "captured_label_text_limit";
+            case "stale:complete actual BFS required before deriving search labels":return "captured_label_bfs_incomplete";
+            case "stale:captured search root has a parent":return "captured_label_root_parent";
+            case "stale:captured search label owner/window changed":return "captured_label_owner_or_window_changed";
+            case "stale:captured child index unavailable":return "captured_label_child_index_invalid";
+            case "stale:captured search parent relation changed":return "captured_label_parent_changed";
+            case "stale:captured search child slot is missing":return "captured_label_child_slot_missing";
+            case "stale:closed captured search node required":return "captured_label_node_missing";
+            case "stale:captured label node is not in this BFS":return "captured_label_node_outside_bfs";
+            case "stale:captured label child index changed":return "captured_label_child_index_changed";
+            case "stale:complete native census missing for captured search labels":return "captured_label_native_census_missing";
+            case "stale:retained search node differs from its actual BFS value":return "captured_label_retained_node_changed";
+            case "stale:captured search label reduction unavailable":return "captured_label_reduction_unavailable";
+            case "stale:captured search labels exceed the original retained text bound":return "captured_label_retained_text_limit";
+            case "stale:duplicate retained search path":return "captured_label_retained_path_duplicate";
+            case "stale:native census differs from captured search label values":return "captured_label_native_census_changed";
+            case "stale:captured search census exceeds the original byte bound":return "captured_label_census_byte_limit";
+            default:return "unclassified_stale";
+        }
+    }
+    synchronized void graphStale(String stage,String message,boolean typedChild,String path,
+                                 Map<String,Object> readStart,Map<String,Object> readEnd,long observedAt){
+        if(ended||!"ctrip.android.view".equals(packageName)
+                ||!("sample_graph".equals(stage)||"ax_seal_graph".equals(stage)||"ax_publication_graph_recheck".equals(stage)))return;
+        try{
+            require(observedAt>=started);
+            Map<String,Object> begin=diagnosticWatermark(readStart),end=diagnosticWatermark(readEnd);
+            require(forwardWatermarks(begin,end));
+            Map<String,Object> row=map();row.put("phase",stage);row.put("cause",graphStaleCause(message));
+            row.put("observed_elapsed_ms",observedAt);row.put("sample_ordinal",counts[Event.SAMPLE_START.ordinal()]);
+            row.put("typed_child_unavailable",typedChild);
+            boolean known=path!=null&&path.length()<=240&&path.matches("0(?:/(?:0|[1-9][0-9]*))*");
+            row.put("node_path",known?path:null);row.put("node_path_recorded",known);
+            row.put("read_start_watermark",begin);row.put("failure_watermark",end);
+            row.put("complete_graph_returned",false);row.put("node_text_recorded",false);
+            row.put("grants_action_authority",false);row.put("grants_publication",false);row.put("changes_deadline",false);
+            append(graphStaleReads,row,4);graphStaleReadCount=plus(graphStaleReadCount,1);clock(observedAt);
+        }catch(RuntimeException unavailable){/* Diagnostics cannot change a read decision. */}
+    }
+    private static Map<String,Object> diagnosticWatermark(Map<String,Object> source){
+        axWatermark(source,false);return Collections.unmodifiableMap(new TreeMap<String,Object>(source));
+    }
+    private static boolean forwardWatermarks(Map<String,Object> before,Map<String,Object> after){
+        for(String key:Arrays.asList("events","unknown","content","boundary"))
+            if(integer(after,key)<integer(before,key))return false;
+        return true;
     }
     /** Reuse bounded hashes already collected on the worker; never performs another read. */
     synchronized void savedGraphChange(GraphStamp before,GraphStamp after,boolean nativeComplete,
@@ -344,8 +442,26 @@ final class ObservationDiagnostics {
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
         if(ended)return;if(!"published".equals(status)&&!"failed".equals(status))return;
+        if("failed".equals(status)&&privateBefore==null&&privateAfter==null&&completeSampleCount>0){
+            privateBefore=sampleBefore;privateAfter=sampleAfter;
+            // A single sample is never emitted as half of a complete pair.
+            if(privateBefore==null||privateAfter==null){privateBefore=null;privateAfter=null;}
+            privatePairStage="sample_graph";privatePairPublication=null;privatePairStatus=samplePairStatus;
+            privatePairOrdinal=sampleAfterFacts==null?0:integer(sampleAfterFacts,"sample_ordinal");
+            privatePairAt=sampleAfterFacts==null?-1:integer(sampleAfterFacts,"complete_endpoint_elapsed_ms");
+            privateBeforeSummary=sampleBeforeSummary;privateAfterSummary=sampleAfterSummary;
+            Map<String,Object> facts=map();facts.put("schema","hepta.failed-complete-sample-pair.v1");
+            facts.put("before",sampleBeforeFacts);facts.put("after",sampleAfterFacts);
+            facts.put("complete_sample_count",completeSampleCount);
+            facts.put("samples_consecutive",sampleBeforeFacts!=null&&sampleAfterFacts!=null
+                    &&integer(sampleAfterFacts,"sample_ordinal")==integer(sampleBeforeFacts,"sample_ordinal")+1);
+            facts.put("published_pair",false);facts.put("stability_proved",false);
+            facts.put("events_admitted_for_publication",false);facts.put("grants_action_authority",false);
+            privatePairSampling=Collections.unmodifiableMap(facts);
+        }
         now=clock(now);closePhase(now);terminal=status;ended=true;previousSampleStamp=null;
-        if("published".equals(status)){privateBefore=null;privateAfter=null;privatePairPublication=null;}
+        sampleBefore=null;sampleAfter=null;sampleBeforeFacts=null;sampleAfterFacts=null;
+        if("published".equals(status)){privateBefore=null;privateAfter=null;privatePairPublication=null;privatePairSampling=null;}
     }
     synchronized Map<String,Object> snapshot(long now){
         long end=ended?lastClock:Math.max(lastClock,now);
@@ -379,6 +495,8 @@ final class ObservationDiagnostics {
             value.put("ax_publication_rejection_count",axPublicationRejections);}
         if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
             value.put("native_seed_admission_count",seedAdmissions);}
+        if(graphStaleReadCount>0){value.put("native_graph_stale_reads",copyRows(graphStaleReads));
+            value.put("native_graph_stale_read_count",graphStaleReadCount);value.put("native_graph_stale_read_limit",4);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
     }
     /** Called only by the separate terminal private-artifact channel. A running
@@ -397,6 +515,10 @@ final class ObservationDiagnostics {
         out.put("before_summary",privateBeforeSummary);out.put("after_summary",privateAfterSummary);
         if(privatePairPublication!=null){out.put("selected_pair_ordinal_kind","ax_publication_rejection");
             out.put("selected_pair_publication_rejection",privatePairPublication);}
+        if(privatePairSampling!=null){out.put("selected_pair_ordinal_kind","complete_sample");
+            out.put("selected_pair_sampling",privatePairSampling);}
+        if(graphStaleReadCount>0){out.put("native_graph_stale_reads",copyRows(graphStaleReads));
+            out.put("native_graph_stale_read_count",graphStaleReadCount);out.put("native_graph_stale_read_limit",4);}
         if(lastAxPublicationRejection!=null){out.put("ax_publication_rejection_count",axPublicationRejections);
             out.put("last_ax_publication_rejection",lastAxPublicationRejection);}
         String status=!ended?"request_not_terminal":"failed".equals(terminal)?privatePairStatus:"request_published";

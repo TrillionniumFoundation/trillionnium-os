@@ -477,6 +477,42 @@ public final class AutomaticTargetHostTest {
             try(Env e=new Env("asset-fail",FLIGHT,false)){
                 e.hold();e.app.model.failVerification=true;e.startedSettings();e.finish();e.noTask();
                 check(e.app.model.configuration().profile==ModelProfile.LFM3&&Arrays.equals(e.originalConfig,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath())),"actual original config restored");
+                check(e.ui.automaticStartFeedback.contains("declared unavailable model asset port")
+                        &&e.ui.automaticStartFeedback.contains("已保留或恢复原始配置"),"main Start feedback retains this settings failure and exact rollback outcome");
+            }
+        });
+        test("memory_archive_failure_keeps_original_model_failure",()->{
+            android.system.Os.reset();
+            try(Env e=new Env("memory-archive-rejected",FLIGHT,false)){
+                e.hold();e.app.model.failVerification=true;e.startedSettings();
+                android.system.Os.fail("PARTIAL_WRITE","memory-admission-",1,false);
+                e.finish();e.noTask();
+                check(android.system.Os.triggered,"actual private receipt write fault reached");
+                check(e.ui.automaticStartFeedback.contains("declared unavailable model asset port")
+                        &&e.ui.automaticStartFeedback.contains("内存检查记录未保存"),"original failure and diagnostic fault both remain visible");
+                check(Arrays.equals(e.originalConfig,Files.readAllBytes(new File(e.directory,"model/runtime-config.json").toPath()))
+                        &&!RuntimeConfigTransaction.pending(e.directory),"exact rollback and pending cleanup remain intact");
+            }finally{android.system.Os.reset();}
+        });
+        test("memory_archive_failure_does_not_reject_valid_configuration",()->{
+            android.system.Os.reset();
+            try(Env e=new Env("memory-archive-valid",FLIGHT,false)){
+                e.hold();e.startedSettings();android.system.Os.fail("PARTIAL_WRITE","memory-admission-",1,false);
+                e.finish();
+                check(android.system.Os.triggered,"actual private receipt write fault reached");
+                check(e.app.tasks.schedules==1&&e.app.model.configuration().profile==ModelProfile.GUI_OWL_4B
+                        &&!RuntimeConfigTransaction.pending(e.directory),"original commit and visible Start still succeed once");
+                check(e.app.modelSettings.failure()==null&&e.app.modelSettings.state().contains("内存检查记录未保存"),
+                        "diagnostic warning does not fabricate settings failure");
+            }finally{android.system.Os.reset();}
+        });
+        test("settings_failure_does_not_leak_into_new_attempt",()->{
+            try(Env e=new Env("settings-failure-reset",FLIGHT,false)){
+                e.hold();e.app.model.failVerification=true;e.startedSettings();e.finish();e.noTask();
+                check(e.app.modelSettings.failure()!=null,"failed attempt is available to its callback");
+                e.hold();e.app.model.failVerification=false;e.startedSettings();
+                check(e.app.modelSettings.failure()==null,"new attempt clears only prior diagnostic failure");
+                e.finish();check(e.app.tasks.schedules==1&&e.app.modelSettings.failure()==null,"new valid attempt starts exactly once");
             }
         });
         test("current_generation_invalid_readiness_prevents_settings_and_schedule",()->{
