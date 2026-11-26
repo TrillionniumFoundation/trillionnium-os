@@ -3,6 +3,7 @@
 No phone, action, model or business completion is executed or claimed.
 """
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -93,6 +94,93 @@ REVIEWED_SAMPLING_BODY_INVERSE={
     '                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT);}'),
   ]},
 }
+# Strict proof copy only. Compilation always consumes the actual source Gate.
+FORM_SAMPLING_GATE_CURRENT = '2abe6a4074be6c75514755c741d10792e78e80d914e7ae063e1f43ce470d0992'
+FORM_SAMPLING_GATE_PREDECESSOR = '426100c4f31e825c9e0f0c556c8c89d23aa45a40593978cb5fd8d5946a4beeb8'
+FORM_SAMPLING_GATE_MEMBER = b'    /** Explicit classified pair over two REAL keys. The caller must have compared complete values.\n     * This timing helper grants no action or graph authority and never substitutes a digest. */\n    Result sampleClassifiedPair(long now,FrameKey expectedPrevious,long expectedAt,FrameKey actual,boolean allowed){\n        if(retired||!allowed)return Result.CANCELLED;\n        if(!requestAlive(now,true)||now>=settleDeadline)return Result.EXPIRED;\n        boolean sameWindow=expectedPrevious!=null&&actual!=null&&!expectedPrevious.truncated&&!actual.truncated\n                &&expectedPrevious.packageName.equals(actual.packageName)&&expectedPrevious.windowId==actual.windowId\n                &&expectedPrevious.rotation==actual.rotation&&expectedPrevious.left==actual.left&&expectedPrevious.top==actual.top\n                &&expectedPrevious.right==actual.right&&expectedPrevious.bottom==actual.bottom;\n        if(sameWindow&&previous!=null&&previous.equals(expectedPrevious)&&previousAt==expectedAt\n                &&now>=expectedAt&&now-expectedAt>=SAMPLE_GAP_MS){\n            previous=actual;previousAt=now;return Result.READY;\n        }\n        return Result.WAIT;\n    }\n'
+
+def gate_predecessor(raw):
+    actual=hashlib.sha256(raw).hexdigest()
+    if actual==FORM_SAMPLING_GATE_PREDECESSOR:return raw
+    if actual!=FORM_SAMPLING_GATE_CURRENT:
+        raise RuntimeError('unreviewed complete FORM sampling Gate source')
+    if raw.count(FORM_SAMPLING_GATE_MEMBER)!=1:
+        raise RuntimeError('unique complete classified-pair Gate member required')
+    prior=raw.replace(FORM_SAMPLING_GATE_MEMBER,b'',1)
+    if hashlib.sha256(prior).hexdigest()!=FORM_SAMPLING_GATE_PREDECESSOR:
+        raise RuntimeError('classified-pair Gate must reverse to the complete original source')
+    return prior
+
+# Exact current method -> complete 0a8 predecessor for the existing historical
+# body proof chain. The real full observation section is extracted above/below
+# unchanged; this helper never supplies compiled Java or an execution endpoint.
+REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE = {
+    '    private void sampleObservation(final ObservationRequest request){': {
+        'current_sha256': '4dda78389010012f907200b4b7c1bbc6d612134edea0cab47912e5f45951cb33',
+        'actual_body_anchor': '    private void sampleObservation(final ObservationRequest request){',
+        'actual_body_sha256': '4dda78389010012f907200b4b7c1bbc6d612134edea0cab47912e5f45951cb33',
+        'predecessor_sha256': '6f0a1bb847e442b84973e4ecfb20d1fc67d08136cc212fa69ec3507cd28267e6',
+        'inverse': [
+            (
+                '        try{observationIo.execute(new Runnable(){public void run(){\n            Graph graph=null;String error=null;final long unknownEvents=request.unknownEvents,events=request.events;\n            CtripFormSampleRead formRead=null;CtripFormSample previous;ObservationEventWatermark formStart;\n            synchronized(request){previous=request.ctripFormSample;formStart=request.eventWatermark();}\n            try{\n                requireObservationWork(request);\n',
+                '        try{observationIo.execute(new Runnable(){public void run(){\n            Graph graph=null;String error=null;final long unknownEvents=request.unknownEvents,events=request.events;\n            try{\n                requireObservationWork(request);\n',
+            ),
+            (
+                '                catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAMPLE_NO_ROOT);}\n                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}\n                // Freeze the real census endpoint before diagnostics or any pure form comparison.\n                final ObservationEventWatermark formEnd;final long formEpoch;\n                synchronized(request){formEnd=request.eventWatermark();formEpoch=request.ctripFormSampleEpoch;}\n                final long formCompletedAt=SystemClock.elapsedRealtime();\n                request.graph("sample_graph",graph);requireObservationWork(request);\n                formRead=readCtripFormSample(request,graph,previous,formStart,formEnd,formCompletedAt,formEpoch);\n            }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error="无法读取当前活动窗口："+message(failure);}\n            finally{request.worker(false);observationIoBusy.set(false);}\n            final Graph sampled=graph;final String failure=error;final CtripFormSampleRead sampledForm=formRead;\n            boolean posted=false;\n            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents,sampledForm);}});}\n            finally{if(!posted&&sampled!=null)sampled.close();}\n        }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,"屏幕观察队列不可用："+message(unavailable));}\n',
+                '                catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAMPLE_NO_ROOT);}\n                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}\n                request.graph("sample_graph",graph);requireObservationWork(request);\n            }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error="无法读取当前活动窗口："+message(failure);}\n            finally{request.worker(false);observationIoBusy.set(false);}\n            final Graph sampled=graph;final String failure=error;\n            boolean posted=false;\n            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents);}});}\n            finally{if(!posted&&sampled!=null)sampled.close();}\n        }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,"屏幕观察队列不可用："+message(unavailable));}\n',
+            ),
+        ],
+    },
+    '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){': {
+        'current_sha256': '8520c7c5821ae81eea943c728b6dd9ab4ca72d3d87f2295b808f23a222944102',
+        'actual_body_anchor': '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){',
+        'actual_body_sha256': '46642366df0dd4ebb11a6f80b2d22641223ad10447153dcfde8e982040598539',
+        'predecessor_sha256': '8982b1a2fe3d36a8fb6881ec7db393e37082b5b503f4cebfe2eff4e68271a0c7',
+        'inverse': [
+            (
+                '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){\n        try{\n            if(!observationActive(request))return;\n',
+                '    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents){\n        try{\n            if(!observationActive(request))return;\n',
+            ),
+            (
+                '                        &&graph.readCompletedElapsedMs>=graph.readStartedElapsedMs;\n                if(!same){\n                    request.resampleSeed=null;request.clearCtripSample("SAMPLE_SEED_RESET");request.gate.resetEvidence();request.nativeSample=false;\n                    if(request.trace!=null)request.trace.reset();nativeSeedDecision(request,"invalidated_before_sample");\n                }else if(!seed.key.equals(frameKey(graph))){\n',
+                '                        &&graph.readCompletedElapsedMs>=graph.readStartedElapsedMs;\n                if(!same){\n                    request.resampleSeed=null;request.gate.resetEvidence();request.nativeSample=false;\n                    if(request.trace!=null)request.trace.reset();nativeSeedDecision(request,"invalidated_before_sample");\n                }else if(!seed.key.equals(frameKey(graph))){\n',
+            ),
+            (
+                '                    request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RECHECKED);\n                }else{\n                    if(graph!=null){graph.close();graph=null;}request.resampleSeed=null;request.clearCtripSample("SAMPLE_EVENT_RESET");request.gate.resetEvidence();nativeRecheck=false;\n                    request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RESET);if(request.trace!=null)request.trace.reset();\n                }\n            }\n            // Two complete native samples are required; an earlier legacy/incomplete sample cannot seed this path.\n            if(nativeRecheck!=request.nativeSample){request.resampleSeed=null;request.clearCtripSample("SAMPLE_MODE_RESET");request.gate.resetEvidence();if(request.trace!=null)request.trace.reset();}\n            request.nativeSample=nativeRecheck;\n            boolean formCurrent=ctripFormSampleCurrent(request,graph,formRead),classified=false;\n            long now;ObservationStabilityGate.Result result;\n            synchronized(request){\n                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                now=SystemClock.elapsedRealtime();\n                result=ObservationStabilityGate.Result.WAIT;\n                if(formCurrent&&formRead.before!=null&&formRead.comparison!=null\n                        &&!formRead.before.key.equals(formRead.after.key)){\n                    result=request.gate.sampleClassifiedPair(now,formRead.before.key,formRead.before.acceptedAt,formRead.after.key,true);\n                    classified=result==ObservationStabilityGate.Result.READY;\n                }\n                // WAIT still consumes the actual current key; terminal results never obtain another budget.\n                if(result==ObservationStabilityGate.Result.WAIT)\n                    result=request.gate.sample(now,graph==null?null:frameKey(graph),true);\n                if(formCurrent&&(result==ObservationStabilityGate.Result.WAIT||result==ObservationStabilityGate.Result.READY)){\n                    if(classified||formRead.before==null||!formRead.before.key.equals(formRead.after.key)){\n                        request.ctripFormSample=new CtripFormSample(formRead.after,now);\n                        if(formRead.before==null)recordCtripSampling(request,"SAMPLE_TARGET_BOUND",request.ctripFormSample,null,null);\n                    }\n                    if(classified)request.ctripSamplingProof=ctripSamplingProof(request,formRead,now);\n                }\n            }\n            if(graph==null&&request.trace!=null)request.trace.missingSample();\n            request.note(ObservationDiagnostics.Event.valueOf("SAMPLE_"+result.name()));\n',
+                '                    request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RECHECKED);\n                }else{\n                    if(graph!=null){graph.close();graph=null;}request.resampleSeed=null;request.gate.resetEvidence();nativeRecheck=false;\n                    request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RESET);if(request.trace!=null)request.trace.reset();\n                }\n            }\n            // Two complete native samples are required; an earlier legacy/incomplete sample cannot seed this path.\n            if(nativeRecheck!=request.nativeSample){request.resampleSeed=null;request.gate.resetEvidence();if(request.trace!=null)request.trace.reset();}\n            request.nativeSample=nativeRecheck;\n            long now=SystemClock.elapsedRealtime();\n            ObservationStabilityGate.Result result=request.gate.sample(now,graph==null?null:frameKey(graph),true);\n            if(graph==null&&request.trace!=null)request.trace.missingSample();\n            request.note(ObservationDiagnostics.Event.valueOf("SAMPLE_"+result.name()));\n',
+            ),
+            (
+                '            }\n            long delay=request.gate.nextSampleDelay(now);\n            if(result==ObservationStabilityGate.Result.READY){\n                // The next read must earn its own pair; a throttled classified READY is not carried forward.\n                synchronized(request){request.ctripSamplingProof=null;}\n                request.note(ObservationDiagnostics.Event.SCREENSHOT_INTERVAL_WAIT);delay=Math.min(delay,screenshotDelay);\n            }\n            request.phase("sample_gap");\n            main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},delay);\n',
+                '            }\n            long delay=request.gate.nextSampleDelay(now);\n            if(result==ObservationStabilityGate.Result.READY){request.note(ObservationDiagnostics.Event.SCREENSHOT_INTERVAL_WAIT);delay=Math.min(delay,screenshotDelay);}\n            request.phase("sample_gap");\n            main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},delay);\n',
+            ),
+        ],
+    },
+    '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){': {
+        'current_sha256': '5490d33aec3dd56908fa02f6de121afd7710479a3137dc0a0e6e127601f35680',
+        'actual_body_anchor': '    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){',
+        'actual_body_sha256': '5490d33aec3dd56908fa02f6de121afd7710479a3137dc0a0e6e127601f35680',
+        'predecessor_sha256': '272b52c9de2479a6569d92999d3f9c71d5876dd15d1bee92e3f61384984f9fd2',
+        'inverse': [
+            (
+                '            request.captured=null;product.bitmap=null;product.published=true;\n            if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());\n            request.clearCtripSample("SAMPLE_REQUEST_PUBLISHED");request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;\n            request.callback.onObservation(observation);\n        }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}\n',
+                '            request.captured=null;product.bitmap=null;product.published=true;\n            if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());\n            request.postEffectChildDiagnostic.finish();request.ctripReadDiagnostic.finish();request.finished=true;request.gate.retire();activeObservation=null;\n            request.callback.onObservation(observation);\n        }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}\n',
+            ),
+        ],
+    },
+}
+
+def form_sampling_body_predecessor(service,anchor,raw,h):
+    reviewed=REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE.get(anchor)
+    if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
+        return raw,False
+    proof=h.body(service,reviewed['actual_body_anchor'])
+    if h.sha(proof.encode())!=reviewed['actual_body_sha256']:
+        raise RuntimeError('exact complete current FORM sampling producer body required: '+anchor)
+    for current,prior in reviewed['inverse']:proof=once(proof,current,prior)
+    if h.sha(proof.encode())!=reviewed['predecessor_sha256']:
+        raise RuntimeError('FORM sampling body must reverse to the complete 0a8 predecessor: '+anchor)
+    return proof,True
+
 def generate(source,output,h):
     service=(source/PKG/'HeptaAccessibilityService.java').read_text()
     evidence=(source/PKG/'NativeAppEvidence.java').read_text()
@@ -176,7 +264,8 @@ def generate(source,output,h):
     for i,value in enumerate(evidence_parts):parts['evidence_'+str(i)]=value
     protected={}
     for anchor,expected in BASELINE_BODY_SHA256.items():
-        raw=h.body(service,anchor);actual=h.sha(raw.encode());proof=raw
+        raw=h.body(service,anchor);actual=h.sha(raw.encode())
+        proof,form_sampling_inverse=form_sampling_body_predecessor(service,anchor,raw,h)
         if child_proof is not None and anchor=='    private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){':
             proof=child_proof['accept_predecessor'](proof.encode()).decode()
         # Reverse only the reviewed Xiaomi original-literal type guard for the
@@ -196,7 +285,7 @@ def generate(source,output,h):
             proof=once(proof,'                // A discarded post-navigation screenshot requires a new pair even when it seeds\n                // the first sample. Starting another Binder read cannot satisfy a sub-gap budget.\n                long remaining=request.deadline-SystemClock.elapsedRealtime();\n                if(request.postEffectController!=null&&remaining<=ObservationStabilityGate.SAMPLE_GAP_MS){\n                    failObservation(request,"操作后的页面仍在变化，本次观察剩余时间不足以重新采样");return;\n                }\n', '')
             if h.sha(proof.encode())!='d86064ad2a7361af1e3be8e1b601b542d3faa73795b849c742b86397a76d710f':raise RuntimeError('historical form publication must restore exact R32 owner check')
         sampling=REVIEWED_SAMPLING_BODY_INVERSE.get(anchor);sampling_inverse=False
-        if sampling is not None and actual==sampling['sha256']:
+        if sampling is not None and h.sha(proof.encode())==sampling['sha256']:
             for revised,prior in sampling['inverse']:proof=once(proof,revised,prior)
             if h.sha(proof.encode())!=sampling['predecessor_sha256']:
                 raise RuntimeError('reviewed sampling body must reverse to exact predecessor: '+anchor)
@@ -211,12 +300,21 @@ def generate(source,output,h):
                 raise RuntimeError('reviewed AX body must reverse to exact legacy body: '+anchor)
         protected[anchor]={'bytes':len(raw.encode()),'sha256':actual,'legacy_sha256':expected,
                            'reviewed_ax_inverse_verified':ax_inverse,
+                           'reviewed_complete_form_sampling_inverse_verified':form_sampling_inverse,
+                           'complete_form_sampling_predecessor_sha256':REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE[anchor]['predecessor_sha256'] if form_sampling_inverse else None,
                            'reviewed_sampling_inverse_verified':sampling_inverse,
                            'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
-    readonly_owner_inverse=None
+    readonly_owner_inverse=None;form_sampling_gate_inverse=None
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
+        if name=='ObservationStabilityGate.java':
+            prior=gate_predecessor(current)
+            if h.sha(prior)!=expected:raise RuntimeError('complete original Gate proof required')
+            protected_files[name]=actual
+            form_sampling_gate_inverse={'current_sha256':actual,'predecessor_sha256':h.sha(prior),
+                'proof_copy_only':True,'actual_compilation_uses_current_source':True}
+            continue
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
         if name=='NativeActionSnapshotCheck.java' and actual=='400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593':
             prior=runpy.run_path(str(source/'tests/native-ctrip-form-observation/scope_predecessor.py'))['predecessor'](current)
@@ -291,7 +389,7 @@ def generate(source,output,h):
             if h.sha(legacy.encode())!=expected:
                 raise RuntimeError('typed AX rejection evidence must reverse to exact legacy file')
         protected_files[name]=actual
-    compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts)
+    compiled_parts,calendar_boundary=h.calendar_observer_legacy_parts(service,parts,retain_ctrip_sampling=True)
     for name in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
         template=once(template,'{{'+name+'}}',compiled_parts[name])
     template=once(template,'            long transitionDeadline(){requireCurrent();return transition;}',
@@ -377,6 +475,7 @@ def generate(source,output,h):
             'protected_production_bodies':protected,'protected_files':protected_files,
             'child_identity_fixture_proof':h.meta(child_fixture) if child_proof is not None else None,
             'readonly_owner_inverse':readonly_owner_inverse,
+            'complete_form_sampling_gate_inverse':form_sampling_gate_inverse,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
             'legacy_fixture_only_fail_closed_port':True,'initial_current_frame_created_by_actual_observer':True,
             'pair_snapshot_uses_actual_full_node_and_snapshot_classes':True,

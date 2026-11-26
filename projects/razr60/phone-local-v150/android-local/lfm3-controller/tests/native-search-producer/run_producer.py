@@ -92,10 +92,10 @@ def main():
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
- parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()
+ parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();\n        initialClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()+(test/'InitialClientCacheCases.fragment').read_text()
  cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
  if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
- parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);',1)
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -244,6 +244,11 @@ def main():
     report['captured_label_expected_cases']=captured_required;report['captured_label_observed_cases']=captured_observed
     report['captured_label_exact_cases']=len(names)==len(set(names)) and len(captured_observed)==len(captured_required) and set(captured_observed)==set(captured_required)
     report['all_pass']=report['all_pass'] and report['captured_label_exact_cases']
+    initial_expected=json.loads((test/'InitialClientCacheExpectedCases.json').read_text())
+    initial_observed=[n for n in names if n.startswith('initial_cache_')]
+    report['initial_cache_expected_cases']=initial_expected;report['initial_cache_observed_cases']=initial_observed
+    report['initial_cache_exact_cases']=len(names)==len(set(names)) and len(initial_observed)==len(initial_expected) and set(initial_observed)==set(initial_expected)
+    report['all_pass']=report['all_pass'] and report['initial_cache_exact_cases']
  finally:
   report['compile_inputs_after']=[meta(p) for p in paths];report['tools_after']=[meta(p['path']) for p in tools]
   report['inputs_unchanged']=report['compile_inputs_before']==report['compile_inputs_after'];report['tools_unchanged']=report['tools_before']==report['tools_after']

@@ -39,6 +39,23 @@ def inventory(root):
     return rows
 def once(raw,old,new):
     need(raw.count(old)==1,'one exact host fixture substitution: '+old[:100]);return raw.replace(old,new,1)
+# Strict proof copy only. Compilation always consumes the actual source Gate.
+FORM_SAMPLING_GATE_CURRENT = '2abe6a4074be6c75514755c741d10792e78e80d914e7ae063e1f43ce470d0992'
+FORM_SAMPLING_GATE_PREDECESSOR = '426100c4f31e825c9e0f0c556c8c89d23aa45a40593978cb5fd8d5946a4beeb8'
+FORM_SAMPLING_GATE_MEMBER = b'    /** Explicit classified pair over two REAL keys. The caller must have compared complete values.\n     * This timing helper grants no action or graph authority and never substitutes a digest. */\n    Result sampleClassifiedPair(long now,FrameKey expectedPrevious,long expectedAt,FrameKey actual,boolean allowed){\n        if(retired||!allowed)return Result.CANCELLED;\n        if(!requestAlive(now,true)||now>=settleDeadline)return Result.EXPIRED;\n        boolean sameWindow=expectedPrevious!=null&&actual!=null&&!expectedPrevious.truncated&&!actual.truncated\n                &&expectedPrevious.packageName.equals(actual.packageName)&&expectedPrevious.windowId==actual.windowId\n                &&expectedPrevious.rotation==actual.rotation&&expectedPrevious.left==actual.left&&expectedPrevious.top==actual.top\n                &&expectedPrevious.right==actual.right&&expectedPrevious.bottom==actual.bottom;\n        if(sameWindow&&previous!=null&&previous.equals(expectedPrevious)&&previousAt==expectedAt\n                &&now>=expectedAt&&now-expectedAt>=SAMPLE_GAP_MS){\n            previous=actual;previousAt=now;return Result.READY;\n        }\n        return Result.WAIT;\n    }\n'
+
+def gate_predecessor(raw):
+    actual=hashlib.sha256(raw).hexdigest()
+    if actual==FORM_SAMPLING_GATE_PREDECESSOR:return raw
+    if actual!=FORM_SAMPLING_GATE_CURRENT:
+        raise RuntimeError('unreviewed complete FORM sampling Gate source')
+    if raw.count(FORM_SAMPLING_GATE_MEMBER)!=1:
+        raise RuntimeError('unique complete classified-pair Gate member required')
+    prior=raw.replace(FORM_SAMPLING_GATE_MEMBER,b'',1)
+    if hashlib.sha256(prior).hexdigest()!=FORM_SAMPLING_GATE_PREDECESSOR:
+        raise RuntimeError('classified-pair Gate must reverse to the complete original source')
+    return prior
+
 def prepare(source,out):
     h=module(source/'tests/observation-diagnostics/run_host.py','coherent_observer_extractor')
     bridge=module(source/'tests/native-ctrip-form-observation/run_observer_host.py','coherent_form_bridge')
@@ -135,13 +152,20 @@ def main():
     jar=a.json_jar.resolve();jdk=a.java_home.resolve();pair=a.actual_pair.resolve()
     pair_before=meta(pair);need((pair_before['bytes'],pair_before['sha256'])==(a.actual_pair_bytes,a.actual_pair_sha256),'exact externally pinned complete actual pair')
     need((jar.stat().st_size,sha(jar.read_bytes()))==(78332,'3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'),'original JSON tool')
-    for relative,expected in PROTECTED.items():need(sha((source/relative).read_bytes())==expected,'unchanged complete original rule/legacy case file '+relative)
+    gate_proof=None
+    for relative,expected in PROTECTED.items():
+        current=(source/relative).read_bytes();proof=current
+        if relative=='src/org/trillionnium/hepta/local/ObservationStabilityGate.java':
+            proof=gate_predecessor(current)
+            gate_proof={'current_sha256':sha(current),'predecessor_sha256':sha(proof),
+                'proof_copy_only':True,'actual_compilation_uses_current_source':True}
+        need(sha(proof)==expected,'complete original rule/legacy file or exact full-source predecessor '+relative)
     tools=[jdk/'bin/java',jdk/'bin/javac',jdk/'lib/modules',jdk/'lib/ct.sym',jar]
     before=inventory(source);tool_before=[meta(p) for p in tools]
     save(out/'SOURCE-INVENTORY-BEFORE.json',before)
     report={'schema':'hepta.ctrip-coherent-census-host.v1','all_pass':False,'source_root':str(source),
         'source_inventory_before':meta(out/'SOURCE-INVENTORY-BEFORE.json'),'tools_before':tool_before,
-        'private_pair':pair_before,'stages':[],'phone_operations':0,
+        'private_pair':pair_before,'stages':[],'phone_operations':0,'complete_form_sampling_gate_inverse':gate_proof,
         'historical_event_watermarks_or_capture_clock_reconstructed':False,'android_bfs_execution':False,
         'actual_75395_failure_predicate_reconstructed':False,'business_completion_claimed':False,
         'declared_new_cases':43,'declared_legacy_observer_cases':68,'legacy_child_41_executed':False}

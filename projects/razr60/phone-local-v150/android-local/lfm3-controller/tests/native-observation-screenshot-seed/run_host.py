@@ -182,7 +182,70 @@ def reverse_postcapture_event_helper(raw):
                       'actual_compilation_uses_unmodified_current_helper': True}
 
 
+# Proof-copy-only inverse of the exact legacy sampling exclusion boundary.
+# Compilers and all real Ctrip bridges still load the unchanged current helper.
+FORM_SAMPLING_HELPER_INVERSE = {
+  "current_bytes": 35585,
+  "current_sha256": "5ea3378a54006880a6a3a09e3e41c678f42ad9546e3afdd59b2ca0f77ef6f68d",
+  "prior_bytes": 30763,
+  "prior_sha256": "1465b6516ada8b0240e29d79a8baf54a66ec09f207e05eaf507fd92e758afb07",
+  "operations": [
+    {
+      "start": 3523,
+      "end": 8257,
+      "current_chunk_sha256": "08cb2e79a404dc68af19cd110344d097f645cf9aa79a7623353bf589ff497bcb",
+      "restore_hex": "6465662063616c656e6461725f6f627365727665725f6c65676163795f706172747328736572766963652c207061727473293a",
+      "restore_sha256": "680d521e312d4f245b41efaee2865a63d33ffa4da38c92af31c1e27c2a60d699"
+    },
+    {
+      "start": 8858,
+      "end": 9011,
+      "current_chunk_sha256": "fc8e1ffc72d7c9c3c5917eb1c7b1afe989a20e1466fd1ebd23814c1dcee9cb62",
+      "restore_hex": "2263616c656e6461725f70726f64756365725f6578636c75646564223a2046616c73652c202263616c656e6461725f70726f64756365725f6578656375746564223a2046616c73657d",
+      "restore_sha256": "8fd57b9a9772ad0858aea3a6ec670b6d23380bb5b3e37ca3ec5975c5ef3812cb"
+    },
+    {
+      "start": 10331,
+      "end": 10404,
+      "current_chunk_sha256": "7cef9e64344dfb9a20f9ceefec03d16e72ee0ccc5f279d4bf455738a8f666ce4",
+      "restore_hex": "2266756c6c5f70726f64756374696f6e5f6f62736572766174696f6e5f736861323536223a207368612870617274735b226f62736572766174696f6e225d2e656e636f64652829292c",
+      "restore_sha256": "261a99db8af41de00fd2b7a0501af8e42d2f9817e73b2256cc2576743c2024ca"
+    },
+    {
+      "start": 10879,
+      "end": 11026,
+      "current_chunk_sha256": "a52248686a46222dfd78e2d159d0e308ed54c559176ffba6a1b2bb5a17bda928",
+      "restore_hex": "2263616c656e6461725f61637475616c5f6761746573223a205b226e61746976652d63616c656e6461722d646174652d6672657368222c20226e61746976652d63616c656e6461722d646174652d616374696f6e73225d7d",
+      "restore_sha256": "ded2bb6693ff2509faa26c94109a680e8da04cc9535abb788fd082b15253728e"
+    }
+  ]
+}
+
+def reverse_form_sampling_helper(path, raw):
+    spec = FORM_SAMPLING_HELPER_INVERSE
+    if path != 'tests/observation-diagnostics/run_host.py' or sha(raw) != spec['current_sha256']:
+        return raw, None
+    need(len(raw) == spec['current_bytes'], 'exact current form sampling helper bytes required')
+    restored = raw
+    for operation in reversed(spec['operations']):
+        start, end = operation['start'], operation['end']
+        need(0 <= start <= end <= len(restored)
+             and sha(restored[start:end]) == operation['current_chunk_sha256'],
+             'exact form sampling helper inverse chunk required')
+        prior = bytes.fromhex(operation['restore_hex'])
+        need(sha(prior) == operation['restore_sha256'], 'exact form sampling inverse replacement required')
+        restored = restored[:start] + prior + restored[end:]
+    need(len(restored) == spec['prior_bytes'] and sha(restored) == spec['prior_sha256'],
+         'whole pre-sampling helper must be restored before the original inverse chain')
+    return restored, {'actual_current_sha256': spec['current_sha256'],
+                      'whole_prior_sha256': spec['prior_sha256'],
+                      'complete_prior_bytes_restored': True, 'proof_copy_only': True,
+                      'actual_compilation_uses_unmodified_current_helper': True}
+
+
 def reverse_calendar_helper(path, raw):
+    actual_input_sha256 = sha(raw)
+    raw, form_sampling_inverse = reverse_form_sampling_helper(path, raw)
     raw, png_inverse = reverse_png_closure(path, raw)
     raw, input_history_inverse = reverse_input_history_helper(path, raw)
     spec = CALENDAR_HELPER_INVERSES[path]
@@ -199,7 +262,8 @@ def reverse_calendar_helper(path, raw):
         restored = restored[:start] + prior + restored[end:]
     need(len(restored) == spec['prior_bytes'] and sha(restored) == spec['prior_sha256'],
          'whole historical helper bytes must be restored: ' + path)
-    return restored, {'actual_current_sha256': png_inverse['current_sha256'], 'png_closure_inverse': png_inverse,
+    return restored, {'actual_current_sha256': actual_input_sha256, 'png_closure_inverse': png_inverse,
+                      'form_sampling_helper_inverse': form_sampling_inverse,
                       'input_history_inverse': input_history_inverse, 'whole_prior_sha256': sha(restored),
                       'inverse_operation_count': len(spec['operations']),
                       'complete_prior_bytes_restored': True, 'proof_copy_only': True,

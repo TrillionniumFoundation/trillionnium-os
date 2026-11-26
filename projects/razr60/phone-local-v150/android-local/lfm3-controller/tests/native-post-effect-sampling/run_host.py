@@ -88,7 +88,7 @@ def main():
             'typed_stale_exception':'    private static final class StaleObservation extends IllegalStateException {',
             'request':'    private static final class ObservationRequest {',
             'sample_worker':'    private void sampleObservation(',
-            'accept_sample':'    private void acceptSample(',
+            'accept_sample':'    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){',
             'screenshot_worker':'    private void processScreenshot(',
             'candidate':'    private PostEffectSamplingRetry postEffectSamplingCandidate(',
             'activation':'    private void activateObservationRequest(',

@@ -65,6 +65,11 @@ def main():
   for anchor in [
    '    private static final class PostEffectChildDiagnostic {',
    '    private static final class CtripReadDiagnostic {',
+   '    private static boolean sameObservationWatermark(',
+   '    private static Map<String,Object> ctripSampleKey(',
+   '    private static void recordCtripSampling(',
+   '    private boolean ctripSamplingProofCurrent(',
+   '    private static Map<String,Object> ctripSamplingSummary(',
    '    private static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String> {',
    '    private PostEffectChildWindowCheck recheckPostEffectChildWindow(ObservationRequest request,ObservationProduct product,',
    '    private static String postEffectChildWindowFingerprint(FrozenObservationWindow value){',

@@ -174,11 +174,11 @@
                 }
             });
         }
-        one("post_back_cache_ordinary_initial_read_never_uses_modal_reset",()->{
+        one("post_back_cache_ordinary_initial_uses_distinct_initial_reset_without_modal_authority",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 f.refreshGraphChildren=true;cachePartialFailure(f);NativeSearchRequest r=f.startPlanning();cachePump(s);
-                check(f.cacheCalls==0&&!r.clientCacheResetClaimed&&!f.base.search.imageModalHomePlanning()
-                        &&f.planning==null&&f.effects==0&&f.syntheticBackEffects==0,"no post-Back route and no effect invented");
+                check(f.cacheCalls==1&&r.clientCacheResetClaimed&&r.clientCacheResetInitialAdmission&&!f.base.search.imageModalHomePlanning()
+                        &&f.planning==null&&f.effects==0&&f.syntheticBackEffects==0,"distinct initial branch grants no post-Back authority, planning or effect");
             }
         });
         one("post_back_cache_second_graph_failure_cannot_reset_after_any_complete_graph",()->{

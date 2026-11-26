@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import runpy
 from pathlib import Path
 import shutil
 import subprocess
@@ -55,6 +56,9 @@ calendar_boundary = {
     "private_constructor_and_lifecycle_methods_throw": True,
     "calendar_callback_created": False, "calendar_producer_executed": False,
     "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
+sampling_helper_path=root/'tests/observation-diagnostics/run_host.py'
+sampling_helpers=runpy.run_path(str(sampling_helper_path))
+compiled_parts,sampling_boundary=sampling_helpers['ctrip_sampling_legacy_parts'](text,compiled_parts)
 template_path=Path(__file__).with_name('ObserverPipelineHost.template')
 template=template_path.read_text()
 for key,value in compiled_parts.items():template=template.replace('{{'+key+'}}',value)
@@ -72,6 +76,8 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
         'extracted':{key:hashlib.sha256(value.encode()).hexdigest() for key,value in parts.items()},'phone_operations':False,'android_runtime':False,'native_inference':False,'production_methods_executed':['acquireTask','recoveryControllerIdle','observe','sampleObservation','acceptSample','watchObservation','captureObservation','watchCapture','processScreenshot','acceptScreenshot','failObservation','retryObservation','copyScreenshot'],'boundary':'Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.'}
 record['calendar_legacy_boundary']=calendar_boundary
+record['ctrip_form_sampling_legacy_boundary']=sampling_boundary
+record['sampling_legacy_helper']={'path':str(sampling_helper_path),'bytes':sampling_helper_path.stat().st_size,'sha256':hashlib.sha256(sampling_helper_path.read_bytes()).hexdigest()}
 png_sources=[root/'src/org/trillionnium/hepta/local/ObservationPngEncoder.java',
              root/'tests/observation-png/stubs/android/graphics/ColorSpace.java',
              root/'tests/observation-png/stubs/android/os/Build.java']

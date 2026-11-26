@@ -1,0 +1,344 @@
+
+    // Dedicated sampling tests: Android graph/window/clock and the pre-existing
+    // Session IO carrier stay synthetic. Actual worker, six-argument accept,
+    // full-census classifier, event counters, clocks and publication execute.
+    private static void samplingCheck(boolean value,String message){
+        CtripFormSamplingHostTest.need(value,message);
+    }
+    private static void samplingEvent(ObserverPipelineHost f,String kind){
+        ObservationRequest r=f.activeObservation;samplingCheck(r!=null,"active request for injected SDK metadata");
+        CtripFormSample sample=r.ctripSample();
+        int window=sample!=null?sample.window.windowId:(f.currentGraph==null?96:f.currentGraph.windowId);
+        if("unknown".equals(kind))f.noteObservationEvent(-1,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+        else if("untyped".equals(kind))f.noteObservationEvent(r.displayId);
+        else if("boundary".equals(kind))f.noteObservationEvent(r.displayId,window,NativeAppGoal.CTRIP_PACKAGE,false,32);
+        else if("foreign_window".equals(kind))f.noteObservationEvent(r.displayId,window+1,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+        else if("foreign_package".equals(kind))f.noteObservationEvent(r.displayId,window,"synthetic.foreign",true,2048);
+        else if("other_display".equals(kind))f.noteObservationEvent(0,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+        else f.noteObservationEvent(r.displayId,window,NativeAppGoal.CTRIP_PACKAGE,true,2048);
+    }
+    // Reuse the unchanged original synthetic nested FORM builder; reflection
+    // opens only this private host-test factory, never an Android or Service API.
+    private static NativeActionSnapshotCheckHostTest.Fixture samplingNestedForm(){
+        try{
+            java.lang.reflect.Method factory=FormPairHostTest.class.getDeclaredMethod("nested");
+            factory.setAccessible(true);
+            return (NativeActionSnapshotCheckHostTest.Fixture)factory.invoke(null);
+        }catch(ReflectiveOperationException failure){
+            throw new IllegalStateException("original nested host fixture invocation failed",failure);
+        }
+    }
+    private static final class SamplingFixture {
+        final ObserverPipelineHost f;final String scenario;final boolean archived;
+        final int baseReads;final PhoneObservation oldFrame;
+        ObservationRequest request;CtripFormSample first,second;
+        long originalStarted,originalDeadline,originalTransition,originalTaskDeadline;
+        final Map<Integer,String> actualKeys=new LinkedHashMap<Integer,String>();
+        int workerGraphs;Map<String,Object> retainedHistory;
+        SamplingFixture(String scenario)throws Exception{
+            this.scenario=scenario;archived="archived_complete_pair".equals(scenario);
+            coherentReset();f=formFixture("post_fixture");
+            try{
+            f.readHook=(g,n)->{
+                if(archived)coherentPopulate(f,g,false,n);
+                else populate(f,g,"nested_clickable_child_rejected".equals(scenario)?samplingNestedForm():
+                        FormPairHostTest.managedForm(),"sampling_initial_fixture",n);
+                g.digest="sampling-initial";f.windowValue=frozenObservationWindow(g);
+            };
+            f.captureFormRead();f.finish();
+            samplingCheck(f.delivered.size()==1&&f.errors.isEmpty(),"actual initial whole-key observer publication");
+            oldFrame=f.current;baseReads=f.reads.get();f.delivered.clear();f.errors.clear();f.pendingScreenshot=null;
+            SystemClock.now+=400;f.autoScreenshot=false;
+            if(!"ordinary_scope".equals(scenario)){
+                f.ownedController=new LocalTaskController();
+                f.submitted=new NativeAppSession.PostEffectReadPermit(new NativeAppSession(),f.taskAuthorization,f.lease,
+                        f.taskBackground.selection,f.taskBackground.generation,15,SystemClock.now+15000);
+                f.submitted.fixtureOrigin=oldFrame.id;
+            }
+            f.readHook=this::read;
+            f.beginFormRead();request=f.activeObservation;
+            samplingCheck(request!=null,"actual observation request admitted");
+            originalStarted=request.started;originalDeadline=request.deadline;
+            originalTransition=request.postEffectTransitionDeadline;originalTaskDeadline=request.postEffectTaskDeadline;
+            drainWorker();
+            first=request.ctripSample();
+            }catch(Throwable original){
+                // Construction may fail before request is assigned. Retire/drain the
+                // real fixture directly, and preserve the initiating failure.
+                try{f.dispose();}catch(Throwable cleanup){original.addSuppressed(cleanup);}
+                if(original instanceof Exception)throw (Exception)original;
+                if(original instanceof Error)throw (Error)original;
+                throw new AssertionError(original);
+            }
+        }
+        void read(Graph g,int absoluteOrdinal){
+            int ordinal=absoluteOrdinal-baseReads;workerGraphs++;
+            samplingCheck(!isMain(),"all sampling censuses use the real serial worker");
+            try{
+                if(archived)coherentPopulate(f,g,ordinal>=2,absoluteOrdinal);
+                else{
+                    boolean nested="nested_clickable_child_rejected".equals(scenario);
+                    NativeActionSnapshotCheckHostTest.Fixture values=nested?samplingNestedForm():FormPairHostTest.managedForm();
+                    if(!nested&&ordinal>=2&&!"same_keys".equals(scenario)&&!"equal_key_interval".equals(scenario))
+                        values=FormPairHostTest.changedForm(values);
+                    if(ordinal>=3&&("classified_interval".equals(scenario)||"equal_key_interval".equals(scenario)))
+                        values=FormPairHostTest.changedForm(values);
+                    if(ordinal>=2&&"direct_sibling_clickable_readonly_control".equals(scenario))
+                        values.nodes.get("0/0/7/0").put("clickable",true);
+                    if(ordinal>=2&&nested)values.click("0/0/0/0/0/0");
+                    populate(f,g,values,"sampling_fixture",absoluteOrdinal);
+                }
+            }catch(Exception error){throw new IllegalStateException("complete synthetic census endpoint",error);}
+            g.digest=ordinal==1?"sampling-A":"same_keys".equals(scenario)?"sampling-A":
+                    "equal_key_interval".equals(scenario)&&ordinal==2?"sampling-A":
+                    ordinal>=3&&("classified_interval".equals(scenario)||"equal_key_interval".equals(scenario))?"sampling-C":"sampling-B";
+            if(ordinal==1){
+                if("historic_boundary_future_content".equals(scenario))
+                    f.noteObservationEvent(15,g.windowId,g.packageName,true,2048);
+                if("first_incomplete".equals(scenario))g.collectionStats=counters(g,g.nativeActionNodes.size(),1,0,0);
+                if("first_not_form".equals(scenario))replaceNode(g,"0/0/2/5","text","not the authorized literal date");
+                if("native_ax_scope".equals(scenario))f.activeObservation.nativeAxMode=new Object();
+                if("initial_scope".equals(scenario))f.activeObservation.initialController=new Object();
+            }
+            if(ordinal==2){
+                if("protected_date".equals(scenario))replaceNode(g,"0/0/2/5","text","11月18日周三");
+                if("protected_query".equals(scenario))replaceNode(g,"0/0/2/13","enabled",false);
+                if("ancestor_changed".equals(scenario))replaceNode(g,"0/0","description","changed complete ancestor");
+                if("missing_child".equals(scenario)){
+                    for(int k=0;k<g.nativeActionNodes.size();k++)if("0/0/7/0".equals(g.nativeActionNodes.get(k).path)){g.nativeActionNodes.remove(k);break;}
+                    g.collectionStats=counters(g,g.nativeActionNodes.size(),0,0,0);
+                }
+                if("pending_child".equals(scenario))g.collectionStats=counters(g,g.nativeActionNodes.size(),1,0,0);
+                if("truncated_graph".equals(scenario))g.truncated=true;
+                if("ime_unknown".equals(scenario))g.state=new ObservationState(TEST_SHA,ImeVisibility.UNKNOWN);
+                if("window_changed".equals(scenario))g.windowId++;
+                if("generation_changed".equals(scenario))g.backgroundGeneration="55555555-6666-7777-8888-999999999999";
+                if("profile_token_changed".equals(scenario))
+                    g.profileWindow=owned(f.taskBackground.profile,g.windowId,"44444444-5555-6666-7777-888888888888");
+                if("read_clock_reversed".equals(scenario))g.readStartedElapsedMs=SystemClock.now+1;
+                if("missing_graph".equals(scenario))throw new NoActiveWindow();
+                if("typed_child_failure".equals(scenario))throw new StaleObservation("synthetic child unavailable",true,"0/0/3/0");
+                if(scenario.startsWith("event_"))samplingEvent(f,scenario.substring("event_".length()));
+                if("historic_boundary_future_content".equals(scenario))samplingEvent(f,"content");
+            }
+            g.nativeObservationComplete=completeNativeObservationGraph(g);
+            f.windowValue=frozenObservationWindow(g);actualKeys.put(ordinal,g.digest);
+        }
+        void drainWorker()throws Exception{
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual serial read worker exit");
+            f.main.drainUntil(()->f.pendingScreenshot!=null);
+        }
+        void next(long advance)throws Exception{
+            SystemClock.now+=advance;f.main.drainUntil(()->f.pendingScreenshot!=null);
+            drainWorker();second=request.ctripSample();
+        }
+        void nextWithoutMainDelivery(long advance)throws Exception{
+            SystemClock.now+=advance;
+            f.main.drainUntil(()->observationIoBusy.get()||observationIo.active.get()!=0);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual sample complete before callback");
+        }
+        void deliverQueued(){f.main.drainUntil(()->f.pendingScreenshot!=null);}
+        void requireNoClassifiedCapture(){
+            samplingCheck(f.pendingScreenshot==null&&f.delivered.isEmpty(),"rejected pair grants no screenshot/publication");
+            samplingCheck(request.ctripSamplingProof==null,"rejected pair leaves no classified proof");
+        }
+        Map<String,Object> publish()throws Exception{
+            samplingCheck(f.pendingScreenshot!=null&&request.captured!=null,"actual second graph enters original screenshot path");
+            samplingCheck(request.captured.digest.equals(actualKeys.get(2))||request.captured.digest.equals(actualKeys.get(3)),
+                    "captured graph retains the actual whole key");
+            samplingCheck(request.ctripSample()==null&&request.ctripSamplingProof==null,
+                    "sampling values transferred once and detached before screenshot");
+            f.deliverScreenshot();f.finish();
+            samplingCheck(f.delivered.size()==1&&f.errors.isEmpty(),"original screenshot/encode/window/event publication passes");
+            samplingCheck(f.current!=oldFrame,"new observation published by original pipeline");
+            samplingCheck(f.current.capturedElapsedMillis==f.lastScreenshotAt,"original actual capture time retained");
+            return f.current.captureEvidence;
+        }
+        Map<String,Object> outcome(){
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("scenario",scenario);out.put("whole_keys",new LinkedHashMap<Integer,String>(actualKeys));
+            out.put("worker_graphs",workerGraphs);out.put("read_works_started",request.readWorksStarted);
+            out.put("read_works_finished",request.readWorksFinished);
+            out.put("original_started",originalStarted);out.put("original_deadline",originalDeadline);
+            out.put("original_transition_deadline",originalTransition);out.put("original_task_deadline",originalTaskDeadline);
+            out.put("events",ctripDiagnosticMark(request.eventWatermark()));
+            out.put("candidate_present",request.ctripSample()!=null);out.put("epoch",request.ctripFormSampleEpoch);
+            out.put("publications",f.delivered.size());out.put("errors",new ArrayList<String>(f.errors));
+            out.put("sampling_diagnostic",request.ctripReadDiagnostic.snapshot());
+            if(retainedHistory!=null)out.put("retained_form_history",retainedHistory);
+            out.put("synthetic_session_io_permit",true);out.put("actual_android_graph_io",false);
+            out.put("phone_operations",0);out.put("action_dispatches",0);out.put("business_completion_verified",false);
+            samplingCheck(request.started==originalStarted&&request.deadline==originalDeadline
+                    &&request.postEffectTransitionDeadline==originalTransition&&request.postEffectTaskDeadline==originalTaskDeadline,
+                    "all original absolute clocks remain unchanged");
+            return out;
+        }
+        public void close()throws Exception{
+            f.dispose();samplingCheck(!observationIoBusy.get()&&observationIo.active.get()==0,"all actual host workers drained");
+            samplingCheck(request.ctripSample()==null&&request.ctripSamplingProof==null,"retirement/publication clears sampling values");
+            for(Graph g:f.graphs)samplingCheck(g.closed,"each graph released by actual owner");
+            for(Bitmap b:Bitmap.made)samplingCheck(b.recycled,"every allocated bitmap released");
+            for(ScreenshotResult shot:f.shots)samplingCheck(shot.buffer.closes==1,"every screenshot buffer closed once");
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private static NativeActionSnapshotCheck.Snapshot samplingSnapshot(Map<String,Object> raw){
+        List<NativeActionSnapshotCheck.Node> nodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(Object value:(List<?>)raw.get("nodes")){
+            Map<String,Object> fields=new LinkedHashMap<String,Object>((Map<String,Object>)value);
+            // The fixed host org.json 20240303 Map constructor omits Java-null
+            // fields; Android's Map constructor stores JSON NULL. Decode only
+            // these schema-nullable keys, never an absent non-null fact. The
+            // unchanged Node/Snapshot checks and whole census SHA below remain.
+            for(String key:Arrays.asList("label","ref_signature_sha256","input_sha256"))
+                if(!fields.containsKey(key))fields.put(key,null);
+            nodes.add(new NativeActionSnapshotCheck.Node(fields));
+        }
+        return new NativeActionSnapshotCheck.Snapshot((Map<String,Object>)raw.get("envelope"),nodes);
+    }
+    @SuppressWarnings("unchecked")
+    private static Map<String,Object> samplingHistory(SamplingFixture h,Map<String,Object> capture)throws Exception{
+        Object summaryObject=capture.get("sampling_stability");
+        samplingCheck(summaryObject instanceof Map,"published actual sampling summary present");
+        Map<String,Object> summary=(Map<String,Object>)summaryObject;
+        samplingCheck("sampling".equals(summary.get("part"))&&Boolean.FALSE.equals(summary.get("grants_action_authority")),
+                "sampling summary is read-only");
+        File file=new File(h.f.directory,String.valueOf(summary.get("file")));
+        byte[] raw=Files.readAllBytes(file.toPath());
+        samplingCheck(raw.length==((Number)summary.get("bytes")).intValue()&&sha(raw).equals(summary.get("sha256")),
+                "complete create-only history matches actual summary bytes/hash");
+        // Preserve these actual host bytes before the original fixture disposal,
+        // including any later decode/assertion failure. No old r2 data is filled.
+        Path retained=CtripFormSamplingHostTest.historyRoot.resolve(h.scenario+".json");
+        Files.write(retained,raw,StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
+        h.retainedHistory=new LinkedHashMap<String,Object>();
+        h.retainedHistory.put("path",retained.toString());h.retainedHistory.put("bytes",raw.length);
+        h.retainedHistory.put("sha256",sha(raw));
+        Map<String,Object> top=new org.json.JSONObject(new String(raw,StandardCharsets.UTF_8)).toMap();
+        samplingCheck("hepta.ctrip-form-capture-history.v1".equals(top.get("schema")),"original history transport schema retained");
+        Map<String,Object> proof=(Map<String,Object>)top.get("sampling");
+        samplingCheck(proof!=null&&"hepta.ctrip-form-sampling-pair.v1".equals(proof.get("schema")),"actual sampling proof retained");
+        Map<String,Object> a=(Map<String,Object>)proof.get("before_key"),b=(Map<String,Object>)proof.get("after_key");
+        samplingCheck(!a.get("observed_digest").equals(b.get("observed_digest")),"real differing whole keys are never forged equal");
+        samplingCheck(Boolean.FALSE.equals(proof.get("historic_events_reclassified"))
+                &&Boolean.FALSE.equals(proof.get("grants_action_authority"))
+                &&Boolean.FALSE.equals(proof.get("business_completion_verified"))
+                &&Boolean.TRUE.equals(proof.get("fresh_action_validation_required")),"read-only and forward-only proof contract");
+        samplingCheck(((Number)proof.get("original_deadline_elapsed_ms")).longValue()==h.originalDeadline,"history preserves original deadline");
+        Map<String,Object> before=(Map<String,Object>)proof.get("before_census"),after=(Map<String,Object>)proof.get("after_census");
+        NativeActionSnapshotCheck.Snapshot aa=samplingSnapshot(before),bb=samplingSnapshot(after);
+        samplingCheck(aa.sha.equals(proof.get("before_census_sha256"))&&bb.sha.equals(proof.get("after_census_sha256")),
+                "complete preserved census hashes reproduce actual comparison input");
+        NativeCtripFormObservation.compare(aa,bb);
+        samplingCheck(raw.length<=786432,"original private form-history cap retained");
+        return proof;
+    }
+    static Map<String,Object> exerciseFormSampling(String scenario)throws Exception{
+        SamplingFixture h=new SamplingFixture(scenario);Map<String,Object> out;
+        try{
+            boolean noSeed="first_incomplete".equals(scenario)||"first_not_form".equals(scenario)
+                    ||"ordinary_scope".equals(scenario)||"native_ax_scope".equals(scenario)||"initial_scope".equals(scenario);
+            if(noSeed){
+                samplingCheck(h.first==null,"excluded/incomplete first graph cannot bind a form sample");
+                h.next(200);h.requireNoClassifiedCapture();out=h.outcome();return out;
+            }
+            samplingCheck(h.first!=null&&h.request.captured==null,"complete actual first sample binds only pure values");
+            samplingCheck(h.first.readOrdinal==1&&h.first.acceptedAt>=h.first.completedAt,"first actual worker read and gate acceptance recorded");
+            samplingCheck(h.f.graphs.get(h.f.graphs.size()-1).closed,"first graph closed before retaining copied census");
+            if("pure_value_lifecycle".equals(scenario)){
+                for(java.lang.reflect.Field field:CtripFormSample.class.getDeclaredFields()){
+                    Class<?> t=field.getType();
+                    samplingCheck(!Graph.class.isAssignableFrom(t)&&!NodeRef.class.isAssignableFrom(t)
+                            &&!Bitmap.class.isAssignableFrom(t)&&!PhoneObservation.class.isAssignableFrom(t)
+                            &&!Runnable.class.isAssignableFrom(t)&&!Cancellation.class.isAssignableFrom(t),
+                            "candidate cannot retain a graph, live node, pixels, observation or callback");
+                }
+                boolean immutable=false;try{h.first.census.env.put("forbidden",true);}catch(UnsupportedOperationException expected){immutable=true;}
+                samplingCheck(immutable,"retained complete census is immutable");
+                h.f.retire();samplingCheck(h.request.ctripSample()==null&&h.request.ctripFormSampleEpoch>h.first.epoch,"retirement clears epoch");
+                out=h.outcome();return out;
+            }
+            if("capture_retry_clears_pair".equals(scenario)){
+                long epoch=h.request.ctripFormSampleEpoch;
+                h.f.retryObservation(h.request,200);
+                samplingCheck(h.request.ctripSample()==null&&h.request.ctripSamplingProof==null
+                        &&h.request.ctripFormSampleEpoch>epoch,"actual retry drops previous sample and proof");
+                h.next(200);h.requireNoClassifiedCapture();out=h.outcome();return out;
+            }
+            if("authorization_replaced".equals(scenario))h.f.taskAuthorization=new AuthorizationGate();
+            if("controller_replaced".equals(scenario))h.f.ownedController=new LocalTaskController();
+            if("background_released".equals(scenario))h.f.taskBackground.closed=true;
+            if("cancelled".equals(scenario))h.f.cancelled.set(true);
+            if("permit_retired".equals(scenario))h.f.submitted.valid=false;
+            if("installed_version_changed".equals(scenario))h.f.taskBackground.profile=target(NativeAppGoal.CTRIP_PACKAGE,
+                    NativeCtripFlightPage.VERSION_CODE-1,NativeCtripFlightPage.BASE_APK_SHA256);
+            if("unsupported_goal".equals(scenario))h.f.taskBackground.selection.taskTarget.nativeGoal=NativeAppGoal.parse(
+                    "在携程查询2026年11月17日上海到北京的单程机票，1位成人。",NativeAppGoal.CTRIP_PACKAGE);
+            if("parallel_action".equals(scenario)){
+                ActionExecutionState work=new ActionExecutionState(TEST_TASK,TEST_TASK,TEST_TASK,TEST_TASK,TEST_SHA,96,15,TEST_GENERATION,
+                        SystemClock.now,SystemClock.now+1000,()->SystemClock.now);
+                samplingCheck(actionSlot.acquire(work),"real action slot acquired for negative fence");
+                try{h.next(200);h.requireNoClassifiedCapture();out=h.outcome();}
+                finally{work.retire("cancelled");work.drained();actionSlot.release(work);}return out;
+            }
+            if("classified_interval".equals(scenario)||"equal_key_interval".equals(scenario)||"diagnostic_bounds".equals(scenario))
+                h.f.lastScreenshotAt=SystemClock.now;
+            if(scenario.startsWith("queued_")){
+                h.nextWithoutMainDelivery(200);samplingEvent(h.f,scenario.substring("queued_".length()));h.deliverQueued();
+                h.requireNoClassifiedCapture();out=h.outcome();return out;
+            }
+            h.next("settle_expiry".equals(scenario)?10000:200);
+            if("classified_interval".equals(scenario)){
+                samplingCheck(h.f.pendingScreenshot==null&&h.request.ctripSamplingProof==null,"throttled classified READY is not carried forward");
+                samplingCheck(h.second!=null&&h.second.readOrdinal==2&&"sampling-B".equals(h.second.key.observedDigest),
+                        "classified interval wait preserves actual B as next candidate");
+                h.next(200);Map<String,Object> proof=samplingHistory(h,h.publish());
+                Map<?,?> a=(Map<?,?>)proof.get("before_key"),b=(Map<?,?>)proof.get("after_key");
+                samplingCheck("sampling-B".equals(a.get("observed_digest"))&&"sampling-C".equals(b.get("observed_digest")),
+                        "third actual graph earns a fresh B/C classification");
+            }else if("equal_key_interval".equals(scenario)){
+                samplingCheck(h.f.pendingScreenshot==null&&h.request.ctripSamplingProof==null&&h.second==h.first,
+                        "legacy equal-key READY keeps original candidate and no classification proof");
+                h.next(200);h.requireNoClassifiedCapture();
+                samplingCheck(h.request.ctripSample()==null,"skipped read ordinal rejects stale A/C classification");
+                samplingCheck("sampling-C".equals(h.actualKeys.get(3)),"fallback receives actual C key");
+            }else if("diagnostic_bounds".equals(scenario)){
+                samplingCheck(h.second!=null&&h.second.readOrdinal==2,"actual comparison values available before interval wait");
+                StringBuilder longMessage=new StringBuilder("中");for(int i=0;i<300;i++)longMessage.append("\uD83D\uDE80");
+                recordCtripSampling(h.request,"SAMPLE_TEST_REJECTED",h.first,h.second,new IllegalArgumentException(longMessage.toString()));
+                Map<String,Object> before=h.request.ctripReadDiagnostic.snapshot();
+                Object last=before.get("last_helper");
+                samplingCheck(last instanceof Map&&"SAMPLE_TEST_REJECTED".equals(((Map<?,?>)last).get("reason")),"actual bounded helper error remains visible");
+                samplingCheck(new org.json.JSONObject((Map<?,?>)last).toString().getBytes(StandardCharsets.UTF_8).length<=768,"original helper record cap");
+                h.request.clearCtripSample("SAMPLE_TEST_LIFECYCLE");
+                Map<String,Object> after=h.request.ctripReadDiagnostic.snapshot();
+                samplingCheck(last.equals(after.get("last_helper")),"lifecycle progress does not overwrite completed comparison detail");
+                samplingCheck(new org.json.JSONObject(after).toString().getBytes(StandardCharsets.UTF_8).length<=4096,"original complete diagnostic cap");
+            }else if("late_window_failure".equals(scenario)||"late_unknown_event".equals(scenario)){
+                samplingCheck(h.f.pendingScreenshot!=null,"classified pair reaches original screenshot admission");
+                if("late_window_failure".equals(scenario))h.f.windowHook=()->h.f.windowValue=changedWindow(h.f.windowValue);
+                else Bitmap.encodeHook=()->samplingEvent(h.f,"unknown");
+                h.f.deliverScreenshot();h.f.finish();
+                samplingCheck(h.f.delivered.isEmpty()&&h.f.current==h.oldFrame,"sampling proof cannot bypass fresh window/event publication refusal");
+                samplingCheck(h.request.ctripSample()==null&&h.request.ctripSamplingProof==null,"failed screenshot cannot reuse old sampling pair");
+            }else if("same_keys".equals(scenario)){
+                Map<String,Object> capture=h.publish();samplingCheck(!capture.containsKey("sampling_stability"),"unchanged whole keys keep original evidence mode");
+            }else if("complete_pair".equals(scenario)||"archived_complete_pair".equals(scenario)
+                    ||"historic_boundary_future_content".equals(scenario)||"event_content".equals(scenario)||"event_other_display".equals(scenario)
+                    ||"direct_sibling_clickable_readonly_control".equals(scenario)){
+                Map<String,Object> proof=samplingHistory(h,h.publish());
+                if("historic_boundary_future_content".equals(scenario)){
+                    List<?> before=(List<?>)proof.get("forward_binding_watermark"),after=(List<?>)proof.get("after_event_watermark");
+                    samplingCheck(((Number)before.get(3)).longValue()==1&&((Number)after.get(3)).longValue()==1,
+                            "pre-binding boundary is preserved without retroactive classification");
+                    samplingCheck(((Number)after.get(2)).longValue()==((Number)before.get(2)).longValue()+1,"future matching content recorded separately");
+                }
+                if(h.archived){
+                    Map<?,?> aa=(Map<?,?>)proof.get("before_census"),bb=(Map<?,?>)proof.get("after_census");
+                    samplingCheck(((List<?>)aa.get("nodes")).size()==283&&((List<?>)bb.get("nodes")).size()==281,
+                            "all original archived nodes represented under explicit synthetic current context");
+                }
+            }else h.requireNoClassifiedCapture();
+            out=h.outcome();return out;
+        }finally{h.close();}
+    }

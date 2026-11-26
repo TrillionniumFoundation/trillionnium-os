@@ -66,7 +66,75 @@ def body(raw,start):
             if depth==0:return raw[first:i+1]
         i+=1
     raise RuntimeError('unterminated body')
-def calendar_observer_legacy_parts(service, parts):
+def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
+    """Exact type boundary only; qualified form tests must retain the real block."""
+    start = "    private boolean ctripFormSamplingOwner(ObservationRequest request,long now){"
+    end = "    private void sampleObservation(final ObservationRequest request){"
+    if start not in service:
+        if "CtripFormSample" in parts["observation"]:
+            raise RuntimeError("Unknown form sampling producer cannot enter legacy observer fixture")
+        return dict(parts), {"schema": "hepta.observer-form-sampling-legacy-boundary.v1",
+                             "sampling_helper_present": False, "sampling_producer_executed": False}
+    actual = section(service, start, end)
+    actual_sha = sha(actual.encode())
+    if actual_sha != "7552b60b680693577fc68d6f1da5a16e014dc99d55f5088ce7cb3896884ce54e":
+        raise RuntimeError("Exact reviewed complete form sampling helper block required")
+    if parts["observation"].count(actual) != 1:
+        raise RuntimeError("Unique complete form sampling helper block required")
+    port = """    /** Legacy observer fixtures have no qualified Ctrip sampling owner.
+     * Dedicated form bridges retain the complete actual helper block instead. */
+    private boolean ctripFormSamplingOwner(ObservationRequest request,long now){return false;}
+    private static boolean sameObservationWatermark(ObservationEventWatermark a,ObservationEventWatermark b){
+        return a!=null&&b!=null&&a.events==b.events&&a.unknownEvents==b.unknownEvents
+                &&a.contentEvents==b.contentEvents&&a.boundaryEvents==b.boundaryEvents;
+    }
+    private static void recordCtripSampling(ObservationRequest request,String reason,CtripFormSample a,CtripFormSample b,Exception failure){
+        throw new AssertionError("legacy observer cannot record a qualified Ctrip sample");
+    }
+    private CtripFormSampleRead readCtripFormSample(ObservationRequest request,Graph graph,CtripFormSample before,
+            ObservationEventWatermark readStart,ObservationEventWatermark completed,long completedAt,long epoch){
+        if(before!=null||request.ctripSample()!=null)
+            throw new AssertionError("legacy observer cannot retain a qualified Ctrip sample");
+        return null;
+    }
+    private boolean ctripFormSampleCurrent(ObservationRequest request,Graph graph,CtripFormSampleRead read){
+        if(read!=null)throw new AssertionError("legacy observer cannot receive a qualified Ctrip pair");
+        return false;
+    }
+    private static Map<String,Object> ctripSamplingProof(ObservationRequest request,CtripFormSampleRead read,long admittedAt){
+        throw new AssertionError("legacy observer cannot construct classified sampling evidence");
+    }
+    private boolean ctripSamplingProofCurrent(ObservationRequest request,Map<String,Object> proof){return false;}
+    private static Map<String,Object> ctripSamplingSummary(Map<String,Object> proof,File path,int bytes,String digest){
+        throw new AssertionError("legacy observer cannot publish classified sampling evidence");
+    }
+"""
+    compiled = dict(parts)
+    if not retain_ctrip_sampling:
+        compiled["observation"] = parts["observation"].replace(actual, port, 1)
+        if compiled["observation"].replace(port, actual, 1) != parts["observation"]:
+            raise RuntimeError("Actual form sampling helper block must remain fully reversible")
+    elif compiled["observation"] != parts["observation"]:
+        raise RuntimeError("Dedicated Ctrip bridge must retain the complete actual sampling block")
+    return compiled, {
+        "schema": "hepta.observer-form-sampling-legacy-boundary.v1",
+        "sampling_helper_present": True,
+        "actual_helper_bytes": len(actual.encode()), "actual_helper_sha256": actual_sha,
+        "compiled_observation_sha256": sha(compiled["observation"].encode()),
+        "full_source_observation_sha256": sha(parts["observation"].encode()),
+        "retains_actual_sampling_helpers": bool(retain_ctrip_sampling),
+        "legacy_sampling_ports_used": not retain_ctrip_sampling,
+        "refusing_ports_sha256": None if retain_ctrip_sampling else sha(port.encode()),
+        "production_worker_six_argument_accept_event_and_capture_bodies_verbatim": True,
+        "legacy_qualified_sample_or_proof_available": False,
+        "legacy_sampling_producer_executed": False,
+        "actual_sampling_behavior_requires_dedicated_form_gate": True,
+        "phone_operations": 0}
+
+
+def calendar_observer_legacy_parts(service, parts, retain_ctrip_sampling=False):
+    original_observation = parts["observation"]
+    parts, sampling_boundary = ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling)
     """Preserve actual observer methods; calendar-only proof types always refuse."""
     start = "    /** One typed read, using the existing observation request/PNG publication."
     end = "    public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,"
@@ -74,7 +142,8 @@ def calendar_observer_legacy_parts(service, parts):
         if "CalendarFreshObserver" in parts["observation"]:
             raise RuntimeError("Unknown calendar producer cannot enter the legacy observer fixture")
         return dict(parts), {"schema": "hepta.observer-calendar-legacy-type-boundary.v1",
-                             "calendar_producer_excluded": False, "calendar_producer_executed": False}
+                             "calendar_producer_excluded": False, "calendar_producer_executed": False,
+                             "ctrip_form_sampling_boundary": sampling_boundary}
     actual = section(service, start, end)
     actual_sha = sha(actual.encode())
     if actual_sha != "d143d3bca16e6f85571c234535aee39a45b91851c77b7cf70dee06adb988fb04":
@@ -95,14 +164,15 @@ def calendar_observer_legacy_parts(service, parts):
     return compiled, {
         "schema": "hepta.observer-calendar-legacy-type-boundary.v1",
         "calendar_producer_excluded": True,
-        "full_production_observation_sha256": sha(parts["observation"].encode()),
+        "full_production_observation_sha256": sha(original_observation.encode()),
         "calendar_only_excluded_bytes": len(actual.encode()),
         "calendar_only_excluded_sha256": actual_sha, "refusing_port_sha256": sha(port.encode()),
         "compiled_observation_sha256": sha(compiled["observation"].encode()),
         "actual_observer_scheduling_and_both_calendar_type_hooks_unchanged": True,
         "private_constructor_and_lifecycle_methods_throw": True,
         "calendar_callback_created": False, "calendar_producer_executed": False,
-        "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"]}
+        "calendar_actual_gates": ["native-calendar-date-fresh", "native-calendar-date-actions"],
+        "ctrip_form_sampling_boundary": sampling_boundary}
 
 
 def calendar_controller_legacy_template(template):
