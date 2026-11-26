@@ -496,6 +496,16 @@ def generate(source,output,h):
     if child_proof is not None:
         template=once(template,child_proof['PORT'],parts['child_identity_recheck']+'\n'+parts['child_window_fingerprint']+'\n')
         template=once(template,compiled_typed_child_port,parts['actual_stale_type']+'\n')
+        # The actual form observer reads immutable diagnostic evidence through the
+        # common post-read type. Keep the original OPEN implementation below;
+        # closed BACK/other legacy carriers must never manufacture that evidence.
+        if 'BACK_READ_TYPE_PORTS' in child_proof:
+            parent_ports=child_proof['BACK_READ_TYPE_PORTS']
+            form_ports=once(parent_ports,'            abstract boolean admitted(boolean retry);\n',
+                '            abstract boolean admitted(boolean retry);\n'
+                '            Map<String,Object> evidence(){throw new AssertionError("no form evidence authority in closed read carrier");}\n'
+                '            String originalObservationId(){throw new AssertionError("no form origin authority in closed read carrier");}\n')
+            template=once(template,parent_ports,form_ports)
     if '{{' in template:raise RuntimeError('unfilled host fixture')
     for name,raw in parts.items():
         if name=='provider_constants':continue

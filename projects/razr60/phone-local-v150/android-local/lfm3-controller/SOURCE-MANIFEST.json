@@ -29,7 +29,8 @@
     "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation",
     "Complete only the legacy qualification host compiler boundary for calendar BACK with refusing types and two typed JSON optional accessors; all production and original cases are unchanged",
     "Extend only existing observer host ABI with an abstract post-read type and a closed refusing BACK port; preserve original OPEN cases and exact historical proof-copy inverses.",
-    "Recognize the exact reviewed closed BACK observer template when selecting the original three-argument Stale fixture port; no production, cases or compile flags changed."
+    "Recognize the exact reviewed closed BACK observer template when selecting the original three-argument Stale fixture port; no production, cases or compile flags changed.",
+    "Expose only refusing default read-evidence methods in the form observer host parent port; original OPEN override, cases and production inputs are unchanged."
   ],
   "complete_source_files": 2740,
   "files": [
@@ -11128,10 +11129,10 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 104500,
+      "bytes": 105372,
       "mode": 420,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "3d6d669873da26c597e780895e71be3fc1cbca6bffd8ac6d0193913f0da3f0f9"
+      "sha256": "bbe67a949ba6edae448110002e21f16b95fc1213cbeb025b3946d82362dd2e23"
     },
     {
       "bytes": 3535,
@@ -16470,10 +16471,10 @@
   ],
   "main_java_sources": 222,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "4d4527a39641af6d8293e45a52bc74f7b8aac0e2171de8cfd64d5b6557263e89",
-  "predecessor_source_manifest_sha256": "4d4527a39641af6d8293e45a52bc74f7b8aac0e2171de8cfd64d5b6557263e89",
+  "predecessor_manifest_sha256": "5c0a9095a8554c7f67b03291cb72e2c92eb729cb9a5308ca1f2e9c960db51b2f",
+  "predecessor_source_manifest_sha256": "5c0a9095a8554c7f67b03291cb72e2c92eb729cb9a5308ca1f2e9c960db51b2f",
   "production_build_inputs_count": 406,
   "production_input_map_sha256": "3f74840e7703c2797009ac28473b50d7ce19a349e256e692dd06863edb69fd67",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "2eca4f35f1c8a689f914f833801b18ab1e4cb9d6"
+  "source_parent_head": "a8e05f1186b04cc519ece9990dfa3adc6701bf59"
 }
