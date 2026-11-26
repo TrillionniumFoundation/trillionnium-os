@@ -270,13 +270,57 @@ def prepare(source, output):
     CalendarOffer offerCalendarDate(NativeCalendarDateEnvelope envelope,LocalInference inference,
             NativeCalendarDateProtocol.Clock clock,long deadline){throw unavailable();}
 '''
+    # The separate manual capture graph is not owned by these old non-native
+    # cases. Remove exactly that new complete block, retaining every original
+    # scope/dispatch/mode member. The Android build compiles its real body.
+    manual_service_only=section(s,
+        '    /** Copies the already published complete graph and releases its SDK references.',
+        '    synchronized void bindNativeTextObservation(')
+    if sum(value.count(manual_service_only) for value in pieces.values())!=1:
+        raise RuntimeError('one exact manual-only block in old Service carrier')
+    for name,value in list(pieces.items()):
+        if manual_service_only in value:pieces[name]=value.replace(manual_service_only,'',1)
+    manual_io_ports='''    // No manual graph, publication or request can be produced by this legacy IO fixture.
+    interface ManualPreviewCallback {
+        void onCaptured(ManualPreviewPublication publication);
+        void onError(String detail);
+    }
+    static final class ManualPreviewPublication {
+        private ManualPreviewPublication(){throw new AssertionError("No manual publication in legacy qualification fixture");}
+        NativeActionSnapshotCheck.Snapshot censusFor(HeptaAccessibilityService service,LocalTaskController controller,
+                NativeAppSession.ManualFixture fixture,PhoneObservation observed){
+            throw new AssertionError("No manual census authority in legacy qualification fixture");
+        }
+    }
+    void captureManualPreview(LocalTaskController controller,NativeAppSession.ManualFixture fixture,
+            PhoneObservation observed,Cancellation cancel,ManualPreviewCallback callback){
+        throw new AssertionError("No manual capture worker in legacy qualification fixture");
+    }
+'''
+    manual_nas_ports='''    /** Type-only manual ABI. Constructors and every authority endpoint always refuse. */
+    static final class ManualFixture implements AutoCloseable {
+        final NativeAppSession session=null;
+        final BackgroundSession background=null;
+        final NativeOrderPreviewManual.Owner owner=null;
+        final NativeAppEvidence.Frame before=null;
+        final long taskDeadline=-1,leaseDeadline=-1;
+        private ManualFixture(){throw unavailable();}
+        void requireCurrent(long now){throw unavailable();}
+        Map<String,Object> binding(String controllerBuildSha){throw unavailable();}
+        public void close(){throw unavailable();}
+    }
+    boolean manualFixtureDetailReady(String observationId){throw unavailable();}
+    ManualFixture beginManualFixture(String observationId,BackgroundSession background,long deadline,long now){
+        throw unavailable();
+    }
+'''
     calendar_nas_source=source/'tests/native-app/legacy-boundary/NativeAppSession.java'
     calendar_nas_raw=calendar_nas_source.read_text()
     calendar_nas_anchor='    private static UnsupportedOperationException unavailable(){'
     if calendar_nas_raw.count(calendar_nas_anchor)!=1:
         raise RuntimeError('one original refusing native Session boundary')
     (output/'NativeAppSession.java').write_text(
-        calendar_nas_raw.replace(calendar_nas_anchor,calendar_nas_ports+calendar_nas_anchor,1))
+        calendar_nas_raw.replace(calendar_nas_anchor,calendar_nas_ports+manual_nas_ports+calendar_nas_anchor,1))
     (output/'VlmInferenceAdapter.java').write_text('''package org.trillionnium.hepta.local;
 /** Callback type only; no Adapter, accepted request or model can be constructed. */
 final class VlmInferenceAdapter {
@@ -287,7 +331,7 @@ final class VlmInferenceAdapter {
     fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()
     marker='{{service_interfaces_outcome}}\n'
     if fixture.count(marker)!=1:raise RuntimeError('one legacy Service interface boundary')
-    fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports+post_effect_cleanup_ports+post_effect_cleanup,1)
+    fixture=fixture.replace(marker,marker+search_io_ports+calendar_io_ports+manual_io_ports+post_effect_cleanup_ports+post_effect_cleanup,1)
     for name, code in pieces.items():
         fixture = fixture.replace('{{' + name + '}}', code)
     if '{{' in fixture:
@@ -427,6 +471,8 @@ final class VlmInferenceAdapter {
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation','VisualPromptProjection','MobiMindContract','MobiMindPins',
           'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','SessionTerminalEvidence','ObservationDiagnostics','NativeActionSnapshotCheck']
     pure += ['NativeCalendarDateEnvelope','NativeCalendarDateIntent','NativeCalendarDateProtocol','UiVenusInputContract','UiVenusPins']
+    # Compile the real new value/file classes and their strict production JSON reader.
+    pure += ['NativeOrderPreviewManual','NativeOrderPreviewManualFiles','WebEvidenceJson']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     files += [pkg/'NativeSearchDecision.java']
@@ -584,6 +630,21 @@ final class PublicProfileBusinessRecoveryClient {
         'native_action_bridge_excluded':{'bytes':len(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()),
             'sha256':hashlib.sha256(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()).hexdigest()},
         'phone_operations':False,'native_inference':False}
+    record['manual_preview_legacy_boundary']={
+        'complete_controller_source_unchanged':True,'shared_native_session_fixture_unchanged':True,
+        'actual_compiler_inputs':{
+            name:{'path':str(pkg/(name+'.java')),'bytes':(pkg/(name+'.java')).stat().st_size,
+                'sha256':hashlib.sha256((pkg/(name+'.java')).read_bytes()).hexdigest()}
+            for name in ('NativeOrderPreviewManual','NativeOrderPreviewManualFiles','WebEvidenceJson')},
+        'manual_service_only_excluded':{'bytes':len(manual_service_only.encode()),
+            'sha256':hashlib.sha256(manual_service_only.encode()).hexdigest()},
+        'added_session_ports_sha256':hashlib.sha256(manual_nas_ports.encode()).hexdigest(),
+        'added_service_ports_sha256':hashlib.sha256(manual_io_ports.encode()).hexdigest(),
+        'all_new_constructors_and_authority_endpoints_refuse':True,
+        'preexisting_dispatch_methods_modified':False,'manual_model_or_input_qualified':False,
+        'separate_protocol_gate_execution_claimed_here':False,
+        'separate_protocol_gate':'tests/order-preview-manual-fixture/run_host.py',
+        'android_capture_body_qualification':'full actual Android compilation; not executed by this legacy host IO fixture'}
     record['calendar_legacy_boundary']={
         'complete_controller_source_unchanged':True,'shared_native_session_fixture_unchanged':True,
         'local_native_session_fixture_source':str(calendar_nas_source.relative_to(source)),

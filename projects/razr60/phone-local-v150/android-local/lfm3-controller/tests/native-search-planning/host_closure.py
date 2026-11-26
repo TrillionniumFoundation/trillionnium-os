@@ -229,6 +229,7 @@ def prepare(source, output, extra_tests=()):
     paths = [source / p for p in query.PURE_PATHS if p not in excluded] + bgfiles
     paths += [source / ("src/org/trillionnium/hepta/local/" + name + ".java") for name in (
         "NativeXiaomiSearchInputObservation", "ObservationCaptureEvidence", "PromptActionDomain", "NativeAppEvidence", "NativeAppDomain", "NativeAppSession",
+        "NativeOrderPreviewManual",
         "NativeActionSnapshotCheck", "NativeAppObservation", "NativeCtripFlightPage", "NativeXiaomiProductPage",
         "ActionExecutionState", "NativeSearchRole", "NativeSearchPlanning", "NativeSearchDecision", "NativeSearchSession")]
     paths += [source / "tests/xiaomi-profile/NativeProfileIdentityHostTest.java",

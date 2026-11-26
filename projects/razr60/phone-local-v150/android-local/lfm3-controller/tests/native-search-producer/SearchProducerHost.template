@@ -133,7 +133,7 @@ public final class HeptaAccessibilityService {
                         "action_set_text".equals(key)?ACTION_SET_TEXT:"action_scroll_forward".equals(key)?ACTION_SCROLL_FORWARD:ACTION_SCROLL_BACKWARD));
             return result;
         }
-        boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("non-click effect");data.effects++;Fixture fixture=data.owner.fixture;fixture.effects++;if(fixture.effectHook!=null)fixture.effectHook.run();return fixture.apiAccepts;}
+        boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("non-click effect");data.effects++;Fixture fixture=data.owner.fixture;fixture.lastEffectReference=this;fixture.effects++;if(fixture.effectHook!=null)fixture.effectHook.run();return fixture.apiAccepts;}
         public boolean equals(Object v){return v instanceof HeptaAccessibilityService.AccessibilityNodeInfo&&((AccessibilityNodeInfo)v).data==data;}public int hashCode(){return System.identityHashCode(data);}
     }
     static final class PhoneObservation {
@@ -210,6 +210,7 @@ public final class HeptaAccessibilityService {
         NativeActionSnapshotCheckHostTest.Fixture values;NativeSearchPlanning planning;String error;ActionOutcome outcome;NativeSearchReadRetryProof retryProof;String retryDetail;
         int graphReads,windowReads,windowReferencesReleased,effects,callbackCount,graphDuration=30;boolean cancelled,displayPresent=true,rootMissing,windowsMissing,apiAccepts=true,pendingAtError;
         String windowTitle="synthetic host Xiaomi window";int actualWindow=96,actualTask=1234,windowType=1;
+        AccessibilityNodeInfo lastEffectReference;
         Runnable graphHook,windowHook,effectHook,afterEffectRecycleHook;long profileLifetime=1000;boolean replaceTargetOnSecond,refreshGraphChildren,observableLoadingProjection;
         int cacheCalls,syntheticBackEffects;boolean cacheResult=true,cacheThrows,incompleteGraph;Runnable cacheHook;
         java.util.function.Consumer<Graph> beforeCapturedNodesHook,afterCapturedNodesHook,afterCapturedApplyHook;

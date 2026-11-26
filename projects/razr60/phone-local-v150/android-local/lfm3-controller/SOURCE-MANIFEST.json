@@ -1,7 +1,7 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_FULL_CANONICAL_AND_ANDROID_BUILD",
+  "candidate_status": "SOURCE_FROZEN_PENDING_CURRENT_CANONICAL_REQUIRED_HOST_AND_ANDROID_BUILD",
   "changes": [
     "profile cleanup accepts separately validated normal cleanup diagnostics",
     "released close history binds original exit and fresh absence",
@@ -21,9 +21,14 @@
     "Add explicit restricted LFM3-VL Ctrip tools selection while ordinary LFM3-VL settings remain observation-only and existing automatic preferences remain unchanged",
     "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards",
     "Keep the legacy mode-less LFM3-VL constructor rejected; route only explicit visual tools settings through the explicit five-argument mode constructor",
-    "Align only the two explicit LFM3-VL tools profile test expectations with the approved closed configuration; retain implicit/missing mode and all identity/receipt negatives"
+    "Align only the two explicit LFM3-VL tools profile test expectations with the approved closed configuration; retain implicit/missing mode and all identity/receipt negatives",
+    "Add an explicitly bounded manual order-preview fixture owner that publishes actual complete before/after census and PNG; navigation routes remain unbound and normal model and cleanup gates remain intact",
+    "Permit a typed same-owner transient AX seal failure to use one fresh frozen-window proof and the existing serial read drain; preserve complete census and final action fences",
+    "Add an independent calendar BACK read-only follow-up permit and its exact current-session controller and service bridge; preserve existing OPEN behavior and single-effect claims",
+    "Order only replacement Xiaomi after-target reads so current target and ancestor refresh precedes the new complete D census, then verify real D getters without a second refresh or extending existing budgets",
+    "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation"
   ],
-  "complete_source_files": 2728,
+  "complete_source_files": 2740,
   "files": [
     {
       "bytes": 100,
@@ -7928,10 +7933,10 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 776227,
+      "bytes": 813820,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "02007a067ef9d638a9159d5e553a4f5c77e3291db39e693eff2708635952f2c0"
+      "sha256": "45c167041fa850cf0795c09ccaeee9adb48a2599ef4aad5671028c6477479a41"
     },
     {
       "bytes": 711,
@@ -7994,10 +7999,10 @@
       "sha256": "a01773c57664b7746bbce41f6930aa1f4f0bd8fc8508256db1a4e39217ea65cb"
     },
     {
-      "bytes": 303455,
+      "bytes": 313259,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "1bd42251b5861ed5a0172c9d29d6eb4df61f206007af2506c6ca8a8a3c47bb3b"
+      "sha256": "9649b37ee988e44fbf7fe06afc006ccee05e5343722f083f32b70c80e4ed497a"
     },
     {
       "bytes": 60034,
@@ -8090,10 +8095,10 @@
       "sha256": "b712a70ab60324fed6ae7f221ac2e4b7b414d57cc6bba50213fa4973de6dbb14"
     },
     {
-      "bytes": 23763,
+      "bytes": 24497,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "sha256": "65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447"
+      "sha256": "fbdd7688e6cb0582001d6f1d5142437be0dd8c25a0d98102b8c0f7023baedd81"
     },
     {
       "bytes": 6445,
@@ -8102,10 +8107,10 @@
       "sha256": "42b69f8d7fbdf31ac3f2064f6910bad0f1dad8270f9bcdb240dff0052557f2dc"
     },
     {
-      "bytes": 176070,
+      "bytes": 195604,
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "7e23cb79aebd80d43517095068591e2ae4dc77f284f7a99139c8d337a83dd822"
+      "sha256": "fa6f9ec0e97298269c16cd0c142d50a865eecbc9b2058404fcacf37d4bdd887b"
     },
     {
       "bytes": 2562,
@@ -8142,6 +8147,18 @@
       "mode": 420,
       "path": "src/org/trillionnium/hepta/local/NativeCtripFormObservation.java",
       "sha256": "ff884b8cafe28330262e8ff27423eaf34553faed3556984a3d188876ccef02ad"
+    },
+    {
+      "bytes": 17988,
+      "mode": 420,
+      "path": "src/org/trillionnium/hepta/local/NativeOrderPreviewManual.java",
+      "sha256": "949fd31a16725409bbc31c8220ce52553ae6f247416d2e54f4b38ea9534a7954"
+    },
+    {
+      "bytes": 14237,
+      "mode": 420,
+      "path": "src/org/trillionnium/hepta/local/NativeOrderPreviewManualFiles.java",
+      "sha256": "7e0055d34e15b5d411d886c0fac2c336413cba4712d5530deddaecc7d72c991c"
     },
     {
       "bytes": 2086,
@@ -10742,10 +10759,52 @@
       "sha256": "3458ae553d76518ebf0963e1d0a835d11a4c0b09a98a17fa78b1bc402410e017"
     },
     {
-      "bytes": 17933,
+      "bytes": 21082,
       "mode": 420,
       "path": "tests/native-ax-observation/run_host.py",
-      "sha256": "146ef6f7096a3932005da5bc87e3ccdfb577b6654f1148b11b93c54d0059eeba"
+      "sha256": "3fa3df0fa89229c7ceed2a06d343eb989acf7c800dcbb7cc216478c9183c0c67"
+    },
+    {
+      "bytes": 25468,
+      "mode": 420,
+      "path": "tests/native-ax-transient-read/AxTransientReadCases.fragment",
+      "sha256": "155f26edb8295389d78edd5f4d192f1eb016ce261f082cc53ad74d1078a580f3"
+    },
+    {
+      "bytes": 15701,
+      "mode": 420,
+      "path": "tests/native-ax-transient-read/run_host.py",
+      "sha256": "26bfdce475a6f0d8fb08115c790fde6a7fa7087b4c3b6ea4025cddc58a0f51d8"
+    },
+    {
+      "bytes": 25468,
+      "mode": 420,
+      "path": "tests/native-calendar-back-ax/AxTransientReadCases.fragment",
+      "sha256": "155f26edb8295389d78edd5f4d192f1eb016ce261f082cc53ad74d1078a580f3"
+    },
+    {
+      "bytes": 18168,
+      "mode": 420,
+      "path": "tests/native-calendar-back-ax/run_host.py",
+      "sha256": "1efe933a2eeb4789c6a54ce38b8063c8fdd62366dc880c43deed62eb2f3722ac"
+    },
+    {
+      "bytes": 21965,
+      "mode": 420,
+      "path": "tests/native-calendar-back-read/CalendarBackCases.fragment",
+      "sha256": "d044decca654a5f3cdbf6c35e19284958b4b73783eefab8a7faba3ecb599a3ca"
+    },
+    {
+      "bytes": 13612,
+      "mode": 420,
+      "path": "tests/native-calendar-back-read/prepare.py",
+      "sha256": "f79ec4eddb2c483174e10a5bb1255e5cfe448d70c7c0992e635d028bd2b23e32"
+    },
+    {
+      "bytes": 16052,
+      "mode": 420,
+      "path": "tests/native-calendar-back-read/run_host.py",
+      "sha256": "d32b636a34c5ba739bdaf691cdac17363e9a021b42388ec8bf70773ae85501da"
     },
     {
       "bytes": 15114,
@@ -11066,10 +11125,10 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 101021,
+      "bytes": 104395,
       "mode": 420,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "affe7913c99d3c4e1573d151138d949194d9127b1331a56cad9c6cf84792b6e8"
+      "sha256": "aa68572012e0f0cee4c014ad04bf955b40194ae3fb187e7428f9fe72c955d543"
     },
     {
       "bytes": 3535,
@@ -11354,10 +11413,10 @@
       "sha256": "d21f56ea528f1165fdeff87ecfef732cfd803d8cbb8e8154034f0c9eca8ededd"
     },
     {
-      "bytes": 90012,
+      "bytes": 90524,
       "mode": 420,
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "sha256": "54d22b3cf97b6391252f69c13269ce39e12b890335bbe3904c1572cefc8f9c84"
+      "sha256": "c58169691c5858beaff2f23951fee890d1ab0a0ce0fcfa074b1d6a2a15fd93c5"
     },
     {
       "bytes": 1646,
@@ -11366,10 +11425,10 @@
       "sha256": "16d69f1877112e980eeedbc9ebec4bb005bc856aa02d0dbf51dddac088979c23"
     },
     {
-      "bytes": 13730,
+      "bytes": 15624,
       "mode": 420,
       "path": "tests/native-observation-read-retry/run_host.py",
-      "sha256": "4065cba8b5d48bc1e7db716d612afea1c7bd02a463d32d01f7d9046d223c4585"
+      "sha256": "bff8f41433d0aa38c6aedc07db9d7336c379242710ddd397ec65aa8cd911494a"
     },
     {
       "bytes": 2377,
@@ -11600,10 +11659,10 @@
       "sha256": "e24deade6532d12a3d220c204a7457be7c537a12de042b3cff71a52e953b81c8"
     },
     {
-      "bytes": 20190,
+      "bytes": 20226,
       "mode": 420,
       "path": "tests/native-search-planning/host_closure.py",
-      "sha256": "f1005347489974dc3b5de722c5ce60a4b0f4d4b194a5c3334a66ee26e2724365"
+      "sha256": "c287dc214e24dca310e37b2e0c533d5f6b3442d2336bc05fb436a655600f6bfe"
     },
     {
       "bytes": 5105,
@@ -11648,10 +11707,10 @@
       "sha256": "d47cbf9c36918fd0fa412c2659a05cb2b7d4d3a1374240aa3aeb43a8ce5d6ed2"
     },
     {
-      "bytes": 23103,
+      "bytes": 23545,
       "mode": 420,
       "path": "tests/native-search-producer/AfterTargetCensusCases.fragment",
-      "sha256": "c51cc4c37ae62f189397274d3a336750ed0fcd0a9f95ca9a0a9dfc7477a59b05"
+      "sha256": "48eaf7ae893c5022b90ce4dc8041cff6de71e8c8364f396f252db753c6c79d5d"
     },
     {
       "bytes": 2393,
@@ -11684,10 +11743,10 @@
       "sha256": "1e0b700f39d8241002c5545e3a7bd7a50b93f121c50efd46037ba4b96a9ffe62"
     },
     {
-      "bytes": 22101,
+      "bytes": 22560,
       "mode": 420,
       "path": "tests/native-search-producer/IncompleteThenFinalCases.fragment",
-      "sha256": "9742cc8d956e165f2ab04b5f67fdfdf29df88e9a52d72c6c369ab0a6452f366a"
+      "sha256": "c1e13143d70edec69a4339f69c9c85e7c7b3559019cabfea10c9ad2378cf29fe"
     },
     {
       "bytes": 27926,
@@ -11738,10 +11797,10 @@
       "sha256": "5fdb5f01b514ad03cb9cd9ace1978ea52769c702d2a2e6f20e5def44c81311b4"
     },
     {
-      "bytes": 68029,
+      "bytes": 68842,
       "mode": 420,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "255922adaa582c5b51a384c297c555be5e1bd2a8554664a1b323674ea8f70a81"
+      "sha256": "fd9052cd15c950c1a63894bcf588c8b901d7fc7756be433e7be1b1cdb38af4f2"
     },
     {
       "bytes": 32307,
@@ -11774,6 +11833,12 @@
       "sha256": "e38be46092b5d0c6388f45f0ad78c366f57575c49e473f5365dc27827267baa1"
     },
     {
+      "bytes": 19349,
+      "mode": 420,
+      "path": "tests/native-search-producer/ReplacementReadOrderCases.fragment",
+      "sha256": "48a85683ecd688fdad5bff38546bf9a30817dda89fc09b8c001e88f33ecc1cf4"
+    },
+    {
       "bytes": 31369,
       "mode": 420,
       "path": "tests/native-search-producer/SamplingExhaustionCases.fragment",
@@ -11786,10 +11851,10 @@
       "sha256": "fde299b1a2859ae11453b5f1d6b5456550f4b58c59374416cf5afd35d471ebdd"
     },
     {
-      "bytes": 34375,
+      "bytes": 34459,
       "mode": 420,
       "path": "tests/native-search-producer/SearchProducerHost.template",
-      "sha256": "fbf74321cf5f931e942b819f24c55c7f22c89955c234040fd7e51b3ecb824b94"
+      "sha256": "a4ee915df071af1da1f722a68eacbb53ee6ce298b55a1916bd3e9ad251802dee"
     },
     {
       "bytes": 112963,
@@ -11816,10 +11881,10 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 28922,
+      "bytes": 30620,
       "mode": 420,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "07f8b4167216a11abdd511a2e2610a094856374f7da4a7756449c48d978979dd"
+      "sha256": "c9a0652fde2de9dc22de3ccd3e6743c95e663e00a89a30a608af9640c8469b65"
     },
     {
       "bytes": 14431,
@@ -13172,6 +13237,18 @@
       "sha256": "4a3707cb46e139c4de01f0fdcc52e18f17335869d0ad1d4347ecb2f29087b0e7"
     },
     {
+      "bytes": 23941,
+      "mode": 420,
+      "path": "tests/order-preview-manual-fixture/NativeOrderPreviewManualHostTest.java",
+      "sha256": "54a1c8d5f990d35fb3ff90274c23f3a98de96092868cb5acde3b6d53d8e37ca3"
+    },
+    {
+      "bytes": 11191,
+      "mode": 420,
+      "path": "tests/order-preview-manual-fixture/run_host.py",
+      "sha256": "050de5c5067f18a445ef02d330abb6d26fcfd4d28d7e0fdefed51d71289bc42e"
+    },
+    {
       "bytes": 11667,
       "mode": 420,
       "path": "tests/owned-generation-cleanup/WorkerGenerationHostTest.java",
@@ -14246,10 +14323,10 @@
       "sha256": "0451f19a8e4b55dfc2abefc1cbe59f4cde74f5899faca1f722a79608aa5acf47"
     },
     {
-      "bytes": 20598,
+      "bytes": 20626,
       "mode": 420,
       "path": "tests/public-profile-terminal-bridge/run_host.py",
-      "sha256": "78c5cb3d12f455a611acd417ad6c63464d16a89e3a85095a2420b60befdb8d09"
+      "sha256": "642fb4654284ce4d07d59f99f36b8d6e88e8d4cb1c733787f6f626a18178c872"
     },
     {
       "bytes": 17308,
@@ -14564,10 +14641,10 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 52773,
+      "bytes": 56918,
       "mode": 420,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "df649963c4401cd5d37568826b08bdcb94c1679be2764124899466abb13686e6"
+      "sha256": "ec44bfda5a4812cac194ab16de8a26d2cad3deac063ba7e82a5502d6e510beb3"
     },
     {
       "bytes": 4054,
@@ -16388,12 +16465,12 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
-  "main_java_sources": 220,
+  "main_java_sources": 222,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "40b70624af90f6d6439448c9b79819a7e6e45f0e85edceaba3d4bcce1fe3937d",
-  "predecessor_source_manifest_sha256": "40b70624af90f6d6439448c9b79819a7e6e45f0e85edceaba3d4bcce1fe3937d",
-  "production_build_inputs_count": 404,
-  "production_input_map_sha256": "c2bed9a532f0d6babb28bfa0e432921c75fd80b63b3da1857ab5d7cf89e37feb",
+  "predecessor_manifest_sha256": "c3f3529ec083cdc4a699fc3d2948a529280cc14f2151b193a0c0798d2a43d094",
+  "predecessor_source_manifest_sha256": "c3f3529ec083cdc4a699fc3d2948a529280cc14f2151b193a0c0798d2a43d094",
+  "production_build_inputs_count": 406,
+  "production_input_map_sha256": "3f74840e7703c2797009ac28473b50d7ce19a349e256e692dd06863edb69fd67",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "3f3f8e50c0772709244275868c9b89f36670fc6e"
+  "source_parent_head": "d848c1e1a9d5140bdc302424352c74de6ea2cf22"
 }

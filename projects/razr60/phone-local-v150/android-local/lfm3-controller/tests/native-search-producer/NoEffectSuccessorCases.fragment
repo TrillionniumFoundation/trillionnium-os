@@ -686,8 +686,17 @@
             HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
             try(Fixture f=s.new Fixture(controller)){
                 controller.bind(f);controller.beforeModel=n->{if(n==1)armTargetRefreshEvent(s,f,3,null);};
-                f.graphHook=()->{if(f.graphReads==5)armTargetRefreshEvent(s,f,3,null);};
+                // The first normal refresh remains the original SDK refresh hook above.
+                // Replacement instability is a new event after the replacement D census.
+                final boolean[] replacementPostDInjected={false};
+                SystemClock.beforeRead=()->{SearchActionWork w=s.activeSearchAction;
+                    if(w!=null&&w.finalCensusResamples==1&&w.latestSnapshot!=null
+                            &&w.firstFinalEventsElapsed>=0
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireAfterTargetRefreshEvents")){
+                        SystemClock.beforeRead=null;replacementPostDInjected[0]=true;successorEvent(s,3);
+                    }};
                 Throwable failure=pumpController(controller,f);
+                check(replacementPostDInjected[0]&&f.graphReads==6,"the second instability is injected at the actual replacement post-D event fence");
                 check(failure!=null&&controller.modelCalls==1&&f.effects==0&&s.taskObservationAdmissions==1,"a second late event in the one replacement stops the same attempt");
                 check(new File(f.directory,"step-01-action.json").isFile()&&!new File(f.directory,"step-02-action.json").exists(),"only the genuine failed original outcome is retained");
                 check(!f.base.journalNames.contains("native-search-no-effect-retirement-01.json"),"selected repair cannot escape into the unchanged successor branch");

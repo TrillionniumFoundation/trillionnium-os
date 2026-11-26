@@ -133,7 +133,12 @@
         one("after_target_replacement_second_target_refresh_event_is_terminal",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt a=afterTargetIntent(f);armTargetRefreshEvent(s,f,3,null);
-                f.graphHook=()->{if(f.graphReads==5)armTargetRefreshEvent(s,f,3,null);};
+                // Preserve this negative at the actual post-D fence after read reordering.
+                SystemClock.beforeRead=()->{SearchActionWork w=s.activeSearchAction;
+                    if(w!=null&&w.finalCensusResamples==1
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireAfterTargetRefreshEvents")){
+                        SystemClock.beforeRead=null;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    }};
                 SearchActionWork work=f.startAction(a);actionIo.one();s.main.one();afterTargetNoFallback(s,f,work);
                 check(work.typedAfterTargetRefreshPostDEventRejected&&work.finalCensusResamples==1&&f.graphReads==6,"second same-window content event never produces a third pair");
             }

@@ -1,0 +1,314 @@
+
+    /** SDK calls, clock and Session admission are explicit IO ports. The companion
+     * Controller gate executes the real entered OPEN / durable outcome / once permit. */
+    static final class AxReadResult implements ObservationCallback {
+        final List<PhoneObservation> observations=new ArrayList<PhoneObservation>();
+        final List<String> failures=new ArrayList<String>();
+        final List<PostEffectObservationRetryProof> proofs=new ArrayList<PostEffectObservationRetryProof>();
+        public void onObservation(PhoneObservation value){check(isMain(),"new AX callback on main");observations.add(value);}
+        public void onError(String error){check(isMain(),"AX failure callback on main");failures.add(error);}
+        public void onPostEffectReadRetryAvailable(String error,PostEffectObservationRetryProof proof){
+            check(isMain(),"AX retry callback on main");failures.add(error);proofs.add(proof);
+        }
+    }
+    static final String AX_READ_TOKEN="dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+    static final String AX_OTHER_TOKEN="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    static ProfileTarget axReadTarget(int uid,long version){
+        return new ProfileTarget(new org.trillionnium.hepta.background.ProfileIdentity(10,10,0,
+                org.trillionnium.hepta.background.ProfileIdentity.MANAGED),uid,NativeCtripFlightPage.PACKAGE,
+                NativeCtripFlightPage.PACKAGE+"/Main",version,
+                Collections.singletonMap("base",NativeCtripFlightPage.BASE_APK_SHA256),Collections.singleton(SnapshotChecks.OWNER));
+    }
+    static WindowOwnership axReadOwner(ObserverPipelineHost f,ProfileTarget target,int window,int task,int parent,String token){
+        WindowOwnership owner=new WindowOwnership(target,SnapshotChecks.GENERATION,9,window,task,parent,token,
+                "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",target.profile.userId,target.profile.serial,target.fullUid,
+                SystemClock.now,SystemClock.now+2000);
+        f.taskBackground.profileProofs.put(owner,Boolean.TRUE);return owner;
+    }
+    static void axReadGraph(ObserverPipelineHost f,Graph graph,String text){
+        axGraph(graph);String app=NativeCtripFlightPage.PACKAGE;
+        graph.packageName=app;graph.backgroundBootstrapPackage=app;graph.backgroundAllowedPackages=Collections.singletonList(app);
+        graph.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,9,
+                new int[]{0,0,1080,2400},app);
+        graph.rows.clear();graph.rows.add(new PhoneObservation.Node("n0",app,"0/0",SnapshotChecks.OWNER));
+        List<NativeActionSnapshotCheck.Node> nodes=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(NativeActionSnapshotCheck.Node old:axNodes(text)){
+            Map<String,Object> row=new LinkedHashMap<String,Object>(old.v);row.put("package",app);
+            nodes.add(new NativeActionSnapshotCheck.Node(row));
+        }
+        graph.nativeActionNodes=Collections.unmodifiableList(nodes);
+        graph.profileWindow=axReadOwner(f,f.taskBackground.observedProfileTarget,7,100,90,AX_READ_TOKEN);
+        graph.digest=sha((app+"|"+text+"|"+graph.windowMetadata.bindFreshness("")).getBytes(StandardCharsets.UTF_8));
+        graph.nativeObservationComplete=completeNativeObservationGraph(graph);
+    }
+    static ObserverPipelineHost axReadFixture()throws Exception{
+        ObserverPipelineHost f=new ObserverPipelineHost();f.lease=SnapshotChecks.TASK;
+        TaskAuthorization.Gate auth=new TaskAuthorization.Gate();f.taskAuthorization=auth;
+        BackgroundSession bg=new BackgroundSession(9);bg.displayId=9;bg.ownerSha256=SnapshotChecks.OWNER;bg.generation=SnapshotChecks.GENERATION;
+        bg.observedProfileTarget=axReadTarget(1010367,NativeCtripFlightPage.VERSION_CODE);
+        BackgroundTaskTarget target=new BackgroundTaskTarget();target.route=BackgroundTaskTarget.NATIVE_APP;target.explicitSelection=true;
+        target.ownerSha256=bg.ownerSha256;target.packageName=NativeCtripFlightPage.PACKAGE;target.nativeGoal=new NativeAppGoal();
+        target.nativeGoal.ownerSha256=target.ownerSha256;target.nativeGoal.packageName=target.packageName;
+        target.nativeGoal.kind=NativeAppGoal.FLIGHT_RESULTS;target.nativeGoal.fromCity="北京";target.nativeGoal.toCity="上海";
+        target.nativeGoal.adults=1;target.nativeGoal.children=0;target.nativeGoal.infants=0;
+        bg.selection.taskTarget=target;bg.selection.initialPackage=target.packageName;bg.selection.allowedPackages=Collections.singletonList(target.packageName);
+        f.taskBackground=bg;LocalTaskController controller=new LocalTaskController();f.ownedController=controller;
+        NativeAppSession session=new NativeAppSession();session.authorization=auth;session.taskId=f.lease;session.selection=bg.selection;
+        session.target=target;session.goal=target.nativeGoal;session.displayId=9;session.generation=bg.generation;
+        f.bindNativeTextObservation(controller,session,f.lease,auth,bg,new LocalInference(false),new LocalRuntimeConfig(false));
+        f.readHook=(g,n)->{axReadGraph(f,g,"initial complete Ctrip page");f.windowValue=frozenObservationWindow(g);};
+        MobiMindPrivateFiles.writeHook=null;MobiMindPrivateFiles.readHook=null;MobiMindPrivateFiles.unchangedHook=null;
+        MobiMindPrivateFiles.writes=0;MobiMindPrivateFiles.reads=0;
+        return f;
+    }
+    static Object axField(Object value,String name)throws Exception{
+        java.lang.reflect.Field field=value.getClass().getDeclaredField(name);field.setAccessible(true);return field.get(value);
+    }
+    static final class AxTransientScenario {
+        final ObserverPipelineHost f;final LocalTaskController controller;final NativeAppSession nativeTask;
+        final NativeAppSession.PostEffectReadPermit permit;final AxReadResult out=new AxReadResult();
+        final PhoneObservation prior;final Graph priorGraph;final long started,taskDeadline,transition;
+        final int first,priorWrites;final String throwKind;ObservationRequest request;Graph failedB,oldA;
+        String fault="none";boolean faultAgain;int freshStart;volatile int identityReads;
+        AxTransientScenario(String kind)throws Exception{
+            throwKind=kind;f=axReadFixture();ObservationRequest initial=axPair(f);drainAx(f);
+            check(initial.finished&&f.current!=null&&f.delivered.size()==1&&f.errors.isEmpty(),"actual initial AX publication");
+            check(f.taskObservationAdmissions==1,"one initial request before entered-effect read");
+            prior=f.current;priorGraph=f.currentGraph;priorWrites=MobiMindPrivateFiles.writes;
+            controller=f.ownedController;nativeTask=(NativeAppSession)f.nativeAxMode.nativeTask;
+            first=f.reads.get();SystemClock.now+=100;started=SystemClock.now;taskDeadline=started+480000;transition=started+14900;
+            permit=new NativeAppSession.PostEffectReadPermit(nativeTask,f.taskAuthorization,f.lease,bg().selection,bg().generation,9,transition);
+            f.readHook=(g,n)->{
+                int ordinal=n-first;
+                if(ordinal==1)SystemClock.now=started+7841;
+                if(ordinal==2)SystemClock.now=started+9024;
+                if(ordinal==3)SystemClock.now=started+9799;
+                if(ordinal>3)SystemClock.now=Math.max(SystemClock.now,started+11344);
+                axReadGraph(f,g,"post OPEN current full A");
+                if(ordinal==2)oldA=g;
+                if(ordinal==3){
+                    failedB=g;
+                    if("identity_latched".equals(fault))f.activeObservation.rejectPostEffectIdentity();
+                    if("read_latched".equals(fault))f.activeObservation.readRecoveryRejected=true;
+                    if("boundary_before".equals(fault))f.activeObservation.recordEvent(false,2);
+                    if("unknown_before".equals(fault))f.activeObservation.recordEvent(true,1);
+                    if("untyped_same_text".equals(fault))throw new StaleObservation("后台子节点已不可用，需重新观察",true,"0/0");
+                    actualAxReadFailure(throwKind);
+                }
+                f.windowValue=frozenObservationWindow(g);
+            };
+            f.windowHook=()->freshWindow();
+        }
+        BackgroundSession bg(){return f.taskBackground;}
+        void freshWindow(){
+            identityReads++;SystemClock.now+=10;ObservationRequest r=f.activeObservation;
+            if("cancel_during".equals(fault))f.cancelled.set(true);
+            if("authorization_during".equals(fault))f.taskAuthorization=new TaskAuthorization.Gate();
+            if("controller_during".equals(fault))f.ownedController=new LocalTaskController();
+            if("transition_during".equals(fault))SystemClock.now=transition;
+            if("request_during".equals(fault))SystemClock.now=r.deadline;
+            if("boundary_during".equals(fault))r.recordEvent(false,2);
+            if("unknown_during".equals(fault))r.recordEvent(true,1);
+            Graph g=r.captured;
+            ProfileTarget target="uid".equals(fault)?axReadTarget(1010368,NativeCtripFlightPage.VERSION_CODE):bg().observedProfileTarget;
+            int window="window".equals(fault)?8:g.windowId;
+            WindowOwnership profile=axReadOwner(f,target,window,"leaf".equals(fault)?101:100,
+                    "parent".equals(fault)?91:90,"token".equals(fault)?AX_OTHER_TOKEN:AX_READ_TOKEN);
+            Map<String,Object> windows=new LinkedHashMap<String,Object>(g.nativeActionWindows);
+            if("window_census".equals(fault))windows.put("unreported_windows_excluded",true);
+            f.windowValue=new FrozenObservationWindow(g.packageName,window,g.displayId,g.rotation,
+                    g.bounds.left,g.bounds.top,g.bounds.right,g.bounds.bottom,g.nativeActionWidth,g.nativeActionHeight,
+                    g.windowMetadata.bindFreshness(""),windows,profile);
+        }
+        void start(){
+            if("wrong_version".equals(fault))bg().observedProfileTarget=axReadTarget(1010367,NativeCtripFlightPage.VERSION_CODE+1);
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,bg(),f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(started,Math.min(taskDeadline,transition)),
+                    taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;
+            check(request!=null,"first post-effect observation admitted by actual Service");
+            check(request.postEffectController==controller&&request.postEffectNativeTask==nativeTask
+                    &&request.postEffectPermit==permit&&request.readAuthorization==f.taskAuthorization,"same original owner objects");
+            check(request.postEffectTransitionDeadline==transition&&request.postEffectTaskDeadline==taskDeadline,"original deadlines bound");
+        }
+        void drive(java.util.function.BooleanSupplier stop)throws Exception{
+            for(int i=0;i<35&&!stop.getAsBoolean();i++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"AX worker return");
+                f.main.drainUntil(stop);
+                if(!stop.getAsBoolean()&&!f.main.hasReady()&&observationIo.active.get()==0)SystemClock.now+=200;
+            }
+            check(stop.getAsBoolean(),"bounded host drive reached real AX boundary");
+        }
+        void toProduct()throws Exception{
+            if(request==null)start();
+            drive(()->request.captured!=null);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"B worker queued actual product");
+            check(f.main.axProduct!=null,"actual worker product retained only by queued main callback");
+        }
+        void deliver()throws Exception{
+            drive(()->!out.failures.isEmpty()||!out.observations.isEmpty());
+        }
+        void released()throws Exception{
+            check(request.finished&&request.captured==null&&f.activeObservation==null,"old request actually retired");
+            check(request.readWorksStarted==request.readWorksFinished,"old read finally counts drained");
+            check(oldA!=null&&oldA.closed&&oldA.refs.isEmpty(),"actual Graph.close released old A SDK refs");
+            check(failedB!=null&&failedB.closed&&failedB.refs.isEmpty(),"failed B resource port closed with actual Graph.close");
+            check(f.current==prior&&f.currentGraph==priorGraph&&out.observations.isEmpty(),"failed B never published");
+            check(MobiMindPrivateFiles.writes==priorWrites,"failed pair wrote no capture receipt");
+            check(request.deadline==started+12000&&request.postEffectTransitionDeadline==transition,"failed clocks never renewed");
+            check(!f.actionWorkPending()&&!f.nativeCancellationWorkPending(),"read retry did not issue action/cancel");
+            noPixels(f);
+        }
+        PostEffectObservationRetryProof qualified()throws Exception{
+            if(request==null)start();deliver();released();
+            check(out.proofs.size()==1,"typed AX transient must issue one private retry proof");
+            check(identityReads==1,"exactly one independent full-window read");
+            PostEffectObservationRetryProof proof=out.proofs.get(0);
+            proof.requireOriginal(f,controller,nativeTask,permit,f.lease,f.taskAuthorization,bg(),taskDeadline);
+            Map<String,Object> evidence=proof.evidence();
+            check("typed_ax_read_unavailable_after_full_window_recheck".equals(evidence.get("reason")),"typed read retry reason");
+            Object raw=evidence.get("ax_read_identity_recheck");check(raw instanceof Map,"typed full-window evidence preserved");
+            Map<?,?> checkMap=(Map<?,?>)raw;
+            check("hepta.native-post-effect-ax-identity-recheck.v1".equals(checkMap.get("schema")),"private certificate schema");
+            check(Boolean.FALSE.equals(checkMap.get("complete_graph_pair"))&&Boolean.FALSE.equals(checkMap.get("grants_publication"))
+                    &&Boolean.FALSE.equals(checkMap.get("grants_action_authority")),"identity certificate is not failed B or action authority");
+            check(Boolean.FALSE.equals(evidence.get("renews_failed_request"))&&Boolean.FALSE.equals(evidence.get("action_replayed"))
+                    &&Boolean.FALSE.equals(evidence.get("business_completion_verified")),"retry remains read-only");
+            check(proof.controller==controller&&proof.nativeTask==nativeTask&&proof.permit==permit
+                    &&proof.authorization==f.taskAuthorization&&proof.transitionDeadline==transition,"private proof preserves original chain");
+            check(proof.samplingHandoff==f.pendingPostEffectSampling&&proof.completedReadWorks==request.readWorksFinished,"actual serial marker to pending object");
+            check(Boolean.TRUE.equals(axField(request,"postEffectAxWindowRecheckAttempted")),"real B catch reached independent checker");
+            check(!request.postEffectIdentityRejected&&!request.readRecoveryRejected,"qualified failure did not create or clear hard refusal");
+            NativeAxProduct p=f.main.axProduct;
+            check(p.first==null&&p.second==null&&p.seal==null&&p.capture==null&&p.path==null,"real B catch never sealed or persisted");
+            check(axField(p,"readFailure") instanceof String&&((String)axField(p,"readFailure")).contains("文本AX观察失败"),"product.close preserves original failure");
+            check(proof.failedAt>=started+9799&&proof.drainedAt>=proof.failedAt&&proof.drainedAt<proof.deadline,"old read failed and drained inside original cap");
+            return proof;
+        }
+        void prepareNew(boolean secondFailure){
+            fault="none";faultAgain=secondFailure;freshStart=f.reads.get();
+            f.readHook=(g,n)->{
+                axReadGraph(f,g,"brand new complete Ctrip page");
+                if(faultAgain&&n-freshStart==3)actualAxReadFailure("child");
+                f.windowValue=frozenObservationWindow(g);
+            };
+        }
+        ObservationRequest submit(PostEffectObservationRetryProof proof,AxReadResult next){
+            f.observePostEffectNative(controller,nativeTask,permit,f.lease,f.taskAuthorization,bg(),f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(SystemClock.now,Math.min(taskDeadline,transition)),
+                    taskDeadline,next,proof);
+            f.main.drain();return f.activeObservation;
+        }
+        void finishNew(AxReadResult next)throws Exception{
+            drive(()->!next.observations.isEmpty()||!next.failures.isEmpty());
+        }
+        void dispose()throws Exception{
+            f.main.afterWorkerPost=null;f.discardPostEffectSamplingForTask(f.lease);f.dispose();
+            for(SdkNode node:SdkNode.made)check(node.recycles==1,"each fake SDK ref recycled by actual Graph.close exactly once");
+            SdkNode.made.clear();
+        }
+    }
+    static void axTransientPositive(String kind)throws Exception{
+        AxTransientScenario s=new AxTransientScenario(kind);PostEffectObservationRetryProof proof=s.qualified();
+        s.prepareNew(false);AxReadResult next=new AxReadResult();ObservationRequest newer=s.submit(proof,next);
+        check(newer!=null&&newer!=s.request&&newer.postEffectRetrySubmission==proof,"fresh request owns actual private proof");
+        check(newer.started>s.request.started&&newer.deadline==s.transition&&newer.postEffectTransitionDeadline==s.transition,
+                "new request is clipped to unchanged original transition");
+        check(proof.consumed.get()&&s.permit.admissions.get()==2,"once-only permit spent exactly once");
+        s.finishNew(next);
+        check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"new complete AX request published");
+        check(s.f.current!=s.prior&&s.f.currentGraph!=s.oldA&&s.f.currentGraph!=s.failedB,"new publication uses a new graph");
+        check(s.f.currentGraph.serial>s.failedB.serial&&s.f.currentGraph.nativeObservationComplete,"fresh request performed complete new samples");
+        check(s.f.reads.get()-s.freshStart==3,"new request needs two samples plus complete B");
+        check(s.f.current.capture!=null&&ObservationCaptureEvidence.NATIVE_AX.equals(s.f.current.capture.kind),"new request uses original complete-pair admission");
+        check(s.f.current.captureEvidence.get("pair_sealed_elapsed_ms")!=null&&MobiMindPrivateFiles.writes==s.priorWrites+1,
+                "only new pair persists one new receipt");
+        AxReadResult third=new AxReadResult();s.submit(proof,third);s.f.main.drain();
+        check(third.observations.isEmpty()&&third.proofs.isEmpty()&&third.failures.size()==1,"same proof cannot admit a third request");
+        s.dispose();
+    }
+    static void axTransientCases(boolean counterfactual)throws Exception{
+        axCase("ax_typed_child_actual_B_to_new_complete_pair",()->axTransientPositive("child"));
+        if(counterfactual)return;
+        for(String kind:new String[]{"root","slot"})
+            axCase("ax_typed_"+kind+"_actual_B_to_new_complete_pair",()->axTransientPositive(kind));
+        for(String kind:new String[]{"hard_identity","hard_unknown"})
+            axCase("ax_"+kind+"_never_new_read",()->{
+                AxTransientScenario s=new AxTransientScenario(kind);s.start();s.deliver();
+                check(s.out.proofs.isEmpty()&&s.identityReads==0,"hard or unknown exception cannot mint a retry");
+                check(s.request.postEffectIdentityRejected,"hard stale identity latch remains set");s.released();s.dispose();
+            });
+        for(String fault:new String[]{"untyped_same_text","identity_latched","read_latched","boundary_before","unknown_before","wrong_version",
+                "token","leaf","parent","uid","window","window_census","cancel_during","authorization_during","controller_during",
+                "boundary_during","unknown_during","request_during","transition_during"})
+            axCase("ax_identity_check_"+fault+"_refuses",()->{
+                AxTransientScenario s=new AxTransientScenario("child");s.fault=fault;s.start();s.deliver();
+                check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty(),"unsafe identity recheck granted retry: "+fault);
+                check(s.request.finished&&s.request.captured==null,"refused request resources retired: "+fault);
+                if("identity_latched".equals(fault))check(s.request.postEffectIdentityRejected,"old hard identity rejection never cleared");
+                if("read_latched".equals(fault))check(s.request.readRecoveryRejected,"old read rejection never cleared");
+                check(s.f.pendingPostEffectSampling==null,"refused check left pending authority");
+                s.dispose();
+            });
+        axCase("ax_ordinary_read_has_no_post_effect_grant",()->{
+            AxTransientScenario s=new AxTransientScenario("child");s.f.axBegin();s.request=s.f.activeObservation;
+            s.drive(()->!s.f.errors.isEmpty()||!s.f.delivered.isEmpty()&&s.f.delivered.size()>1);
+            check(s.f.current==s.prior&&s.identityReads==0&&s.f.pendingPostEffectSampling==null,"ordinary read borrowed post OPEN grant");
+            s.dispose();
+        });
+        axCase("ax_worker_must_return_before_private_retry_callback",()->{
+            AxTransientScenario s=new AxTransientScenario("child");Block hold=new Block();
+            s.f.windowHook=()->{s.freshWindow();s.f.main.afterWorkerPost=hold;};s.start();
+            s.drive(()->s.request.captured!=null);hold.entered();
+            s.f.main.drainUntil(()->s.request.finished);
+            check(s.request.finished&&s.request.captured==null&&s.out.proofs.isEmpty()&&s.out.failures.isEmpty(),
+                    "retirement is not worker-drain permission");
+            check(observationIo.active.get()>0&&s.oldA.closed&&s.failedB.closed,"A/B released while original worker still held");
+            s.f.main.afterWorkerPost=null;hold.open();s.deliver();
+            check(s.out.proofs.size()==1&&observationIo.active.get()==0,"only serial return marker minted proof");
+            s.dispose();
+        });
+        for(boolean boundary:new boolean[]{false,true})
+            axCase("ax_event_queued_"+(boundary?"boundary":"content")+"_invalidates_pending_retry",()->{
+                AxTransientScenario s=new AxTransientScenario("child");s.toProduct();s.f.main.drainUntil(()->s.request.finished);
+                check(s.f.pendingPostEffectSampling!=null&&s.out.proofs.isEmpty(),"pending interval is represented");
+                s.f.notePostEffectSamplingEvent(9);s.deliver();
+                check(s.out.proofs.isEmpty()&&s.f.pendingPostEffectSampling==null,"target event during drain cannot be hidden");
+                s.dispose();
+            });
+        axCase("ax_content_after_identity_before_main_invalidates_certificate",()->{
+            AxTransientScenario s=new AxTransientScenario("child");s.toProduct();s.request.recordEvent(false,1);s.deliver();
+            check(s.out.proofs.isEmpty()&&s.request.postEffectIdentityRejected&&s.request.readRecoveryRejected,
+                    "late content cannot reuse old fresh-window certificate");s.dispose();
+        });
+        axCase("ax_original_transition_blocks_delayed_new_admission",()->{
+            AxTransientScenario s=new AxTransientScenario("child");PostEffectObservationRetryProof proof=s.qualified();
+            s.prepareNew(false);int reads=s.f.reads.get();SystemClock.now=s.transition;
+            AxReadResult next=new AxReadResult();s.submit(proof,next);s.f.main.drain();
+            check(next.failures.size()==1&&next.proofs.isEmpty()&&s.f.reads.get()==reads,"late fresh read must not start");
+            s.dispose();
+        });
+        axCase("ax_new_read_identity_change_refused_by_original_graph_guards",()->{
+            AxTransientScenario s=new AxTransientScenario("child");PostEffectObservationRetryProof proof=s.qualified();
+            s.prepareNew(false);ReadHook fresh=s.f.readHook;
+            s.f.readHook=(g,n)->{fresh.read(g,n);g.backgroundGeneration="99999999-9999-4999-8999-999999999999";};
+            AxReadResult next=new AxReadResult();s.submit(proof,next);s.finishNew(next);
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&!next.failures.isEmpty(),"new full read still checks owner generation");
+            s.dispose();
+        });
+        axCase("ax_second_typed_failure_never_gets_third_read",()->{
+            AxTransientScenario s=new AxTransientScenario("child");PostEffectObservationRetryProof proof=s.qualified();
+            s.prepareNew(true);AxReadResult next=new AxReadResult();ObservationRequest newer=s.submit(proof,next);s.finishNew(next);
+            check(next.observations.isEmpty()&&next.proofs.isEmpty()&&next.failures.size()==1&&newer.finished,
+                    "once budget does not recycle after second typed failure");
+            check(s.permit.admissions.get()==2&&s.f.pendingPostEffectSampling==null,"no third permit or handoff");s.dispose();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        try{axTransientCases(args.length>1&&"counterfactual".equals(args[1]));}
+        finally{
+            SnapshotChecks.finish(args[0]);observationIo.executor.shutdownNow();
+            expect(observationIo.executor.awaitTermination(4,TimeUnit.SECONDS),"actual serial executor shutdown");
+        }
+    }

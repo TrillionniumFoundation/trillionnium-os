@@ -1,0 +1,251 @@
+
+    /** Explicit host SDK/model delivery. All owner/Session/action state/receipt
+     * constructors, Controller await/finally/once/write-fsync methods are real.
+     * These synthetic calendars and complete AX bytes are not Phone fixtures. */
+    static final class BackFixture {
+        static final long QUEUED=1070855802L;
+        final String owner=NativeAppProviderHostTest.OWNER;
+        final String task,run,gen="e4e6fdf7-b6a2-41c0-9f25-2d62705624a3",selectionSha;
+        final org.trillionnium.hepta.background.ProfileTarget profile;
+        final BackgroundSession.Selection selection;
+        final TaskAuthorization auth;
+        final NativeAppEvidence.Installed installed;
+        final boolean nativeText,hasProfile;
+        final NativeAppEvidence.Frame frame;
+        final ActionDecision action;
+        boolean installedCurrent=true;int installationChecks;
+        int freshOrdinal;
+        BackFixture(String label,boolean nativeText,boolean hasProfile)throws Exception{
+            this.nativeText=nativeText;this.hasProfile=hasProfile;
+            task=NativeActionBridgeHost.id("calendar-back-task:"+label);
+            run=NativeActionBridgeHost.id("calendar-back-model:"+label);
+            profile=new org.trillionnium.hepta.background.ProfileTarget(
+                new org.trillionnium.hepta.background.ProfileIdentity(10,10L,0,
+                    org.trillionnium.hepta.background.ProfileIdentity.MANAGED),1010367,
+                NativeAppGoal.CTRIP_PACKAGE,NativeAppGoal.CTRIP_PACKAGE+"/ctrip.business.splash.CtripSplashActivity",
+                NativeCtripFlightPage.VERSION_CODE,Collections.singletonMap("base",NativeCtripFlightPage.BASE_APK_SHA256),
+                Collections.singleton(NativeActionBridgeHost.hash("synthetic-back-signer")));
+            BackgroundTaskTarget target=hasProfile
+                ?BackgroundTaskTarget.resolveExplicitSelection(owner,NativeAppGoal.CTRIP_PACKAGE,
+                    Collections.singleton(NativeAppGoal.CTRIP_PACKAGE),profile)
+                :BackgroundTaskTarget.resolveExplicitSelection(owner,NativeAppGoal.CTRIP_PACKAGE,
+                    Collections.singleton(NativeAppGoal.CTRIP_PACKAGE));
+            selection=new BackgroundSession.Selection(target);
+            auth=TaskAuthorization.parse(owner).forExecutionSelection(selection);
+            selectionSha=NativeActionBridgeHost.hash("calendar-back-selection:"+target.targetSha256);
+            installed=hasProfile?new NativeAppEvidence.Installed(profile):
+                new NativeAppEvidence.Installed(NativeAppGoal.CTRIP_PACKAGE,10367,
+                    NativeCtripFlightPage.VERSION_CODE,Collections.singletonMap("base",NativeCtripFlightPage.BASE_APK_SHA256));
+            frame=frame(true,QUEUED-40L,3009);
+            action=ActionDecision.parse(new JSONObject().put("action","back").put("package",frame.packageName)
+                    .put("observation_id",frame.observationId).toString(),ActionDecision.IME_ACTION_SCHEMA);
+            clock(QUEUED);
+        }
+        org.trillionnium.hepta.background.WindowOwnership window(int window,long at){
+            return hasProfile?new org.trillionnium.hepta.background.WindowOwnership(profile,gen,740,window,1000109,2154,
+                "0ca375d3-4ee6-48d9-9b65-676982e0ddca",UUID.randomUUID().toString(),10,10L,1010367,at,at+4000):null;
+        }
+        NativeAppEvidence.Frame frame(boolean calendar,long captured,int window)throws Exception{
+            NativeXmlFixture.Snapshot xml=NativeXmlFixture.read(NativeActionBridgeHost.sourceRoot.resolve(
+                    "tests/native-app-provider/fixtures/"+(calendar?"calendar14.xml":"form14.xml")));
+            String observation=NativeActionBridgeHost.id(task+":complete-host-frame:"+(++freshOrdinal));
+            org.trillionnium.hepta.background.WindowOwnership ownership=window(window,captured-5);
+            String tree=xml.sourceSha256,state=NativeActionBridgeHost.hash("state:"+tree);
+            Map<String,Object> b=new TreeMap<String,Object>();
+            b.put("task_id",task);b.put("owner_sha256",selection.target.ownerSha256);
+            b.put("execution_target_sha256",selection.target.targetSha256);b.put("task_authorization_sha256",auth.sha256);
+            b.put("actual_selection_sha256",selectionSha);b.put("native_goal_sha256",selection.target.nativeGoal.contractSha256);
+            b.put("observation_id",observation);b.put("package",NativeAppGoal.CTRIP_PACKAGE);b.put("background_generation",gen);
+            b.put("app_tree_sha256",tree);b.put("observation_state_sha256",state);
+            b.put("display_id",740);b.put("window_id",window);b.put("rotation",0);b.put("width",1224);b.put("height",2992);
+            b.put("left",0);b.put("top",0);b.put("right",1224);b.put("bottom",2992);
+            b.put("captured_elapsed_ms",captured);b.put("original_census_captured_elapsed_ms",captured-3);
+            b.put("profile_window",ownership==null?null:ownership.evidence());
+            b.put("profile_action_identity",ownership==null?null:NativeAppEvidence.profileActionIdentity(ownership));
+            ObservationCaptureEvidence capture=null;
+            if(nativeText){
+                Map<String,Object> r=new TreeMap<String,Object>();r.put("schema","hepta.native-ax-capture.v1");
+                r.put("kind","native_ax");r.put("binding",b);
+                for(String key:Arrays.asList("visual_model","screenshot_present","publication_refreshes_capture_age",
+                        "grants_action_authority","business_completion_verified"))r.put(key,false);
+                r.put("first",census(b,xml.nodes,captured-5,captured-2));
+                r.put("second",census(b,xml.nodes,captured+1,captured+3));
+                r.put("request_started_elapsed_ms",captured-10);r.put("request_deadline_elapsed_ms",captured+11990);
+                r.put("sealed_elapsed_ms",captured+4);r.put("capture_watermark",watermark());
+                r.put("second_start_watermark",watermark());r.put("second_completed_watermark",watermark());
+                r.put("complete_census_endpoint_frozen",true);
+                byte[] bytes=ObservationCaptureEvidence.nativeAxBytes(r);
+                capture=ObservationCaptureEvidence.fromSealedNativeAx(r,bytes,ObservationCaptureEvidence.hash(bytes));
+                yes(capture.nativeText(),"actual complete AX constructor accepts explicit host pair");
+            }
+            return new NativeAppEvidence.Frame(task,selection.target.ownerSha256,selection.target.targetSha256,auth.sha256,
+                selectionSha,observation,NativeAppGoal.CTRIP_PACKAGE,gen,tree,state,nativeText?null:NativeActionBridgeHost.hash("host-pixels"),
+                NativeActionBridgeHost.hash("record:"+observation),NativeActionBridgeHost.hash("completion:"+observation),
+                740,window,0,1224,2992,0,0,1224,2992,captured,false,true,xml.nodes,1,true,ownership,capture);
+        }
+        static Map<String,Object> watermark(){Map<String,Object> m=new TreeMap<String,Object>();
+            for(String key:Arrays.asList("events","content","unknown","boundary"))m.put(key,0L);return m;}
+        static Map<String,Object> census(Map<String,Object> b,List<NativeAppEvidence.Node> nodes,long started,long finished){
+            Map<String,Object> c=new TreeMap<String,Object>(),identity=new TreeMap<String,Object>(b);
+            for(String key:Arrays.asList("observation_id","captured_elapsed_ms","profile_window","profile_action_identity",
+                    "original_census_captured_elapsed_ms"))identity.remove(key);
+            List<Map<String,Object>> rows=new ArrayList<Map<String,Object>>();
+            for(NativeAppEvidence.Node n:nodes){Map<String,Object> row=new TreeMap<String,Object>();
+                row.put("path",n.path);row.put("parent_class",n.parentClass);row.put("package",n.packageName);
+                row.put("class",n.className);row.put("view_id",n.viewId);row.put("text",n.text);row.put("description",n.description);
+                row.put("bounds",Arrays.asList(n.left,n.top,n.right,n.bottom));row.put("ref_signature_sha256",n.signature);
+                rows.add(row);}
+            c.put("identity",identity);c.put("nodes",rows);c.put("reported_windows",Collections.singletonMap("window",b.get("window_id")));
+            c.put("window",Collections.singletonMap("window_id",b.get("window_id")));c.put("complete",true);c.put("truncated",false);
+            c.put("visited",rows.size());for(String key:Arrays.asList("pending","child_slots_omitted","node_budget_omissions","text_budget_omissions"))c.put(key,0);
+            c.put("profile_window",b.get("profile_window"));c.put("profile_owner",b.get("profile_action_identity"));
+            c.put("census_captured_elapsed_ms",b.get("original_census_captured_elapsed_ms"));
+            c.put("read_started_elapsed_ms",started);c.put("read_completed_elapsed_ms",finished);return c;
+        }
+    }
+    BackFixture backFixture;
+    ControllerReadRetryHost(String label,boolean nativeText,boolean profile)throws Exception{
+        fixture=null;backFixture=new BackFixture(label,nativeText,profile);
+        activeNativeBackground=new BackgroundSession();activeNativeBackground.generation=backFixture.gen;
+        activeNativeBackground.ownerSha256=backFixture.selection.target.ownerSha256;activeNativeBackground.display=740;
+        activeNativeBackground.selection=backFixture.selection;authorization=backFixture.auth.bind(backFixture.task);
+        before=new PhoneObservation(backFixture.frame);currentTaskId=backFixture.task;
+        Path path=outputRoot.resolve(String.format(Locale.ROOT,"case-%03d",++fixtureOrdinal));Files.createDirectory(path);directory=path.toFile();
+        service=new HeptaAccessibilityService(this);postFixture=true;
+        activeNativeTask=new NativeAppSession(currentTaskId,authorization,activeNativeBackground.selection,backFixture.installed,
+            backFixture.selectionSha,backFixture.gen,740,
+            ()->{backFixture.installationChecks++;if(!backFixture.installedCurrent)throw new IllegalStateException("synthetic installed identity changed");},
+            (leaf,value)->{if(failPostOutcome&&leaf.startsWith("native-app-outcome-"))throw new IOException("explicit synthetic Session journal failure");
+                record(directory,leaf,new JSONObject(value));postJournal.add(leaf);});
+        activeNativeTask.observed(backFixture.frame);
+        yes(NativeCtripFlightPage.CALENDAR.equals(activeNativeTask.domain().phase),"real provider identified complete calendar");
+        authorization.check(backFixture.action,backFixture.run);
+        activeNativeTask.beforeModelAction(1,backFixture.action,backFixture.run,SystemClock.elapsedRealtime());
+    }
+    ActionDecision postAction(){return backFixture==null?fixture.action:backFixture.action;}
+    String postRun(){return backFixture==null?fixture.run:backFixture.run;}
+    NativeAppSession.PostActionReadAccess backPermit(){return activeNativeTask.calendarBackReadPermit(postAction(),postRun(),before.id);}
+    static ControllerReadRetryHost backNew(String name)throws Exception{return new ControllerReadRetryHost(name,true,true);}
+    static ControllerReadRetryHost backReady(String name)throws Exception{ControllerReadRetryHost f=backNew(name);f.completePostAction();return f;}
+    static void backCases()throws Exception{
+        one("back_real_returned_drained_handoff_and_durable_outcome_mints_separate_once",()->{
+            ControllerReadRetryHost f=backNew("handoff");yes(f.backPermit()==null,"not before action");
+            f.invokePostAction();yes(f.backPermit()==null,"not before durable Session outcome");
+            yes(f.service.lastGuard==null&&f.service.performCalls==1&&f.service.syntheticEffectEntries==1,
+                    "actual BACK has no borrowed OPEN guard");
+            Map<String,Object> projection=nativeQueryExecution(f.postActionOutcome.actionExecution);
+            yes(!projection.containsKey("phases")&&!projection.containsKey("live_profile_before_effect"),
+                    "original projection never broadened");
+            f.commitPostOutcome(projection);
+            NativeAppSession.PostActionReadAccess permit=f.backPermit();
+            yes(permit instanceof NativeAppSession.CalendarBackReadPermit,"distinct private BACK permit");
+            yes(f.activeNativeTask.postEffectReadPermit(f.postAction(),f.postRun(),f.before.id)==null,"OPEN permit remains absent");
+            refused(()->f.backPermit(),"one issuance must reject");
+            Map<String,Object> e=permit.evidence();
+            yes("hepta.native-calendar-back-read-permit.v1".equals(e.get("schema")),"BACK evidence schema");
+            yes(permit.transitionDeadline()==1070871934L,"real ec5 callback plus original 15 seconds");
+            yes(Boolean.FALSE.equals(e.get("action_replayed")),"receipt denies replay");
+        });
+        one("back_ec5_timing_3751ms_left_uses_new_complete_pair_once",()->{
+            ControllerReadRetryHost f=backReady("ec5-success");clock(1070857070L);f.service.firstAt=1070868183L;f.service.retryAt=1070869000L;
+            PhoneObservation result=f.postCall(1070900000L);
+            yes(f.postFinished==1070856934L&&f.postTransitionDeadline-f.service.firstAt==3751L,"recorded ec5 residual window");
+            yes(f.service.postCalls==1&&f.service.postRetryCalls==1&&f.service.performCalls==1,"one new read, original BACK only once");
+            yes(f.service.firstDeadline==1070869070L&&f.service.retryDeadline==1070871934L,"original 12 second request and 15 second transition");
+            yes(result!=f.before&&result.nativeFrame.capture.nativeText()&&result.nativeFrame.collectionComplete,"actual fresh complete AX value");
+            yes(result.nativeFrame.windowId==3008&&!result.id.equals(f.before.id),"new destination frame, old calendar is never republished");
+            yes(f.written.containsKey(POST_INTENT)&&f.nativeObservationRetryUsed,"actual durable intent and shared once latch");
+            JSONObject intent=f.written.get(POST_INTENT);
+            yes(intent.getJSONObject("entered_action").getString("schema").equals("hepta.native-calendar-back-read-permit.v1"),"durable distinct permit");
+            yes(intent.getJSONObject("failed_read_terminal").has("ax_read_identity_recheck"),"typed AX diagnostic retained");
+            yes(!intent.getBoolean("action_replayed")&&!intent.getBoolean("old_request_renewed"),"no replay or clock renewal");
+            yes(f.service.pendingReadWorks==0,"producer IO port was drained before next submission");
+        });
+        for(String mode:Arrays.asList("not-returned","not-drained","not-current","not-accepted","cancelled","missing-profile","duplicate-phase",
+                "bad-profile","missing-return-phase","wrong-operation","wrong-projection","phases-extra-key")){
+            final String fault=mode;one("back_handoff_rejects_"+mode,()->{
+                ControllerReadRetryHost f=backNew(fault);
+                f.service.backFault=fault;
+                if("not-drained".equals(fault))f.service.actionDrain=false;
+                if("not-current".equals(fault))f.service.actionCallbackCurrent=false;
+                if("not-accepted".equals(fault))f.service.actionAccepted=false;
+                if("cancelled".equals(fault))f.service.beforeActionCallback=()->f.cancelled.set(true);
+                try{f.invokePostAction();Map<String,Object> projection=nativeQueryExecution(f.postActionOutcome.actionExecution);
+                    if("wrong-projection".equals(fault))projection.put("operation_id",NativeActionBridgeHost.id("different-operation"));
+                    f.commitPostOutcome(projection);
+                }catch(CleanupUnknown|IllegalStateException|IOException expected){yes(true,"actual returned/close guard rejected");}
+                yes(f.backPermit()==null,"no permit for "+fault);yes(f.service.postCalls==0&&f.service.postRetryCalls==0,"no observation was authorized");
+            });
+        }
+        one("back_cancel_after_finally_revokes_before_outcome",()->{
+            ControllerReadRetryHost f=backNew("cancel-after-finally");f.invokePostAction();f.cancelled.set(true);
+            f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution));yes(f.backPermit()==null,"original cancellation binding retained");
+        });
+        one("back_journal_failure_keeps_permission_unpublished",()->{
+            ControllerReadRetryHost f=backNew("journal-failure");f.invokePostAction();f.failPostOutcome=true;
+            boolean failed=false;try{f.commitPostOutcome(nativeQueryExecution(f.postActionOutcome.actionExecution));}catch(IOException expected){failed=true;}
+            yes(failed,"real Session journal error");
+            yes(f.backPermit()==null&&f.service.postCalls==0,"no permission before durable outcome");
+        });
+        one("back_wrong_observation_is_hard_rejection_for_eligible_native_candidate",()->{
+            ControllerReadRetryHost f=backNew("wrong-observation");
+            refused(()->f.activeNativeTask.calendarBackAwait(f.postAction(),f.postRun(),NativeActionBridgeHost.id("wrong"),
+                    SystemClock.elapsedRealtime(),SystemClock.elapsedRealtime()+8000),"wrong candidate observation is not a soft opt out");
+            yes(f.service.performCalls==0,"no effect entered in rejected candidate");
+        });
+        one("back_visual_legacy_path_does_not_block_action_or_mint_permission",()->{
+            ControllerReadRetryHost f=new ControllerReadRetryHost("visual",false,true);f.completePostAction();
+            yes(f.postActionOutcome.accepted&&f.service.performCalls==1&&f.backPermit()==null,"unsupported capture stays original BACK path");
+        });
+        one("back_no_profile_legacy_path_does_not_block_action_or_mint_permission",()->{
+            ControllerReadRetryHost f=new ControllerReadRetryHost("personal",true,false);f.completePostAction();
+            yes(f.postActionOutcome.accepted&&f.service.performCalls==1&&f.backPermit()==null,"personal context stays original BACK path");
+        });
+        one("back_noncalendar_open_preserves_original_action_and_own_permit",()->{
+            ControllerReadRetryHost f=postReady("not-calendar");
+            yes(f.activeNativeTask.calendarBackReadPermit(f.postAction(),f.postRun(),f.before.id)==null,"noncalendar does not receive BACK permit");
+            yes(f.postPermit()!=null&&f.service.performCalls==1,"original OPEN route remains accepted");
+        });
+        for(String mode:Arrays.asList("ordinary","sampling","identity","hard","worker-live")){
+            final String fault=mode;one("back_unqualified_"+mode+"_cannot_start_second_read",()->{
+                ControllerReadRetryHost f=backReady("unqualified-"+fault);f.service.backReadFault=fault;
+                refused(()->f.postCall(1070900000L),"unqualified first observation");
+                yes(f.service.postRetryCalls==0&&f.service.performCalls==1&&!f.written.containsKey(POST_INTENT),"no retry, no replay, no durable grant");
+            });
+        }
+        one("back_spent_shared_task_budget_blocks_new_read",()->{
+            ControllerReadRetryHost f=backReady("once-spent");f.nativeObservationRetryUsed=true;
+            refused(()->f.postCall(1070900000L),"shared once already spent");f.postNoRetry("no independent BACK budget");
+        });
+        one("back_late_failed_read_cannot_extend_transition",()->{
+            ControllerReadRetryHost f=backReady("late-first");f.service.firstAt=f.postTransitionDeadline;
+            refused(()->f.postCall(1070900000L),"late first callback");f.postNoRetry("original deadline remains final");
+        });
+        one("back_new_read_callback_at_deadline_rejected",()->{
+            ControllerReadRetryHost f=backReady("late-new");f.service.firstAt=1070868183L;f.service.retryAt=f.postTransitionDeadline;
+            refused(()->f.postCall(1070900000L),"late replacement");yes(f.service.postRetryCalls==1&&f.service.performCalls==1,"single new read only");
+        });
+        one("back_business_deadline_clips_original_transition",()->{
+            ControllerReadRetryHost f=backReady("task-cap");f.service.firstAt=1070868183L;f.service.retryAt=1070868500L;
+            f.postCall(1070868700L);yes(f.service.retryDeadline==1070868700L,"business deadline clipped; not renewed");
+        });
+        one("back_second_typed_failure_never_creates_third_read",()->{
+            ControllerReadRetryHost f=backReady("second-failure");f.service.retryMode="typed";
+            refused(()->f.postCall(1070900000L),"second failure terminal");
+            yes(f.service.postCalls==1&&f.service.postRetryCalls==1&&f.service.performCalls==1,"no loop or BACK replay");
+        });
+        one("back_cancel_after_durable_intent_keeps_spent_latch_without_submission",()->{
+            ControllerReadRetryHost f=backReady("cancel-after-intent");f.afterDurableIntent=()->f.cancelled.set(true);
+            refused(()->f.postCall(1070900000L),"cancel after fsync");
+            yes(f.nativeObservationRetryUsed&&f.written.containsKey(POST_INTENT)&&f.service.postRetryCalls==0,"spent latch and original record preserved");
+        });
+        one("back_installation_change_at_real_Session_revalidation_blocks_publication",()->{
+            ControllerReadRetryHost f=backReady("installation-change");
+            int checks=f.backFixture.installationChecks,pages=f.postJournal.size();
+            f.service.beforeFirstCallback=()->f.backFixture.installedCurrent=false;
+            refused(()->f.postCall(1070900000L),"changed installed identity");
+            yes(f.backFixture.installationChecks>checks&&f.postJournal.size()==pages,"actual Session revalidated installation before publishing a new page");
+            yes(f.service.postRetryCalls==1&&f.service.performCalls==1&&f.nativeObservationRetryUsed
+                    &&f.written.containsKey(POST_INTENT),"one read-only submission remains spent; no action replay or returned observation");
+        });
+    }

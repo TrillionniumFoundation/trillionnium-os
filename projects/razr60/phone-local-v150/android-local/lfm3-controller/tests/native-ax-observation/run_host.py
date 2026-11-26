@@ -44,6 +44,22 @@ def generate(source,out,h,snap):
   raise RuntimeError('AX-only carrier must reverse in full to the actual source member')
  s=once(s,sampling_carrier,sampling_carrier_host)
  block=h.section(service,'    /** Native text capture mode is bound once','    synchronized TaskAuthorization.Gate bindTaskAuthorization(')
+ # The later manual pixel/census publisher is a separate, fail-closed product
+ # entry. The legacy AX suite has no manual owner or pixel publication ports.
+ # Exclude only its exact complete block; every AX producer method stays verbatim.
+ original_ax_block_sha256=h.sha(block.encode());manual_capture_exclusion=None
+ manual_start='    /** Copies the already published complete graph and releases its SDK references.'
+ manual_end='    synchronized void bindNativeTextObservation('
+ if manual_start in block:
+  if block.count(manual_start)!=1 or block.count(manual_end)!=1:
+   raise RuntimeError('unique complete manual capture block required')
+  manual_block=h.section(block,manual_start,manual_end)
+  if len(manual_block.encode())!=7913 or h.sha(manual_block.encode())!='cd70667313f0ec76656b0fb0a740985334412df4a9cad06cc05382c7696c4599':
+   raise RuntimeError('exact reviewed manual-only capture block required')
+  block=once(block,manual_block,'')
+  manual_capture_exclusion={'bytes':len(manual_block.encode()),'sha256':h.sha(manual_block.encode()),
+                            'compiled_by_dedicated_manual_and_android_closures':True,
+                            'manual_authority_not_ported_into_legacy_ax':True}
  for prefix in ['    private void bindNativeAxObservationRequest(ObservationRequest request){','    private boolean nativeTextObservationAllowed(ObservationRequest request,Graph graph){','    private void captureNativeAxObservation(ObservationRequest request){']:
   s=once(s,h.body(s,prefix),'')
  old=(source/'tests/native-observation-snapshot/SnapshotPipelineCases.fragment').read_text()
@@ -138,10 +154,36 @@ def generate(source,out,h,snap):
             if(live.phoneConstructHook!=null)live.phoneConstructHook.run();
         }''')
  s=once(s,'        static Map<String,Object> profileActionIdentity(WindowOwnership ignored){throw new AssertionError("host user0 has no profile proof");}',profile_adapter)
+ # The AX block consumes the production typed read failure and the same pure
+ # window fingerprint as the post-effect bridge. Replace the legacy read port
+ # and compile complete current members; no historical proof is compiled here.
+ actual_stale=h.body(service,'    private static final class StaleObservation extends IllegalStateException {')
+ stale_port=h.body(s,'    static final class StaleObservation extends IllegalStateException {')
+ s=once(s,stale_port,actual_stale)
+ fingerprint=h.body(service,'    private static String postEffectChildWindowFingerprint(')
+ evidence=(source/PKG/'NativeAppEvidence.java').read_text()
+ value_members={name:h.body(evidence,anchor) for name,anchor in {
+     'fingerprint':'    static String fingerprint(',
+     'canonical':'    private static void canonical(',
+     'hash':'    static String hash(',
+     'need':'    static void need(',
+ }.items()}
+ s=once(s,'    static final class NativeAppEvidence {',
+     '    static final class NativeAppEvidence {\n'+'\n'.join(value_members.values()))
+ s=once(s,'import java.security.MessageDigest;',
+     'import java.security.MessageDigest;\nimport java.security.NoSuchAlgorithmException;')
+ s=once(s,'    static ObservationCaptureEvidence phoneCapture;',
+     fingerprint+'\n    static ObservationCaptureEvidence phoneCapture;')
+ retry_members={'actual_stale':actual_stale,'child_window_fingerprint':fingerprint,**value_members}
+ for name,member in retry_members.items():
+  if s.count(member)!=1:raise RuntimeError('complete actual AX retry dependency must occur exactly once: '+name)
  h.write(path,s)
  return {'schema':'hepta.native-ax-extraction.v1','production_ax_methods_verbatim':True,
          'production_observer_original_methods_verbatim':True,'actual_helper_compiled':True,
          'ax_block_sha256':h.sha(block.encode()),'legacy_extraction':meta,
+         'original_ax_block_sha256':original_ax_block_sha256,'manual_capture_exclusion':manual_capture_exclusion,
+         'actual_ax_retry_dependencies':{name:{'bytes':len(member.encode()),'sha256':h.sha(member.encode())} for name,member in retry_members.items()},
+         'actual_stale_replaces_legacy_read_port':True,'retry_dependency_members_verbatim':True,
          'diagnostic_provider_port_removed_sha256':h.sha(diagnostic_provider_port.encode()),
          'actual_provider_value_members_unchanged':True,
          'sampling_carrier_type_qualification':{

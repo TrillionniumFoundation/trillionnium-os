@@ -108,6 +108,10 @@ public final class NativeAppGoal {
             +"[，,][ ]*核价[，,][ ]*预算(?:不超过|上限为)?"+CAP
             +"[，,][ ]*若(?:金额|总额)在预算内(?:就)?(?:准备到|到)(?:订单)?确认页停下"+NO_TRANSACTION,Pattern.CASE_INSENSITIVE);
 
+    // An explicit, finite fixture owner. This is not a suffix added to a query owner.
+    private static final Pattern MANUAL_PREVIEW_FIXTURE = Pattern.compile("测试采集订单预览\\[(?<manualPurpose>preview_open_sku|preview_select_requested_variant|preview_open_confirmation)\\]："+SHOP+"准备购买"+UNIT+ITEM
+            +"[，,]预算不超过"+CAP+"[，,]核对商品、数量和总额后停在订单确认页"+NO_TRANSACTION);
+
     /** Owner values only. No observed stock, selected SKU, order total, or action follows from recognition. */
     public static final class OrderPreview {
         public final String capYuan, requestedVariant;
@@ -233,6 +237,9 @@ public final class NativeAppGoal {
             }
         }
         if (XIAOMI_PACKAGE.equals(explicitlySelectedPackage)) {
+            Matcher manual=MANUAL_PREVIEW_FIXTURE.matcher(owner);
+            if(manual.matches())return new NativeAppGoal(owner,explicitlySelectedPackage,manual,
+                    "complete_literal_manual_order_preview_fixture.v1/"+manual.group("manualPurpose"),new OrderPreview(manual));
             Matcher preview=PREVIEW_BUY.matcher(owner);
             if(!preview.matches())preview=PREVIEW_PRICE.matcher(owner);
             if(preview.matches())return new NativeAppGoal(owner,explicitlySelectedPackage,preview,

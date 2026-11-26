@@ -114,6 +114,13 @@ final class ControllerReadRetryHost {
         }
 {{service_proof}}
 {{initial_service_proof}}
+        /** Compilation-only data type for the actual proof evidence discriminator.
+         * This legacy consumer never constructs an AX handoff; the separate actual
+         * AX producer bridge exercises that branch. No constructor can grant it. */
+        private static final class PostEffectSamplingRetry {
+            final java.util.Map<String,Object> axReadIdentity=null;
+            private PostEffectSamplingRetry(){throw new AssertionError("no AX handoff authority in consumer IO port");}
+        }
 {{post_service_proof}}
         final ControllerReadRetryHost host;
         String firstMode="typed",retryMode="success",proofMutation;

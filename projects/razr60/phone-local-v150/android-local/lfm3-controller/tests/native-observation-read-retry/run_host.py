@@ -68,6 +68,15 @@ def main():
           'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
         methods={key:extractor.body(controller,anchor) for key,anchor in anchors.items()}
         methods['pending_loop_prefix']=extractor.section(controller,'            taskSteps: while(steps<MAX_STEPS){','                // Includes fresh observations after stale/undispatched proposals.')
+        # This gate exercises actual query/pending reads, not manual fixture IO.
+        # Retain the real manual-detail predicate, but make its separate route
+        # explicitly unavailable rather than inventing live pixel/file authority.
+        manual_anchor='                if(activeNativeTask!=null&&activeNativeTask.manualFixtureDetailReady(observation.id)){'
+        manual_branch=extractor.body(controller,manual_anchor)
+        need(len(manual_branch.encode())==688 and common.sha(manual_branch.encode())=='5bbc084c3f5adae4447ecb0863c99fa895f2ccc99820bf27b03b70e2a666c129',
+             'exact complete manual-only task-loop branch required')
+        manual_port=manual_anchor+'\n                    throw new AssertionError("manual fixture route is outside the retry consumer gate");\n                }'
+        need(methods['pending_loop_prefix'].count(manual_branch)==1,'one actual manual route in pending prefix')
         methods['pending_model_guard']=extractor.section(controller,'        final boolean searchProtocol=grammar!=null&&NativeSearchDecision.SCHEMA.equals(grammar.schema);','        final LocalRuntimeConfig runtime=inference.configuration();')
         need(run_task.count('awaitPendingNativeTransition(')==1 and run_task.index('awaitPendingNativeTransition(')<run_task.index('awaitModel('),
              'actual main loop must finish pending observation before model planning')
@@ -83,12 +92,22 @@ def main():
                 compiled_body=body.replace('LocalTaskController.this','ControllerReadRetryHost.this',1)
                 need(compiled_body.replace('ControllerReadRetryHost.this','LocalTaskController.this',1)==body,
                      'exact enclosing-name-only inverse')
+            if key=='pending_loop_prefix':
+                compiled_body=body.replace(manual_branch,manual_port,1)
+                need(compiled_body.count(manual_port)==1 and compiled_body.replace(manual_port,manual_branch,1)==body,
+                     'whole pending prefix inverse after fail-only manual route')
             template=template.replace(marker,compiled_body,1)
         need('{{' not in template,'all actual methods inserted')
         generated=out/'generated/ControllerReadRetryHost.java';common.write(generated,template)
-        paths=list(dict.fromkeys([*paths,generated,source/PKG/'ObservationStabilityGate.java',source/PKG/'ActionExecutionState.java']))
+        paths=list(dict.fromkeys([*paths,generated,source/PKG/'ObservationStabilityGate.java',source/PKG/'ActionExecutionState.java',source/PKG/'NativeOrderPreviewManual.java']))
         extraction={'schema':'hepta.native-observation-controller-retry-extraction.v1','bodies_verbatim':False,
-          'all_bodies_verbatim_except_explicit_enclosing_class_name':True,
+          'all_bodies_verbatim_except_explicit_enclosing_class_name':False,
+          'all_bodies_verbatim_except_enclosing_name_and_fail_only_manual_route':True,
+          'manual_route':{'original_branch_bytes':len(manual_branch.encode()),
+            'original_branch_sha256':common.sha(manual_branch.encode()),'compiled_port_sha256':common.sha(manual_port.encode()),
+            'original_detail_predicate_verbatim':True,'whole_pending_prefix_inverse_equal':True,
+            'body_always_throws':True,'manual_authority_created':False,'manual_behavior_executed':False,
+            'actual_manual_value_class_compiled':common.meta(source/PKG/'NativeOrderPreviewManual.java')},
           'enclosing_class_mapping':{'method':'await_raw_calendar','from':'LocalTaskController.this',
             'to':'ControllerReadRetryHost.this','occurrences':1,'inverse_bytes_equal':True},
           'calendar_route':{'private_unconstructible_type_only_ports':True,'methods_always_throw':True,

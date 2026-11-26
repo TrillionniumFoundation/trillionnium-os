@@ -23,7 +23,7 @@ CONTRACTS = {'legacy': (1, 28, 'ad7777f8f55f49c6fdf31b255460e7526ce4449eaec94a23
 
 EXTRA = ['NativeCtripFormObservation', 'ObservationCaptureEvidence', 'PromptActionDomain', 'NativeAppEvidence', 'NativeAppDomain', 'NativeAppSession',
          'NativeXiaomiSearchInputObservation', 'NativeActionSnapshotCheck', 'NativeAppObservation', 'NativeCtripFlightPage', 'NativeXiaomiProductPage',
-         'NativeSearchPlanning', 'NativeSearchRole', 'NativeSearchDecision', 'NativeSearchSession']
+         'NativeSearchPlanning', 'NativeSearchRole', 'NativeSearchDecision', 'NativeSearchSession', 'NativeOrderPreviewManual']
 
 
 def need(ok, message):

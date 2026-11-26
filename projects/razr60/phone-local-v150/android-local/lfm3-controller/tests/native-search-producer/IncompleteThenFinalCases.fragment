@@ -54,7 +54,13 @@
         one("budget521_second_after_target_replacement_is_terminal",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt a=afterTargetIntent(f);budget521Sequence(s,f,3);final Runnable first=f.graphHook;
-                f.graphHook=()->{first.run();if(f.graphReads==7){f.syncNodes();armTargetRefreshEvent(s,f,3,null);}};
+                f.graphHook=first;
+                // The second event must still be after the replacement D, not its pre-D preparation.
+                SystemClock.beforeRead=()->{SearchActionWork w=s.activeSearchAction;
+                    if(w!=null&&w.finalCensusResamples==1
+                            &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireAfterTargetRefreshEvents")){
+                        SystemClock.beforeRead=null;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
+                    }};
                 SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();afterTargetNoFallback(s,f,w);budget521Counters(w,1,1);
                 check(f.graphReads==8&&w.currentReadAttempts.size()==3,"a second final rejection cannot obtain a fourth pair");
             }

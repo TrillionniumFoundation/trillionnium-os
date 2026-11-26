@@ -519,6 +519,13 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            NativeOrderPreviewManual.Owner manualOwner=NativeOrderPreviewManual.recognize(completion.nativeGoal());
+            if(instruction.startsWith("测试采集订单预览[")&&manualOwner==null)
+                throw new IllegalStateException("manual fixture requires the complete literal owner and explicit selected target");
+            if(manualOwner!=null&&(backgroundSelection==null||!backgroundSelection.independentProfileDisplay
+                    ||backgroundSelection.profileTarget==null||!"preview_open_sku".equals(manualOwner.purpose)||!config.profile.visual()
+                    ||!inference.acceptsObservedImage()||!inference.modelOutputDispatchAllowed()||config.visualObservationOnly))
+                throw new IllegalStateException("manual fixture currently requires the explicit visual-tools detail-to-SKU owner; later page routes are unbound");
             if(config.profile==ModelProfile.LFM3_VL_2B&&!config.visualObservationOnly)
                 requireLfm3VlToolsSelection(config,instruction,authorization.authorization,backgroundSelection,completion.nativeGoal());
             if(CALENDAR_WINDOW_PROBE_OWNER.equals(instruction))
@@ -641,6 +648,13 @@ public final class LocalTaskController implements AutoCloseable {
             taskSteps: while(steps<MAX_STEPS){
                 checkActive(deadline);
                 observation=awaitPendingNativeTransition(taskId,evidence,authorization,deadline,observation);
+                if(activeNativeTask!=null&&activeNativeTask.manualFixtureDetailReady(observation.id)){
+                    observation=runNativeManualPreview(taskId,evidence,authorization,background,scope,deadline,observation);
+                    history.put(new JSONObject().put("action","manual_fixture_capture").put("origin","owner_manual_fixture")
+                            .put("model_issued",false).put("dispatched",false).put("effect",false).put("business_success",false));
+                    finalStatus="partial";summary="已保存订单预览测试采集原件；页面导航尚未绑定，未提交订单或支付。";
+                    break taskSteps;
+                }
                 steps++;
                 final PhoneObservation before=observation;
                 // Includes fresh observations after stale/undispatched proposals.
@@ -1464,6 +1478,33 @@ public final class LocalTaskController implements AutoCloseable {
         }
     }
     /** Copy only service-owned scalar lifetime facts; never parse model text as a receipt. */
+    /** Extra BACK facts come from the real Service callback. The ordinary
+     * nativeQueryExecution projection and all original outcome calls stay exact. */
+    private static java.util.Map<String,Object> nativeCalendarBackExecution(JSONObject raw)throws Exception{
+        java.util.Map<String,Object> value=nativeQueryExecution(raw);if(value==null)return null;
+        JSONArray phases=raw.optJSONArray("phases");JSONObject profile=raw.optJSONObject("live_profile_before_effect");
+        if(phases==null||phases.length()<1||phases.length()>ActionExecutionState.MAX_PHASES||profile==null)return null;
+        java.util.List<java.util.Map<String,Object>> events=new java.util.ArrayList<java.util.Map<String,Object>>();
+        for(int i=0;i<phases.length();i++){
+            JSONObject row=phases.optJSONObject(i);
+            if(row==null||row.length()!=2||!row.has("phase")||!row.has("elapsed_ms"))return null;
+            Object name=row.get("phase"),at=row.get("elapsed_ms");
+            if(!(name instanceof String)||((String)name).isEmpty()||!(at instanceof Integer||at instanceof Long)
+                    ||((Number)at).longValue()<0)return null;
+            java.util.Map<String,Object> event=new java.util.LinkedHashMap<String,Object>();event.put("phase",name);event.put("elapsed_ms",at);events.add(event);
+        }
+        String[] keys={"schema","source","generation","target_identity_sha256","proof_id","task_token_id",
+                "display_id","window_id","task_id","parent_task_id","user_id","user_serial","full_uid",
+                "observed_elapsed_ms","expires_elapsed_ms","proof_sha256","serialized_token_is_authority","grants_action_authority"};
+        if(profile.length()!=keys.length)return null;
+        java.util.Map<String,Object> actual=new java.util.LinkedHashMap<String,Object>();
+        for(String key:keys){
+            if(!profile.has(key))return null;Object item=profile.get(key);
+            if(!(item instanceof String||item instanceof Integer||item instanceof Long||item instanceof Boolean))return null;
+            actual.put(key,item);
+        }
+        value.put("phases",events);value.put("live_profile_before_effect",actual);return value;
+    }
     private static java.util.Map<String,Object> nativeQueryExecution(JSONObject raw)throws Exception{
         if(raw==null)return null;
         java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
@@ -2352,11 +2393,11 @@ public final class LocalTaskController implements AutoCloseable {
         }finally{initialNativeObservation=null;}
     }
     private static final class PostEffectNativeObservation {
-        final NativeAppSession nativeTask;final NativeAppSession.PostEffectReadPermit permit;
+        final NativeAppSession nativeTask;final NativeAppSession.PostActionReadAccess permit;
         final BackgroundSession background;final TaskAuthorization.Gate authorization;
         final String taskId;final long taskDeadline;
         final HeptaAccessibilityService.PostEffectObservationRetryProof retryProof;
-        PostEffectNativeObservation(NativeAppSession nativeTask,NativeAppSession.PostEffectReadPermit permit,
+        PostEffectNativeObservation(NativeAppSession nativeTask,NativeAppSession.PostActionReadAccess permit,
                 BackgroundSession background,TaskAuthorization.Gate authorization,String taskId,long taskDeadline,
                 HeptaAccessibilityService.PostEffectObservationRetryProof retryProof){
             this.nativeTask=nativeTask;this.permit=permit;this.background=background;this.authorization=authorization;
@@ -2381,12 +2422,13 @@ public final class LocalTaskController implements AutoCloseable {
         if(SystemClock.elapsedRealtime()>=expected.permit.transitionDeadline()||service.actionWorkPending()
                 ||service.nativeCancellationWorkPending())throw new IllegalStateException("操作后转场预算或动作退出边界已变化");
     }
-    /** One new read after an accepted OPEN effect; never a second dispatch.
+    /** One new read after a privately proved OPEN or calendar BACK; never a second dispatch.
      * The non-initial retry budget and original 15-second transition are shared. */
     private PhoneObservation awaitPostEffectNativeObservation(String id,File directory,TaskAuthorization.Gate authorization,long deadline,
             ActionDecision action,String runId,PhoneObservation before)throws Exception{
         NativeAppSession nativeTask=activeNativeTask;
-        NativeAppSession.PostEffectReadPermit permit=nativeTask==null?null:nativeTask.postEffectReadPermit(action,runId,before.id);
+        NativeAppSession.PostActionReadAccess permit=nativeTask==null?null:nativeTask.postEffectReadPermit(action,runId,before.id);
+        if(permit==null&&nativeTask!=null)permit=nativeTask.calendarBackReadPermit(action,runId,before.id);
         if(permit==null)return awaitObservation(id,directory,authorization,deadline);
         if(postEffectNativeObservation!=null||initialNativeObservation!=null)throw new IllegalStateException("原生观察上下文尚未退出");
         PostEffectNativeObservation post=new PostEffectNativeObservation(nativeTask,permit,activeNativeBackground,authorization,id,deadline,null);
@@ -2486,6 +2528,79 @@ public final class LocalTaskController implements AutoCloseable {
             NativeAppSession.CalendarPermit permit=read.acceptFreshObservation(proof);
             accepted=true;return permit;
         }finally{if(!accepted)read.close();}
+    }
+
+    private void requireManualPreviewOwner(NativeAppSession.ManualFixture fixture){
+        if(fixture==null||!running||blocked||closed||cancelled.get()||activeWebTask!=null
+                ||activeNativeTask!=fixture.session||activeNativeBackground!=fixture.background
+                ||!fixture.session.taskId.equals(currentTaskId))
+            throw new IllegalStateException("manual fixture is not the actual live controller owner");
+        synchronized(handleLock){if(activeInference!=null)throw new IllegalStateException("manual fixture cannot overlap a model request");}
+        fixture.requireCurrent(SystemClock.elapsedRealtime());
+    }
+    private HeptaAccessibilityService.ManualPreviewPublication awaitManualPreviewPublication(
+            final NativeAppSession.ManualFixture fixture,final PhoneObservation observed)throws Exception{
+        requireManualPreviewOwner(fixture);
+        final CountDownLatch ready=new CountDownLatch(1);
+        final AtomicBoolean abandoned=new AtomicBoolean(false);
+        final AtomicReference<HeptaAccessibilityService.ManualPreviewPublication> value=
+                new AtomicReference<HeptaAccessibilityService.ManualPreviewPublication>();
+        final AtomicReference<String> error=new AtomicReference<String>();
+        try{
+            service.captureManualPreview(this,fixture,observed,new HeptaAccessibilityService.Cancellation(){
+                public boolean isCancelled(){return cancelled.get()||abandoned.get();}
+            },new HeptaAccessibilityService.ManualPreviewCallback(){
+                public void onCaptured(HeptaAccessibilityService.ManualPreviewPublication publication){
+                    if(!abandoned.get()){value.set(publication);ready.countDown();}
+                }
+                public void onError(String detail){if(!abandoned.get()){error.set(detail);ready.countDown();}}
+            });
+            while(!ready.await(100,TimeUnit.MILLISECONDS))requireManualPreviewOwner(fixture);
+            requireManualPreviewOwner(fixture);
+            if(error.get()!=null||value.get()==null)throw new IllegalStateException(error.get()==null?"manual publication missing":error.get());
+            return value.get();
+        }finally{abandoned.set(true);}
+    }
+    /** One separate test phase after the original real model query/detail path.
+     * All page routes remain unbound; this revision cannot enter an input call. */
+    private PhoneObservation runNativeManualPreview(String taskId,File directory,TaskAuthorization.Gate authorization,
+            BackgroundSession background,QualificationScopeConfig.Bound scope,long taskDeadline,PhoneObservation before)throws Exception{
+        NativeAppSession task=activeNativeTask;
+        if(task==null||scope==null)
+            throw new IllegalStateException("actual native task and captured scope state required");
+        NativeAppSession.ManualFixture fixture=task.beginManualFixture(before.id,background,taskDeadline,SystemClock.elapsedRealtime());
+        try{
+            requireManualPreviewOwner(fixture);scope.verifyUnchanged();
+            final String controllerBuildSha;
+            try(java.io.InputStream input=service.getAssets().open(QualificationScope.BUILD_ASSET)){
+                controllerBuildSha=NativeOrderPreviewManual.packagedBuildSha(input,scope.buildIdentitySha256);
+            }
+            scope.verifyUnchanged();requireManualPreviewOwner(fixture);
+            HeptaAccessibilityService.ManualPreviewPublication captured=awaitManualPreviewPublication(fixture,before);
+            NativeOrderPreviewManualFiles files=NativeOrderPreviewManualFiles.publish(directory,fixture,before,
+                    captured.censusFor(service,this,fixture,before),controllerBuildSha,SystemClock.elapsedRealtime());
+            emit("已保存当前商品详情采集原件；本次未绑定的页面导航不会执行。");
+            NativeOrderPreviewManual.ManualPreviewGuard request=null;
+            while(SystemClock.elapsedRealtime()<files.ready.reviewDeadline){
+                requireManualPreviewOwner(fixture);
+                request=files.consumeIfPublished(SystemClock.elapsedRealtime());
+                if(request!=null)break;
+                Thread.sleep(100);
+            }
+            PhoneObservation last=before;
+            if(request!=null){
+                // This is an actual post-refusal observation, explicitly not proof
+                // that a navigation took place. Preserve it before any provider check.
+                requireManualPreviewOwner(fixture);
+                last=awaitObservationRaw(taskId,directory,authorization,taskDeadline);
+                record(directory,"native-app-frame-"+last.id+".json",last.toEvidenceJson());
+                HeptaAccessibilityService.ManualPreviewPublication after=awaitManualPreviewPublication(fixture,last);
+                files.archiveAfterRefusal(last,after.censusFor(service,this,fixture,last));
+            }
+            files.finish(request==null?"request_not_published_before_fixed_review_deadline":"page_navigation_route_unbound",
+                    SystemClock.elapsedRealtime());
+            return last;
+        }finally{fixture.close();}
     }
 
     private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{
@@ -2737,10 +2852,13 @@ public final class LocalTaskController implements AutoCloseable {
         NativeAppSession nativeTask=activeNativeTask;
         final NativeAppSession.ActionGuard nativeGuard=nativeTask==null?null:
                 nativeTask.actionGuard(action,modelRunId,observed.id,actionIssued,actionDeadline);
+        final NativeAppSession.CalendarBackAwait calendarBack=nativeTask==null?null:
+                nativeTask.calendarBackAwait(action,modelRunId,observed.id,actionIssued,actionDeadline);
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<HeptaAccessibilityService.ActionOutcome> outcome=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
         java.util.Map<String,Object> unenteredAwaitReceipt=null;
         java.util.Map<String,Object> enteredAwaitReceipt=null;
+        java.util.Map<String,Object> calendarBackReceipt=null;
         try{
         service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,actionDeadline,nativeGuard,
                 new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
@@ -2772,6 +2890,8 @@ public final class LocalTaskController implements AutoCloseable {
         if(nativeGuard!=null&&!cancelled.get()&&result.accepted&&result.dispatched&&!result.stale
                 &&NativeActionSnapshotCheck.OPEN.equals(nativeGuard.purpose))
             enteredAwaitReceipt=nativeQueryExecution(result.actionExecution);
+        if(calendarBack!=null&&!cancelled.get()&&result.accepted&&result.dispatched&&!result.stale)
+            calendarBackReceipt=nativeCalendarBackExecution(result.actionExecution);
         return result;
         }finally{if(nativeGuard!=null){synchronized(this){
             // stop() uses this same monitor; no journal or Service IO runs here.
@@ -2780,6 +2900,11 @@ public final class LocalTaskController implements AutoCloseable {
             else if(enteredAwaitReceipt!=null&&!cancelled.get()&&SystemClock.elapsedRealtime()<actionDeadline)
                 nativeGuard.closeAfterEnteredAwait(enteredAwaitReceipt,cancelled);
             else nativeGuard.close();
+        }}
+        if(calendarBack!=null){synchronized(this){
+            if(calendarBackReceipt!=null&&!cancelled.get()&&SystemClock.elapsedRealtime()<actionDeadline)
+                calendarBack.closeAfterReturnedAwait(calendarBackReceipt,cancelled);
+            else calendarBack.close();
         }}}
     }
     /** A model-bound native failure/partial ends the controller task without

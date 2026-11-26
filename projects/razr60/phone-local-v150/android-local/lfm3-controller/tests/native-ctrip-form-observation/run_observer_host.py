@@ -176,6 +176,8 @@ def form_sampling_body_predecessor(service,anchor,raw,h):
         raise RuntimeError('FORM sampling body must reverse to the complete 0a8 predecessor: '+anchor)
     return proof,True
 
+MANUAL_GOAL_INSERTIONS=['\n    // An explicit, finite fixture owner. This is not a suffix added to a query owner.\n    private static final Pattern MANUAL_PREVIEW_FIXTURE = Pattern.compile("测试采集订单预览\\\\[(?<manualPurpose>preview_open_sku|preview_select_requested_variant|preview_open_confirmation)\\\\]："+SHOP+"准备购买"+UNIT+ITEM\n            +"[，,]预算不超过"+CAP+"[，,]核对商品、数量和总额后停在订单确认页"+NO_TRANSACTION);\n', '            Matcher manual=MANUAL_PREVIEW_FIXTURE.matcher(owner);\n            if(manual.matches())return new NativeAppGoal(owner,explicitlySelectedPackage,manual,\n                    "complete_literal_manual_order_preview_fixture.v1/"+manual.group("manualPurpose"),new OrderPreview(manual));\n']
+
 def generate(source,output,h):
     service=(source/PKG/'HeptaAccessibilityService.java').read_text()
     evidence=(source/PKG/'NativeAppEvidence.java').read_text()
@@ -246,6 +248,15 @@ def generate(source,output,h):
         parts['child_identity_recheck']=h.body(service,'    private PostEffectChildWindowCheck recheckPostEffectChildWindow(')
         parts['child_window_fingerprint']=h.body(service,'    private static String postEffectChildWindowFingerprint(')
         parts['actual_stale_type']=h.body(service,'    private static final class StaleObservation extends IllegalStateException {')
+    bounded_diagnostic_members={
+        'bounded_diagnostic_watermark':('    private static Map<String,Object> observationDiagnosticWatermark','5113e1f47c1fe1e82de2335ed0c265834ca96b3d51d1f9ff2a5958b5b0dc9b7d'),
+        'bounded_sample_census':('    private static void recordNativeSampleCensus','8b8c5e852ebdf566d3ed38925c8301266b0f77f192281c7a50b8f2600f602da3'),
+        'bounded_graph_stale':('    private static void recordNativeGraphStale','ab03b84d144fd4fa2a2d0fb5a6a08577e072bc6cce5d5160f6788820534c2ce7')}
+    for name,(anchor,expected) in bounded_diagnostic_members.items():
+        raw=h.body(service,anchor)
+        if h.sha(raw.encode())!=expected or parts['observation'].count(raw)!=1:
+            raise RuntimeError('exact actual bounded diagnostic helper required: '+name)
+        parts[name]=raw
     evidence_anchors=[
       '    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){',
       '    static void requireProfileTarget(ProfileTarget expected,WindowOwnership actual){',
@@ -303,6 +314,7 @@ def generate(source,output,h):
                            'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
     readonly_owner_inverse=None;form_sampling_gate_inverse=None;partial_banner_inverse=None
+    manual_owner_inverse=None
     for name,expected in BASELINE_FILES.items():
         current=(source/PKG/name).read_bytes();actual=h.sha(current)
         if name=='ObservationStabilityGate.java':
@@ -335,6 +347,25 @@ def generate(source,output,h):
             if current.count(start)!=1 or current.count(end)!=1:raise RuntimeError('calendar minimum reader boundaries')
             prior=current[:current.index(start)]+current[current.index(end):]
             if h.sha(prior)!=r32_provider_pins[name]:raise RuntimeError('calendar minimum reader must reverse to R32 provider')
+            protected_files[name]=actual
+            continue
+        if name=='NativeAppGoal.java' and actual=='fbdd7688e6cb0582001d6f1d5142437be0dd8c25a0d98102b8c0f7023baedd81':
+            # Proof-only removal of the two complete manual-owner additions.
+            # The actual current Goal remains in JAVA and the strict compiler list.
+            proof=current.decode()
+            for inserted in MANUAL_GOAL_INSERTIONS:proof=once(proof,inserted,'')
+            if len(proof.encode())!=23763 or h.sha(proof.encode())!='65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447':
+                raise RuntimeError('manual OWNER must reverse to complete reviewed read-only OWNER')
+            helper=source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py'
+            if h.sha(helper.read_bytes())!='14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353':
+                raise RuntimeError('exact reviewed read-only OWNER inverse helper')
+            prior=runpy.run_path(str(helper))['predecessor'](proof.encode())
+            if len(prior)!=21582 or h.sha(prior)!='9f823e54fee2862e390df6b86d7a2fc9a02d463c073159dc6f38d6c3a31cb5c4':
+                raise RuntimeError('complete preceding OWNER source required')
+            manual_owner_inverse={'current_sha256':actual,'read_only_owner_sha256':h.sha(proof.encode()),
+                'predecessor_sha256':h.sha(prior),'helper':h.meta(helper),
+                'insertion_sha256':[h.sha(value.encode()) for value in MANUAL_GOAL_INSERTIONS],
+                'proof_copy_only':True,'actual_compilation_uses_current_source':True}
             protected_files[name]=actual
             continue
         if name=='NativeAppGoal.java' and actual=='65c87f6254ac109223ddb643f0ef7dd9763c5690414b7ccb8a50e4bc921c6447':
@@ -479,6 +510,7 @@ def generate(source,output,h):
             'protected_production_bodies':protected,'protected_files':protected_files,
             'child_identity_fixture_proof':h.meta(child_fixture) if child_proof is not None else None,
             'readonly_owner_inverse':readonly_owner_inverse,
+            'manual_owner_inverse':manual_owner_inverse,
             'complete_form_sampling_gate_inverse':form_sampling_gate_inverse,
             'partial_banner_refusal_inverse':partial_banner_inverse,
             'protected_legacy_files':BASELINE_FILES,'current_ax_fail_only_ports_preserved':True,
@@ -504,6 +536,7 @@ def main():
     inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
     inputs += [source/'tests/native-search-carousel-edge/protected_partial_edge.py']
     inputs += [source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py']
+    inputs += [source/'tests/native-ctrip-child-identity/protected_fixture.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],

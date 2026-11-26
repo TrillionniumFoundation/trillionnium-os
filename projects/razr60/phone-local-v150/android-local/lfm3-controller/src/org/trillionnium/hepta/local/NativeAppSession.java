@@ -69,6 +69,7 @@ final class NativeAppSession {
     // This field is never reset by close, failed journaling or a new Offer wrapper.
     private CalendarOffer calendarDateOffer;
     private CalendarSelectionEvidence calendarSelection;
+    private volatile ManualFixture manualFixture;
 
     /** Controller wake-up only. Implementations must hand control back to the
      * ordinary task worker; this interface has no observation or input method. */
@@ -747,6 +748,59 @@ final class NativeAppSession {
         e.put("model_actions_required",true);e.put("screenshots_used_as_text",false);e.put("automatic_actions_or_replay",false);
         e.put("query_result_verified",false);journal.write("native-app-binding.json",e);
     }
+    /** The old model query remains real. Only its independently verified detail
+     * page can enter this separate, one-use fixture phase. */
+    boolean manualFixtureDetailReady(String observationId){
+        NativeOrderPreviewManual.Owner owner=NativeOrderPreviewManual.recognize(goal);if(owner==null)return false;live();
+        return "preview_open_sku".equals(owner.purpose)&&manualFixture==null
+                &&current!=null&&current.frame.observationId.equals(observationId)
+                &&inFlight==null&&pending==null&&product!=null&&product.quote!=null
+                &&"detail_display".equals(product.quote.kind)&&productQueryProof!=null&&productOpenProof!=null
+                &&productSemantic!=null&&productSemantic.equals(product.quote.semanticFingerprint);
+    }
+    ManualFixture beginManualFixture(String observationId,BackgroundSession background,long taskDeadline,long now)throws Exception{
+        need(manualFixtureDetailReady(observationId),"one real model-query/detail fixture source required");
+        verifyInstalled();need(installed.profileTarget!=null&&background!=null&&background.selection==selection
+                &&background.selection.independentProfileDisplay&&background.profileTarget().same(installed.profileTarget)
+                &&background.displayId()==displayId&&generation.equals(background.generation)
+                &&now>=current.frame.capturedElapsedMs&&now<taskDeadline&&now<background.expiresElapsed,
+                "actual current managed-profile lease and original lifetime required");
+        manualFixture=new ManualFixture(this,background,NativeOrderPreviewManual.recognize(goal),current.frame,taskDeadline);
+        return manualFixture;
+    }
+    static final class ManualFixture implements AutoCloseable {
+        final NativeAppSession session;
+        final BackgroundSession background;
+        final NativeOrderPreviewManual.Owner owner;
+        final NativeAppEvidence.Frame before;
+        final long taskDeadline,leaseDeadline;
+        private volatile boolean closed;
+        private ManualFixture(NativeAppSession session,BackgroundSession background,NativeOrderPreviewManual.Owner owner,
+                NativeAppEvidence.Frame before,long taskDeadline){
+            this.session=session;this.background=background;this.owner=owner;this.before=before;
+            this.taskDeadline=taskDeadline;leaseDeadline=background.expiresElapsed;
+        }
+        void requireCurrent(long now){
+            session.live();
+            need(!closed&&session.manualFixture==this&&session.current!=null&&session.current.frame==before
+                    &&session.inFlight==null&&session.pending==null&&session.installed.profileTarget!=null
+                    &&session.selection==background.selection&&background.selection.taskTarget==session.target
+                    &&session.generation.equals(background.generation)&&session.displayId==background.displayId()
+                    &&now>=before.capturedElapsedMs&&now<taskDeadline&&now<leaseDeadline,
+                    "manual fixture owner, lease or original lifetime ended");
+        }
+        Map<String,Object> binding(String controllerBuildSha){
+            Map<String,Object> out=NativeAppEvidence.map();out.put("task_id",session.taskId);
+            out.put("owner_sha256",owner.goal.ownerSha256);out.put("target_sha256",session.target.targetSha256);
+            out.put("authorization_sha256",session.authorization.authorization.sha256);out.put("selection_sha256",session.selectionSha);
+            out.put("installed_set_sha256",session.installed.apkSetSha256);out.put("goal_sha256",owner.goal.contractSha256);
+            out.put("background_generation",session.generation);
+            out.putAll(NativeAppEvidence.profileActionIdentity(before.profileWindow));
+            out.put("controller_build_identity_sha256",controllerBuildSha);return NativeAppEvidence.immutableMap(out);
+        }
+        public void close(){closed=true;}
+    }
+
     void bindSearchPlanning(NativeSearchSession session){
         live();need(session!=null&&session.nativeTask==this&&searchPlanning==null&&current==null&&observations.isEmpty()
                 &&inFlight==null&&pending==null&&ordinal==0&&NativeSearchSession.eligible(this),"one explicit initial native search planning Session required");
@@ -1205,7 +1259,19 @@ final class NativeAppSession {
     }
     /** Read eligibility after one real, drained navigation effect. It cannot
      * replay that effect or extend the original pending-transition clock. */
-    static final class PostEffectReadPermit {
+    /** Closed read-only transport contract. Only the two private Session producers
+     * below can create it; a BACK outcome never acquires the OPEN action guard. */
+    static abstract class PostActionReadAccess {
+        private PostActionReadAccess(){}
+        abstract void requireCurrent();
+        abstract String originalObservationId();
+        abstract long transitionDeadline();
+        abstract void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId);
+        abstract void admit(boolean retry);
+        abstract boolean admitted(boolean retry);
+        abstract Map<String,Object> evidence();
+    }
+    static final class PostEffectReadPermit extends PostActionReadAccess {
         private final NativeAppSession session;private final Attempt attempt;
         private final java.util.concurrent.atomic.AtomicInteger admissions=new java.util.concurrent.atomic.AtomicInteger();
         private PostEffectReadPermit(NativeAppSession session,Attempt attempt){this.session=session;this.attempt=attempt;}
@@ -1252,6 +1318,168 @@ final class NativeAppSession {
                 "post-effect read lost its durable private pending navigation");
         requireFrame(a.before.frame);
     }
+    /** One original calendar BACK await, issued before dispatch but granting no
+     * read admission. Only the real Controller return/drain handoff can seal it. */
+    static final class CalendarBackAwait {
+        private final NativeAppSession session;private final Attempt attempt;
+        private final long issued,deadline;private final String actionSha;
+        private final java.util.concurrent.atomic.AtomicInteger state=new java.util.concurrent.atomic.AtomicInteger();
+        private Map<String,Object> sealed,sealedProjection;private String sealedSha,projectionSha,returnedExecutionSha;
+        private java.util.concurrent.atomic.AtomicBoolean cancellation;
+        private boolean consumed;
+        private CalendarBackAwait(NativeAppSession session,Attempt attempt,long issued,long deadline){
+            this.session=session;this.attempt=attempt;this.issued=issued;this.deadline=deadline;
+            Map<String,Object> v=NativeAppEvidence.map();v.put("action_schema",attempt.action.actionSchema);
+            v.put("action",attempt.action.action);v.put("observation_id",attempt.action.observationId);
+            v.put("package",attempt.action.packageName);v.put("model_run_id",attempt.run);
+            v.put("purpose",attempt.purpose);v.put("ordinal",attempt.ordinal);v.put("step",attempt.step);
+            v.put("before_source_sha256",attempt.before.frame.sourceRecordSha);actionSha=NativeAppEvidence.fingerprint(v);
+        }
+        synchronized void closeAfterReturnedAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){
+            boolean accepted=false;
+            try{
+                if(execution==null||cancelled==null||cancelled.get()||state.get()!=0)return;
+                Map<String,Object> value=NativeAppEvidence.immutableMap(execution);
+                String hash=NativeAppEvidence.fingerprint(value);
+                Map<String,Object> original=NativeAppEvidence.map();original.putAll(value);
+                original.remove("phases");original.remove("live_profile_before_effect");
+                Map<String,Object> projection=NativeAppEvidence.immutableMap(original);
+                if(!cancelled.get()&&state.compareAndSet(0,2)){
+                    sealed=value;sealedSha=hash;sealedProjection=projection;
+                    projectionSha=NativeAppEvidence.fingerprint(projection);cancellation=cancelled;accepted=true;
+                }
+            }finally{state.set(2);if(!accepted){sealed=null;sealedSha=null;sealedProjection=null;projectionSha=null;}}
+        }
+        synchronized void close(){state.set(2);sealed=null;sealedSha=null;sealedProjection=null;projectionSha=null;}
+        private synchronized Map<String,Object> originalExecution(Map<String,Object> projection){
+            if(state.get()!=2||consumed||sealed==null||sealedProjection==null||cancellation==null||cancellation.get()
+                    ||!sealedProjection.equals(projection)||!projectionSha.equals(NativeAppEvidence.fingerprint(projection)))return null;
+            return sealed;
+        }
+        private synchronized boolean consume(Map<String,Object> execution){
+            if(originalExecution(execution)==null)return false;
+            consumed=true;returnedExecutionSha=sealedSha;
+            sealed=null;sealedSha=null;sealedProjection=null;projectionSha=null;return !cancellation.get();
+        }
+        private synchronized boolean returned(){return state.get()==2&&consumed&&cancellation!=null&&!cancellation.get();}
+    }
+    CalendarBackAwait calendarBackAwait(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{
+        Attempt a=inFlight;
+        if(a==null||!"return_from_calendar".equals(a.purpose)||!"back".equals(action.action)
+                ||!NativeCtripFlightPage.supported(goal)||installed.profileTarget==null
+                ||a.before.frame.profileWindow==null||a.before.frame.capture==null||!a.before.frame.capture.nativeText()
+                ||a.flight==null||!NativeCtripFlightPage.CALENDAR.equals(a.flight.phase))return null;
+        live();need(a.action==action&&a.run.equals(run)&&a.before==current&&a.journaled
+                &&a.before.frame.observationId.equals(observation)&&a.started<=issued
+                &&a.flight!=null&&NativeCtripFlightPage.CALENDAR.equals(a.flight.phase)&&flight==a.flight
+                &&NativeCtripFlightPage.supported(goal)&&installed.profileTarget!=null
+                &&a.before.frame.profileWindow!=null&&a.before.frame.capture!=null&&a.before.frame.capture.nativeText()
+                &&action.toolChildOrigin==null&&action.nodeId==null&&goal.packageName.equals(action.packageName)
+                &&a.guard==null&&a.calendarBackAwait==null&&pending==null&&deadline>issued&&deadline-issued<=8000,
+                "calendar BACK await requires its original journaled calendar action");
+        current.requireCurrent(action);requireFrame(a.before.frame);
+        NativeAppEvidence.requireProfileTarget(installed.profileTarget,a.before.frame.profileWindow);
+        a.calendarBackAwait=new CalendarBackAwait(this,a,issued,deadline);return a.calendarBackAwait;
+    }
+    /** Distinct from OPEN: this type can continue only a typed AX B read failure.
+     * It has no action claim and cannot dispatch or replay the original BACK. */
+    static final class CalendarBackReadPermit extends PostActionReadAccess {
+        private final NativeAppSession session;private final Attempt attempt;
+        private final java.util.concurrent.atomic.AtomicInteger admissions=new java.util.concurrent.atomic.AtomicInteger();
+        private CalendarBackReadPermit(NativeAppSession session,Attempt attempt){this.session=session;this.attempt=attempt;}
+        void requireCurrent(){session.requireCalendarBackRead(attempt);}
+        String originalObservationId(){requireCurrent();return attempt.before.frame.observationId;}
+        long transitionDeadline(){requireCurrent();return attempt.finished+OBSERVED_TRANSITION_MS;}
+        void requireOwner(NativeAppSession owner,Object authorization,String task,Object selection,String generation,int displayId){
+            requireCurrent();need(owner==session&&authorization==session.authorization&&session.taskId.equals(task)
+                    &&selection==session.selection&&session.generation.equals(generation)&&displayId==session.displayId,
+                    "calendar BACK read belongs to another private Session or background");
+        }
+        void admit(boolean retry){requireCurrent();need(admissions.compareAndSet(retry?1:0,retry?2:1),"calendar BACK read admission already consumed");}
+        boolean admitted(boolean retry){return admissions.get()==(retry?2:1);}
+        Map<String,Object> evidence(){
+            requireCurrent();Map<String,Object> v=session.base();v.put("schema","hepta.native-calendar-back-read-permit.v1");
+            v.put("original_model_run_id",attempt.run);v.put("original_observation_id",attempt.before.frame.observationId);
+            v.put("original_action_sha256",attempt.calendarBackAwait.actionSha);v.put("purpose",attempt.purpose);
+            v.put("action_record_sha256",attempt.receipt.get("step_action_record_sha256"));
+            v.put("entered_execution_projection_sha256",attempt.calendarBackExecutionSha);
+            v.put("operation_id",attempt.calendarBackOperation);v.put("drained_outcome_elapsed_ms",attempt.finished);
+            v.put("original_transition_deadline_elapsed_ms",transitionDeadline());v.put("source_calendar_window_id",attempt.before.frame.windowId);
+            v.put("effect_entered",true);v.put("worker_drained",true);v.put("action_replayed",false);
+            v.put("typed_ax_read_failure_only",true);v.put("grants_action_authority",false);v.put("business_verified",false);
+            return NativeAppEvidence.immutableMap(v);
+        }
+    }
+    CalendarBackReadPermit calendarBackReadPermit(ActionDecision action,String run,String observation){
+        Attempt a=pending;if(a==null||!a.calendarBackReadEligible)return null;
+        need(a.action==action&&a.run.equals(run)&&a.before.frame.observationId.equals(observation),
+                "calendar BACK read must follow its same actual action");
+        requireCalendarBackRead(a);need(!a.calendarBackPermitIssued,"calendar BACK read context already issued");
+        a.calendarBackPermitIssued=true;return new CalendarBackReadPermit(this,a);
+    }
+    private void requireCalendarBackRead(Attempt a){
+        live();need(a!=null&&a==pending&&a.before==current&&inFlight==null&&a.journaled&&a.outcomeJournaled
+                &&a.calendarBackReadEligible&&a.calendarBackAwait!=null&&a.calendarBackAwait.returned()
+                &&a.guard==null&&!a.postEffectReadEligible&&"return_from_calendar".equals(a.purpose)
+                &&"back".equals(a.action.action)&&a.action.toolChildOrigin==null&&NativeCtripFlightPage.supported(goal)
+                &&a.flight!=null&&NativeCtripFlightPage.CALENDAR.equals(a.flight.phase)
+                &&a.receipt!=null&&Boolean.TRUE.equals(a.receipt.get("accepted"))
+                &&Boolean.TRUE.equals(a.receipt.get("dispatched"))&&Boolean.FALSE.equals(a.receipt.get("stale"))
+                &&Boolean.TRUE.equals(a.receipt.get("calendar_back_read_recovery_available"))
+                &&NativeAppEvidence.sha(a.calendarBackExecutionSha)&&NativeAppEvidence.id(a.calendarBackOperation)
+                &&a.finished>=a.started&&a.finished<=Long.MAX_VALUE-OBSERVED_TRANSITION_MS,
+                "calendar BACK read lost its durable returned private outcome");
+        requireFrame(a.before.frame);
+    }
+    private boolean provedReturnedCalendarBack(Attempt a,Map<String,Object> outcomeProjection,long finished){
+        CalendarBackAwait w=a.calendarBackAwait;
+        Map<String,Object> x=w==null?null:w.originalExecution(outcomeProjection);
+        if(w==null||w.session!=this||w.attempt!=a||a.guard!=null||a.before!=current||pending!=null
+                ||!"return_from_calendar".equals(a.purpose)||!"back".equals(a.action.action)
+                ||a.action.toolChildOrigin!=null||a.flight==null||!NativeCtripFlightPage.CALENDAR.equals(a.flight.phase)
+                ||!NativeCtripFlightPage.supported(goal)||a.before.frame.profileWindow==null||x==null)return false;
+        if(!"hepta.action-execution.v1".equals(x.get("schema"))||!"serial_action_worker".equals(x.get("execution_kind"))
+                ||!(x.get("operation_id") instanceof String)||!NativeAppEvidence.id((String)x.get("operation_id"))
+                ||!taskId.equals(x.get("task_id"))||!a.run.equals(x.get("model_run_id"))
+                ||!a.before.frame.observationId.equals(x.get("observation_id"))
+                ||!authorization.authorization.sha256.equals(x.get("authorization_sha256"))
+                ||executionNumber(x,"window_id")!=a.before.frame.windowId||executionNumber(x,"display_id")!=displayId
+                ||!generation.equals(x.get("background_generation"))||!Boolean.FALSE.equals(x.get("retired"))
+                ||!x.containsKey("retirement_reason")||x.get("retirement_reason")!=null
+                ||!Boolean.TRUE.equals(x.get("effect_entered"))||!Boolean.TRUE.equals(x.get("effect_returned"))
+                ||!Boolean.TRUE.equals(x.get("api_accepted"))||!Boolean.TRUE.equals(x.get("worker_drained"))
+                ||!Boolean.TRUE.equals(x.get("callback_published"))||!Boolean.TRUE.equals(x.get("callback_authority_current"))
+                ||!Boolean.FALSE.equals(x.get("automatic_redispatch"))||x.get("native_action_guard")!=null)return false;
+        long queued=executionNumber(x,"queued_elapsed_ms"),drained=executionNumber(x,"worker_drained_elapsed_ms");
+        long entered=calendarBackPhase(x,"effect_entered"),returned=calendarBackPhase(x,"effect_returned");
+        long drainedPhase=calendarBackPhase(x,"worker_drained"),callback=calendarBackPhase(x,"callback_published");
+        if(queued<a.started||queued<w.issued||w.deadline<=queued||w.deadline-queued>8000
+                ||executionNumber(x,"deadline_elapsed_ms")!=w.deadline||entered<queued||returned<entered
+                ||drained<returned||drainedPhase!=drained||callback<drained||callback>finished||finished>=w.deadline)return false;
+        Object profile=x.get("live_profile_before_effect");if(!(profile instanceof Map<?,?>))return false;
+        Map<?,?> p=(Map<?,?>)profile;
+        org.trillionnium.hepta.background.WindowOwnership owner=a.before.frame.profileWindow;
+        long observed=executionNumber(p,"observed_elapsed_ms"),expires=executionNumber(p,"expires_elapsed_ms");
+        if(!"hepta.profile-window-ownership.v1".equals(p.get("schema"))
+                ||!generation.equals(p.get("generation"))||!owner.targetSha256.equals(p.get("target_identity_sha256"))
+                ||!owner.taskTokenId.equals(p.get("task_token_id"))||executionNumber(p,"display_id")!=displayId
+                ||executionNumber(p,"window_id")!=owner.windowId||executionNumber(p,"task_id")!=owner.taskId
+                ||executionNumber(p,"parent_task_id")!=owner.parentTaskId||executionNumber(p,"user_id")!=owner.userId
+                ||executionNumber(p,"user_serial")!=owner.userSerial||executionNumber(p,"full_uid")!=owner.fullUid
+                ||observed<queued||observed>entered||expires<=entered
+                ||!Boolean.FALSE.equals(p.get("serialized_token_is_authority"))||!Boolean.FALSE.equals(p.get("grants_action_authority")))return false;
+        return w.consume(outcomeProjection);
+    }
+    private static long calendarBackPhase(Map<String,Object> x,String phase){
+        Object raw=x.get("phases");if(!(raw instanceof List<?>))return -1;
+        long value=-1;int count=0;
+        for(Object item:(List<?>)raw){
+            if(!(item instanceof Map<?,?>))return -1;Map<?,?> row=(Map<?,?>)item;
+            if(phase.equals(row.get("phase"))){count++;value=executionNumber(row,"elapsed_ms");}
+        }
+        return count==1?value:-1;
+    }
+
     /** Read-only identity of one durable accepted transition. It has no action
      * admission, retry entitlement or method that can renew the original clock. */
     static final class PendingObservation {
@@ -1495,6 +1723,8 @@ final class NativeAppSession {
         final NativeCtripFlightPage.Page flight;final NativeXiaomiProductPage.Page product;final long started;
         final LocalDate date;long finished;Map<String,Object> receipt;boolean journaled;ActionGuard guard;
         boolean outcomeJournaled,postEffectReadEligible,postEffectPermitIssued;String enteredExecutionSha,enteredOperation;
+        CalendarBackAwait calendarBackAwait;boolean calendarBackReadEligible,calendarBackPermitIssued;
+        String calendarBackExecutionSha,calendarBackOperation;
         Attempt(int ordinal,int step,String run,ActionDecision action,NativeAppDomain before,String purpose,
                 NativeCtripFlightPage.Page flight,NativeXiaomiProductPage.Page product,long started,LocalDate date){
             this.ordinal=ordinal;this.step=step;this.run=run;this.action=action;this.before=before;this.purpose=purpose;
@@ -1576,6 +1806,7 @@ final class NativeAppSession {
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
         boolean recovery=!accepted&&!dispatched&&stale&&provedUnenteredGuardedAction(a,actionExecution,finished);
         boolean postEffect=accepted&&dispatched&&!stale&&provedEnteredGuardedAction(a,actionExecution,finished);
+        boolean calendarBack=accepted&&dispatched&&!stale&&provedReturnedCalendarBack(a,actionExecution,finished);
         boolean release=recovery&&NativeActionSnapshotCheck.QUERY.equals(a.purpose)
                 &&a.date!=null&&queryAttempts.contains(a.date);
         boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
@@ -1584,6 +1815,7 @@ final class NativeAppSession {
         boolean dateRelease=!accepted&&!dispatched&&stale&&provedUnenteredDateNavigation(a,actionExecution,finished);
         boolean productRelease=!accepted&&!dispatched&&stale&&provedUnenteredProductQuery(a,actionExecution,finished,recovery);
         if(a.guard!=null)a.guard.close();
+        if(a.calendarBackAwait!=null)a.calendarBackAwait.close();
         Map<String,Object> outcome=NativeAppEvidence.map();outcome.put("accepted",accepted);outcome.put("dispatched",dispatched);outcome.put("stale",stale);
         outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);
         outcome.put("query_reservation_released",release);
@@ -1594,6 +1826,10 @@ final class NativeAppSession {
         if(postEffect){
             outcome.put("post_effect_read_recovery_available",true);
             outcome.put("post_effect_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+        }
+        if(calendarBack){
+            outcome.put("calendar_back_read_recovery_available",true);
+            outcome.put("calendar_back_execution_projection_sha256",a.calendarBackAwait.returnedExecutionSha);
         }
         if(recovery){
             Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-stale-recovery-proof.v1");
@@ -1655,6 +1891,8 @@ final class NativeAppSession {
         need(dispatched,"native action effect not dispatched");
         need(pending==null,"new native action while preceding transition unresolved");pending=a;
         if(postEffect){a.enteredExecutionSha=NativeAppEvidence.fingerprint(actionExecution);a.enteredOperation=(String)actionExecution.get("operation_id");a.postEffectReadEligible=true;}
+        if(calendarBack){a.calendarBackExecutionSha=a.calendarBackAwait.returnedExecutionSha;
+            a.calendarBackOperation=(String)actionExecution.get("operation_id");a.calendarBackReadEligible=true;}
     }
     /** An exact Controller close-and-seal handoff is mandatory; JSON alone,
      * a normal closed guard or the unentered receipt never qualifies. */
@@ -1940,6 +2178,7 @@ final class NativeAppSession {
     void retire()throws Exception{if(retired)return;retired=true;
         if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
         if(calendarDateOffer!=null)calendarDateOffer.close();
+        if(manualFixture!=null)manualFixture.close();
         Map<String,Object> e=base();e.put("action_domain_retired",true);e.put("pending_action",inFlight!=null||pending!=null);
         e.put("invalid",invalid);e.put("invalid_reason",invalidReason);e.put("accepted_completion_candidate",acceptedClaim!=null);
         e.put("progress",progress());journal.write("native-app-retired.json",e);

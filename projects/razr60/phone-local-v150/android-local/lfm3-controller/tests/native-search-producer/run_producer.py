@@ -15,6 +15,7 @@ def main():
  for arg in ('source','output','java-home','json-jar'):ap.add_argument('--'+arg,type=Path,required=True)
  ap.add_argument('--loading-original',type=Path)
  ap.add_argument('--incomplete-final-original',type=Path)
+ ap.add_argument('--repeated-after-target-original',type=Path)
  ap.add_argument('--captured-label-original',type=Path)
  ap.add_argument('--after-target-original',type=Path,action='append',default=[])
  args=ap.parse_args();source=args.source.resolve();out=args.output.resolve();jdk=args.java_home.resolve();jar=args.json_jar.resolve()
@@ -26,6 +27,8 @@ def main():
  if captured_original_before and (captured_original_before['bytes'],captured_original_before['sha256'])!=(121578,'77eee186865f051c625b39b9c28da421519c371ad95099f0387d3a673f310c7e'):raise RuntimeError('exact complete a774 original required')
  incomplete_final_before=meta(args.incomplete_final_original) if args.incomplete_final_original else None
  if incomplete_final_before and (incomplete_final_before['bytes'],incomplete_final_before['sha256'])!=(370127,'5c0bd265787a6c9b239c4c7827a1339c3603b4f2017d1a2237c90fd34d5feb5f'):raise RuntimeError('exact complete task521 original required')
+ repeated_before=meta(args.repeated_after_target_original) if args.repeated_after_target_original else None
+ if repeated_before and (repeated_before['bytes'],repeated_before['sha256'])!=(488040,'3b06fcd3a914eef1283a223f5e2b71f1d2ca66e2f352b838e7de09e0031e79fb'):raise RuntimeError('exact complete 88b original required')
  out.mkdir(mode=0o700);sys.dont_write_bytecode=True
  test=source/'tests/native-search-producer';pkg=source/'src/org/trillionnium/hepta/local'
  query=module(source/'tests/web-flight/run_query_host_tests.py','producer_query')
@@ -94,11 +97,14 @@ def main():
  if raw.count(start)!=1 or raw.count(end)!=1:raise RuntimeError('legacy callback anchors')
  parts['legacy_callback']=raw[raw.index(start):raw.index(end)+len(end)]
  parts['cases']=(test/'ProducerCases.fragment').read_text()
+ first_case='        one("actual_profile_reply_contract_for_producer_fixture",()->{'
+ if parts['cases'].count(first_case)!=1:raise RuntimeError('one first production case anchor')
+ parts['cases']=parts['cases'].replace(first_case,'        replacementReadOrderCases();\n'+first_case,1)+(test/'ReplacementReadOrderCases.fragment').read_text()
  if parts['cases'].count('        finalCensusRecoveryCases();')!=1:raise RuntimeError('one original producer case registration anchor')
  parts['cases']=parts['cases'].replace('        finalCensusRecoveryCases();','        finalCensusRecoveryCases();\n        modalPreludeCases();\n        incompleteCensusCases();\n        incompleteThenFinalCases();\n        publicationReplacementCases();\n        afterTargetReplacementCases();\n        postBackClientCacheCases();\n        capturedLabelCases();\n        initialClientCacheCases();',1)+(test/'ModalPreludeCases.fragment').read_text()+(test/'IncompleteCensusCases.fragment').read_text()+(test/'IncompleteThenFinalCases.fragment').read_text()+(test/'PublicationReplacementCases.fragment').read_text()+(test/'AfterTargetCensusCases.fragment').read_text()+(test/'PostBackClientCacheCases.fragment').read_text()+(test/'CapturedLabelCases.fragment').read_text()+(test/'InitialClientCacheCases.fragment').read_text()
  cache_report_anchor='        report.put("after_target_census_evidence",afterTargetEvidence);'
  if parts['cases'].count(cache_report_anchor)!=1:raise RuntimeError('one original evidence report anchor')
- parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);\n        report.put("incomplete_then_final_evidence",incompleteThenFinalEvidence);',1)
+ parts['cases']=parts['cases'].replace(cache_report_anchor,cache_report_anchor+'\n        report.put("post_back_cache_event_evidence",postBackCacheEventEvidence);\n        report.put("captured_label_evidence",capturedLabelEvidence);\n        report.put("initial_cache_evidence",initialCacheEvidence);\n        report.put("incomplete_then_final_evidence",incompleteThenFinalEvidence);\n        report.put("replacement_read_order_evidence",replacementReadOrderEvidence);',1)
  parts['loading_cases']=(test/'LoadingRetryCases.fragment').read_text()+(test/'ProgressHomeCases.fragment').read_text()
  parts['successor_cases']=(test/'NoEffectSuccessorCases.fragment').read_text()+(test/'FullPageSwapCases.fragment').read_text()+(test/'SearchIconCases.fragment').read_text()+(test/'NavigationWindowCases.fragment').read_text()
  parts['sampling_cases']=(test/'SamplingExhaustionCases.fragment').read_text()
@@ -210,6 +216,7 @@ def main():
  report['modal_fixture_before']=meta(modal_fixture)
  original_before=meta(args.loading_original) if args.loading_original else None
  report['external_incomplete_final_original_before']=incomplete_final_before
+ report['external_repeated_after_target_original_before']=repeated_before
  report['incomplete_final_policy_boundary']={'intentional_shared_budget_contract_change':True,'incomplete_D_replacement_once_before_complete_replacement_only':True,'complete_final_replacement_once':True,'original_total_C_read_cap':8,'original_navigation_deadline_ms':24000,'same_attempt_model_slot_and_owner':True,'new_device_success_claimed':False}
  report['external_after_target_originals_before']=after_target_before
  report['external_after_target_replay_enabled']=bool(after_target_before)
@@ -228,10 +235,13 @@ def main():
  try:
   argsfile=out/'javac.args';argsfile.write_text('\n'.join('"'+str(p)+'"' for p in paths)+'\n')
   if run('javac',[jdk/'bin/javac','-J-Xmx768m','--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',jar,'-d',classes,'@'+str(argsfile)])==0:
-   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+(['-Dhepta.test.incompleteFinalOriginal='+str(args.incomplete_final_original.resolve())] if args.incomplete_final_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
+   if run('producer-cases',[jdk/'bin/java','-ea','-Dhepta.test.imageModalCensuses='+str(modal_fixture),'-Dhepta.test.fullPageCensuses='+str(test/'0b742-execution-censuses.json'),'-Dhepta.test.progressHome='+str(test/'dcc738-progress-censuses.json'),'-Dhepta.test.retiredSearch='+str(test/'99c24-retired-search.json'),'-Dhepta.test.retiredNoInput='+str(test/'92dc-retired-without-input.json')]+['-Dhepta.test.afterTargetOriginal'+str(i+1)+'='+str(p.resolve()) for i,p in enumerate(args.after_target_original)]+(['-Dhepta.test.capturedLabelOriginal='+str(args.captured_label_original.resolve())] if args.captured_label_original else [])+(['-Dhepta.test.incompleteFinalOriginal='+str(args.incomplete_final_original.resolve())] if args.incomplete_final_original else [])+(['-Dhepta.test.repeatedAfterTargetOriginal='+str(args.repeated_after_target_original.resolve())] if args.repeated_after_target_original else [])+['-cp',str(classes)+':'+str(jar),'org.trillionnium.hepta.local.HeptaAccessibilityService',out/'CASES.json',out/'private-fixture']+([args.loading_original.resolve()] if args.loading_original else []))==0:
     report['case_result']=json.loads((out/'CASES.json').read_text());report['all_pass']=report['case_result']['all_pass']
     expected=json.loads((test/'AfterTargetExpectedCases.json').read_text())
     names=[r['name'] for r in report['case_result']['results']]
+    report['read_order_observed_cases']=[n for n in names if n.startswith('read_order_')]
+    report['read_order_exact_count']=len(report['read_order_observed_cases'])==(20 if repeated_before else 19)
+    report['all_pass']=report['all_pass'] and report['read_order_exact_count']
     required=expected['synthetic_actual_call_path']+(expected['archived_pair_optional_external'] if after_target_before else [])
     observed=[n for n in names if n.startswith('after_target_')]
     report['after_target_expected_cases']=required;report['after_target_observed_cases']=observed
@@ -266,6 +276,9 @@ def main():
   report['external_incomplete_final_original_after']=meta(args.incomplete_final_original) if args.incomplete_final_original else None
   report['external_incomplete_final_original_unchanged']=incomplete_final_before==report['external_incomplete_final_original_after']
   report['all_pass']=report['all_pass'] and report['external_incomplete_final_original_unchanged']
+  report['external_repeated_after_target_original_after']=meta(args.repeated_after_target_original) if args.repeated_after_target_original else None
+  report['external_repeated_after_target_original_unchanged']=repeated_before==report['external_repeated_after_target_original_after']
+  report['all_pass']=report['all_pass'] and report['external_repeated_after_target_original_unchanged']
   report['modal_fixture_after']=meta(modal_fixture);report['modal_fixture_unchanged']=report['modal_fixture_before']==report['modal_fixture_after']
   report['all_pass']=report['all_pass'] and report['inputs_unchanged'] and report['tools_unchanged'] and report['external_original_unchanged'] and report['modal_fixture_unchanged'] and report['external_after_target_originals_unchanged']
   write(out/'RESULT.json',json.dumps(report,ensure_ascii=False,indent=2)+'\n')
