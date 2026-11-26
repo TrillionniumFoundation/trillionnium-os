@@ -1,0 +1,259 @@
+
+    /** All SDK objects, authorization and Session permits here are explicit host IO.
+     * Real worker/7-argument callback/checkpoint/Gate/AX receipt/current-window code executes. */
+    static org.json.JSONObject pairOriginal;
+    static boolean pairBackMode;
+    static final String PAIR_ERROR="无法完整读取操作后的页面，本次任务已结束";
+    @SuppressWarnings("unchecked")
+    static Map<String,Object> pairMap(Object value){return (Map<String,Object>)value;}
+    static Object pairOptional(Object value,String name)throws Exception{
+        try{return axField(value,name);}catch(NoSuchFieldException absent){return null;}
+    }
+    static void pairSet(Object value,String name,Object replacement)throws Exception{
+        java.lang.reflect.Field field=value.getClass().getDeclaredField(name);field.setAccessible(true);field.set(value,replacement);
+    }
+    static void pairRawGraph(ObserverPipelineHost f,Graph graph,boolean second)throws Exception{
+        axReadGraph(f,graph,"explicit complete 8120 host read");
+        org.json.JSONObject raw=pairOriginal.getJSONObject(second?"after":"before");
+        org.json.JSONObject identity=raw.getJSONObject("identity"),read=raw.getJSONObject("read");
+        graph.windowId=identity.getInt("window_id");graph.nativeActionWidth=identity.getInt("width");graph.nativeActionHeight=identity.getInt("height");
+        graph.bounds.left=0;graph.bounds.top=0;graph.bounds.right=graph.nativeActionWidth;graph.bounds.bottom=graph.nativeActionHeight;
+        graph.nativeActionWindows=immutableMap(read.getJSONObject("reported_windows").toMap());
+        // Only the execution display is an explicit host IO mapping. Every window/native node value stays original.
+        Map<String,Object> windows=new LinkedHashMap<String,Object>(graph.nativeActionWindows);windows.put("display_id",graph.displayId);
+        List<Object> windowRows=new ArrayList<Object>();
+        for(Object old:(List<?>)windows.get("windows")){
+            Map<String,Object> row=new LinkedHashMap<String,Object>(pairMap(old));row.put("display_id",graph.displayId);windowRows.add(row);
+        }
+        windows.put("windows",windowRows);graph.nativeActionWindows=immutableMap(windows);
+        graph.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,graph.nativeActionWidth,graph.nativeActionHeight},
+                "android.widget.FrameLayout",1,graph.displayId,new int[]{0,0,graph.nativeActionWidth,graph.nativeActionHeight},graph.packageName);
+        List<NativeActionSnapshotCheck.Node> nativeRows=new ArrayList<NativeActionSnapshotCheck.Node>();
+        for(Object row:raw.getJSONArray("native_nodes").toList())nativeRows.add(new NativeActionSnapshotCheck.Node(pairMap(row)));
+        graph.nativeActionNodes=Collections.unmodifiableList(nativeRows);
+        graph.rows.clear();int retained=read.getInt("retained_nodes");
+        for(int i=0;i<retained;i++){
+            String id="n"+i,path=(String)nativeRows.get(i).v.get("path");
+            graph.rows.add(new PhoneObservation.Node(id,graph.packageName,path,SnapshotChecks.OWNER));
+            if(i>0)graph.refs.put(id,new NodeRef(SnapshotChecks.OWNER));
+        }
+        graph.collectionStats=new PhoneObservation.CollectionStats(1536,512,6144,nativeRows.size(),retained,
+                read.getInt("native_text_utf16"),0,0,0,0,1);
+        graph.digest=raw.getString("app_tree_sha256");
+        graph.profileWindow=axReadOwner(f,f.taskBackground.observedProfileTarget,graph.windowId,100,90,AX_READ_TOKEN);
+        graph.nativeObservationComplete=completeNativeObservationGraph(graph);
+    }
+    static final class SamplingPairScenario {
+        final ObserverPipelineHost f;final NativeAppSession session;final LocalTaskController controller;
+        final NativeAppSession.PostActionReadAccess permit;final AxReadResult out=new AxReadResult();
+        final PhoneObservation prior;final Graph priorGraph;final int first,priorWrites,priorWindows;
+        final long started,transition,taskDeadline;ObservationRequest request;Graph a,d;Object pureA;String fault="none";
+        boolean failExtra=true;volatile int windowReads,sampleHookCalls;int legacyArity;Map<String,Object> firstCensus,secondCensus;
+        SamplingPairScenario()throws Exception{
+            f=axReadFixture();ObservationRequest initial=axPair(f);drainAx(f);
+            check(initial.finished&&f.current!=null&&f.errors.isEmpty(),"real original initial AX publication");
+            prior=f.current;priorGraph=f.currentGraph;first=f.reads.get();priorWrites=MobiMindPrivateFiles.writes;
+            priorWindows=f.windowChecks.get();SystemClock.now+=100;started=SystemClock.now;transition=started+14900;taskDeadline=started+480000;
+            controller=f.ownedController;session=(NativeAppSession)f.nativeAxMode.nativeTask;
+            permit=pairBackMode?new NativeAppSession.CalendarBackReadPermit(session,f.taskAuthorization,f.lease,
+                    f.taskBackground.selection,f.taskBackground.generation,9,transition):
+                    new NativeAppSession.PostEffectReadPermit(session,f.taskAuthorization,f.lease,f.taskBackground.selection,
+                    f.taskBackground.generation,9,transition);
+            f.readHook=(graph,n)->{
+                int ordinal=n-first;
+                if(ordinal>2&&failExtra){SystemClock.now+=200;actualAxReadFailure("child");}
+                try{pairRawGraph(f,graph,ordinal>1);}catch(Exception problem){throw new IllegalStateException(problem);}
+                SystemClock.now+=ordinal==1?1125:959;
+                graph.nativeActionCapturedAt=SystemClock.now;
+                graph.profileWindow=axReadOwner(f,f.taskBackground.observedProfileTarget,graph.windowId,100,90,AX_READ_TOKEN);
+                if(ordinal==1)a=graph;else if(ordinal==2)d=graph;
+                if(ordinal==2){
+                    if("missing_node".equals(fault)){
+                        List<NativeActionSnapshotCheck.Node> shortened=new ArrayList<NativeActionSnapshotCheck.Node>(graph.nativeActionNodes);
+                        shortened.remove(shortened.size()-1);graph.nativeActionNodes=Collections.unmodifiableList(shortened);
+                    }
+                    if("incomplete".equals(fault))graph.nativeObservationComplete=false;
+                    if("truncated".equals(fault))graph.truncated=true;
+                    if("different_node".equals(fault)){
+                        List<NativeActionSnapshotCheck.Node> altered=new ArrayList<NativeActionSnapshotCheck.Node>(graph.nativeActionNodes);
+                        Map<String,Object> row=new LinkedHashMap<String,Object>(altered.get(0).v);row.put("text","host changed complete D");
+                        altered.set(0,new NativeActionSnapshotCheck.Node(row));graph.nativeActionNodes=Collections.unmodifiableList(altered);
+                    }
+                    if("different_window".equals(fault))graph.windowId++;
+                    if("different_profile".equals(fault))graph.profileWindow=axReadOwner(f,axReadTarget(1010368,NativeCtripFlightPage.VERSION_CODE),graph.windowId,100,90,AX_READ_TOKEN);
+                }
+                f.windowValue=frozenObservationWindow(graph);
+            };
+            f.windowHook=()->{
+                windowReads++;SystemClock.now+=10;Graph actual=f.activeObservation.captured;
+                WindowOwnership profile=axReadOwner(f,f.taskBackground.observedProfileTarget,
+                        "fresh_window_changed".equals(fault)?actual.windowId+1:actual.windowId,100,90,AX_READ_TOKEN);
+                f.windowValue=new FrozenObservationWindow(actual.packageName,profile.windowId,actual.displayId,actual.rotation,
+                        actual.bounds.left,actual.bounds.top,actual.bounds.right,actual.bounds.bottom,
+                        actual.nativeActionWidth,actual.nativeActionHeight,actual.windowMetadata.bindFreshness(""),actual.nativeActionWindows,profile);
+            };
+            f.main.samplePosted=()->{
+                if(f.main.sampleGraph==d&&d!=null){
+                    sampleHookCalls++;
+                    if("unknown_after_D".equals(fault))f.activeObservation.recordEvent(true,1);
+                    if("boundary_after_D".equals(fault))f.activeObservation.recordEvent(false,2);
+                    if("nonconsecutive".equals(fault)){f.activeObservation.readWorksStarted++;f.activeObservation.readWorksFinished++;}
+                    if("cancel_after_D".equals(fault))f.cancelled.set(true);
+                }
+            };
+        }
+        void start(){
+            f.main.legacySampleArity=legacyArity;
+            f.observePostEffectNative(controller,session,permit,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(started,Math.min(taskDeadline,transition)),
+                    taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;check(request!=null,"real post-effect Service request admitted");
+        }
+        void drive(java.util.function.BooleanSupplier done)throws Exception{
+            for(int i=0;i<80&&!done.getAsBoolean();i++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"real sample/AX worker returned");
+                f.main.drainUntil(done);
+                if(!done.getAsBoolean()&&!f.main.hasReady()&&observationIo.active.get()==0)SystemClock.now+=200;
+            }
+            check(done.getAsBoolean(),"bounded pair host drive reached actual callback");
+        }
+        void afterA()throws Exception{
+            if(request==null)start();
+            drive(()->a!=null&&a.closed);
+            pureA=pairOptional(request,"nativeAxSample");
+            check(pureA!=null,"actual first 7-argument callback retained a pure A");
+            check(a.refs.isEmpty(),"A SDK references really released before D");
+        }
+        void toProduct()throws Exception{
+            if(request==null)start();
+            drive(()->request.captured!=null||!out.failures.isEmpty());
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual AX worker queued complete product");
+        }
+        void finish()throws Exception{
+            if(request==null)start();drive(()->!out.observations.isEmpty()||!out.failures.isEmpty());
+        }
+        void positive()throws Exception{
+            toProduct();firstCensus=f.main.axProduct.first;secondCensus=f.main.axProduct.second;finish();
+            check(out.observations.size()==1&&out.failures.isEmpty()&&out.proofs.isEmpty(),
+                    "complete 8120 A/D must publish without third child walk");
+            check(f.reads.get()-first==2,"exactly two distinct full native reads; no redundant child walk");
+            check(a!=d&&a.closed&&a.refs.isEmpty()&&!d.closed&&d.refs.size()==107,"A closed; D actual refs held for readonly publication");
+            check(f.currentGraph==d&&f.current!=prior&&f.current.capture!=null,"actual D is current; no serialized graph fabricated");
+            check(d.nativeActionNodes.size()==281&&d.collectionStats.visited==281&&d.collectionStats.retained==107,
+                    "all 281 native values, not the 107 retained projection");
+            check(windowReads==1&&f.windowChecks.get()==priorWindows+1,"one real independently returned current window check");
+            check(MobiMindPrivateFiles.writes==priorWrites+1,"one original canonical receipt persisted");
+            NativeAxProduct product=f.main.axProduct;
+            Object pair=pairOptional(product,"samplePair");check(pair!=null,"actual seven-argument callback supplied its pair");
+            check(((AtomicBoolean)axField(pair,"claimed")).get(),"private pair claimed once");
+            check(product.original==d&&firstCensus!=secondCensus,"actual D graph and two separately frozen census values");
+            check(((List<?>)firstCensus.get("nodes")).size()==281&&((List<?>)secondCensus.get("nodes")).size()==281,"complete original values sealed");
+            check(NativeAppEvidence.fingerprint(firstCensus.get("nodes")).equals(
+                    NativeAppEvidence.fingerprint(pairOriginal.getJSONObject("before").getJSONArray("native_nodes").toList())),
+                    "A native values exactly equal raw original");
+            check(NativeAppEvidence.fingerprint(secondCensus.get("nodes")).equals(
+                    NativeAppEvidence.fingerprint(pairOriginal.getJSONObject("after").getJSONArray("native_nodes").toList())),
+                    "D native values exactly equal raw original");
+            long capture=product.identity.capturedAt;
+            check(a.readCompletedElapsedMs<=capture&&capture<=d.readStartedElapsedMs&&d.readCompletedElapsedMs<=product.seal.sealedAt,
+                    "real A endpoint then new actual checkpoint then real D then seal");
+            check(capture<d.readCompletedElapsedMs&&product.completedAt==d.readCompletedElapsedMs,"capture age never renewed at seal/READY");
+            check(product.identity.profileWindow==a.profileWindow&&firstCensus.get("profile_window").equals(a.profileWindow.evidence()),
+                    "original first-census profile evidence kept while real graph D is held");
+            check(product.capture==f.current.capture&&product.path.isFile(),"original receipt consumer produced published capture");
+            Map<String,Object> meta=f.current.captureEvidence;
+            check("actual_sampling_checkpoint_before_next_read".equals(meta.get("capture_clock_source")),"honest clock provenance");
+            check(Boolean.FALSE.equals(meta.get("sampling_pair_grants_action_authority")),"sampling pair grants no action authority");
+            check(request.deadline==started+12000&&request.postEffectTransitionDeadline==transition,"original request and transition deadlines");
+            check(!f.actionWorkPending()&&!f.nativeCancellationWorkPending(),"readonly capture did not dispatch or cancel an action");
+            noPixels(f);
+        }
+        void rejected()throws Exception{
+            finish();check(out.observations.isEmpty()&&!out.failures.isEmpty(),"invalid A/D cannot publish");
+            check(f.current==prior&&f.currentGraph==priorGraph,"failed candidate never replaces current");
+            check(request.finished&&request.captured==null,"failed candidate resources retired");
+        }
+        void dispose()throws Exception{
+            f.main.samplePosted=null;f.main.afterWorkerPost=null;f.discardPostEffectSamplingForTask(f.lease);f.dispose();
+            for(SdkNode node:SdkNode.made)check(node.recycles==1,"every actual-close SDK port reference recycled once");
+            SdkNode.made.clear();
+        }
+    }
+    static void samplingPairCases(boolean counterfactual)throws Exception{
+        pairBackMode=true;
+        axCase("sampling_pair_recorded_8120_actual_BACK_two_reads_original_receipt",()->{
+            SamplingPairScenario s=new SamplingPairScenario();s.positive();s.dispose();
+        });
+        if(counterfactual)return;
+        pairBackMode=false;
+        axCase("sampling_pair_actual_OPEN_same_closed_readonly_path",()->{
+            SamplingPairScenario s=new SamplingPairScenario();s.positive();s.dispose();
+        });
+        pairBackMode=true;
+        for(String fault:new String[]{"missing_node","incomplete","truncated","different_node","different_window",
+                "different_profile","nonconsecutive","unknown_after_D","boundary_after_D","cancel_after_D","fresh_window_changed"}){
+            axCase("sampling_pair_"+fault+"_refuses",()->{
+                SamplingPairScenario s=new SamplingPairScenario();s.fault=fault;s.rejected();
+                check(s.sampleHookCalls==1,"real D worker callback probe fired exactly once: "+fault);
+                if("unknown_after_D".equals(fault))check(s.request.unknownEvents==1,"actual unknown event injected");
+                if("boundary_after_D".equals(fault))check(s.request.eventWatermark().boundaryEvents==1,"actual boundary event injected");
+                if("cancel_after_D".equals(fault))check(s.f.cancelled.get(),"actual cancellation port injected");
+                System.out.println("PAIR_HOOK "+fault+" calls="+s.sampleHookCalls+" unknown="+s.request.unknownEvents+
+                        " boundary="+s.request.eventWatermark().boundaryEvents+" cancelled="+s.f.cancelled.get());
+                s.dispose();
+            });
+        }
+        for(String fault:new String[]{"deadline","transition","cancel","authorization","permit","request"}){
+            axCase("sampling_pair_after_A_"+fault+"_refuses",()->{
+                SamplingPairScenario s=new SamplingPairScenario();s.afterA();
+                if("deadline".equals(fault))SystemClock.now=s.request.deadline;
+                if("transition".equals(fault))SystemClock.now=s.transition;
+                if("cancel".equals(fault))s.f.cancelled.set(true);
+                if("authorization".equals(fault))s.f.taskAuthorization=new TaskAuthorization.Gate();
+                if("permit".equals(fault)){
+                    NativeAppSession.PostActionReadAccess replacement=new NativeAppSession.CalendarBackReadPermit(s.session,s.f.taskAuthorization,
+                            s.f.lease,s.f.taskBackground.selection,s.f.taskBackground.generation,9,s.transition);
+                    s.request.postEffectPermit=replacement;
+                }
+                if("request".equals(fault))pairSet(s.pureA,"requestId","00000000000000000000000000000000");
+                s.rejected();s.dispose();
+            });
+        }
+        for(int arity:new int[]{5,6}){
+            axCase("sampling_pair_legacy_"+arity+"_argument_callback_has_no_proof",()->{
+                SamplingPairScenario s=new SamplingPairScenario();s.legacyArity=arity;s.rejected();
+                check(pairOptional(s.request,"nativeAxReadyPair")==null,"old callback never created sampling certificate");
+                check(s.f.main.legacyDeliveries.get()>=2,"actual explicit old callback was exercised");
+                s.dispose();
+            });
+        }
+        axCase("sampling_pair_duplicate_private_claim_refused",()->{
+            SamplingPairScenario s=new SamplingPairScenario();s.toProduct();
+            check(s.f.main.axProduct!=null,"actual first capture completed before duplicate claim");
+            Object pair=axField(s.f.main.axProduct,"samplePair");check(pair!=null&&((AtomicBoolean)axField(pair,"claimed")).get(),"pair already consumed");
+            int writes=MobiMindPrivateFiles.writes,reads=s.f.reads.get();
+            pairSet(s.request,"nativeAxReadyPair",pair);s.f.captureNativeAxObservation(s.request);s.rejected();
+            check(MobiMindPrivateFiles.writes==writes&&s.f.reads.get()==reads,"duplicate claim cannot persist/read another pair");
+            s.dispose();
+        });
+        axCase("sampling_pair_old_request_pure_A_cannot_seed_new_request",()->{
+            SamplingPairScenario old=new SamplingPairScenario();old.afterA();Object oldPure=old.pureA;
+            old.f.cancelled.set(true);old.rejected();old.dispose();
+            SamplingPairScenario current=new SamplingPairScenario();current.afterA();
+            pairSet(current.request,"nativeAxSample",oldPure);current.rejected();current.dispose();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        pairOriginal=new org.json.JSONObject(new String(Files.readAllBytes(new File(args[1]).toPath()),StandardCharsets.UTF_8));
+        try{
+            check(pairOriginal.getString("task_id").equals("8120e10a66ba4d339b83aadd6390502a"),"exact recorded task");
+            check(!pairOriginal.getBoolean("sent_to_model")&&!pairOriginal.getBoolean("grants_publication"),"original failed pair stays unpublished");
+            check(pairOriginal.getJSONObject("before").getInt("raw_node_count")==281&&pairOriginal.getJSONObject("after").getInt("raw_node_count")==281,
+                    "both recorded full 281-node values supplied");
+            samplingPairCases(args.length>2&&"counterfactual".equals(args[2]));
+        }finally{
+            SnapshotChecks.finish(args[0]);observationIo.executor.shutdownNow();
+            expect(observationIo.executor.awaitTermination(4,TimeUnit.SECONDS),"actual serial executor shutdown");
+        }
+    }

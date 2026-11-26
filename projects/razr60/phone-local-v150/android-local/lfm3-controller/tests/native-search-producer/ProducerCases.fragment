@@ -483,7 +483,27 @@
         one("content_after_complete_D_before_target_refresh_reacquires_full_pair",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.windowHook=()->{if(s.activeSearchAction!=null&&s.activeSearchAction.pairCompleted!=null){f.windowHook=null;s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);}};
-                f.action(attempt);check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"late content requires a complete new C/D before the one original effect");
+                f.action(attempt);
+                Map<String,Object> trace=new LinkedHashMap<String,Object>();trace.put("kind","original_window_hook_after_first_D_fence");
+                initialTrace(f,null,trace);
+                check(f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"late content requires a complete new C/D before the one original effect");
+            }
+            // Same real window-read boundary, with forbidden event kinds: no typed
+            // replacement and no action are admitted by the initial proof's deferral.
+            for(int type=0;type<3;type++){final int kind=type;
+                HeptaAccessibilityService negative=new HeptaAccessibilityService();try(Fixture f=negative.new Fixture()){
+                    NativeSearchSession.Attempt attempt=f.intent();final boolean[] injected={false};
+                    f.windowHook=()->{if(negative.activeSearchAction!=null&&negative.activeSearchAction.pairCompleted!=null){
+                        check(negative.activeSearchAction.firstFinalEventsElapsed>=0,"event is after the actual first D fence");
+                        f.windowHook=null;injected[0]=true;successorEvent(negative,kind);
+                    }};
+                    f.action(attempt);noEffect(f,"forbidden post-window event stays refused");
+                    JSONObject evidence=finalCensusEvidence(f);
+                    check(injected[0]&&f.graphReads==4&&evidence.getInt("complete_census_resamples")==0
+                            &&!evidence.getBoolean("typed_post_D_first_fence_rejected")
+                            &&!Boolean.TRUE.equals(attempt.evidence().get("claimed")),"no extra census or action from unknown/boundary/untyped event");
+                    check(sameReferenceDrained(f),"post-window refusal drains original nodes");
+                }
             }
         });
         one("same_values_new_C_D_Android_node_identity_is_refused",()->{
@@ -493,8 +513,9 @@
         });
         one("original_C_live_target_change_after_D_is_refused",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                NativeSearchSession.Attempt attempt=f.intent();f.graphHook=()->{if(f.graphReads==4){NodeData node=f.nodes.get(attempt.offer.planning.role.actionPath);node.beforeRefresh=()->node.v.put("selected",true);}};
-                f.action(attempt);noEffect(f,"latest signature and current reference rechecked");
+                NativeSearchSession.Attempt attempt=f.intent();final boolean[] changed={false};
+                armPostDTargetRead(s,f,attempt.offer.planning.role.actionPath,()->{changed[0]=true;f.nodes.get(attempt.offer.planning.role.actionPath).v.put("selected",true);});
+                f.action(attempt);noEffect(f,"latest signature and current reference rechecked");check(changed[0],"changed value was delivered at the actual post-D getter");
             }
         });
         one("final_reported_window_change_is_refused",()->{

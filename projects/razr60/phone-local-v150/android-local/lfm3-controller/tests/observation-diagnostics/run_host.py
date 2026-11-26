@@ -93,16 +93,44 @@ def pixel_native_census_legacy_parts(service, parts):
                       "pixel_census_producer_executed": False, "pixel_census_authority_available": False,
                       "new_actual_producer_gate": "tests/pixels-native-census/run_host.py"}
 
+def native_ax_sampling_legacy_parts(service, parts):
+    """Current actual callbacks with an explicit no-new-proof legacy IO boundary.
+    The dedicated native-ax-sampling-pair gate reinstates these complete current
+    helpers and executes the real seven-argument sample callback and AX consumer.
+    """
+    start = '    /** Ctrip native post-effect observation only; no deadline, permit or action is created. */'
+    end = '    private void sampleObservation(final ObservationRequest request){'
+    if start not in service:
+        return dict(parts), {'present': False, 'qualified_pair_available': False}
+    actual = section(service, start, end)
+    if len(actual.encode()) != 6839 or sha(actual.encode()) != '3f5233643e334129c6d6012f23ad5a107fc3d144b1e1aaefa8aaaef8d415cf55':
+        raise RuntimeError('exact complete reviewed native AX sampling helpers required')
+    port = '    /** Legacy observer IO has no actual two-read native AX sampling certificate. */\n    private boolean nativeAxSamplingOwner(ObservationRequest request,long now){return false;}\n    private NativeAxSampleRead readNativeAxSample(ObservationRequest request,Graph graph,NativeAxSample before,\n            ObservationEventWatermark start,ObservationEventWatermark completed,long completedAt){\n        if(before!=null||request.nativeAxSample!=null)throw new AssertionError("legacy AX cannot retain a sampling proof");\n        return null;\n    }\n    private NativeAxSamplePair acceptNativeAxSample(ObservationRequest request,Graph graph,NativeAxSampleRead read,\n            ObservationStabilityGate.Result result,long now){\n        if(read!=null||request.nativeAxSample!=null||request.nativeAxReadyPair!=null)\n            throw new AssertionError("legacy AX cannot supply a sampling proof");\n        return null;\n    }\n    private boolean nativeAxSamplePairCurrent(ObservationRequest request,NativeAxSamplePair pair,Graph graph){\n        if(pair!=null)throw new AssertionError("legacy AX cannot publish a sampling proof");\n        return false;\n    }\n\n'
+    compiled = dict(parts)
+    if compiled['observation'].count(actual) != 1:
+        raise RuntimeError('one complete native AX sampling helper block required')
+    original = compiled['observation']
+    compiled['observation'] = original.replace(actual, port, 1)
+    if compiled['observation'].replace(port, actual, 1) != original:
+        raise RuntimeError('native AX legacy exclusion must reverse completely')
+    return compiled, {'present': True, 'qualified_pair_available': False,
+        'actual_helper_bytes': len(actual.encode()), 'actual_helper_sha256': sha(actual.encode()),
+        'port_sha256': sha(port.encode()), 'actual_callback_retained': True,
+        'actual_producer_gate': 'tests/native-ax-sampling-pair/run_host.py'}
+
 def ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
     parts, pixel_boundary = pixel_native_census_legacy_parts(service, parts)
+    parts, ax_sampling_boundary = native_ax_sampling_legacy_parts(service, parts)
     compiled, boundary = _ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling)
     boundary["pixel_native_census_boundary"] = pixel_boundary
+    boundary["native_ax_sampling_boundary"] = ax_sampling_boundary
     return compiled, boundary
 
 def _ctrip_sampling_legacy_parts(service, parts, retain_ctrip_sampling=False):
     """Exact type boundary only; qualified form tests must retain the real block."""
     start = "    private boolean ctripFormSamplingOwner(ObservationRequest request,long now){"
-    end = "    private void sampleObservation(final ObservationRequest request){"
+    end = ("    /** Ctrip native post-effect observation only; no deadline, permit or action is created. */" if "    /** Ctrip native post-effect observation only; no deadline, permit or action is created. */" in service
+           else "    private void sampleObservation(final ObservationRequest request){")
     if start not in service:
         if "CtripFormSample" in parts["observation"]:
             raise RuntimeError("Unknown form sampling producer cannot enter legacy observer fixture")

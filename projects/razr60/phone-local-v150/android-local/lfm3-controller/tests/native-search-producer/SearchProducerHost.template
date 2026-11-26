@@ -105,6 +105,7 @@ public final class HeptaAccessibilityService {
             return result;
         }
         Object value(String k){if(released)throw new AssertionError("recycled node used");
+            Fixture active=data.owner.fixture;if(active.targetReadHook!=null)active.targetReadHook.accept(data);
             if(failValue){failValue=false;data.owner.fixture.cancelled=true;throw new IllegalStateException("synthetic copied value failure");}
             return data.v.get(k);
         }
@@ -215,6 +216,7 @@ public final class HeptaAccessibilityService {
         int cacheCalls,syntheticBackEffects;boolean cacheResult=true,cacheThrows,incompleteGraph;Runnable cacheHook;
         java.util.function.Consumer<Graph> beforeCapturedNodesHook,afterCapturedNodesHook,afterCapturedApplyHook;
         java.util.function.Consumer<String> beforeCapturedNodeHook;
+        java.util.function.Consumer<NodeData> targetReadHook;
         Runnable afterCapturedClosureHook;
         NativeSearchCapturedLabels lastCapturedLabels;Graph lastCapturedGraph;int capturedApplyCalls;
         Fixture()throws Exception{this(new Object());}

@@ -89,17 +89,30 @@
                 ()->{},(name,value)->{});
         return new NativeSearchSession(f.base.controller,task,f.base.env.session,start,deadline);
     }
-    /** New cases inject a synthetic event through the existing Android refresh port.
-     * No old phone failure is assigned a watermark that its original receipt lacks. */
+    /** Existing late-event tests keep their event after D. The normal active
+     * refresh has moved before D, so a normally-null SDK getter hook now targets
+     * the real post-D chain; the unchanged legacy refresh path is also recognized.
+     * No phone failure is assigned a source or watermark that it never recorded. */
+    static void armPostDTargetRead(HeptaAccessibilityService service,Fixture fixture,String path,Runnable mutation){
+        fixture.targetReadHook=observed->{
+            SearchActionWork work=service.activeSearchAction;
+            if(observed==fixture.nodes.get(path)&&work!=null&&work.firstFinalEventsElapsed>=0
+                    &&!work.firstPostDEventRejected
+                    &&(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","readNativeSearchReplacementTargetChain")
+                        ||successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","refreshNativeSearchTargetChain"))){
+                fixture.targetReadHook=null;
+                mutation.run();
+            }
+        };
+    }
     static void armTargetRefreshEvent(HeptaAccessibilityService service,Fixture fixture,int kind,Runnable duringRefresh){
-        NodeData root=fixture.nodes.get("0");check(root!=null,"actual full synthetic census contains root");
-        root.beforeRefresh=()->{
-            check(successorStack("org.trillionnium.hepta.local.HeptaAccessibilityService","refreshNativeSearchTargetChain"),"event arrives during the actual target/ancestor refresh method");
+        check(fixture.nodes.get("0")!=null,"actual full synthetic census contains root");
+        armPostDTargetRead(service,fixture,"0",()->{
             SearchActionWork work=service.activeSearchAction;
             check(work!=null&&work.firstFinalEventsElapsed>=0&&!work.firstPostDEventRejected,"first actual D event fence already passed");
             if(duringRefresh!=null)duringRefresh.run();
             successorEvent(service,kind);
-        };
+        });
     }
     static NoEffectRun submitCapturedSearch(HeptaAccessibilityService service,Fixture f,NativeSearchSession.Attempt attempt){
         NoEffectRun value=new NoEffectRun(service,f,attempt);
@@ -686,7 +699,7 @@
             HeptaAccessibilityService s=new HeptaAccessibilityService();NativeSearchNoEffectControllerHost controller=new NativeSearchNoEffectControllerHost(s);
             try(Fixture f=s.new Fixture(controller)){
                 controller.bind(f);controller.beforeModel=n->{if(n==1)armTargetRefreshEvent(s,f,3,null);};
-                // The first normal refresh remains the original SDK refresh hook above.
+                // The first late event uses the actual post-D root getter hook above.
                 // Replacement instability is a new event after the replacement D census.
                 final boolean[] replacementPostDInjected={false};
                 SystemClock.beforeRead=()->{SearchActionWork w=s.activeSearchAction;

@@ -44,7 +44,9 @@
                     NativeSearchRole other=NativeSearchRole.iconPair(f.planning.first,f.planning.second,true);
                     rejected(()->offer.reserve(f.base.decision(offer,f.planning.id,other.roleId),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000));
                     SystemClock.now+=20;NativeSearchSession.Attempt action=offer.reserve(f.base.decision(offer),NativeSearchSessionHostTest.RUN,SystemClock.now,SystemClock.now+8000);
-                    f.graphHook=()->{if(f.graphReads==4)f.nodes.get(entry).beforeRefresh=()->{
+                    // These original after-D hint/forbidden-value cases exercise the retained FINAL_PRECLAIM legacy refresh branch.
+                    finalCensusEvent(service,0,1);
+                    f.graphHook=()->{if(f.graphReads==6)f.nodes.get(entry).beforeRefresh=()->{
                         NodeData hint=f.nodes.get(entry+"/0"),term=f.nodes.get(entry+"/0/0");
                         hint.v.put("description","搜索另一款数据线");term.v.put("text","另一款数据线");
                         if(mutation.equals("interactive"))term.v.put("clickable",true);
@@ -54,6 +56,7 @@
                         if(mutation.equals("out_of_bounds"))term.v.put("bounds",Arrays.asList(0,0,2000,3000));
                     };};
                     f.action(action);boolean allowed=mutation.equals("hint");
+                    check(f.graphReads==6&&finalCensusEvidence(f).getInt("complete_census_resamples")==1,"original after-D refresh branch was reached through one FINAL_PRECLAIM replacement");
                     check(f.outcome!=null&&f.outcome.accepted==allowed&&f.outcome.dispatched==allowed
                             &&f.effects==(allowed?1:0)&&f.nodes.get(entry).effects==(allowed?1:0)&&f.nodes.get(icon).effects==0,
                             "only one original bound switcher may be invoked: "+mutation);

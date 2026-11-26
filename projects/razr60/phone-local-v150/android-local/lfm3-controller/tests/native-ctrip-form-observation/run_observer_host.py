@@ -158,12 +158,52 @@ def diagnostic_sampling_predecessor(raw,h):
             raise RuntimeError('complete pre-diagnostic sampling body required')
     return raw
 
+# Proof copies only. The compiled observation section retains the actual seven-argument callback.
+CTRIP_AX_PAIR_SAMPLING_INVERSE={
+    "    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){": {
+        "input_sha256": "fd4e92925eb76a1e0ab15e454d66778ac4c60246f5a053e1c86e71f7915602d1",
+        "actual_anchor": "    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,\n            CtripFormSampleRead formRead,NativeAxSampleRead axRead){",
+        "actual_sha256": "1b64c9fe55fbc8ce47058cb0783c0779989eff901eea74158b8ef236eb2b355c",
+        "inverse": [
+            ("    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,\n            CtripFormSampleRead formRead,NativeAxSampleRead axRead){\n        try{\n            if(!observationActive(request))return;\n            if(error!=null){failObservation(request,error);return;}\n","    private void acceptSample(final ObservationRequest request,Graph graph,String error,long events,long unknownEvents,CtripFormSampleRead formRead){\n        try{\n            if(!observationActive(request))return;\n            if(error!=null){failObservation(request,error);return;}\n"),
+            ("                    if(classified)request.ctripSamplingProof=ctripSamplingProof(request,formRead,now);\n                }\n            }\n            NativeAxSamplePair sampledAxPair=acceptNativeAxSample(request,graph,axRead,result,now);\n            if(graph==null&&request.trace!=null)request.trace.missingSample();\n            request.note(ObservationDiagnostics.Event.valueOf(\"SAMPLE_\"+result.name()));\n            if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){\n","                    if(classified)request.ctripSamplingProof=ctripSamplingProof(request,formRead,now);\n                }\n            }\n            if(graph==null&&request.trace!=null)request.trace.missingSample();\n            request.note(ObservationDiagnostics.Event.valueOf(\"SAMPLE_\"+result.name()));\n            if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){\n"),
+            ("            }\n            long screenshotDelay=nativeTextObservationAllowed(request,graph)?0:Math.max(0,400-(now-lastScreenshotAt));\n            if(result==ObservationStabilityGate.Result.READY&&screenshotDelay==0){\n                request.nativeAxReadyPair=sampledAxPair;\n                request.captured=graph;graph=null;captureObservation(request);return;\n            }\n            long delay=request.gate.nextSampleDelay(now);\n","            }\n            long screenshotDelay=nativeTextObservationAllowed(request,graph)?0:Math.max(0,400-(now-lastScreenshotAt));\n            if(result==ObservationStabilityGate.Result.READY&&screenshotDelay==0){\n                request.captured=graph;graph=null;captureObservation(request);return;\n            }\n            long delay=request.gate.nextSampleDelay(now);\n")
+        ],
+        "predecessor_sha256": "ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c"
+    },
+    "    private void sampleObservation(final ObservationRequest request){": {
+        "input_sha256": "875a3d294d3b0791262ba57252d80b6e90afdebe876146ba94130948338deaa5",
+        "actual_anchor": "    private void sampleObservation(final ObservationRequest request){",
+        "actual_sha256": "875a3d294d3b0791262ba57252d80b6e90afdebe876146ba94130948338deaa5",
+        "inverse": [
+            ("        try{observationIo.execute(new Runnable(){public void run(){\n            Graph graph=null;String error=null;final long unknownEvents=request.unknownEvents,events=request.events;\n            CtripFormSampleRead formRead=null;CtripFormSample previous;ObservationEventWatermark formStart;\n            NativeAxSampleRead axRead=null;NativeAxSample axPrevious;\n            synchronized(request){previous=request.ctripFormSample;axPrevious=request.nativeAxSample;formStart=request.eventWatermark();}\n            try{\n                requireObservationWork(request);\n                try{graph=readGraph(observationBudget(request),request.background);}\n","        try{observationIo.execute(new Runnable(){public void run(){\n            Graph graph=null;String error=null;final long unknownEvents=request.unknownEvents,events=request.events;\n            CtripFormSampleRead formRead=null;CtripFormSample previous;ObservationEventWatermark formStart;\n            synchronized(request){previous=request.ctripFormSample;formStart=request.eventWatermark();}\n            try{\n                requireObservationWork(request);\n                try{graph=readGraph(observationBudget(request),request.background);}\n"),
+            ("                request.graph(\"sample_graph\",graph);\n                recordNativeSampleCensus(request,graph,formStart,formEnd,formCompletedAt);requireObservationWork(request);\n                formRead=readCtripFormSample(request,graph,previous,formStart,formEnd,formCompletedAt,formEpoch);\n                axRead=readNativeAxSample(request,graph,axPrevious,formStart,formEnd,formCompletedAt);\n            }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error=\"无法读取当前活动窗口：\"+message(failure);}\n            finally{request.worker(false);observationIoBusy.set(false);}\n            final Graph sampled=graph;final String failure=error;final CtripFormSampleRead sampledForm=formRead;\n            final NativeAxSampleRead sampledAx=axRead;boolean posted=false;\n            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents,sampledForm,sampledAx);}});}\n            finally{if(!posted&&sampled!=null)sampled.close();}\n        }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,\"屏幕观察队列不可用：\"+message(unavailable));}\n    }","                request.graph(\"sample_graph\",graph);\n                recordNativeSampleCensus(request,graph,formStart,formEnd,formCompletedAt);requireObservationWork(request);\n                formRead=readCtripFormSample(request,graph,previous,formStart,formEnd,formCompletedAt,formEpoch);\n            }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error=\"无法读取当前活动窗口：\"+message(failure);}\n            finally{request.worker(false);observationIoBusy.set(false);}\n            final Graph sampled=graph;final String failure=error;final CtripFormSampleRead sampledForm=formRead;\n            boolean posted=false;\n            try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events,unknownEvents,sampledForm);}});}\n            finally{if(!posted&&sampled!=null)sampled.close();}\n        }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,\"屏幕观察队列不可用：\"+message(unavailable));}\n    }")
+        ],
+        "predecessor_sha256": "1a234bbc9a3fa685fb3098e414c99fdadd69369c53abbf5f9d22de27ddd6c339"
+    }
+}
+def ctrip_ax_pair_sampling_predecessor(service,anchor,raw,h):
+    rule=CTRIP_AX_PAIR_SAMPLING_INVERSE.get(anchor)
+    if rule is None:return raw
+    if h.sha(raw.encode())!=rule['input_sha256']:
+        raise RuntimeError('exact complete current AX sampling delegate required')
+    actual=h.body(service,rule['actual_anchor'])
+    if h.sha(actual.encode())!=rule['actual_sha256']:
+        raise RuntimeError('exact complete current seven-argument AX sampling body required')
+    proof=actual
+    for revised,prior in rule['inverse']:proof=once(proof,revised,prior)
+    if h.sha(proof.encode())!=rule['predecessor_sha256']:
+        raise RuntimeError('AX sampling proof must restore complete reviewed Pixel59 member')
+    return proof
+
 def form_sampling_body_predecessor(service,anchor,raw,h):
-    raw=diagnostic_sampling_predecessor(raw,h)
+    raw=diagnostic_sampling_predecessor(ctrip_ax_pair_sampling_predecessor(service,anchor,raw,h),h)
     reviewed=REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE.get(anchor)
     if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
         return raw,False
-    proof=diagnostic_sampling_predecessor(pixel_guarded_member_predecessor(reviewed['actual_body_anchor'],h.body(service,reviewed['actual_body_anchor']),h),h)
+    actual_anchor=reviewed['actual_body_anchor']
+    actual_body=ctrip_ax_pair_sampling_predecessor(service,actual_anchor,h.body(service,actual_anchor),h)
+    proof=diagnostic_sampling_predecessor(pixel_guarded_member_predecessor(actual_anchor,actual_body,h),h)
     # Current source stays in generated/compiled inputs; only this exact complete body is restored for the historical proof.
     if h.sha(proof.encode())=='ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c':
         proof=once(proof,'                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n','                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')

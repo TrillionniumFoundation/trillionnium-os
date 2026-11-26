@@ -10,7 +10,8 @@
     static void readOrderDefaultSequence(HeptaAccessibilityService s,Fixture f){
         f.refreshGraphChildren=true;
         f.graphHook=()->{
-            if(f.graphReads==3||f.graphReads==5){f.syncNodes();readOrderRootEvent(s,f,3);}
+            if(f.graphReads==3){f.syncNodes();armTargetRefreshEvent(s,f,3,null);}
+            if(f.graphReads==5){f.syncNodes();readOrderRootEvent(s,f,3);}
         };
     }
     static void readOrderAfterD(HeptaAccessibilityService s,Runnable mutation){
@@ -211,7 +212,8 @@
                     recordedHomeSample(f,capture);
                     if(f.graphReads==5){incompleteNodesDrained(f.nodes,"original first C/D node objects fully disposed");f.nodes.clear();}
                     f.syncNodes();
-                    if(f.graphReads==3||f.graphReads==5)readOrderRootEvent(s,f,3);
+                    if(f.graphReads==3)armTargetRefreshEvent(s,f,3,null);
+                    if(f.graphReads==5)readOrderRootEvent(s,f,3);
                     if(f.graphReads==4||f.graphReads==6)for(int n=0;n<(f.graphReads==4?24:20);n++)
                         s.noteNativeSearchEvent(7,96,NativeAppGoal.XIAOMI_PACKAGE,true,true);
                 };
