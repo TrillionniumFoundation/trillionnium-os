@@ -138,10 +138,35 @@ def generate(source,out,h,snap):
             if(live.phoneConstructHook!=null)live.phoneConstructHook.run();
         }''')
  s=once(s,'        static Map<String,Object> profileActionIdentity(WindowOwnership ignored){throw new AssertionError("host user0 has no profile proof");}',profile_adapter)
+ # The AX block consumes the production typed read failure and the same pure
+ # window fingerprint as the post-effect bridge. Replace the legacy read port
+ # and compile complete current members; no historical proof is compiled here.
+ actual_stale=h.body(service,'    private static final class StaleObservation extends IllegalStateException {')
+ stale_port=h.body(s,'    static final class StaleObservation extends IllegalStateException {')
+ s=once(s,stale_port,actual_stale)
+ fingerprint=h.body(service,'    private static String postEffectChildWindowFingerprint(')
+ evidence=(source/PKG/'NativeAppEvidence.java').read_text()
+ value_members={name:h.body(evidence,anchor) for name,anchor in {
+     'fingerprint':'    static String fingerprint(',
+     'canonical':'    private static void canonical(',
+     'hash':'    static String hash(',
+     'need':'    static void need(',
+ }.items()}
+ s=once(s,'    static final class NativeAppEvidence {',
+     '    static final class NativeAppEvidence {\n'+'\n'.join(value_members.values()))
+ s=once(s,'import java.security.MessageDigest;',
+     'import java.security.MessageDigest;\nimport java.security.NoSuchAlgorithmException;')
+ s=once(s,'    static ObservationCaptureEvidence phoneCapture;',
+     fingerprint+'\n    static ObservationCaptureEvidence phoneCapture;')
+ retry_members={'actual_stale':actual_stale,'child_window_fingerprint':fingerprint,**value_members}
+ for name,member in retry_members.items():
+  if s.count(member)!=1:raise RuntimeError('complete actual AX retry dependency must occur exactly once: '+name)
  h.write(path,s)
  return {'schema':'hepta.native-ax-extraction.v1','production_ax_methods_verbatim':True,
          'production_observer_original_methods_verbatim':True,'actual_helper_compiled':True,
          'ax_block_sha256':h.sha(block.encode()),'legacy_extraction':meta,
+         'actual_ax_retry_dependencies':{name:{'bytes':len(member.encode()),'sha256':h.sha(member.encode())} for name,member in retry_members.items()},
+         'actual_stale_replaces_legacy_read_port':True,'retry_dependency_members_verbatim':True,
          'diagnostic_provider_port_removed_sha256':h.sha(diagnostic_provider_port.encode()),
          'actual_provider_value_members_unchanged':True,
          'sampling_carrier_type_qualification':{

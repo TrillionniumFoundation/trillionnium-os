@@ -69,6 +69,7 @@ final class NativeAppSession {
     // This field is never reset by close, failed journaling or a new Offer wrapper.
     private CalendarOffer calendarDateOffer;
     private CalendarSelectionEvidence calendarSelection;
+    private volatile ManualFixture manualFixture;
 
     /** Controller wake-up only. Implementations must hand control back to the
      * ordinary task worker; this interface has no observation or input method. */
@@ -748,6 +749,59 @@ final class NativeAppSession {
         e.put("model_actions_required",true);e.put("screenshots_used_as_text",false);e.put("automatic_actions_or_replay",false);
         e.put("query_result_verified",false);journal.write("native-app-binding.json",e);
     }
+    /** The old model query remains real. Only its independently verified detail
+     * page can enter this separate, one-use fixture phase. */
+    boolean manualFixtureDetailReady(String observationId){
+        NativeOrderPreviewManual.Owner owner=NativeOrderPreviewManual.recognize(goal);if(owner==null)return false;live();
+        return "preview_open_sku".equals(owner.purpose)&&manualFixture==null
+                &&current!=null&&current.frame.observationId.equals(observationId)
+                &&inFlight==null&&pending==null&&product!=null&&product.quote!=null
+                &&"detail_display".equals(product.quote.kind)&&productQueryProof!=null&&productOpenProof!=null
+                &&productSemantic!=null&&productSemantic.equals(product.quote.semanticFingerprint);
+    }
+    ManualFixture beginManualFixture(String observationId,BackgroundSession background,long taskDeadline,long now)throws Exception{
+        need(manualFixtureDetailReady(observationId),"one real model-query/detail fixture source required");
+        verifyInstalled();need(installed.profileTarget!=null&&background!=null&&background.selection==selection
+                &&background.selection.independentProfileDisplay&&background.profileTarget().same(installed.profileTarget)
+                &&background.displayId()==displayId&&generation.equals(background.generation)
+                &&now>=current.frame.capturedElapsedMs&&now<taskDeadline&&now<background.expiresElapsed,
+                "actual current managed-profile lease and original lifetime required");
+        manualFixture=new ManualFixture(this,background,NativeOrderPreviewManual.recognize(goal),current.frame,taskDeadline);
+        return manualFixture;
+    }
+    static final class ManualFixture implements AutoCloseable {
+        final NativeAppSession session;
+        final BackgroundSession background;
+        final NativeOrderPreviewManual.Owner owner;
+        final NativeAppEvidence.Frame before;
+        final long taskDeadline,leaseDeadline;
+        private volatile boolean closed;
+        private ManualFixture(NativeAppSession session,BackgroundSession background,NativeOrderPreviewManual.Owner owner,
+                NativeAppEvidence.Frame before,long taskDeadline){
+            this.session=session;this.background=background;this.owner=owner;this.before=before;
+            this.taskDeadline=taskDeadline;leaseDeadline=background.expiresElapsed;
+        }
+        void requireCurrent(long now){
+            session.live();
+            need(!closed&&session.manualFixture==this&&session.current!=null&&session.current.frame==before
+                    &&session.inFlight==null&&session.pending==null&&session.installed.profileTarget!=null
+                    &&session.selection==background.selection&&background.selection.taskTarget==session.target
+                    &&session.generation.equals(background.generation)&&session.displayId==background.displayId()
+                    &&now>=before.capturedElapsedMs&&now<taskDeadline&&now<leaseDeadline,
+                    "manual fixture owner, lease or original lifetime ended");
+        }
+        Map<String,Object> binding(String controllerBuildSha){
+            Map<String,Object> out=NativeAppEvidence.map();out.put("task_id",session.taskId);
+            out.put("owner_sha256",owner.goal.ownerSha256);out.put("target_sha256",session.target.targetSha256);
+            out.put("authorization_sha256",session.authorization.authorization.sha256);out.put("selection_sha256",session.selectionSha);
+            out.put("installed_set_sha256",session.installed.apkSetSha256);out.put("goal_sha256",owner.goal.contractSha256);
+            out.put("background_generation",session.generation);
+            out.putAll(NativeAppEvidence.profileActionIdentity(before.profileWindow));
+            out.put("controller_build_identity_sha256",controllerBuildSha);return NativeAppEvidence.immutableMap(out);
+        }
+        public void close(){closed=true;}
+    }
+
     void bindSearchPlanning(NativeSearchSession session){
         live();need(session!=null&&session.nativeTask==this&&searchPlanning==null&&current==null&&observations.isEmpty()
                 &&inFlight==null&&pending==null&&ordinal==0&&NativeSearchSession.eligible(this),"one explicit initial native search planning Session required");
@@ -1941,6 +1995,7 @@ final class NativeAppSession {
     void retire()throws Exception{if(retired)return;retired=true;
         if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
         if(calendarDateOffer!=null)calendarDateOffer.close();
+        if(manualFixture!=null)manualFixture.close();
         Map<String,Object> e=base();e.put("action_domain_retired",true);e.put("pending_action",inFlight!=null||pending!=null);
         e.put("invalid",invalid);e.put("invalid_reason",invalidReason);e.put("accepted_completion_candidate",acceptedClaim!=null);
         e.put("progress",progress());journal.write("native-app-retired.json",e);

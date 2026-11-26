@@ -519,6 +519,13 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            NativeOrderPreviewManual.Owner manualOwner=NativeOrderPreviewManual.recognize(completion.nativeGoal());
+            if(instruction.startsWith("测试采集订单预览[")&&manualOwner==null)
+                throw new IllegalStateException("manual fixture requires the complete literal owner and explicit selected target");
+            if(manualOwner!=null&&(backgroundSelection==null||!backgroundSelection.independentProfileDisplay
+                    ||backgroundSelection.profileTarget==null||!"preview_open_sku".equals(manualOwner.purpose)||!config.profile.visual()
+                    ||!inference.acceptsObservedImage()||!inference.modelOutputDispatchAllowed()||config.visualObservationOnly))
+                throw new IllegalStateException("manual fixture currently requires the explicit visual-tools detail-to-SKU owner; later page routes are unbound");
             if(CALENDAR_WINDOW_PROBE_OWNER.equals(instruction))
                 requireCalendarWindowProbeSelection(taskId,instruction,authorization,backgroundSelection,deadline);
             if(TaskCompletionGate.NOTES.equals(completion.contract.kind)){
@@ -639,6 +646,13 @@ public final class LocalTaskController implements AutoCloseable {
             taskSteps: while(steps<MAX_STEPS){
                 checkActive(deadline);
                 observation=awaitPendingNativeTransition(taskId,evidence,authorization,deadline,observation);
+                if(activeNativeTask!=null&&activeNativeTask.manualFixtureDetailReady(observation.id)){
+                    observation=runNativeManualPreview(taskId,evidence,authorization,background,scope,deadline,observation);
+                    history.put(new JSONObject().put("action","manual_fixture_capture").put("origin","owner_manual_fixture")
+                            .put("model_issued",false).put("dispatched",false).put("effect",false).put("business_success",false));
+                    finalStatus="partial";summary="已保存订单预览测试采集原件；页面导航尚未绑定，未提交订单或支付。";
+                    break taskSteps;
+                }
                 steps++;
                 final PhoneObservation before=observation;
                 // Includes fresh observations after stale/undispatched proposals.
@@ -2459,6 +2473,79 @@ public final class LocalTaskController implements AutoCloseable {
             NativeAppSession.CalendarPermit permit=read.acceptFreshObservation(proof);
             accepted=true;return permit;
         }finally{if(!accepted)read.close();}
+    }
+
+    private void requireManualPreviewOwner(NativeAppSession.ManualFixture fixture){
+        if(fixture==null||!running||blocked||closed||cancelled.get()||activeWebTask!=null
+                ||activeNativeTask!=fixture.session||activeNativeBackground!=fixture.background
+                ||!fixture.session.taskId.equals(currentTaskId))
+            throw new IllegalStateException("manual fixture is not the actual live controller owner");
+        synchronized(handleLock){if(activeInference!=null)throw new IllegalStateException("manual fixture cannot overlap a model request");}
+        fixture.requireCurrent(SystemClock.elapsedRealtime());
+    }
+    private HeptaAccessibilityService.ManualPreviewPublication awaitManualPreviewPublication(
+            final NativeAppSession.ManualFixture fixture,final PhoneObservation observed)throws Exception{
+        requireManualPreviewOwner(fixture);
+        final CountDownLatch ready=new CountDownLatch(1);
+        final AtomicBoolean abandoned=new AtomicBoolean(false);
+        final AtomicReference<HeptaAccessibilityService.ManualPreviewPublication> value=
+                new AtomicReference<HeptaAccessibilityService.ManualPreviewPublication>();
+        final AtomicReference<String> error=new AtomicReference<String>();
+        try{
+            service.captureManualPreview(this,fixture,observed,new HeptaAccessibilityService.Cancellation(){
+                public boolean isCancelled(){return cancelled.get()||abandoned.get();}
+            },new HeptaAccessibilityService.ManualPreviewCallback(){
+                public void onCaptured(HeptaAccessibilityService.ManualPreviewPublication publication){
+                    if(!abandoned.get()){value.set(publication);ready.countDown();}
+                }
+                public void onError(String detail){if(!abandoned.get()){error.set(detail);ready.countDown();}}
+            });
+            while(!ready.await(100,TimeUnit.MILLISECONDS))requireManualPreviewOwner(fixture);
+            requireManualPreviewOwner(fixture);
+            if(error.get()!=null||value.get()==null)throw new IllegalStateException(error.get()==null?"manual publication missing":error.get());
+            return value.get();
+        }finally{abandoned.set(true);}
+    }
+    /** One separate test phase after the original real model query/detail path.
+     * All page routes remain unbound; this revision cannot enter an input call. */
+    private PhoneObservation runNativeManualPreview(String taskId,File directory,TaskAuthorization.Gate authorization,
+            BackgroundSession background,QualificationScopeConfig.Bound scope,long taskDeadline,PhoneObservation before)throws Exception{
+        NativeAppSession task=activeNativeTask;
+        if(task==null||scope==null)
+            throw new IllegalStateException("actual native task and captured scope state required");
+        NativeAppSession.ManualFixture fixture=task.beginManualFixture(before.id,background,taskDeadline,SystemClock.elapsedRealtime());
+        try{
+            requireManualPreviewOwner(fixture);scope.verifyUnchanged();
+            final String controllerBuildSha;
+            try(java.io.InputStream input=service.getAssets().open(QualificationScope.BUILD_ASSET)){
+                controllerBuildSha=NativeOrderPreviewManual.packagedBuildSha(input,scope.buildIdentitySha256);
+            }
+            scope.verifyUnchanged();requireManualPreviewOwner(fixture);
+            HeptaAccessibilityService.ManualPreviewPublication captured=awaitManualPreviewPublication(fixture,before);
+            NativeOrderPreviewManualFiles files=NativeOrderPreviewManualFiles.publish(directory,fixture,before,
+                    captured.censusFor(service,this,fixture,before),controllerBuildSha,SystemClock.elapsedRealtime());
+            emit("已保存当前商品详情采集原件；本次未绑定的页面导航不会执行。");
+            NativeOrderPreviewManual.ManualPreviewGuard request=null;
+            while(SystemClock.elapsedRealtime()<files.ready.reviewDeadline){
+                requireManualPreviewOwner(fixture);
+                request=files.consumeIfPublished(SystemClock.elapsedRealtime());
+                if(request!=null)break;
+                Thread.sleep(100);
+            }
+            PhoneObservation last=before;
+            if(request!=null){
+                // This is an actual post-refusal observation, explicitly not proof
+                // that a navigation took place. Preserve it before any provider check.
+                requireManualPreviewOwner(fixture);
+                last=awaitObservationRaw(taskId,directory,authorization,taskDeadline);
+                record(directory,"native-app-frame-"+last.id+".json",last.toEvidenceJson());
+                HeptaAccessibilityService.ManualPreviewPublication after=awaitManualPreviewPublication(fixture,last);
+                files.archiveAfterRefusal(last,after.censusFor(service,this,fixture,last));
+            }
+            files.finish(request==null?"request_not_published_before_fixed_review_deadline":"page_navigation_route_unbound",
+                    SystemClock.elapsedRealtime());
+            return last;
+        }finally{fixture.close();}
     }
 
     private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{

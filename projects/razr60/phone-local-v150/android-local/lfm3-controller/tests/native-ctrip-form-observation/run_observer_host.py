@@ -146,11 +146,29 @@ REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE = {
     },
 }
 
+# Exact complete-body inverse for the reviewed 688 bounded diagnostic-only calls.
+# This proof is never used as the generated or compiled production body.
+BOUNDED_SAMPLE_DIAGNOSTIC_ANCHOR='    private void sampleObservation(final ObservationRequest request){'
+BOUNDED_SAMPLE_DIAGNOSTIC_SHA256='1a234bbc9a3fa685fb3098e414c99fdadd69369c53abbf5f9d22de27ddd6c339'
+BOUNDED_SAMPLE_DIAGNOSTIC_PREDECESSOR_SHA256='4dda78389010012f907200b4b7c1bbc6d612134edea0cab47912e5f45951cb33'
+BOUNDED_SAMPLE_DIAGNOSTIC_INVERSE=(('                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);\n                    recordNativeGraphStale(request,"sample_graph",busy,formStart,request.eventWatermark(),SystemClock.elapsedRealtime());}', '                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT,busy.backgroundChildUnavailable);}'), ('                request.graph("sample_graph",graph);\n                recordNativeSampleCensus(request,graph,formStart,formEnd,formCompletedAt);requireObservationWork(request);', '                request.graph("sample_graph",graph);requireObservationWork(request);'))
+
+def bounded_sample_diagnostic_predecessor(anchor,raw,h):
+    if anchor!=BOUNDED_SAMPLE_DIAGNOSTIC_ANCHOR or h.sha(raw.encode())!=BOUNDED_SAMPLE_DIAGNOSTIC_SHA256:
+        return raw
+    proof=raw
+    for current,prior in BOUNDED_SAMPLE_DIAGNOSTIC_INVERSE:proof=once(proof,current,prior)
+    if h.sha(proof.encode())!=BOUNDED_SAMPLE_DIAGNOSTIC_PREDECESSOR_SHA256:
+        raise RuntimeError('bounded diagnostics must reverse to the exact complete 5f sample body')
+    return proof
+
 def form_sampling_body_predecessor(service,anchor,raw,h):
+    raw=bounded_sample_diagnostic_predecessor(anchor,raw,h)
     reviewed=REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE.get(anchor)
     if reviewed is None or h.sha(raw.encode())!=reviewed['current_sha256']:
         return raw,False
     proof=h.body(service,reviewed['actual_body_anchor'])
+    proof=bounded_sample_diagnostic_predecessor(reviewed['actual_body_anchor'],proof,h)
     # Current source stays in generated/compiled inputs; only this exact complete body is restored for the historical proof.
     if h.sha(proof.encode())=='ab4241d46100fcaf8ccacfa274d792d6244f5cd1e5269a37ad6e3e90bf08e94c':
         proof=once(proof,'                request.ctripSamplingProof=null;\n                boolean initialFormCurrent=formCurrent;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent){\n                    if(formRead!=null)recordCtripSampleRefusal(request,formRead,initialFormCurrent);\n                    request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n                }\n','                request.ctripSamplingProof=null;\n                formCurrent=formCurrent&&formRead.after.epoch==request.ctripFormSampleEpoch\n                        &&request.ctripFormSample==formRead.before\n                        &&sameObservationWatermark(formRead.after.completed,request.eventWatermark());\n                if(!formCurrent)request.clearCtripSample("SAMPLE_CANDIDATE_NOT_CURRENT");\n')
@@ -231,6 +249,15 @@ def generate(source,output,h):
         parts['child_identity_recheck']=h.body(service,'    private PostEffectChildWindowCheck recheckPostEffectChildWindow(')
         parts['child_window_fingerprint']=h.body(service,'    private static String postEffectChildWindowFingerprint(')
         parts['actual_stale_type']=h.body(service,'    private static final class StaleObservation extends IllegalStateException {')
+    bounded_diagnostic_members={
+        'bounded_diagnostic_watermark':('    private static Map<String,Object> observationDiagnosticWatermark','5113e1f47c1fe1e82de2335ed0c265834ca96b3d51d1f9ff2a5958b5b0dc9b7d'),
+        'bounded_sample_census':('    private static void recordNativeSampleCensus','8b8c5e852ebdf566d3ed38925c8301266b0f77f192281c7a50b8f2600f602da3'),
+        'bounded_graph_stale':('    private static void recordNativeGraphStale','ab03b84d144fd4fa2a2d0fb5a6a08577e072bc6cce5d5160f6788820534c2ce7')}
+    for name,(anchor,expected) in bounded_diagnostic_members.items():
+        raw=h.body(service,anchor)
+        if h.sha(raw.encode())!=expected or parts['observation'].count(raw)!=1:
+            raise RuntimeError('exact actual bounded diagnostic helper required: '+name)
+        parts[name]=raw
     evidence_anchors=[
       '    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){',
       '    static void requireProfileTarget(ProfileTarget expected,WindowOwnership actual){',
@@ -284,6 +311,7 @@ def generate(source,output,h):
                            'reviewed_ax_inverse_verified':ax_inverse,
                            'reviewed_complete_form_sampling_inverse_verified':form_sampling_inverse,
                            'complete_form_sampling_predecessor_sha256':REVIEWED_COMPLETE_FORM_SAMPLING_BODY_INVERSE[anchor]['predecessor_sha256'] if form_sampling_inverse else None,
+                           'reviewed_bounded_diagnostic_inverse_verified':anchor==BOUNDED_SAMPLE_DIAGNOSTIC_ANCHOR and actual==BOUNDED_SAMPLE_DIAGNOSTIC_SHA256,
                            'reviewed_sampling_inverse_verified':sampling_inverse,
                            'sampling_predecessor_sha256':predecessor if sampling_inverse else None}
     protected_files={}
@@ -447,7 +475,10 @@ def generate(source,output,h):
                   '        if(!owns(task)||!authorizationReady||authorization==null||authorization!=taskAuthorization)throw new IllegalStateException("retired fixture authorization");')
     if child_proof is not None:
         template=once(template,child_proof['PORT'],parts['child_identity_recheck']+'\n'+parts['child_window_fingerprint']+'\n')
-        template=once(template,typed_child_port,parts['actual_stale_type']+'\n')
+        compiled_stale_port=typed_child_port
+        if child_proof.get('BOUNDED_STALE_PORT') is not None and child_proof['BOUNDED_STALE_PORT'] in template:
+            compiled_stale_port=once(typed_child_port,child_proof['PREVIOUS_STALE_PORT'],child_proof['BOUNDED_STALE_PORT'])
+        template=once(template,compiled_stale_port,parts['actual_stale_type']+'\n')
     if '{{' in template:raise RuntimeError('unfilled host fixture')
     for name,raw in parts.items():
         if name=='provider_constants':continue
@@ -489,6 +520,7 @@ def main():
     inputs += [source/'tests/native-xiaomi-query-stability/protected_filled_query.py']
     inputs += [source/'tests/native-search-carousel-edge/protected_partial_edge.py']
     inputs += [source/'tests/native-ctrip-readonly-owner/protected_readonly_owner.py']
+    inputs += [source/'tests/native-ctrip-child-identity/protected_fixture.py']
     inputs += h.png_sources(source)
     before=[h.meta(p) for p in inputs];tools_before=[h.meta(p) for p in tools]
     report={'schema':'hepta.ctrip-form-observer-host.v1','all_pass':False,'stages':[],

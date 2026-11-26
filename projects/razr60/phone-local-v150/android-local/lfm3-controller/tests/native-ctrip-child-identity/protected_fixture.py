@@ -8,8 +8,17 @@ NEW_ACCEPT = 'f5c0cc3c284f2b6125a4d8adaaf5781843cf97b8faa9ec5742cef98920a372ca'
 DIAGNOSTIC_PORTS = '    /** Diagnostic-only legacy ports. They cannot classify a form, alter events,\n     * grant an input, or publish. The dedicated observer bridge replaces this\n     * complete block with the actual production helpers/provider constants. */\n    private static final class NativeCtripFlightPage {static final String PACKAGE="ctrip.android.view";}\n    private static List<Long> ctripDiagnosticMark(ObservationEventWatermark mark){return null;}\n    private static Map<String,Object> ctripSavedGraphGate(ObservationRequest request,CaptureIdentity identity,\n            ObservationProduct product,ObservationEventWatermark persisted,boolean scoped,boolean complete,boolean retry){return null;}\n    private static void recordCtripFormGate(ObservationRequest request,String reason,String stage,IllegalArgumentException failure){}\n'
 COHERENT_TEMPLATE = 'fa4359f1b523ead7b8c9373e9fb8c625f09a4f51a9189cbc6af9443538cf020e'
 COHERENT_ACCEPT = '272b52c9de2479a6569d92999d3f9c71d5876dd15d1bee92e3f61384984f9fd2'
+BOUNDED_STALE_TEMPLATE = 'ea4bfcbb24a933fe585b89c617c8c2444f0ca1f1565d1dddba53f8c1de49bfa6'
+BOUNDED_STALE_PORT = '    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;final String backgroundChildPath;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){this(message,childUnavailable,null);}\n        StaleObservation(String message,boolean childUnavailable,String path){super(message);backgroundChildUnavailable=childUnavailable;backgroundChildPath=path;}\n    }\n'
+PREVIOUS_STALE_PORT = '    static final class StaleObservation extends IllegalStateException {\n        private static final long serialVersionUID=1L;final boolean backgroundChildUnavailable;\n        StaleObservation(String message){this(message,false);}\n        StaleObservation(String message,boolean childUnavailable){super(message);backgroundChildUnavailable=childUnavailable;}\n    }\n'
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def template_predecessor(raw):
+    # The diagnostic child path is data only. Prove the entire current template
+    # inverts to the already accepted predecessor; all unknown bytes still refuse.
+    if sha(raw)==BOUNDED_STALE_TEMPLATE:
+        if raw.count(BOUNDED_STALE_PORT.encode())!=1:raise RuntimeError("exact bounded stale diagnostic port required")
+        raw=raw.replace(BOUNDED_STALE_PORT.encode(),PREVIOUS_STALE_PORT.encode(),1)
+        if sha(raw)!=COHERENT_TEMPLATE:raise RuntimeError("bounded stale template whole inverse mismatch")
     if sha(raw)==COHERENT_TEMPLATE:
         if raw.count(DIAGNOSTIC_PORTS.encode())!=1:raise RuntimeError("exact diagnostic-only template block required")
         raw=raw.replace(DIAGNOSTIC_PORTS.encode(),b"",1)
