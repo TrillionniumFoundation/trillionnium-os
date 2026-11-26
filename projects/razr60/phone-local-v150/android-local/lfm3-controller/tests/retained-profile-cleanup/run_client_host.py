@@ -31,11 +31,12 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('source', 'output', 'java-home', 'json-jar', 'original-paths', 'normal-original-paths'):
         parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--model-done-cleanup', action='store_true', help='Use the actual model-done cleanup-failure Client/CAS regression')
     args = parser.parse_args()
     source = args.source.resolve(strict=True)
     output = args.output.absolute()
     original_runner = source / 'tests/public-profile-business-client/run_host.py'
-    test = source / 'tests/retained-profile-cleanup/RetainedProfileCleanupClientHostTest.java'
+    test = source / ('tests/public-profile-business-client/PublicProfileModelDoneClientHostTest.java' if args.model_done_cleanup else 'tests/retained-profile-cleanup/RetainedProfileCleanupClientHostTest.java')
     spec = importlib.util.spec_from_file_location('actual_business_client_runner', original_runner)
     base = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(base)
@@ -96,8 +97,9 @@ def main():
             index = argv.index(old_main)
             if len(argv) != index + 3:
                 raise RuntimeError('base main arguments changed')
-            argv[index] = 'org.trillionnium.hepta.local.RetainedProfileCleanupClientHostTest'
-            argv.append(str(args.normal_original_paths.resolve(strict=True)))
+            argv[index] = ('org.trillionnium.hepta.local.PublicProfileModelDoneClientHostTest' if args.model_done_cleanup else 'org.trillionnium.hepta.local.RetainedProfileCleanupClientHostTest')
+            if not args.model_done_cleanup:
+                argv.append(str(args.normal_original_paths.resolve(strict=True)))
         return old_stage(name, argv, out, cwd)
 
     base.load, base.stage = load, stage
@@ -127,7 +129,8 @@ def main():
                   normal_originals_unchanged=normal_before == normal_after, explicit_generated_ports=extra_projections,
                   actual_prepared_cleanup_client_private_io_modelproof_absence_receipt_and_lease_cas=True,
                   independent_absence_process_and_socket_are_synthetic=True,
-                  process_exit_wait_uses_real_owned_host_children=True,
+                  process_exit_wait_uses_real_owned_host_children=not args.model_done_cleanup,
+                  model_done_cleanup_profile=args.model_done_cleanup,
                   root_effects_executed=False, android_runtime_tested=False, phone_operations=0)
     base.write(base_path, result)
     print(json.dumps(dict(all_pass=result['all_pass'], counts=result['counts'], result=ref(base_path))))

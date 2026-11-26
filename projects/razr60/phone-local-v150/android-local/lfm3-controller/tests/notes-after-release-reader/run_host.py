@@ -27,6 +27,36 @@ RETAINED_INPUTS = {
 }
 
 
+# Reviewed cleanup evolution is reversed only for historical source proofs.
+# Actual compiler paths and method extraction always use current production.
+def _cleanup_phase_inputs():
+    source = Path(__file__).resolve().parents[2]
+    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",
+            source / "tests/profile-cleanup-settle/production-predecessor.json"]
+
+def _cleanup_phase_proof(relative, raw):
+    from runpy import run_path
+    helper = _cleanup_phase_inputs()[0]
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
+        raise RuntimeError("fixed cleanup proof helper differs")
+    return run_path(str(helper))["predecessor"](relative, raw)
+
+def _cleanup_reader_fixture_proof(raw):
+    row = {'current_bytes': 13123, 'current_sha256': '6912298024c418c910412501bae0ad1e9f011c8b8f77cc58e6dab28d9b7c27a1', 'previous_bytes': 12215, 'previous_sha256': 'e2c96a91af83615bfcb157a66dca32b8d39e4c1a00e266c967c89c05b01fb468', 'inverse_edits': [{'start': 9, 'end': 23, 'current': ['# Reviewed cleanup evolution is reversed only for historical source proofs.\n', '# Actual compiler paths and method extraction always use current production.\n', 'def _cleanup_phase_inputs():\n', '    source = Path(__file__).resolve().parents[2]\n', '    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",\n', '            source / "tests/profile-cleanup-settle/production-predecessor.json"]\n', '\n', 'def _cleanup_phase_proof(relative, raw):\n', '    from runpy import run_path\n', '    helper = _cleanup_phase_inputs()[0]\n', '    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":\n', '        raise RuntimeError("fixed cleanup proof helper differs")\n', '    return run_path(str(helper))["predecessor"](relative, raw)\n', '\n'], 'previous': []}, {'start': 72, 'end': 73, 'current': ['    tracked += _cleanup_phase_inputs()\n'], 'previous': []}, {'start': 74, 'end': 75, 'current': ["    need(hashlib.sha256(_cleanup_phase_proof('src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java',raw(bg/'BackgroundTaskOrganizer.java'))).hexdigest()=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')\n"], 'previous': ["    need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')\n"]}]}
+    if (len(raw), hashlib.sha256(raw).hexdigest()) == (row["previous_bytes"], row["previous_sha256"]):
+        return raw
+    if (len(raw), hashlib.sha256(raw).hexdigest()) != (row["current_bytes"], row["current_sha256"]):
+        raise RuntimeError("exact current reader fixture required")
+    lines = raw.decode().splitlines(keepends=True)
+    for edit in reversed(row["inverse_edits"]):
+        if lines[edit["start"]:edit["end"]] != edit["current"]:
+            raise RuntimeError("reader fixture inverse block changed")
+        lines[edit["start"]:edit["end"]] = edit["previous"]
+    restored = "".join(lines).encode()
+    if (len(restored), hashlib.sha256(restored).hexdigest()) != (row["previous_bytes"], row["previous_sha256"]):
+        raise RuntimeError("whole original reader fixture required")
+    return restored
+
 def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
@@ -133,6 +163,7 @@ def main():
     broker = background / "BackgroundDisplayBroker.java"
     tracked = set(files + [source/"tests/notes-task-info-reader/first_root_history.py",source / "tests/profile-permission-ready-confirmation/late_ready_history.py", broker, fixture, original / "run_host.py", original / "prepare_fixture.py",
                           original / "README.md", here / "run_host.py", here / "README.md"])
+    tracked.update(_cleanup_phase_inputs())
     tools = [jar, jdk / "bin/javac", jdk / "bin/java", jdk / "lib/ct.sym"]
     result = {"schema": "hepta.notes-after-release-reader-gate.v1", "all_pass": False,
               "phone_operations": 0, "android_runtime": False, "hardware_qualification_claimed": False,
@@ -169,7 +200,8 @@ def main():
         restore=run_path(str(source/"tests/notes-task-info-reader/first_root_history.py"))["predecessor"]
         for relative, expected in RETAINED_INPUTS.items():
             file=source/relative
-            recorded=digest(restore(file.name,file.read_text()).encode()) if file.name=="NotesTaskInfoReaderHostTest.java" else sha(file)
+            recorded=digest(restore(file.name,file.read_text()).encode()) if file.name=="NotesTaskInfoReaderHostTest.java" else (
+                digest(_cleanup_phase_proof(relative,file.read_bytes())) if file.name=="BackgroundTaskOrganizer.java" else sha(file))
             if recorded != expected:
                 raise RuntimeError("Retained fixture or organizer changed: " + relative)
         result["retained_inputs_unchanged"] = dict(RETAINED_INPUTS)
@@ -188,7 +220,7 @@ def main():
         broker_text = broker.read_text()
         from runpy import run_path
         history = run_path(str(source/"tests/profile-permission-ready-confirmation/late_ready_history.py"))
-        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](broker_text)
+        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](_cleanup_phase_proof("src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",broker_text.encode()).decode())
         prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(r31_text)
         result["reviewed_calendar_broker_inverse"] = calendar_inverse
         if (broker_text.count(new_call) != 1
@@ -204,7 +236,7 @@ def main():
             raise RuntimeError("Release/display/custody guard order changed")
         if broker_text.count(".frameAfterRelease(") != 1:
             raise RuntimeError("After-release reader gained another broker call")
-        legacy_runner = restore("run_host.py",(original / "run_host.py").read_text())
+        legacy_runner = restore("run_host.py",_cleanup_reader_fixture_proof((original / "run_host.py").read_bytes()).decode())
         if (legacy_runner.count(READER_NEW_SHA) != 1
                 or digest(legacy_runner.replace(READER_NEW_SHA, READER_OLD_SHA, 1).encode()) != LEGACY_RUNNER_SHA):
             raise RuntimeError("Original reader gate changed beyond the exact new-reader pin")

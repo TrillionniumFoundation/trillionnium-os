@@ -106,5 +106,11 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     @Override public void bindRoot(Object token,Object cookie)throws Exception{organizer.bindProfileRoot(token,cookie);}
     @Override public void removeLeaf(Object token)throws Exception{organizer.removeOwnedLeaf(token);}
     @Override public boolean deleteRoot(Object token)throws Exception{return organizer.deleteOwnedContainer(token);}
+    @Override public void removeLeaf(Object token,ProfileOwnedTask.CleanupEffectCheck check)throws Exception{
+        organizer.removeOwnedLeaf(token,()->check.check());
+    }
+    @Override public boolean deleteRoot(Object token,ProfileOwnedTask.CleanupEffectCheck check)throws Exception{
+        return organizer.deleteOwnedContainer(token,()->check.check());
+    }
     @Override public void pause()throws Exception{Thread.sleep(20);}
 }

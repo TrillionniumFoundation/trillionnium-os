@@ -1,0 +1,512 @@
+{
+  "files": {
+    "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java": {
+      "current_bytes": 162533,
+      "current_sha256": "1ba8ffb027d7ef8f84985853ab1482bc26bdd52989c3ef17fa07594515ec3fd4",
+      "inverse_edits": [
+        {
+          "current": [
+            "    private volatile ProfileOwnedTask.CleanupPhase normalProfileCleanup;\n"
+          ],
+          "end": 85,
+          "previous": [],
+          "start": 84
+        },
+        {
+          "current": [
+            "                ProfileOwnedTask.CleanupPhase settling=normalProfileCleanup;\n",
+            "                long now=SystemClock.elapsedRealtime();\n",
+            "                if(settling!=null&&cleanupDone.getCount()!=0&&settling.mayAwait(now))\n",
+            "                    awaitCleanup(Math.max(1,Math.min(settling.watchdogDeadline()-now,r.deadline-now)));\n"
+          ],
+          "end": 379,
+          "previous": [],
+          "start": 375
+        },
+        {
+          "current": [
+            "        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;\n",
+            "        if(cleanupStarted.get()&&normal!=null)return normal.ioDeadline();\n"
+          ],
+          "end": 696,
+          "previous": [],
+          "start": 694
+        },
+        {
+          "current": [
+            "                if (cleanupStarted.get() && now >= cleanupWatchdogDeadline() && !releasedProfileReplyMayFlush(now)) {\n"
+          ],
+          "end": 1441,
+          "previous": [
+            "                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {\n"
+          ],
+          "start": 1440
+        },
+        {
+          "current": [
+            "    private long cleanupReadDeadline(){\n",
+            "        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;\n",
+            "        return normal==null?cleanupAt+CLEANUP_MS-100:normal.readDeadline();\n",
+            "    }\n",
+            "    private long cleanupWatchdogDeadline(){\n",
+            "        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;\n",
+            "        return normal==null?cleanupAt+CLEANUP_MS:normal.watchdogDeadline();\n",
+            "    }\n"
+          ],
+          "end": 1484,
+          "previous": [],
+          "start": 1476
+        },
+        {
+          "current": [
+            "        // Only a verified release may flush on the original authenticated close\n",
+            "        // socket. A bounded normal-profile read phase does not extend that request;\n",
+            "        // private/Notes cleanup and an unactivated phase retain the original bound.\n"
+          ],
+          "end": 1492,
+          "previous": [
+            "        // The cleanup deadline and unknown-custody watchdog are unchanged. Only a\n",
+            "        // verified release may finish its reply on the original socket, within both\n",
+            "        // the original request deadline and a short independent write bound.\n"
+          ],
+          "start": 1489
+        },
+        {
+          "current": [
+            "                &&profileCustody.known()&&now>=cleanupAt&&now<cleanupWatchdogDeadline()+750;\n"
+          ],
+          "end": 1494,
+          "previous": [
+            "                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;\n"
+          ],
+          "start": 1493
+        },
+        {
+          "current": [
+            "            final ProfileOwnedTask tasks=profileOwnedTask;\n"
+          ],
+          "end": 1683,
+          "previous": [],
+          "start": 1682
+        },
+        {
+          "current": [
+            "                if(config.publicOwnGroupScope!=null&&tasks!=null&&\"client_close\".equals(terminalReason)\n",
+            "                        &&authenticatedProfileClosePeer!=null&&authenticatedProfileClosePeer==connection)\n",
+            "                    normalProfileCleanup=tasks.beginNormalCleanup(cleanupAt,requestDeadline,()->profileCustody.normalCleanupAllowed());\n"
+          ],
+          "end": 1687,
+          "previous": [],
+          "start": 1684
+        },
+        {
+          "current": [
+            "                    if(config.publicOwnGroupScope!=null&&!profileCustody.normalCleanupAllowed())\n",
+            "                        throw new IOException(\"PROFILE_CUSTODY_QUARANTINED\");\n"
+          ],
+          "end": 1690,
+          "previous": [
+            "                    ProfileOwnedTask tasks=profileOwnedTask;\n"
+          ],
+          "start": 1688
+        },
+        {
+          "current": [
+            "                    ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;\n",
+            "                    if(normal!=null)tasks.prepareNormalDisplayRelease(normal);\n"
+          ],
+          "end": 1704,
+          "previous": [],
+          "start": 1702
+        },
+        {
+          "current": [
+            "                    if(normal!=null){\n",
+            "                        if(owned==null||owned!=publicCreateReturnedHandle||profileDisplayReleaseAttempted)\n",
+            "                            throw new IOException(\"PROFILE_NORMAL_CLEANUP_DISPLAY_HANDLE_CHANGED\");\n",
+            "                        publicOwnGroupFramework.requireRetiredDestroyHandle(displayId,displayName);\n",
+            "                        normal.claimDisplay(tasks);\n",
+            "                    }\n"
+          ],
+          "end": 1716,
+          "previous": [],
+          "start": 1710
+        },
+        {
+          "current": [
+            "                    if(normal!=null)normal.returnedDisplay(tasks);\n"
+          ],
+          "end": 1718,
+          "previous": [],
+          "start": 1717
+        },
+        {
+          "current": [
+            "                while(SystemClock.elapsedRealtime()<cleanupReadDeadline()){\n"
+          ],
+          "end": 1725,
+          "previous": [
+            "                while(SystemClock.elapsedRealtime()<cleanupAt+CLEANUP_MS-100){\n"
+          ],
+          "start": 1724
+        },
+        {
+          "current": [
+            "                    ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;\n",
+            "                    if(normal!=null)normal.beginRead(tasks);\n",
+            "                    recheckProfile(false,profileDeadline());\n"
+          ],
+          "end": 1738,
+          "previous": [
+            "                    recheckProfile(false,cleanupAt+CLEANUP_MS-100);\n"
+          ],
+          "start": 1735
+        },
+        {
+          "current": [
+            "                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->profileDeadline()),\n"
+          ],
+          "end": 1742,
+          "previous": [
+            "                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->cleanupAt+CLEANUP_MS-100),\n"
+          ],
+          "start": 1741
+        },
+        {
+          "current": [
+            "                    if(normal!=null)normal.requireFresh(tasks);\n"
+          ],
+          "end": 1744,
+          "previous": [],
+          "start": 1743
+        },
+        {
+          "current": [
+            "        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();\n"
+          ],
+          "end": 1773,
+          "previous": [],
+          "start": 1772
+        }
+      ],
+      "previous_bytes": 160154,
+      "previous_sha256": "abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c"
+    },
+    "src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java": {
+      "current_bytes": 30367,
+      "current_sha256": "13f80b470d55bfb9be55ed47202f645d0605c4a01b2bb06ce978a5b96a0ffd7a",
+      "inverse_edits": [
+        {
+          "current": [
+            "    /** The final guard runs after package/Binder preparation, immediately before the actual effect. */\n",
+            "    void removeOwnedLeaf(Object token,Check finalCheck) throws Exception {\n",
+            "        locationCheck.check();Object transaction=transactionType.getConstructor().newInstance();\n",
+            "        remove.invoke(transaction,wrapper(token));finalCheck.check();apply.invoke(windowOrganizer,transaction);\n",
+            "    }\n",
+            "    boolean deleteOwnedContainer(Object token,Check finalCheck) throws Exception {\n",
+            "        locationCheck.check();Object actual=wrapper(token);finalCheck.check();\n",
+            "        return Boolean.TRUE.equals(delete.invoke(organizer,actual));\n",
+            "    }\n"
+          ],
+          "end": 337,
+          "previous": [],
+          "start": 328
+        }
+      ],
+      "previous_bytes": 29736,
+      "previous_sha256": "70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec"
+    },
+    "src/org/trillionnium/hepta/background/ProfileDisplayCustody.java": {
+      "current_bytes": 1760,
+      "current_sha256": "b0113a801b041a34e373a1ef1d1550df48cc742f2613601deb51c8f1e7ab84ca",
+      "inverse_edits": [
+        {
+          "current": [
+            "    synchronized boolean normalCleanupAllowed(){return attempted&&!unknown&&!displayAbsent;}\n"
+          ],
+          "end": 9,
+          "previous": [],
+          "start": 8
+        }
+      ],
+      "previous_bytes": 1667,
+      "previous_sha256": "245cb70d0ab59918e6bbc1fa032120bfbea18065a31d6172483d4768ae409b75"
+    },
+    "src/org/trillionnium/hepta/background/ProfileOwnedTask.java": {
+      "current_bytes": 74746,
+      "current_sha256": "fe0b6a67deefea03d7fb7f7881e42e08b73c5c978f7808374865ef62bb4c395c",
+      "inverse_edits": [
+        {
+          "current": [
+            "        default void removeLeaf(Object token,CleanupEffectCheck check)throws Exception{check.check();removeLeaf(token);}\n",
+            "        default boolean deleteRoot(Object token,CleanupEffectCheck check)throws Exception{check.check();return deleteRoot(token);}\n"
+          ],
+          "end": 34,
+          "previous": [],
+          "start": 32
+        },
+        {
+          "current": [
+            "    interface CleanupEffectCheck {void check()throws Exception;}\n",
+            "    private CleanupPhase normalCleanupPhase;\n",
+            "\n",
+            "    /** One authenticated ordinary close. Only a returned, original leaf removal\n",
+            "     * can open its bounded read-convergence interval. No wire/JSON constructor. */\n",
+            "    static final class CleanupPhase {\n",
+            "        private final ProfileOwnedTask owner;\n",
+            "        private final java.util.function.BooleanSupplier normalAllowed;\n",
+            "        final long started,originalDeadline,convergenceDeadline;\n",
+            "        private volatile boolean activated,failed;\n",
+            "        private volatile long sampleStarted=-1,sampleDeadline=-1;\n",
+            "        private volatile long leafEntered=-1,leafReturned=-1,rootEntered=-1,rootReturned=-1;\n",
+            "        private volatile long displayEntered=-1,displayReturned=-1;\n",
+            "        private CleanupPhase(ProfileOwnedTask owner,long started,long requestDeadline,\n",
+            "                java.util.function.BooleanSupplier normalAllowed){\n",
+            "            this.owner=owner;this.started=started;this.normalAllowed=normalAllowed;\n",
+            "            originalDeadline=started+1400;\n",
+            "            convergenceDeadline=Math.min(started+3000,requestDeadline-150);\n",
+            "        }\n",
+            "        private void requireOwner(ProfileOwnedTask expected)throws Exception{\n",
+            "            need(expected==owner&&owner.normalCleanupPhase==this&&!failed&&!owner.identityUnknown\n",
+            "                    &&normalAllowed.getAsBoolean(),\"PROFILE_NORMAL_CLEANUP_RETIRED\");\n",
+            "        }\n",
+            "        void beginRead(ProfileOwnedTask expected)throws Exception{\n",
+            "            requireOwner(expected);long now=owner.platform.now();\n",
+            "            need(now>=started&&now<readDeadline(),\"PROFILE_NORMAL_CLEANUP_READ_DEADLINE\");\n",
+            "            sampleStarted=now;sampleDeadline=Math.min(readDeadline(),now+1500);\n",
+            "        }\n",
+            "        private long freshNow(ProfileOwnedTask expected)throws Exception{\n",
+            "            requireOwner(expected);long now=owner.platform.now();\n",
+            "            need(sampleStarted>=started&&now>=sampleStarted&&now<sampleDeadline&&now<readDeadline()\n",
+            "                    &&now-sampleStarted<1500,\"PROFILE_NORMAL_CLEANUP_CENSUS_STALE_OR_DEADLINE\");\n",
+            "            return now;\n",
+            "        }\n",
+            "        void requireFresh(ProfileOwnedTask expected)throws Exception{freshNow(expected);}\n",
+            "        private void claimLeaf(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);\n",
+            "            need(!activated&&leafEntered<0&&now<originalDeadline,\n",
+            "                    \"PROFILE_NORMAL_CLEANUP_LEAF_ALREADY_ATTEMPTED_OR_LATE\");\n",
+            "            leafEntered=now;\n",
+            "        }\n",
+            "        private void returnedLeaf(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);\n",
+            "            need(leafEntered>=started&&leafReturned<0&&now>=leafEntered&&now<originalDeadline\n",
+            "                    &&owner.leafRemoveAttempted&&owner.leafRemoved,\n",
+            "                    \"PROFILE_NORMAL_CLEANUP_LEAF_RETURN_UNCONFIRMED\");\n",
+            "            leafReturned=now;activated=true;\n",
+            "        }\n",
+            "        private void claimRoot(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);need(rootEntered<0,\"PROFILE_NORMAL_CLEANUP_ROOT_ALREADY_ATTEMPTED\");\n",
+            "            rootEntered=now;\n",
+            "        }\n",
+            "        private void returnedRoot(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);need(rootEntered>=started&&rootReturned<0&&owner.rootRemoved,\n",
+            "                    \"PROFILE_NORMAL_CLEANUP_ROOT_RETURN_UNCONFIRMED\");\n",
+            "            rootReturned=now;\n",
+            "        }\n",
+            "        void claimDisplay(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);\n",
+            "            need(owner.cleanupKnown()&&displayEntered<0,\"PROFILE_NORMAL_CLEANUP_DISPLAY_NOT_READY_OR_REPLAY\");\n",
+            "            displayEntered=now;\n",
+            "        }\n",
+            "        void returnedDisplay(ProfileOwnedTask expected)throws Exception{\n",
+            "            long now=freshNow(expected);need(displayEntered>=started&&displayReturned<0,\n",
+            "                    \"PROFILE_NORMAL_CLEANUP_DISPLAY_RETURN_UNCONFIRMED\");\n",
+            "            displayReturned=now;\n",
+            "        }\n",
+            "        long readDeadline(){return activated?convergenceDeadline:originalDeadline;}\n",
+            "        long ioDeadline(){return sampleDeadline<0?readDeadline():Math.min(readDeadline(),sampleDeadline);}\n",
+            "        long watchdogDeadline(){return activated&&!failed?convergenceDeadline+100:started+1500;}\n",
+            "        boolean mayAwait(long now){return activated&&!failed&&normalAllowed.getAsBoolean()\n",
+            "                &&now>=started&&now<convergenceDeadline;}\n",
+            "        void fail(){failed=true;}\n",
+            "        Map<String,Object> evidence(){\n",
+            "            Map<String,Object> out=new LinkedHashMap<String,Object>();\n",
+            "            out.put(\"schema\",\"hepta.profile-normal-cleanup-phase.v1\");\n",
+            "            out.put(\"original_task_reads_deadline_elapsed_ms\",originalDeadline);\n",
+            "            out.put(\"bounded_convergence_deadline_elapsed_ms\",convergenceDeadline);\n",
+            "            out.put(\"maximum_census_to_effect_age_ms\",1500);\n",
+            "            out.put(\"read_convergence_activated\",activated);out.put(\"failed\",failed);\n",
+            "            out.put(\"last_sample_started_elapsed_ms\",sampleStarted);\n",
+            "            out.put(\"leaf_effect_entered_elapsed_ms\",leafEntered);out.put(\"leaf_effect_returned_elapsed_ms\",leafReturned);\n",
+            "            out.put(\"root_effect_entered_elapsed_ms\",rootEntered);out.put(\"root_effect_returned_elapsed_ms\",rootReturned);\n",
+            "            out.put(\"display_effect_entered_elapsed_ms\",displayEntered);out.put(\"display_effect_returned_elapsed_ms\",displayReturned);\n",
+            "            out.put(\"business_admission_restored\",false);out.put(\"serialized_evidence_is_authority\",false);\n",
+            "            return Collections.unmodifiableMap(out);\n",
+            "        }\n",
+            "    }\n",
+            "    /** The live owner, never a serialized ID, creates this optional close phase.\n",
+            "     * Private, unlaunched and already unknown paths keep their old deadline. */\n",
+            "    synchronized CleanupPhase beginNormalCleanup(long started,long requestDeadline,\n",
+            "            java.util.function.BooleanSupplier normalAllowed)throws Exception{\n",
+            "        if(publicHistory==null||!prepared||!dispatchMarked||!startAccepted||root==null||leaf==null\n",
+            "                ||retiring||identityUnknown||cleanupKnown||normalAllowed==null||!normalAllowed.getAsBoolean()\n",
+            "                ||requestDeadline<=started+1550)return null;\n",
+            "        need(normalCleanupPhase==null&&platform.now()>=started&&platform.now()<started+1400,\n",
+            "                \"PROFILE_NORMAL_CLEANUP_PHASE_ALREADY_BOUND_OR_LATE\");\n",
+            "        normalCleanupPhase=new CleanupPhase(this,started,requestDeadline,normalAllowed);return normalCleanupPhase;\n",
+            "    }\n",
+            "    private long retirementReadDeadline(long original){return normalCleanupPhase==null?original:normalCleanupPhase.readDeadline();}\n",
+            "    private void beginNormalRead()throws Exception{if(normalCleanupPhase!=null)normalCleanupPhase.beginRead(this);}\n",
+            "    private void requireNormalFresh()throws Exception{if(normalCleanupPhase!=null)normalCleanupPhase.requireFresh(this);}\n",
+            "    /** Final complete live identity after the same fresh public recents read.\n",
+            "     * It does not freeze unrelated physical-screen activity. */\n",
+            "    private void normalCleanupFinalPair(boolean requireLeafNow)throws Exception{\n",
+            "        requireNormalFresh();actual(false);\n",
+            "        ProfileTaskPolicy.Snapshot all=platform.snapshot();personalAudit=all.personalAudit(target,personal);\n",
+            "        List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());\n",
+            "        need(roots.size()==1,\"PROFILE_NORMAL_CLEANUP_FINAL_ROOT_MISSING\");\n",
+            "        BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);requireRootIdentity(currentRoot);\n",
+            "        List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));\n",
+            "        if(requireLeafNow){\n",
+            "            need(children.size()==1&&sameTask(leaf,children.get(0))&&leaf.uid==children.get(0).uid,\n",
+            "                    \"PROFILE_NORMAL_CLEANUP_FINAL_LEAF_CHANGED\");\n",
+            "            ProfilePermissionTransient.Proof permission=permissionForOwnedPair(currentRoot,children.get(0),all);\n",
+            "            if(permission==null){requireRoot(currentRoot,true);requireLeaf(children.get(0),all);}\n",
+            "            all.requireOnlyOwned(target,display,root.id,leaf.id);\n",
+            "        }else{\n",
+            "            need(children.isEmpty(),\"PROFILE_NORMAL_CLEANUP_FINAL_ROOT_NOT_EMPTY\");\n",
+            "            requireRoot(currentRoot,false);all.requireDedicatedEmpty(target);\n",
+            "            all.requireOnlyOwned(target,display,root.id,-1);\n",
+            "            need(leaf==null||!all.allIds.contains(leaf.id),\"PROFILE_NORMAL_CLEANUP_FINAL_LEAF_MOVED\");\n",
+            "        }\n",
+            "        requireNormalFresh();\n",
+            "    }\n",
+            "    synchronized void prepareNormalDisplayRelease(CleanupPhase phase)throws Exception{\n",
+            "        need(phase!=null&&phase==normalCleanupPhase&&retiring&&cleanupKnown(),\n",
+            "                \"PROFILE_NORMAL_CLEANUP_DISPLAY_UNBOUND\");\n",
+            "        phase.beginRead(this);need(absent(),\"PROFILE_NORMAL_CLEANUP_PRE_RELEASE_ABSENCE\");\n",
+            "        phase.requireFresh(this);\n",
+            "    }\n",
+            "\n"
+          ],
+          "end": 171,
+          "previous": [],
+          "start": 39
+        },
+        {
+          "current": [
+            "            if(normalCleanupPhase!=null)need(deadline==normalCleanupPhase.originalDeadline,\"PROFILE_NORMAL_CLEANUP_DEADLINE_BINDING\");\n",
+            "            beginNormalRead();actual(false);\n"
+          ],
+          "end": 406,
+          "previous": [
+            "            actual(false);\n"
+          ],
+          "start": 404
+        },
+        {
+          "current": [
+            "                    if(normalCleanupPhase==null){leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;}\n",
+            "                    else{\n",
+            "                        normalCleanupFinalPair(true);need(!leafRemoveAttempted,\"PROFILE_NORMAL_CLEANUP_LEAF_REPLAY\");\n",
+            "                        leafRemoveAttempted=true;platform.removeLeaf(leaf.token,()->normalCleanupPhase.claimLeaf(this));\n",
+            "                        leafRemoved=true;normalCleanupPhase.returnedLeaf(this);\n",
+            "                    }\n"
+          ],
+          "end": 437,
+          "previous": [
+            "                    leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;\n"
+          ],
+          "start": 431
+        },
+        {
+          "current": [
+            "                while(platform.now()<retirementReadDeadline(deadline)){\n",
+            "                    beginNormalRead();actual(false);\n"
+          ],
+          "end": 445,
+          "previous": [
+            "                while(platform.now()<deadline){\n",
+            "                    actual(false);\n"
+          ],
+          "start": 443
+        },
+        {
+          "current": [
+            "                    requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);requireNormalFresh();\n"
+          ],
+          "end": 460,
+          "previous": [
+            "                    requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);\n"
+          ],
+          "start": 459
+        },
+        {
+          "current": [
+            "                        if(normalCleanupPhase==null){\n",
+            "                            rootDeleteAttempted=true;\n",
+            "                            need(platform.deleteRoot(root.token),\"PROFILE_ROOT_DELETE_NOT_ACCEPTED\");rootRemoved=true;\n",
+            "                        }else{\n",
+            "                            normalCleanupFinalPair(false);need(!rootDeleteAttempted,\"PROFILE_NORMAL_CLEANUP_ROOT_REPLAY\");\n",
+            "                            rootDeleteAttempted=true;\n",
+            "                            need(platform.deleteRoot(root.token,()->normalCleanupPhase.claimRoot(this)),\"PROFILE_ROOT_DELETE_NOT_ACCEPTED\");\n",
+            "                            rootRemoved=true;normalCleanupPhase.returnedRoot(this);\n",
+            "                        }\n",
+            "                        break;\n"
+          ],
+          "end": 478,
+          "previous": [
+            "                        rootDeleteAttempted=true;\n",
+            "                        need(platform.deleteRoot(root.token),\"PROFILE_ROOT_DELETE_NOT_ACCEPTED\");rootRemoved=true;break;\n"
+          ],
+          "start": 468
+        },
+        {
+          "current": [
+            "            while(platform.now()<retirementReadDeadline(deadline)){\n",
+            "                beginNormalRead();boolean gone=absent();requireNormalFresh();\n",
+            "                if(gone)return;platform.pause();\n"
+          ],
+          "end": 491,
+          "previous": [
+            "            while(platform.now()<deadline){\n",
+            "                if(absent())return;platform.pause();\n"
+          ],
+          "start": 488
+        },
+        {
+          "current": [
+            "            if(normalCleanupPhase!=null)normalCleanupPhase.fail();\n"
+          ],
+          "end": 495,
+          "previous": [],
+          "start": 494
+        },
+        {
+          "current": [
+            "        if(normalCleanupPhase!=null)out.put(\"normal_cleanup_phase\",normalCleanupPhase.evidence());\n"
+          ],
+          "end": 724,
+          "previous": [],
+          "start": 723
+        }
+      ],
+      "previous_bytes": 64339,
+      "previous_sha256": "c1c7cc2b3d8a3d43ec9b2ce8ddb6f23ceab7697ab4eafcf6e948f6630bbaef08"
+    },
+    "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java": {
+      "current_bytes": 8616,
+      "current_sha256": "4e8db15af7761c0d872e0af694d3bfc540ab07439d177a9e1ab953f37d8e5a2a",
+      "inverse_edits": [
+        {
+          "current": [
+            "    @Override public void removeLeaf(Object token,ProfileOwnedTask.CleanupEffectCheck check)throws Exception{\n",
+            "        organizer.removeOwnedLeaf(token,()->check.check());\n",
+            "    }\n",
+            "    @Override public boolean deleteRoot(Object token,ProfileOwnedTask.CleanupEffectCheck check)throws Exception{\n",
+            "        return organizer.deleteOwnedContainer(token,()->check.check());\n",
+            "    }\n"
+          ],
+          "end": 114,
+          "previous": [],
+          "start": 108
+        }
+      ],
+      "previous_bytes": 8249,
+      "previous_sha256": "ecdd2e0ee3153456042bc8c76dda9d122d8617ee432aaf551e1b0cdfb9f4ac84"
+    }
+  },
+  "proof_only_not_compiled": true,
+  "schema": "hepta.profile-cleanup-phase.exact-predecessor.v1"
+}

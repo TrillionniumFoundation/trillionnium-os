@@ -26,6 +26,20 @@ EXPECTED=[
  *["changed_"+key+"_refuses" for key in ("serial","uid","version","apk","split","signer","component","package")],
  "terminal_verify_after_release_uses_original_catalogue_only",
  "terminal_verify_has_no_live_fallback_when_catalogue_unavailable"]
+# Reviewed cleanup evolution is reversed only for historical source proofs.
+# Actual compiler paths and method extraction always use current production.
+def _cleanup_phase_inputs():
+    source = Path(__file__).resolve().parents[2]
+    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",
+            source / "tests/profile-cleanup-settle/production-predecessor.json"]
+
+def _cleanup_phase_proof(relative, raw):
+    from runpy import run_path
+    helper = _cleanup_phase_inputs()[0]
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
+        raise RuntimeError("fixed cleanup proof helper differs")
+    return run_path(str(helper))["predecessor"](relative, raw)
+
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def record(path):
  p=Path(path).resolve();raw=p.read_bytes()
@@ -38,6 +52,7 @@ def once(raw,old,new):
  require(raw.count(old)==1,"exact unique source fragment required: "+old[:100])
  return raw.replace(old,new,1)
 def admitted_close_proof_copy(text):
+ text=_cleanup_phase_proof("src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",text.encode()).decode()
  # This copy proves only the exact two-line authenticated Notes-close change.
  # All actual producer refs and compiled sources remain the current source.
  if sha(text.encode())=="abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c":
@@ -136,6 +151,7 @@ def main():
  extra=[source/"src/org/trillionnium/hepta/local/VlmPins.java"]
  paths=list(dict.fromkeys(paths+extra))
  originals=list(dict.fromkeys([Path(r["path"]) for r in provenance["production_inputs"]]+extra+[Path(__file__).resolve(),source/"src/org/trillionnium/hepta/local/LocalTaskController.java"]+[source/x for x in UNCHANGED]))
+ originals += _cleanup_phase_inputs()
  tools=[jdk/"bin/java",jdk/"bin/javac",jdk/"lib/modules",jar,Path(sys.executable).resolve()]
  before=[record(x) for x in originals];tool_before=[record(x) for x in tools]
  report=dict(schema="hepta.native-profile-live-identity-gate.v1",all_pass=False,source=str(source),source_inputs_before=before,

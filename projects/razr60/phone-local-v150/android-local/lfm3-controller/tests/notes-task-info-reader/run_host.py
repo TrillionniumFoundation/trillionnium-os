@@ -7,6 +7,20 @@ JSON_SHA='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 CAPTURE_SHA='e0c6a2c1eee8d0d490df7ffd381149ffa443ab4c756bd4fdc41f960ef115db9c'
 SYNTHETIC_SHA='8b44610ab210e5882d5de0cb61583992ccb626ed021b63af277f47407c3af201'
 SYNTHETIC_BYTES=18714
+# Reviewed cleanup evolution is reversed only for historical source proofs.
+# Actual compiler paths and method extraction always use current production.
+def _cleanup_phase_inputs():
+    source = Path(__file__).resolve().parents[2]
+    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",
+            source / "tests/profile-cleanup-settle/production-predecessor.json"]
+
+def _cleanup_phase_proof(relative, raw):
+    from runpy import run_path
+    helper = _cleanup_phase_inputs()[0]
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
+        raise RuntimeError("fixed cleanup proof helper differs")
+    return run_path(str(helper))["predecessor"](relative, raw)
+
 def need(v,m):
     if not v:raise RuntimeError(m)
 def raw(p):
@@ -56,8 +70,9 @@ def main():
              and later==retained['later_owned_tasks'] and all(cleanup[key]==retained[key] for key in ('absence_reads','cleanup_known','launch_dispatched')),
              'actual first failure and independent later cleanup must match the minimized record')
         tracked.append(terminal)
+    tracked += _cleanup_phase_inputs()
     before=[pin(p) for p in tracked]
-    need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
+    need(hashlib.sha256(_cleanup_phase_proof('src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java',raw(bg/'BackgroundTaskOrganizer.java'))).hexdigest()=='70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec','approved organizer differs')
     history=own/'active_census_history.py'
     need(pin(history)['sha256']=='c85c2125ac4d0a2c20ea5e78c4a04648618cf1e75816bd5b890ff692f0b63883','reviewed active-census inverse differs')
     proof_spec=importlib.util.spec_from_file_location('notes_active_census_history',history);proof_module=importlib.util.module_from_spec(proof_spec);proof_spec.loader.exec_module(proof_module)

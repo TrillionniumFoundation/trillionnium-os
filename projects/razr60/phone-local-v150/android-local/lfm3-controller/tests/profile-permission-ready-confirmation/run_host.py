@@ -44,6 +44,20 @@ RETAINED_FILES = {
 }
 
 
+# Reviewed cleanup evolution is reversed only for historical source proofs.
+# Actual compiler paths and method extraction always use current production.
+def _cleanup_phase_inputs():
+    source = Path(__file__).resolve().parents[2]
+    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",
+            source / "tests/profile-cleanup-settle/production-predecessor.json"]
+
+def _cleanup_phase_proof(relative, raw):
+    from runpy import run_path
+    helper = _cleanup_phase_inputs()[0]
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
+        raise RuntimeError("fixed cleanup proof helper differs")
+    return run_path(str(helper))["predecessor"](relative, raw)
+
 def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
@@ -188,6 +202,7 @@ def main():
               "all_pass": False, "phone_contacted": False, "android_build": False,
               "android_adapters_compiled": False, "java_release": 8,
               "taskinfo_fixtures_synthetic": True, "source_inputs": {}, "stages": []}
+    tracked.update(_cleanup_phase_inputs())
     pins = {}
 
     def run(name, argv):
@@ -208,7 +223,8 @@ def main():
         result["source_inputs"] = pins
         retained = {}
         for relative, expected in RETAINED_FILES.items():
-            actual = sha(source / relative)
+            actual = (digest(_cleanup_phase_proof(relative,(source / relative).read_bytes()))
+                      if relative.endswith("/ProfileTaskPlatform.java") else sha(source / relative))
             if actual != expected:
                 raise RuntimeError("Retained baseline fixture changed: " + relative)
             retained[relative] = actual
@@ -216,6 +232,8 @@ def main():
         checks = []
         for relative, methods in PROTECTED_METHODS.items():
             current = (source / relative).read_text()
+            if relative.endswith("/ProfileOwnedTask.java"):
+                current = _cleanup_phase_proof(relative,current.encode()).decode()
             for marker, expected in methods.items():
                 actual = digest(method(current, marker).encode())
                 if actual != expected:
@@ -245,7 +263,7 @@ def main():
             raise RuntimeError("Exact independent Notes cleanup call differs")
         from runpy import run_path
         history = run_path(str(source/"tests/profile-permission-ready-confirmation/late_ready_history.py"))
-        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](broker_text)
+        r31_text, result["late_ready_r31_inverse"] = history["predecessor"](_cleanup_phase_proof("src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",broker_text.encode()).decode())
         prior_broker, calendar_inverse = reviewed_calendar_broker_inverse(r31_text)
         result["reviewed_calendar_broker_inverse"] = calendar_inverse
         ready_broker = prior_broker.replace(notes_new_call, notes_old_call, 1)

@@ -82,6 +82,7 @@ public final class BackgroundDisplayBroker {
     private volatile long connectionDeadline;
     private volatile long lastUnlockedCheck;
     private volatile long cleanupAt;
+    private volatile ProfileOwnedTask.CleanupPhase normalProfileCleanup;
     private final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
     private volatile int displayId = -1;
     private volatile int displayFlags;
@@ -372,6 +373,10 @@ public final class BackgroundDisplayBroker {
             if ("close".equals(r.operation)) {
                 beginCleanup("client_close");
                 awaitCleanup(Math.max(1, Math.min(CLEANUP_MS, r.deadline - SystemClock.elapsedRealtime())));
+                ProfileOwnedTask.CleanupPhase settling=normalProfileCleanup;
+                long now=SystemClock.elapsedRealtime();
+                if(settling!=null&&cleanupDone.getCount()!=0&&settling.mayAwait(now))
+                    awaitCleanup(Math.max(1,Math.min(settling.watchdogDeadline()-now,r.deadline-now)));
                 return response(r, "RELEASED".equals(state), "RELEASED".equals(state) ? null : "CLEANUP_NOT_CONFIRMED", false);
             }
             guard(r, false);
@@ -687,6 +692,8 @@ public final class BackgroundDisplayBroker {
     private long profileDeadline(){
         Long retainedDeadline=retainedReadDeadline.get();
         if(retainedDeadline!=null)return retainedDeadline.longValue();
+        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;
+        if(cleanupStarted.get()&&normal!=null)return normal.ioDeadline();
         return cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:
                 Math.min(expires,requestDeadline>0?requestDeadline:started+STARTUP_MS);
     }
@@ -1431,7 +1438,7 @@ public final class BackgroundDisplayBroker {
                 // This independent watchdog is the authoritative absolute screen-lease deadline.
                 if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);
                 if(config.publicOwnGroupScope!=null)publicSurfaceRetirement.observeDeadline(now);
-                if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS && !releasedProfileReplyMayFlush(now)) {
+                if (cleanupStarted.get() && now >= cleanupWatchdogDeadline() && !releasedProfileReplyMayFlush(now)) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
                     if(config.profileTarget!=null&&profileCustody.known()){
                         state=releasedState();haltAfterBootRead(0);
@@ -1467,16 +1474,24 @@ public final class BackgroundDisplayBroker {
         watchdog.setDaemon(true); watchdog.start();
     }
 
+    private long cleanupReadDeadline(){
+        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;
+        return normal==null?cleanupAt+CLEANUP_MS-100:normal.readDeadline();
+    }
+    private long cleanupWatchdogDeadline(){
+        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;
+        return normal==null?cleanupAt+CLEANUP_MS:normal.watchdogDeadline();
+    }
     private boolean profileCloseReplyPending(long now){
         LocalSocket peer=authenticatedProfileClosePeer;
         return peer!=null&&peer==connection&&closing.get()&&now<requestDeadline;
     }
     private boolean releasedProfileReplyMayFlush(long now){
-        // The cleanup deadline and unknown-custody watchdog are unchanged. Only a
-        // verified release may finish its reply on the original socket, within both
-        // the original request deadline and a short independent write bound.
+        // Only a verified release may flush on the original authenticated close
+        // socket. A bounded normal-profile read phase does not extend that request;
+        // private/Notes cleanup and an unactivated phase retain the original bound.
         return profileCloseReplyPending(now)&&cleanupDone.getCount()==0&&"RELEASED".equals(state)
-                &&profileCustody.known()&&now>=cleanupAt&&now-cleanupAt<CLEANUP_MS+750;
+                &&profileCustody.known()&&now>=cleanupAt&&now<cleanupWatchdogDeadline()+750;
     }
 
     private void shutdown(String reason) {
@@ -1665,9 +1680,14 @@ public final class BackgroundDisplayBroker {
 
     private void beginProfileCleanup(){
         Thread cleanup=new Thread(()->{
+            final ProfileOwnedTask tasks=profileOwnedTask;
             try{
+                if(config.publicOwnGroupScope!=null&&tasks!=null&&"client_close".equals(terminalReason)
+                        &&authenticatedProfileClosePeer!=null&&authenticatedProfileClosePeer==connection)
+                    normalProfileCleanup=tasks.beginNormalCleanup(cleanupAt,requestDeadline,()->profileCustody.normalCleanupAllowed());
                 synchronized(dispatchGate){
-                    ProfileOwnedTask tasks=profileOwnedTask;
+                    if(config.publicOwnGroupScope!=null&&!profileCustody.normalCleanupAllowed())
+                        throw new IOException("PROFILE_CUSTODY_QUARANTINED");
                     if(tasks!=null){
                         profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.TASK_RETIRE);
                         tasks.retire(cleanupAt+CLEANUP_MS-100);
@@ -1680,20 +1700,29 @@ public final class BackgroundDisplayBroker {
                         profileCleanupReadback=emptyProfileCleanup(true);
                     }
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_RELEASE);
+                    ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;
+                    if(normal!=null)tasks.prepareNormalDisplayRelease(normal);
                     profileCustody.tasksVerified();
                     // The watchdog can mark uncertainty while a Binder call is in flight. It is
                     // monotonic: an observed quarantine refuses a new release call. A release
                     // already in flight can still time out; its custodian then remains alive.
                     if(!profileCustody.mayRelease())throw new IOException("PROFILE_CUSTODY_QUARANTINED");
                     VirtualDisplay owned=virtual;
+                    if(normal!=null){
+                        if(owned==null||owned!=publicCreateReturnedHandle||profileDisplayReleaseAttempted)
+                            throw new IOException("PROFILE_NORMAL_CLEANUP_DISPLAY_HANDLE_CHANGED");
+                        publicOwnGroupFramework.requireRetiredDestroyHandle(displayId,displayName);
+                        normal.claimDisplay(tasks);
+                    }
                     if(owned!=null){profileDisplayReleaseAttempted=true;owned.release();}
+                    if(normal!=null)normal.returnedDisplay(tasks);
                     ImageReader reader=surfaceReader;if(reader!=null)reader.close();
                     HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
                 }
                 profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.DISPLAY_ABSENCE);
                 if(createInFlight||effectInFlight)throw new IOException("PROFILE_EFFECT_UNRESOLVED");
                 boolean gone=false;
-                while(SystemClock.elapsedRealtime()<cleanupAt+CLEANUP_MS-100){
+                while(SystemClock.elapsedRealtime()<cleanupReadDeadline()){
                     DisplayManager dm=displays;
                     if(dm==null){gone=virtual==null&&!createInFlight&&!effectInFlight;break;}
                     boolean present=displayId>0&&dm.getDisplay(displayId)!=null;
@@ -1704,12 +1733,15 @@ public final class BackgroundDisplayBroker {
                 if(!gone)throw new IOException("PROFILE_DISPLAY_ABSENCE_UNCONFIRMED");
                 if(publicProfileHistory!=null){
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PROFILE_IDENTITY);
-                    recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                    ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;
+                    if(normal!=null)normal.beginRead(tasks);
+                    recheckProfile(false,profileDeadline());
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_GLOBAL_TASKS);
                     BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(config.profileTarget);
                     profileCleanupFailures.phase(ProfileCleanupFailureAudit.Phase.FINAL_PUBLIC_RECENTS);
-                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->cleanupAt+CLEANUP_MS-100),
+                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->profileDeadline()),
                             config.profileTarget,SystemClock.elapsedRealtime());
+                    if(normal!=null)normal.requireFresh(tasks);
                 }
                 profileCustody.displayVerifiedAbsent();state=releasedState();
             }catch(Throwable error){
@@ -1738,6 +1770,7 @@ public final class BackgroundDisplayBroker {
         return java.util.Collections.unmodifiableMap(out);
     }
     private void quarantineProfile(String reason){
+        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();
         // Keep the first cleanup refusal separate from the original close/Stop reason.
         // Diagnostics never change custody, deadlines, or the cleanup outcome.
         try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}

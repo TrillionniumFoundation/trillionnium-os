@@ -326,6 +326,15 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
         // Only the coordinator's new, fully-bound leaf token reaches this operation.
         remove.invoke(transaction,wrapper(token));apply.invoke(windowOrganizer,transaction);
     }
+    /** The final guard runs after package/Binder preparation, immediately before the actual effect. */
+    void removeOwnedLeaf(Object token,Check finalCheck) throws Exception {
+        locationCheck.check();Object transaction=transactionType.getConstructor().newInstance();
+        remove.invoke(transaction,wrapper(token));finalCheck.check();apply.invoke(windowOrganizer,transaction);
+    }
+    boolean deleteOwnedContainer(Object token,Check finalCheck) throws Exception {
+        locationCheck.check();Object actual=wrapper(token);finalCheck.check();
+        return Boolean.TRUE.equals(delete.invoke(organizer,actual));
+    }
     @Override public boolean deleteOwnedContainer(Object token) throws Exception {
         locationCheck.check();return Boolean.TRUE.equals(delete.invoke(organizer,wrapper(token)));
     }

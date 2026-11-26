@@ -30,11 +30,145 @@ public final class ProfileOwnedTask {
         void bindRoot(Object rootToken,Object launchCookie)throws Exception;
         void removeLeaf(Object token)throws Exception;
         boolean deleteRoot(Object token)throws Exception;
+        default void removeLeaf(Object token,CleanupEffectCheck check)throws Exception{check.check();removeLeaf(token);}
+        default boolean deleteRoot(Object token,CleanupEffectCheck check)throws Exception{check.check();return deleteRoot(token);}
         void pause()throws Exception;
         default Map<String,Object> permissionReadMismatchEvidence(){return Collections.emptyMap();}
         default ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf)throws Exception{return null;}
     }
+    interface CleanupEffectCheck {void check()throws Exception;}
+    private CleanupPhase normalCleanupPhase;
+
+    /** One authenticated ordinary close. Only a returned, original leaf removal
+     * can open its bounded read-convergence interval. No wire/JSON constructor. */
+    static final class CleanupPhase {
+        private final ProfileOwnedTask owner;
+        private final java.util.function.BooleanSupplier normalAllowed;
+        final long started,originalDeadline,convergenceDeadline;
+        private volatile boolean activated,failed;
+        private volatile long sampleStarted=-1,sampleDeadline=-1;
+        private volatile long leafEntered=-1,leafReturned=-1,rootEntered=-1,rootReturned=-1;
+        private volatile long displayEntered=-1,displayReturned=-1;
+        private CleanupPhase(ProfileOwnedTask owner,long started,long requestDeadline,
+                java.util.function.BooleanSupplier normalAllowed){
+            this.owner=owner;this.started=started;this.normalAllowed=normalAllowed;
+            originalDeadline=started+1400;
+            convergenceDeadline=Math.min(started+3000,requestDeadline-150);
+        }
+        private void requireOwner(ProfileOwnedTask expected)throws Exception{
+            need(expected==owner&&owner.normalCleanupPhase==this&&!failed&&!owner.identityUnknown
+                    &&normalAllowed.getAsBoolean(),"PROFILE_NORMAL_CLEANUP_RETIRED");
+        }
+        void beginRead(ProfileOwnedTask expected)throws Exception{
+            requireOwner(expected);long now=owner.platform.now();
+            need(now>=started&&now<readDeadline(),"PROFILE_NORMAL_CLEANUP_READ_DEADLINE");
+            sampleStarted=now;sampleDeadline=Math.min(readDeadline(),now+1500);
+        }
+        private long freshNow(ProfileOwnedTask expected)throws Exception{
+            requireOwner(expected);long now=owner.platform.now();
+            need(sampleStarted>=started&&now>=sampleStarted&&now<sampleDeadline&&now<readDeadline()
+                    &&now-sampleStarted<1500,"PROFILE_NORMAL_CLEANUP_CENSUS_STALE_OR_DEADLINE");
+            return now;
+        }
+        void requireFresh(ProfileOwnedTask expected)throws Exception{freshNow(expected);}
+        private void claimLeaf(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);
+            need(!activated&&leafEntered<0&&now<originalDeadline,
+                    "PROFILE_NORMAL_CLEANUP_LEAF_ALREADY_ATTEMPTED_OR_LATE");
+            leafEntered=now;
+        }
+        private void returnedLeaf(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);
+            need(leafEntered>=started&&leafReturned<0&&now>=leafEntered&&now<originalDeadline
+                    &&owner.leafRemoveAttempted&&owner.leafRemoved,
+                    "PROFILE_NORMAL_CLEANUP_LEAF_RETURN_UNCONFIRMED");
+            leafReturned=now;activated=true;
+        }
+        private void claimRoot(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);need(rootEntered<0,"PROFILE_NORMAL_CLEANUP_ROOT_ALREADY_ATTEMPTED");
+            rootEntered=now;
+        }
+        private void returnedRoot(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);need(rootEntered>=started&&rootReturned<0&&owner.rootRemoved,
+                    "PROFILE_NORMAL_CLEANUP_ROOT_RETURN_UNCONFIRMED");
+            rootReturned=now;
+        }
+        void claimDisplay(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);
+            need(owner.cleanupKnown()&&displayEntered<0,"PROFILE_NORMAL_CLEANUP_DISPLAY_NOT_READY_OR_REPLAY");
+            displayEntered=now;
+        }
+        void returnedDisplay(ProfileOwnedTask expected)throws Exception{
+            long now=freshNow(expected);need(displayEntered>=started&&displayReturned<0,
+                    "PROFILE_NORMAL_CLEANUP_DISPLAY_RETURN_UNCONFIRMED");
+            displayReturned=now;
+        }
+        long readDeadline(){return activated?convergenceDeadline:originalDeadline;}
+        long ioDeadline(){return sampleDeadline<0?readDeadline():Math.min(readDeadline(),sampleDeadline);}
+        long watchdogDeadline(){return activated&&!failed?convergenceDeadline+100:started+1500;}
+        boolean mayAwait(long now){return activated&&!failed&&normalAllowed.getAsBoolean()
+                &&now>=started&&now<convergenceDeadline;}
+        void fail(){failed=true;}
+        Map<String,Object> evidence(){
+            Map<String,Object> out=new LinkedHashMap<String,Object>();
+            out.put("schema","hepta.profile-normal-cleanup-phase.v1");
+            out.put("original_task_reads_deadline_elapsed_ms",originalDeadline);
+            out.put("bounded_convergence_deadline_elapsed_ms",convergenceDeadline);
+            out.put("maximum_census_to_effect_age_ms",1500);
+            out.put("read_convergence_activated",activated);out.put("failed",failed);
+            out.put("last_sample_started_elapsed_ms",sampleStarted);
+            out.put("leaf_effect_entered_elapsed_ms",leafEntered);out.put("leaf_effect_returned_elapsed_ms",leafReturned);
+            out.put("root_effect_entered_elapsed_ms",rootEntered);out.put("root_effect_returned_elapsed_ms",rootReturned);
+            out.put("display_effect_entered_elapsed_ms",displayEntered);out.put("display_effect_returned_elapsed_ms",displayReturned);
+            out.put("business_admission_restored",false);out.put("serialized_evidence_is_authority",false);
+            return Collections.unmodifiableMap(out);
+        }
+    }
+    /** The live owner, never a serialized ID, creates this optional close phase.
+     * Private, unlaunched and already unknown paths keep their old deadline. */
+    synchronized CleanupPhase beginNormalCleanup(long started,long requestDeadline,
+            java.util.function.BooleanSupplier normalAllowed)throws Exception{
+        if(publicHistory==null||!prepared||!dispatchMarked||!startAccepted||root==null||leaf==null
+                ||retiring||identityUnknown||cleanupKnown||normalAllowed==null||!normalAllowed.getAsBoolean()
+                ||requestDeadline<=started+1550)return null;
+        need(normalCleanupPhase==null&&platform.now()>=started&&platform.now()<started+1400,
+                "PROFILE_NORMAL_CLEANUP_PHASE_ALREADY_BOUND_OR_LATE");
+        normalCleanupPhase=new CleanupPhase(this,started,requestDeadline,normalAllowed);return normalCleanupPhase;
+    }
+    private long retirementReadDeadline(long original){return normalCleanupPhase==null?original:normalCleanupPhase.readDeadline();}
+    private void beginNormalRead()throws Exception{if(normalCleanupPhase!=null)normalCleanupPhase.beginRead(this);}
+    private void requireNormalFresh()throws Exception{if(normalCleanupPhase!=null)normalCleanupPhase.requireFresh(this);}
+    /** Final complete live identity after the same fresh public recents read.
+     * It does not freeze unrelated physical-screen activity. */
+    private void normalCleanupFinalPair(boolean requireLeafNow)throws Exception{
+        requireNormalFresh();actual(false);
+        ProfileTaskPolicy.Snapshot all=platform.snapshot();personalAudit=all.personalAudit(target,personal);
+        List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
+        need(roots.size()==1,"PROFILE_NORMAL_CLEANUP_FINAL_ROOT_MISSING");
+        BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);requireRootIdentity(currentRoot);
+        List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
+        if(requireLeafNow){
+            need(children.size()==1&&sameTask(leaf,children.get(0))&&leaf.uid==children.get(0).uid,
+                    "PROFILE_NORMAL_CLEANUP_FINAL_LEAF_CHANGED");
+            ProfilePermissionTransient.Proof permission=permissionForOwnedPair(currentRoot,children.get(0),all);
+            if(permission==null){requireRoot(currentRoot,true);requireLeaf(children.get(0),all);}
+            all.requireOnlyOwned(target,display,root.id,leaf.id);
+        }else{
+            need(children.isEmpty(),"PROFILE_NORMAL_CLEANUP_FINAL_ROOT_NOT_EMPTY");
+            requireRoot(currentRoot,false);all.requireDedicatedEmpty(target);
+            all.requireOnlyOwned(target,display,root.id,-1);
+            need(leaf==null||!all.allIds.contains(leaf.id),"PROFILE_NORMAL_CLEANUP_FINAL_LEAF_MOVED");
+        }
+        requireNormalFresh();
+    }
+    synchronized void prepareNormalDisplayRelease(CleanupPhase phase)throws Exception{
+        need(phase!=null&&phase==normalCleanupPhase&&retiring&&cleanupKnown(),
+                "PROFILE_NORMAL_CLEANUP_DISPLAY_UNBOUND");
+        phase.beginRead(this);need(absent(),"PROFILE_NORMAL_CLEANUP_PRE_RELEASE_ABSENCE");
+        phase.requireFresh(this);
+    }
+
     /** Package-local public-mode observation seam. The default private path has
      * no dependency on public recents/JSON adapters and retains its strict gate. */
     interface PublicRecentHistory {
@@ -268,7 +402,8 @@ public final class ProfileOwnedTask {
     public synchronized void retire(long deadline)throws Exception{
         need(!retiring,"PROFILE_RETIRE_ALREADY_ATTEMPTED");retiring=true;
         try{
-            actual(false);
+            if(normalCleanupPhase!=null)need(deadline==normalCleanupPhase.originalDeadline,"PROFILE_NORMAL_CLEANUP_DEADLINE_BINDING");
+            beginNormalRead();actual(false);
             if(!rootAttempted){
                 platform.snapshot().requireDedicatedEmpty(target);requireRecentEmpty(readRecents());
                 need(checked(platform.roots()).isEmpty(),"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
@@ -294,15 +429,20 @@ public final class ProfileOwnedTask {
                     requireRecentOnlyOwned(readRecents(),leaf.id);
                     if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
-                    leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;
+                    if(normalCleanupPhase==null){leafRemoveAttempted=true;platform.removeLeaf(leaf.token);leafRemoved=true;}
+                    else{
+                        normalCleanupFinalPair(true);need(!leafRemoveAttempted,"PROFILE_NORMAL_CLEANUP_LEAF_REPLAY");
+                        leafRemoveAttempted=true;platform.removeLeaf(leaf.token,()->normalCleanupPhase.claimLeaf(this));
+                        leafRemoved=true;normalCleanupPhase.returnedLeaf(this);
+                    }
                 }else{
                     requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
                     if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!recentIds(readRecents()).contains(leaf.id),
                             "PROFILE_DETACHED_RECENT_LEAF_UNRESOLVED");
                 }
-                while(platform.now()<deadline){
-                    actual(false);
+                while(platform.now()<retirementReadDeadline(deadline)){
+                    beginNormalRead();actual(false);
                     ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
                     boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
                     List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;
@@ -317,7 +457,7 @@ public final class ProfileOwnedTask {
                         }
                     }
                     ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
-                    requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);
+                    requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);requireNormalFresh();
                     boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
                     if(noLeaf){
                         current.requireDedicatedEmpty(target);requireRecentEmpty(recent);
@@ -326,8 +466,16 @@ public final class ProfileOwnedTask {
                         List<BackgroundOwnedSingleTask.Task> currentChildren=sampledChildren==null
                                 ?checked(platform.children(root.token)):sampledChildren;
                         need(currentChildren.isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
-                        rootDeleteAttempted=true;
-                        need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
+                        if(normalCleanupPhase==null){
+                            rootDeleteAttempted=true;
+                            need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;
+                        }else{
+                            normalCleanupFinalPair(false);need(!rootDeleteAttempted,"PROFILE_NORMAL_CLEANUP_ROOT_REPLAY");
+                            rootDeleteAttempted=true;
+                            need(platform.deleteRoot(root.token,()->normalCleanupPhase.claimRoot(this)),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");
+                            rootRemoved=true;normalCleanupPhase.returnedRoot(this);
+                        }
+                        break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
                     current.requireOnlyOwned(target,display,root.id,liveLeafGone?-1:leaf.id);
@@ -338,11 +486,13 @@ public final class ProfileOwnedTask {
                 need(!global.allIds.contains(root.id),"PROFILE_ROOT_MOVED_OUTSIDE_DISPLAY");
                 if(leaf!=null)need(!global.allIds.contains(leaf.id),"PROFILE_LEAF_MOVED_OUTSIDE_DISPLAY");
             }
-            while(platform.now()<deadline){
-                if(absent())return;platform.pause();
+            while(platform.now()<retirementReadDeadline(deadline)){
+                beginNormalRead();boolean gone=absent();requireNormalFresh();
+                if(gone)return;platform.pause();
             }
             need(false,"PROFILE_RETIRE_ABSENCE_UNCONFIRMED");
         }catch(Exception error){
+            if(normalCleanupPhase!=null)normalCleanupPhase.fail();
             identityUnknown=true;
             if(error.getMessage()!=null&&error.getMessage().contains("FOREIGN"))foreignTasks=true;
             throw error;
@@ -571,6 +721,7 @@ public final class ProfileOwnedTask {
             item.put("full_uid",leaf.uid);item.put("live_absent",liveAbsent);item.put("recents_absent",recentsAbsent);owned.add(item);
         }
         out.put("owned_tasks",owned);
+        if(normalCleanupPhase!=null)out.put("normal_cleanup_phase",normalCleanupPhase.evidence());
         if(publicHistory!=null){Map<String,Object> history=publicHistory.evidence();out.put("public_foreign_recent_history",history);
             out.put("recents_absence_scope","hepta.public-profile-history-custody.v2".equals(history.get("schema"))
                     ?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved");}

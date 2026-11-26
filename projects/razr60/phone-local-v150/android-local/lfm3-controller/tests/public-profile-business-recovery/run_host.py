@@ -76,6 +76,7 @@ def main():
     ap.add_argument("--visual", action="store_true", help="Replay genuine visual-task originals from the supplied manifest and path map")
     ap.add_argument("--retained-before-model", action="store_true", help="Replay original retained-custody capture before the first model request")
     ap.add_argument("--retained-after-business", action="store_true", help="Replay retained failed business originals and independent current-absence policy")
+    ap.add_argument("--model-done-cleanup", action="store_true", help="Replay a verified native product model claim followed by a failed retained close")
     args = ap.parse_args()
     source = args.source.resolve(strict=True)
     output = args.output.absolute()
@@ -92,7 +93,9 @@ def main():
         special_name = "PublicProfileBusinessIncompleteHostTest"
     if args.retained_after_business:
         special_name = "PublicProfileRetainedBusinessHostTest"
-    special = args.visual or args.retained_before_model or args.incomplete_client_close or args.retained_after_business
+    if args.model_done_cleanup:
+        special_name = "PublicProfileModelDoneCleanupHostTest"
+    special = args.visual or args.retained_before_model or args.incomplete_client_close or args.retained_after_business or args.model_done_cleanup
     visual_test = host_test.with_name(special_name+".java")
     before = inventory(source)
     tools_before = {n: ref(p) for n,p in (("java",java),("javac",javac),("json_jar",jar),("runner",script))}

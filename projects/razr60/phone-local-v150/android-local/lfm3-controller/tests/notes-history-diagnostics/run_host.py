@@ -34,6 +34,20 @@ EXPECTED=[
  "whole-terminal bound leaves original fields and limits intact",
  "actual coordinator pre-effect refusal does not dispatch",
  "actual post-returned refusal retains single attempted effect"]
+# Reviewed cleanup evolution is reversed only for historical source proofs.
+# Actual compiler paths and method extraction always use current production.
+def _cleanup_phase_inputs():
+    source = Path(__file__).resolve().parents[2]
+    return [source / "tests/profile-cleanup-settle/protected_cleanup_phase.py",
+            source / "tests/profile-cleanup-settle/production-predecessor.json"]
+
+def _cleanup_phase_proof(relative, raw):
+    from runpy import run_path
+    helper = _cleanup_phase_inputs()[0]
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
+        raise RuntimeError("fixed cleanup proof helper differs")
+    return run_path(str(helper))["predecessor"](relative, raw)
+
 def need(ok,message):
     if not ok:raise ValueError(message)
 def ref(path):
@@ -51,6 +65,7 @@ def unique(text,old,new):
 def put(path,value):
     with path.open("x",encoding="utf-8") as f:json.dump(value,f,ensure_ascii=False,indent=2);f.write("\n")
 def close_reply_proof_copy(text):
+    text=_cleanup_phase_proof("src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",text.encode()).decode()
     # Only this exact admitted-close source may be reversed for the historical proof.
     # Extraction and compilation below continue to use the unmodified actual text.
     if hashlib.sha256(text.encode()).hexdigest()=="abccc17b66df24056a75bb44d8b0f9c6c790727cf0ac2abd4067a0d27d60ea7c":
@@ -184,6 +199,7 @@ def main():
     tracked=list(dict.fromkeys(java_inputs+[s/"src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
         Path(__file__).resolve(),a.retirement_result.resolve(),a.json_jar.resolve(),a.java_home.resolve()/"bin/javac",
         a.java_home.resolve()/"bin/java",a.java_home.resolve()/"lib/ct.sym"]+nearest+([a.actual_terminal.resolve()] if a.actual_terminal else [])))
+    tracked += _cleanup_phase_inputs()
     before=[ref(path) for path in tracked]
     result=dict(schema="hepta.notes-history-diagnostics-host.v1",all_pass=False,phone_operations=0,
                 source=str(s),retirement_result=ref(a.retirement_result),actual_production_inputs=production,

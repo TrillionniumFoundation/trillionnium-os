@@ -6,6 +6,7 @@ final class ProfileDisplayCustody {
     synchronized void beforeCreate(){attempted=true;}
     synchronized void tasksVerified(){if(!unknown)tasksClear=true;}
     synchronized boolean mayRelease(){return tasksClear&&!unknown;}
+    synchronized boolean normalCleanupAllowed(){return attempted&&!unknown&&!displayAbsent;}
     synchronized void unresolved(){unknown=true;}
     synchronized void displayVerifiedAbsent(){
         if(!tasksClear||unknown)throw new IllegalStateException("PROFILE_CUSTODY_NOT_RELEASEABLE");
