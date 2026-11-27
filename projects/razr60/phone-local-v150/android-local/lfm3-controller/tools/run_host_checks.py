@@ -132,11 +132,26 @@ def main():
                 or cleanup_sampling.get("original_task_fixture_used") is not False
                 or cleanup_sampling.get("phone_operations")!=0
                 or cleanup_sampling.get("sampling",{}).get("assertions")!=55
-                or cleanup_sampling.get("diagnostics",{}).get("assertions")!=14):
+                or cleanup_sampling.get("diagnostics",{}).get("assertions")!=14
+                or cleanup_sampling.get("failure_snapshot",{}).get("all_pass") is not True
+                or cleanup_sampling.get("failure_snapshot",{}).get("phone_operations")!=0
+                or cleanup_sampling.get("failure_snapshot",{}).get("old_race_demonstrated") is not True
+                or cleanup_sampling.get("failure_snapshot",{}).get("unchanged_normal_cleanup_cases")!=35
+                or cleanup_sampling.get("failure_snapshot",{}).get("new_snapshot_cases")!=12
+                or cleanup_sampling.get("normal_capture",{}).get("all_pass") is not True
+                or cleanup_sampling.get("normal_capture",{}).get("cases")!=9
+                or cleanup_sampling.get("normal_capture",{}).get("assertions")!=11
+                or cleanup_sampling.get("normal_capture",{}).get("case_names_sha256")!="087d4418ea7a3702f9ba876a3c43f8dad07e92e535c5551e91c801481124585f"
+                or cleanup_sampling.get("normal_capture",{}).get("actual_comparator_executed") is not True
+                or cleanup_sampling.get("normal_capture",{}).get("complete_request_executed") is not False
+                or cleanup_sampling.get("normal_capture",{}).get("legacy_path_replayed") is not False
+                or cleanup_sampling.get("normal_capture",{}).get("private_originals_used") is not False
+                or cleanup_sampling.get("normal_capture",{}).get("phone_operations")!=0):
             raise RuntimeError("profile cleanup candidate regression contract differs")
         report["profile_cleanup_sampling_gate"]={"bytes":len(cleanup_sampling_raw),
             "sha256":hashlib.sha256(cleanup_sampling_raw).hexdigest(),
-            "sampling":cleanup_sampling["sampling"],"diagnostics":cleanup_sampling["diagnostics"]}
+            "sampling":cleanup_sampling["sampling"],"diagnostics":cleanup_sampling["diagnostics"],
+            "failure_snapshot":cleanup_sampling["failure_snapshot"],"normal_capture":cleanup_sampling["normal_capture"]}
         if not (java_home/"bin/javac").is_file():
             raise RuntimeError("The selected Java runtime must have its full JDK javac for the mandatory audit gates")
         report["host_json_dependency"]={"path":str(json_jar),"bytes":len(json_bytes),"sha256":json_digest,
