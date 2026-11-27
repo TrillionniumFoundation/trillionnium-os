@@ -62,10 +62,34 @@
             });
         }
         for(int type=0;type<4;type++){final int kind=type;
-            one("initial_read_order_first_fence_"+new String[]{"unknown","boundary","untyped","content"}[type]+"_still_refused",()->{
+            one(kind==3?"initial_read_order_first_fence_content_same_intent_new_pair_once":
+                    "initial_read_order_first_fence_"+new String[]{"unknown","boundary","untyped"}[type]+"_still_refused",()->{
                 HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                    NativeSearchSession.Attempt a=afterTargetIntent(f);armFirstFinalEvent(s,kind);f.action(a);
-                    noEffect(f,"unchanged first fence cannot spend a new census allowance");
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);
+                    if(kind==3){
+                        long deadline=a.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed;
+                        final Map<String,NodeData> rejectedNodes=new LinkedHashMap<String,NodeData>(f.nodes);
+                        final boolean[] oldPairClosed={false},newDEffect={false};
+                        f.graphHook=()->{if(f.graphReads==5){
+                            SearchActionWork live=s.activeSearchAction;
+                            check(live!=null&&live.attempt==a&&!live.state.isDrained()&&actionSlot.pending(),"same original worker holds the one read replacement");
+                            for(NodeData n:rejectedNodes.values())check(n.obtained==n.recycled&&n.effects==0,"rejected first C/D closed without any effect before new C");
+                            check(!Boolean.TRUE.equals(a.evidence().get("claimed"))&&f.effects==0,"old pair cannot dispatch or claim");
+                            oldPairClosed[0]=true;f.nodes.clear();
+                        }};
+                        readOrderEffectIdentity(s,f,newDEffect);armFirstFinalEvent(s,kind);
+                        SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();
+                        check(oldPairClosed[0]&&newDEffect[0]&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,"typed first-fence refusal admits only one new complete C/D on the same intent");
+                        check(w.attempt==a&&w.firstPostDCensusRepairSelected&&w.finalCensusResamples==1&&w.currentReadAttempts.size()==2
+                                &&a.deadlineElapsed==deadline&&f.base.search.chainDeadlineElapsed==chain&&deadline-a.startedElapsed==24000,"shared final1/C8/original24s and same Attempt remain fixed");
+                        check(!w.hasNoEffectReplanFence()&&s.taskObservationAdmissions==1&&!w.replanDrainMarkerCompleted,"selected same-intent repair cannot manufacture a model successor");
+                        JSONObject e=finalCensusEvidence(f),old=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                        check("FIRST_POST_D".equals(old.getString("producer_boundary"))&&e.getInt("complete_census_resamples")==1,"sealed old refusal and the only new pair remain distinct");
+                        for(NodeData n:rejectedNodes.values())check(n.effects==0&&n.obtained==n.recycled,"discarded references never receive the later effect");
+                        check(sameReferenceDrained(f),"replacement pair references drain");return;
+                    }
+                    armFirstFinalEvent(s,kind);f.action(a);
+                    noEffect(f,"unknown/boundary/untyped first-fence events remain hard refusals");
                     JSONObject e=finalCensusEvidence(f);
                     check(e.getBoolean("typed_post_D_first_fence_rejected")&&f.graphReads==4
                             &&e.getInt("complete_census_resamples")==0&&!Boolean.TRUE.equals(a.evidence().get("claimed")),"original hard refusal remains before D target binding");

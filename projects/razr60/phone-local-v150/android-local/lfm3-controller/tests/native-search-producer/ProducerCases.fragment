@@ -247,7 +247,8 @@
                 check(declared==2&&original&&phased,"exact original final constructor plus private stage constructor");
                 check(java.lang.reflect.Modifier.isPrivate(NativeSearchFinalCensusResampleProof.Boundary.class.getModifiers())
                         &&Arrays.equals(NativeSearchFinalCensusResampleProof.Boundary.values(),new NativeSearchFinalCensusResampleProof.Boundary[]{
-                            NativeSearchFinalCensusResampleProof.Boundary.FINAL_PRECLAIM,NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET}),"closed private stage enum cannot be supplied through a Session API");
+                            NativeSearchFinalCensusResampleProof.Boundary.FINAL_PRECLAIM,NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET,
+                            NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D}),"exact three-value private stage enum cannot be supplied through a Session API");
                 f.action(attempt);check(f.outcome.accepted&&f.effects==1&&f.graphReads==4,"denied capability attempt does not manufacture or consume revalidation");
             }
         });
