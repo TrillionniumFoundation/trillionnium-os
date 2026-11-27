@@ -50,6 +50,20 @@ def main():
     broker = bg / "BackgroundDisplayBroker.java"
     diagnostic = src / "tests/profile-cleanup-sampling/ProfileCleanupDiagnosticsHostTest.java"
     tracked = files + [broker, diagnostic, shared, fixture, Path(__file__).resolve()]
+    tracked += [src / relative for relative in (
+        "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
+        "tests/public-profile-business-recovery/PublicProfileNormalCaptureHostTest.java",
+        "tests/public-profile-business-recovery/run_normal_capture.py",
+        "tests/profile-failure-snapshot/run_host.py",
+        "tests/profile-failure-snapshot/ProfileFailureSnapshotBrokerHost.template",
+        "tests/profile-failure-snapshot/ProfileFailureSnapshotHostTest.java",
+        "tests/profile-failure-snapshot/before-failure-snapshot-broker.inc",
+        "tests/profile-cleanup-settle/run_host.py",
+        "tests/profile-cleanup-settle/ProfileCleanupSettleFixtures.java",
+        "tests/profile-cleanup-settle/ProfileCleanupSettleHostTest.java",
+        "src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java",
+        "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
+        "src/org/trillionnium/hepta/local/BackgroundSession.java")]
     pins = {str(p): sha(p) for p in tracked}
     out.mkdir(parents=True)
     result = dict(schema="hepta.profile-cleanup-candidate-host.v1", all_pass=False,
@@ -107,6 +121,36 @@ def main():
              and result["diagnostics"].get("assertions") == 14
              and result["diagnostics"].get("original_close_reason_changed") is False,
              "complete diagnostic contract changed")
+        run("failure-snapshot", [sys.executable, "-B", src / "tests/profile-failure-snapshot/run_host.py",
+            "--source", src, "--output", out / "failure-snapshot", "--java-home", a.java_home, "--json-jar", a.json_jar])
+        snapshot_path=out / "failure-snapshot/RESULT.json"
+        snapshot=json.loads(snapshot_path.read_bytes())
+        need(snapshot.get("all_pass") is True and snapshot.get("source_inputs_unchanged") is True
+             and snapshot.get("phone_operations") == 0 and snapshot.get("archived_original_supplied") is False
+             and snapshot.get("old_producer_negative",{}).get("expected_old_failure_demonstrated") is True
+             and snapshot.get("unchanged_normal_cleanup_regression",{}).get("case_count") == 35
+             and snapshot.get("new_producer_snapshot_regression",{}).get("case_count") == 12,
+             "complete broker failure snapshot contract changed")
+        result["failure_snapshot"]={"all_pass":True,"result":str(snapshot_path),"sha256":sha(snapshot_path),
+            "phone_operations":0,"old_race_demonstrated":True,"unchanged_normal_cleanup_cases":35,
+            "new_snapshot_cases":12,"original_raw_task_used":False,
+            "case_results":snapshot["new_producer_snapshot_regression"]}
+        run("normal-capture", [sys.executable, "-B", src / "tests/public-profile-business-recovery/run_normal_capture.py",
+            "--source", src, "--output", out / "normal-capture", "--java-home", a.java_home, "--json-jar", a.json_jar])
+        normal_path=out / "normal-capture/RESULT.json"
+        normal=json.loads(normal_path.read_bytes())
+        need(normal.get("schema") == "hepta.public-profile-normal-capture-run.v1"
+             and normal.get("all_pass") is True and normal.get("source_inputs_unchanged") is True
+             and normal.get("tools_unchanged") is True and normal.get("actual_comparator_executed") is True
+             and normal.get("complete_request_executed") is False and normal.get("legacy_path_replayed") is False
+             and normal.get("private_originals_used") is False and normal.get("phone_operations") == 0
+             and normal.get("cases",{}).get("cases") == 9 and normal.get("cases",{}).get("assertions") == 11
+             and normal.get("case_names_sha256") == "087d4418ea7a3702f9ba876a3c43f8dad07e92e535c5551e91c801481124585f",
+             "complete ordinary retained capture contract changed")
+        result["normal_capture"]={"all_pass":True,"result":str(normal_path),"sha256":sha(normal_path),
+            "cases":9,"assertions":11,"case_names_sha256":normal["case_names_sha256"],
+            "actual_comparator_executed":True,"complete_request_executed":False,
+            "legacy_path_replayed":False,"phone_operations":0,"private_originals_used":False}
         result["all_pass"] = True
     finally:
         result["source_inputs_unchanged"] = pins == {p: sha(Path(p)) for p in pins}

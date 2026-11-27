@@ -13,6 +13,14 @@ def main():
     bg=source/'src/org/trillionnium/hepta/background'
     broker=(bg/'BackgroundDisplayBroker.java').read_text()
     framework=(bg/'PublicOwnGroupFramework.java').read_text()
+    failure_helper=source/'tests/profile-failure-snapshot/run_host.py'
+    failure_base=failure_helper.with_name('before-failure-snapshot-broker.inc')
+    failure_raw=failure_helper.read_bytes()
+    if (len(failure_raw),hashlib.sha256(failure_raw).hexdigest())!=(35625,'53118d3e2882ee9c73b2a7f295ea37baa6c6dcfa9e2dca372c787d4f01f79007'):
+        raise RuntimeError('fixed failure-snapshot predecessor helper required')
+    failure_spec=importlib.util.spec_from_file_location('screen_failure_snapshot_predecessor',failure_helper)
+    failure=importlib.util.module_from_spec(failure_spec);failure_spec.loader.exec_module(failure)
+    failure_proof=failure.failure_snapshot_predecessor((bg/'BackgroundDisplayBroker.java').read_bytes())
     phase_helper=source/'tests/profile-cleanup-settle/protected_cleanup_phase.py'
     phase_data=phase_helper.with_name('production-predecessor.json')
     if hashlib.sha256(phase_helper.read_bytes()).hexdigest()!='a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2':
@@ -20,7 +28,7 @@ def main():
     spec=importlib.util.spec_from_file_location('screen_cleanup_phase_predecessor',phase_helper)
     phase=importlib.util.module_from_spec(spec);spec.loader.exec_module(phase)
     proof_broker=phase.predecessor('src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',
-                                  (bg/'BackgroundDisplayBroker.java').read_bytes()).decode('utf-8')
+                                  failure_proof).decode('utf-8')
     # Integration checks retain the actual port and lifecycle call sites; the Java test below
     # executes the production state machine, including a real concurrent acquire/retire race.
     exact={
@@ -56,15 +64,32 @@ def main():
             or broker.count(calendar_release)!=1):
         raise RuntimeError('exact Calendar cleanup retirement/drain integration missing')
     legacy_cleanup=broker.replace(calendar_retire,'',1)
-    # Keep the complete historical prefix contract, and separately require its
-    # exact current successor: phase quarantine precedes the original power
-    # retirement. Neither proof copy is compiled.
+    # Keep both original prefix contracts on their exact whole-file predecessors.
+    # The current failure-snapshot successor retires power before its short
+    # decision gate and preserves a known release before recording failure.
+    # Its complete method and order are checked separately; no proof is compiled.
+    phase_source=failure_proof.decode('utf-8')
     phase_failure='        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();\n'
     phase_prefix=exact['profile_quarantine'].replace(
         '    private void quarantineProfile(String reason){\n',
         '    private void quarantineProfile(String reason){\n'+phase_failure,1)
-    if broker.count(phase_prefix)!=1 or broker.count(phase_failure)!=1:
-        raise RuntimeError('actual phase quarantine before original screen retirement required')
+    if phase_source.count(phase_prefix)!=1 or phase_source.count(phase_failure)!=1:
+        raise RuntimeError('historical phase quarantine before original screen retirement required')
+    quarantine_start='    private void quarantineProfile(String reason){\n'
+    quarantine_end='    private final AtomicBoolean retainedRecheckStarted=new AtomicBoolean();\n'
+    if broker.count(quarantine_start)!=1 or broker.count(quarantine_end)!=1:
+        raise RuntimeError('unique current failure-snapshot quarantine boundary required')
+    quarantine=broker[broker.index(quarantine_start):broker.index(quarantine_end)]
+    if (len(quarantine.encode()),hashlib.sha256(quarantine.encode()).hexdigest())!=(1704,'c11ef2525823ddc8fa83f97dbfcc9124a4fa1491bf44755b3803a986f098f9cd'):
+        raise RuntimeError('complete current failure-snapshot quarantine method required')
+    quarantine_order=['retirePublicScreenLease();','synchronized(profileTerminalDecisionGate){',
+        'if(profileCustody.known())return;',
+        'ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();',
+        'try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}',
+        'profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";']
+    if (any(quarantine.count(marker)!=1 for marker in quarantine_order)
+            or [quarantine.index(marker) for marker in quarantine_order]!=sorted(quarantine.index(marker) for marker in quarantine_order)):
+        raise RuntimeError('actual screen retirement and known-release decision order required')
     for key,value in exact.items():
         actual=(framework if key=='physical_group_census' else
                 legacy_cleanup if key=='cleanup_latch' else proof_broker if key=='profile_quarantine' else broker)
@@ -131,7 +156,7 @@ final class PublicScreenInitializationFixture {
     files=[bg/'PublicOwnGroupScreenLease.java',source/'tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java',
            source/'tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java',initialization]
     files.append(fixture)
-    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve(),phase_helper,phase_data]
+    inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve(),phase_helper,phase_data,failure_helper,failure_base]
     def pin(p):
         data=p.read_bytes();return {'path':str(p),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
     before=[pin(p) for p in inputs]
@@ -150,9 +175,15 @@ final class PublicScreenInitializationFixture {
         'actual_release_hunk_sha256':hashlib.sha256(calendar_release.encode()).hexdigest()}
     report['profile_cleanup_diagnostic_source_contract']={'complete_prefix_sha256':hashlib.sha256(exact['profile_quarantine'].encode()).hexdigest(),
         'original_screen_retire_after_bounded_diagnostic':True,'projection_compiled':False,'diagnostic_runtime_covered_by_separate_gate':True,
-        'actual_successor_prefix_sha256':hashlib.sha256(phase_prefix.encode()).hexdigest(),
-        'actual_phase_quarantine_before_screen_retirement':True,'whole_broker_predecessor_sha256':hashlib.sha256(proof_broker.encode()).hexdigest(),
-        'cleanup_phase_runtime_covered_by_separate_gate':True}
+        'historical_phase_successor_prefix_sha256':hashlib.sha256(phase_prefix.encode()).hexdigest(),
+        'historical_phase_quarantine_before_screen_retirement':True,'whole_broker_predecessor_sha256':hashlib.sha256(proof_broker.encode()).hexdigest(),
+        'actual_snapshot_quarantine_sha256':hashlib.sha256(quarantine.encode()).hexdigest(),
+        'actual_snapshot_quarantine_bytes':len(quarantine.encode()),
+        'actual_screen_retirement_before_terminal_decision_gate':True,
+        'actual_verified_release_preserved_before_failure_decision':True,
+        'cleanup_phase_runtime_covered_by_separate_gate':True,
+        'failure_snapshot_whole_predecessor_sha256':hashlib.sha256(failure_proof).hexdigest(),
+        'failure_snapshot_inverse_before_original_phase_inverse':True}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)
         stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');stdout.write_bytes(result.stdout);stderr.write_bytes(result.stderr)

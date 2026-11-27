@@ -84,6 +84,10 @@ public final class BackgroundDisplayBroker {
     private volatile long cleanupAt;
     private volatile ProfileOwnedTask.CleanupPhase normalProfileCleanup;
     private final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
+    // Only short, in-memory normal-success/quarantine decisions share this gate.
+    // Never acquire dispatchGate or a ProfileOwnedTask monitor while holding it.
+    private final Object profileTerminalDecisionGate=new Object();
+    private volatile String frozenRetainedProfileTerminal;
     private volatile int displayId = -1;
     private volatile int displayFlags;
     private volatile JSONObject displayPolicyReadback;
@@ -375,8 +379,12 @@ public final class BackgroundDisplayBroker {
                 awaitCleanup(Math.max(1, Math.min(CLEANUP_MS, r.deadline - SystemClock.elapsedRealtime())));
                 ProfileOwnedTask.CleanupPhase settling=normalProfileCleanup;
                 long now=SystemClock.elapsedRealtime();
-                if(settling!=null&&cleanupDone.getCount()!=0&&settling.mayAwait(now))
-                    awaitCleanup(Math.max(1,Math.min(settling.watchdogDeadline()-now,r.deadline-now)));
+                long remaining=settling==null?0:Math.min(settling.watchdogDeadline(),r.deadline)-now;
+                if(settling!=null&&cleanupDone.getCount()!=0&&remaining>0)awaitCleanup(remaining);
+                // The original deadline is decisive, not the next 50 ms watchdog tick.
+                // A shorter request or a still-valid cleanup interval is not a failure decision.
+                if(config.publicOwnGroupScope!=null&&config.profileTarget!=null
+                        &&SystemClock.elapsedRealtime()>=cleanupWatchdogDeadline())quarantineProfile("cleanup_deadline");
                 return response(r, "RELEASED".equals(state), "RELEASED".equals(state) ? null : "CLEANUP_NOT_CONFIRMED", false);
             }
             guard(r, false);
@@ -1743,7 +1751,9 @@ public final class BackgroundDisplayBroker {
                             config.profileTarget,SystemClock.elapsedRealtime());
                     if(normal!=null)normal.requireFresh(tasks);
                 }
-                profileCustody.displayVerifiedAbsent();state=releasedState();
+                synchronized(profileTerminalDecisionGate){
+                    profileCustody.displayVerifiedAbsent();state=releasedState();
+                }
             }catch(Throwable error){
                 // Never release, close the surface, halt, or exit merely because retire failed.
                 if(profileOwnedTask!=null)refreshProfileTaskEvidence();
@@ -1770,19 +1780,26 @@ public final class BackgroundDisplayBroker {
         return java.util.Collections.unmodifiableMap(out);
     }
     private void quarantineProfile(String reason){
-        ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();
-        // Keep the first cleanup refusal separate from the original close/Stop reason.
-        // Diagnostics never change custody, deadlines, or the cleanup outcome.
-        try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}
-        catch(Throwable unavailable){/* Original quarantine remains authoritative. */}
         retirePublicScreenLease();
-        profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
-        java.util.Map<String,Object> previous=profileCleanupReadback;
-        java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>(
-                previous==null?emptyProfileCleanup(false):previous);
-        out.put("cleanup_known",false);out.put("live_tasks_absent",false);out.put("recents_tasks_absent",false);
-        out.put("identity_unknown",true);profileCleanupReadback=java.util.Collections.unmodifiableMap(out);
-        if(terminalReason.isEmpty())terminalReason=reason;
+        java.util.Map<String,Object> fallback=profileCleanupReadback;
+        if(fallback==null)fallback=emptyProfileCleanup(false);
+        synchronized(profileTerminalDecisionGate){
+            // A completed, verified normal release must win over a late watchdog tick.
+            // A distinct retained cleanup keeps its original business UNKNOWN, too.
+            if(profileCustody.known())return;
+            ProfileOwnedTask.CleanupPhase normal=normalProfileCleanup;if(normal!=null)normal.fail();
+            // Keep the first cleanup refusal separate from the original close/Stop reason.
+            // Diagnostics never change custody, deadlines, or the cleanup outcome.
+            try{profileCleanupFailures.record(reason,cleanupAt,cleanupAt+CLEANUP_MS-100,SystemClock.elapsedRealtime());}
+            catch(Throwable unavailable){/* Original quarantine remains authoritative. */}
+            profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
+            java.util.Map<String,Object> previous=profileCleanupReadback;
+            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>(
+                    previous==null?fallback:previous);
+            out.put("cleanup_known",false);out.put("live_tasks_absent",false);out.put("recents_tasks_absent",false);
+            out.put("identity_unknown",true);profileCleanupReadback=java.util.Collections.unmodifiableMap(out);
+            if(terminalReason.isEmpty())terminalReason=reason;
+        }
         LocalServerSocket listening=server;
         if(listening!=null)try{listening.close();}catch(IOException ignored){}
     }
@@ -1894,6 +1911,9 @@ public final class BackgroundDisplayBroker {
                             if(!replyDone.get())try{exactPeer.close();}catch(IOException ignored){}
                         },"HeptaRetainedCleanupReplyDeadline");closer.setDaemon(true);closer.start();
                         ProfileOwnedTask original=profileOwnedTask;
+                        // This separate interval can archive late normal-worker observations.
+                        // It never rewrites the already captured two-line original broker output.
+                        JSONObject priorDiagnostic=retainedProfileLateDiagnostic();
                         try{
                             retainedCleanupAttempt.run(this::cleanupRetainedProfile);
                         }catch(Throwable refused){/* The independent reply records failure. No second attempt. */}
@@ -1901,8 +1921,8 @@ public final class BackgroundDisplayBroker {
                             long remaining=deadline-SystemClock.elapsedRealtime();
                             if(remaining<=0)throw new IOException("RETAINED_CLEANUP_REPLY_DEADLINE");
                             peer.setSoTimeout((int)Math.min(SOCKET_MS,remaining));
-                            BrokerProtocol.writeFrame(peer.getOutputStream(),new JSONObject(retainedCleanupAttempt.evidence())
-                                    .toString().getBytes(StandardCharsets.UTF_8));
+                            BrokerProtocol.writeFrame(peer.getOutputStream(),retainedCleanupReply(
+                                    new JSONObject(retainedCleanupAttempt.evidence()),priorDiagnostic));
                         }finally{
                             // Flush/close precedes custody exit, so main's original
                             // exit(70) cannot kill an otherwise complete reply.
@@ -2067,10 +2087,25 @@ public final class BackgroundDisplayBroker {
             }
         }
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
+        if(r!=null&&"close".equals(r.operation)){
+            String frozen=retainedProfileFailureTerminal();
+            if(frozen!=null){
+                JSONObject decision=new JSONObject(frozen);
+                for(String key:new String[]{"profile_cleanup","profile_cleanup_diagnostics","profile_last_leaf_validation",
+                        "profile_first_root_refusal","profile_permission_first_read_mismatch","public_surface_detach",
+                        "profile_failure_decision_snapshot"})value.put(key,decision.get(key));
+                JSONObject cleanup=decision.getJSONObject("profile_cleanup");
+                value.put("state","CLEANUP_UNKNOWN").put("ok",false).put("profile_custody_retained",true)
+                        .put("profile_cleanup_known",cleanup.get("cleanup_known")).put("terminal_reason",decision.get("reason"));
+                if(cleanup.has("public_foreign_recent_history"))
+                    value.put("public_profile_recent_history",cleanup.get("public_foreign_recent_history"));
+            }
+        }
         return value.toString().getBytes(StandardCharsets.UTF_8);
     }
-    private void printTerminal() {
-        try { JSONObject terminal=new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
+    /** Materialize the original evidence fields; no new task refresh or native read. */
+    private JSONObject terminalRecord()throws Exception {
+        JSONObject terminal=new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
             .put("generation", config.generation).put("state", state).put("display_id", displayId)
             .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))
             .put("boot_count_read_retirement_failure",bootReadRetirementFailure==null?JSONObject.NULL:bootReadRetirementFailure)
@@ -2094,7 +2129,92 @@ public final class BackgroundDisplayBroker {
                     .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
             if(config.publicOwnGroupScope!=null)appendNotesHistoryDiagnostic(terminal,publicNotesCleanupFailure,
                     config.publicOwnGroupScope.taskId,config.generation,config.publicOwnGroupScope.sha256,displayId);
-            System.out.println(terminal); }
+        return terminal;
+    }
+    private boolean retainedProfileFailureScope(){
+        return config.publicOwnGroupScope!=null&&config.profileTarget!=null&&cleanupStarted.get()&&closing.get()
+                &&publicAdmissionRetired.get()&&!serve&&"client_close".equals(terminalReason)
+                &&"CLEANUP_UNKNOWN".equals(state)&&profileCustody.retain();
+    }
+    /** Freeze an actual failure decision, not a claim that the worker has drained.
+     * Both original publish sites still emit: their byte-identical pair is the
+     * acknowledgement contract. A later independently verified release bypasses it. */
+    private String retainedProfileFailureTerminal()throws Exception{
+        synchronized(profileTerminalDecisionGate){
+            if(!retainedProfileFailureScope())return null;
+            if(frozenRetainedProfileTerminal!=null)return frozenRetainedProfileTerminal;
+        }
+        long began=SystemClock.elapsedRealtime();JSONObject observed=terminalRecord();
+        boolean drained=cleanupDone.getCount()==0;long ended=SystemClock.elapsedRealtime();
+        observed.put("profile_failure_decision_snapshot",new JSONObject()
+                .put("schema","hepta.profile-failure-decision-snapshot.v1")
+                .put("capture_started_elapsed_ms",began).put("capture_ended_elapsed_ms",ended)
+                .put("normal_cleanup_worker_drained",drained).put("complete_final_worker_diagnostic",false)
+                .put("provides_cleanup_proof",false).put("allows_input_or_model_resumption",false));
+        String frozen=observed.toString();
+        if(frozen.getBytes(StandardCharsets.UTF_8).length+1>BrokerProtocol.MAX_RESPONSE/2)
+            throw new IOException("PROFILE_FAILURE_SNAPSHOT_BOUND");
+        synchronized(profileTerminalDecisionGate){
+            if(!retainedProfileFailureScope())return null;
+            if(frozenRetainedProfileTerminal==null)frozenRetainedProfileTerminal=frozen;
+            return frozenRetainedProfileTerminal;
+        }
+    }
+    /** Optional, bounded diagnostic only. The existing cleanup client archives
+     * the full reply in its separate receipt; no validator uses this as authority.
+     * Without a later request/reply this observation remains in the live custodian. */
+    private JSONObject retainedProfileLateDiagnostic(){
+        String original=frozenRetainedProfileTerminal;if(original==null)return null;
+        JSONObject out=new JSONObject();
+        try{
+            out.put("schema","hepta.profile-late-normal-cleanup-diagnostic.v1")
+                    .put("capture_interval","before_retained_cleanup_attempt")
+                    .put("observation_scope","cached_profile_cleanup_and_normal_phase")
+                    .put("complete_final_worker_diagnostic",false)
+                    .put("original_terminal_line_sha256",ProfileIdentity.sha((original+"\n").getBytes(StandardCharsets.UTF_8)))
+                    .put("normal_cleanup_worker_drained",cleanupDone.getCount()==0)
+                    .put("provides_cleanup_proof",false).put("business_admission_restored",false)
+                    .put("old_failure_rewritten",false);
+            // Do not call terminalRecord, platform evidence getters, or any task
+            // monitor in this claimed interval. These are published cached fields;
+            // CleanupPhase.evidence only reads its immutable/volatile members.
+            java.util.Map<String,Object> cached=profileCleanupReadback;
+            ProfileOwnedTask.CleanupPhase phase=normalProfileCleanup;
+            JSONObject observed=new JSONObject()
+                    .put("profile_cleanup",cached==null?JSONObject.NULL:new JSONObject(cached))
+                    .put("normal_cleanup_phase",phase==null?JSONObject.NULL:new JSONObject(phase.evidence()));
+            byte[] bytes=observed.toString().getBytes(StandardCharsets.UTF_8);
+            out.put("observed_elapsed_ms",SystemClock.elapsedRealtime()).put("observation_bytes",bytes.length)
+                    .put("observation_sha256",ProfileIdentity.sha(bytes)).put("observation",observed).put("complete",true);
+            if(out.toString().getBytes(StandardCharsets.UTF_8).length>BrokerProtocol.MAX_RESPONSE/2)
+                out.put("observation",JSONObject.NULL).put("complete",false).put("omission_reason","bounded_diagnostic_size");
+        }catch(Throwable unavailable){
+            try{out.put("observation",JSONObject.NULL).put("complete",false)
+                    .put("omission_reason","diagnostic_capture_unavailable");}catch(Throwable ignored){return null;}
+        }
+        return out;
+    }
+    /** Diagnostics cannot displace or invalidate an otherwise sendable attempt
+     * reply. The original frame limit and attempt bytes remain decisive. Absence
+     * of this optional field never means late diagnostics were persisted. */
+    private byte[] retainedCleanupReply(JSONObject original,JSONObject diagnostic)throws Exception{
+        byte[] baseline=original.toString().getBytes(StandardCharsets.UTF_8);
+        if(diagnostic==null)return baseline;
+        JSONObject reply=new JSONObject(new String(baseline,StandardCharsets.UTF_8));
+        reply.put("prior_normal_cleanup_diagnostic",diagnostic);
+        byte[] expanded=reply.toString().getBytes(StandardCharsets.UTF_8);
+        if(expanded.length<=BrokerProtocol.MAX_RESPONSE)return expanded;
+        JSONObject omitted=new JSONObject(diagnostic.toString()).put("observation",JSONObject.NULL)
+                .put("complete",false).put("omission_reason","original_reply_frame_limit");
+        reply.put("prior_normal_cleanup_diagnostic",omitted);
+        byte[] bounded=reply.toString().getBytes(StandardCharsets.UTF_8);
+        return bounded.length<=BrokerProtocol.MAX_RESPONSE?bounded:baseline;
+    }
+    private void printTerminal() {
+        try {
+            String frozen=retainedProfileFailureTerminal();
+            System.out.println(frozen==null?terminalRecord().toString():frozen);
+        }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }
     /** Diagnostic-only augmentation of the original single terminal object.

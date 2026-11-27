@@ -29,13 +29,21 @@ def main():
     text = broker.read_text()
     # Historical source contracts use an exact whole-file proof copy. All
     # fragments below are still extracted from current production text.
+    failure_helper=root/'tests/profile-failure-snapshot/run_host.py'
+    failure_base=failure_helper.with_name('before-failure-snapshot-broker.inc')
+    failure_raw=failure_helper.read_bytes()
+    if (len(failure_raw),hashlib.sha256(failure_raw).hexdigest())!=(35625,'53118d3e2882ee9c73b2a7f295ea37baa6c6dcfa9e2dca372c787d4f01f79007'):
+        raise RuntimeError('fixed failure-snapshot predecessor helper required')
+    failure_spec=importlib.util.spec_from_file_location('broker_failure_snapshot_predecessor',failure_helper)
+    failure=importlib.util.module_from_spec(failure_spec);failure_spec.loader.exec_module(failure)
+    failure_proof=failure.failure_snapshot_predecessor(broker.read_bytes())
     phase_helper=root/'tests/profile-cleanup-settle/protected_cleanup_phase.py'
     phase_data=phase_helper.with_name('production-predecessor.json')
     if hashlib.sha256(phase_helper.read_bytes()).hexdigest()!='a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2':
         raise RuntimeError('fixed cleanup phase predecessor helper required')
     spec=importlib.util.spec_from_file_location('broker_cleanup_phase_predecessor',phase_helper)
     phase=importlib.util.module_from_spec(spec);spec.loader.exec_module(phase)
-    proof_text=phase.predecessor('src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',broker.read_bytes()).decode('utf-8')
+    proof_text=phase.predecessor('src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',failure_proof).decode('utf-8')
     # These legacy cases intentionally have no active normal-profile phase.
     # A mistakenly reached phase port fails; the separate settle gate compiles
     # the actual phase implementation, including its races and effect guards.
@@ -242,6 +250,8 @@ public final class DisplayManager {
         'normal_profile_phase_scope':'absent in these legacy cases; exact active implementation exercised by profile-cleanup-settle',
         'inactive_phase_ports_sha256':hashlib.sha256(inactive_phase_ports.encode()).hexdigest(),
         'cleanup_phase_proof_inputs':{str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in (phase_helper,phase_data)},
+        'failure_snapshot_proof_inputs':{str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in (failure_helper,failure_base)},
+        'failure_snapshot_whole_predecessor_sha256':hashlib.sha256(failure_proof).hexdigest(),
         'template':{'path':str(notes_template),'bytes':notes_template.stat().st_size,'sha256':hashlib.sha256(notes_template.read_bytes()).hexdigest()},
         'actual_fragments':{key.strip():{'bytes':len(value.encode()),'sha256':hashlib.sha256(value.encode()).hexdigest()} for key,value in replacements.items()},
         'compiled_protocol':{'path':str(files[0]),'bytes':files[0].stat().st_size,'sha256':hashlib.sha256(files[0].read_bytes()).hexdigest()},
@@ -309,7 +319,7 @@ public final class DisplayManager {
         evidence['notes_close_reply_exit_code']=notes_result.returncode
         evidence['notes_close_source_extraction']=extraction
         evidence['notes_close_input_files']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
-            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture,phase_helper,phase_data)}
+            (Path(__file__).resolve(),notes_template,close_program,broker,close_fixture,phase_helper,phase_data,failure_helper,failure_base)}
         evidence['tools']={str(p):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in
             ((args.java,args.javac) if args.javac else (args.java,))}
         evidence['expected_notes_close_cases']=['notes_authenticated_close_late_policy_keeps_complete_original_frame', 'parent_registration_same_notes_race_reproduces_eof', 'late_policy_wrong_current_peer_not_protected', 'late_policy_missing_notes_and_profile_custody_not_protected', 'late_policy_no_public_scope_not_protected', 'late_policy_at_original_request_deadline_not_protected', 'wrong_peer_uid_never_parses_or_registers', 'foreign_generation_never_registers', 'foreign_scope_never_registers', 'expired_request_never_registers', 'request_above_original_limit_never_registers', 'authenticated_nonclose_does_not_register_or_begin_cleanup', 'notes_cleanup_at_1499_may_flush', 'notes_cleanup_at_1500_halts_without_profile_extension', 'notes_cleanup_at_2249_still_halts', 'notes_unknown_cleanup_at_1500_is_not_success', 'profile_verified_release_at_1500_retains_original_exception', 'profile_verified_release_at_2249_may_flush', 'profile_verified_release_at_2250_halts', 'profile_exception_stops_at_original_request_deadline', 'shorter_close_request_keeps_original_wait_budget', 'session_expiry_bounds_pending_close_peer']
