@@ -1,0 +1,364 @@
+    /** ce5 full archived node values; SDK objects, event delivery and future reads
+     * are explicit host ports. The failed device action is never relabelled success. */
+    static final List<Map<String,Object>> ce5Evidence=new ArrayList<Map<String,Object>>();
+    static final String CE5_PATH="0/0/3/0/0";
+    static SearchActionWork ce5Run(HeptaAccessibilityService s,Fixture f,NativeSearchSession.Attempt a){
+        SearchActionWork w=f.startAction(a);
+        if(actionIo.hasJobs())actionIo.one();
+        if(w!=null&&w.hasNoEffectReplanFence()&&w.state.isDrained()&&!actionSlot.pending()&&actionIo.hasJobs())actionIo.one();
+        if(s.main.hasJobs())s.main.one();return w;
+    }
+    static void ce5Trace(Fixture f,SearchActionWork w,String name,boolean full){
+        Map<String,Object> row=new LinkedHashMap<String,Object>();row.put("kind",name);
+        row.put("effects",f.effects);row.put("graph_reads",f.graphReads);row.put("current_C_reads",w.currentReadAttempts.size());
+        row.put("complete_resamples",w.finalCensusResamples);row.put("incomplete_resamples",w.incompleteCensusResamples);
+        row.put("claimed",w.attempt.evidence().get("claimed"));row.put("attempt_started",w.attempt.startedElapsed);
+        row.put("attempt_deadline",w.attempt.deadlineElapsed);row.put("chain_deadline",w.session.chainDeadlineElapsed);
+        row.put("elapsed",SystemClock.now);row.put("worker_drained",w.state.isDrained());
+        row.put("platform_call_invoked",w.platformCallInvoked);row.put("same_reference_drained",sameReferenceDrained(f));
+        row.put("serial_submissions",actionIo.submissions);row.put("planning_admissions",f.base.search==null?null:safePlanningAdmissions(f));
+        row.put("has_no_effect_successor_fence",w.hasNoEffectReplanFence());
+        row.put("terminal_accepted",f.outcome!=null&&f.outcome.accepted);row.put("terminal_dispatched",f.outcome!=null&&f.outcome.dispatched);
+        row.put("terminal_detail",f.outcome==null?null:f.outcome.detail);
+        row.put("phone_operations",0);row.put("actual_model_calls",0);row.put("new_device_success_claimed",false);
+        if(full)row.put("execution",f.outcome==null?null:f.outcome.actionExecution.toMap());
+        ce5Evidence.add(row);
+    }
+    static int safePlanningAdmissions(Fixture f){return f.base.search==null?-1:live.taskObservationAdmissions;}
+    static void ce5NoEffect(Fixture f,SearchActionWork w,String why){
+        noEffect(f,why);
+        check(!w.platformCallInvoked&&!w.state.effectEntered()&&!Boolean.TRUE.equals(w.attempt.evidence().get("claimed")),
+                "no dispatch, effect entry or claim");
+        check(w.state.isDrained()&&sameReferenceDrained(f),"the actual failed worker and owned SDK references drained");
+        check(f.outcome.actionExecution.getBoolean("worker_drained")
+                &&f.outcome.actionExecution.getBoolean("callback_published"),"actual terminal callback contains drain proof");
+        check(w.attempt.deadlineElapsed-w.attempt.startedElapsed==24000&&w.currentReadAttempts.size()<=8
+                &&w.finalCensusResamples<=1&&w.incompleteCensusResamples<=1,"original C8/24s/final1/incomplete1");
+        ce5Trace(f,w,why,false);
+    }
+    static final class Ce5Io {
+        final HeptaAccessibilityService s;final Fixture f;final JSONObject first,second;
+        final List<Map<String,NodeData>> retired=new ArrayList<Map<String,NodeData>>();
+        NativeSearchSession.Attempt attempt;Runnable atFailure,atDiscard,clockHook;
+        java.util.function.Consumer<Integer> afterGraph;
+        boolean deliveredFinal,failedSecondD,repeatedD,repeatSecondFailure,discardHookReached;
+        boolean firstRootEvent,secondRootEvent;
+        Ce5Io(HeptaAccessibilityService s,Fixture f,JSONObject original){
+            this.s=s;this.f=f;
+            JSONObject n=original.getJSONObject("action_execution").getJSONObject("native_search_execution");
+            first=n.getJSONArray("discarded_final_censuses").getJSONObject(0);second=n.getJSONObject("current_C");
+            f.refreshGraphChildren=true;
+            f.graphHook=()->{
+                if(f.graphReads==5||f.graphReads==7){
+                    check(sameReferenceDrained(f),"complete old pair or failed replacement C/D closed before new C");
+                    for(NodeData node:f.nodes.values())check(node.effects==0,"old C/D never dispatched");
+                    retired.add(new LinkedHashMap<String,NodeData>(f.nodes));f.nodes.clear();
+                }
+                recordedHomeSample(f,f.graphReads<=4?first.getJSONObject(f.graphReads==4?"latest_D":"current_C"):second);
+                f.syncNodes();
+                if(f.graphReads==3)f.nodes.get("0").beforeRefresh=()->{
+                    if(!firstRootEvent){firstRootEvent=true;successorEvent(s,3);successorEvent(s,3);}
+                };
+                if(f.graphReads==4)successorEvent(s,3);
+                if(f.graphReads==5)f.nodes.get("0").beforeRefresh=()->{
+                    if(!secondRootEvent){secondRootEvent=true;for(int i=0;i<16;i++)successorEvent(s,3);}
+                };
+                if(afterGraph!=null)afterGraph.accept(Integer.valueOf(f.graphReads));
+            };
+            f.beforeCapturedNodeHook=path->{
+                if(f.graphReads==6&&CE5_PATH.equals(path)){
+                    failedSecondD=true;
+                    // The actual archived failure was 5799 ms into its 24000 ms
+                    // Attempt. Future successful reads below remain synthetic.
+                    if(attempt!=null)SystemClock.now=Math.max(SystemClock.now,attempt.startedElapsed+5799);
+                    f.nodes.get(path).refresh=false;if(atFailure!=null)atFailure.run();
+                }
+                if(repeatSecondFailure&&f.graphReads==8&&CE5_PATH.equals(path)){
+                    repeatedD=true;f.nodes.get(path).refresh=false;
+                }
+            };
+            SystemClock.beforeRead=()->{
+                if(!deliveredFinal&&finalCensusPreclaimBoundary(s)){
+                    deliveredFinal=true;for(int i=0;i<3;i++)successorEvent(s,3);
+                }
+                if(atDiscard!=null&&!discardHookReached&&failedSecondD
+                        &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","discardIncompleteCensusForResample")){
+                    discardHookReached=true;atDiscard.run();
+                }
+                if(clockHook!=null)clockHook.run();
+            };
+        }
+        NativeSearchSession.Attempt reserve()throws Exception{
+            attempt=afterTargetIntent(f);f.graphDuration=1500;return attempt;
+        }
+        void drained(){
+            for(Map<String,NodeData> nodes:retired)for(NodeData node:nodes.values())
+                check(node.obtained==node.recycled&&node.effects==0,"all retired full/partial references drained without effect");
+        }
+    }
+    static void ce5Positive(JSONObject original)throws Exception{
+        HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+            Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();
+            long deadline=a.deadlineElapsed,chain=f.base.search.chainDeadlineElapsed;String model=a.modelRunId;
+            boolean[] actualD={false};readOrderEffectIdentity(s,f,actualD);
+            SearchActionWork w=ce5Run(s,f,a);ce5Trace(f,w,"actual_ce5_sequence_before_behavior_assertion",true);
+            // This remains the first assertion for unchanged-whole-fd3 counterfactual.
+            check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==8,
+                    "existing final replacement must complete with unused incomplete read and one actual new-D effect");
+            JSONObject e=finalCensusEvidence(f);JSONArray discarded=e.getJSONArray("discarded_final_censuses");
+            JSONObject old=discarded.getJSONObject(0),incomplete=e.getJSONArray("incomplete_D_census_reads").getJSONObject(0);
+            check(actualD[0]&&io.deliveredFinal&&io.failedSecondD&&sameReferenceDrained(f),"real callback and new-D SDK identity reached");
+            check("FINAL_PRECLAIM".equals(old.getString("producer_boundary"))&&old.getBoolean("old_C_graph_closed")
+                    &&old.getBoolean("old_D_graph_closed")&&old.getBoolean("old_revalidation_discarded"),"actual closed and consumed original complete pair");
+            check(old.getJSONObject("D_completed_watermark").getLong("content")==3
+                    &&old.getJSONObject("rejection_watermark").getLong("content")==6,"original 3-to-6 late event is retained");
+            check(incomplete.getBoolean("replacement_pair_admitted")
+                    &&incomplete.getBoolean("completes_existing_final_replacement")
+                    &&CE5_PATH.equals(incomplete.getString("failed_descendant_path"))
+                    &&incomplete.getBoolean("partial_D_graph_and_queue_discarded"),"actual incomplete D is discarded, never promoted or skipped");
+            check(discarded.getJSONObject(1).isNull("latest_D")
+                    &&!discarded.getJSONObject(1).getBoolean("old_revalidation_discarded"),"no second complete proof was discarded");
+            check(w.finalCensusResamples==1&&w.incompleteCensusResamples==1&&w.currentReadAttempts.size()==3
+                    &&e.getInt("complete_census_resample_limit")==1&&e.getInt("incomplete_D_census_resample_limit")==1
+                    &&e.getInt("current_C_resample_limit")==7,"the existing two read allowances and cumulative C cap stay unchanged");
+            check(e.getJSONObject("before_effect_watermark").getLong("content")==22
+                    &&e.getJSONObject("final_preclaim_replacement_read_order").getBoolean("new_D_dispatch_reference_bound"),
+                    "all 22 events stay recorded and current complete D supplies the sole effect reference");
+            check(w.ancestorChainChecked&&w.windowsChecked&&w.profileBeforeEffect!=null&&w.finalPreclaimEventsElapsed>=0,
+                    "fresh target, complete windows, profile and final preclaim checks all repeat");
+            check(a==w.attempt&&model.equals(a.modelRunId)&&a.deadlineElapsed==deadline
+                    &&chain==f.base.search.chainDeadlineElapsed&&deadline-a.startedElapsed==24000
+                    &&SystemClock.now<deadline&&SystemClock.now-a.startedElapsed>=5799&&SystemClock.now-a.startedElapsed<10000,
+                    "same Attempt and original 24-second clock, never the later chain deadline");
+            check(e.getBoolean("incomplete_final_replacement_read_selected")&&!w.hasNoEffectReplanFence()
+                    &&actionIo.submissions==1&&s.taskObservationAdmissions==1,"no model successor, new planning or serial replan marker");
+            f.base.search.acceptOutcome(a,f.outcome,sha(f.outcome.actionExecution.toString().getBytes(StandardCharsets.UTF_8)),SystemClock.now);
+            check(s.nativeSearchAllowsLegacyObservation(s.lease),"real Session consumes this actual current navigation outcome");
+            io.drained();
+        }
+    }
+    static void ce5ReplacementCases(String[] args)throws Exception{
+        NativeProfileIdentityHostTest.workspace=Paths.get(args[1]);Files.createDirectories(NativeProfileIdentityHostTest.workspace);
+        byte[] raw=Files.readAllBytes(Paths.get(System.getProperty("hepta.test.ce5Original")));
+        check(raw.length==358195&&"16754f841eea1b35166eee4e22a6c26dda5f104ca74c9a6f1029c4569c17ec2b".equals(sha(raw)),
+                "complete unchanged ce5 action original");
+        JSONObject original=new JSONObject(new String(raw,StandardCharsets.UTF_8));
+        one("ce5_final_replacement_incomplete_D_then_complete_pair_dispatches_once",()->ce5Positive(original));
+        if(!Boolean.getBoolean("hepta.test.ce5Counterfactual")&&Boolean.TRUE.equals(cases.get(0).get("passed"))){
+            one("ce5_device_original_remains_failed_no_claim_or_effect",()->{
+                JSONObject x=original.getJSONObject("action_execution"),n=x.getJSONObject("native_search_execution");
+                JSONObject a=original.getJSONObject("attempt"),old=n.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                JSONObject bad=n.getJSONArray("incomplete_D_census_reads").getJSONObject(0);
+                check(!original.getBoolean("accepted")&&!original.getBoolean("dispatched")&&!a.getBoolean("claimed")
+                        &&!x.getBoolean("effect_entered")&&!n.getBoolean("platform_call_invoked")&&x.getBoolean("worker_drained"),"device task stays failed without action");
+                check("FINAL_PRECLAIM".equals(old.getString("producer_boundary"))
+                        &&old.getLong("first_final_event_check_elapsed_ms")==1117032040L
+                        &&old.getLong("after_target_refresh_event_check_elapsed_ms")==1117032053L
+                        &&old.getLong("checked_elapsed_ms")==1117032297L,"FIRST and AFTER_TARGET passed before the true final-preclaim rejection");
+                check(old.getJSONObject("D_completed_watermark").getLong("content")==3
+                        &&old.getJSONObject("rejection_watermark").getLong("content")==6
+                        &&old.getJSONObject("role_comparison").getBoolean("full_tree_equal"),"complete actual 78-node pair and actual event difference");
+                NativeActionSnapshotCheck.Snapshot c=fullSwapSnapshot(old.getJSONObject("current_C")),d=fullSwapSnapshot(old.getJSONObject("latest_D"));
+                check(c.nodes.size()==78&&d.nodes.size()==78
+                        &&Boolean.TRUE.equals(NativeSearchRole.compareForExecution(c,d).evidence().get("full_tree_equal")),"real full census parser reproduces the original role proof");
+                check(n.getJSONArray("current_C_read_attempts").length()==2&&n.getInt("complete_census_resamples")==1
+                        &&n.getInt("incomplete_D_census_resamples")==0&&n.isNull("latest_D"),"original never completed replacement D");
+                check(CE5_PATH.equals(bad.getString("failed_descendant_path"))&&!bad.getBoolean("replacement_pair_admitted")
+                        &&bad.getLong("started_elapsed_ms")==1117034110L&&bad.getLong("ended_elapsed_ms")==1117035097L
+                        &&a.getLong("deadline_elapsed_ms")-bad.getLong("ended_elapsed_ms")==18201L,"typed descendant failure within original deadline remains an unchanged recorded refusal");
+            });
+            one("ce5_replacement_repeat_incomplete_D_is_terminal",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();io.repeatSecondFailure=true;
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"a second incomplete D never admits a fourth C");
+                    JSONArray failed=finalCensusEvidence(f).getJSONArray("incomplete_D_census_reads");
+                    check(io.failedSecondD&&io.repeatedD&&f.graphReads==8&&w.currentReadAttempts.size()==3
+                            &&w.finalCensusResamples==1&&w.incompleteCensusResamples==1&&failed.length()==2
+                            &&!failed.getJSONObject(1).getBoolean("replacement_pair_admitted"),"exact once-only allowance is exhausted");
+                    check(!w.hasNoEffectReplanFence()&&actionIo.submissions==1,"selected read repair cannot become a model successor");io.drained();
+                }
+            });
+            for(int k=0;k<2;k++){final int fence=k;
+                one("ce5_after_incomplete_new_D_"+(k==0?"first_fence":"final_preclaim")+"_content_refused",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] fired={false};
+                        io.clockHook=()->{SearchActionWork w=s.activeSearchAction;
+                            if(!fired[0]&&w!=null&&w.incompleteCensusResamples==1&&w.latestSnapshot!=null&&w.roleProof!=null
+                                    &&(fence==0?inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork","requireFirstFinalEvents")
+                                            :finalCensusPreclaimBoundary(s))){fired[0]=true;successorEvent(s,3);}
+                        };
+                        SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"new post-D content remains a real refusal");
+                        check(fired[0]&&f.graphReads==8&&w.currentReadAttempts.size()==3&&w.finalCensusResamples==1
+                                &&w.incompleteCensusResamples==1&&!w.hasNoEffectReplanFence(),"no extra complete replacement or model fallback");
+                        if(fence==0)check(w.firstPostDEventRejected,"actual first fence rejected");
+                        else check(w.typedFinalPreclaimContentRejected,"actual final preclaim fence rejected");
+                        io.drained();
+                    }
+                });
+            }
+            for(int k=0;k<3;k++){final int event=k;
+                one("ce5_incomplete_replacement_"+new String[]{"unknown","boundary","untyped"}[k]+"_event_refused",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] reached={false};
+                        io.atFailure=()->{reached[0]=true;incompleteForbiddenEvent(s,event+1);};
+                        SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"original event identity fence remains mandatory");
+                        check(reached[0]&&f.graphReads==6&&w.finalCensusResamples==1&&w.incompleteCensusResamples==0
+                                &&w.currentReadAttempts.size()==2,"forbidden event never consumes incomplete allowance");io.drained();
+                    }
+                });
+            }
+            for(int k=0;k<2;k++){final int fault=k;
+                one("ce5_incomplete_replacement_"+(k==0?"original_24s_expiry":"cancel")+"_refused",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] reached={false};
+                        io.atFailure=()->{reached[0]=true;if(fault==0){
+                            check(a.deadlineElapsed<f.base.search.chainDeadlineElapsed,"chain would remain live beyond action deadline");
+                            SystemClock.now=a.deadlineElapsed;
+                        }else f.cancelled=true;};
+                        SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"original deadline/cancellation has no replacement escape");
+                        check(reached[0]&&f.graphReads==6&&w.incompleteCensusResamples==0,"no next C after original action expiry or cancel");io.drained();
+                    }
+                });
+            }
+            for(int k=0;k<7;k++){final int fault=k;
+                one("ce5_incomplete_proof_"+new String[]{"read_order_swapped","old_C_not_closed","old_D_not_closed","target_consumed","completed_missing","D_returned","pending_present"}[k]+"_refused",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();
+                        final Graph[] reopened={null};final boolean[] changed={false};
+                        io.atDiscard=()->{
+                            SearchActionWork w=s.activeSearchAction;check(w!=null&&w.completedFinalCensusResample!=null&&w.replacementTargetProof!=null,"real consumed final proof and actual failed pre-D read reached");
+                            changed[0]=true;NativeSearchReplacementTargetProof p=w.replacementTargetProof;
+                            if(fault==0){
+                                NativeSearchReplacementTargetProof other=new NativeSearchReplacementTargetProof(w,p.currentTarget,p.path,p.startedElapsed,p.completedElapsed,p.refreshedWatermark);
+                                other.dStartedElapsed=p.dStartedElapsed;w.replacementTargetProof=other;
+                                check(other!=p&&other.current==p.current&&other.replacementCensus==p.replacementCensus,"invalid test-only identical-value object is not the captured failure proof");
+                            }else if(fault==1||fault==2){
+                                reopened[0]=fault==1?w.completedFinalCensusResample.oldC:w.completedFinalCensusResample.oldD;
+                                reopened[0].refs.put("test-only-reopened",p.currentTarget);
+                            }else if(fault==3)p.consumed.set(true);
+                            else if(fault==4)w.completedFinalCensusResample=null;
+                            else if(fault==5)w.latestGraph=f.lastCapturedGraph;
+                            else w.pendingFinalCensusResample=w.completedFinalCensusResample;
+                        };
+                        SearchActionWork w=ce5Run(s,f,a);if(reopened[0]!=null)reopened[0].refs.clear();
+                        ce5NoEffect(f,w,"invalid private read capability cannot admit another C");
+                        check(changed[0]&&io.discardHookReached&&f.graphReads==6&&w.currentReadAttempts.size()==2
+                                &&w.incompleteCensusResamples==0,"failure object/closed references/unused pre-D proof are all mandatory");io.drained();
+                    }
+                });
+            }
+            for(int k=0;k<2;k++){final int fault=k;
+                one("ce5_completed_replacement_"+(k==0?"changed_protected_target":"changed_C_D_sdk_identity")+"_refused",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] changed={false};
+                        io.afterGraph=n->{if(n.intValue()==(fault==0?7:8)){changed[0]=true;
+                            if(fault==0)f.values.nodes.get("0/0/3").put("clickable",false);else f.replaceTargetOnSecond=true;
+                        }};
+                        SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"complete replacement still needs protected role and actual SDK identity");
+                        check(changed[0]&&w.incompleteCensusResamples==1&&w.finalCensusResamples==1
+                                &&w.currentReadAttempts.size()==3&&!w.hasNoEffectReplanFence(),"same original repair cannot authorize changed current target");io.drained();
+                    }
+                });
+            }
+            one("ce5_completed_replacement_final_window_change_refused",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] changed={false};
+                    io.clockHook=()->{SearchActionWork w=s.activeSearchAction;
+                        if(!changed[0]&&w!=null&&w.incompleteCensusResamples==1&&w.latestSnapshot!=null&&w.firstFinalEventsElapsed>=0
+                                &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService","readNativeActionWindows")){
+                            changed[0]=true;f.windowTitle="changed actual host window";
+                        }
+                    };
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"fresh final reported windows cannot be omitted");
+                    check(changed[0]&&f.graphReads==8&&!w.hasNoEffectReplanFence(),"actual post-D window read reached and refused");io.drained();
+                }
+            });
+            one("ce5_completed_replacement_final_profile_expiry_refused",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    Ce5Io io=new Ce5Io(s,f,original);NativeSearchSession.Attempt a=io.reserve();boolean[] changed={false};
+                    io.clockHook=()->{SearchActionWork w=s.activeSearchAction;
+                        if(!changed[0]&&w!=null&&w.incompleteCensusResamples==1&&w.profileBeforeEffect!=null&&finalCensusPreclaimBoundary(s)){
+                            changed[0]=true;check(w.profileBeforeEffect.expiresElapsedMs<a.deadlineElapsed,"profile expires while original Attempt still has time");
+                            SystemClock.now=w.profileBeforeEffect.expiresElapsedMs;
+                        }
+                    };
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"final profile must still be live before claim");
+                    check(changed[0]&&f.graphReads==8&&!w.hasNoEffectReplanFence(),"actual final profile clock check reached");io.drained();
+                }
+            });
+            one("ce5_selected_incomplete_repair_real_banner_refusal_cannot_request_new_model",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    installTestBanner(f,1);NativeSearchSession.Attempt a=afterTargetIntent(f);f.refreshGraphChildren=true;
+                    finalCensusEvent(s,0,1);boolean[] banner={false};
+                    f.graphHook=()->{
+                        if(f.graphReads==5||f.graphReads==7){check(sameReferenceDrained(f),"prior complete/partial round closed");f.nodes.clear();}
+                        if(f.graphReads==6)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                        if(f.graphReads==8){banner[0]=true;advanceTestBanner(f);}
+                    };
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"selected incomplete read never mints a second model authorization");
+                    check(banner[0]&&w.bannerRefusal!=null&&a.ownsBannerRefusal(w.bannerRefusal)
+                            &&w.currentNodeIdentityChecked&&w.roleProof==null,"actual C/D banner comparison and SDK identity reached their real refusal");
+                    check(finalCensusEvidence(f).getBoolean("incomplete_final_replacement_read_selected")
+                            &&!w.hasNoEffectReplanFence()&&!w.replanDrainMarkerCompleted
+                            &&actionIo.submissions==1&&s.taskObservationAdmissions==1,"no serial successor marker, planning admission or model successor proof");
+                    rejected(()->s.requireNativeSearchNoEffectFacts(w,f.outcome));
+                }
+            });
+            one("ce5_eighth_C_before_incomplete_replacement_cannot_borrow_ninth",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);f.refreshGraphChildren=true;finalCensusEvent(s,0,1);
+                    f.graphHook=()->{
+                        if(f.graphReads>=3&&f.graphReads<=8)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                        if(f.graphReads==9||f.graphReads==11){check(sameReferenceDrained(f),"all previous failed/current references closed");f.nodes.clear();}
+                        if(f.graphReads==12)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                    };
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"unused incomplete flag cannot expand the actual cumulative C8 limit");
+                    check(w.currentReadAttempts.size()==8&&f.graphReads==12&&w.finalCensusResamples==1
+                            &&w.incompleteCensusResamples==0,"six failed C plus two complete C consume all eight actual reads");
+                }
+            });
+            one("ce5_already_consumed_incomplete_allowance_stays_spent_after_final",()->{
+                HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                    NativeSearchSession.Attempt a=afterTargetIntent(f);f.refreshGraphChildren=true;finalCensusEvent(s,0,1);
+                    f.graphHook=()->{
+                        if(f.graphReads==4||f.graphReads==8)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                        if(f.graphReads==5||f.graphReads==7){check(sameReferenceDrained(f),"old round references closed");f.nodes.clear();}
+                    };
+                    SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"one earlier incomplete read plus final replacement exhaust both allowances");
+                    JSONArray failed=finalCensusEvidence(f).getJSONArray("incomplete_D_census_reads");
+                    check(f.graphReads==8&&w.currentReadAttempts.size()==3&&w.finalCensusResamples==1&&w.incompleteCensusResamples==1
+                            &&failed.length()==2&&!failed.getJSONObject(1).getBoolean("replacement_pair_admitted"),"second incomplete D remains terminal");
+                }
+            });
+            for(int k=0;k<2;k++){final int boundary=k;
+                one("ce5_other_"+(k==0?"FIRST_POST_D":"AFTER_TARGET")+"_repair_incomplete_admission_unchanged",()->{
+                    HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                        NativeSearchSession.Attempt a=afterTargetIntent(f);f.refreshGraphChildren=true;boolean[] event={false};
+                        SystemClock.beforeRead=()->{SearchActionWork w=s.activeSearchAction;
+                            if(!event[0]&&w!=null&&w.finalCensusResamples==0&&w.latestSnapshot!=null&&w.roleProof!=null
+                                    &&inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService$SearchActionWork",
+                                            boundary==0?"requireFirstFinalEvents":"requireAfterTargetRefreshEvents")){
+                                event[0]=true;successorEvent(s,3);
+                            }
+                        };
+                        f.graphHook=()->{
+                            if(f.graphReads==5){check(sameReferenceDrained(f),"old pair closed");f.nodes.clear();}
+                            if(f.graphReads==6)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;
+                        };
+                        SearchActionWork w=ce5Run(s,f,a);ce5NoEffect(f,w,"only the evidenced FINAL_PRECLAIM boundary gains incomplete completion");
+                        check(event[0]&&w.finalCensusResamples==1&&w.incompleteCensusResamples==0&&f.graphReads==6
+                                &&!w.hasNoEffectReplanFence(),"other existing selected repair contracts remain unchanged");
+                    }
+                });
+            }
+            one("ce5_original_producer_migrated_case_uses_real_unchanged_callback",()->finalReplacementIncompleteLegacyCase());
+        }
+        boolean pass=true;for(Map<String,Object> row:cases)if(!Boolean.TRUE.equals(row.get("passed")))pass=false;
+        Map<String,Object> report=new LinkedHashMap<String,Object>();report.put("schema","hepta.native-search-ce5-incomplete-replacement-focused.v1");
+        report.put("all_pass",pass);report.put("case_count",cases.size());report.put("assertions",assertions);report.put("results",cases);
+        report.put("ce5_evidence",ce5Evidence);report.put("phone_operations",0);report.put("actual_model_calls",0);
+        report.put("new_device_success_claimed",false);report.put("original_device_run_remains_failed",true);
+        Files.write(Paths.get(args[0]),(new JSONObject(report).toString(2)+"\n").getBytes(StandardCharsets.UTF_8));
+        System.out.println(new JSONObject().put("all_pass",pass).put("cases",cases.size()).put("assertions",assertions));
+        if(!pass)throw new AssertionError("focused ce5 incomplete replacement cases failed");
+    }

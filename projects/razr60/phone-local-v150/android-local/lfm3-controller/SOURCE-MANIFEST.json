@@ -1,13 +1,28 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_PRODUCER_FIXTURE_HOST_AND_ANDROID",
+  "candidate_status": "SOURCE_FROZEN_PENDING_CURRENT_JOINT_QUALIFICATION",
   "changes": [
-    "tests/native-search-producer/InitialReadOrderCases.fragment",
-    "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-    "tests/native-search-producer/ProducerCases.fragment"
+    "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+    "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
+    "src/org/trillionnium/hepta/local/BackgroundSession.java",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "tests/native-search-final-replacement-incomplete/EXPECTED-CASES.json",
+    "tests/native-search-final-replacement-incomplete/FinalReplacementIncompleteCases.fragment",
+    "tests/native-search-final-replacement-incomplete/run_focused.py",
+    "tests/native-search-producer/IncompleteCensusCases.fragment",
+    "tests/native-search-producer/run_producer.py",
+    "tests/profile-cleanup-recents-first/PRODUCTION-r1.patch",
+    "tests/profile-cleanup-recents-first/ProfileCleanupRecentsFirstHostTest.java",
+    "tests/profile-cleanup-recents-first/WHOLE-INVERSE-r1.json",
+    "tests/profile-cleanup-recents-first/run_focused.py",
+    "tests/profile-permission-ready-confirmation/run_host.py",
+    "tests/public-profile-closing-recovery/ClosingBackgroundSessionHostTest.java",
+    "tests/public-profile-closing-recovery/PublicProfileClosingRecoveryHostTest.java",
+    "tests/public-profile-closing-recovery/run_host.py",
+    "tests/public-profile-closing-recovery/run_lifecycle.py"
   ],
-  "complete_source_files": 2755,
+  "complete_source_files": 2766,
   "files": [
     {
       "bytes": 100,
@@ -6285,9 +6300,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 74746,
+      "bytes": 75021,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "fe0b6a67deefea03d7fb7f7881e42e08b73c5c978f7808374865ef62bb4c395c"
+      "sha256": "4ccfa1934331f17274b6f0d6ab911d7dd986a2cce852d9f65e64aea96c907a80"
     },
     {
       "bytes": 21140,
@@ -6435,9 +6450,9 @@
       "sha256": "60f901b4a6d863f2e712d49aaa166859c4a2437fbf46a2562e16413acb3a65c4"
     },
     {
-      "bytes": 133529,
+      "bytes": 143491,
       "path": "src/org/trillionnium/hepta/background/PublicProfileBusinessAbsenceRecovery.java",
-      "sha256": "b7f4c9096b2d499e5c679af5ea564b4eec9badebfa685e3e40ab0a117f56b609"
+      "sha256": "bd7435e36731011895dd2500124c6284aac15844367d84a23e6bdcbd106b53ba"
     },
     {
       "bytes": 25376,
@@ -6520,9 +6535,9 @@
       "sha256": "d35e4e2ec7d9daed58e45151fcbb6bd2e859ca070ba43fb7dc4fea201d8ba410"
     },
     {
-      "bytes": 158831,
+      "bytes": 160470,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "fcb2494d0638e5600a2b84b63ce6e09d9c2180aebc58e61f17949408c73e25d6"
+      "sha256": "7c4f9469de3df7287016e6ec20596ab4c026544e52f12c3cb8a1c3b24b5b75ab"
     },
     {
       "bytes": 10735,
@@ -6595,9 +6610,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 846274,
+      "bytes": 849045,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "8ffeb474e92c05d003a54b5f45d1f538b29df9c8aa244c8ab08a9c50b72f0585"
+      "sha256": "f77c8db67648016c4e3c449b3be1e987455d48ad89b0aab5665907270a564f46"
     },
     {
       "bytes": 711,
@@ -9705,6 +9720,21 @@
       "sha256": "82d0135e098c95197705c6ccec94d37061dbde90671831e8bcf085e4e8d9d29f"
     },
     {
+      "bytes": 1604,
+      "path": "tests/native-search-final-replacement-incomplete/EXPECTED-CASES.json",
+      "sha256": "88633e8ac125f4e67eef7e5cb757fb82d067fd051f0b9fbc8233e58da50b956d"
+    },
+    {
+      "bytes": 31869,
+      "path": "tests/native-search-final-replacement-incomplete/FinalReplacementIncompleteCases.fragment",
+      "sha256": "3ecf1893e48fa44ccd1a4f2e508e15bf41b42096d30c43f1a18c8d61ac543a6f"
+    },
+    {
+      "bytes": 10579,
+      "path": "tests/native-search-final-replacement-incomplete/run_focused.py",
+      "sha256": "4355e9ae184067db0538f43f2440d2b2d5c80bebd7f4960aa0c5c9face1adbca"
+    },
+    {
       "bytes": 1307,
       "path": "tests/native-search-first-post-d/EXPECTED-CASES.json",
       "sha256": "ae78cbe001fa9313438b12cffd4267bdd1828791972a18af0808f745b35571fd"
@@ -9825,9 +9855,9 @@
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
     },
     {
-      "bytes": 18723,
+      "bytes": 20124,
       "path": "tests/native-search-producer/IncompleteCensusCases.fragment",
-      "sha256": "1e0b700f39d8241002c5545e3a7bd7a50b93f121c50efd46037ba4b96a9ffe62"
+      "sha256": "6a9a05004ae3fc328fd02d17efb129ed75c0fe419bdc566adc15229838fe2a5b"
     },
     {
       "bytes": 22560,
@@ -9950,9 +9980,9 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 33937,
+      "bytes": 33966,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "d68cd9908493c8ad086e480b698d04f2fd0ba7923a73103834660cdf6b20c341"
+      "sha256": "43e0cc16bff72a3bd04445e6333e7635477cdc8cfd8bbd70e4756b93386a775b"
     },
     {
       "bytes": 14431,
@@ -11310,6 +11340,26 @@
       "sha256": "4377023d5512b9eb7effb9036abfe1a07225af16c981f64e2d95a74ac55399e6"
     },
     {
+      "bytes": 2321,
+      "path": "tests/profile-cleanup-recents-first/PRODUCTION-r1.patch",
+      "sha256": "801ba9b1269826ce27d1c842a45dd8bdcf8cf5d4c8f2c45bb6a6f5dbaa338427"
+    },
+    {
+      "bytes": 17132,
+      "path": "tests/profile-cleanup-recents-first/ProfileCleanupRecentsFirstHostTest.java",
+      "sha256": "bad7ec15f965f50e2145897745e0dfd58a549117069479077b03211b35a7df1d"
+    },
+    {
+      "bytes": 3538,
+      "path": "tests/profile-cleanup-recents-first/WHOLE-INVERSE-r1.json",
+      "sha256": "e96cda253acbb9f24d447208279b29eb45b12f22833fa67f724536c6d904d6de"
+    },
+    {
+      "bytes": 12030,
+      "path": "tests/profile-cleanup-recents-first/run_focused.py",
+      "sha256": "d8553001e5308ca9922824ae7c38806547e377b7c4ed45965a865d562f2ab638"
+    },
+    {
       "bytes": 3064,
       "path": "tests/profile-cleanup-sampling/ProfileCleanupDiagnosticsHostTest.java",
       "sha256": "e20e419abd9f82cd6fc6c567998f4d893eb005d36e8e4b0eeb66d457e464d9e3"
@@ -11510,9 +11560,9 @@
       "sha256": "aff5fa6e3bae21984281064ba7b38b01b4ca70e58516c9015f6a5a088db6b73a"
     },
     {
-      "bytes": 22471,
+      "bytes": 26025,
       "path": "tests/profile-permission-ready-confirmation/run_host.py",
-      "sha256": "276963fd6c596327cbe951db0d6de52416025ccaeb3e7b87a1af28e5aa4ff594"
+      "sha256": "7a7dde231f49f41e992553d5f6fea392b7239864547e172dfaa37495265ee411"
     },
     {
       "bytes": 29281,
@@ -11938,6 +11988,26 @@
       "bytes": 8879,
       "path": "tests/public-profile-cleanup/run_host.py",
       "sha256": "3f3ff4efb0a61adc340a1ec150a7a6ac47e74f163df3c16d874e3fbec29206e8"
+    },
+    {
+      "bytes": 6160,
+      "path": "tests/public-profile-closing-recovery/ClosingBackgroundSessionHostTest.java",
+      "sha256": "56f04255f80fbbbfe2b0ec96dc714285c4a8db37d86d5d10b3f5d69a4c710f15"
+    },
+    {
+      "bytes": 22032,
+      "path": "tests/public-profile-closing-recovery/PublicProfileClosingRecoveryHostTest.java",
+      "sha256": "7603959c068a67dd6a3c7150db50584bde4647794f5298668a8e88b2facda802"
+    },
+    {
+      "bytes": 6819,
+      "path": "tests/public-profile-closing-recovery/run_host.py",
+      "sha256": "af3323959183395d29e39b80a6da7c27f54e10aaab15257329b3d6c4670ff6ab"
+    },
+    {
+      "bytes": 4814,
+      "path": "tests/public-profile-closing-recovery/run_lifecycle.py",
+      "sha256": "76aeaeb19ac30b4a26634fb54d5a6f4eff1d0f2ce7ca40cf5b5866ebae6d2434"
     },
     {
       "bytes": 16597,
@@ -13782,10 +13852,10 @@
   ],
   "main_java_sources": 223,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "26e8a14cb3042959bfc7e970a4cf88f4bfe2180e8e4f7c8e71f27f7026699014",
-  "predecessor_source_manifest_sha256": "26e8a14cb3042959bfc7e970a4cf88f4bfe2180e8e4f7c8e71f27f7026699014",
+  "predecessor_manifest_sha256": "59b6f16e470b81b3d44f15dce323c5f07522cd4ec2f74e5e5bfd32c7ea8c7732",
+  "predecessor_source_manifest_sha256": "59b6f16e470b81b3d44f15dce323c5f07522cd4ec2f74e5e5bfd32c7ea8c7732",
   "production_build_inputs_count": 407,
-  "production_input_map_sha256": "0b0e61d96bf2ce61f0d085c03c5c383732e194c60e63573c2cafdaea11289b8e",
+  "production_input_map_sha256": "a9fe22fcc5fe8694e663ae56aa5b23387571dde1a8d7731151e64f631a827b16",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "1e648016fb053efc486eb2974efb5dfc826dd26d"
+  "source_parent_head": "fd3e6f275c1082ce2197ad5629c4228d39780109"
 }

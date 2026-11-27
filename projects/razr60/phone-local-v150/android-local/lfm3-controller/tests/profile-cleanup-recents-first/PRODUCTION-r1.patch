@@ -1,0 +1,30 @@
+--- a/src/org/trillionnium/hepta/background/ProfileOwnedTask.java
++++ b/src/org/trillionnium/hepta/background/ProfileOwnedTask.java
+@@ -443,20 +443,23 @@
+                 }
+                 while(platform.now()<retirementReadDeadline(deadline)){
+                     beginNormalRead();actual(false);
++                    // Normal public cleanup samples complete history before fresh live tasks.
++                    // The unchanged final live pair and effect guard still fence root deletion.
++                    ProfileTaskPolicy.Recents normalRecent=normalCleanupPhase!=null&&publicHistory!=null
++                            ?readRecents():null;
+                     ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
+                     boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);
+                     List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;
+                     if(publicHistory!=null&&liveLeafGone){
+-                        // Read the retained root/children before the final complete public-history
+-                        // sample. There is no mutation in this interval: one fresh raw dump then
+-                        // proves both owned recents absence and preserved unrelated history.
++                        // Keep actual retained root/children from the same bounded interval.
++                        // Without a normal phase, the original history-last ordering remains.
+                         sampledRoots=checked(platform.roots());
+                         if(sampledRoots.size()==1){
+                             requireRootIdentity(sampledRoots.get(0));
+                             sampledChildren=checked(platform.children(root.token));
+                         }
+                     }
+-                    ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
++                    ProfileTaskPolicy.Recents recent=normalRecent==null?readRecents():normalRecent;recentsAfterSha=recent.sha256;
+                     requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);requireNormalFresh();
+                     boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
+                     if(noLeaf){

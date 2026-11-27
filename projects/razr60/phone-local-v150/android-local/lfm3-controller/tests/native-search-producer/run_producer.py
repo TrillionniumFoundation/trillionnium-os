@@ -226,7 +226,7 @@ def main():
  report['external_final_preclaim_original_before']=final_preclaim_before
  report['external_incomplete_final_original_before']=incomplete_final_before
  report['external_repeated_after_target_original_before']=repeated_before
- report['incomplete_final_policy_boundary']={'intentional_shared_budget_contract_change':True,'incomplete_D_replacement_once_before_complete_replacement_only':True,'complete_final_replacement_once':True,'original_total_C_read_cap':8,'original_navigation_deadline_ms':24000,'same_attempt_model_slot_and_owner':True,'new_device_success_claimed':False}
+ report['incomplete_final_policy_boundary']={'intentional_shared_budget_contract_change':True,'incomplete_D_replacement_once':True,'after_complete_only_actual_FINAL_PRECLAIM_unreturned_D':True,'complete_final_replacement_once':True,'original_total_C_read_cap':8,'original_navigation_deadline_ms':24000,'same_attempt_model_slot_and_owner':True,'new_device_success_claimed':False}
  report['external_after_target_originals_before']=after_target_before
  report['external_after_target_replay_enabled']=bool(after_target_before)
  report['external_loading_original']=original_before

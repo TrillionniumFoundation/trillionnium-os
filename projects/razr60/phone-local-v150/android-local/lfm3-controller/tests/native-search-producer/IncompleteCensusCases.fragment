@@ -83,18 +83,7 @@
                 check(Boolean.TRUE.equals(attempt.evidence().get("claimed"))&&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"the original Attempt claims the new complete final proof once");
             }
         });
-        one("late_final_content_then_incomplete_D_still_cannot_reopen_reads",()->{
-            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
-                NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;int[] fired=finalCensusEvent(s,0,1);
-                f.graphHook=()->{if(f.graphReads==6)f.nodes.get(INCOMPLETE_D_PATH).refresh=false;};
-                f.action(attempt);noEffect(f,"replacement D failure cannot reopen complete-census budget");
-                JSONObject e=finalCensusEvidence(f);JSONArray failures=e.getJSONArray("incomplete_D_census_reads");
-                check(fired[0]==1&&f.graphReads==6&&e.getInt("complete_census_resamples")==1
-                        &&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"prior real complete-pair replacement retained");
-                check(failures.length()==1&&!failures.getJSONObject(0).getBoolean("replacement_pair_admitted")
-                        &&e.isNull("latest_D")&&attempt.evidence().get("revalidation")==null,"failed D remains incomplete");
-            }
-        });
+        one("late_final_content_then_unused_incomplete_D_finishes_same_replacement",()->finalReplacementIncompleteLegacyCase());
         one("eighth_C_followed_by_incomplete_D_cannot_borrow_a_ninth_C",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();f.refreshGraphChildren=true;
@@ -199,4 +188,30 @@
                 check(denied&&f.effects==1&&f.graphReads==6,"old claimed Attempt cannot obtain new graph reads or a second effect");
             }
         });
+    }
+
+    /** ce5 changes only the old reverse-order read admission, not either allowance. */
+    static void finalReplacementIncompleteLegacyCase()throws Exception{
+        HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+            NativeSearchSession.Attempt attempt=f.intent();long originalDeadline=attempt.deadlineElapsed;
+            String originalRun=attempt.modelRunId;f.refreshGraphChildren=true;int[] fired=finalCensusEvent(s,0,1);
+            final Map<String,NodeData> failedPair=new LinkedHashMap<String,NodeData>();
+            f.graphHook=()->{
+                if(f.graphReads==6){failedPair.putAll(f.nodes);f.nodes.get(INCOMPLETE_D_PATH).refresh=false;}
+                if(f.graphReads==7){incompleteNodesDrained(f.nodes,"actual failed replacement C and partial D closed before new C");f.nodes.clear();}
+            };
+            f.action(attempt);
+            check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==8,
+                    "only a new complete C/D finishes the existing replacement and dispatches once");
+            JSONObject e=finalCensusEvidence(f);JSONArray failures=e.getJSONArray("incomplete_D_census_reads");
+            check(fired[0]==1&&e.getInt("complete_census_resamples")==1&&e.getInt("incomplete_D_census_resamples")==1
+                    &&Boolean.TRUE.equals(attempt.evidence().get("final_census_resampled")),"same original complete and incomplete once-only allowances");
+            check(failures.length()==1&&failures.getJSONObject(0).getBoolean("replacement_pair_admitted")
+                    &&failures.getJSONObject(0).getBoolean("completes_existing_final_replacement")
+                    &&e.getJSONArray("discarded_final_censuses").getJSONObject(1).isNull("latest_D"),"partial D never becomes a complete proof");
+            check(e.getJSONArray("current_C_read_attempts").length()==3&&attempt.deadlineElapsed==originalDeadline
+                    &&originalRun.equals(attempt.modelRunId)&&SystemClock.now<originalDeadline,"same original short deadline, model and cumulative C ledger");
+            check(e.getBoolean("incomplete_final_replacement_read_selected"),"the actual selected branch is recorded");
+            for(NodeData n:failedPair.values())check(n.obtained==n.recycled&&n.effects==0,"failed replacement references drained without an effect");
+        }
     }

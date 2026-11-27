@@ -6429,12 +6429,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         private static final long serialVersionUID=1L;
         private final SearchActionWork work;private final Graph oldC;
         private final NativeActionSnapshotCheck.Snapshot oldSnapshot;
+        private final NativeSearchReplacementTargetProof readOrderAtFailure;
         private final StaleObservation failure;private final long readStartedElapsed,readEndedElapsed;
         private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
         private NativeSearchIncompleteCensusChanged(SearchActionWork work,StaleObservation failure,long started,long ended){
             super("new search complete D read failed before return: "+failure.getMessage(),failure);
             this.work=work;oldC=work.currentGraph;oldSnapshot=work.currentSnapshot;
             this.failure=failure;readStartedElapsed=started;readEndedElapsed=ended;
+            readOrderAtFailure=work.replacementTargetProof;
         }
     }
     /** A new typed intent owns its own current C NodeRef; no PhoneObservation is manufactured. */
@@ -6629,7 +6631,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final NativeSearchSession.Attempt attempt;final NativeSearchSession session;final QualificationScopeConfig.Bound scope;
         final Cancellation cancel;final ActionExecutionState state;final SearchEvents events;
         Graph currentGraph,latestGraph;NativeSearchRole revalidatedRole;
-        boolean afterTargetCensusRepairSelected,firstPostDCensusRepairSelected;
+        boolean afterTargetCensusRepairSelected,firstPostDCensusRepairSelected,incompleteFinalReplacementRepairSelected;
         boolean platformCallInvoked;JSONObject sealedDiagnostic;String sealedDiagnosticSha;
         final File planningDirectory;final int planningReadOrdinal;
         final java.util.concurrent.atomic.AtomicBoolean callbackQueued=new java.util.concurrent.atomic.AtomicBoolean();
@@ -6751,7 +6753,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
         }
         boolean hasNoEffectReplanFence(){
-            if(afterTargetCensusRepairSelected||firstPostDCensusRepairSelected)return false;
+            if(afterTargetCensusRepairSelected||firstPostDCensusRepairSelected||incompleteFinalReplacementRepairSelected)return false;
             if(bannerRefusal!=null)return !firstPostDEventRejected&&!typedAfterTargetRefreshPostDEventRejected;
             return firstPostDEventRejected!=typedAfterTargetRefreshPostDEventRejected;
         }
@@ -6851,10 +6853,34 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             // pairStart and the same live SearchEvents tracker deliberately survive.
             check();
         }
-        /** A typed incomplete D may replace its incomplete pair once, before any complete
-         * final-census replacement. This does not spend that later allowance.
-         * Both counters retain the original C-read cap and absolute deadline;
-         * a failed descendant is never skipped or treated as the action target. */
+        /** The existing unused incomplete-D allowance may finish only the actual
+         * consumed FINAL_PRECLAIM replacement. Its current D must not have returned;
+         * the old complete pair stays closed and grants no effect or new-model path. */
+        private boolean mayFinishFinalReplacement(NativeSearchIncompleteCensusChanged failed){
+            NativeSearchFinalCensusResampleProof complete=completedFinalCensusResample;
+            NativeSearchReplacementTargetProof read=replacementTargetProof;
+            return failed!=null&&hasCompletedFinalCensusResample()
+                    &&complete.boundary==NativeSearchFinalCensusResampleProof.Boundary.FINAL_PRECLAIM
+                    &&!incompleteFinalReplacementRepairSelected&&incompleteCensusResamples==0
+                    &&read!=null&&read==failed.readOrderAtFailure&&read.work==this
+                    &&!read.initialCensus&&read.replacementCensus==complete&&read.sameReadRound()
+                    &&read.current==currentGraph&&read.captured==currentSnapshot
+                    &&read.currentTarget!=null&&read.currentTarget==nativeSearchNode(currentGraph,read.path)
+                    &&complete.oldC!=null&&complete.oldD!=null&&complete.oldC!=currentGraph&&complete.oldD!=currentGraph
+                    &&complete.oldC.refs.isEmpty()&&complete.oldD.refs.isEmpty()
+                    &&read.startedElapsed>=complete.issuedElapsed&&read.completedElapsed>=read.startedElapsed
+                    &&read.dStartedElapsed==failed.readStartedElapsed&&read.dStartedElapsed>=read.completedElapsed
+                    &&failed.readEndedElapsed>=read.dStartedElapsed&&!read.consumed.get()
+                    &&read.postDCheckedElapsed<0&&!read.newDReferenceBound
+                    &&latestGraph==null&&latestReadReturnedElapsed<0&&latestSnapshotCompletedElapsed<0
+                    &&roleComparedElapsed<0&&firstFinalEventsElapsed<0
+                    &&afterTargetRefreshEventsElapsed<0&&finalPreclaimEventsElapsed<0;
+        }
+        /** A typed incomplete D may replace its incomplete pair once. Normally it
+         * precedes the complete replacement; an exact still-incomplete FINAL_PRECLAIM
+         * replacement may use that same unused allowance without replacing another
+         * complete proof. Both counters retain the original C cap and absolute deadline.
+         * A failed descendant is never skipped or treated as the action target. */
         void discardIncompleteCensusForResample(NativeSearchIncompleteCensusChanged failed){
             check();long now=SystemClock.elapsedRealtime();attempt.requireUnvalidatedRead(now);
             if(failed==null||failed.work!=this||failed.oldC!=currentGraph||failed.oldSnapshot!=currentSnapshot)
@@ -6870,11 +6896,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             incompleteLatestReads.add(rejected);
             synchronized(nativeSearchEventLock){
                 long observedNow=SystemClock.elapsedRealtime();NativeSearchPlanning.EventMark observed=events.mark();
+                boolean finishingFinalReplacement=mayFinishFinalReplacement(failed);
                 if(!failed.failure.backgroundChildUnavailable||failed.failure.backgroundChildPath==null
                         ||!failed.failure.backgroundChildPath.matches("0(?:/[0-9]+)*")
                         ||failed.readStartedElapsed<attempt.startedElapsed||failed.readEndedElapsed<failed.readStartedElapsed
                         ||observedNow<failed.readEndedElapsed||observedNow>=state.deadlineElapsed
-                        ||observedNow>=session.chainDeadlineElapsed||finalCensusResamples!=0||incompleteCensusResamples!=0||pendingFinalCensusResample!=null
+                        ||observedNow>=session.chainDeadlineElapsed||(finalCensusResamples!=0&&!finishingFinalReplacement)
+                        ||incompleteCensusResamples!=0||pendingFinalCensusResample!=null
                         ||currentReadAttempts.isEmpty()||currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT
                         ||currentGraph==null||currentSnapshot==null||currentGraph.refs.isEmpty()
                         ||latestSnapshot!=null||pairCompleted!=null||roleProof!=null||profileBeforeEffect!=null
@@ -6885,6 +6913,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     throw failed.failure;
                 requireNativeSearchPairEvents(pairStart,observed);
                 if(!failed.consumed.compareAndSet(false,true))throw failed.failure;
+                if(finishingFinalReplacement)incompleteFinalReplacementRepairSelected=true;
+                rejected.put("completes_existing_final_replacement",finishingFinalReplacement);
                 rejected.put("rejection_watermark",observed.evidence());
             }
             Map<String,Object> old=new LinkedHashMap<String,Object>();
@@ -7072,6 +7102,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("current_C_read_attempts",work.currentReadAttempts);proof.put("current_C_resample_limit",NATIVE_SEARCH_CURRENT_C_READ_LIMIT-1);
             proof.put("incomplete_D_census_reads",work.incompleteLatestReads);
             proof.put("incomplete_D_census_resamples",work.incompleteCensusResamples);proof.put("incomplete_D_census_resample_limit",1);
+            proof.put("incomplete_final_replacement_read_selected",work.incompleteFinalReplacementRepairSelected);
             proof.put("original_attempt_deadline_elapsed_ms",work.attempt.deadlineElapsed);
             if(work.finalSwitcherHint!=null)proof.put("final_switcher_hint",work.finalSwitcherHint);
             if(work.targetSignatureRefusal!=null)proof.put("fresh_signature_refusal",work.targetSignatureRefusal);

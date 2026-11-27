@@ -619,11 +619,25 @@ final class BackgroundSession {
     private boolean publicProfilePostlaunchRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null
             &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
             &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
+    /** Admission only for the same retired failed close. Old releases are never
+     * inferred; the complete archived Request is checked before a retained effect. */
+    private boolean businessCleanupFailureState(){
+        if("CLEANUP_UNKNOWN".equals(state))return true;
+        if(!"CLOSING".equals(state)||!retired||retainedCleanup==null||lastResponse==null)return false;
+        return "close".equals(lastResponse.opt("operation"))&&"CLOSING".equals(lastResponse.opt("state"))
+                &&"CLEANUP_NOT_CONFIRMED".equals(lastResponse.opt("error"))
+                &&Boolean.FALSE.equals(lastResponse.opt("ok"))&&Boolean.FALSE.equals(lastResponse.opt("dispatched"))
+                &&Boolean.TRUE.equals(lastResponse.opt("profile_custody_retained"))
+                &&Boolean.TRUE.equals(lastResponse.opt("public_scope_admission_retired"))
+                &&Boolean.TRUE.equals(lastResponse.opt("public_scope_closing"))
+                &&generation.equals(lastResponse.opt("generation"))&&displayId==lastResponse.optInt("display_id",-1)
+                &&publicOwnGroupScope!=null&&publicOwnGroupScope.sha256.equals(lastResponse.opt("display_scope_sha256"));
+    }
     /** Admission for read-only verification. An old live broker or retained
      * controller process still prevents acceptance of the new absence receipt. */
     synchronized boolean publicProfileBusinessRecoveryEligible(){
         return publicProfileRecoveryEligible()||publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
-                &&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state)
+                &&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1&&businessCleanupFailureState()
                 &&(brokerProcess==null||!brokerProcess.isAlive())
                 &&(!brokerExitObserved&&brokerExitCode==null||brokerExitObserved&&brokerExitCode!=null
                 &&brokerExitCode.intValue()>0&&brokerExitCode.intValue()<=255);
@@ -633,7 +647,7 @@ final class BackgroundSession {
     synchronized boolean publicProfileBusinessCleanupEntryEligible(){
         return publicProfileBusinessRecoveryEligible()||retainedCleanup!=null&&publicOwnGroupScope!=null&&profileTarget()!=null
                 &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
-                &&"CLEANUP_UNKNOWN".equals(state)&&!brokerExitObserved&&brokerExitCode==null
+                &&businessCleanupFailureState()&&!brokerExitObserved&&brokerExitCode==null
                 &&brokerProcess!=null&&brokerProcess.isAlive();
     }
     /** Wait only for this already-owned process and reader; no signal or release
@@ -654,7 +668,7 @@ final class BackgroundSession {
         if(reader!=null&&reader.isAlive()&&remaining>0)reader.join(remaining);
         synchronized(this){
             if(SystemClock.elapsedRealtime()>=deadline||brokerProcess!=owned||brokerOutputThread!=reader
-                    ||owned.isAlive()||reader!=null&&reader.isAlive()||!retired||!"CLEANUP_UNKNOWN".equals(state))
+                    ||owned.isAlive()||reader!=null&&reader.isAlive()||!retired||!businessCleanupFailureState())
                 throw new IOException("保留清理进程或原输出读取器尚未排空");
             int exit=owned.exitValue();
             if(exit<=0||exit>255)throw new IOException("保留清理必须保留原失败退出");
@@ -1339,7 +1353,12 @@ final class BackgroundSession {
             else{
                 JSONObject response=call("close",null,3500);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
-                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}else saveJournal();
+                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}
+                else{
+                    // The request has finished without release proof. Preserve the
+                    // actual CLOSING reply in lastResponse; local retirement is UNKNOWN.
+                    state="CLEANUP_UNKNOWN";saveJournal();
+                }
             }
         }catch(Exception failure){known=false;error=HeptaAccessibilityService.message(failure);state="CLEANUP_UNKNOWN";
             try{if(MobiMindPrivateFiles.exists(journal))saveJournal();}catch(Exception ignored){} }
@@ -1656,9 +1675,12 @@ final class BackgroundSession {
         String generation=old.getString("generation"),name=old.getString("display_name"),task=old.getString("task_id"),owner=old.getString("owner_sha256");
         int display=old.getInt("display_id"),boot=old.getInt("boot_count");long expiry=old.getLong("expires_elapsed_ms");
         ProfileTarget target=journalProfileTarget(old);PublicOwnGroupPolicy.Scope scope=journalPublicScope(old);
+        String originalFailureState=old.getString("state");
+        boolean retainedClosing="CLOSING".equals(originalFailureState)&&RetainedProfileCleanupClient.configured(old);
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(name)||!name.equals(old.getString("socket"))
                 ||scope==null||target==null||target.profile.userId!=10||!ProfileTarget.supportsPackage(target.packageName)
-                ||display<=1||!Boolean.TRUE.equals(old.get("profile_launch_attempted"))||!"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                ||display<=1||!Boolean.TRUE.equals(old.get("profile_launch_attempted"))
+                ||!("CLEANUP_UNKNOWN".equals(originalFailureState)||retainedClosing)
                 ||readBootCount(context)!=boot||expiry>=Long.MAX_VALUE-2000||SystemClock.elapsedRealtime()<=expiry+2000)
             throw new IOException("业务恢复仅适用于同一启动内已到期的已支持公共资料租约");
         check.checkBusiness(task,owner);root.unchanged(context);original.unchangedPath();
@@ -1679,7 +1701,7 @@ final class BackgroundSession {
             for(String key:immutable)if(!PublicProfileBusinessAbsenceRecovery.canonical(new JSONObject().put("value",old.get(key)))
                     .equals(PublicProfileBusinessAbsenceRecovery.canonical(new JSONObject().put("value",next.get(key)))))
                 throw new IOException("独立清理后原租约身份发生变化："+key);
-            if(!"CLEANUP_UNKNOWN".equals(next.getString("state"))||!Boolean.TRUE.equals(next.get("profile_launch_attempted")))
+            if(!originalFailureState.equals(next.getString("state"))||!Boolean.TRUE.equals(next.get("profile_launch_attempted")))
                 throw new IOException("独立清理不能把旧租约改写为正常释放");
             original=fresh;
         }

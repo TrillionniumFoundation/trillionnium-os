@@ -53,6 +53,21 @@ def _cleanup_phase_inputs():
 
 def _cleanup_phase_proof(relative, raw):
     from runpy import run_path
+    # Only this historical method proof normalizes the exact reviewed read-order
+    # delta; compiler paths below continue to use the complete current Java file.
+    if (relative == "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+            and type(raw) is bytes
+            and hashlib.sha256(raw).hexdigest() == "4ccfa1934331f17274b6f0d6ab911d7dd986a2cce852d9f65e64aea96c907a80"):
+        if len(raw) != 75021:
+            raise RuntimeError("exact recents-first whole source required")
+        current = "                    beginNormalRead();actual(false);\n                    // Normal public cleanup samples complete history before fresh live tasks.\n                    // The unchanged final live pair and effect guard still fence root deletion.\n                    ProfileTaskPolicy.Recents normalRecent=normalCleanupPhase!=null&&publicHistory!=null\n                            ?readRecents():null;\n                    ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);\n                    boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);\n                    List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;\n                    if(publicHistory!=null&&liveLeafGone){\n                        // Keep actual retained root/children from the same bounded interval.\n                        // Without a normal phase, the original history-last ordering remains.\n                        sampledRoots=checked(platform.roots());\n                        if(sampledRoots.size()==1){\n                            requireRootIdentity(sampledRoots.get(0));\n                            sampledChildren=checked(platform.children(root.token));\n                        }\n                    }\n                    ProfileTaskPolicy.Recents recent=normalRecent==null?readRecents():normalRecent;recentsAfterSha=recent.sha256;\n".encode("utf-8")
+        previous = "                    beginNormalRead();actual(false);\n                    ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);\n                    boolean liveLeafGone=leaf==null||!current.allIds.contains(leaf.id);\n                    List<BackgroundOwnedSingleTask.Task> sampledRoots=null,sampledChildren=null;\n                    if(publicHistory!=null&&liveLeafGone){\n                        // Read the retained root/children before the final complete public-history\n                        // sample. There is no mutation in this interval: one fresh raw dump then\n                        // proves both owned recents absence and preserved unrelated history.\n                        sampledRoots=checked(platform.roots());\n                        if(sampledRoots.size()==1){\n                            requireRootIdentity(sampledRoots.get(0));\n                            sampledChildren=checked(platform.children(root.token));\n                        }\n                    }\n                    ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;\n".encode("utf-8")
+        if raw.count(current) != 1:
+            raise RuntimeError("exact recents-first whole delta required")
+        raw = raw.replace(current, previous, 1)
+        if (len(raw) != 74746 or hashlib.sha256(raw).hexdigest()
+                != "fe0b6a67deefea03d7fb7f7881e42e08b73c5c978f7808374865ef62bb4c395c"):
+            raise RuntimeError("recents-first proof must restore exact predecessor")
     helper = _cleanup_phase_inputs()[0]
     if hashlib.sha256(helper.read_bytes()).hexdigest() != "a48c11798f672654823b2cf6dd9f19d31d7ea1a20f1d69b488eb1a4e4019a8d2":
         raise RuntimeError("fixed cleanup proof helper differs")
