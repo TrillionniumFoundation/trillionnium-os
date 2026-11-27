@@ -1443,19 +1443,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** Pure values from one actual serial sample. No Graph or SDK node is retained. */
     private static final class NativeAxSample {
-        final Object issuer,authorization,mode;final NativeAppSession.PostActionReadAccess permit;
-        final String taskId,requestId;final long token,acceptedAt,completedAt;final int readOrdinal;
+        final Object issuer,authorization,mode,initialController,initialNativeTask;final NativeAppSession.PostActionReadAccess permit;
+        final String taskId,requestId;final long token,acceptedAt,completedAt,initialTaskDeadline;final int readOrdinal,taskReadOrdinal;
         final CaptureIdentity identity;final Map<String,Object> census;
         final ObservationEventWatermark readStart,completed;
         NativeAxSample(Object issuer,ObservationRequest request,Graph graph,Map<String,Object> census,ObservationEventWatermark start,
                 ObservationEventWatermark end,long completedAt,long checkpoint,ObservationEventWatermark checkpointMark){
             this.issuer=issuer;authorization=request.readAuthorization;mode=request.nativeAxMode;permit=request.postEffectPermit;
+            initialController=request.initialController;initialNativeTask=request.initialNativeTask;
+            initialTaskDeadline=request.initialTaskDeadline;taskReadOrdinal=request.taskReadOrdinal;
             taskId=request.taskId;requestId=request.requestId;token=request.token;readOrdinal=request.readWorksStarted;
             acceptedAt=-1;this.completedAt=completedAt;readStart=start;completed=end;
             identity=new CaptureIdentity(graph,checkpoint,checkpointMark,true);this.census=census;
         }
         NativeAxSample(NativeAxSample value,long acceptedAt){
             issuer=value.issuer;authorization=value.authorization;mode=value.mode;permit=value.permit;
+            initialController=value.initialController;initialNativeTask=value.initialNativeTask;
+            initialTaskDeadline=value.initialTaskDeadline;taskReadOrdinal=value.taskReadOrdinal;
             taskId=value.taskId;requestId=value.requestId;token=value.token;readOrdinal=value.readOrdinal;
             this.acceptedAt=acceptedAt;completedAt=value.completedAt;readStart=value.readStart;completed=value.completed;
             identity=value.identity;census=value.census;
@@ -1463,6 +1467,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean belongsTo(ObservationRequest request){
             return issuer==live&&authorization!=null&&authorization==request.readAuthorization
                     &&mode!=null&&mode==request.nativeAxMode&&permit==request.postEffectPermit
+                    &&initialController==request.initialController&&initialNativeTask==request.initialNativeTask
+                    &&initialTaskDeadline==request.initialTaskDeadline&&taskReadOrdinal==request.taskReadOrdinal
                     &&taskId.equals(request.taskId)&&requestId.equals(request.requestId)&&token==request.token;
         }
     }
@@ -2356,7 +2362,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         out.put("fresh_action_validation_required",true);out.put("grants_action_authority",false);return java.util.Collections.unmodifiableMap(out);
     }
     /** Ctrip native post-effect observation only; no deadline, permit or action is created. */
-    private boolean nativeAxSamplingOwner(ObservationRequest request,long now){
+    private boolean nativeAxPostEffectSamplingOwner(ObservationRequest request,long now){
         if(request.finished||activeObservation!=request||request.cancel.isCancelled()
                 ||request.nativeAxMode==null||request.nativeAxMode!=nativeAxMode
                 ||request.initialController!=null||request.initialRetrySubmission!=null
@@ -2376,6 +2382,34 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&target.versionCode==NativeCtripFlightPage.VERSION_CODE
                 &&NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
                 &&task!=null&&NativeCtripFlightPage.supported(task.nativeGoal);
+    }
+    /** Initial reads have their own admitted owner; no effect receipt or permit is inferred. */
+    private boolean nativeAxInitialSamplingOwner(ObservationRequest request,long now){
+        NativeAxMode mode=nativeAxMode;
+        if(request.finished||activeObservation!=request||request.cancel.isCancelled()
+                ||mode==null||request.nativeAxMode!=mode||!initialObservationOwner(request)
+                ||request.initialController!=mode.controller||request.initialNativeTask!=mode.nativeTask
+                ||request.initialRetrySubmission!=null||request.initialIdentityRejected||request.taskReadOrdinal!=1
+                ||request.retrySubmission!=null||request.readBefore!=null||request.readIdentity!=null
+                ||request.postEffectController!=null||request.postEffectNativeTask!=null||request.postEffectPermit!=null
+                ||request.postEffectRetrySubmission!=null||request.postEffectIdentity!=null
+                ||request.postEffectIdentityRejected||request.postEffectSamplingRejected||request.readRecoveryRejected
+                ||request.background==null||request.displayId<=1||mode.background!=request.background
+                ||request.readAuthorization==null||request.readAuthorization!=taskAuthorization
+                ||mode.authorization!=request.readAuthorization||capturePending||request.shotPending
+                ||actionWorkPending()||nativeCancellationWorkPending()||request.unknownEvents!=0||locked(request.background)
+                ||now<request.started||now>=request.deadline||now>=request.initialTaskDeadline
+                ||request.deadline>request.initialTaskDeadline)return false;
+        ProfileTarget target=request.background.profileTarget();BackgroundTaskTarget task=request.background.selection.taskTarget;
+        return target!=null&&NativeCtripFlightPage.PACKAGE.equals(target.packageName)
+                &&target.versionCode==NativeCtripFlightPage.VERSION_CODE
+                &&NativeCtripFlightPage.BASE_APK_SHA256.equals(target.apkHashes.get("base"))
+                &&task!=null&&NativeCtripFlightPage.supported(task.nativeGoal);
+    }
+    /** Select the existing effect scope or the separate first-read scope, never one from the other. */
+    private boolean nativeAxSamplingOwner(ObservationRequest request,long now){
+        return request.initialController==null?nativeAxPostEffectSamplingOwner(request,now):
+                nativeAxInitialSamplingOwner(request,now);
     }
     private NativeAxSampleRead readNativeAxSample(ObservationRequest request,Graph graph,NativeAxSample before,
             ObservationEventWatermark start,ObservationEventWatermark completed,long completedAt){
@@ -6273,7 +6307,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** A memory-only capability from the last unclaimed census fence. It
      * never creates another model intent, Attempt, action slot or deadline. */
     static final class NativeSearchFinalCensusResampleProof {
-        private enum Boundary { FINAL_PRECLAIM, AFTER_TARGET }
+        private enum Boundary { FINAL_PRECLAIM, AFTER_TARGET, FIRST_POST_D }
         private final Boundary boundary;
         private final HeptaAccessibilityService issuer;private final SearchActionWork work;
         private final NativeSearchRole role;private final Graph oldC,oldD;
@@ -6292,6 +6326,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         void consume(NativeSearchSession.Attempt actual,NativeSearchRole actualRole,long now){
             if(boundary==Boundary.AFTER_TARGET){consumeAfterTarget(actual,actualRole,now);return;}
+            if(boundary==Boundary.FIRST_POST_D){consumeFirstPostD(actual,actualRole,now);return;}
             if(actual!=work.attempt||actualRole!=role||now<issuedElapsed||now>=actual.deadlineElapsed)
                 throw new IllegalStateException("same original unclaimed census proof required");
             work.check();actual.requireUnclaimedRevalidated(now);
@@ -6312,6 +6347,41 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 requireNativeSearchPairEvents(work.pairStart,observed);
                 if(!observed.monotonicSince(rejected)||!consumed.compareAndSet(false,true))
                     throw new IllegalStateException("one unchanged-identity census resample capability required");
+            }
+        }
+        /** The real first post-D fence rejects its old complete pair before this
+         * read-only handoff. Both graphs must close and the same Attempt must
+         * still be unclaimed; no final target/window proof is asserted here. */
+        private void consumeFirstPostD(NativeSearchSession.Attempt actual,NativeSearchRole actualRole,long now){
+            if(actual!=work.attempt||actualRole!=role||now<issuedElapsed||now>=actual.deadlineElapsed)
+                throw new IllegalStateException("same original first-post-D census proof required");
+            work.check();actual.requireUnclaimedRevalidated(now);
+            synchronized(issuer.nativeSearchEventLock){
+                long observedNow=SystemClock.elapsedRealtime();
+                if(work.pendingFinalCensusResample!=this||work.completedFinalCensusResample!=null||work.finalCensusResamples!=0
+                        ||issuer.activeSearchAction!=work||issuer.nativeSearchTrackedAction!=work||issuer.lastActionExecution!=work.state
+                        ||work.currentGraph!=null||oldC==null||oldD==null||oldC==oldD||!oldC.refs.isEmpty()||!oldD.refs.isEmpty()
+                        ||work.latestGraph!=oldD||work.currentSnapshot!=current||work.latestSnapshot!=latest
+                        ||work.revalidatedRole!=role||work.roleProof==null||!work.firstPostDCensusRepairSelected
+                        ||!work.firstPostDEventRejected||work.firstRejectedWatermark!=rejected
+                        ||work.afterTargetCensusRepairSelected||work.typedAfterTargetRefreshPostDEventRejected
+                        ||work.typedFinalPreclaimContentRejected||work.afterTargetRefreshEventsElapsed>=0||work.finalPreclaimEventsElapsed>=0
+                        ||!work.currentNodeIdentityChecked||work.ancestorChainChecked||work.windowsChecked||work.profileBeforeEffect!=null
+                        ||work.latestReadReturnedElapsed<actual.startedElapsed
+                        ||work.latestSnapshotCompletedElapsed<work.latestReadReturnedElapsed
+                        ||work.roleComparedElapsed<work.latestSnapshotCompletedElapsed
+                        ||work.firstFinalEventsElapsed<work.roleComparedElapsed||issuedElapsed!=work.firstFinalEventsElapsed
+                        ||work.currentReadAttempts.isEmpty()||work.currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT
+                        ||work.platformCallInvoked||work.state.effectEntered()||work.state.retired()||work.state.isDrained()
+                        ||work.cancel.isCancelled()||observedNow<issuedElapsed||observedNow>=work.state.deadlineElapsed
+                        ||observedNow>=work.session.chainDeadlineElapsed)
+                    throw new IllegalStateException("closed old graphs and exact unclaimed first-post-D boundary required");
+                NativeSearchPlanning.EventMark observed=work.events.mark();
+                requireNativeSearchPairEvents(work.pairStart,observed);
+                requireNativeSearchPairEvents(work.pairCompleted,rejected);
+                requireNativeSearchPairEvents(rejected,observed);
+                if(!consumed.compareAndSet(false,true))
+                    throw new IllegalStateException("one first-post-D census resample capability required");
             }
         }
         /** Earlier read-only boundary: no completed final window/profile proof is asserted.
@@ -6389,12 +6459,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         private boolean sameReadRound(){
             return work.incompleteCensusResamples==incompleteCensusOrdinal
-                    &&(initialCensus?work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected
+                    &&(initialCensus?work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected&&!work.firstPostDCensusRepairSelected
                             &&replacementCensus==null&&work.completedFinalCensusResample==null
                         :work.hasCompletedFinalCensusResample()&&replacementCensus==work.completedFinalCensusResample);
         }
         private String evidenceKey(){
             return initialCensus?"initial_census_read_order":
+                    replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D?"first_post_D_replacement_read_order":
                     replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
                         ?"after_target_replacement_read_order":"final_preclaim_replacement_read_order";
         }
@@ -6445,6 +6516,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         private Map<String,Object> evidence(){
             Map<String,Object> value=new LinkedHashMap<String,Object>();
             value.put("schema",initialCensus?"hepta.native-search-initial-read-order.v1":
+                    replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D?"hepta.native-search-first-post-D-read-order.v1":
                     replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
                         ?"hepta.native-search-after-target-read-order.v1":"hepta.native-search-final-preclaim-read-order.v1");
             if(!initialCensus)value.put("producer_boundary",replacementCensus.boundary.name());
@@ -6464,7 +6536,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
 
     private void prepareNativeSearchReplacementTarget(SearchActionWork work,NodeRef original,NativeSearchRole role)throws Exception{
         work.check();work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
-        boolean initialCensus=work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected
+        boolean initialCensus=work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected&&!work.firstPostDCensusRepairSelected
                 &&work.completedFinalCensusResample==null;
         boolean completeReplacement=work.hasCompletedFinalCensusResample();
         if((!initialCensus&&!completeReplacement)||work.replacementTargetProof!=null
@@ -6557,7 +6629,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final NativeSearchSession.Attempt attempt;final NativeSearchSession session;final QualificationScopeConfig.Bound scope;
         final Cancellation cancel;final ActionExecutionState state;final SearchEvents events;
         Graph currentGraph,latestGraph;NativeSearchRole revalidatedRole;
-        boolean afterTargetCensusRepairSelected;
+        boolean afterTargetCensusRepairSelected,firstPostDCensusRepairSelected;
         boolean platformCallInvoked;JSONObject sealedDiagnostic;String sealedDiagnosticSha;
         final File planningDirectory;final int planningReadOrdinal;
         final java.util.concurrent.atomic.AtomicBoolean callbackQueued=new java.util.concurrent.atomic.AtomicBoolean();
@@ -6608,14 +6680,38 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         void phase(String phase){check();marker(state.phase(phase));}
         void marker(Map<String,Object> value){try{android.util.Log.i("HeptaAction",new JSONObject(value).toString());}catch(RuntimeException ignored){}}
         void requireFirstFinalEvents(){
-            check();
+            check();attempt.requireUnclaimedRevalidated(SystemClock.elapsedRealtime());
             synchronized(nativeSearchEventLock){
                 firstFinalEventsElapsed=SystemClock.elapsedRealtime();
                 NativeSearchPlanning.EventMark observed=events.mark();
-                if(!sameSearchEvents(pairCompleted,observed)){
-                    firstPostDEventRejected=true;firstRejectedWatermark=observed;
-                    throw new StaleObservation("new search intent received an event after its complete current D census");
-                }
+                if(sameSearchEvents(pairCompleted,observed))return;
+                // This complete pair remains rejected. Only a typed same-owner
+                // content interval may discard it for the existing one full reread.
+                firstPostDEventRejected=true;firstRejectedWatermark=observed;
+                if(latestReadReturnedElapsed<attempt.startedElapsed||latestSnapshotCompletedElapsed<latestReadReturnedElapsed
+                        ||roleComparedElapsed<latestSnapshotCompletedElapsed||firstFinalEventsElapsed<roleComparedElapsed
+                        ||firstFinalEventsElapsed>=state.deadlineElapsed||firstFinalEventsElapsed>=session.chainDeadlineElapsed
+                        ||cancel.isCancelled()||currentGraph==null||latestGraph==null||currentGraph==latestGraph
+                        ||currentGraph.refs.isEmpty()||latestGraph.refs.isEmpty()
+                        ||currentSnapshot==null||latestSnapshot==null||revalidatedRole==null||roleProof==null
+                        ||!currentNodeIdentityChecked||ancestorChainChecked||windowsChecked||profileBeforeEffect!=null
+                        ||afterTargetRefreshEventsElapsed>=0||finalPreclaimEventsElapsed>=0
+                        ||afterTargetCensusRepairSelected||typedAfterTargetRefreshPostDEventRejected||typedFinalPreclaimContentRejected
+                        ||platformCallInvoked||state.effectEntered()||state.retired()||state.isDrained()
+                        ||activeSearchAction!=this||nativeSearchTrackedAction!=this||lastActionExecution!=state)
+                    throw new StaleObservation("new search first-post-D census event is outside the live unclaimed boundary");
+                requireNativeSearchPairEvents(pairStart,observed);
+                requireNativeSearchPairEvents(pairCompleted,observed);
+                // Selecting read repair permanently excludes a new-model fallback,
+                // including when this same allowance has already been spent.
+                firstPostDCensusRepairSelected=true;
+                if(finalCensusResamples!=0||pendingFinalCensusResample!=null||completedFinalCensusResample!=null
+                        ||currentReadAttempts.isEmpty()||currentReadAttempts.size()>=NATIVE_SEARCH_CURRENT_C_READ_LIMIT)
+                    throw new StaleObservation("new search first-post-D census cannot replace its spent read budget");
+                pendingFinalCensusResample=new NativeSearchFinalCensusResampleProof(HeptaAccessibilityService.this,this,
+                        revalidatedRole,latestGraph,observed,firstFinalEventsElapsed,
+                        NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D);
+                throw new NativeSearchFinalCensusChanged(pendingFinalCensusResample);
             }
         }
         /** Called only after C's full actual target/ancestor chain and root metadata
@@ -6655,7 +6751,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
         }
         boolean hasNoEffectReplanFence(){
-            if(afterTargetCensusRepairSelected)return false;
+            if(afterTargetCensusRepairSelected||firstPostDCensusRepairSelected)return false;
             if(bannerRefusal!=null)return !firstPostDEventRejected&&!typedAfterTargetRefreshPostDEventRejected;
             return firstPostDEventRejected!=typedAfterTargetRefreshPostDEventRejected;
         }
@@ -6702,7 +6798,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NativeSearchFinalCensusResampleProof proof=completedFinalCensusResample;
             return finalCensusResamples==1&&proof!=null&&proof.work==this
                     &&proof.issuer==HeptaAccessibilityService.this&&proof.consumed.get()
-                    &&afterTargetCensusRepairSelected==(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET);
+                    &&afterTargetCensusRepairSelected==(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET)
+                    &&firstPostDCensusRepairSelected==(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D);
         }
         void discardFinalCensusForResample(NativeSearchFinalCensusResampleProof proof){
             check();
@@ -6710,7 +6807,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new IllegalStateException("actual final-census failure capability required");
             Map<String,Object> old=new LinkedHashMap<String,Object>();
             old.put("ordinal",discardedFinalCensuses.size()+1);
-            old.put("reason",proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
+            old.put("reason",proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D
+                    ?"content_event_at_first_post_D_fence":proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
                     ?"content_event_after_target_chain":"content_event_at_last_preclaim_fence");
             old.put("producer_boundary",proof.boundary.name());
             old.put("current_C",NativeSearchPlanning.snapshot(currentSnapshot));old.put("latest_D",NativeSearchPlanning.snapshot(latestSnapshot));
@@ -6718,6 +6816,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             old.put("D_completed_watermark",pairCompleted.evidence());old.put("rejection_watermark",proof.rejected.evidence());
             old.put("checked_elapsed_ms",proof.issuedElapsed);old.put("original_attempt_deadline_elapsed_ms",attempt.deadlineElapsed);
             old.put("first_final_event_check_elapsed_ms",firstFinalEventsElapsed);
+            if(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D){
+                old.put("typed_post_D_first_fence_rejected",firstPostDEventRejected);
+                old.put("first_final_event_rejection_watermark",firstRejectedWatermark.evidence());
+            }
             old.put("after_target_refresh_event_check_elapsed_ms",afterTargetRefreshEventsElapsed);
             old.put("original_target_chain_return_completed",ancestorChainChecked);
             old.put("reported_windows_checked",windowsChecked);
@@ -6733,7 +6835,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             finalCensusResamples++;old.put("old_revalidation_discarded",true);pendingFinalCensusResample=null;
             completedFinalCensusResample=proof;replacementTargetProof=null;
             // The discarded immutable record above retains every actual rejection.
-            // Only this completed private AFTER_TARGET handoff clears its spent round latch.
+            // Only the completed private handoff clears its own spent round latch.
+            // The selected-repair latch and consumed proof persist across the new pair.
+            if(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.FIRST_POST_D){
+                firstPostDEventRejected=false;firstRejectedWatermark=null;
+            }
             if(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET){
                 typedAfterTargetRefreshPostDEventRejected=false;afterTargetRefreshRejectedWatermark=null;
             }

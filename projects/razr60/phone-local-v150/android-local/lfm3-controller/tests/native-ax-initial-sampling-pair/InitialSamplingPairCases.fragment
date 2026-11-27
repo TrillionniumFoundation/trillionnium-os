@@ -1,0 +1,242 @@
+
+    /** Explicit host SDK/clock/Session IO around the real admitted initial request.
+     * Both stable reads independently materialize the same recorded 118-node value;
+     * this is a host stable-candidate mapping, not a claim that the failed Phone pair matched. */
+    static final class InitialSamplingScenario {
+        final ObserverPipelineHost f;final NativeAppSession session;final LocalTaskController controller;
+        final AxReadResult out=new AxReadResult();final PhoneObservation prior;final Graph priorGraph;
+        final long started,taskDeadline;final int first,priorWrites;
+        ObservationRequest request;Graph a,d,recheck;Object pureA;String fault="none";
+        volatile int sampleHookCalls,windowReads;int maxReads=2,legacyArity;boolean thirdChanged;
+        InitialSamplingScenario()throws Exception{
+            f=axReadFixture();controller=f.ownedController;session=(NativeAppSession)f.nativeAxMode.nativeTask;
+            prior=f.current;priorGraph=f.currentGraph;first=f.reads.get();priorWrites=MobiMindPrivateFiles.writes;
+            started=SystemClock.now;taskDeadline=started+480000;
+            f.readHook=(graph,n)->{
+                int ordinal=n-first;
+                if(ordinal>maxReads){SystemClock.now+=200;actualAxReadFailure("child");}
+                boolean originalAfter="recorded_changed_pair".equals(fault)&&ordinal==2||thirdChanged&&ordinal==3;
+                try{pairRawGraph(f,graph,originalAfter);}catch(Exception problem){throw new IllegalStateException(problem);}
+                SystemClock.now+=ordinal==1?599:624;
+                graph.nativeActionCapturedAt=SystemClock.now;
+                graph.profileWindow=axReadOwner(f,f.taskBackground.observedProfileTarget,graph.windowId,100,90,AX_READ_TOKEN);
+                if(ordinal==1)a=graph;else if(ordinal==2)d=graph;else if(ordinal==3)recheck=graph;
+                if(ordinal==2){
+                    if("missing_node".equals(fault)){
+                        List<NativeActionSnapshotCheck.Node> rows=new ArrayList<NativeActionSnapshotCheck.Node>(graph.nativeActionNodes);
+                        rows.remove(rows.size()-1);graph.nativeActionNodes=Collections.unmodifiableList(rows);
+                    }
+                    if("incomplete".equals(fault))graph.nativeObservationComplete=false;
+                    if("truncated".equals(fault))graph.truncated=true;
+                    if("different_node_same_key".equals(fault)){
+                        List<NativeActionSnapshotCheck.Node> rows=new ArrayList<NativeActionSnapshotCheck.Node>(graph.nativeActionNodes);
+                        Map<String,Object> row=new LinkedHashMap<String,Object>(rows.get(0).v);row.put("text","explicit host full-node mutation");
+                        rows.set(0,new NativeActionSnapshotCheck.Node(row));graph.nativeActionNodes=Collections.unmodifiableList(rows);
+                    }
+                    if("different_window".equals(fault))graph.windowId++;
+                    if("different_profile".equals(fault))
+                        graph.profileWindow=axReadOwner(f,axReadTarget(1010368,NativeCtripFlightPage.VERSION_CODE),graph.windowId,100,90,AX_READ_TOKEN);
+                }
+                f.windowValue=frozenObservationWindow(graph);
+            };
+            f.main.samplePosted=()->{
+                if(d!=null&&f.main.sampleGraph==d){
+                    sampleHookCalls++;
+                    if("unknown_after_D".equals(fault))f.activeObservation.recordEvent(true,1);
+                    if("boundary_after_D".equals(fault))f.activeObservation.recordEvent(false,2);
+                    if("content_after_D".equals(fault))f.activeObservation.recordEvent(false,1);
+                    if("cancel_after_D".equals(fault))f.cancelled.set(true);
+                    if("nonconsecutive".equals(fault)){f.activeObservation.readWorksStarted++;f.activeObservation.readWorksFinished++;}
+                }
+            };
+            f.windowHook=()->{
+                windowReads++;SystemClock.now+=10;Graph graph=f.activeObservation.captured;
+                if(windowReads==1){
+                    if("late_content".equals(fault))f.activeObservation.recordEvent(false,1);
+                    if("late_boundary".equals(fault))f.activeObservation.recordEvent(false,2);
+                    if("late_unknown".equals(fault))f.activeObservation.recordEvent(true,1);
+                }
+                WindowOwnership profile=axReadOwner(f,f.taskBackground.observedProfileTarget,
+                        "fresh_window_changed".equals(fault)?graph.windowId+1:graph.windowId,100,90,AX_READ_TOKEN);
+                f.windowValue=new FrozenObservationWindow(graph.packageName,profile.windowId,graph.displayId,graph.rotation,
+                        graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom,
+                        graph.nativeActionWidth,graph.nativeActionHeight,graph.windowMetadata.bindFreshness(""),graph.nativeActionWindows,profile);
+            };
+        }
+        void start(){
+            f.main.legacySampleArity=legacyArity;
+            f.observeInitialNative(controller,session,f.lease,f.taskAuthorization,f.taskBackground,f.directory,
+                    ()->f.cancelled.get(),ObservationStabilityGate.requestDeadline(started,taskDeadline),taskDeadline,out,null);
+            f.main.drain();request=f.activeObservation;
+            check(request!=null,"real initial factory admitted its request");
+            check(request.initialController==controller&&request.initialNativeTask==session
+                    &&request.readAuthorization==f.taskAuthorization&&request.nativeAxMode==f.nativeAxMode,
+                    "actual initial admission populated controller, Session, authorization and AX mode");
+            check(request.taskReadOrdinal==1&&f.taskObservationAdmissions==1,"actual first admission generated ordinal one");
+            check(request.postEffectController==null&&request.postEffectNativeTask==null&&request.postEffectPermit==null
+                    &&request.postEffectRetrySubmission==null&&request.postEffectTaskDeadline==0,
+                    "initial factory did not infer an effect or transition permit");
+        }
+        void drive(java.util.function.BooleanSupplier done)throws Exception{
+            for(int i=0;i<100&&!done.getAsBoolean();i++){
+                await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual initial serial worker returned");
+                f.main.drainUntil(done);
+                if(!done.getAsBoolean()&&!f.main.hasReady()&&observationIo.active.get()==0)SystemClock.now+=200;
+            }
+            check(done.getAsBoolean(),"bounded initial drive reached an actual callback");
+        }
+        void afterA()throws Exception{
+            if(request==null)start();drive(()->a!=null&&a.closed);
+            pureA=pairOptional(request,"nativeAxSample");
+            check(pureA!=null&&a.refs.isEmpty(),"real first callback retained values and released A SDK references");
+        }
+        void finish()throws Exception{
+            if(request==null)start();drive(()->!out.observations.isEmpty()||!out.failures.isEmpty());
+        }
+        void positive(boolean lateRecheck)throws Exception{
+            finish();
+            // The unchanged old source must fail here on behavior, not a new field/ABI lookup.
+            check(out.observations.size()==1&&out.failures.isEmpty()&&out.proofs.isEmpty(),
+                    "complete initial A/D must publish without an unnecessary third child walk");
+            check(f.reads.get()-first==(lateRecheck?3:2),"only the two samples plus an event-required full recheck");
+            check(a!=d&&a.closed&&a.refs.isEmpty()&&!d.closed&&f.currentGraph==d,
+                    "A was released; the actual complete D object supplies current refs");
+            check(d.nativeActionNodes.size()==118&&d.collectionStats.visited==118&&d.collectionStats.retained==74,
+                    "all 118 raw native nodes retained independently of 74 model rows");
+            check(d.refs.size()==74,"D SDK references held through readonly publication");
+            check(f.current!=prior&&f.current.capture!=null&&MobiMindPrivateFiles.writes==priorWrites+1,
+                    "one original AX receipt and one actual initial callback");
+            NativeAxProduct product=f.main.axProduct;Object pair=pairOptional(product,"samplePair");
+            // NativeAxProduct retains the original samplePair across its one publication recheck.
+            check(pair!=null&&((AtomicBoolean)axField(pair,"claimed")).get(),"actual pair claimed once");
+            Object firstSample=axField(pair,"first"),secondSample=axField(pair,"second");
+            check(axField(firstSample,"initialController")==controller&&axField(firstSample,"initialNativeTask")==session
+                    &&((Long)axField(firstSample,"initialTaskDeadline")).longValue()==taskDeadline
+                    &&((Integer)axField(firstSample,"taskReadOrdinal")).intValue()==1,
+                    "actual initial owner, task deadline and ordinal are frozen in the private proof");
+            Map<String,Object> firstValues=pairMap(axField(firstSample,"census")),secondValues=pairMap(axField(secondSample,"census"));
+            check(firstValues!=secondValues&&((List<?>)firstValues.get("nodes")).size()==118
+                    &&((List<?>)secondValues.get("nodes")).size()==118,"two independently frozen complete values");
+            String recorded=NativeAppEvidence.fingerprint(pairOriginal.getJSONObject("before").getJSONArray("native_nodes").toList());
+            check(recorded.equals(NativeAppEvidence.fingerprint(firstValues.get("nodes")))
+                    &&recorded.equals(NativeAppEvidence.fingerprint(secondValues.get("nodes"))),
+                    "stable host mapping preserves all bytes of the recorded before nodes on each independent read");
+            CaptureIdentity firstIdentity=(CaptureIdentity)axField(firstSample,"identity");
+            check(a.readCompletedElapsedMs<=firstIdentity.capturedAt&&firstIdentity.capturedAt<=d.readStartedElapsedMs
+                    &&d.readCompletedElapsedMs<request.deadline,"real A checkpoint precedes the separate D read");
+            check(f.current.capturedElapsedMillis==firstIdentity.capturedAt
+                    &&f.current.capturedElapsedMillis<d.readCompletedElapsedMs,"capture age not refreshed by READY or sealing");
+            check(windowReads==(lateRecheck?2:1),"independent current window/profile check remains mandatory");
+            check(f.current.capture.publicationRechecked()==lateRecheck,"original publication recheck consumer reports actual use");
+            if(lateRecheck)check(recheck!=null&&recheck!=d&&recheck.closed,"late content required a fresh complete C graph");
+            check(request.deadline==started+12000&&request.initialTaskDeadline==taskDeadline,
+                    "original settle/capture/request and task clock remain fixed");
+            check(request.postEffectPermit==null&&request.postEffectController==null&&!f.actionWorkPending(),
+                    "no action or post-effect authority fabricated by initial publication");
+            check(Boolean.FALSE.equals(f.current.captureEvidence.get("sampling_pair_grants_action_authority")),
+                    "sampling certificate remains read only");
+            noPixels(f);
+        }
+        void rejected()throws Exception{
+            finish();check(out.observations.isEmpty()&&!out.failures.isEmpty(),"invalid initial candidate cannot publish");
+            check(f.current==prior&&f.currentGraph==priorGraph,"refusal cannot replace current observation");
+            check(request.finished&&request.captured==null,"failed initial candidate resources retired");
+            noPixels(f);
+        }
+        void toProduct()throws Exception{
+            if(request==null)start();drive(()->request.captured!=null||!out.failures.isEmpty());
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual initial product queued");
+        }
+        void dispose()throws Exception{
+            f.main.samplePosted=null;f.main.afterWorkerPost=null;f.dispose();
+            for(SdkNode node:SdkNode.made)check(node.recycles==1,"each SDK reference recycled exactly once");
+            SdkNode.made.clear();
+        }
+    }
+    static void initialSamplingCases(boolean counterfactual)throws Exception{
+        axCase("initial_6b67_stable_host_candidate_uses_actual_two_reads_and_receipt",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.positive(false);s.dispose();
+        });
+        if(counterfactual)return;
+        for(String fault:new String[]{"recorded_changed_pair","missing_node","incomplete","truncated","different_node_same_key",
+                "different_window","different_profile","unknown_after_D","boundary_after_D","content_after_D",
+                "cancel_after_D","nonconsecutive","fresh_window_changed"}){
+            axCase("initial_sampling_"+fault+"_refuses",()->{
+                InitialSamplingScenario s=new InitialSamplingScenario();s.fault=fault;s.rejected();
+                check(s.sampleHookCalls==1,"actual D callback fault hook fired: "+fault);
+                if("unknown_after_D".equals(fault))check(s.request.unknownEvents==1,"actual unknown event injected");
+                if("boundary_after_D".equals(fault))check(s.request.eventWatermark().boundaryEvents==1,"actual boundary event injected");
+                if("content_after_D".equals(fault))check(s.request.eventWatermark().contentEvents==1,"actual content event injected");
+                if("cancel_after_D".equals(fault))check(s.f.cancelled.get(),"actual cancellation injected");
+                if("recorded_changed_pair".equals(fault)){
+                    check(!s.a.digest.equals(s.d.digest),"original recorded pair remains different and never gains publication");
+                }
+                s.dispose();
+            });
+        }
+        for(String fault:new String[]{"controller","native_task","task_deadline","ordinal_two","initial_retry","effect_permit",
+                "current_mode","expired","cancel"}){
+            axCase("initial_sampling_after_A_"+fault+"_refuses",()->{
+                InitialSamplingScenario s=new InitialSamplingScenario();s.afterA();
+                if("controller".equals(fault))s.f.ownedController=new LocalTaskController();
+                if("native_task".equals(fault))s.request.initialNativeTask=new NativeAppSession();
+                if("task_deadline".equals(fault))s.request.initialTaskDeadline++;
+                if("ordinal_two".equals(fault)){s.request.taskReadOrdinal=2;s.f.taskObservationAdmissions=2;}
+                // Explicit negative-only host injection. This is never an issued retry proof or a new admission.
+                if("initial_retry".equals(fault))s.request.initialRetrySubmission=new InitialObservationRetryProof(s.f,s.request,SystemClock.now);
+                if("effect_permit".equals(fault))s.request.postEffectPermit=new NativeAppSession.PostEffectReadPermit(s.session,
+                        s.f.taskAuthorization,s.f.lease,s.f.taskBackground.selection,s.f.taskBackground.generation,9,s.started+15000);
+                if("current_mode".equals(fault))s.f.nativeAxMode=new NativeAxMode(s.controller,new NativeAppSession(),
+                        s.f.taskAuthorization,s.f.taskBackground,s.f.lease);
+                if("expired".equals(fault))SystemClock.now=s.request.deadline;
+                if("cancel".equals(fault))s.f.cancelled.set(true);
+                s.rejected();s.dispose();
+            });
+        }
+        for(int arity:new int[]{5,6})axCase("initial_sampling_legacy_"+arity+"_callback_has_no_pair",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.legacyArity=arity;s.rejected();
+            check(s.f.main.legacyDeliveries.get()>=2,"both old callbacks actually delivered");
+            check(pairOptional(s.request,"nativeAxReadyPair")==null,"old callback did not forge a seven-argument proof");s.dispose();
+        });
+        axCase("initial_sampling_late_content_requires_fresh_full_publication_recheck",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.fault="late_content";s.maxReads=3;s.positive(true);s.dispose();
+        });
+        axCase("initial_sampling_late_content_changed_recheck_refuses",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.fault="late_content";s.maxReads=3;s.thirdChanged=true;s.rejected();
+            check(s.recheck!=null&&s.recheck.closed&&s.windowReads>=1,"actual third changed graph was independently read and closed");s.dispose();
+        });
+        for(String fault:new String[]{"late_boundary","late_unknown"})axCase("initial_sampling_"+fault+"_refuses",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.fault=fault;s.rejected();
+            check(s.windowReads==1,"fault injected at actual first fresh publication window");s.dispose();
+        });
+        axCase("initial_sampling_duplicate_private_claim_refuses",()->{
+            InitialSamplingScenario s=new InitialSamplingScenario();s.toProduct();
+            Object pair=axField(s.f.main.axProduct,"samplePair");
+            check(pair!=null&&((AtomicBoolean)axField(pair,"claimed")).get(),"actual pair consumed before duplicate");
+            int reads=s.f.reads.get(),writes=MobiMindPrivateFiles.writes;
+            pairSet(s.request,"nativeAxReadyPair",pair);s.f.captureNativeAxObservation(s.request);s.rejected();
+            check(s.f.reads.get()==reads&&MobiMindPrivateFiles.writes==writes,"duplicate claim added no read or receipt");s.dispose();
+        });
+        axCase("initial_sampling_old_request_A_cannot_seed_new_request",()->{
+            InitialSamplingScenario old=new InitialSamplingScenario();old.afterA();Object oldA=old.pureA;
+            old.f.cancelled.set(true);old.rejected();old.dispose();
+            InitialSamplingScenario fresh=new InitialSamplingScenario();fresh.afterA();
+            pairSet(fresh.request,"nativeAxSample",oldA);fresh.rejected();fresh.dispose();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        pairOriginal=new org.json.JSONObject(new String(Files.readAllBytes(new File(args[1]).toPath()),StandardCharsets.UTF_8));
+        try{
+            check(pairOriginal.getString("task_id").equals("6b67bc7395524085885c3ca0cc1b8c48"),"exact original failed initial task");
+            check(!pairOriginal.getBoolean("sent_to_model")&&!pairOriginal.getBoolean("grants_publication"),"real failed raw pair stays unqualified");
+            check(pairOriginal.getJSONObject("before").getInt("raw_node_count")==118
+                    &&pairOriginal.getJSONObject("after").getInt("raw_node_count")==118,"both complete recorded 118-node values supplied");
+            check(!pairOriginal.getJSONObject("before").getString("app_tree_sha256").equals(
+                    pairOriginal.getJSONObject("after").getString("app_tree_sha256")),"recorded raw pair is not renamed as stable");
+            initialSamplingCases(args.length>2&&"counterfactual".equals(args[2]));
+        }finally{
+            SnapshotChecks.finish(args[0]);observationIo.executor.shutdownNow();
+            expect(observationIo.executor.awaitTermination(4,TimeUnit.SECONDS),"actual serial executor shutdown");
+        }
+    }
