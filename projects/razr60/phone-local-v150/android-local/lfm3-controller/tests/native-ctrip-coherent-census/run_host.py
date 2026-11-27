@@ -58,7 +58,7 @@ def gate_predecessor(raw):
 
 def partial_banner_predecessor(source,raw):
     helper=source/'tests/native-search-carousel-edge/protected_partial_edge.py'
-    need(sha(helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d','exact reviewed partial-edge inverse helper')
+    need(sha(helper.read_bytes())=='0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b','exact reviewed partial-edge inverse helper')
     return module(helper,'ctrip_partial_banner_proof').predecessor(raw)
 
 def prepare(source,out):

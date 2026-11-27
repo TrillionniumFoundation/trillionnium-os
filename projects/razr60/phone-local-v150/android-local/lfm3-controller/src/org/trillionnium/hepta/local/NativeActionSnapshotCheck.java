@@ -823,8 +823,7 @@ final class NativeActionSnapshotCheck {
                     need(x.children==0,"banner leaves cannot hide descendants");
                     if(child==0)need("android.widget.ImageView".equals(x.cls)&&x.view.isEmpty()
                             &&x.text.isEmpty()&&"广告素材".equals(x.desc),"actual passive banner image");
-                    else need("android.widget.TextView".equals(x.cls)&&(CP+"label_text").equals(x.view)
-                            &&"活动".equals(x.text)&&x.desc.isEmpty(),"actual passive activity label");
+                    else need(ctripBannerCaption(x),"actual passive activity/ad caption");
                 }
                 need(after.nodes.containsKey(p)&&z.children==2,"same complete banner page");
             }
@@ -837,6 +836,10 @@ final class NativeActionSnapshotCheck {
                         Node a=before.node(node.path),z=after.node(node.path);
                         need(sameBannerNodeFacts(a,z)&&a.bounds.get(1).equals(z.bounds.get(1))
                                 &&a.bounds.get(3).equals(z.bounds.get(3)),"only observed horizontal banner movement");
+                        // A caption switch must carry the actual reference for each
+                        // literal; hidden leaves retain no projected label/reference.
+                        if(ctripBannerCaption(a)&&ctripBannerCaption(z)&&!a.text.equals(z.text))
+                            requireSearchInputReference(snap,node);
                     }
                     if(node.visible()){
                         // Use the raw reported bounds.  A child is never clipped to a
@@ -857,6 +860,8 @@ final class NativeActionSnapshotCheck {
             Map<String,Object> allowed=new TreeMap<String,Object>();allowed.put(YEAR,date.path);allowed.put(QUERY,query.path);
             proof.put("form_purpose_target_paths",allowed);
             proof.put("date_bounds",date.bounds);proof.put("query_bounds",query.bounds);
+            proof.put("banner_caption_literals",Arrays.asList("活动","广告"));
+            proof.put("caption_change_requires_actual_reference",true);
             proof.put("foreign_visible_hit_rectangles",0);proof.put("grants_action_authority",false);
             proof.put("whole_screen_pixels_stable",false);proof.put("fresh_same_scope_comparison_required",true);
         }catch(IllegalArgumentException rejected){
@@ -873,9 +878,17 @@ final class NativeActionSnapshotCheck {
                 ||!"hepta.observed-ime-enter.v1|true|false|null".equals(s(node.v,"ime_enter")))return false;
         return pager||"hepta.observed-scroll-actions.v1|observed".equals(s(node.v,"scroll_actions"));
     }
+    /** Only the two recorded noninteractive caption literals. The containing
+     * exact banner, complete form, raw geometry and all capabilities are still
+     * checked by ctripFormRegions; this value predicate supplies no authority. */
+    private static boolean ctripBannerCaption(Node node){
+        return "android.widget.TextView".equals(node.cls)&&(CP+"label_text").equals(node.view)
+                &&node.children==0&&node.desc.isEmpty()&&("活动".equals(node.text)||"广告".equals(node.text));
+    }
     private static boolean sameBannerNodeFacts(Node a,Node z){
         Map<String,Object> left=new TreeMap<String,Object>(a.v),right=new TreeMap<String,Object>(z.v);
         for(String key:Arrays.asList("bounds","visible","label","ref_signature_sha256")){left.remove(key);right.remove(key);}
+        if(ctripBannerCaption(a)&&ctripBannerCaption(z)){left.remove("text");right.remove("text");}
         return left.equals(right);
     }
 

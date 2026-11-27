@@ -379,9 +379,9 @@ def generate(source,output,h):
             continue
         r32_provider_pins={'NativeActionSnapshotCheck.java': '4b44a759dd41f60c6c693c60d500a83fa8ec83962eb7f6b8d6dd5be95953ad6b', 'NativeCtripFlightPage.java': '78d72c577f42e44754da0856df5f02152f9ba69c40b9b219968d869683539892'}
         partial_banner_proof=current
-        if name=='NativeActionSnapshotCheck.java' and actual=='c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346':
+        if name=='NativeActionSnapshotCheck.java' and actual in ('c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346','46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6'):
             helper=source/'tests/native-search-carousel-edge/protected_partial_edge.py'
-            if h.sha(helper.read_bytes())!='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d':raise RuntimeError('exact reviewed partial-edge inverse helper')
+            if h.sha(helper.read_bytes())!='0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b':raise RuntimeError('exact reviewed partial-edge inverse helper')
             partial_banner_proof=runpy.run_path(str(helper))['predecessor'](current)
             partial_banner_inverse={'current_sha256':actual,'predecessor_sha256':h.sha(partial_banner_proof),
                 'helper':h.meta(helper),'proof_copy_only':True,'actual_compilation_uses_current_source':True}

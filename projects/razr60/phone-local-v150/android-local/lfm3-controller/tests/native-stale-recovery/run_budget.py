@@ -60,8 +60,8 @@ native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
 # Proof-copy inverse only; compile the actual current comparator below.
 partial_helper=root/'tests/native-search-carousel-edge/protected_partial_edge.py'
-assert sha(partial_helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d', 'exact reviewed partial-edge inverse helper'
-if sha(native_snapshot_proof)=='c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346':
+assert sha(partial_helper.read_bytes())=='0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b', 'exact reviewed partial-edge inverse helper'
+if sha(native_snapshot_proof) in ('c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346','46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6'):
     native_snapshot_proof=runpy.run_path(str(partial_helper))['predecessor'](native_snapshot_proof)
 if sha(native_snapshot_proof) in ('b5bbcc3e74f769c94718de560fa476431d0b726997f48b9c4ad094a997d737b2','400db829f8b5942d9ad4a43a1bbbc18d96fe2138964482146b8cd08fd63ea593'):
     native_snapshot_proof=runpy.run_path(str(root/'tests/native-xiaomi-query-stability/protected_filled_query.py'))['predecessor']('NativeActionSnapshotCheck.java',native_snapshot_proof)

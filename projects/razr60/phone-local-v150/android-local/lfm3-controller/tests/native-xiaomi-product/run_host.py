@@ -90,7 +90,7 @@ def main():
     def read(path):v=bound(path);originals[path]=v;return v[0]
     read(Path(__file__).resolve())
     partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
-    need(sha(read(partial_helper))=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
+    need(sha(read(partial_helper))=="0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b","exact reviewed partial-edge inverse helper")
     partial_banner_predecessor=runpy.run_path(str(partial_helper))["predecessor"]
     inverse_helper=a.source/"tests/native-xiaomi-query-stability/protected_filled_query.py"
     read(inverse_helper)

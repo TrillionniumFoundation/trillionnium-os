@@ -43,7 +43,7 @@ def main():
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
     partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
     partial_meta=info(partial_helper)
-    need(partial_meta["sha256"]=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
+    need(partial_meta["sha256"]=="0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b","exact reviewed partial-edge inverse helper")
     originals[str(partial_helper)]=partial_meta
     partial_banner_predecessor=runpy.run_path(str(partial_helper))["predecessor"]
     for rel,pin in PIN_DATA.items():

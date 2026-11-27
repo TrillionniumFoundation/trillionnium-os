@@ -1,43 +1,27 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_TWO_HOTFIX_JOINT_HOST_AND_ANDROID",
+  "candidate_status": "SOURCE_FROZEN_PENDING_SUCCESSOR_JOINT_HOST_AND_ANDROID",
   "changes": [
-    "profile cleanup accepts separately validated normal cleanup diagnostics",
-    "released close history binds original exit and fresh absence",
-    "avoid duplicate unpublished Ctrip sample encoding and record currentness refusal",
-    "Notes retirement permits unrelated personal foreground changes with owned task isolation preserved",
-    "business recovery compares typed physical display identity and protected recents while unrelated personal foreground remains usable",
-    "Keep a proven same-owner empty native AX loading window sampling within its original request deadline; never publish empty content or replay the business action",
-    "Show actual automatic-model configuration failures and retain same-call memory admission facts without changing model admission thresholds",
-    "Validate the original planning Offer before duplicate controller audit persistence while keeping core durable planning evidence and model-before-journal exclusion",
-    "Retain bounded actual Ctrip AX stale causes and same-request completed sample values only in terminal failure diagnostics without extra reads or authority",
-    "Keep exact whole-template historical proof chains compatible with the diagnostic typed exception field; compile the unchanged current production bodies",
-    "Let one typed incomplete D read recovery precede one complete final census replacement in the same Xiaomi search Attempt; retain the original total eight C reads, absolute 24-second deadline, owner guards and one input",
-    "Require the Activity cached automatic-target snapshot to match persisted preferences before toggling automatic mode; reload and report stale changes without overwriting current target/model choices",
-    "Include both nested provenance source manifests in the full component inventory; production bytes are unchanged from the approved two-fix parent",
-    "Allow positive link counts only for fixed system UID/GID 1000 installed runtime pins while keeping full size/SHA, open-FD/named-path stability, cancellation and private model/input single-link rules",
-    "Repin the independently rebuilt VLM worker to the actual runtime-hardlink native source and retain earlier build provenance",
-    "Add explicit restricted LFM3-VL Ctrip tools selection while ordinary LFM3-VL settings remain observation-only and existing automatic preferences remain unchanged",
-    "Register the complete visual 34-case/289-assertion union and the actual native runtime pin IO gate without reducing existing host guards",
-    "Keep the legacy mode-less LFM3-VL constructor rejected; route only explicit visual tools settings through the explicit five-argument mode constructor",
-    "Align only the two explicit LFM3-VL tools profile test expectations with the approved closed configuration; retain implicit/missing mode and all identity/receipt negatives",
-    "Add an explicitly bounded manual order-preview fixture owner that publishes actual complete before/after census and PNG; navigation routes remain unbound and normal model and cleanup gates remain intact",
-    "Permit a typed same-owner transient AX seal failure to use one fresh frozen-window proof and the existing serial read drain; preserve complete census and final action fences",
-    "Add an independent calendar BACK read-only follow-up permit and its exact current-session controller and service bridge; preserve existing OPEN behavior and single-effect claims",
-    "Order only replacement Xiaomi after-target reads so current target and ancestor refresh precedes the new complete D census, then verify real D getters without a second refresh or extending existing budgets",
-    "Carry exact required host-generation compatibility and preserved legacy suites into the actual complete joint compilation",
-    "Complete only the legacy qualification host compiler boundary for calendar BACK with refusing types and two typed JSON optional accessors; all production and original cases are unchanged",
-    "Extend only existing observer host ABI with an abstract post-read type and a closed refusing BACK port; preserve original OPEN cases and exact historical proof-copy inverses.",
-    "Recognize the exact reviewed closed BACK observer template when selecting the original three-argument Stale fixture port; no production, cases or compile flags changed.",
-    "Expose only refusing default read-evidence methods in the form observer host parent port; original OPEN override, cases and production inputs are unchanged.",
-    "Retain pixels capture identity while durably binding an optional complete native census to the same published graph and original PNG; no action, READY, price or completion authority",
-    "Carry the exact Pixel full-class compile dependency and refusing legacy observer carrier into ba372 fixtures while preserving all BACK and typed-Stale ABI and original cases; adopt the independently qualified single BACK test-type replacement",
-    "Prepare the first Xiaomi C target and ancestor chain before the first complete D census while retaining all original final event fences, read limits, deadlines and single-effect claims",
-    "Publish Ctrip native post-effect read-only AX observations from two actual consecutive complete same-request A/D censuses with a truthful pre-D capture checkpoint and the real D graph held through the original receipt and fresh-window publication checks",
-    "Preserve current seven-argument sampling compilation while restoring only exact whole historical proof copies in the form and screenshot-seed host generators"
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+    "tests/native-calendar-back-ax/run_host.py",
+    "tests/native-ctrip-caption/NativeCtripCaptionHostTest.java",
+    "tests/native-ctrip-caption/README.md",
+    "tests/native-ctrip-caption/run_host.py",
+    "tests/native-ctrip-coherent-census/run_host.py",
+    "tests/native-ctrip-form-observation/run_observer_host.py",
+    "tests/native-search-carousel-edge/protected_partial_edge.py",
+    "tests/native-search-producer/FinalPreclaimReadOrderCases.fragment",
+    "tests/native-search-producer/InitialReadOrderCases.fragment",
+    "tests/native-search-producer/ProducerCases.fragment",
+    "tests/native-search-producer/SearchIconCases.fragment",
+    "tests/native-search-producer/run_producer.py",
+    "tests/native-stale-recovery/run_budget.py",
+    "tests/native-xiaomi-direct-card/run_host.py",
+    "tests/native-xiaomi-product/run_host.py"
   ],
-  "complete_source_files": 2746,
+  "complete_source_files": 2750,
   "files": [
     {
       "bytes": 100,
@@ -6625,9 +6609,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 834632,
+      "bytes": 835899,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "02c4299eaefcf8635484c54ba81d7924ff2f6c4c34221aad3d58881e16d10895"
+      "sha256": "124ce58df6aa0b8973c6b620c3faafe676fcbd54df2cc6901ddb13527a1a5341"
     },
     {
       "bytes": 711,
@@ -6745,9 +6729,9 @@
       "sha256": "ad003f4011763177096661cc4e5b4779545caae93174b015269f04a9dfc9eeae"
     },
     {
-      "bytes": 87557,
+      "bytes": 88545,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346"
+      "sha256": "46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6"
     },
     {
       "bytes": 15512,
@@ -9015,9 +8999,9 @@
       "sha256": "155f26edb8295389d78edd5f4d192f1eb016ce261f082cc53ad74d1078a580f3"
     },
     {
-      "bytes": 20425,
+      "bytes": 21872,
       "path": "tests/native-calendar-back-ax/run_host.py",
-      "sha256": "cdd76cc017347ae3a513d44a163e407e209cc8ef9d4ac01d3215a83333814981"
+      "sha256": "5f50195b72dccfbe3e9c147d26924fb720f793cfb406ff8104419fad930b9a37"
     },
     {
       "bytes": 21965,
@@ -9225,6 +9209,21 @@
       "sha256": "bd703e93f159a32eb7c26c9501881dcf7982c6ec13fab37f98548f43239b588c"
     },
     {
+      "bytes": 28389,
+      "path": "tests/native-ctrip-caption/NativeCtripCaptionHostTest.java",
+      "sha256": "34591eec290c891278fdfa32dc6b42641ecc627c4852c5ce4ab8fd3d403d553b"
+    },
+    {
+      "bytes": 1473,
+      "path": "tests/native-ctrip-caption/README.md",
+      "sha256": "c14b4e519c704a24c9cab8c07a1abc53a53a8aa17abae7afce505b71b5f99c80"
+    },
+    {
+      "bytes": 11763,
+      "path": "tests/native-ctrip-caption/run_host.py",
+      "sha256": "ea1fd4cc45ed67cb4256983cfa1f88a06d3ad56d17929ed18bc145f42a4996be"
+    },
+    {
       "bytes": 21297,
       "path": "tests/native-ctrip-child-identity/ChildIdentityCases.fragment",
       "sha256": "ee07391204bf113aebcbee2007893a7ea05e80cbb7389945148fc20e79c1f740"
@@ -9262,7 +9261,7 @@
     {
       "bytes": 16673,
       "path": "tests/native-ctrip-coherent-census/run_host.py",
-      "sha256": "cc6d16a08e43e0e43bec6e2c5f4880e7659f9a5679924f131b809d5a983fe452"
+      "sha256": "b85a87cfca55d4c7cd15b84ad37fecf3ee3d5970ebe448df95da0e157678e510"
     },
     {
       "bytes": 10293,
@@ -9300,9 +9299,9 @@
       "sha256": "3924f281b88ed7a1244141b5962d9c697f93af4c12529d1b490b69e7878550ea"
     },
     {
-      "bytes": 128194,
+      "bytes": 128265,
       "path": "tests/native-ctrip-form-observation/run_observer_host.py",
-      "sha256": "1f6cfa2f997ed62343e242d25f0e2c5901a0c0a7a3192b7472cca75f418cdc04"
+      "sha256": "ed4d3a817d5e2b07df914d14f8ed5549be668f38a352f36a4246e45789cd5314"
     },
     {
       "bytes": 3563,
@@ -9690,9 +9689,9 @@
       "sha256": "4b04b63db139330fdec649d434aa0010d55aabb359c10f501c8fbdeb2c3126d0"
     },
     {
-      "bytes": 2121,
+      "bytes": 8373,
       "path": "tests/native-search-carousel-edge/protected_partial_edge.py",
-      "sha256": "a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d"
+      "sha256": "0e9fd09f587fd7939d20d675952bb5c8b7422c14cd79111b572a930c8e174b1b"
     },
     {
       "bytes": 5982,
@@ -9805,6 +9804,11 @@
       "sha256": "4a3709413e76d16c3ae84e2cecb9c843fba230d2dadd5d0547193e3edcb757a1"
     },
     {
+      "bytes": 17499,
+      "path": "tests/native-search-producer/FinalPreclaimReadOrderCases.fragment",
+      "sha256": "c7827d540e77af0677d98b387c297636c1744d1b0411da08f911de95b9c1d3d8"
+    },
+    {
       "bytes": 11452,
       "path": "tests/native-search-producer/FullPageSwapCases.fragment",
       "sha256": "1ff73500cc880fa3f88b62eaa3e7724faa3f236fd1f85c47b2e9bee41d3c6e24"
@@ -9830,9 +9834,9 @@
       "sha256": "67c12f90dbd2ab68a02437216af8096808c2ead809fb897ef0a332f1c41fe9c1"
     },
     {
-      "bytes": 20497,
+      "bytes": 20894,
       "path": "tests/native-search-producer/InitialReadOrderCases.fragment",
-      "sha256": "9107f508700296e643a3ca8027818af9f114e0674cf18a3f3a3739b06bb5b840"
+      "sha256": "ef087eb6ab0f0d15962bbd9a54ee8bd459dc7166e1c6e372f82a06749f64bbd6"
     },
     {
       "bytes": 1382,
@@ -9880,9 +9884,9 @@
       "sha256": "1f7489a4f31e674ef73a9ee810cfcb60c5650ec413d3ef1679034fa8efd1606f"
     },
     {
-      "bytes": 78634,
+      "bytes": 78663,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "de996032b3887d861d2f76291abce656df23fd885e854358f1a15de7ed6ed3ac"
+      "sha256": "4a3a82c80d16852eeb9808cda61bc5776e21395c34a5a9586a26e504d3f0aab2"
     },
     {
       "bytes": 13317,
@@ -9905,9 +9909,9 @@
       "sha256": "aa2f49c12954e429f4bd45393b245a0ffa55aea0b3b017aaff59bc360debd65f"
     },
     {
-      "bytes": 7522,
+      "bytes": 8137,
       "path": "tests/native-search-producer/SearchIconCases.fragment",
-      "sha256": "1f8dc8855fdb9f7b57cc8f36c84dfa1371d8bd0655d4029dc9abc6fe5efa3e03"
+      "sha256": "b84f36a35cf89770173f74ac22a5571b9a01731325a41a2e051b0c28a0ecb3e1"
     },
     {
       "bytes": 34634,
@@ -9935,9 +9939,9 @@
       "sha256": "edd185366183654e2c859d98e28eb0d13d22c7b2fb6752c1b7e4340a7d561c49"
     },
     {
-      "bytes": 32467,
+      "bytes": 33937,
       "path": "tests/native-search-producer/run_producer.py",
-      "sha256": "0f8e571b87e6ea51277d2350251df7cd17bb551c7163ec76ef8c35ce7857cb8a"
+      "sha256": "d68cd9908493c8ad086e480b698d04f2fd0ba7923a73103834660cdf6b20c341"
     },
     {
       "bytes": 14431,
@@ -9985,9 +9989,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 16743,
+      "bytes": 16814,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "6ef2925bcd1d84f790d2a7b4379e685d20d1d39b9a88ca23b76a8a45007f5a92"
+      "sha256": "2a6db7f05c04a5d3f93ee1344d3fe7c1c32b468a840e19f6987403fb1f6b7653"
     },
     {
       "bytes": 14162,
@@ -10057,7 +10061,7 @@
     {
       "bytes": 17867,
       "path": "tests/native-xiaomi-direct-card/run_host.py",
-      "sha256": "8aff960d00dbb3630ddcae31f919595483dfdbb0a94872f9e0f96bdb2346afae"
+      "sha256": "8c660c8bec050281f1666c6c2ff9d6625d9d521af8e590ea5da2c9db577a2122"
     },
     {
       "bytes": 17559,
@@ -10267,7 +10271,7 @@
     {
       "bytes": 16508,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "170bf927c9f640529fc7252f0c6199add4864bad3bb7822142f6497cbfb69e50"
+      "sha256": "5b432f28473a76a92cb3cabad1348e91d88f4021c66cc3cc61f298a326ae1912"
     },
     {
       "bytes": 14737,
@@ -13767,10 +13771,10 @@
   ],
   "main_java_sources": 223,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "3970e68e1fccdeb4f26768227f73c07f9e75caf3f67cb8a62c7ba0b2abbfd457",
-  "predecessor_source_manifest_sha256": "3970e68e1fccdeb4f26768227f73c07f9e75caf3f67cb8a62c7ba0b2abbfd457",
+  "predecessor_manifest_sha256": "66217015fd862045851502e2d2b1cbbc9645cc7478061e60245bd91a1f58d5a8",
+  "predecessor_source_manifest_sha256": "66217015fd862045851502e2d2b1cbbc9645cc7478061e60245bd91a1f58d5a8",
   "production_build_inputs_count": 407,
-  "production_input_map_sha256": "bc7a2d2aa870eab56a06d0f60cd88fb0a2e4aa786996a6f268749b8f691c7e12",
+  "production_input_map_sha256": "d87e7fe215cae1cd718843edd4cba4137f210b19a93778bf9c97daa44518bac4",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "59b84bf5bb73ac19c2d5661c4d35a852fe114263"
+  "source_parent_head": "5b943de939a72d0e61fd912c6af3b3edc60ad0f5"
 }
