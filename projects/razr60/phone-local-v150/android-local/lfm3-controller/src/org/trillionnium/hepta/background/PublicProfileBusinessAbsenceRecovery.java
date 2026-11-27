@@ -445,6 +445,15 @@ public final class PublicProfileBusinessAbsenceRecovery {
         /** Preserve an actual failed retained broker after completed model work.
          * These records establish origin only. Current native process/task/display
          * absence remains mandatory and is never inferred from any old flag. */
+        /** Ordinary retained origins compare every complete capture before
+         * projecting the already validated optional phase diagnostic. This
+         * package-visible pure comparator creates no cleanup or input authority. */
+        static JSONObject retainedBusinessCaptureFields(JSONObject terminal,JSONObject last)throws Exception{
+            JSONObject end=terminal.getJSONObject("profile_cleanup");
+            need(same(end,last.getJSONObject("profile_cleanup"))&&same(terminal.getJSONObject("profile_last_leaf_validation"),last.getJSONObject("profile_last_leaf_validation"))
+                    &&same(terminal.getJSONObject("public_surface_detach"),last.getJSONObject("public_surface_detach")),"RETAINED_BUSINESS_CAPTURE_BINDING");
+            return releasedCleanupFieldView(end);
+        }
         private JSONObject retainedBusinessOrigin(JSONObject bootstrap,JSONObject cleanup,byte[] output)throws Exception{
             JSONObject terminal=retainedBusinessTerminal(output),first=bootstrap.getJSONObject("last_broker_response"),last=cleanup.getJSONObject("last_broker_response");
             requireHistoricalResponse(first,bootstrap.getJSONObject("app_display_readback"));
@@ -474,9 +483,13 @@ public final class PublicProfileBusinessAbsenceRecovery {
                     &&number(lastRead,"observed_ended_elapsed_ms")>=number(lastRead,"observed_started_elapsed_ms")
                     &&number(lastRead,"observed_ended_elapsed_ms")<expires,"RETAINED_BUSINESS_LAST_READBACK");
             JSONObject begin=first.getJSONObject("profile_cleanup"),end=terminal.getJSONObject("profile_cleanup");
-            need(same(terminal.getJSONObject("profile_last_leaf_validation"),last.getJSONObject("profile_last_leaf_validation"))
-                    &&same(terminal.getJSONObject("public_surface_detach"),last.getJSONObject("public_surface_detach")),"RETAINED_BUSINESS_CAPTURE_BINDING");
-            if(!same(end,last.getJSONObject("profile_cleanup")))requireClosingUnknownProgress(terminal,last);
+            if(closingResponseHistory){
+                need(same(terminal.getJSONObject("profile_last_leaf_validation"),last.getJSONObject("profile_last_leaf_validation"))
+                        &&same(terminal.getJSONObject("public_surface_detach"),last.getJSONObject("public_surface_detach")),"RETAINED_BUSINESS_CAPTURE_BINDING");
+                if(!same(end,last.getJSONObject("profile_cleanup")))requireClosingUnknownProgress(terminal,last);
+            }else{
+                end=retainedBusinessCaptureFields(terminal,last);
+            }
             keys(closingResponseHistory?releasedCleanupFieldView(end):end,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid","cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks","public_foreign_recent_history","recents_absence_scope");
             for(String key:new String[]{"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid","recents_absence_scope"})
                 need(same(begin.get(key),end.get(key)),"RETAINED_BUSINESS_CUSTODY_IDENTITY");
@@ -729,7 +742,7 @@ public final class PublicProfileBusinessAbsenceRecovery {
         /** Validate the optional diagnostic vocabulary before making a field view.
          * Original bytes and the complete close/terminal comparison retain it; no
          * diagnostic flag is used as cleanup, mutation, or current absence authority. */
-        private JSONObject releasedCleanupFieldView(JSONObject value)throws Exception{
+        private static JSONObject releasedCleanupFieldView(JSONObject value)throws Exception{
             if(!value.has("normal_cleanup_phase"))return value;
             JSONObject phase=value.getJSONObject("normal_cleanup_phase");
             keys(phase,"schema","original_task_reads_deadline_elapsed_ms","bounded_convergence_deadline_elapsed_ms",

@@ -1,0 +1,259 @@
+package org.trillionnium.hepta.background;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.LongSupplier;
+import org.json.JSONObject;
+
+/** Full changed production methods are inserted unchanged. Only clock, Android
+ * Binder endpoints and display objects below are explicit synthetic IO ports. */
+final class BackgroundTaskOrganizer {
+    interface Check {void check()throws Exception;}
+    static ProfileCleanupSettleFixtures.Platform io;
+    final ProfileCleanupSettleFixtures.Platform platform;
+    final Check locationCheck;
+    final Class<?> transactionType=Transaction.class;
+    final Object windowOrganizer,organizer;
+    final Method remove,apply,delete;
+    long leafPreparationDelay,rootPreparationDelay;
+    boolean quarantineAtLeafPreparation,quarantineAtRootPreparation;
+    BackgroundTaskOrganizer(ProfileCleanupSettleFixtures.Platform p)throws Exception{
+        platform=p;Effects target=new Effects(p);windowOrganizer=target;organizer=target;
+        remove=Transaction.class.getMethod("remove",Object.class);
+        apply=Effects.class.getMethod("apply",Transaction.class);delete=Effects.class.getMethod("delete",Object.class);
+        locationCheck=()->{
+            p.recheck(false);
+            p.f.now+=p.removed?rootPreparationDelay:leafPreparationDelay;
+            if(p.removed?quarantineAtRootPreparation:quarantineAtLeafPreparation)p.custody.unresolved();
+        };
+    }
+    Object wrapper(Object token){
+        if(token==null||(!platform.f.rootToken.equals(token)&&!platform.f.leafToken.equals(token)))
+            throw new AssertionError("actual retained wrapper missing");
+        return token;
+    }
+    public static final class Transaction {
+        Object token;
+        public Transaction(){}
+        public Transaction remove(Object value){token=value;return this;}
+    }
+    public static final class Effects {
+        final ProfileCleanupSettleFixtures.Platform p;
+        public Effects(ProfileCleanupSettleFixtures.Platform p){this.p=p;}
+        public void apply(Transaction t)throws Exception{p.removeLeaf(t.token);}
+        public boolean delete(Object token)throws Exception{return p.deleteRoot(token);}
+    }
+    static ProfileTaskPolicy.Snapshot profileSnapshot(Object ignored)throws Exception{return io.snapshot();}
+    static String profileRecents(LongSupplier deadline)throws Exception{
+        String raw=io.publicRecentsDump();
+        if(io.now()>=deadline.getAsLong())throw new IOException("PROFILE_RECENTS_DEADLINE");
+        return raw;
+    }
+@@ORGANIZER_REMOVE@@
+@@ORGANIZER_DELETE@@
+}
+final class ProfileTaskPlatform extends ProfileCleanupSettleFixtures.Platform {
+    final BackgroundTaskOrganizer organizer;
+    ProfileTaskPlatform()throws Exception{organizer=new BackgroundTaskOrganizer(this);}
+@@PLATFORM_REMOVE@@
+@@PLATFORM_DELETE@@
+}
+final class SystemClock {
+    static ProfileCleanupSettleFixtures.Platform io;
+    static long elapsedRealtime(){return io.now();}
+}
+final class ProfileCleanupBrokerHost {
+@@BUDGET_FIELDS@@
+    final ProfileTaskPlatform io;
+    final Object dispatchGate=new Object(),activityTasks=new Object();
+    final AtomicBoolean closing=new AtomicBoolean();
+    final AtomicBoolean cleanupStarted=new AtomicBoolean();
+    final AtomicBoolean publicAdmissionRetired=new AtomicBoolean();
+@@DECISION_GATE_FIELD@@
+@@FROZEN_FIELD@@
+    final CountDownLatch cleanupDone=new CountDownLatch(1);
+    final ThreadLocal<Long> retainedReadDeadline=new ThreadLocal<Long>();
+    final ProfileDisplayCustody profileCustody;
+    final ProfileCleanupFailureAudit profileCleanupFailures=new ProfileCleanupFailureAudit();
+    volatile ProfileOwnedTask.CleanupPhase normalProfileCleanup;
+    final ProfileOwnedTask profileOwnedTask;
+    final PublicProfileRecentHistory.Baseline publicProfileHistory;
+    final Config config=new Config();
+    final LocalSocket connection=new LocalSocket();
+    LocalSocket authenticatedProfileClosePeer=connection;
+    LocalServerSocket server=new LocalServerSocket();
+    final VirtualDisplay virtual=new VirtualDisplay();
+    final VirtualDisplay publicCreateReturnedHandle=virtual;
+    final Framework publicOwnGroupFramework=new Framework();
+    final DisplayManager displays=new DisplayManager();
+    ImageReader surfaceReader=new ImageReader();
+    HandlerThread displayThread=new HandlerThread();
+    long cleanupAt,requestDeadline,started,expires;
+    String terminalReason="client_close",state="CLOSING",displayName="synthetic-owned-vd";
+    int displayId=7;
+    boolean createInFlight,effectInFlight,profileDisplayReleaseAttempted,serve=true,displayPresent=true;
+    long displayPreparationDelay;
+    boolean quarantineBeforeDisplay,throwDisplayRelease,replaceDisplayIdentity;
+    int displayReleaseCalls,awaitCalls;
+    boolean forceFirstAwaitExpiry,forceDeadlineBeforeWatchdog;
+    int lastMainExit=-1;
+    boolean retainedWatchdogHoldPublished;
+    String retainedRecheckOutcome="",bootReadRetirementFailure;
+    BackgroundOwnedSingleTask ownedSingleTask;
+    WindowInfosCapture calendarWindowCapture;
+    DiagnosticPort publicNotesCustody;
+    final DiagnosticPort publicNotesReadFailures=new DiagnosticPort();
+    final DiagnosticPort publicPolicyFailures=new DiagnosticPort();
+    final DiagnosticPort publicScreenLease=new DiagnosticPort();
+    Throwable publicNotesCleanupFailure;
+    boolean detachFinished=true;
+    Map<String,Object> profileCleanupReadback,profilePersonalAudit;
+    ProfileCleanupBrokerHost(ProfileTaskPlatform p)throws Exception{
+        io=p;profileOwnedTask=p.owner;profileCustody=p.custody;publicProfileHistory=p.history;
+        config.profileTarget=ProfileCleanupSettleFixtures.TARGET;config.publicOwnGroupScope=new ScopePort();
+        config.generation=ProfileBrokerHostTest.GEN;cleanupAt=p.started;started=cleanupAt;expires=started+540000;
+        requestDeadline=cleanupAt+3500;closing.set(true);SystemClock.io=p;BackgroundTaskOrganizer.io=p;
+        p.ioDeadline=()->profileDeadline();
+        profileCleanupReadback=p.owner.cleanupEvidence();
+    }
+    static final class ScopePort {
+        String sha256=ProfileIdentity.sha("synthetic-scope");
+        String taskId="1234567890abcdef1234567890abcdef";
+    }
+    static final class Config {ScopePort publicOwnGroupScope;ProfileTarget profileTarget;String generation;}
+    static final class WindowInfosCapture {void retire(){} boolean locallyDrained(){return true;}}
+    static class DiagnosticPort {
+        Map<String,Object> evidence(){return Collections.<String,Object>emptyMap();}
+        boolean known(){return false;} boolean retain(){return false;} void retireAdmission(){}
+    }
+    static final class PublicPersonalNotesRetirement {
+        static Map<String,Object> historyDiagnostic(Throwable error){
+            if(error!=null)throw new AssertionError("Notes diagnostic outside profile-only fixture");return null;
+        }
+    }
+    static final class SyntheticHalt extends RuntimeException {
+        private static final long serialVersionUID=1L;
+        final int exitCode;SyntheticHalt(int code){exitCode=code;}
+    }
+    static final class Runtime {
+        static Runtime getRuntime(){return new Runtime();}
+        void halt(int code){throw new SyntheticHalt(code);}
+    }
+    static final class LocalSocket {void close()throws IOException{}}
+    static final class LocalServerSocket {void close()throws IOException{}}
+    static final class ImageReader {void close(){}}
+    static final class HandlerThread {void quitSafely(){}}
+    static final class Display {String getName(){return "synthetic-owned-vd";}}
+    final class DisplayManager {
+        Display getDisplay(int id){return displayPresent&&id==displayId?new Display():null;}
+        Display[] getDisplays(){return displayPresent?new Display[]{new Display()}:new Display[0];}
+    }
+    final class VirtualDisplay {
+        void release()throws IOException{
+            displayReleaseCalls++;
+            if(throwDisplayRelease)throw new IOException("SYNTHETIC_DISPLAY_RELEASE_FAILED");
+            displayPresent=false;
+        }
+    }
+    final class Framework {
+        void requireRetiredDestroyHandle(int id,String name)throws IOException{
+            if(replaceDisplayIdentity||id!=7||!"synthetic-owned-vd".equals(name))throw new IOException("DISPLAY_IDENTITY_CHANGED");
+            io.f.now+=displayPreparationDelay;
+            if(quarantineBeforeDisplay)profileCustody.unresolved();
+        }
+    }
+    static final class Request {
+        final String operation="close";final long deadline;
+        Request(long deadline){this.deadline=deadline;}
+    }
+    @@BEGIN_CLEANUP@@
+@@RELEASED_STATE@@
+@@HALT_AFTER_BOOT_READ@@
+@@CLOSE_SOCKETS@@
+    void retireBootRead(){}
+    void beginPublicNotesCleanup(){throw new AssertionError("Notes worker outside profile-only fixture");}
+    void quarantinePublicNotes(String reason){throw new AssertionError("Notes quarantine outside profile-only fixture");}
+    void beginPublicSurfaceDetach(){}
+    void awaitCleanup(long ms){
+        try{
+            awaitCalls++;
+            if((forceFirstAwaitExpiry||forceDeadlineBeforeWatchdog)&&awaitCalls==1){
+                if(!io.mixedReached.await(5,TimeUnit.SECONDS))throw new AssertionError("actual worker did not reach mixed projection");
+                io.f.now=io.started+1500;return;
+            }
+            if(forceDeadlineBeforeWatchdog&&awaitCalls==2){
+                io.f.now=cleanupWatchdogDeadline();return;
+            }
+            if(forceFirstAwaitExpiry)io.continueMixed.countDown();
+            cleanupDone.await(Math.max(1,ms),TimeUnit.MILLISECONDS);
+        }catch(InterruptedException e){Thread.currentThread().interrupt();}
+    }
+    static String code(Throwable error){
+        while(error instanceof java.lang.reflect.InvocationTargetException&&error.getCause()!=null)error=error.getCause();
+        return error.getMessage()==null?error.getClass().getSimpleName():error.getMessage();
+    }
+    void retirePublicScreenLease(){}
+    void requireUnlaunchedProfileEmpty(){throw new AssertionError("launched fixture took unlaunched port");}
+    void recheckProfile(boolean ready,long deadline)throws Exception{
+        io.recheck(ready);if(io.now()>=deadline)throw new IOException("PROFILE_READ_DEADLINE");
+    }
+    byte[] response(Request r,boolean ok,String error,boolean dispatched)throws Exception{
+        JSONObject value=new JSONObject().put("ok",ok).put("state",state).put("error",error==null?JSONObject.NULL:error)
+            .put("dispatched",dispatched).put("profile_cleanup",new JSONObject(profileCleanupReadback))
+            .put("profile_last_leaf_validation",new JSONObject(profileOwnedTask.lastLeafValidation()))
+            .put("public_surface_detach",publicDetachEvidence());
+@@CLOSE_RESPONSE_BINDING@@
+        return value.toString().getBytes(StandardCharsets.UTF_8);
+    }
+    JSONObject publicDetachEvidence(){
+        return new JSONObject().put("state","API_RETURNED_UNVERIFIED").put("admission_irrevocably_retired",true)
+            .put("worker_finished",detachFinished).put("api_returned",detachFinished)
+            .put("provides_task_or_display_cleanup_proof",false).put("allows_input_or_model_resumption",false);
+    }
+    byte[] close(Request r)throws Exception{
+@@CLOSE_BRANCH@@
+        throw new AssertionError("only close fixture");
+    }
+@@READ_DEADLINE@@
+@@WATCHDOG_DEADLINE@@
+@@PROFILE_DEADLINE@@
+@@CLOSE_REPLY_PENDING@@
+@@CLOSE_REPLY_FLUSH@@
+@@BEGIN_PROFILE_CLEANUP@@
+@@REFRESH_EVIDENCE@@
+@@EMPTY_EVIDENCE@@
+@@QUARANTINE@@
+@@FAILURE_AUDIT@@
+@@TERMINAL_RECORD@@
+@@FAILURE_SCOPE@@
+@@FAILURE_TERMINAL@@
+@@LATE_DIAGNOSTIC@@
+@@RETAINED_REPLY@@
+@@PRINT_TERMINAL@@
+@@NOTES_DIAGNOSTIC@@
+    void runWatchdogCleanup(long now){
+@@WATCHDOG_CLEANUP@@
+    }
+    void runMainFinally(){
+        ProfileCleanupBrokerHost broker=this;int exit=0;
+@@MAIN_FINALLY@@
+        lastMainExit=exit;
+    }
+    void publishTerminal(){printTerminal();}
+    String frozenFailure(){return frozenRetainedProfileTerminal;}
+    JSONObject lateDiagnostic(){return retainedProfileLateDiagnostic();}
+    byte[] retainedReply(JSONObject base,JSONObject diagnostic)throws Exception{return retainedCleanupReply(base,diagnostic);}
+    void lateWatchdogQuarantine(){quarantineProfile("cleanup_deadline");}
+    void commitRetainedRecheck(ProfileOwnedTask tasks){
+@@RETAINED_SUCCESS_COMMIT@@
+    }
+
+    JSONObject closeResult()throws Exception{
+        return new JSONObject(new String(close(new Request(requestDeadline)),java.nio.charset.StandardCharsets.UTF_8));
+    }
+    boolean watchdogWouldFire(long now){return now>=cleanupWatchdogDeadline()&&!releasedProfileReplyMayFlush(now);}
+    long brokerReadDeadline(){return cleanupReadDeadline();}
+}
