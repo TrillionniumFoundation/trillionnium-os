@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_PRODUCER_FIXTURE_HOST_AND_ANDROID",
+  "candidate_status": "SOURCE_COMMITTED_PENDING_FULL_HOST_AND_ANDROID",
   "changes": [
-    "tests/native-search-producer/InitialReadOrderCases.fragment",
-    "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-    "tests/native-search-producer/ProducerCases.fragment"
+    "src/org/trillionnium/hepta/local/BackgroundSession.java",
+    "tests/background-session/BackgroundSessionHostTest.java",
+    "tests/public-own-group-policy/PublicOwnGroupSessionHostTest.java"
   ],
   "complete_source_files": 2755,
   "files": [
@@ -6520,9 +6520,9 @@
       "sha256": "d35e4e2ec7d9daed58e45151fcbb6bd2e859ca070ba43fb7dc4fea201d8ba410"
     },
     {
-      "bytes": 158831,
+      "bytes": 159130,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "fcb2494d0638e5600a2b84b63ce6e09d9c2180aebc58e61f17949408c73e25d6"
+      "sha256": "fa4032217849ba2bd275cc2e3a77ba1404c36cf3aa69b7ffbaea03ad334129e9"
     },
     {
       "bytes": 10735,
@@ -7730,9 +7730,9 @@
       "sha256": "617b805314ce547f8f77d0763af11c5d1348dd7f459884db6ff67ea510873e9f"
     },
     {
-      "bytes": 31073,
+      "bytes": 33664,
       "path": "tests/background-session/BackgroundSessionHostTest.java",
-      "sha256": "97761e57bb423d9c57bf1049798551d5368befae44ce167fcd76670974b150d2"
+      "sha256": "8fda07e244df4cd45153a905bb8934f4b4d1603767237da5de8ca47a4e50907c"
     },
     {
       "bytes": 8825,
@@ -11760,9 +11760,9 @@
       "sha256": "c5b3688275e6290417a698584c3b5326673c072f7cfeb050227662d0134f236a"
     },
     {
-      "bytes": 23315,
+      "bytes": 26082,
       "path": "tests/public-own-group-policy/PublicOwnGroupSessionHostTest.java",
-      "sha256": "eccd4bddc336553e4d8b6812ebc2aa7a4499729250686c550687dea0e7ca5392"
+      "sha256": "c94ac8fdf220705a15405e8e08b879220bf88a2ae155b6d15ecdb76c2c2daa0c"
     },
     {
       "bytes": 11669,
@@ -13780,12 +13780,13 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
+  "host_qualified": false,
   "main_java_sources": 223,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "26e8a14cb3042959bfc7e970a4cf88f4bfe2180e8e4f7c8e71f27f7026699014",
-  "predecessor_source_manifest_sha256": "26e8a14cb3042959bfc7e970a4cf88f4bfe2180e8e4f7c8e71f27f7026699014",
+  "predecessor_manifest_sha256": "59b6f16e470b81b3d44f15dce323c5f07522cd4ec2f74e5e5bfd32c7ea8c7732",
+  "predecessor_source_manifest_sha256": "59b6f16e470b81b3d44f15dce323c5f07522cd4ec2f74e5e5bfd32c7ea8c7732",
   "production_build_inputs_count": 407,
-  "production_input_map_sha256": "0b0e61d96bf2ce61f0d085c03c5c383732e194c60e63573c2cafdaea11289b8e",
+  "production_input_map_sha256": "86aa3b39316b3a0c33162b33e98fdb7bf218b3cf9f9ed957e650d0a3196a7725",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "1e648016fb053efc486eb2974efb5dfc826dd26d"
+  "source_parent_head": "fd3e6f275c1082ce2197ad5629c4228d39780109"
 }

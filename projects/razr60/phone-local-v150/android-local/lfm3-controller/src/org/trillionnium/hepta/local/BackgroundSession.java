@@ -1339,7 +1339,12 @@ final class BackgroundSession {
             else{
                 JSONObject response=call("close",null,3500);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
-                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}else saveJournal();
+                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}
+                else{
+                    // This close attempt has no release proof, including a broker's transient CLOSING reply.
+                    // Preserve lastResponse; the local unknown state neither proves exit nor permits input.
+                    state="CLEANUP_UNKNOWN";saveJournal();
+                }
             }
         }catch(Exception failure){known=false;error=HeptaAccessibilityService.message(failure);state="CLEANUP_UNKNOWN";
             try{if(MobiMindPrivateFiles.exists(journal))saveJournal();}catch(Exception ignored){} }

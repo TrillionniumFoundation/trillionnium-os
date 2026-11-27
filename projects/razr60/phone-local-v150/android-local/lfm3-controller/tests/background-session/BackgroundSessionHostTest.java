@@ -187,9 +187,28 @@ public final class BackgroundSessionHostTest {
         test("background_home_foreign_and_cancel_zero_requests",()->{try(Env e=new Env()){e.active();rejects(()->e.session.action("home",PKG,()->false));rejects(()->e.session.action("launch","com.example.foreign",()->false));rejects(()->e.session.action("back",PKG,()->true));check(LocalSocket.connections==0,"forbidden command sent");}});
         test("back_binds_observed_package",()->{try(Env e=new Env()){e.active();LocalSocket.responder=req->response(req,"ACTIVE",7,true,true);e.session.action("back",PKG,()->false);JSONObject sent=decode(LocalSocket.sent);check(PKG.equals(sent.getString("package"))&&"back".equals(sent.getString("op")),"BACK lost expected package");}});
         test("response_cannot_rebind_display",()->{try(Env e=new Env()){e.active();LocalSocket.responder=req->response(req,"ACTIVE",0,true,true);rejects(()->e.session.action("back",PKG,()->false));check(e.session.displayId()==7,"default display rebound");}});
-        test("close_requires_response_and_display_absence",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->response(req,"RELEASED",7,true,false);BackgroundSession.Cleanup result=e.session.close();check(!result.known&&e.journalPresent()&&!e.session.released(),"live display cleanup reported known");}});
-        test("close_release_removes_own_journal",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->{e.context.displays.displays.clear();return response(req,"RELEASED",7,true,false);};BackgroundSession.Cleanup result=e.session.close();check(result.known&&!e.journalPresent()&&e.session.released(),"release proof lost");}});
-        test("close_timeout_retains_barrier",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->{throw new java.net.SocketTimeoutException("fixture");};check(!e.session.close().known&&e.journalPresent()&&!e.session.released(),"timeout weakened cleanup");}});
+        test("close_requires_response_and_display_absence",()->{try(Env e=new Env()){
+            e.active();e.journal();LocalSocket.responder=req->response(req,"RELEASED",7,true,false);
+            BackgroundSession.Cleanup result=e.session.close();
+            check(!result.known&&e.journalPresent()&&!e.session.released(),"live display cleanup reported known");
+            check("CLEANUP_UNKNOWN".equals(result.evidence.getString("state")),"missing absence left a locally released state");
+            check("RELEASED".equals(result.evidence.getJSONObject("last_broker_response").getString("state")),"root reply was rewritten");
+        }});
+        test("close_non_ok_closing_keeps_original_reply_and_unknown_barrier",()->{try(Env e=new Env()){
+            e.active();e.journal();final JSONObject[] original={null};
+            LocalSocket.responder=req->{original[0]=decode(response(req,"CLOSING",7,false,false)).put("error","CLEANUP_NOT_CONFIRMED");
+                return frame(original[0].toString().getBytes(StandardCharsets.UTF_8));};
+            BackgroundSession.Cleanup result=e.session.close();
+            JSONObject journal=new JSONObject(new String(Files.readAllBytes(e.directory.resolve(BackgroundSession.JOURNAL)),StandardCharsets.UTF_8));
+            check(!result.known&&!e.session.released()&&e.journalPresent(),"refusal lost cleanup barrier");
+            check("CLEANUP_UNKNOWN".equals(result.evidence.getString("state"))&&"CLEANUP_UNKNOWN".equals(journal.getString("state")),"completed refusal remained locally closing");
+            check(result.evidence.getJSONObject("last_broker_response").toString().equals(original[0].toString()),"original refusal changed");
+            check(journal.getString("generation").equals(e.session.generation)&&journal.getInt("display_id")==7&&e.context.displays.getDisplay(7)!=null,"refusal changed owned display identity");
+            int requests=LocalSocket.connections;rejects(()->e.session.action("back",PKG,()->false));
+            check(LocalSocket.connections==requests&&requests==1,"unknown state admitted input or replayed close");
+        }});
+        test("close_release_removes_own_journal",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->{e.context.displays.displays.clear();return response(req,"RELEASED",7,true,false);};BackgroundSession.Cleanup result=e.session.close();check(result.known&&!e.journalPresent()&&e.session.released(),"release proof lost");check("RELEASED".equals(result.evidence.getString("state"))&&result.evidence.getBoolean("cleanup_known"),"verified release became unknown");}});
+        test("close_timeout_retains_barrier",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->{throw new java.net.SocketTimeoutException("fixture");};BackgroundSession.Cleanup result=e.session.close();check(!result.known&&e.journalPresent()&&!e.session.released(),"timeout weakened cleanup");check("CLEANUP_UNKNOWN".equals(result.evidence.getString("state")),"exception close lost unknown state");}});
         test("journal_delete_failure_never_known",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.responder=req->{e.context.displays.displays.clear();return response(req,"RELEASED",7,true,false);};android.system.Os.failUnlink=true;check(!e.session.close().known&&e.journalPresent()&&!e.session.released(),"delete failure released lease");}});
         test("already_released_failed_launch_reuses_proof",()->{try(Env e=new Env()){e.active();e.journal();e.context.displays.displays.clear();JSONObject receipt=decode(response(frame(request(e.session.generation,"launch").put("package",PKG).toString().getBytes(StandardCharsets.UTF_8)),"RELEASED",7,false,true));invoke(e.session,"accept",new Class<?>[]{JSONObject.class,boolean.class},receipt,false);check(e.session.close().known&&!e.journalPresent()&&LocalSocket.connections==0,"closed broker unnecessarily contacted");}});
         test("reconcile_live_orphan_not_cleared",()->{try(Env e=new Env()){e.active();e.journal();LocalSocket.missing=true;check(!BackgroundSession.reconcile(e.context).known&&e.journalPresent(),"orphan cleared before expiry");}});
@@ -217,7 +236,11 @@ public final class BackgroundSessionHostTest {
             BackgroundSession.Cleanup cleanup=e.session.close();
             check(!cleanup.known&&e.journalPresent()&&cleanup.evidence.getBoolean("broker_process_exit_observed")&&cleanup.evidence.getInt("broker_process_exit_code")==70,"exited broker output erased release barrier");
         }});
-        test("unstarted_close_is_known_without_broker",()->{try(Env e=new Env()){check(e.session.close().known&&e.session.released()&&LocalSocket.connections==0,"unstarted close tried broker");}});
+        test("unstarted_close_is_known_without_broker",()->{try(Env e=new Env()){BackgroundSession.Cleanup result=e.session.close();check(result.known&&e.session.released()&&LocalSocket.connections==0,"unstarted close tried broker");check("RELEASED".equals(result.evidence.getString("state")),"unstarted close became unknown");}});
+        test("unspawned_registered_close_removes_own_journal_without_rpc",()->{try(Env e=new Env()){
+            e.journal();field(e.session,"spawnAttempted",false);BackgroundSession.Cleanup result=e.session.close();
+            check(result.known&&e.session.released()&&!e.journalPresent()&&LocalSocket.connections==0,"unspawned registered lease did not close locally");
+        }});
         for(boolean stop:new boolean[]{false,true})test("cleanup_unknown_with_late_scope_refusal_stop_"+stop,()->{
             final int[] closes={0},cancels={0};
             LocalInference model=new LocalInference(){

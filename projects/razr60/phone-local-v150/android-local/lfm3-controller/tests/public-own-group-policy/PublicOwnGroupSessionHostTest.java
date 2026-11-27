@@ -208,6 +208,31 @@ public final class PublicOwnGroupSessionHostTest {
                 JSONObject r=BackgroundSessionHostTest.decode(e.reply(bytes));r.put("state","RELEASED");return BackgroundSessionHostTest.frame(r.toString().getBytes(StandardCharsets.UTF_8));};
             BackgroundSession.Cleanup c=e.session.close();yes(!c.known&&!e.session.released());yes(Files.exists(e.root.resolve(BackgroundSession.JOURNAL)));no(e.session::requireActive);e.physicalUnchanged();
         }});
+        test("closing refusal preserves unknown state and original live profile custody",()->{try(Env e=new Env(true)){
+            e.active();BackgroundSessionHostTest.field(e.session,"profileLaunchAttempted",true);
+            BackgroundSessionHostTest.field(e.session,"bootstrapDispatched",true);e.journal();
+            ProfileSessionHostTest.Custodian process=new ProfileSessionHostTest.Custodian();
+            BackgroundSessionHostTest.field(e.session,"brokerProcess",process);final JSONObject[] original={null};
+            LocalSocket.responder=bytes->{JSONObject q=BackgroundSessionHostTest.decode(bytes);
+                yes(q.getInt("version")==4&&q.getString("display_scope_sha256").equals(e.scope.sha256)&&"close".equals(q.getString("op")));
+                original[0]=BackgroundSessionHostTest.decode(e.reply(bytes)).put("state","CLOSING").put("ok",false)
+                        .put("error","CLEANUP_NOT_CONFIRMED").put("profile_cleanup_known",false).put("profile_custody_retained",true)
+                        .put("public_scope_admission_retired",true).put("public_scope_closing",true);
+                return BackgroundSessionHostTest.frame(original[0].toString().getBytes(StandardCharsets.UTF_8));};
+            int before=LocalSocket.connections;BackgroundSession.Cleanup c=e.session.close();
+            JSONObject journal=new JSONObject(new String(Files.readAllBytes(e.root.resolve(BackgroundSession.JOURNAL)),StandardCharsets.UTF_8));
+            yes(!c.known&&!e.session.released()&&"CLEANUP_UNKNOWN".equals(c.evidence.getString("state")));
+            yes("CLEANUP_UNKNOWN".equals(journal.getString("state"))&&journal.getString("generation").equals(e.session.generation));
+            yes(c.evidence.getJSONObject("last_broker_response").toString().equals(original[0].toString()));
+            yes(process.isAlive()&&process.destroyed==0&&!c.evidence.getBoolean("broker_process_exit_observed"));
+            yes(e.context.displays.getDisplay(7)!=null&&LocalSocket.connections==before+1);
+            yes(e.session.publicProfileBusinessCleanupEntryEligible()&&!e.session.publicProfileBusinessRecoveryEligible());
+            no(e.session::requireActive);no(e.session::requireAdmissionActive);
+            no(()->e.session.awaitRetainedBrokerExit("22222222222222222222222222222222",e.session.generation,e.session.ownerSha256,SystemClock.now+1000));
+            no(()->e.session.awaitRetainedBrokerExit(e.session.taskId,e.session.generation,e.session.ownerSha256,SystemClock.now+1000));
+            yes(process.isAlive()&&process.destroyed==0&&!e.session.publicProfileBusinessRecoveryEligible());
+            yes(LocalSocket.connections==before+1&&Files.exists(e.root.resolve(BackgroundSession.JOURNAL)));e.physicalUnchanged();
+        }});
         System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"passed\":true,\"phone_contacted\":false,\"actual_full_session\":true,\"android_transport_fake\":true}");
     }
 }
