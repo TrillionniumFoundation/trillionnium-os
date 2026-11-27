@@ -175,9 +175,10 @@
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt attempt=f.intent();finalCensusEvent(s,0,1);
                 f.graphHook=()->{if(f.graphReads==5)s.noteNativeSearchEvent(-1,-1,null,false,false);};
-                f.action(attempt);noEffect(f,"whole original interval remains covered");JSONObject e=finalCensusEvidence(f);
-                check(f.graphReads==6&&e.getInt("complete_census_resamples")==1,"real new full pair read before original-interval refusal");
-                check(e.getJSONObject("D_completed_watermark").getLong("unknown")>e.getJSONObject("pair_start_watermark").getLong("unknown"),"unknown remains in cumulative evidence");
+                SearchActionWork work=f.startAction(attempt);actionIo.one();s.main.one();
+                noEffect(f,"whole original interval remains covered");JSONObject e=finalCensusEvidence(f);
+                check(f.graphReads==5&&e.getInt("complete_census_resamples")==1&&e.isNull("latest_D"),"original-interval refusal now precedes replacement D");
+                check(work.events.mark().unknown>work.pairStart.unknown,"unknown remains in the same cumulative tracker");
                 check(attempt.evidence().get("revalidation")==null,"invalid replacement never restores claim proof");
             }
         });

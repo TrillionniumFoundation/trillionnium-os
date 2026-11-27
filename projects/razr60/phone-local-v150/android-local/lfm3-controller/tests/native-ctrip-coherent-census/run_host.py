@@ -57,6 +57,11 @@ def gate_predecessor(raw):
     return prior
 
 def partial_banner_predecessor(source,raw):
+    # Current production bytes still compile; only this proof copy is normalized.
+    caption=source/'tests/native-ctrip-caption/protected_caption.py'
+    need(sha(caption.read_bytes())=='d607f8d3233aa4ea2cdef88f7b14e93062b4ec68139ba82462fb93f89008a19d','exact reviewed passive-caption inverse helper')
+    if (len(raw),sha(raw))==(88545,'46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6'):
+        raw=module(caption,'ctrip_passive_caption_proof').predecessor(raw)
     helper=source/'tests/native-search-carousel-edge/protected_partial_edge.py'
     need(sha(helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d','exact reviewed partial-edge inverse helper')
     return module(helper,'ctrip_partial_banner_proof').predecessor(raw)
@@ -139,6 +144,7 @@ def prepare(source,out):
         source/'tests/native-ctrip-child-identity/run_host.py',
         source/'tests/native-ctrip-form-observation/run_observer_host.py',
         source/'tests/native-search-carousel-edge/protected_partial_edge.py',
+        source/'tests/native-ctrip-caption/protected_caption.py',
         source/'tests/observation-diagnostics/run_host.py',
         source/'tests/native-ctrip-form-observation/form-region-nodes.json',
         source/TEST/'run_host.py',source/TEST/'CtripCoherentHostTest.java',source/TEST/'CtripCoherentCases.fragment',

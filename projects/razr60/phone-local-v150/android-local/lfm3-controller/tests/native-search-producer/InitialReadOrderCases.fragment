@@ -131,20 +131,24 @@
                 check(w.finalCensusResamples==1&&w.incompleteCensusResamples==0&&!w.hasNoEffectReplanFence()&&sameReferenceDrained(f),"one replacement, no model successor or leaked references");
             }
         });
-        one("initial_read_order_legacy_final_preclaim_replacement_keeps_original_refresh_path",()->{
+        one("initial_read_order_final_preclaim_replacement_has_its_own_boundary",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt a=afterTargetIntent(f);finalCensusEvent(s,0,1);
-                final boolean[] legacy={false};
-                f.graphHook=()->{if(f.graphReads==6)f.nodes.get("0").beforeRefresh=()->{
-                    legacy[0]=inMethod("org.trillionnium.hepta.local.HeptaAccessibilityService","refreshNativeSearchTargetChain");
-                };};
+                final NativeSearchReplacementTargetProof[] initial={null},replacement={null};final boolean[] cleared={false};
+                f.graphHook=()->{
+                    if(f.graphReads==4)initial[0]=s.activeSearchAction.replacementTargetProof;
+                    if(f.graphReads==5)cleared[0]=s.activeSearchAction.replacementTargetProof==null;
+                    if(f.graphReads==6)replacement[0]=s.activeSearchAction.replacementTargetProof;
+                };
                 SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();
-                check(f.outcome.accepted&&f.effects==1&&f.graphReads==6&&legacy[0],"FINAL_PRECLAIM continues through the unmodified original refresh helper");
-                check(w.finalCensusResamples==1&&!w.afterTargetCensusRepairSelected&&w.replacementTargetProof==null,"initial-only proof is retired, not granted to a different boundary");
-                JSONObject d=finalCensusEvidence(f).getJSONArray("discarded_final_censuses").getJSONObject(0);
+                check(f.outcome.accepted&&f.effects==1&&f.graphReads==6&&initial[0]!=null&&cleared[0]
+                        &&replacement[0]!=null&&replacement[0]!=initial[0],"FINAL_PRECLAIM cannot borrow the retired initial C proof");
+                check(w.finalCensusResamples==1&&!w.afterTargetCensusRepairSelected&&w.replacementTargetProof==replacement[0],"actual final-preclaim replacement owns its separate one-round proof");
+                JSONObject e=finalCensusEvidence(f),d=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
                 check(d.getString("producer_boundary").equals("FINAL_PRECLAIM")
-                        &&d.getJSONObject("pre_D_target_read_order").getString("schema").equals("hepta.native-search-initial-read-order.v1"),"original boundary and retired initial evidence both preserved");
-                check(sameReferenceDrained(f),"legacy replacement remains one drained effect");
+                        &&d.getJSONObject("pre_D_target_read_order").getString("schema").equals("hepta.native-search-initial-read-order.v1")
+                        &&e.getJSONObject("final_preclaim_replacement_read_order").getString("producer_boundary").equals("FINAL_PRECLAIM"),"original boundary and retired initial evidence both preserved");
+                check(sameReferenceDrained(f),"replacement remains one drained effect");
             }
         });
         String raw=System.getProperty("hepta.test.initialReadOrderOriginal");

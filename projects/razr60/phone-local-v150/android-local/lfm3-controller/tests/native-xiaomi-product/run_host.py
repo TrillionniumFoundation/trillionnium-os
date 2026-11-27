@@ -89,6 +89,9 @@ def main():
     originals={}
     def read(path):v=bound(path);originals[path]=v;return v[0]
     read(Path(__file__).resolve())
+    caption_helper=a.source/"tests/native-ctrip-caption/protected_caption.py"
+    need(sha(read(caption_helper))=="d607f8d3233aa4ea2cdef88f7b14e93062b4ec68139ba82462fb93f89008a19d","exact reviewed passive-caption inverse helper")
+    caption_predecessor=runpy.run_path(str(caption_helper))["predecessor"]
     partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
     need(sha(read(partial_helper))=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
     partial_banner_predecessor=runpy.run_path(str(partial_helper))["predecessor"]
@@ -113,7 +116,10 @@ def main():
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
     for rel in PATHS:
         raw=read(a.source/rel)
-        partial_proof=partial_banner_predecessor(raw) if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" else raw
+        caption_proof=raw
+        if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" and (len(raw),sha(raw))==(88545,"46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6"):
+            caption_proof=caption_predecessor(raw)
+        partial_proof=partial_banner_predecessor(caption_proof) if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" else raw
         proof_raw=history_predecessor(raw) if rel==SEARCH_HISTORY_PATH else partial_proof
         if rel==SEARCH_HISTORY_PATH:need(sha(proof_raw)==PRE_SEARCH_HISTORY_SHARED[rel],"complete history input predecessor")
         if rel==READONLY_OWNER_PATH:

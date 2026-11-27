@@ -6368,14 +6368,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     /** A new typed intent owns its own current C NodeRef; no PhoneObservation is manufactured. */
-    /** The first complete round and the existing AFTER_TARGET replacement
-     * prepare C's actual target before D. No old graph, old target, event
-     * exemption, new Attempt or extra census is authorized. */
+    /** Every admitted complete round prepares C's actual target before D.
+     * A replacement retains the exact consumed FINAL_PRECLAIM or AFTER_TARGET
+     * capability. No old graph, event exemption, new Attempt or census is granted. */
     private static final class NativeSearchReplacementTargetProof {
         private final SearchActionWork work;private final Graph current;
         private final NodeRef currentTarget;private final NativeActionSnapshotCheck.Snapshot captured;
         private final String path;private final long startedElapsed,completedElapsed;
         private final boolean initialCensus;private final int incompleteCensusOrdinal;
+        private final NativeSearchFinalCensusResampleProof replacementCensus;
         private final NativeSearchPlanning.EventMark refreshedWatermark;
         private final java.util.concurrent.atomic.AtomicBoolean consumed=new java.util.concurrent.atomic.AtomicBoolean();
         private long dStartedElapsed=-1,postDCheckedElapsed=-1;private boolean newDReferenceBound;
@@ -6384,11 +6385,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             this.work=work;current=work.currentGraph;currentTarget=target;captured=work.currentSnapshot;
             this.path=path;startedElapsed=started;completedElapsed=completed;refreshedWatermark=refreshed;
             initialCensus=work.finalCensusResamples==0;incompleteCensusOrdinal=work.incompleteCensusResamples;
+            replacementCensus=work.completedFinalCensusResample;
         }
         private boolean sameReadRound(){
             return work.incompleteCensusResamples==incompleteCensusOrdinal
                     &&(initialCensus?work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected
-                        :work.finalCensusResamples==1&&work.afterTargetCensusRepairSelected);
+                            &&replacementCensus==null&&work.completedFinalCensusResample==null
+                        :work.hasCompletedFinalCensusResample()&&replacementCensus==work.completedFinalCensusResample);
+        }
+        private String evidenceKey(){
+            return initialCensus?"initial_census_read_order":
+                    replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
+                        ?"after_target_replacement_read_order":"final_preclaim_replacement_read_order";
         }
         private void beforeD(long now){
             work.check();work.attempt.requireUnvalidatedRead(now);
@@ -6436,7 +6444,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         private Map<String,Object> evidence(){
             Map<String,Object> value=new LinkedHashMap<String,Object>();
-            value.put("schema",initialCensus?"hepta.native-search-initial-read-order.v1":"hepta.native-search-after-target-read-order.v1");
+            value.put("schema",initialCensus?"hepta.native-search-initial-read-order.v1":
+                    replacementCensus.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET
+                        ?"hepta.native-search-after-target-read-order.v1":"hepta.native-search-final-preclaim-read-order.v1");
+            if(!initialCensus)value.put("producer_boundary",replacementCensus.boundary.name());
             value.put("pre_D_target_chain_refresh_started_elapsed_ms",startedElapsed);
             value.put("pre_D_target_chain_refresh_completed_elapsed_ms",completedElapsed);
             value.put("pre_D_refresh_watermark",refreshedWatermark.evidence());
@@ -6453,14 +6464,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
 
     private void prepareNativeSearchReplacementTarget(SearchActionWork work,NodeRef original,NativeSearchRole role)throws Exception{
         work.check();work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
-        boolean initialCensus=work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected;
-        boolean afterTargetReplacement=work.afterTargetCensusRepairSelected&&work.finalCensusResamples==1;
-        if((!initialCensus&&!afterTargetReplacement)||work.replacementTargetProof!=null
+        boolean initialCensus=work.finalCensusResamples==0&&!work.afterTargetCensusRepairSelected
+                &&work.completedFinalCensusResample==null;
+        boolean completeReplacement=work.hasCompletedFinalCensusResample();
+        if((!initialCensus&&!completeReplacement)||work.replacementTargetProof!=null
                 ||work.currentGraph==null||work.currentSnapshot==null||original!=nativeSearchNode(work.currentGraph,role.actionPath)
                 ||work.latestGraph!=null||work.latestSnapshot!=null||work.pairCompleted!=null||work.roleProof!=null
                 ||work.pendingFinalCensusResample!=null||work.currentNodeIdentityChecked||work.ancestorChainChecked
                 ||work.windowsChecked||work.profileBeforeEffect!=null||work.platformCallInvoked||work.state.effectEntered())
-            throw new StaleObservation("only the initial census or private AFTER_TARGET replacement may refresh before D");
+            throw new StaleObservation("only the initial census or exact consumed final-census replacement may refresh before D");
         long began=SystemClock.elapsedRealtime();
         readNativeSearchReplacementTargetChain(work,original,role.actionPath,work.currentSnapshot,work.currentGraph,true);
         work.check();work.attempt.requireUnvalidatedRead(SystemClock.elapsedRealtime());
@@ -6560,7 +6572,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long afterTargetRefreshEventsElapsed=-1;
         long finalPreclaimEventsElapsed=-1;NativeSearchPlanning.EventMark finalPreclaimRejectedWatermark;
         boolean typedFinalPreclaimContentRejected;int finalCensusResamples,incompleteCensusResamples;
-        NativeSearchFinalCensusResampleProof pendingFinalCensusResample;
+        NativeSearchFinalCensusResampleProof pendingFinalCensusResample,completedFinalCensusResample;
         NativeSearchReplacementTargetProof replacementTargetProof;
         final List<Map<String,Object>> discardedFinalCensuses=new ArrayList<Map<String,Object>>();
         long latestReadReturnedElapsed=-1,latestSnapshotCompletedElapsed=-1,roleComparedElapsed=-1,firstFinalEventsElapsed=-1;
@@ -6686,9 +6698,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new NativeSearchFinalCensusChanged(pendingFinalCensusResample);
             }
         }
+        private boolean hasCompletedFinalCensusResample(){
+            NativeSearchFinalCensusResampleProof proof=completedFinalCensusResample;
+            return finalCensusResamples==1&&proof!=null&&proof.work==this
+                    &&proof.issuer==HeptaAccessibilityService.this&&proof.consumed.get()
+                    &&afterTargetCensusRepairSelected==(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET);
+        }
         void discardFinalCensusForResample(NativeSearchFinalCensusResampleProof proof){
             check();
-            if(proof==null||proof!=pendingFinalCensusResample)
+            if(proof==null||proof!=pendingFinalCensusResample||completedFinalCensusResample!=null)
                 throw new IllegalStateException("actual final-census failure capability required");
             Map<String,Object> old=new LinkedHashMap<String,Object>();
             old.put("ordinal",discardedFinalCensuses.size()+1);
@@ -6713,7 +6731,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             discardedFinalCensuses.add(old);
             attempt.discardRevalidationForFinalCensus(proof,SystemClock.elapsedRealtime());
             finalCensusResamples++;old.put("old_revalidation_discarded",true);pendingFinalCensusResample=null;
-            replacementTargetProof=null;
+            completedFinalCensusResample=proof;replacementTargetProof=null;
             // The discarded immutable record above retains every actual rejection.
             // Only this completed private AFTER_TARGET handoff clears its spent round latch.
             if(proof.boundary==NativeSearchFinalCensusResampleProof.Boundary.AFTER_TARGET){
@@ -6969,8 +6987,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             proof.put("typed_final_preclaim_content_rejected",work.typedFinalPreclaimContentRejected);
             proof.put("complete_census_resamples",work.finalCensusResamples);proof.put("complete_census_resample_limit",1);
             proof.put("after_target_read_repair_selected",work.afterTargetCensusRepairSelected);
-            if(work.replacementTargetProof!=null)proof.put(work.replacementTargetProof.initialCensus
-                    ?"initial_census_read_order":"after_target_replacement_read_order",work.replacementTargetProof.evidence());
+            if(work.replacementTargetProof!=null)proof.put(work.replacementTargetProof.evidenceKey(),work.replacementTargetProof.evidence());
             proof.put("discarded_final_censuses",work.discardedFinalCensuses);
             proof.put("original_chain_deadline_elapsed_ms",work.session.chainDeadlineElapsed);
             proof.put("original_reference_begins_at_current_C",true);proof.put("same_C_D_android_node",work.currentNodeIdentityChecked);
@@ -7044,8 +7061,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NodeRef original=nativeSearchNode(work.currentGraph,currentRole.actionPath);NodeRef effectReference=original;
             if(!NativeAppEvidence.hash(original.signature).equals(current.node(currentRole.actionPath).v.get("ref_signature_sha256")))
                 throw new StaleObservation("new search C reference does not match its complete census");
-            if(work.finalCensusResamples==0||(work.afterTargetCensusRepairSelected&&work.finalCensusResamples==1))
-                prepareNativeSearchReplacementTarget(work,original,currentRole);
+            prepareNativeSearchReplacementTarget(work,original,currentRole);
             work.attempt.verifyInstalled();work.check();work.phase("graph_read");
             long latestReadStarted=SystemClock.elapsedRealtime();
             if(work.replacementTargetProof!=null)work.replacementTargetProof.beforeD(latestReadStarted);
