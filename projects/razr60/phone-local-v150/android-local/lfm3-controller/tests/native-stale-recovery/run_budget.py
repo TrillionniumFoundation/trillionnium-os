@@ -59,6 +59,10 @@ assert sha(local_session_proof) in {
 native_snapshot_raw=(src/'NativeActionSnapshotCheck.java').read_bytes()
 native_snapshot_proof=native_snapshot_raw
 # Proof-copy inverse only; compile the actual current comparator below.
+caption_helper=root/'tests/native-ctrip-caption/protected_caption.py'
+assert sha(caption_helper.read_bytes())=='d607f8d3233aa4ea2cdef88f7b14e93062b4ec68139ba82462fb93f89008a19d', 'exact reviewed passive-caption inverse helper'
+if (len(native_snapshot_proof),sha(native_snapshot_proof))==(88545,'46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6'):
+    native_snapshot_proof=runpy.run_path(str(caption_helper))['predecessor'](native_snapshot_proof)
 partial_helper=root/'tests/native-search-carousel-edge/protected_partial_edge.py'
 assert sha(partial_helper.read_bytes())=='a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d', 'exact reviewed partial-edge inverse helper'
 if sha(native_snapshot_proof)=='c1df34cb7613f7b50e206b89140e1518556343f438fe43594ff27ca1c5db3346':
@@ -172,7 +176,7 @@ harness_path.write_bytes(template.read_bytes())
 inputs = [root/row['path'] for row in ns['record']['source_inputs']]
 inputs += [src/name for name in ['ObservationCaptureEvidence.java','NativeCtripFormObservation.java','NativeXiaomiSearchInputObservation.java', 'LocalTaskController.java','HeptaAccessibilityService.java','NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java','ObservedImeEnter.java','ActionExecutionState.java','RecentActionProjection.java']]
 inputs += [Path(__file__).resolve(), template, a.json_jar.resolve(), root/'tests/native-xiaomi-query-stability/protected_filled_query.py']
-inputs += [root/'tests/native-ctrip-form-observation/scope_predecessor.py',partial_helper]
+inputs += [root/'tests/native-ctrip-form-observation/scope_predecessor.py',partial_helper,caption_helper]
 before = [identity(path) for path in inputs]
 # Real org.json is deliberately used: the legacy host fixture's toString(2)
 # delegates to compact JSON and cannot establish pretty-file byte counts.

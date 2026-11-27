@@ -89,6 +89,9 @@ def main():
     originals={}
     def read(path):v=bound(path);originals[path]=v;return v[0]
     read(Path(__file__).resolve())
+    caption_helper=a.source/"tests/native-ctrip-caption/protected_caption.py"
+    need(sha(read(caption_helper))=="d607f8d3233aa4ea2cdef88f7b14e93062b4ec68139ba82462fb93f89008a19d","exact reviewed passive-caption inverse helper")
+    caption_predecessor=runpy.run_path(str(caption_helper))["predecessor"]
     partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
     need(sha(read(partial_helper))=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
     partial_banner_predecessor=runpy.run_path(str(partial_helper))["predecessor"]
@@ -108,16 +111,26 @@ def main():
     history_helper=a.source/"tests/native-xiaomi-search-history/protected_history_prefix.py"
     need(sha(read(history_helper))=="90c3fbb3550ee110dd9f939aecf65ebad210694fa128e9371f7076c6d2ad08d5","exact reviewed history inverse helper")
     history_predecessor=runpy.run_path(str(history_helper))["predecessor"]
+    manual_helper=a.source/"tests/order-preview-manual-fixture/protected_manual_owner.py"
+    need(sha(read(manual_helper))=="94a251e75be32f192c42e8a911874d73b07acbf18bf9d044a1804d5ea3c8dd8e","exact reviewed manual OWNER inverse helper")
+    manual_predecessor=runpy.run_path(str(manual_helper))["predecessor"]
     owner_helper=a.source/"tests/native-ctrip-readonly-owner/protected_readonly_owner.py"
     need(sha(read(owner_helper))=="14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353","exact reviewed read-only OWNER inverse helper")
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
     for rel in PATHS:
         raw=read(a.source/rel)
-        partial_proof=partial_banner_predecessor(raw) if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" else raw
+        caption_proof=raw
+        if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" and (len(raw),sha(raw))==(88545,"46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6"):
+            caption_proof=caption_predecessor(raw)
+        partial_proof=partial_banner_predecessor(caption_proof) if rel=="src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java" else raw
         proof_raw=history_predecessor(raw) if rel==SEARCH_HISTORY_PATH else partial_proof
         if rel==SEARCH_HISTORY_PATH:need(sha(proof_raw)==PRE_SEARCH_HISTORY_SHARED[rel],"complete history input predecessor")
         if rel==READONLY_OWNER_PATH:
-            proof_raw=owner_predecessor(raw)
+            manual_proof=raw
+            if (len(raw),sha(raw))==(24497,"fbdd7688e6cb0582001d6f1d5142437be0dd8c25a0d98102b8c0f7023baedd81"):
+                manual_proof=manual_predecessor(raw)
+            partial_proof=manual_proof
+            proof_raw=owner_predecessor(manual_proof)
             need(len(proof_raw)==21582 and sha(proof_raw)==PRE_READONLY_OWNER_SHARED[rel],"complete preceding OWNER source")
         if rel in SHARED:need(sha(partial_proof)==SHARED[rel],"reviewed shared DTO/goal pin or exact partial-edge predecessor")
         if rel==CAPTURE_REUSE_PATH:

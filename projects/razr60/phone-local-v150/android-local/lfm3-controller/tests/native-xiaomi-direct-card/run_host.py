@@ -36,11 +36,21 @@ def main():
     need(detail_meta["sha256"]=="f1bf83564946293cc0074b64dfe5b5ae858d3115d3299005ea9296548dae143a","exact reviewed detail inverse helper")
     originals[str(detail_helper)]=detail_meta
     detail_predecessor=runpy.run_path(str(detail_helper))["predecessor"]
+    manual_helper=a.source/"tests/order-preview-manual-fixture/protected_manual_owner.py"
+    manual_meta=info(manual_helper)
+    need(manual_meta["sha256"]=="94a251e75be32f192c42e8a911874d73b07acbf18bf9d044a1804d5ea3c8dd8e","exact reviewed manual OWNER inverse helper")
+    originals[str(manual_helper)]=manual_meta
+    manual_predecessor=runpy.run_path(str(manual_helper))["predecessor"]
     owner_helper=a.source/"tests/native-ctrip-readonly-owner/protected_readonly_owner.py"
     owner_meta=info(owner_helper)
     need(owner_meta["sha256"]=="14a0378f13c0a0cfbb370b0230ec2b58a0ee475f4e88e4031f3a866e9333e353","exact reviewed read-only OWNER inverse helper")
     originals[str(owner_helper)]=owner_meta
     owner_predecessor=runpy.run_path(str(owner_helper))["predecessor"]
+    caption_helper=a.source/"tests/native-ctrip-caption/protected_caption.py"
+    caption_meta=info(caption_helper)
+    need(caption_meta["sha256"]=="d607f8d3233aa4ea2cdef88f7b14e93062b4ec68139ba82462fb93f89008a19d","exact reviewed passive-caption inverse helper")
+    originals[str(caption_helper)]=caption_meta
+    caption_predecessor=runpy.run_path(str(caption_helper))["predecessor"]
     partial_helper=a.source/"tests/native-search-carousel-edge/protected_partial_edge.py"
     partial_meta=info(partial_helper)
     need(partial_meta["sha256"]=="a63626f6fcddbd3090ac631ddb96e12f1c47fa9313993ccda4eb17606166561d","exact reviewed partial-edge inverse helper")
@@ -50,8 +60,16 @@ def main():
         meta=info(a.source/rel)
         proof_raw=history_predecessor((a.source/rel).read_bytes()) if rel==PKG+"NativeXiaomiSearchInputObservation.java" else None
         if rel==PKG+"NativeXiaomiProductPage.java":proof_raw=detail_predecessor((a.source/rel).read_bytes())
-        if rel==PKG+"NativeAppGoal.java":proof_raw=owner_predecessor((a.source/rel).read_bytes())
-        if rel==PKG+"NativeActionSnapshotCheck.java":proof_raw=partial_banner_predecessor((a.source/rel).read_bytes())
+        if rel==PKG+"NativeAppGoal.java":
+            manual_proof=(a.source/rel).read_bytes()
+            if (len(manual_proof),sha(manual_proof))==(24497,"fbdd7688e6cb0582001d6f1d5142437be0dd8c25a0d98102b8c0f7023baedd81"):
+                manual_proof=manual_predecessor(manual_proof)
+            proof_raw=owner_predecessor(manual_proof)
+        if rel==PKG+"NativeActionSnapshotCheck.java":
+            caption_proof=(a.source/rel).read_bytes()
+            if (len(caption_proof),sha(caption_proof))==(88545,"46c6aed0dfb6279c5b56ec80095a5d2fead6c3c95335f70d5a47a98bef52e0f6"):
+                caption_proof=caption_predecessor(caption_proof)
+            proof_raw=partial_banner_predecessor(caption_proof)
         need((len(proof_raw)==pin["bytes"] and sha(proof_raw)==pin["sha256"]) if proof_raw is not None
              else (meta["bytes"]==pin["bytes"] and meta["sha256"]==pin["sha256"]),"exact source/fixture predecessor pin: "+rel)
         originals[str(a.source/rel)]=meta

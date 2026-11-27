@@ -60,12 +60,24 @@ def generate(code,tests,out,common):
         await_template=await_template.replace(marker,value,1)
     need('{{' not in await_template,'complete actual await closure extraction')
     common.write(generated/'ControllerGuardClosureHost.java',await_template)
+    # Complete the actual await dependency only when the source has the BACK path.
+    # The existing helper inserts the production member verbatim and proves its
+    # generated-file inverse; historical sources retain their original closure.
+    calendar_projection=None;calendar_records=[];calendar_helper=None
+    if 'nativeCalendarBackExecution(' in await_methods['await_action']:
+        calendar_projection=extractor.body(controller,'    private static java.util.Map<String,Object> nativeCalendarBackExecution(')
+        calendar_helper=code/'tests/native-calendar-back-read/prepare.py'
+        back=common.module(calendar_helper,'stale_actual_calendar_projection')
+        calendar_records=back.extend_other_generated(code,out,extractor,common)
     paths,bg=integration.sources(code,out)
+    manual_value=code/PKG/'NativeOrderPreviewManual.java'
+    if manual_value.is_file():paths.append(manual_value)
     paths += [tests/TEST/'NativeStaleRecoveryHostTest.java',tests/'tests/native-query-reservation/NativeQueryReservationHostTest.java']
     paths=list(dict.fromkeys(p.resolve() for p in paths))
     extracted=dict(methods);extracted.update(parts)
     extracted.update(action_receipt=receipt,terminal_execution=terminal,controller_projection=projection,system_prompt=actual_prompt)
     extracted.update({'closure_'+key:value for key,value in await_methods.items()})
+    if calendar_projection is not None:extracted['controller_calendar_back_projection']=calendar_projection
     extraction={
       'schema':'hepta.native-stale-recovery-extraction.v1','bodies_verbatim':True,
       'service_source':common.meta(code/PKG/'HeptaAccessibilityService.java'),
@@ -73,6 +85,9 @@ def generate(code,tests,out,common):
       'methods':{k:{'bytes':len(v.encode('utf-8')),'sha256':common.sha(v.encode('utf-8'))} for k,v in extracted.items()},
       'actual_controller_call':call,'actual_controller_call_sha256':common.sha(call.encode('utf-8')),
       'case_fragment':common.meta(tests/TEST/'RecoveryCases.fragment'),'background_fixture':bg,
+      'actual_manual_value_class_compiled':common.meta(manual_value) if manual_value.is_file() else None,
+      'calendar_projection_helper':common.meta(calendar_helper) if calendar_helper is not None else None,
+      'calendar_projection_generated':calendar_records,
       'boundary':'Actual Session, ActionExecutionState, comparator and verbatim Service methods; synthetic host Android graph, model decisions, clock, installed package and journal. No Android, phone, model or business pass.'}
     common.save(out/'EXTRACTION.json',extraction)
     return paths,extraction
