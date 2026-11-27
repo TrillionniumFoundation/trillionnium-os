@@ -1,27 +1,23 @@
 {
   "android_qualified": false,
   "candidate_exact_git_head": null,
-  "candidate_status": "SOURCE_FROZEN_PENDING_SUCCESSOR_JOINT_HOST_AND_ANDROID",
+  "candidate_status": "SOURCE_FROZEN_PENDING_INITIAL_READ_JOINT_HOST_AND_ANDROID",
   "changes": [
     "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-    "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-    "tests/native-calendar-back-ax/run_host.py",
-    "tests/native-ctrip-caption/NativeCtripCaptionHostTest.java",
-    "tests/native-ctrip-caption/README.md",
-    "tests/native-ctrip-caption/run_host.py",
-    "tests/native-ctrip-coherent-census/run_host.py",
-    "tests/native-ctrip-form-observation/run_observer_host.py",
-    "tests/native-search-carousel-edge/protected_partial_edge.py",
-    "tests/native-search-producer/FinalPreclaimReadOrderCases.fragment",
+    "tests/native-ax-initial-sampling-pair/InitialSamplingPairCases.fragment",
+    "tests/native-ax-initial-sampling-pair/run_host.py",
+    "tests/native-observation-screenshot-seed/run_host.py",
+    "tests/native-search-first-post-d/EXPECTED-CASES.json",
+    "tests/native-search-first-post-d/FirstPostDFenceCases.fragment",
+    "tests/native-search-first-post-d/run_focused.py",
     "tests/native-search-producer/InitialReadOrderCases.fragment",
+    "tests/native-search-producer/NoEffectSuccessorCases.fragment",
     "tests/native-search-producer/ProducerCases.fragment",
-    "tests/native-search-producer/SearchIconCases.fragment",
-    "tests/native-search-producer/run_producer.py",
-    "tests/native-stale-recovery/run_budget.py",
-    "tests/native-xiaomi-direct-card/run_host.py",
-    "tests/native-xiaomi-product/run_host.py"
+    "tests/observation-diagnostics/run_host.py"
   ],
-  "complete_source_files": 2750,
+  "complete_source_files": 2755,
+  "derived_from_unqualified_manifest_sha256": "26e8a14cb3042959bfc7e970a4cf88f4bfe2180e8e4f7c8e71f27f7026699014",
+  "derived_from_unqualified_source_head": "1e648016fb053efc486eb2974efb5dfc826dd26d",
   "files": [
     {
       "bytes": 100,
@@ -6609,9 +6605,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 835899,
+      "bytes": 846274,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "124ce58df6aa0b8973c6b620c3faafe676fcbd54df2cc6901ddb13527a1a5341"
+      "sha256": "8ffeb474e92c05d003a54b5f45d1f538b29df9c8aa244c8ab08a9c50b72f0585"
     },
     {
       "bytes": 711,
@@ -8944,6 +8940,16 @@
       "sha256": "436c282e57c009551f9e7023bd1a0a062e1e7fa2c5b18692c6abfde0fe4a5196"
     },
     {
+      "bytes": 19463,
+      "path": "tests/native-ax-initial-sampling-pair/InitialSamplingPairCases.fragment",
+      "sha256": "78e998705991a306ba8946678c21265522e895848bb3c1d86e8930d15ca69922"
+    },
+    {
+      "bytes": 9985,
+      "path": "tests/native-ax-initial-sampling-pair/run_host.py",
+      "sha256": "ebf279b8e9b8e85e3d26a0488294bfb441fa631a9c7f969c75f257790b7c2ff5"
+    },
+    {
       "bytes": 9890,
       "path": "tests/native-ax-observation/ActualAxPhoneChecks.java",
       "sha256": "2d6f71ebd6b93bbc348ef18c0b9fb7c78e40c659540de25319d555ca6cfe59fe"
@@ -9574,9 +9580,9 @@
       "sha256": "9c9fb458bb111eb813a106cbc3f7c7ba86ca3da6e4799d27b908604638477d8e"
     },
     {
-      "bytes": 101243,
+      "bytes": 105024,
       "path": "tests/native-observation-screenshot-seed/run_host.py",
-      "sha256": "c07ef6328029eb09862cfcda8a668dfe8368dd4584227bc6db1f7ab363c17f64"
+      "sha256": "1c894edbc25751fada0403e013d71fe3f8cf0b6c9f3b230407a91e802552d375"
     },
     {
       "bytes": 7722,
@@ -9709,6 +9715,21 @@
       "sha256": "82d0135e098c95197705c6ccec94d37061dbde90671831e8bcf085e4e8d9d29f"
     },
     {
+      "bytes": 1307,
+      "path": "tests/native-search-first-post-d/EXPECTED-CASES.json",
+      "sha256": "ae78cbe001fa9313438b12cffd4267bdd1828791972a18af0808f745b35571fd"
+    },
+    {
+      "bytes": 27593,
+      "path": "tests/native-search-first-post-d/FirstPostDFenceCases.fragment",
+      "sha256": "39a41bb80af695b09114fc10d1277bb39c1d63d542143e01240fa59974607ad7"
+    },
+    {
+      "bytes": 10521,
+      "path": "tests/native-search-first-post-d/run_focused.py",
+      "sha256": "bc08907ad71bd4a3d55c419166aa26459af669f00f91e9840889c7ad65ffadcb"
+    },
+    {
       "bytes": 9167,
       "path": "tests/native-search-grammar/NativeSearchGrammarHostTest.java",
       "sha256": "0427df28341ed62d2c235b691ca86e00f1dfc6c461847608ad52d845bd7701be"
@@ -9834,9 +9855,9 @@
       "sha256": "67c12f90dbd2ab68a02437216af8096808c2ead809fb897ef0a332f1c41fe9c1"
     },
     {
-      "bytes": 20894,
+      "bytes": 25653,
       "path": "tests/native-search-producer/InitialReadOrderCases.fragment",
-      "sha256": "ef087eb6ab0f0d15962bbd9a54ee8bd459dc7166e1c6e372f82a06749f64bbd6"
+      "sha256": "f0db312b78597e106941f0154855c22f1c362b5f1250dda12489b45c4143d733"
     },
     {
       "bytes": 1382,
@@ -9869,9 +9890,9 @@
       "sha256": "5fdb5f01b514ad03cb9cd9ace1978ea52769c702d2a2e6f20e5def44c81311b4"
     },
     {
-      "bytes": 69554,
+      "bytes": 76516,
       "path": "tests/native-search-producer/NoEffectSuccessorCases.fragment",
-      "sha256": "bbacc2e0cdf27029ace411e3836625046af3ed8497f84deef2bd3f6a7fc9b81a"
+      "sha256": "06108113dca2963da1ea8633c69affde75633af7d76476a8e339e0a82737fbd2"
     },
     {
       "bytes": 32307,
@@ -9884,9 +9905,9 @@
       "sha256": "1f7489a4f31e674ef73a9ee810cfcb60c5650ec413d3ef1679034fa8efd1606f"
     },
     {
-      "bytes": 78663,
+      "bytes": 78860,
       "path": "tests/native-search-producer/ProducerCases.fragment",
-      "sha256": "4a3a82c80d16852eeb9808cda61bc5776e21395c34a5a9586a26e504d3f0aab2"
+      "sha256": "687035aa59f35624bdf2f65f5c696aa384cd446f8d623429b2270bfbbf8025e0"
     },
     {
       "bytes": 13317,
@@ -10949,9 +10970,9 @@
       "sha256": "743e0b8ab9eb900f1349b9b883b5083e45f0d97374242bae2ee196b0d86bfc52"
     },
     {
-      "bytes": 46062,
+      "bytes": 49122,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "e4de1331137de3b6376853c7cd7f4bd315a23406d3c1d4a22d135c5f40a10ac2"
+      "sha256": "2599fa119758dfb1817d5e65f7f59d906b50ee7488eafb0ea1cd404f609cff78"
     },
     {
       "bytes": 13092,
@@ -13771,10 +13792,10 @@
   ],
   "main_java_sources": 223,
   "phone_qualified": false,
-  "predecessor_manifest_sha256": "66217015fd862045851502e2d2b1cbbc9645cc7478061e60245bd91a1f58d5a8",
-  "predecessor_source_manifest_sha256": "66217015fd862045851502e2d2b1cbbc9645cc7478061e60245bd91a1f58d5a8",
+  "predecessor_manifest_sha256": "7945ce47829aab6990c80aad16f6d6db2518579fedd4b3a4520001b7abc3d5d9",
+  "predecessor_source_manifest_sha256": "7945ce47829aab6990c80aad16f6d6db2518579fedd4b3a4520001b7abc3d5d9",
   "production_build_inputs_count": 407,
-  "production_input_map_sha256": "d87e7fe215cae1cd718843edd4cba4137f210b19a93778bf9c97daa44518bac4",
+  "production_input_map_sha256": "0b0e61d96bf2ce61f0d085c03c5c383732e194c60e63573c2cafdaea11289b8e",
   "schema": "hepta.local-source.v3",
-  "source_parent_head": "5b943de939a72d0e61fd912c6af3b3edc60ad0f5"
+  "source_parent_head": "6897439d75fbc745f76c49ed12370d702411261b"
 }

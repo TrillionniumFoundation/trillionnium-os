@@ -61,8 +61,8 @@
                 }
             });
         }
-        for(int type=0;type<4;type++){final int kind=type;
-            one("initial_read_order_first_fence_"+new String[]{"unknown","boundary","untyped","content"}[type]+"_still_refused",()->{
+        for(int type=0;type<3;type++){final int kind=type;
+            one("initial_read_order_first_fence_"+new String[]{"unknown","boundary","untyped"}[type]+"_still_refused",()->{
                 HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                     NativeSearchSession.Attempt a=afterTargetIntent(f);armFirstFinalEvent(s,kind);f.action(a);
                     noEffect(f,"unchanged first fence cannot spend a new census allowance");
@@ -75,6 +75,50 @@
                 }
             });
         }
+        // Preserve the old content input at its actual FIRST_POST_D boundary.
+        // It now consumes the private same-Attempt replacement; it is not a
+        // substitute trigger for the separate no-effect/new-model tests.
+        one("initial_read_order_first_fence_content_discards_old_pair_and_uses_one_replacement",()->{
+            HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
+                NativeSearchSession.Attempt a=afterTargetIntent(f);long deadline=a.deadlineElapsed;
+                final boolean[] actualD={false};readOrderEffectIdentity(s,f,actualD);
+                armFirstFinalEvent(s,3);SearchActionWork w=f.startAction(a);actionIo.one();s.main.one();
+                check(f.outcome!=null&&f.outcome.accepted&&f.outcome.dispatched&&f.effects==1&&f.graphReads==6,
+                        "the original first-fence content input requires one new complete C/D pair and one effect");
+                JSONObject e=finalCensusEvidence(f),old=e.getJSONArray("discarded_final_censuses").getJSONObject(0);
+                JSONObject before=old.getJSONObject("pre_D_target_read_order"),after=e.getJSONObject("first_post_D_replacement_read_order");
+                check(e.getJSONArray("discarded_final_censuses").length()==1&&"FIRST_POST_D".equals(old.getString("producer_boundary"))
+                        &&old.getBoolean("typed_post_D_first_fence_rejected")&&old.getBoolean("old_C_graph_closed")
+                        &&old.getBoolean("old_D_graph_closed")&&old.getBoolean("old_revalidation_discarded"),
+                        "the exact rejected old pair closes before its one private replacement proof is consumed");
+                check(!before.getBoolean("new_D_dispatch_reference_bound")&&before.getLong("post_D_getter_check_completed_elapsed_ms")==-1
+                        &&!old.getBoolean("original_target_chain_return_completed")&&!old.getBoolean("reported_windows_checked")
+                        &&!old.getBoolean("final_profile_proof_present")&&!old.getBoolean("effect_entered")&&!old.getBoolean("platform_call_invoked"),
+                        "the first refusal never fabricates old target/window/profile checks or an old effect");
+                check(old.getJSONObject("D_completed_watermark").getLong("content")==0
+                        &&old.getJSONObject("rejection_watermark").getLong("content")==1
+                        &&e.getJSONObject("D_completed_watermark").getLong("content")==1
+                        &&e.getJSONObject("before_effect_watermark").getLong("content")==1,
+                        "the original content event remains accounted for throughout the replacement");
+                check(actualD[0]&&"FIRST_POST_D".equals(after.getString("producer_boundary"))
+                        &&after.getBoolean("new_D_dispatch_reference_bound")&&!after.getBoolean("post_D_event_exemption")
+                        &&!after.getBoolean("additional_census_allowance"),"only the replacement D reference can effect without an event or budget exemption");
+                check(after.getLong("pre_D_target_chain_refresh_completed_elapsed_ms")<=after.getLong("replacement_D_started_elapsed_ms")
+                        &&after.getLong("replacement_D_started_elapsed_ms")<=e.getLong("D_read_returned_elapsed_ms")
+                        &&e.getLong("D_read_returned_elapsed_ms")<=after.getLong("post_D_getter_check_completed_elapsed_ms"),
+                        "actual replacement pre-D refresh, complete D and post-D getters retain their order");
+                check(w.attempt==a&&a.deadlineElapsed==deadline&&deadline-a.startedElapsed==24000
+                        &&w.finalCensusResamples==1&&w.incompleteCensusResamples==0&&w.currentReadAttempts.size()==2,
+                        "the same reserved Attempt retains its original deadline, one replacement and bounded C reads");
+                check(w.ancestorChainChecked&&w.windowsChecked&&w.profileBeforeEffect!=null&&w.finalPreclaimEventsElapsed>=0
+                        &&w.firstPostDCensusRepairSelected&&!w.afterTargetCensusRepairSelected&&!w.hasNoEffectReplanFence()
+                        &&observationIo.submissions==1&&s.taskObservationAdmissions==1&&!old.getBoolean("model_reissued"),
+                        "all final guards pass on the original model intent without a successor planning/model request");
+                check(f.callbackCount==2&&Boolean.TRUE.equals(a.evidence().get("claimed"))
+                        &&f.outcome.actionExecution.getBoolean("worker_drained")&&f.outcome.actionExecution.getBoolean("effect_returned")
+                        &&sameReferenceDrained(f),"one returned claimed effect and all old/new SDK references physically drain");
+            }
+        });
         one("initial_read_order_incomplete_D_retires_C_proof_and_builds_new_round",()->{
             HeptaAccessibilityService s=new HeptaAccessibilityService();try(Fixture f=s.new Fixture()){
                 NativeSearchSession.Attempt a=afterTargetIntent(f);firstIncompleteDThenFreshPair(f);
